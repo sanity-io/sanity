@@ -4,7 +4,17 @@ import {PublishIcon} from '@sanity/icons/Publish'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
-import {Badge, Box, Card, Checkbox, Container, Flex, Menu, TextInput} from '@sanity/ui'
+import {
+  Badge,
+  Box,
+  Card,
+  Container,
+  Flex,
+  Menu,
+  MenuDivider,
+  TextInput,
+  useMediaIndex,
+} from '@sanity/ui'
 import {type CSSProperties, useCallback, useMemo, useState} from 'react'
 
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
@@ -25,15 +35,23 @@ import {VariantReleaseLane} from './VariantReleaseLane'
 const TABLE_CARD_STYLE: CSSProperties = {
   height: '100%',
   overflow: 'auto',
-  // No scrollbar-gutter: it forces a fixed reserve the Container-based command lane doesn't have,
-  // which misaligns the centered rows from the chrome as the viewport narrows. Without it, the
-  // rows and chrome share the same centered inset at every width (with overlay scrollbars). The
-  // minor horizontal shift when a filter toggles a non-overlay scrollbar is deferred to the shared
-  // document-table work (FH-90), where header + table live in one scroll context.
+  // Reserve the scrollbar gutter symmetrically (both edges). The table centers its rows in a
+  // container[3] block; with a classic (non-overlay) scrollbar, toggling a filter changes the row
+  // count, the vertical scrollbar appears/disappears, the content box width changes, and the
+  // centered rows jump horizontally relative to the command lane above (which has no scrollbar).
+  // "stable both-edges" reserves the gutter on both sides at all times, so the content box width
+  // is constant and the rows stay centered — matching the command lane — whether or not the
+  // scrollbar is showing.
+  scrollbarGutter: 'stable both-edges',
 }
 
-// The command-lane search input is a fixed leading control; the filter tabs fill the rest.
+// The command-lane search input is right-aligned and fixed-width; the filter tabs lead from the
+// left (aligned with the columns below) and fill the rest.
 const SEARCH_INPUT_STYLE: CSSProperties = {maxWidth: 280}
+
+// Constant command-lane content height so the browse↔bulk swap (search input vs action buttons)
+// never changes the lane height and shifts the table rows below.
+const COMMAND_LANE_STYLE: CSSProperties = {minHeight: 33}
 
 function filterDocuments(
   rows: DocumentInVariantGroup[],
@@ -56,6 +74,10 @@ export function VariantDocumentsTable({
   variantId?: string
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
+  // Below this breakpoint the primary bulk buttons collapse into the "more" menu so the toolbar
+  // never crowds the count/clear on the left.
+  const mediaIndex = useMediaIndex()
+  const compactBulkActions = mediaIndex < 2
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
   const [activeLane, setActiveLane] = useState<string>(RELEASE_LANE_ALL)
   const [searchTerm, setSearchTerm] = useState('')
@@ -139,6 +161,8 @@ export function VariantDocumentsTable({
     })
   }, [selectableGroupIds])
 
+  const handleClearSelection = useCallback(() => setSelectedGroupIds(new Set()), [])
+
   const isSelected = useCallback(
     (groupId: string) => selectedGroupIds.has(groupId),
     [selectedGroupIds],
@@ -162,50 +186,55 @@ export function VariantDocumentsTable({
 
   return (
     <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
-      {/* Command lane (three-zone header, zone 1). Persistent, so nothing shifts vertically. It
-          swaps GitHub-style: idle shows browse controls (search + filter tabs); on selection it
-          becomes a bulk-action toolbar — select-all + count on the left, actions on the right.
-          container[3] + paddingX={2} so the lane aligns with the table's row content below (the
-          shared Table centers rows at container[3]; the first column insets by 8px). */}
+      {/* Command lane (three-zone header, zone 1). Fixed height, so the browse↔bulk swap never
+          shifts the rows below. Idle: filter tabs lead from the left (aligned with the columns),
+          search is right-aligned. On selection it becomes a bulk toolbar — selected count on the
+          left, actions on the right. Select-all is NOT here — it lives in the column-header row's
+          checkbox cell, above the row checkboxes it governs. container[3] + paddingX={2} aligns the
+          lane with the table's row content below. */}
       {hasDocuments && (
         <Card flex="none" borderBottom paddingY={2}>
           <Container flex="none" width={3}>
             <Box paddingX={2}>
-              <Flex align="center" gap={3}>
-                {/* Select-all is persistent and leftmost (over the checkbox column). Clicking it
-                    when anything is selected clears — so "clear" lives with the count, not between
-                    actions. */}
-                <Checkbox
-                  aria-label={t('detail.documents.bulk.select-all')}
-                  checked={allSelected}
-                  data-testid="variant-bulk-select-all"
-                  indeterminate={someSelected && !allSelected}
-                  onChange={handleToggleAll}
-                />
+              <Flex align="center" gap={3} style={COMMAND_LANE_STYLE}>
                 {selectedVisibleCount > 0 ? (
                   <>
-                    {/* Selection mode: count beside the box (primary-toned, live indicator); browse
-                        controls give way to the bulk actions on the right. */}
+                    {/* Selection mode: count + Clear grouped on the left as one set (primary-toned
+                        count is a live indicator). Clear is the same action as clicking the header
+                        select-all while selected, surfaced explicitly here for discoverability. */}
                     <Badge data-testid="variant-bulk-selected-count" fontSize={1} tone="primary">
                       {t('detail.documents.bulk.selected', {count: selectedVisibleCount})}
                     </Badge>
+                    <Button
+                      data-testid="variant-bulk-clear"
+                      mode="bleed"
+                      onClick={handleClearSelection}
+                      text={t('detail.documents.bulk.clear')}
+                    />
                     <Box flex={1} />
                     <Flex align="center" flex="none" gap={2}>
-                      <Button
-                        data-testid="variant-bulk-publish"
-                        disabled
-                        icon={PublishIcon}
-                        mode="ghost"
-                        text={t('detail.documents.bulk.publish')}
-                      />
-                      <Button
-                        data-testid="variant-bulk-delete"
-                        disabled
-                        icon={TrashIcon}
-                        mode="ghost"
-                        text={t('detail.documents.bulk.delete')}
-                        tone="critical"
-                      />
+                      {/* Primary constructive actions: Publish (green, the main CTA) + Add to
+                          release. On narrow widths they fold into the "more" menu below. Destructive
+                          Delete stays in the overflow — not one click away for a bulk op. Actions are
+                          stubbed (disabled) until wired up (FH-113). */}
+                      {!compactBulkActions && (
+                        <>
+                          <Button
+                            data-testid="variant-bulk-publish"
+                            disabled
+                            icon={PublishIcon}
+                            text={t('detail.documents.bulk.publish')}
+                            tone="positive"
+                          />
+                          <Button
+                            data-testid="variant-bulk-add-to-release"
+                            disabled
+                            icon={AddIcon}
+                            mode="ghost"
+                            text={t('detail.documents.bulk.add-to-release')}
+                          />
+                        </>
+                      )}
                       <MenuButton
                         id="variant-bulk-more"
                         button={
@@ -218,15 +247,35 @@ export function VariantDocumentsTable({
                         }
                         menu={
                           <Menu>
+                            {compactBulkActions && (
+                              <>
+                                <MenuItem
+                                  data-testid="variant-bulk-publish"
+                                  disabled
+                                  icon={PublishIcon}
+                                  text={t('detail.documents.bulk.publish')}
+                                  tone="positive"
+                                />
+                                <MenuItem
+                                  data-testid="variant-bulk-add-to-release"
+                                  disabled
+                                  icon={AddIcon}
+                                  text={t('detail.documents.bulk.add-to-release')}
+                                />
+                                <MenuDivider />
+                              </>
+                            )}
                             <MenuItem
                               disabled
                               icon={UnpublishIcon}
                               text={t('detail.documents.bulk.unpublish')}
                             />
                             <MenuItem
+                              data-testid="variant-bulk-delete"
                               disabled
-                              icon={AddIcon}
-                              text={t('detail.documents.bulk.add-to-release')}
+                              icon={TrashIcon}
+                              text={t('detail.documents.bulk.delete')}
+                              tone="critical"
                             />
                           </Menu>
                         }
@@ -236,6 +285,18 @@ export function VariantDocumentsTable({
                   </>
                 ) : (
                   <>
+                    {/* Filter tabs lead from the left, aligned with the columns below. */}
+                    <Box flex={1} style={{minWidth: 0, overflowX: 'auto'}}>
+                      {hasReleaseControls && (
+                        <VariantReleaseLane
+                          activeLane={resolvedActiveLane}
+                          onSelectLane={handleSelectLane}
+                          segments={segments}
+                          totalCount={rows.length}
+                        />
+                      )}
+                    </Box>
+                    {/* Search is right-aligned and fixed-width. */}
                     <Box flex="none" style={SEARCH_INPUT_STYLE}>
                       <TextInput
                         aria-label={t('detail.documents.table.search-placeholder')}
@@ -248,16 +309,6 @@ export function VariantDocumentsTable({
                         placeholder={t('detail.documents.table.search-placeholder')}
                         value={searchTerm}
                       />
-                    </Box>
-                    <Box flex={1} style={{minWidth: 0, overflowX: 'auto'}}>
-                      {hasReleaseControls && (
-                        <VariantReleaseLane
-                          activeLane={resolvedActiveLane}
-                          onSelectLane={handleSelectLane}
-                          segments={segments}
-                          totalCount={rows.length}
-                        />
-                      )}
                     </Box>
                   </>
                 )}

@@ -96,6 +96,8 @@ const variantsLocaleStrings = {
   'detail.documents.bulk.selected_one': '{{count}} selected',
   /** Count of selected documents in the bulk-action bar (plural). */
   'detail.documents.bulk.selected_other': '{{count}} selected',
+  /** Clears the current document selection (grouped with the selected count). */
+  'detail.documents.bulk.clear': 'Clear',
   /** Primary bulk action: publish the selected documents. */
   'detail.documents.bulk.publish': 'Publish',
   /** Primary bulk action: delete the selected documents. */

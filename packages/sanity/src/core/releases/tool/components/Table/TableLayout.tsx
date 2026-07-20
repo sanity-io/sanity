@@ -7,15 +7,20 @@ interface TableLayoutProps {
   contentHeight?: string
 }
 
+// borderSpacing: 0 on both states so the header sits at the same offset whether the table renders
+// as a grid (empty state) or a default table box (populated). Without it, the populated table keeps
+// the browser-default 2px border-spacing and the header shifts ~2px when the last row filters out.
 const emptyTableStyle: CSSProperties = {
   width: '100%',
   height: '100%',
   display: 'grid',
   gridTemplateRows: 'auto 1fr',
+  borderSpacing: 0,
 }
 
 const defaultTableStyle: CSSProperties = {
   width: '100%',
+  borderSpacing: 0,
 }
 
 /**

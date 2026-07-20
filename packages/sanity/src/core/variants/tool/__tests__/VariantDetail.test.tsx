@@ -342,21 +342,15 @@ describe('VariantDetail', () => {
     consoleError.mockRestore()
   })
 
-  it('deletes the variant from the footer menu and navigates back to overview', async () => {
+  it('deletes the variant from the header delete button and navigates back to overview', async () => {
     routerState.variantId = getVariantId(variantAlphaAudience._id)
     setVariants([variantAlphaAudience])
     const user = userEvent.setup()
 
     await renderDetail()
 
-    const menuButton = screen
-      .getAllByRole('button')
-      .find((button) => button.id === 'variant-detail-actions-alpha-audience')
-
-    if (!menuButton) throw new Error('Variant detail actions menu button not found')
-
-    await user.click(menuButton)
-    await user.click(await screen.findByText('Delete variant definition'))
+    // The header delete icon button opens the confirm dialog directly (no overflow menu).
+    await user.click(await screen.findByRole('button', {name: 'Delete variant definition'}))
     await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
@@ -375,14 +369,7 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    const menuButton = screen
-      .getAllByRole('button')
-      .find((button) => button.id === 'variant-detail-actions-alpha-audience')
-
-    if (!menuButton) throw new Error('Variant detail actions menu button not found')
-
-    await user.click(menuButton)
-    await user.click(await screen.findByText('Delete variant definition'))
+    await user.click(await screen.findByRole('button', {name: 'Delete variant definition'}))
     await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {

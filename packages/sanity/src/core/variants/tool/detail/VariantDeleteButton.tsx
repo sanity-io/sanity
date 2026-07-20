@@ -1,16 +1,21 @@
-import {Menu} from '@sanity/ui'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {useRouter} from 'sanity/router'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
+import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {DeleteVariantDialog} from '../../components/dialog/DeleteVariantDialog'
 import {useVariantDeleteAction} from '../../hooks/useVariantDeleteAction'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
-import {getVariantId, getVariantTitle} from '../util'
+import {getVariantTitle} from '../util'
 
-export function VariantDetailMenuButton({
+/**
+ * Delete control for the variant detail header. A bleed trash icon button (with a confirm dialog)
+ * rather than an overflow menu: the variant definition's only header action besides Edit is Delete,
+ * so a dedicated icon keeps the header a clean pair of icon buttons and avoids a "⋯" menu competing
+ * with the documents' bulk-action "⋯" below.
+ */
+export function VariantDeleteButton({
   documentCount,
   documentsLoading = false,
   variant,
@@ -40,21 +45,15 @@ export function VariantDetailMenuButton({
 
   return (
     <>
-      <MenuButton
-        button={<ContextMenuButton disabled={isDeleting} loading={isDeleting} />}
-        id={`variant-detail-actions-${getVariantId(variant._id)}`}
-        menu={
-          <Menu>
-            <MenuItem
-              disabled={deleteDisabled}
-              onClick={handleDelete}
-              text={t('overview.action.delete-variant')}
-              tone="critical"
-              tooltipProps={deleteDisabledTooltip ? {content: deleteDisabledTooltip} : undefined}
-            />
-          </Menu>
-        }
-        popover={{placement: 'bottom-end', portal: true}}
+      <Button
+        aria-label={t('overview.action.delete-variant')}
+        disabled={deleteDisabled || isDeleting}
+        icon={TrashIcon}
+        loading={isDeleting}
+        mode="bleed"
+        onClick={handleDelete}
+        tone="critical"
+        tooltipProps={{content: deleteDisabledTooltip || t('overview.action.delete-variant')}}
       />
       {isDeleteDialogOpen && (
         <DeleteVariantDialog

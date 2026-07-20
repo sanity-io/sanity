@@ -1,5 +1,6 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {ClockIcon} from '@sanity/icons/Clock'
+import {EditIcon} from '@sanity/icons/Edit'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
@@ -19,7 +20,7 @@ import {
   getVariantTitle,
 } from '../util'
 import {groupVariantDocumentsByGroup} from './groupVariantDocumentsByGroup'
-import {VariantDetailMenuButton} from './VariantDetailMenuButton'
+import {VariantDeleteButton} from './VariantDeleteButton'
 import {VariantDocumentsTable} from './VariantDocumentsTable'
 
 // Thin vertical rule separating the inline metadata segments in the header lane.
@@ -96,7 +97,7 @@ export function VariantDetail() {
             <Flex align="center" gap={3}>
               {/* overflow:hidden guarantees the identity + metadata can never spill into the
                   actions on the right — the metadata group below shrinks and clips first. */}
-              <Flex align="center" gap={3} flex={1} style={{minWidth: 0, overflow: 'hidden'}}>
+              <Flex align="center" gap={3} flex={1} style={{minWidth: 0, overflowX: 'hidden'}}>
                 <Button
                   aria-label={t('detail.back')}
                   icon={ArrowLeftIcon}
@@ -122,7 +123,7 @@ export function VariantDetail() {
                   align="center"
                   flex={1}
                   gap={3}
-                  style={{minWidth: 0, overflow: 'hidden'}}
+                  style={{minWidth: 0, overflowX: 'hidden'}}
                   wrap="nowrap"
                 >
                   {Object.keys(variant.conditions).length > 0 ? (
@@ -181,11 +182,17 @@ export function VariantDetail() {
                   </Text>
                 </Tooltip>
                 <HeaderDivider />
+                {/* Edit + Delete as a clean pair of icon buttons (was a text button + a "⋯" menu
+                    holding only Delete). Keeps the header uncluttered and leaves a single "⋯" in the
+                    app — the documents' bulk-action menu — instead of two competing ones. */}
                 <Button
+                  aria-label={t('detail.action.edit-variant')}
+                  icon={EditIcon}
+                  mode="bleed"
                   onClick={() => setEditDialogOpen(true)}
-                  text={t('detail.action.edit-variant')}
+                  tooltipProps={{content: t('detail.action.edit-variant')}}
                 />
-                <VariantDetailMenuButton
+                <VariantDeleteButton
                   documentCount={tableRows.length}
                   documentsLoading={documentsLoading}
                   variant={variant}

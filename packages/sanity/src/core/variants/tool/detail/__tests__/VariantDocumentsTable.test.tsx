@@ -39,6 +39,12 @@ vi.mock('../../../../releases/store/useActiveReleases', () => ({
   })),
 }))
 
+// Wide viewport so the primary bulk buttons render inline (not collapsed into the "more" menu).
+vi.mock('@sanity/ui', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useMediaIndex: vi.fn(() => 4),
+}))
+
 setupVirtualListEnv()
 
 const defaultValidation = {
@@ -252,7 +258,7 @@ describe('VariantDocumentsTable', () => {
     // Selecting swaps browse controls (search) for the bulk toolbar: count + primary actions.
     expect(screen.getByText('1 selected')).toBeInTheDocument()
     expect(screen.getByTestId('variant-bulk-publish')).toBeInTheDocument()
-    expect(screen.getByTestId('variant-bulk-delete')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-bulk-add-to-release')).toBeInTheDocument()
     expect(screen.queryByTestId('variant-documents-search')).not.toBeInTheDocument()
   })
 
@@ -265,8 +271,8 @@ describe('VariantDocumentsTable', () => {
       expect(screen.getAllByTestId('table-row')).toHaveLength(2)
     })
 
-    // Select-all lives in the command lane, present from a cold state (not reveal-on-selection),
-    // and there is exactly one (not also in the column header).
+    // Select-all lives in the column-header row (above the row checkboxes), present from a cold
+    // state, and there is exactly one.
     const selectAll = screen.getByRole('checkbox', {name: 'Select all documents'})
 
     await user.click(selectAll)
@@ -281,7 +287,7 @@ describe('VariantDocumentsTable', () => {
     expect(screen.queryByText('2 selected')).not.toBeInTheDocument()
   })
 
-  it('shows Publish and Delete as primary actions and the rest under a more menu', async () => {
+  it('shows Publish and Add to release as primary actions with Unpublish and Delete under a more menu', async () => {
     const user = userEvent.setup()
 
     await renderTable()
@@ -292,14 +298,14 @@ describe('VariantDocumentsTable', () => {
 
     await user.click(screen.getAllByRole('checkbox', {name: 'Select document'})[0]!)
 
-    // Publish + Delete are explicit primary buttons (stubbed disabled).
+    // Publish + Add to release are the primary constructive buttons (stubbed disabled).
     expect(screen.getByTestId('variant-bulk-publish')).toBeDisabled()
-    expect(screen.getByTestId('variant-bulk-delete')).toBeDisabled()
+    expect(screen.getByTestId('variant-bulk-add-to-release')).toBeDisabled()
 
-    // Secondary actions live behind the "more" overflow.
+    // Unpublish + the destructive Delete live behind the "more" overflow.
     await user.click(screen.getByTestId('variant-bulk-more'))
     expect(await screen.findByText('Unpublish')).toBeInTheDocument()
-    expect(screen.getByText('Add to release')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-bulk-delete')).toBeInTheDocument()
   })
 
   it('puts search in the command lane, not the column header', async () => {

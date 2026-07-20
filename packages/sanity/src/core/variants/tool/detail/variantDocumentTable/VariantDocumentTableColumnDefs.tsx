@@ -120,10 +120,19 @@ export const getVariantDocumentTableColumnDefs = (
           width: 44,
           style: {minWidth: 44, maxWidth: 44},
           sorting: false,
-          // Empty header: select-all lives in the command-lane selection bar, not here. The
-          // column-header row is column labels + sort only (three-zone header spec).
+          // Select-all lives in the column-header row's checkbox cell — directly above the row
+          // checkboxes it governs — not floating in the command lane. Doubles as clear (clicking
+          // while anything is selected clears the selection, GitHub-style).
           header: ({headerProps}) => (
-            <Flex {...headerProps} align="center" justify="center" paddingY={3} sizing="border" />
+            <Flex {...headerProps} align="center" justify="center" paddingY={3} sizing="border">
+              <Checkbox
+                aria-label={t('detail.documents.bulk.select-all')}
+                checked={selection.allSelected}
+                data-testid="variant-bulk-select-all"
+                indeterminate={selection.someSelected && !selection.allSelected}
+                onChange={selection.onToggleAll}
+              />
+            </Flex>
           ),
           cell: ({cellProps, datum}) => (
             <Flex {...cellProps} align="center" justify="center" paddingX={2} sizing="border">
@@ -189,15 +198,19 @@ export const getVariantDocumentTableColumnDefs = (
     ),
   },
   {
-    // The document preview / title column. Search moved out of this header into the command lane
-    // (three-zone header spec); the header is now a plain sortable "Document" label.
+    // The document preview / title column. Search moved out of this header into the command lane;
+    // the header is a plain sortable "Document" label. flex={1} in BOTH header and body (the body
+    // cell below is also flex={1}) so this column grows to fill the row — pushing "Edited" to the
+    // right edge with no trailing dead space — and keeps the same width whether the table has rows
+    // or not. (A content-sized column collapses to its label width when empty and diverges between
+    // the independent header and body flexboxes.)
     id: 'search',
     width: null,
-    style: {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
+    style: {minWidth: 240},
     sorting: true,
     sortTransform: ({document}) => getDocumentPreviewTitle(document).toLowerCase(),
     header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} flex={1} paddingY={3} sizing="border">
         <Headers.SortHeaderButton text={t('detail.documents.table.document')} {...props} />
       </Flex>
     ),

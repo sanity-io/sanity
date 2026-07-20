@@ -5,7 +5,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
-import {VariantDetailMenuButton} from '../detail/VariantDetailMenuButton'
+import {VariantDeleteButton} from '../detail/VariantDeleteButton'
 
 const mockNavigate = vi.fn()
 
@@ -46,13 +46,13 @@ function createDeferred<T = void>() {
   return {promise, resolve, reject}
 }
 
-describe('VariantDetailMenuButton', () => {
+describe('VariantDeleteButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     variantOperationsMock.deleteVariant.mockResolvedValue(undefined)
   })
 
-  const renderMenuButton = async ({
+  const renderDeleteButton = async ({
     documentCount = 0,
     documentsLoading = false,
   }: {
@@ -63,24 +63,24 @@ describe('VariantDetailMenuButton', () => {
       resources: [variantsUsEnglishLocaleBundle],
     })
     const result = render(
-      <VariantDetailMenuButton
+      <VariantDeleteButton
         documentCount={documentCount}
         documentsLoading={documentsLoading}
         variant={variantAlphaAudience}
       />,
       {wrapper},
     )
-    await screen.findByRole('button')
+    await screen.findByRole('button', {name: 'Delete variant definition'})
     return result
   }
 
-  it('deletes the variant and navigates back to overview when delete is selected', async () => {
+  it('deletes the variant and navigates back to overview when confirmed', async () => {
     const user = userEvent.setup()
 
-    await renderMenuButton()
+    await renderDeleteButton()
 
-    await user.click(screen.getByRole('button'))
-    await user.click(await screen.findByText('Delete variant definition'))
+    // The delete icon button opens the confirm dialog directly (no overflow menu).
+    await user.click(screen.getByRole('button', {name: 'Delete variant definition'}))
     await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
@@ -89,27 +89,26 @@ describe('VariantDetailMenuButton', () => {
     })
   })
 
-  it('shows a loading state on the menu button while deleting', async () => {
+  it('shows a loading state on the delete button while deleting', async () => {
     const user = userEvent.setup()
     const deleteDeferred = createDeferred()
     variantOperationsMock.deleteVariant.mockReturnValue(deleteDeferred.promise)
 
-    await renderMenuButton()
+    await renderDeleteButton()
 
-    const menuButton = screen.getByRole('button')
+    const deleteButton = screen.getByRole('button', {name: 'Delete variant definition'})
 
-    await user.click(menuButton)
-    await user.click(await screen.findByText('Delete variant definition'))
+    await user.click(deleteButton)
     await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
-      expect(menuButton).toBeDisabled()
+      expect(deleteButton).toBeDisabled()
     })
 
     deleteDeferred.resolve()
 
     await waitFor(() => {
-      expect(menuButton).toBeEnabled()
+      expect(deleteButton).toBeEnabled()
     })
   })
 
@@ -119,10 +118,9 @@ describe('VariantDetailMenuButton', () => {
     variantOperationsMock.deleteVariant.mockRejectedValue(error)
     const user = userEvent.setup()
 
-    await renderMenuButton()
+    await renderDeleteButton()
 
-    await user.click(screen.getByRole('button'))
-    await user.click(await screen.findByText('Delete variant definition'))
+    await user.click(screen.getByRole('button', {name: 'Delete variant definition'}))
     await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
@@ -140,26 +138,16 @@ describe('VariantDetailMenuButton', () => {
   })
 
   it('disables delete when the variant has documents', async () => {
-    const user = userEvent.setup()
+    await renderDeleteButton({documentCount: 1})
 
-    await renderMenuButton({documentCount: 1})
-
-    await user.click(screen.getByRole('button'))
-    await user.click(await screen.findByText('Delete variant definition'))
-
+    expect(screen.getByRole('button', {name: 'Delete variant definition'})).toBeDisabled()
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
-    expect(mockNavigate).not.toHaveBeenCalled()
   })
 
   it('disables delete while documents are loading', async () => {
-    const user = userEvent.setup()
+    await renderDeleteButton({documentCount: 0, documentsLoading: true})
 
-    await renderMenuButton({documentCount: 0, documentsLoading: true})
-
-    await user.click(screen.getByRole('button'))
-    await user.click(await screen.findByText('Delete variant definition'))
-
+    expect(screen.getByRole('button', {name: 'Delete variant definition'})).toBeDisabled()
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
-    expect(mockNavigate).not.toHaveBeenCalled()
   })
 })
