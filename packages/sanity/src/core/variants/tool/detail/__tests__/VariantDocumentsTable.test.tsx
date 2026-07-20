@@ -265,6 +265,63 @@ describe('VariantDocumentsTable', () => {
     expect(renderedTitles).toEqual(['Alpha article', 'Zulu article'])
   })
 
+  it('selects a document and surfaces the bulk-action bar', async () => {
+    const user = userEvent.setup()
+
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    // No bar until something is selected.
+    expect(screen.queryByTestId('variant-bulk-clear')).not.toBeInTheDocument()
+
+    const rowCheckboxes = screen.getAllByRole('checkbox', {name: 'Select document'})
+    expect(rowCheckboxes).toHaveLength(2)
+
+    await user.click(rowCheckboxes[0]!)
+
+    expect(screen.getByText('1 selected')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-bulk-actions-menu')).toBeInTheDocument()
+  })
+
+  it('select-all selects every document and clear resets the selection', async () => {
+    const user = userEvent.setup()
+
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    await user.click(screen.getByRole('checkbox', {name: 'Select all documents'}))
+
+    expect(screen.getByText('2 selected')).toBeInTheDocument()
+
+    await user.click(screen.getByTestId('variant-bulk-clear'))
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('variant-bulk-clear')).not.toBeInTheDocument()
+    })
+  })
+
+  it('lists the (stubbed) bulk publish and delete actions', async () => {
+    const user = userEvent.setup()
+
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    await user.click(screen.getByRole('checkbox', {name: 'Select all documents'}))
+    await user.click(screen.getByTestId('variant-bulk-actions-menu'))
+
+    expect(await screen.findByText('Publish selected')).toBeInTheDocument()
+    expect(screen.getByText('Delete selected')).toBeInTheDocument()
+  })
+
   it('finds documents by name when title is missing', async () => {
     const user = userEvent.setup()
     const rows: DocumentInVariantGroup[] = [

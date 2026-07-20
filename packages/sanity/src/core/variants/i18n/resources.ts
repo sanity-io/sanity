@@ -94,6 +94,24 @@ const variantsLocaleStrings = {
   'detail.documents.table.validation.error_one': '{{count}} validation error',
   /** Validation error tooltip for multiple errors in the variant document table. */
   'detail.documents.table.validation.error_other': '{{count}} validation errors',
+  /** Accessible label for the select-all checkbox in the variant document table header. */
+  'detail.documents.bulk.select-all': 'Select all documents',
+  /** Accessible label for a per-row select checkbox in the variant document table. */
+  'detail.documents.bulk.select-row': 'Select document',
+  /** Count of selected documents in the bulk-action bar (singular). */
+  'detail.documents.bulk.selected_one': '{{count}} selected',
+  /** Count of selected documents in the bulk-action bar (plural). */
+  'detail.documents.bulk.selected_other': '{{count}} selected',
+  /** Label for the bulk-actions menu button. */
+  'detail.documents.bulk.actions': 'Actions',
+  /** Bulk action: publish the selected documents. */
+  'detail.documents.bulk.publish': 'Publish selected',
+  /** Bulk action: delete the selected documents. */
+  'detail.documents.bulk.delete': 'Delete selected',
+  /** Label for clearing the current document selection. */
+  'detail.documents.bulk.clear': 'Clear',
+  /** Note that bulk actions are prototyped but not yet wired to real operations. */
+  'detail.documents.bulk.stub-note': 'Bulk actions are being wired up',
   /** Error message when variant documents fail to load. */
   'detail.documents.error': 'Unable to load documents for this variant definition',
   /** Description for the missing Variant detail page. */
