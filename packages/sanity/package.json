@@ -89,16 +89,17 @@
       "monorepo": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
     },
-    "./bundle.css": {
-      "browser": "./lib/bundle.css",
-      "style": "./lib/bundle.css",
-      "node": "./lib/bundle.css.js",
-      "default": "./lib/bundle.css.js"
-    },
     "./workbench": {
       "source": "./src/_exports/workbench.ts",
       "monorepo": "./src/_exports/workbench.ts",
       "default": "./lib/workbench.js"
+    },
+    "./bundle.css": {
+      "types": "./lib/bundle-css.d.ts",
+      "browser": "./lib/bundle.css",
+      "style": "./lib/bundle.css",
+      "node": "./lib/bundle-css.js",
+      "default": "./lib/bundle-css.js"
     },
     "./package.json": "./package.json"
   },
@@ -115,13 +116,14 @@
       "./structure": "./lib/structure.js",
       "./media-library": "./lib/media-library.js",
       "./migrate": "./lib/migrate.js",
+      "./workbench": "./lib/workbench.js",
       "./bundle.css": {
+        "types": "./lib/bundle-css.d.ts",
         "browser": "./lib/bundle.css",
         "style": "./lib/bundle.css",
-        "node": "./lib/bundle.css.js",
-        "default": "./lib/bundle.css.js"
+        "node": "./lib/bundle-css.js",
+        "default": "./lib/bundle-css.js"
       },
-      "./workbench": "./lib/workbench.js",
       "./package.json": "./package.json"
     }
   },
@@ -147,15 +149,16 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@isaacs/ttlcache": "^1.4.1",
     "@mux/mux-player-react": "^3.13.0",
-    "@portabletext/editor": "^7.10.7",
+    "@portabletext/editor": "^7.10.8",
     "@portabletext/html": "^1.1.1",
     "@portabletext/patches": "^2.0.5",
-    "@portabletext/plugin-dnd": "^1.0.19",
-    "@portabletext/plugin-list-index": "^1.0.19",
-    "@portabletext/plugin-markdown-shortcuts": "^8.0.35",
-    "@portabletext/plugin-one-line": "^7.0.34",
-    "@portabletext/plugin-paste-link": "^4.0.34",
-    "@portabletext/plugin-typography": "^8.0.35",
+    "@portabletext/plugin-dnd": "^1.0.20",
+    "@portabletext/plugin-list-index": "^1.0.20",
+    "@portabletext/plugin-markdown-shortcuts": "^8.0.36",
+    "@portabletext/plugin-one-line": "^7.0.35",
+    "@portabletext/plugin-paste-link": "^4.0.35",
+    "@portabletext/plugin-table": "^1.3.5",
+    "@portabletext/plugin-typography": "^8.0.36",
     "@portabletext/react": "^6.2.0",
     "@portabletext/sanity-bridge": "^3.2.2",
     "@portabletext/to-html": "^5.0.2",
@@ -190,7 +193,7 @@
     "@sanity/ui": "catalog:",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.3",
-    "@sanity/workbench": "0.1.0-alpha.24",
+    "@sanity/workbench": "0.1.0-alpha.26",
     "@sentry/react": "^10.62.0",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.4",

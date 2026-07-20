@@ -3,7 +3,7 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^7.23.2",
+    "@sanity/client": "^7.24.0",
     "@sanity/functions": "^1.4.0",
     "@slack/web-api": "^7.17.0"
   },
