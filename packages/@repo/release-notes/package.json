@@ -48,7 +48,7 @@
     "turndown": "^7.2.4"
   },
   "devDependencies": {
-    "@portabletext/markdown": "^1.4.3",
+    "@portabletext/markdown": "^1.4.4",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",

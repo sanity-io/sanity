@@ -4,12 +4,14 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import {memo, useMemo} from 'react'
 import {
   CopyPasteProvider,
+  getPublishedId,
   ReferenceInputOptionsProvider,
   SourceProvider,
   Translate,
   useDocumentType,
   usePerspective,
   useSource,
+  useTargetDocumentState,
   useTemplatePermissions,
   useTemplates,
   useTranslation,
@@ -47,10 +49,14 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
   const {resolveNewDocumentOptions} = useSource().document
-  const {selectedPerspectiveName} = usePerspective()
+  const {selectedPerspectiveName, selectedVariantName} = usePerspective()
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
+  // Resolution state of the document targeted by the selected perspective and variant. This
+  // subscription lives here — outside the keyed provider wrapper below — so it survives wrapper
+  // remounts and warm remounts resolve synchronously from the shared caches.
+  const targetDocumentState = useTargetDocumentState(getPublishedId(options.id))
   useResetHistoryParams()
   const DocumentLayout = useDocumentLayoutComponent()
 
@@ -129,11 +135,37 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
     )
   }
 
+  // When a variant is requested, block mounting the editing subtree until the target document
+  // has resolved: listeners and patches must never be wired against the base draft/published
+  // pair while the actual target (an opaque, server-generated version id) is still unknown.
+  if (selectedVariantName && targetDocumentState.status === 'resolving') {
+    return (
+      <LoadingPane
+        flex={2.5}
+        minWidth={320}
+        paneKey={paneKey}
+        title={t('panes.document-pane.variant-target.loading')}
+      />
+    )
+  }
+
+  // Remount the editing subtree whenever the resolved variant target changes (variant switched,
+  // variant document created/discarded while open), so transitions pass back through the gate
+  // above instead of a mounted tree silently falling back to the base pair. Also prevents form
+  // state from being reused across variants. Inert when no variant is requested.
+  const variantTargetKey = selectedVariantName
+    ? `-${selectedVariantName}-${
+        targetDocumentState.status === 'ready'
+          ? (targetDocumentState.targetDocument?._id ?? 'none')
+          : targetDocumentState.status
+      }`
+    : ''
+
   return (
     <DocumentPaneProviderWrapper
       // this needs to be here to avoid formState from being re-used across (incompatible) document types
       // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
-      key={`${documentType}-${options.id}-${selectedPerspectiveName || ''}`}
+      key={`${documentType}-${options.id}-${selectedPerspectiveName || ''}${variantTargetKey}`}
       {...providerProps}
     >
       {/* NOTE: this is a temporary location for this provider until we */}

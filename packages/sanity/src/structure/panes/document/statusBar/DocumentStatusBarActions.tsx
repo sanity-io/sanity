@@ -6,12 +6,12 @@ import {
   DocumentGroupInventoryAction,
   type DocumentGroupInventoryProps,
   Hotkeys,
+  isGoingToUnpublish,
   isSanityDefinedAction,
   useClient,
   useDocumentStore,
   usePausedScheduledDraft,
   usePerspective,
-  useSetVariant,
   useSource,
 } from 'sanity'
 
@@ -24,8 +24,6 @@ import {DocTitle} from '../../../components/DocTitle'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {useHistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
-import {useIsEditingVariantDocument} from '../../../hooks/useIsEditingVariantDocument'
-import {usePerspectiveNavigator} from '../../../hooks/usePerspectiveNavigator'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
@@ -47,10 +45,17 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 ) {
   const {disabled, states} = props
   const {__internal_tasks, beta} = useSource()
-  const {displayed, editState, isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive} =
-    useDocumentPane()
+
+  const {
+    displayed,
+    editState,
+    isDocumentGroupInventoryActive,
+    setIsDocumentGroupInventoryActive,
+    documentId,
+    documentType,
+  } = useDocumentPane()
   const {params} = usePaneRouter()
-  const {documentId, documentType} = useDocumentPane()
+
   const showingRevision = Boolean(params?.rev)
 
   const perspectiveList = useDocumentPerspectiveList()
@@ -105,18 +110,32 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       : [firstActionState, ...menuActionStates].filter(Boolean)
   }, [showFirstActionButton, firstActionState, menuActionStates])
 
+  // When a document is designated to be unpublished in a release, the published
+  // document is displayed instead.
+  //
+  // The document group inventory must always reflect the intended document id,
+  // even if the document pane decided to display a different document for some
+  // reason.
+  //
+  // In the future, this would be more robust if `DocumentPaneProvider`
+  // exposed both the displayed document and the original source document.
+  const targetDocumentId =
+    editState?.version && isGoingToUnpublish(editState?.version)
+      ? editState.version._id
+      : displayed?._id
+
   return (
     <Flex align="center" gap={3}>
       {__internal_tasks && __internal_tasks.footerAction}
-      {hasDocumentGroupInventory && typeof displayed?._id !== 'undefined' && (
+      {hasDocumentGroupInventory && typeof targetDocumentId !== 'undefined' && (
         <DocumentGroupInventoryAction
-          documentId={displayed._id}
+          documentId={targetDocumentId}
           portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
           isDocumentGroupInventoryActive={isDocumentGroupInventoryActive}
           setIsDocumentGroupInventoryActive={setIsDocumentGroupInventoryActive}
         >
           <DocumentGroupInventory
-            documentId={displayed._id}
+            documentId={targetDocumentId}
             documentType={documentType}
             portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
             perspectiveList={perspectiveList}
@@ -163,8 +182,6 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
   const {connectionState, documentId} = useDocumentPane()
 
-  const isEditingVariantDocument = useIsEditingVariantDocument()
-
   // The restore action has a dedicated place in the UI; it's only visible when the user is viewing
   // a different document revision. It must be omitted from this collection.
   const states = props.states.filter((state) =>
@@ -178,9 +195,7 @@ function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
       // Use document ID as key to make sure that the actions state is reset when the document changes
       key={documentId}
       disabled={connectionState !== 'connected'}
-      // Temporary: hide actions when editing a variant document until actions are supported on variant documents
-      // See PR https://github.com/sanity-io/sanity/pull/13156
-      states={isEditingVariantDocument ? [] : states}
+      states={states}
     />
   )
 }

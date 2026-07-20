@@ -721,6 +721,7 @@ import type {
   getTemplatePermissions,
   getValueAtPath,
   getValueError,
+  getVariantPublishedSibling,
   getVariantTitle,
   getVersionFromId,
   getVersionId,
@@ -3875,7 +3876,7 @@ describe('sanity', () => {
     expectTypeOf<typeof getDocumentIsInPerspective>().toBeFunction()
   })
   test('getDocumentPairPermissions', () => {
-    expectTypeOf<typeof getDocumentPairPermissions>().toBeFunction()
+    expectTypeOf<typeof getDocumentPairPermissions>().not.toBeNever()
   })
   test('getDocumentValuePermissions', () => {
     expectTypeOf<typeof getDocumentValuePermissions>().toBeFunction()
@@ -3974,6 +3975,9 @@ describe('sanity', () => {
   })
   test('getValueError', () => {
     expectTypeOf<typeof getValueError>().toBeFunction()
+  })
+  test('getVariantPublishedSibling', () => {
+    expectTypeOf<typeof getVariantPublishedSibling>().toBeFunction()
   })
   test('getVariantTitle', () => {
     expectTypeOf<typeof getVariantTitle>().toBeFunction()

@@ -58,7 +58,7 @@ describe('CreateVariantDialog', () => {
     const result = render(<CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} />, {
       wrapper,
     })
-    await screen.findByRole('dialog', {name: 'Create variant'})
+    await screen.findByRole('dialog', {name: 'Create variant definition'})
     return result
   }
 
@@ -313,12 +313,12 @@ describe('CreateVariantDialog', () => {
     expect(toastMock.push).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'error',
-        title: 'Unable to create variant',
+        title: 'Unable to create variant definition',
       }),
     )
     expect(onCancel).not.toHaveBeenCalled()
     expect(onSubmit).not.toHaveBeenCalled()
-    expect(screen.getByRole('dialog', {name: 'Create variant'})).toBeInTheDocument()
+    expect(screen.getByRole('dialog', {name: 'Create variant definition'})).toBeInTheDocument()
 
     consoleError.mockRestore()
   })
