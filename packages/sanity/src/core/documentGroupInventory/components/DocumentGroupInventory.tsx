@@ -223,11 +223,13 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
         <Header>
           <Stack gap={4}>
             <Flex gap={4} align="center" justify="flex-end">
-              <TextButton onClick={() => inventoryRef.send({type: 'feedback.begin'})}>
+              <TextButton
+                onClick={() => inventoryRef.send({type: 'feedback.begin'})}
+                title={feedbackT('feedback.menu-item')}
+                aria-label={feedbackT('feedback.menu-item')}
+              >
                 <Text size={1}>
-                  <Flex gap={2} align="center" justify="flex-end">
-                    <FeedbackIcon /> {feedbackT('feedback.menu-item')}
-                  </Flex>
+                  <FeedbackIcon />
                 </Text>
               </TextButton>
               <TextButton
