@@ -89,9 +89,13 @@ export function VariantDetail() {
         {/* container[3] so the header aligns with the table's row content below (the shared Table
             centers rows at container[3]) instead of spreading edge-to-edge on wide screens. */}
         <Container flex="none" width={3}>
-          <Box paddingX={3}>
+          {/* paddingX={2} (8px) matches the table's first-column content inset so the back button,
+              conditions, and actions line up with the "Appears in" column and row content below. */}
+          <Box paddingX={2}>
             <Flex align="center" gap={3}>
-              <Flex align="center" gap={3} flex={1} style={{minWidth: 0}}>
+              {/* overflow:hidden guarantees the identity + metadata can never spill into the
+                  actions on the right — the metadata group below shrinks and clips first. */}
+              <Flex align="center" gap={3} flex={1} style={{minWidth: 0, overflow: 'hidden'}}>
                 <Button
                   aria-label={t('detail.back')}
                   icon={ArrowLeftIcon}
@@ -110,42 +114,52 @@ export function VariantDetail() {
                   </Text>
                 </Flex>
                 <HeaderDivider />
-                {Object.keys(variant.conditions).length > 0 ? (
-                  // Conditions are read-only facts, not interactive chips — render them as quiet
-                  // key/value metadata (muted key, solid value, dot-separated) so they're visually
-                  // distinct from the lineage *status* badges further along the lane.
-                  <Flex align="center" flex="none" gap={3} wrap="wrap">
-                    {Object.entries(variant.conditions).map(([key, value], index) => (
-                      <Flex align="center" gap={2} key={key}>
-                        {index > 0 && (
-                          <Text aria-hidden muted size={1}>
-                            ·
-                          </Text>
-                        )}
-                        <Flex align="center" gap={1}>
-                          <Text muted size={1}>
-                            {key}
-                          </Text>
-                          <Text size={1} weight="medium">
-                            {typeof value === 'string' ? value : JSON.stringify(value)}
-                          </Text>
+                {/* Secondary metadata (conditions + description) in one group that grows to fill
+                    and shrinks/clips (nowrap, overflow hidden) as the lane narrows — so it never
+                    wraps to a second line or pushes into the actions on the right. */}
+                <Flex
+                  align="center"
+                  flex={1}
+                  gap={3}
+                  style={{minWidth: 0, overflow: 'hidden'}}
+                  wrap="nowrap"
+                >
+                  {Object.keys(variant.conditions).length > 0 ? (
+                    // Conditions are read-only facts, not interactive chips — quiet key/value
+                    // metadata (muted key, solid value, dot-separated).
+                    <Flex align="center" flex="none" gap={3} wrap="nowrap">
+                      {Object.entries(variant.conditions).map(([key, value], index) => (
+                        <Flex align="center" gap={2} key={key}>
+                          {index > 0 && (
+                            <Text aria-hidden muted size={1}>
+                              ·
+                            </Text>
+                          )}
+                          <Flex align="center" gap={1}>
+                            <Text muted size={1}>
+                              {key}
+                            </Text>
+                            <Text size={1} weight="medium">
+                              {typeof value === 'string' ? value : JSON.stringify(value)}
+                            </Text>
+                          </Flex>
                         </Flex>
-                      </Flex>
-                    ))}
-                  </Flex>
-                ) : (
-                  <Text muted size={1}>
-                    {t('overview.table.no-conditions')}
-                  </Text>
-                )}
-                {description && (
-                  <>
-                    <HeaderDivider />
-                    <Text muted size={1} style={{minWidth: 0}} textOverflow="ellipsis">
-                      {description}
+                      ))}
+                    </Flex>
+                  ) : (
+                    <Text muted size={1}>
+                      {t('overview.table.no-conditions')}
                     </Text>
-                  </>
-                )}
+                  )}
+                  {description && (
+                    <>
+                      <HeaderDivider />
+                      <Text muted size={1} style={{minWidth: 0}} textOverflow="ellipsis">
+                        {description}
+                      </Text>
+                    </>
+                  )}
+                </Flex>
               </Flex>
               <Flex align="center" data-testid="variant-detail-actions" flex="none" gap={3}>
                 <Flex align="center" gap={2}>

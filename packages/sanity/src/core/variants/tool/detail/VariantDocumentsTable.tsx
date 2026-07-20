@@ -15,11 +15,12 @@ import {VariantReleaseLane} from './VariantReleaseLane'
 const TABLE_CARD_STYLE: CSSProperties = {
   height: '100%',
   overflow: 'auto',
-  // Reserve the vertical scrollbar gutter permanently. The shared Table centers its rows in a
-  // fixed-width Container, so when a filter (e.g. All → Published) drops the row count below the
-  // overflow threshold, the scrollbar vanishes, the content box widens, and the centered table
-  // jumps horizontally. A stable gutter keeps the content-box width constant across filters.
-  scrollbarGutter: 'stable',
+  // Reserve the vertical scrollbar gutter on BOTH edges. The shared Table centers its rows in a
+  // fixed-width Container, so a right-only gutter (`stable`) shifts that centered content left and
+  // misaligns it from the header/lane above; `both-edges` keeps the reserve symmetric so the rows
+  // stay centered and aligned, while still preventing the horizontal jump when a filter toggles the
+  // scrollbar on/off.
+  scrollbarGutter: 'stable both-edges',
 }
 
 function filterDocuments(
@@ -92,7 +93,7 @@ export function VariantDocumentsTable({
           {/* container[3] chrome so the lane aligns with the table's row content (which the shared
               Table centers at container[3]); the inner box still scrolls if the tabs overflow. */}
           <Container flex="none" width={3}>
-            <Box paddingX={3} style={{minWidth: 0, overflowX: 'auto'}}>
+            <Box paddingX={2} style={{minWidth: 0, overflowX: 'auto'}}>
               <VariantReleaseLane
                 activeLane={resolvedActiveLane}
                 onSelectLane={handleSelectLane}
