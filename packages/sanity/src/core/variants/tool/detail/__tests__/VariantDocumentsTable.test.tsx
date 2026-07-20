@@ -196,43 +196,7 @@ describe('VariantDocumentsTable', () => {
     })
   })
 
-  it('groups documents into release swimlanes when toggled', async () => {
-    const user = userEvent.setup()
-
-    await renderTable()
-
-    await waitFor(() => {
-      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
-    })
-
-    // Switch to the grouped (swimlane) view; the filter lane stays put (one persistent lane).
-    await user.click(screen.getByTestId('variant-group-by-release-toggle'))
-
-    await waitFor(() => {
-      expect(screen.getAllByTestId('variant-release-aggregate-toggle')).toHaveLength(2)
-    })
-    expect(screen.getByTestId('variant-release-lane')).toBeInTheDocument()
-
-    // One collapsible header per bundle (published + drafts), with document counts.
-    const headers = screen.getAllByTestId('variant-release-aggregate-toggle')
-    expect(headers).toHaveLength(2)
-    expect(screen.getByText('Published')).toBeInTheDocument()
-    expect(screen.getByText('Draft')).toBeInTheDocument()
-    expect(screen.getByText('1 document')).toBeInTheDocument()
-    expect(screen.getByText('2 documents')).toBeInTheDocument()
-
-    // Groups open by default: First article rides both published and drafts, so it shows twice.
-    expect(screen.getAllByText('First article')).toHaveLength(2)
-
-    // Collapsing the Published group removes its copy, leaving the one under Drafts.
-    await user.click(headers[0]!)
-
-    await waitFor(() => {
-      expect(screen.getAllByText('First article')).toHaveLength(1)
-    })
-  })
-
-  it('sorts grouped rows by document group id on first load', async () => {
+  it('sorts rows by document group id on first load', async () => {
     const rows: DocumentInVariantGroup[] = [
       {
         ...mockRows[1]!,

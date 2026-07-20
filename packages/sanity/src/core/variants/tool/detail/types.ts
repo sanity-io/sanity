@@ -34,24 +34,11 @@ export interface DocumentInVariant extends BundleDocument {
  * A document group row for the variant detail table.
  * Produced by {@link groupVariantDocumentsByGroup} from a flat {@link DocumentInVariant} list.
  *
- * In the "group by release" (swimlane) view the same row shape is reused for synthetic
- * *release aggregate* header rows — one collapsible header per bundle the documents ride —
- * carrying the aggregate fields below; real document rows leave them undefined.
- *
  * @internal
  */
 export interface DocumentInVariantGroup extends DocumentInVariant {
   groupId: string
   versions: VariantDocumentVersion[]
-  /**
-   * Unique table row id / sort key. Equals `groupId` in the flat view; in the swimlane view it is
-   * a monotonic ordering key so the same document can appear under several release groups (each with
-   * its own `rowKey`) while `groupId` stays the real document group id the preview links to.
-   */
+  /** Unique table row id / sort key. Equals `groupId` in the (single) flat view. */
   rowKey?: string
-  isReleaseAggregate?: boolean
-  releaseLabel?: string
-  releaseCount?: number
-  isReleaseExpanded?: boolean
-  onToggleRelease?: () => void
 }

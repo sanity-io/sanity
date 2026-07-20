@@ -1,6 +1,5 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {PublishIcon} from '@sanity/icons/Publish'
-import {StackIcon} from '@sanity/icons/Stack'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Box, Card, Flex, Menu, Text} from '@sanity/ui'
 import {type CSSProperties, useCallback, useMemo, useState} from 'react'
@@ -12,13 +11,7 @@ import {Table} from '../../../releases/tool/components/Table/Table'
 import {type Column} from '../../../releases/tool/components/Table/types'
 import {searchDocumentRelease} from '../../../releases/tool/detail/documentTable/searchDocumentRelease'
 import {variantsLocaleNamespace} from '../../i18n'
-import {
-  buildReleaseSwimlaneRows,
-  computeReleaseLaneSegments,
-  RELEASE_LANE_ALL,
-  type ReleaseLaneSegment,
-  rowMatchesLane,
-} from './releaseLane'
+import {computeReleaseLaneSegments, RELEASE_LANE_ALL, rowMatchesLane} from './releaseLane'
 import {type DocumentInVariantGroup} from './types'
 import {
   getVariantDocumentTableColumnDefs,
@@ -44,10 +37,7 @@ function filterDocuments(
     return rows
   }
 
-  // Keep release aggregate headers so the swimlane structure survives a search.
-  return rows.filter(
-    (row) => row.isReleaseAggregate || searchDocumentRelease(row.document, searchTerm),
-  )
+  return rows.filter((row) => searchDocumentRelease(row.document, searchTerm))
 }
 
 export function VariantDocumentsTable({
@@ -60,12 +50,8 @@ export function VariantDocumentsTable({
   variantId?: string
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  // Bundle labels live in the core namespace (shared with the per-row bundle chips / lane).
-  const {t: tCore} = useTranslation()
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
   const [activeLane, setActiveLane] = useState<string>(RELEASE_LANE_ALL)
-  const [grouped, setGrouped] = useState(false)
-  const [expandedReleases, setExpandedReleases] = useState<ReadonlySet<string>>(() => new Set())
   const [selectedGroupIds, setSelectedGroupIds] = useState<ReadonlySet<string>>(() => new Set())
   const {data: releases} = useActiveReleases()
   const releasesById = useMemo(
@@ -84,74 +70,29 @@ export function VariantDocumentsTable({
       ? activeLane
       : RELEASE_LANE_ALL
 
-  const flatRows = useMemo(() => {
+  // Filter tabs are the one way to scope by bundle (grouping was removed: filtering preserves
+  // column sorting, which grouping cannot). A selected tab filters the flat, always-sortable list.
+  const displayRows = useMemo(() => {
     const filtered =
       resolvedActiveLane === RELEASE_LANE_ALL
         ? rows
         : rows.filter((row) => rowMatchesLane(row, resolvedActiveLane, releasesById))
-    // The flat view keys rows by their real groupId.
     return filtered.map((row) => ({...row, rowKey: row.groupId}))
   }, [rows, resolvedActiveLane, releasesById])
-
-  const getSegmentLabel = useCallback(
-    (segment: ReleaseLaneSegment): string => {
-      if (segment.kind === 'published') return tCore('release.chip.published')
-      if (segment.kind === 'drafts') return tCore('release.chip.draft')
-      return segment.release?.metadata?.title ?? tCore('release.placeholder-untitled-release')
-    },
-    [tCore],
-  )
-
-  const toggleRelease = useCallback((segmentId: string) => {
-    setExpandedReleases((previous) => {
-      const next = new Set(previous)
-      if (next.has(segmentId)) {
-        next.delete(segmentId)
-      } else {
-        next.add(segmentId)
-      }
-      return next
-    })
-  }, [])
-
-  const swimlaneRows = useMemo(
-    () =>
-      buildReleaseSwimlaneRows({
-        rows,
-        releasesById,
-        expanded: expandedReleases,
-        activeLane: resolvedActiveLane,
-        getSegmentLabel,
-        onToggle: toggleRelease,
-      }),
-    [rows, releasesById, expandedReleases, resolvedActiveLane, getSegmentLabel, toggleRelease],
-  )
 
   const handleSelectLane = useCallback((laneId: string) => {
     // Clicking the already-active segment clears the filter back to "All".
     setActiveLane((previous) => (previous === laneId ? RELEASE_LANE_ALL : laneId))
   }, [])
 
-  const handleToggleGrouped = useCallback(() => {
-    const next = !grouped
-    setGrouped(next)
-    // Open every group by default so grouping just inserts headers rather than collapsing content.
-    if (next) {
-      setExpandedReleases(new Set(segments.map((segment) => segment.id)))
-    }
-  }, [grouped, segments])
-
-  const displayRows = grouped ? swimlaneRows : flatRows
   const hasReleaseControls = !loading && segments.length > 1
 
-  // Bulk selection. Keyed by the real document groupId (stable across the flat/swimlane views, where
-  // the same document can appear under several release lanes). Aggregate header rows aren't
-  // selectable. Selection persists across lane/search filters; the count reflects what's currently
-  // visible so a filtered-out selection never inflates the bar.
+  // Bulk selection. Keyed by the document groupId. Selection persists across lane/search filters;
+  // the count reflects what's currently visible so a filtered-out selection never inflates the bar.
   const selectableGroupIds = useMemo(() => {
     const ids = new Set<string>()
     for (const row of displayRows) {
-      if (!row.isReleaseAggregate) ids.add(row.groupId)
+      ids.add(row.groupId)
     }
     return ids
   }, [displayRows])
@@ -204,8 +145,8 @@ export function VariantDocumentsTable({
   )
 
   const columnDefs = useMemo<Column<DocumentInVariantGroup>[]>(
-    () => getVariantDocumentTableColumnDefs(t, variantId, releasesById, grouped, selection),
-    [t, variantId, releasesById, grouped, selection],
+    () => getVariantDocumentTableColumnDefs(t, variantId, releasesById, selection),
+    [t, variantId, releasesById, selection],
   )
 
   return (
@@ -213,26 +154,14 @@ export function VariantDocumentsTable({
       {hasReleaseControls && (
         // Bordered so the filter lane is visually distinct from the table's column-header row below.
         <Card flex="none" borderBottom paddingX={4} paddingY={3}>
-          {/* One persistent lane: the filter tabs always filter; the toggle only switches the
-              list/grouped view. Nothing is conditionally hidden, so the toggle never shifts. */}
-          <Flex align="center" gap={3} justify="space-between">
-            <Box flex={1} style={{minWidth: 0, overflowX: 'auto'}}>
-              <VariantReleaseLane
-                activeLane={resolvedActiveLane}
-                onSelectLane={handleSelectLane}
-                segments={segments}
-                totalCount={rows.length}
-              />
-            </Box>
-            <Button
-              data-testid="variant-group-by-release-toggle"
-              icon={StackIcon}
-              mode="bleed"
-              onClick={handleToggleGrouped}
-              selected={grouped}
-              tooltipProps={{content: t('detail.release-lane.group-by-release')}}
+          <Box style={{minWidth: 0, overflowX: 'auto'}}>
+            <VariantReleaseLane
+              activeLane={resolvedActiveLane}
+              onSelectLane={handleSelectLane}
+              segments={segments}
+              totalCount={rows.length}
             />
-          </Flex>
+          </Box>
         </Card>
       )}
       {selectedVisibleCount > 0 && (
@@ -301,19 +230,6 @@ export function VariantDocumentsTable({
           loading={loading}
           // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
           rowId="rowKey"
-          // The release aggregate row is a full-width, tinted, clickable section divider. The
-          // tint is a subtle mix of the foreground colour so it reads in both light and dark.
-          rowProps={(datum) =>
-            datum.isReleaseAggregate
-              ? {
-                  onClick: datum.onToggleRelease,
-                  style: {
-                    cursor: 'pointer',
-                    backgroundColor: 'color-mix(in srgb, var(--card-fg-color) 8%, transparent)',
-                  },
-                }
-              : {}
-          }
           scrollContainerRef={scrollContainerRef}
           searchFilter={filterDocuments}
         />

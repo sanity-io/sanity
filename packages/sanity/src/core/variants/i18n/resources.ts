@@ -84,12 +84,6 @@ const variantsLocaleStrings = {
   'detail.release-lane.all': 'All',
   /** A single release lane filter tab: a bundle label followed by its document count. */
   'detail.release-lane.count': '{{label}} ({{count}})',
-  /** Toggle that switches the documents table into the grouped-by-release (swimlane) view. */
-  'detail.release-lane.group-by-release': 'Group by release',
-  /** Document count on a release swimlane group header (singular). */
-  'detail.release-lane.group-count_one': '{{count}} document',
-  /** Document count on a release swimlane group header (plural). */
-  'detail.release-lane.group-count_other': '{{count}} documents',
   /** Validation error tooltip for a single error in the variant document table. */
   'detail.documents.table.validation.error_one': '{{count}} validation error',
   /** Validation error tooltip for multiple errors in the variant document table. */

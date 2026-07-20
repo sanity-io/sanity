@@ -1,6 +1,4 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
@@ -47,39 +45,6 @@ const MemoDocumentType = memo(
   },
   (prev, next) => prev.type === next.type,
 )
-
-// The whole row is made clickable + toned via the table's rowProps; this is just the label content,
-// rendered in the first column and allowed to overflow so it reads as a full-width section divider.
-function ReleaseAggregateHeader({
-  datum,
-  t,
-}: {
-  datum: DocumentInVariantGroup
-  t: TFunction<'variants'>
-}) {
-  return (
-    <Flex
-      align="center"
-      data-testid="variant-release-aggregate-toggle"
-      gap={2}
-      paddingX={2}
-      style={{whiteSpace: 'nowrap'}}
-    >
-      <Text size={1}>{datum.isReleaseExpanded ? <ChevronDownIcon /> : <ChevronRightIcon />}</Text>
-      <Text size={1} weight="semibold">
-        {datum.releaseLabel}
-      </Text>
-      <Text muted size={1}>
-        {t(
-          datum.releaseCount === 1
-            ? 'detail.release-lane.group-count_one'
-            : 'detail.release-lane.group-count_other',
-          {count: datum.releaseCount ?? 0},
-        )}
-      </Text>
-    </Flex>
-  )
-}
 
 // The critical-validation indicator. Rendered inline at the trailing edge of the document preview
 // (rather than in a separate far-right column) so the error is unmistakably tied to *its* document
@@ -137,7 +102,6 @@ export const getVariantDocumentTableColumnDefs = (
   t: TFunction<'variants'>,
   variantId: string | undefined,
   releasesById: Map<string, ReleaseDocument>,
-  grouped: boolean,
   selection?: VariantDocumentSelection,
 ): Column<DocumentInVariantGroup>[] => [
   {
@@ -145,11 +109,10 @@ export const getVariantDocumentTableColumnDefs = (
     hidden: true,
     width: null,
     sorting: true,
-    // In the swimlane view rowKey encodes the group order; flat rows set rowKey = groupId.
     sortTransform: (row) => row.rowKey ?? row.groupId,
   },
   // Leading checkbox column for bulk selection. Only present when the table is wired for selection;
-  // aggregate/loading rows render no checkbox (they aren't documents you can act on).
+  // loading rows render no checkbox (they aren't documents you can act on).
   ...(selection
     ? [
         {
@@ -170,7 +133,7 @@ export const getVariantDocumentTableColumnDefs = (
           ),
           cell: ({cellProps, datum}) => (
             <Flex {...cellProps} align="center" justify="center" paddingX={2} sizing="border">
-              {!datum.isReleaseAggregate && !datum.isLoading && (
+              {!datum.isLoading && (
                 <Checkbox
                   aria-label={t('detail.documents.bulk.select-row')}
                   checked={selection.isSelected(datum.groupId)}
@@ -191,67 +154,42 @@ export const getVariantDocumentTableColumnDefs = (
     // which only ever holds short schema titles.
     width: 190,
     style: {minWidth: 120, maxWidth: 190},
-    sorting: !grouped,
+    sorting: true,
     sortTransform: (row) => getRowBundleSortKey(row, releasesById),
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        {grouped ? (
-          <Headers.BasicHeader text={t('detail.documents.table.appears-in')} />
-        ) : (
-          <Headers.SortHeaderButton text={t('detail.documents.table.appears-in')} {...props} />
-        )}
+        <Headers.SortHeaderButton text={t('detail.documents.table.appears-in')} {...props} />
       </Flex>
     ),
-    cell: ({cellProps, datum}) => {
-      // Aggregate header renders here (first column) and is allowed to overflow across the empty
-      // cells so the gray, full-row-clickable header reads as a section divider.
-      if (datum.isReleaseAggregate) {
-        return (
-          <Flex
-            align="center"
-            {...cellProps}
-            style={{...cellProps.style, minWidth: 0, overflow: 'visible'}}
-          >
-            <ReleaseAggregateHeader datum={datum} t={t} />
-          </Flex>
-        )
-      }
-      return (
-        <Flex
-          align="center"
-          {...cellProps}
-          style={{...cellProps.style, flex: '0 1 auto', minWidth: 0, overflow: 'hidden'}}
-        >
-          <Box style={{minWidth: 0, overflow: 'hidden'}} paddingX={2}>
-            {!datum.isLoading && (
-              <VariantDocumentBundleChips versions={datum.versions} releasesById={releasesById} />
-            )}
-          </Box>
-        </Flex>
-      )
-    },
+    cell: ({cellProps, datum}) => (
+      <Flex
+        align="center"
+        {...cellProps}
+        style={{...cellProps.style, flex: '0 1 auto', minWidth: 0, overflow: 'hidden'}}
+      >
+        <Box style={{minWidth: 0, overflow: 'hidden'}} paddingX={2}>
+          {!datum.isLoading && (
+            <VariantDocumentBundleChips versions={datum.versions} releasesById={releasesById} />
+          )}
+        </Box>
+      </Flex>
+    ),
   },
   {
     id: 'document._type',
     // Trimmed from 160 → 130: schema titles are short, so the freed width goes to "Appears in".
     width: 130,
     style: {minWidth: 110, maxWidth: 130},
-    sorting: !grouped,
+    sorting: true,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        {grouped ? (
-          <Headers.BasicHeader text={t('detail.documents.table.type')} />
-        ) : (
-          <Headers.SortHeaderButton text={t('detail.documents.table.type')} {...props} />
-        )}
+        <Headers.SortHeaderButton text={t('detail.documents.table.type')} {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
       <Flex align="center" {...cellProps}>
         <Box paddingX={2}>
-          {!datum.isLoading && !datum.isReleaseAggregate && (
-            <MemoDocumentType type={datum.document._type} />
-          )}
+          {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
         </Box>
       </Flex>
     ),
@@ -278,7 +216,7 @@ export const getVariantDocumentTableColumnDefs = (
         sizing="border"
       >
         <Box flex={1} style={{minWidth: 0}}>
-          {datum.isReleaseAggregate ? null : datum.isLoading ? (
+          {datum.isLoading ? (
             <SanityDefaultPreview isPlaceholder />
           ) : (
             <MemoVariantDocumentPreview
@@ -288,7 +226,7 @@ export const getVariantDocumentTableColumnDefs = (
             />
           )}
         </Box>
-        {!datum.isReleaseAggregate && !datum.isLoading && datum.validation.hasError && (
+        {!datum.isLoading && datum.validation.hasError && (
           <Box flex="none">
             <ValidationErrorIndicator datum={datum} t={t} />
           </Box>
@@ -298,20 +236,16 @@ export const getVariantDocumentTableColumnDefs = (
   },
   {
     id: 'document._updatedAt',
-    sorting: !grouped,
+    sorting: true,
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        {grouped ? (
-          <Headers.BasicHeader text={t('detail.documents.table.edited')} />
-        ) : (
-          <Headers.SortHeaderButton text={t('detail.documents.table.edited')} {...props} />
-        )}
+        <Headers.SortHeaderButton text={t('detail.documents.table.edited')} {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
       <Flex {...cellProps} align="center" paddingX={2} paddingY={3} style={{minWidth: 130}}>
-        {!datum.isLoading && !datum.isReleaseAggregate && datum.document._updatedAt && (
+        {!datum.isLoading && datum.document._updatedAt && (
           <Text muted size={1}>
             <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
           </Text>
