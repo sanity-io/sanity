@@ -15,12 +15,11 @@ import {VariantReleaseLane} from './VariantReleaseLane'
 const TABLE_CARD_STYLE: CSSProperties = {
   height: '100%',
   overflow: 'auto',
-  // Reserve the vertical scrollbar gutter on BOTH edges. The shared Table centers its rows in a
-  // fixed-width Container, so a right-only gutter (`stable`) shifts that centered content left and
-  // misaligns it from the header/lane above; `both-edges` keeps the reserve symmetric so the rows
-  // stay centered and aligned, while still preventing the horizontal jump when a filter toggles the
-  // scrollbar on/off.
-  scrollbarGutter: 'stable both-edges',
+  // No scrollbar-gutter: it forces a fixed reserve the Container-based header/lane don't have,
+  // which misaligns the centered rows from the chrome as the viewport narrows. Without it, the
+  // rows and chrome share the same centered inset at every width (with overlay scrollbars). The
+  // minor horizontal shift when a filter toggles a non-overlay scrollbar is deferred to the shared
+  // document-table work (FH-90), where header + table live in one scroll context.
 }
 
 function filterDocuments(
