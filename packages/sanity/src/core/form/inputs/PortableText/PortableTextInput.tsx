@@ -2,16 +2,19 @@ import {
   type EditorEmittedEvent,
   EditorProvider,
   type EditorSelection,
+  type EditorSnapshot,
   type Patch,
+  type Editor,
   PortableTextEditor,
   type RangeDecoration,
   useEditor,
   usePortableTextEditor,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
+import {getSpan} from '@portabletext/editor/traversal'
 import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
+import {type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, useToast} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {fromString, startsWith} from '@sanity/util/paths'
@@ -64,14 +67,28 @@ function keyGenerator() {
 
 /**
  * `EditorProvider` doesn't have a `ref` prop. This custom PTE plugin takes
- * care of imperatively forwarding that ref.
+ * care of imperatively forwarding the legacy `PortableTextEditor` instance,
+ * the public `editorRef` prop's contract.
  */
-const EditorRefPlugin = forwardRef<PortableTextEditor | null>((_, ref) => {
+const LegacyEditorRefPlugin = forwardRef<PortableTextEditor | null>((_, ref) => {
   const portableTextEditor = usePortableTextEditor()
 
   const portableTextEditorRef = useRef(portableTextEditor)
 
   useImperativeHandle(ref, () => portableTextEditorRef.current, [])
+
+  return null
+})
+LegacyEditorRefPlugin.displayName = 'LegacyEditorRefPlugin'
+
+/**
+ * Captures the editor instance so callbacks defined outside
+ * `EditorProvider` can take snapshots.
+ */
+const EditorRefPlugin = forwardRef<Editor | null>((_, ref) => {
+  const editor = useEditor()
+
+  useImperativeHandle(ref, () => editor, [editor])
 
   return null
 })
@@ -125,8 +142,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   } = props
 
   const {onBlur, ref: elementRef} = elementProps
-  const defaultEditorRef = useRef<PortableTextEditor | null>(null)
-  const editorRef = editorRefProp || defaultEditorRef
+  const defaultLegacyEditorRef = useRef<PortableTextEditor | null>(null)
+  const editorRef = useRef<Editor | null>(null)
+  const legacyEditorRef = editorRefProp || defaultLegacyEditorRef
 
   const presenceCursorDecorations = usePresenceCursorDecorations(
     useMemo(
@@ -257,23 +275,16 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   }, [hasFocusWithin])
 
   const setFocusPathFromEditorSelection = useCallback(
-    (nextSelection: EditorSelection) => {
+    (nextSelection: EditorSelection, snapshot: EditorSnapshot | null) => {
       const focusPath = nextSelection?.focus.path
       if (!focusPath) return
 
-      // Report focus on spans with `.text` appended to the reported focusPath.
-      // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
-      // The PT-input already supports these paths the other way around.
-      // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
-      // having to change the PTE's internals.
-      const isSpanPath =
-        focusPath.length === 3 && // A span path is always 3 segments long
-        focusPath[1] === 'children' && // Is a child of a block
-        isKeySegment(focusPath[2]) && // Contains the key of the child
-        !portableTextMemberItems.some(
-          (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
-        )
-      const nextFocusPath = isSpanPath ? focusPath.concat(['text']) : focusPath
+      // Spans report with `.text` appended, the path shape the Presentation
+      // tool uses to address text. `useTrackFocusPath` resolves such paths
+      // in the other direction through the same `getSpan` traversal, so
+      // both directions agree on what a span path is at any depth.
+      const nextFocusPath =
+        snapshot && getSpan(snapshot, focusPath) ? focusPath.concat(['text']) : focusPath
 
       // Must called in a transition useTrackFocusPath hook
       // will try to effectuate a focusPath that is different from what currently is the editor focusPath
@@ -283,7 +294,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         })
       })
     },
-    [onPathFocus, portableTextMemberItems],
+    [onPathFocus],
   )
 
   // Handle editor changes
@@ -295,7 +306,10 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
           onChange(toFormPatches(change.patches))
           break
         case 'selection':
-          setFocusPathFromEditorSelection(change.selection)
+          setFocusPathFromEditorSelection(
+            change.selection,
+            editorRef.current?.getSnapshot() ?? null,
+          )
           break
         case 'focus':
           setIsActive(true)
@@ -319,11 +333,19 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
           break
         default:
       }
-      if (editorRef.current && onEditorChange) {
-        onEditorChange(change, editorRef.current)
+      if (legacyEditorRef.current && onEditorChange) {
+        onEditorChange(change, legacyEditorRef.current)
       }
     },
-    [editorRef, onEditorChange, onChange, setFocusPathFromEditorSelection, onBlur, toast],
+    [
+      legacyEditorRef,
+      editorRef,
+      onEditorChange,
+      onChange,
+      setFocusPathFromEditorSelection,
+      onBlur,
+      toast,
+    ],
   )
 
   useEffect(() => {
@@ -355,11 +377,11 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const handleActivate = useCallback((): void => {
     if (!isActive) {
       setIsActive(true)
-      if (editorRef.current) {
-        PortableTextEditor.focus(editorRef.current)
+      if (legacyEditorRef.current) {
+        PortableTextEditor.focus(legacyEditorRef.current)
       }
     }
-  }, [editorRef, isActive])
+  }, [legacyEditorRef, isActive])
 
   const previousRangeDecorations = useRef<RangeDecoration[]>([])
 
@@ -404,6 +426,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                   onChange={handleEditorChange}
                   onOptimisticChange={onOptimisticChange}
                 />
+                <LegacyEditorRefPlugin ref={legacyEditorRef} />
                 <EditorRefPlugin ref={editorRef} />
                 <PatchesPlugin path={path} />
                 <UpdateReadOnlyPlugin readOnly={readOnly || !ready} />
