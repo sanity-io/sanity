@@ -66,6 +66,20 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
+  // @sanity/pkg-utils@11 / rolldown-plugin-dts emits a bare `import "get-it"` side-effect in
+  // @sanity/vision's bundled declarations (transitive via @sanity/client). get-it is not a direct
+  // dependency of vision, so TypeScript cannot resolve it from the published package graph
+  // (TS2882). Runtime is unaffected; remove once dts emit stops leaking that import.
+  if (code === 2882 && file.fileName.includes('/packages/@sanity/vision/lib/')) {
+    return false
+  }
+
+  // quick-lru@7.3.0 declares Map subclass methods returning IterableIterator, which is not
+  // assignable to MapIterator under TypeScript 6+ (TS2416). Third-party; not actionable here.
+  if (code === 2416 && file.fileName.includes('/node_modules/quick-lru/')) {
+    return false
+  }
+
   return true
 })
 
