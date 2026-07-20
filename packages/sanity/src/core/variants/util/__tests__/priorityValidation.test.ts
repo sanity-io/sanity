@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {getPriorityValidationError} from '../priorityValidation'
+import {getPriorityInputValidationError, getPriorityValidationError} from '../priorityValidation'
 
 describe('getPriorityValidationError', () => {
   it('accepts any finite number', () => {
@@ -13,5 +13,15 @@ describe('getPriorityValidationError', () => {
   it('rejects non-finite values', () => {
     expect(getPriorityValidationError(Number.NaN)).toBe('invalid')
     expect(getPriorityValidationError(Number.POSITIVE_INFINITY)).toBe('invalid')
+  })
+
+  it('rejects empty priority input', () => {
+    expect(getPriorityInputValidationError('')).toBe('invalid')
+    expect(getPriorityInputValidationError('   ')).toBe('invalid')
+  })
+
+  it('validates parsed priority input', () => {
+    expect(getPriorityInputValidationError('42.5')).toBeUndefined()
+    expect(getPriorityInputValidationError('not-a-number')).toBe('invalid')
   })
 })

@@ -20,7 +20,7 @@ import {
   getConditionValueValidationError,
 } from '../../util/conditionValidation'
 import {getVariantTitleValue} from '../../util/getIsVariantInvalid'
-import {getPriorityValidationError} from '../../util/priorityValidation'
+import {getPriorityInputValidationError} from '../../util/priorityValidation'
 import {createPortableTextDescription} from '../../util/variantDefaults'
 import {ConditionAutocompleteInput} from './ConditionAutocompleteInput'
 import {
@@ -130,11 +130,18 @@ export type VariantFormChangeHandler = (path: Path, value: unknown) => void
 
 export function VariantForm(props: {
   onChange: VariantFormChangeHandler
-  onConditionValidityChange?: (invalid: boolean) => void
+  onConditionValidityChange: (invalid: boolean) => void
+  onPriorityValidityChange: (invalid: boolean) => void
   showValidation?: boolean
   value: EditableSystemVariant
 }) {
-  const {onChange, onConditionValidityChange, showValidation = false, value} = props
+  const {
+    onChange,
+    onConditionValidityChange,
+    onPriorityValidityChange,
+    showValidation = false,
+    value,
+  } = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const {data: variants} = useAllVariants()
   const suggestionIndex = useMemo(() => buildConditionSuggestionIndex(variants), [variants])
@@ -145,6 +152,7 @@ export function VariantForm(props: {
   // duplicates collapse and partial key edits like "far" -> "favorite" can lose data.
   // Keep rows locally while editing, then commit back once they serialize cleanly.
   const [conditionRows, setConditionRows] = useState(() => getConditionRows(value.conditions))
+  const [priorityInput, setPriorityInput] = useState(() => String(value.priority))
   const conditionsValidation = useMemo(
     () => getConditionRowsValidation(conditionRows),
     [conditionRows],
@@ -152,8 +160,9 @@ export function VariantForm(props: {
 
   const hasTitle = Boolean(getVariantTitleValue(value))
   const showTitleError = showValidation && !hasTitle
-  const priorityValidationError = getPriorityValidationError(value.priority)
+  const priorityValidationError = getPriorityInputValidationError(priorityInput)
   const showPriorityError = showValidation && priorityValidationError
+
   const lastConditionRow = conditionRows[conditionRows.length - 1]
   const canAddCondition = Boolean(
     lastConditionRow && !hasConditionRowsValidationErrors(conditionsValidation),
@@ -167,7 +176,7 @@ export function VariantForm(props: {
 
       const nextRowsValidation = getConditionRowsValidation(rows)
       const nextRowsInvalid = hasConditionRowsValidationErrors(nextRowsValidation)
-      onConditionValidityChange?.(nextRowsInvalid)
+      onConditionValidityChange(nextRowsInvalid)
 
       if (nextRows.length === 0 || !nextRowsInvalid) {
         onChange(['conditions'], getConditionsFromRows(nextRows))
@@ -195,10 +204,18 @@ export function VariantForm(props: {
 
   const handlePriorityChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
+      const rawValue = event.currentTarget.value
       const nextValue = event.currentTarget.valueAsNumber
-      onChange(['priority'], Number.isNaN(nextValue) ? Number.NaN : nextValue)
+
+      setPriorityInput(rawValue)
+      const priorityValidationError = getPriorityInputValidationError(rawValue)
+      onPriorityValidityChange(Boolean(priorityValidationError))
+
+      if (Number.isFinite(nextValue)) {
+        onChange(['priority'], nextValue)
+      }
     },
-    [onChange],
+    [onChange, onPriorityValidityChange],
   )
 
   const handleConditionChange = useCallback(
@@ -290,7 +307,7 @@ export function VariantForm(props: {
           inputMode="decimal"
           onChange={handlePriorityChange}
           type="number"
-          value={Number.isFinite(value.priority) ? value.priority : ''}
+          value={priorityInput}
         />
         {showPriorityError && priorityValidationError && (
           <TextWithTone data-testid="variant-form-priority-error" size={1} tone="critical">

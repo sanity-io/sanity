@@ -7,3 +7,13 @@ export function getPriorityValidationError(priority: number): PriorityValidation
 
   return undefined
 }
+
+export function getPriorityInputValidationError(
+  input: string,
+): PriorityValidationError | undefined {
+  if (input.trim() === '') {
+    return 'invalid'
+  }
+
+  return getPriorityValidationError(Number(input))
+}
