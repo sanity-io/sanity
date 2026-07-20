@@ -56,7 +56,7 @@ catalogs:
       specifier: ^2.1.5
       version: 2.1.5
     '@vanilla-extract/vite-plugin':
-      specifier: ^5.2.4
+      specifier: ^5.2.5
       version: 5.2.5
     '@vitejs/plugin-react':
       specifier: ^6.0.3
