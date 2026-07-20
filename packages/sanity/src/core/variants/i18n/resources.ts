@@ -96,14 +96,16 @@ const variantsLocaleStrings = {
   'detail.documents.bulk.selected_one': '{{count}} selected',
   /** Count of selected documents in the bulk-action bar (plural). */
   'detail.documents.bulk.selected_other': '{{count}} selected',
-  /** Label for the bulk-actions menu button. */
-  'detail.documents.bulk.actions': 'Actions',
-  /** Bulk action: publish the selected documents. */
-  'detail.documents.bulk.publish': 'Publish selected',
-  /** Bulk action: delete the selected documents. */
-  'detail.documents.bulk.delete': 'Delete selected',
-  /** Label for clearing the current document selection. */
-  'detail.documents.bulk.clear': 'Clear',
+  /** Primary bulk action: publish the selected documents. */
+  'detail.documents.bulk.publish': 'Publish',
+  /** Primary bulk action: delete the selected documents. */
+  'detail.documents.bulk.delete': 'Delete',
+  /** Overflow menu of secondary bulk actions. */
+  'detail.documents.bulk.more': 'More bulk actions',
+  /** Secondary bulk action: unpublish the selected documents. */
+  'detail.documents.bulk.unpublish': 'Unpublish',
+  /** Secondary bulk action: add the selected documents to a release. */
+  'detail.documents.bulk.add-to-release': 'Add to release',
   /** Error message when variant documents fail to load. */
   'detail.documents.error': 'Unable to load documents for this variant definition',
   /** Description for the missing Variant detail page. */

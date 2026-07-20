@@ -1,8 +1,10 @@
+import {AddIcon} from '@sanity/icons/Add'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Box, Card, Checkbox, Flex, Menu, Text, TextInput} from '@sanity/ui'
+import {UnpublishIcon} from '@sanity/icons/Unpublish'
+import {Badge, Box, Card, Checkbox, Flex, Menu, TextInput} from '@sanity/ui'
 import {type CSSProperties, useCallback, useMemo, useState} from 'react'
 
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
@@ -130,14 +132,12 @@ export function VariantDocumentsTable({
 
   const handleToggleAll = useCallback(() => {
     setSelectedGroupIds((previous) => {
-      const everySelected =
-        selectableGroupIds.size > 0 && [...selectableGroupIds].every((id) => previous.has(id))
-      // Toggling with a full selection clears; otherwise select every currently-visible document.
-      return everySelected ? new Set() : new Set(selectableGroupIds)
+      // GitHub-style: the select-all box doubles as clear — if anything visible is selected,
+      // clicking it clears; otherwise it selects every currently-visible document.
+      const anyVisibleSelected = [...selectableGroupIds].some((id) => previous.has(id))
+      return anyVisibleSelected ? new Set() : new Set(selectableGroupIds)
     })
   }, [selectableGroupIds])
-
-  const handleClearSelection = useCallback(() => setSelectedGroupIds(new Set()), [])
 
   const isSelected = useCallback(
     (groupId: string) => selectedGroupIds.has(groupId),
@@ -162,15 +162,14 @@ export function VariantDocumentsTable({
 
   return (
     <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
-      {/* Command lane (three-zone header, zone 1): one persistent row of table-scoped controls —
-          select-all, search, filter tabs, and (right, under the header's Edit action) the bulk
-          actions. Because the lane is always present, selecting rows fills its right side in place
-          instead of inserting a new row, so nothing shifts vertically under the cursor. */}
+      {/* Command lane (three-zone header, zone 1). Persistent, so nothing shifts vertically. It
+          swaps GitHub-style: idle shows browse controls (search + filter tabs); on selection it
+          becomes a bulk-action toolbar — select-all + count on the left, actions on the right. */}
       {hasDocuments && (
         <Card flex="none" borderBottom paddingX={4} paddingY={2}>
           <Flex align="center" gap={3}>
-            {/* Persistent select-all (leftmost, roughly over the checkbox column below), so it's
-                discoverable from a cold state — not revealed only after a first selection. */}
+            {/* Select-all is persistent and leftmost (over the checkbox column). Clicking it when
+                anything is selected clears — so "clear" lives with the count, not between actions. */}
             <Checkbox
               aria-label={t('detail.documents.bulk.select-all')}
               checked={allSelected}
@@ -178,72 +177,84 @@ export function VariantDocumentsTable({
               indeterminate={someSelected && !allSelected}
               onChange={handleToggleAll}
             />
-            <Box flex="none" style={SEARCH_INPUT_STYLE}>
-              <TextInput
-                aria-label={t('detail.documents.table.search-placeholder')}
-                clearButton={Boolean(searchTerm)}
-                data-testid="variant-documents-search"
-                fontSize={1}
-                icon={SearchIcon}
-                onChange={(event) => setSearchTerm(event.currentTarget.value)}
-                onClear={() => setSearchTerm('')}
-                placeholder={t('detail.documents.table.search-placeholder')}
-                value={searchTerm}
-              />
-            </Box>
-            {/* Filter tabs fill the middle; the flex spacer keeps the bulk cluster right-aligned
-                even when there are no release controls to show. */}
-            <Box flex={1} style={{minWidth: 0, overflowX: 'auto'}}>
-              {hasReleaseControls && (
-                <VariantReleaseLane
-                  activeLane={resolvedActiveLane}
-                  onSelectLane={handleSelectLane}
-                  segments={segments}
-                  totalCount={rows.length}
-                />
-              )}
-            </Box>
-            {/* Bulk actions appear here (right, under Edit) when a selection exists — in place, no
-                new row. Publish/Delete are prototyped-but-not-wired (stubbed disabled). */}
-            {selectedVisibleCount > 0 && (
-              <Flex align="center" flex="none" gap={2}>
-                <Text size={1} weight="medium">
+            {selectedVisibleCount > 0 ? (
+              <>
+                {/* Selection mode: count beside the box (primary-toned, live indicator); browse
+                    controls give way to the bulk actions on the right. */}
+                <Badge data-testid="variant-bulk-selected-count" fontSize={1} tone="primary">
                   {t('detail.documents.bulk.selected', {count: selectedVisibleCount})}
-                </Text>
-                <MenuButton
-                  id="variant-bulk-actions"
-                  button={
-                    <Button
-                      data-testid="variant-bulk-actions-menu"
-                      icon={EllipsisHorizontalIcon}
-                      mode="bleed"
-                      text={t('detail.documents.bulk.actions')}
+                </Badge>
+                <Box flex={1} />
+                <Flex align="center" flex="none" gap={2}>
+                  <Button
+                    data-testid="variant-bulk-publish"
+                    disabled
+                    icon={PublishIcon}
+                    mode="ghost"
+                    text={t('detail.documents.bulk.publish')}
+                  />
+                  <Button
+                    data-testid="variant-bulk-delete"
+                    disabled
+                    icon={TrashIcon}
+                    mode="ghost"
+                    text={t('detail.documents.bulk.delete')}
+                    tone="critical"
+                  />
+                  <MenuButton
+                    id="variant-bulk-more"
+                    button={
+                      <Button
+                        data-testid="variant-bulk-more"
+                        icon={EllipsisHorizontalIcon}
+                        mode="bleed"
+                        tooltipProps={{content: t('detail.documents.bulk.more')}}
+                      />
+                    }
+                    menu={
+                      <Menu>
+                        <MenuItem
+                          disabled
+                          icon={UnpublishIcon}
+                          text={t('detail.documents.bulk.unpublish')}
+                        />
+                        <MenuItem
+                          disabled
+                          icon={AddIcon}
+                          text={t('detail.documents.bulk.add-to-release')}
+                        />
+                      </Menu>
+                    }
+                    popover={{placement: 'bottom-end', portal: true}}
+                  />
+                </Flex>
+              </>
+            ) : (
+              <>
+                <Box flex="none" style={SEARCH_INPUT_STYLE}>
+                  <TextInput
+                    aria-label={t('detail.documents.table.search-placeholder')}
+                    clearButton={Boolean(searchTerm)}
+                    data-testid="variant-documents-search"
+                    fontSize={1}
+                    icon={SearchIcon}
+                    onChange={(event) => setSearchTerm(event.currentTarget.value)}
+                    onClear={() => setSearchTerm('')}
+                    placeholder={t('detail.documents.table.search-placeholder')}
+                    value={searchTerm}
+                  />
+                </Box>
+                <Box flex={1} style={{minWidth: 0, overflowX: 'auto'}}>
+                  {hasReleaseControls && (
+                    <VariantReleaseLane
+                      activeLane={resolvedActiveLane}
+                      onSelectLane={handleSelectLane}
+                      segments={segments}
+                      totalCount={rows.length}
                     />
-                  }
-                  menu={
-                    <Menu>
-                      <MenuItem
-                        disabled
-                        icon={PublishIcon}
-                        text={t('detail.documents.bulk.publish')}
-                      />
-                      <MenuItem
-                        disabled
-                        icon={TrashIcon}
-                        text={t('detail.documents.bulk.delete')}
-                        tone="critical"
-                      />
-                    </Menu>
-                  }
-                  popover={{placement: 'bottom-end', portal: true}}
-                />
-                <Button
-                  data-testid="variant-bulk-clear"
-                  mode="bleed"
-                  onClick={handleClearSelection}
-                  text={t('detail.documents.bulk.clear')}
-                />
-              </Flex>
+                  )}
+                </Box>
+              </>
             )}
           </Flex>
         </Card>
