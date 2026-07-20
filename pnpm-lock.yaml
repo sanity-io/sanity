@@ -92,7 +92,7 @@ catalogs:
       specifier: npm:@sanity/styled-components@^6.1.24
       version: 6.1.24
     vite:
-      specifier: ^8.1.4
+      specifier: ^8.1.5
       version: 8.1.5
     vitest-browser-react:
       specifier: ^2.2.0
