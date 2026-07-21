@@ -136,8 +136,8 @@ importers:
         specifier: ^4.4.5
         version: 4.4.5(eslint@10.5.0)
       eslint-plugin-boundaries:
-        specifier: ^6.0.2
-        version: 6.0.2(eslint-import-resolver-typescript@4.4.5)(eslint@10.5.0)
+        specifier: ^7.0.2
+        version: 7.0.2(eslint-import-resolver-typescript@4.4.5)(eslint@10.5.0)
       eslint-plugin-i18next:
         specifier: ^6.1.5
         version: 6.1.5
@@ -3165,8 +3165,8 @@ packages:
   '@borewit/text-codec@0.2.2':
     resolution: {integrity: sha512-DDaRehssg1aNrH4+2hnj1B7vnUGEjU6OIlyRdkMd0aUdIUvKXrJfXsy8LVtXAy7DRvYVluWbMspsRhz2lcW0mQ==}
 
-  '@boundaries/elements@2.0.1':
-    resolution: {integrity: sha512-sAWO3D8PFP6pBXdxxW93SQi/KQqqhE2AAHo3AgWfdtJXwO6bfK6/wUN81XnOZk0qRC6vHzUEKhjwVD9dtDWvxg==}
+  '@boundaries/elements@3.0.1':
+    resolution: {integrity: sha512-T53UueJVRIn1B2G5FWo6T3rqAA1aHcuypRweQcbW6Z/leUygsHW54Gezkm/8uxB9Fw8ewE+izfKKmA9XVv7HdQ==}
     engines: {node: '>=18.18'}
 
   '@bramus/specificity@2.4.2':
@@ -9814,8 +9814,8 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
 
-  eslint-plugin-boundaries@6.0.2:
-    resolution: {integrity: sha512-wSHgiYeMEbziP91lH0UQ9oslgF2djG1x+LV9z/qO19ggMKZaCB8pKIGePHAY91eLF4EAgpsxQk8MRSFGRPfPzw==}
+  eslint-plugin-boundaries@7.0.2:
+    resolution: {integrity: sha512-VLaPMvNh+ONw6F/S0gpkS0/QDudqVjcaL1DoGo+8sJqZmxxabOtrFZ24PDI1jQLg3pyqujzJ3/4Cq7Bk249gjQ==}
     engines: {node: '>=18.18'}
     peerDependencies:
       eslint: '>=6.0.0'
@@ -15934,7 +15934,7 @@ snapshots:
   '@borewit/text-codec@0.2.2':
     optional: true
 
-  '@boundaries/elements@2.0.1(eslint-import-resolver-typescript@4.4.5)(eslint@10.5.0)':
+  '@boundaries/elements@3.0.1(eslint-import-resolver-typescript@4.4.5)(eslint@10.5.0)':
     dependencies:
       eslint-import-resolver-node: 0.3.9
       eslint-module-utils: 2.12.1(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.5)(eslint@10.5.0)
@@ -22932,9 +22932,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-boundaries@6.0.2(eslint-import-resolver-typescript@4.4.5)(eslint@10.5.0):
+  eslint-plugin-boundaries@7.0.2(eslint-import-resolver-typescript@4.4.5)(eslint@10.5.0):
     dependencies:
-      '@boundaries/elements': 2.0.1(eslint-import-resolver-typescript@4.4.5)(eslint@10.5.0)
+      '@boundaries/elements': 3.0.1(eslint-import-resolver-typescript@4.4.5)(eslint@10.5.0)
       chalk: 4.1.2
       eslint: 10.5.0(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.9
