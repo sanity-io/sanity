@@ -217,7 +217,7 @@
     "mendoza": "^3.0.8",
     "motion": "^12.42.2",
     "nano-pubsub": "^3.0.0",
-    "nanoid": "^5.1.16",
+    "nanoid": "^6.0.0",
     "observable-callback": "^1.0.3",
     "path-to-regexp": "^6.3.0",
     "player.style": "^0.3.4",
