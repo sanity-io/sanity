@@ -1772,7 +1772,7 @@ importers:
         specifier: ^3.0.8
         version: 3.0.8
       motion:
-        specifier: ^12.42.0
+        specifier: ^12.42.2
         version: 12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react@19.2.7)
       nano-pubsub:
         specifier: ^3.0.0
