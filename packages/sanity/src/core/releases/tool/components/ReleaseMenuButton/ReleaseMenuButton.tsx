@@ -50,6 +50,11 @@ export type ReleaseMenuButtonProps = {
   release: ReleaseDocument
   documentsCount: number
   documents?: DocumentInRelease[]
+  /**
+   * When provided, an "Edit details" item is prepended to the menu. Only the detail page passes
+   * this (its rail routes editing through the overflow menu); the overview list rows leave it unset.
+   */
+  onEditDetails?: () => void
 }
 
 export const ReleaseMenuButton = ({
@@ -57,6 +62,7 @@ export const ReleaseMenuButton = ({
   release,
   documentsCount,
   documents,
+  onEditDetails,
 }: ReleaseMenuButtonProps) => {
   const toast = useToast()
   const router = useRouter()
@@ -344,6 +350,13 @@ export const ReleaseMenuButton = ({
               setSelectedAction={handleSetSelectedAction}
               disabled={isPerformingOperation}
               documents={documents ?? []}
+              onEditDetails={
+                onEditDetails &&
+                (() => {
+                  closePopover()
+                  onEditDetails()
+                })
+              }
             />
             {hasCustomActions && (
               <>

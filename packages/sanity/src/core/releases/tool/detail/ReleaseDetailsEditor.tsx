@@ -1,47 +1,31 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {EditIcon} from '@sanity/icons/Edit'
-import {useEffect, useRef, useState} from 'react'
+import {useState} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {DetailIdentity} from '../../../components/detailLayout'
 import {useTranslation} from '../../../i18n'
+import {useWorkspace} from '../../../studio/workspace'
 import {EditReleaseDialog} from '../../components/dialog/EditReleaseDialog'
-import {getIsReleaseOpen} from '../../components/dialog/TitleDescriptionForm'
-import {useReleaseOperations} from '../../index'
-import {useReleasePermissions} from '../../store/useReleasePermissions'
+import {useCanEditRelease} from './useCanEditRelease'
 
 /**
  * The release identity (title + description) as a read-only display surface built on the shared
- * `DetailIdentity` spine. Editing is an explicit action — a hover-revealed pencil opens the edit
- * dialog — rather than an always-live inline form, keeping the interaction consistent with how
- * documents are edited elsewhere in Studio.
+ * `DetailIdentity` spine.
+ *
+ * Editing is an explicit action, never inline. In production it is a hover-revealed pencil beside
+ * the title; behind `beta.variants` the pencil is dropped in favour of a defined "Edit details"
+ * action in the top action rail (a defined button is discoverable and keyboard/screen-reader
+ * accessible in a way a hover-only affordance is not).
  */
 export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): React.JSX.Element {
   const {t} = useTranslation()
-  const {updateRelease} = useReleaseOperations()
-  const {checkWithPermissionGuard} = useReleasePermissions()
-  const [hasUpdatePermission, setHasUpdatePermission] = useState<boolean | null>(null)
   const [editOpen, setEditOpen] = useState(false)
+  const canEdit = useCanEditRelease(release)
 
-  const isReleaseOpen = getIsReleaseOpen(release)
-  const isMounted = useRef(false)
-
-  useEffect(() => {
-    isMounted.current = true
-
-    if (isReleaseOpen) {
-      // Editing is only possible on an open release, so only check permission when it's open.
-      void checkWithPermissionGuard(updateRelease, release).then((hasPermission) => {
-        if (isMounted.current) setHasUpdatePermission(hasPermission)
-      })
-    }
-
-    return () => {
-      isMounted.current = false
-    }
-  }, [checkWithPermissionGuard, isReleaseOpen, release, updateRelease])
-
-  const canEdit = isReleaseOpen && Boolean(hasUpdatePermission)
+  // Behind beta.variants, editing lives in the action rail, so the identity block is pure display.
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const showInlineEdit = canEdit && !variantsEnabled
 
   return (
     <>
@@ -52,7 +36,7 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): Rea
         titleTestId="release-title-display"
         descriptionTestId="release-description-display"
         titleAction={
-          canEdit ? (
+          showInlineEdit ? (
             <Button
               data-testid="edit-release-details-button"
               icon={EditIcon}

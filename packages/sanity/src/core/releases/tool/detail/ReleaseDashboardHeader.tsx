@@ -18,7 +18,9 @@ import {useWorkspace} from '../../../studio/workspace'
 import {releasesLocaleNamespace} from '../../i18n'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {CopyReleaseActions} from './CopyReleaseActions'
+import {ReleaseActionRail} from './ReleaseActionRail'
 import {type ReleaseInspector} from './ReleaseDetail'
+import {type DocumentInRelease} from './types'
 
 // The bleed back-button carries its own horizontal padding, which would push the breadcrumb text
 // right of the title/table left edge. Cancel that padding so the breadcrumb sits on the same hard
@@ -26,11 +28,12 @@ import {type ReleaseInspector} from './ReleaseDetail'
 const BREADCRUMB_ALIGN_STYLE = {marginLeft: -8}
 
 export function ReleaseDashboardHeader(props: {
+  documents: DocumentInRelease[]
   inspector: ReleaseInspector | undefined
   release: ReleaseDocument
   setInspector: Dispatch<SetStateAction<ReleaseInspector | undefined>>
 }) {
-  const {inspector, release, setInspector} = props
+  const {documents, inspector, release, setInspector} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const title = release.metadata.title || tCore('release.placeholder-untitled-release')
@@ -100,7 +103,14 @@ export function ReleaseDashboardHeader(props: {
             )}
           </Flex>
 
-          {!variantsEnabled && (
+          {variantsEnabled ? (
+            // The F-pattern action rail: the release's primary action (Run release / Publish /
+            // Schedule / …) and its overflow menu sit top-right, where the eye lands first, instead
+            // of in a bottom footer. The footer is dropped in beta (see ReleaseDetail).
+            <Flex flex="none">
+              <ReleaseActionRail release={release} documents={documents} />
+            </Flex>
+          ) : (
             <Flex flex="none" gap={2}>
               <CopyReleaseActions release={release} />
               <Button

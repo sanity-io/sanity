@@ -6,6 +6,7 @@ import {useRouter} from 'sanity/router'
 
 import {LoadingBlock} from '../../../components'
 import {useTranslation} from '../../../i18n'
+import {useWorkspace} from '../../../studio/workspace'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
@@ -27,6 +28,8 @@ export function ReleaseDetail() {
   const router = useRouter()
   const [inspector, setInspector] = useState<ReleaseInspector | undefined>(undefined)
   const {t} = useTranslation(releasesLocaleNamespace)
+  // Behind beta.variants the action cluster moves to the top rail and the footer is dropped.
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
   const releaseId = decodeURIComponent(releaseIdRaw || '')
   const {data, loading} = useActiveReleases()
@@ -107,6 +110,7 @@ export function ReleaseDetail() {
       <Flex direction="column" flex={1} height="fill" overflow="hidden">
         <Card flex="none">
           <ReleaseDashboardHeader
+            documents={results}
             release={releaseInDetail}
             inspector={inspector}
             setInspector={setInspector}
@@ -116,15 +120,23 @@ export function ReleaseDetail() {
         <Flex flex={1}>
           <Flex direction="column" flex={1} height="fill">
             <Card flex={1} overflow="auto">
-              <ReleaseDashboardDetails release={releaseInDetail} documents={results} />
+              <ReleaseDashboardDetails
+                release={releaseInDetail}
+                documents={results}
+                events={releaseEvents.events}
+              />
               {detailContent}
             </Card>
 
-            <ReleaseDashboardFooter
-              documents={results}
-              release={releaseInDetail}
-              events={releaseEvents.events}
-            />
+            {/* In beta the footer's action cluster moved to the top rail and its Created status
+                moved into the properties panel, so the footer is dropped entirely. */}
+            {!variantsEnabled && (
+              <ReleaseDashboardFooter
+                documents={results}
+                release={releaseInDetail}
+                events={releaseEvents.events}
+              />
+            )}
           </Flex>
 
           <ReleaseDashboardActivityPanel

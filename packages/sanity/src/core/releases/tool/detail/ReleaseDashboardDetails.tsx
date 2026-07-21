@@ -4,14 +4,17 @@ import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useEffect, useRef, useState} from 'react'
 
+import {AvatarSkeleton, RelativeTime, UserAvatar} from '../../../components'
 import {DetailPropertiesPanel} from '../../../components/detailLayout'
 import {Details} from '../../../form/components/Details'
 import {useTranslation} from '../../../i18n'
+import {useWorkspace} from '../../../studio/workspace'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {isNotArchivedRelease} from '../../util/util'
 import {ArchivedReleaseBanner} from './ArchivedReleaseBanner'
+import {isCreateReleaseEvent, type ReleaseEvent} from './events/types'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
 import {type DocumentInRelease} from './types'
@@ -20,9 +23,11 @@ import {ValidationProgressIndicator} from './ValidationProgressIndicator'
 export function ReleaseDashboardDetails({
   release,
   documents,
+  events,
 }: {
   release: ReleaseDocument
   documents: DocumentInRelease[]
+  events: ReleaseEvent[]
 }) {
   const {state} = release
 
@@ -30,6 +35,9 @@ export function ReleaseDashboardDetails({
   const {publishRelease, schedule} = useReleaseOperations()
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
+  // Behind beta.variants the footer is dropped, so its "Created" status is rehomed here.
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const createAuthor = events.find(isCreateReleaseEvent)?.author
   const isAtTimeRelease = release?.metadata?.releaseType === 'scheduled'
   const isReleaseOpen = state !== 'archived' && state !== 'published'
   const isActive = release.state === 'active'
@@ -82,8 +90,8 @@ export function ReleaseDashboardDetails({
             <ReleaseDetailsEditor release={release} />
           </Box>
           {/* The metadata is its own bordered surface — the shared properties panel — so it reads
-              as a discrete block next to the identity. Created lives in the footer (with the author
-              avatar), so it is not repeated here. */}
+              as a discrete block next to the identity. In production "Created" lives in the footer;
+              behind beta.variants the footer is dropped, so a Created row is added here instead. */}
           <DetailPropertiesPanel
             testId="release-detail-metadata"
             sections={[
@@ -102,6 +110,21 @@ export function ReleaseDashboardDetails({
                   {
                     label: tRelease('dashboard.details.metadata.documents'),
                     value: String(documents.length),
+                  },
+                  variantsEnabled && {
+                    label: tRelease('footer.status.created'),
+                    value: (
+                      <Flex align="center" gap={2}>
+                        {createAuthor ? (
+                          <UserAvatar size={0} user={createAuthor} />
+                        ) : (
+                          <AvatarSkeleton $size={0} />
+                        )}
+                        <Text size={1}>
+                          <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
+                        </Text>
+                      </Flex>
+                    ),
                   },
                 ],
               },
