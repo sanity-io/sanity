@@ -4,7 +4,6 @@ import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useEffect, useRef, useState} from 'react'
 
-import {RelativeTime} from '../../../components'
 import {Details} from '../../../form/components/Details'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -94,14 +93,7 @@ export function ReleaseDashboardDetails({
               </Text>
               <ValidationProgressIndicator documents={documents} />
             </Flex>
-            <Flex align="center" gap={3} justify="space-between">
-              <Text muted size={1}>
-                {tRelease('dashboard.details.metadata.created')}
-              </Text>
-              <Text size={1}>
-                <RelativeTime time={release._createdAt} useTemporalPhrase />
-              </Text>
-            </Flex>
+            {/* Created lives in the footer (with the author avatar), so it is not repeated here. */}
             <Flex align="center" gap={3} justify="space-between">
               <Text muted size={1}>
                 {tRelease('dashboard.details.metadata.documents')}

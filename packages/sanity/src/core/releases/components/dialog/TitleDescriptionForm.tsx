@@ -1,9 +1,11 @@
 import {type EditableReleaseDocument} from '@sanity/client'
-import {Stack} from '@sanity/ui'
+import {Box, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
+import {Button} from '../../../../ui-components/button/Button'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
 
@@ -93,22 +95,26 @@ export function TitleDescriptionForm({
   release,
   onChange,
   disabled,
-  autoGrow = false,
+  clampToModal = false,
 }: {
   release: EditableReleaseDocument
   onChange: (changedValue: EditableReleaseDocument) => void
   disabled?: boolean
   /**
-   * Detail-page usage: the description grows with its content and the page scrolls, instead of
-   * capping at MAX_DESCRIPTION_HEIGHT with an internal scrollbar (which suits the dialog).
+   * Detail-page usage: clamp the description to a fixed height (no internal scroll) and reveal the
+   * full text in a modal via "Show more", so the header height — and the page layout — never shift
+   * with the description length. The dialog usage keeps its default capped + internal-scroll cap.
    */
-  autoGrow?: boolean
+  clampToModal?: boolean
 }): React.JSX.Element {
   const isReleaseOpen = getIsReleaseOpen(release)
   const titleRef = useRef<HTMLTextAreaElement>(null)
   const descriptionRef = useRef<HTMLTextAreaElement>(null)
   const [scrollHeight, setScrollHeight] = useState(46)
+  const [showFullDescription, setShowFullDescription] = useState(false)
   const {t} = useTranslation()
+
+  const isDescriptionClamped = clampToModal && scrollHeight > MAX_DESCRIPTION_HEIGHT
 
   const {localData, updateLocalData, createFocusHandler, handleBlur} =
     useReleaseFormOptimisticUpdating({
@@ -184,25 +190,54 @@ export function TitleDescriptionForm({
         disabled={disabled}
       />
       {shouldShowDescription && (
-        <DescriptionTextArea
-          ref={descriptionRef}
-          autoFocus={!localData.title}
-          value={localData.description}
-          placeholder={t('release.form.placeholder-describe-release')}
-          onChange={handleDescriptionChange}
-          onFocus={createFocusHandler('description')}
-          onBlur={handleBlur}
-          style={{
-            height: `${scrollHeight}px`,
-            // autoGrow: no cap, no internal scroll — the page scrolls (detail page). Otherwise cap
-            // at MAX_DESCRIPTION_HEIGHT with an internal scrollbar (dialog).
-            maxHeight: autoGrow ? undefined : MAX_DESCRIPTION_HEIGHT,
-            overflowY: !autoGrow && scrollHeight > MAX_DESCRIPTION_HEIGHT ? 'auto' : 'hidden',
-          }}
-          data-testid="release-form-description"
-          disabled={disabled}
-          readOnly={!isReleaseOpen}
-        />
+        <Stack space={2}>
+          <DescriptionTextArea
+            ref={descriptionRef}
+            autoFocus={!localData.title}
+            value={localData.description}
+            placeholder={t('release.form.placeholder-describe-release')}
+            onChange={handleDescriptionChange}
+            onFocus={createFocusHandler('description')}
+            onBlur={handleBlur}
+            style={{
+              height: `${isDescriptionClamped ? MAX_DESCRIPTION_HEIGHT : scrollHeight}px`,
+              maxHeight: MAX_DESCRIPTION_HEIGHT,
+              // clampToModal: hard clip (no scroll) — the full text opens in a modal, so the header
+              // height and the page layout never shift. Dialog usage keeps the internal scrollbar.
+              overflowY: clampToModal
+                ? 'hidden'
+                : scrollHeight > MAX_DESCRIPTION_HEIGHT
+                  ? 'auto'
+                  : 'hidden',
+            }}
+            data-testid="release-form-description"
+            disabled={disabled}
+            readOnly={!isReleaseOpen}
+          />
+          {isDescriptionClamped && (
+            <Button
+              data-testid="release-description-show-more"
+              mode="bleed"
+              onClick={() => setShowFullDescription(true)}
+              style={{alignSelf: 'flex-start'}}
+              text={t('release.form.description.show-more')}
+            />
+          )}
+        </Stack>
+      )}
+      {showFullDescription && (
+        <Dialog
+          header={localData.title || t('release.placeholder-untitled-release')}
+          id="release-full-description"
+          onClose={() => setShowFullDescription(false)}
+          width={1}
+        >
+          <Box padding={4}>
+            <Text size={1} style={{whiteSpace: 'pre-wrap'}}>
+              {localData.description}
+            </Text>
+          </Box>
+        </Dialog>
       )}
     </Stack>
   )
