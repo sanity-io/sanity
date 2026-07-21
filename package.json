@@ -132,7 +132,7 @@
     "sanity": "workspace:*",
     "tsx": "^4.22.4",
     "turbo": "^2.10.4",
-    "typedoc": "^0.28.19",
+    "typedoc": "^0.28.20",
     "vercel": "^54.17.3",
     "vite": "catalog:",
     "vitest": "catalog:"
