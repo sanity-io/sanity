@@ -938,8 +938,8 @@ importers:
   packages/@repo/release-notes:
     dependencies:
       '@anthropic-ai/sdk':
-        specifier: ^0.105.0
-        version: 0.105.0(zod@4.4.3)
+        specifier: ^0.112.3
+        version: 0.112.3(zod@4.4.3)
       '@conventional-changelog/git-client':
         specifier: ^2.7.0
         version: 2.7.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
@@ -2307,8 +2307,8 @@ packages:
     peerDependencies:
       zod: ^4.0.0
 
-  '@anthropic-ai/sdk@0.105.0':
-    resolution: {integrity: sha512-sDyu+aM9cE6uZE+HgRjjHRb+qqb87GHZOx+8bE0YlWetdL1YcVLxn8h9ltxGOflyChTe6PMEo50kMQV4cw0hfg==}
+  '@anthropic-ai/sdk@0.112.3':
+    resolution: {integrity: sha512-wjcozJlitVIuBEw9cj/xBuRznwkhcLmXmNzlFoeHbh4AvrDG3HGZrdvEOTTmobcbhjGkfOpKbmDTCQ4s9LQvCg==}
     hasBin: true
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
@@ -14624,7 +14624,7 @@ snapshots:
       - supports-color
     optional: true
 
-  '@anthropic-ai/sdk@0.105.0(zod@4.4.3)':
+  '@anthropic-ai/sdk@0.112.3(zod@4.4.3)':
     dependencies:
       json-schema-to-ts: 3.1.1
       standardwebhooks: 1.0.0
