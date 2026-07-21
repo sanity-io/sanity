@@ -311,8 +311,9 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
 
   /** Text for the button name for the release tool */
   'overview.action.documentation': 'Documentation',
-  /** Label for the back button on a release detail page (returns to the releases list) */
-  'overview.back-to-all-releases': 'Back to all releases',
+  /** Label for the back button on a release detail page (returns to the releases list). The
+   * leading arrow already conveys "back", so the label names the destination only. */
+  'overview.back-to-all-releases': 'All releases',
   /** Tooltip for the calendar button in the release overview */
   'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */

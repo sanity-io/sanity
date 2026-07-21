@@ -28,7 +28,7 @@ export const useArchiveAndDeleteCustomAction: ReleaseActionComponent = ({release
     disabled: false,
     title: 'Archive and Delete this release',
     onHandle: handleArchiveAndDelete,
-    // Archive-then-delete removes the release, so it reads as cautionary (like Archive above).
-    tone: 'caution',
+    // The most destructive release action (archives AND deletes), so it reads as critical.
+    tone: 'critical',
   } satisfies ReleaseActionDescription
 }
