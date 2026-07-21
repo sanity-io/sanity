@@ -1,4 +1,4 @@
-import {BookIcon} from '@sanity/icons/Book'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {
   getReleaseIdFromReleaseDocumentId,
   type ReleaseActionComponent,
@@ -24,7 +24,7 @@ export const useArchiveAndDeleteCustomAction: ReleaseActionComponent = ({release
 
   return {
     label: 'Archive and Delete',
-    icon: BookIcon,
+    icon: TrashIcon,
     disabled: false,
     title: 'Archive and Delete this release',
     onHandle: handleArchiveAndDelete,

@@ -1,10 +1,8 @@
 import {ArchiveIcon} from '@sanity/icons/Archive'
 import {CloseCircleIcon} from '@sanity/icons/CloseCircle'
 import {CopyIcon} from '@sanity/icons/Copy'
-import {EditIcon} from '@sanity/icons/Edit'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnarchiveIcon} from '@sanity/icons/Unarchive'
-import {MenuDivider} from '@sanity/ui'
 import {
   type Dispatch,
   type MouseEventHandler,
@@ -40,11 +38,9 @@ export const ReleaseMenu = ({
   release,
   setSelectedAction,
   documents,
-  onEditDetails,
 }: ReleaseMenuProps) => {
   const releaseMenuDisabled = !release || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {t: tCore} = useTranslation()
   const {archive, unarchive, deleteRelease, publishRelease, schedule, createRelease} =
     useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
@@ -168,21 +164,6 @@ export const ReleaseMenu = ({
     disabled,
   ])
 
-  const editMenuItem = useMemo(() => {
-    if (!onEditDetails) return null
-
-    return (
-      <MenuItem
-        key="edit-details"
-        icon={EditIcon}
-        text={tCore('release.action.edit-details')}
-        onClick={onEditDetails}
-        disabled={releaseMenuDisabled}
-        data-testid="edit-release-details-menu-item"
-      />
-    )
-  }, [onEditDetails, tCore, releaseMenuDisabled])
-
   const deleteMenuItem = useMemo(() => {
     if (release.state !== 'archived' && release.state !== 'published') return null
 
@@ -284,9 +265,6 @@ export const ReleaseMenu = ({
   }, [release.metadata.releaseType, publishMenuItem, scheduleMenuItem])
 
   return [
-    editMenuItem,
-    // Divider separates "Edit details" (identity) from the lifecycle actions below it.
-    editMenuItem && <MenuDivider key="edit-details-divider" />,
     unscheduleMenuItem,
     ...ActionsOrder,
     duplicateMenuItem,
