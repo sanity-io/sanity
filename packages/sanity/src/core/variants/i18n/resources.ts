@@ -66,6 +66,14 @@ const variantsLocaleStrings = {
   'overview.table.no-conditions': 'No conditions',
   /** Title for the Variants overview. */
   'overview.title': 'Variant definitions',
+  /** Label for the card-view toggle in the overview. */
+  'overview.view.cards': 'Cards',
+  /** Tooltip for the card-view toggle in the overview. */
+  'overview.view.cards.tooltip': 'Card view',
+  /** Label for the list-view toggle in the overview. */
+  'overview.view.list': 'List',
+  /** Tooltip for the list-view toggle in the overview. */
+  'overview.view.list.tooltip': 'List view',
   /** Edit action on the Variant detail page. */
   'detail.action.edit-variant': 'Edit variant definition',
   /** Tooltip for pinning a variant to the studio. */

@@ -1,5 +1,7 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {SearchIcon} from '@sanity/icons/Search'
+import {SquareIcon} from '@sanity/icons/Square'
+import {ThListIcon} from '@sanity/icons/ThList'
 import {Box, Card, Container, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
@@ -16,6 +18,7 @@ import {useAllVariants} from '../../store/useAllVariants'
 import {type SystemVariant} from '../../types'
 import {getVariantSetReference, type VariantSetReference} from '../../util/variantSet'
 import {filterVariantsForSearch, getVariantId} from '../util'
+import {VariantDimensionMap} from './VariantDimensionMap'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
 import {VariantSetMenuButton} from './VariantSetMenuButton'
@@ -32,6 +35,9 @@ export function VariantsOverview() {
   const [isCreateVariantDialogOpen, setIsCreateVariantDialogOpen] = useState(false)
   const [isCreateVariantSetDialogOpen, setIsCreateVariantSetDialogOpen] = useState(false)
   const [expandedSets, setExpandedSets] = useState<ReadonlySet<string>>(() => new Set())
+  // Cards = uniform identity tiles (the landscape); List = the flat grouped table where
+  // values render in full. Two zoom levels on the same singles+sets dataset.
+  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
 
   const toggleSet = useCallback((setId: string) => {
     setExpandedSets((previous) => {
@@ -204,7 +210,17 @@ export function VariantsOverview() {
       {/* Same container width as releases document table (`container[3]` in Table), so chrome aligns with row content */}
       <Container flex="none" width={3}>
         <Flex direction="column" paddingX={3}>
-          <Card flex="none" paddingY={5}>
+          {/* Sticky so the create actions stay reachable once the map + list scroll away. */}
+          <Card
+            flex="none"
+            paddingY={5}
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 200,
+              backgroundColor: 'var(--card-bg-color)',
+            }}
+          >
             <Flex align="flex-start" gap={4} justify="space-between">
               <Stack space={3}>
                 <Text as="h1" size={4} weight="bold">
@@ -219,16 +235,38 @@ export function VariantsOverview() {
           </Card>
 
           <Box flex="none" paddingBottom={4} paddingTop={2}>
-            <TextInput
-              clearButton={!!searchQuery}
-              fontSize={1}
-              icon={SearchIcon}
-              onChange={(event) => setSearchQuery(event.currentTarget.value)}
-              onClear={() => setSearchQuery('')}
-              placeholder={t('overview.search.placeholder')}
-              radius={3}
-              value={searchQuery}
-            />
+            <Flex gap={2}>
+              <Box flex={1}>
+                <TextInput
+                  clearButton={!!searchQuery}
+                  fontSize={1}
+                  icon={SearchIcon}
+                  onChange={(event) => setSearchQuery(event.currentTarget.value)}
+                  onClear={() => setSearchQuery('')}
+                  placeholder={t('overview.search.placeholder')}
+                  radius={3}
+                  value={searchQuery}
+                />
+              </Box>
+              {(hasVariants || loading) && (
+                <Flex gap={1}>
+                  <Button
+                    icon={SquareIcon}
+                    mode={viewMode === 'cards' ? 'ghost' : 'bleed'}
+                    onClick={() => setViewMode('cards')}
+                    text={t('overview.view.cards')}
+                    tooltipProps={{content: t('overview.view.cards.tooltip')}}
+                  />
+                  <Button
+                    icon={ThListIcon}
+                    mode={viewMode === 'list' ? 'ghost' : 'bleed'}
+                    onClick={() => setViewMode('list')}
+                    text={t('overview.view.list')}
+                    tooltipProps={{content: t('overview.view.list.tooltip')}}
+                  />
+                </Flex>
+              )}
+            </Flex>
           </Box>
 
           {hasVariants && (
@@ -245,18 +283,32 @@ export function VariantsOverview() {
         </Flex>
       </Container>
 
-      {/* Full-width scroll region so table borders span the tool pane (same pattern as release detail summary). */}
-      <Box flex={1} overflow="auto" ref={setScrollContainerRef}>
-        <Table<TableVariant>
-          columnDefs={columnDefs}
-          data={displayRows}
-          emptyState={tableEmptyState}
-          loading={loading}
-          rowId={VARIANT_TABLE_ROW_ID}
-          rowActions={renderRowActions}
-          scrollContainerRef={scrollContainerRef}
-        />
-      </Box>
+      {viewMode === 'list' ? (
+        // Full-width scroll region so table borders span the tool pane (same pattern as release detail summary).
+        <Box flex={1} overflow="auto" ref={setScrollContainerRef}>
+          <Table<TableVariant>
+            columnDefs={columnDefs}
+            data={displayRows}
+            emptyState={tableEmptyState}
+            loading={loading}
+            rowId={VARIANT_TABLE_ROW_ID}
+            rowActions={renderRowActions}
+            scrollContainerRef={scrollContainerRef}
+          />
+        </Box>
+      ) : (
+        <Box flex={1} overflow="auto">
+          <Container width={3}>
+            <Box paddingBottom={5} paddingX={3}>
+              {hasVariants ? (
+                <VariantDimensionMap searchQuery={searchQuery} variants={variantsList} />
+              ) : (
+                tableEmptyState()
+              )}
+            </Box>
+          </Container>
+        </Box>
+      )}
 
       {isCreateVariantDialogOpen && (
         <CreateVariantDialog

@@ -20,6 +20,7 @@ interface VariantDialogProps {
   onCancel: () => void
   onSubmit: (variant: EditableSystemVariant) => Promise<void>
   renderCancelButton?: boolean
+  showSetSelector?: boolean
 }
 
 export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
@@ -33,6 +34,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
     onCancel,
     onSubmit,
     renderCancelButton = false,
+    showSetSelector = false,
   } = props
   const toast = useToast()
   const {t} = useTranslation(variantsLocaleNamespace)
@@ -92,6 +94,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
             <VariantForm
               onChange={handleVariantChange}
               onConditionValidityChange={setConditionsInvalid}
+              showSetSelector={showSetSelector}
               showValidation={showValidation}
               value={variant}
             />

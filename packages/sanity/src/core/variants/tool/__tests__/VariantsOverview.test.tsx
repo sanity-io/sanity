@@ -130,13 +130,21 @@ describe('VariantsOverview', () => {
     vi.clearAllMocks()
   })
 
-  const renderOverview = async () => {
+  // The overview defaults to the Cards view; these tests exercise the list/table, so
+  // switch to List after mount when the toggle is present (absent in the empty state).
+  const renderOverview = async ({view = 'list'}: {view?: 'cards' | 'list'} = {}) => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const view = render(<VariantsOverview />, {wrapper})
+    const result = render(<VariantsOverview />, {wrapper})
     await screen.findByPlaceholderText('Search variant definitions…', {}, {timeout: 5000})
-    return view
+    if (view === 'list') {
+      const listButton = screen.queryByRole('button', {name: 'List'})
+      if (listButton) {
+        await userEvent.click(listButton)
+      }
+    }
+    return result
   }
 
   const setVariants = (variants: SystemVariant[]) => {
@@ -205,8 +213,10 @@ describe('VariantsOverview', () => {
       expect(screen.getAllByTestId('table-row')).toHaveLength(2)
     })
 
-    expect(screen.getByText('Alpha audience')).toBeInTheDocument()
-    expect(screen.getByText('Norwegian market')).toBeInTheDocument()
+    // Scope to table rows: the dimension-map cards also render these names.
+    const rows = screen.getAllByTestId('table-row')
+    expect(rows.some((row) => within(row).queryByText('Alpha audience'))).toBe(true)
+    expect(rows.some((row) => within(row).queryByText('Norwegian market'))).toBe(true)
   })
 
   it('renders live document counts for each variant', async () => {
@@ -284,7 +294,9 @@ describe('VariantsOverview', () => {
 
     await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
 
-    await user.click(screen.getByText('Alpha audience'))
+    // Click the name in the table row (the dimension-map card also shows it).
+    const row = screen.getAllByTestId('table-row')[0]!
+    await user.click(within(row).getByText('Alpha audience'))
 
     expect(mockNavigate).toHaveBeenCalledWith({
       variantId: getVariantId(variantAlphaAudience._id),
