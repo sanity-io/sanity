@@ -1,0 +1,19 @@
+{
+  "name": "@repo/ailf",
+  "version": "6.4.0",
+  "private": true,
+  "description": "AI Literacy Framework (AILF) evaluation configuration",
+  "type": "module",
+  "scripts": {
+    "ailf": "ailf",
+    "check:types": "(cd ../../.. && tsgo --project packages/@repo/ailf/tsconfig.json --erasableSyntaxOnly)"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "@sanity/ailf": "^7.31.1",
+    "@typescript/native-preview": "catalog:"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

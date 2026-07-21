@@ -58,11 +58,13 @@ const filteredErrors = errors.filter((d) => {
   }
 
   // quick-lru's own typings subclass Map with incompatible `keys`/`values`/`[Symbol.iterator]`
-  // signatures (TS2416). Its d.ts is only pulled into this program because rolldown-plugin-dts
-  // leaves an unused `import QuickLRU from 'quick-lru'` behind in sanity's bundled d.ts after
-  // tree-shaking the (internal, unexported) declarations that referenced it. The import is dead,
-  // so these errors can't affect consumers; drop the filter once rolldown-plugin-dts prunes
-  // unused external type imports or quick-lru fixes its Map compatibility.
+  // signatures against TypeScript's iterator helper types (TS2416: quick-lru returns
+  // IterableIterator where Map expects MapIterator). Its d.ts is pulled into this program by
+  // an unused `import QuickLRU from 'quick-lru'` that rolldown-plugin-dts leaves behind in
+  // sanity's bundled d.ts after tree-shaking the (internal, unexported) declarations that
+  // referenced it. The import is dead, so these errors can't affect consumers; drop the filter
+  // once quick-lru ships MapIterator-compatible declarations or rolldown-plugin-dts prunes
+  // unused external type imports.
   if (code === 2416 && file.fileName.includes('/node_modules/quick-lru/')) {
     return false
   }
@@ -73,6 +75,12 @@ const filteredErrors = errors.filter((d) => {
   // checking in node_modules and does not impact runtime behavior. Remove once @sanity/workbench
   // ships a release without duplicate identifiers in its generated .d.ts files.
   if (code === 2300 && file.fileName.includes('/node_modules/@sanity/workbench/')) {
+    return false
+  }
+
+  // Temporary workaround for @sanity/vision declaration output that emits a side-effect import to
+  // "get-it", which TypeScript reports as TS2882 under skipLibCheck: false in this suite.
+  if (code === 2882 && file.fileName.includes('/packages/@sanity/vision/lib/index.d.ts')) {
     return false
   }
 

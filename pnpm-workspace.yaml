@@ -11,8 +11,14 @@ packages:
   - packages/sanity/fixtures/examples/*
 
 allowBuilds:
+  '@playwright/browser-chromium': false
+  '@swc/core': false
+  better-sqlite3: false
   esbuild: false
   lefthook: true
+  onnxruntime-node: false
+  protobufjs: false
+  sharp: false
   unrs-resolver: false
 
 catalog:
@@ -20,11 +26,11 @@ catalog:
   '@optique/run': ^1.1.1
   '@playwright/test': 1.61.1
   '@rolldown/plugin-babel': ^0.2.3
-  '@sanity/client': ^7.23.2
-  '@sanity/migrate': ^7.0.3
+  '@sanity/client': ^7.24.0
+  '@sanity/migrate': ^8.0.0
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.19.6
-  '@sanity/ui': ^3.3.0
+  '@sanity/ui': ^3.3.5
   '@types/node': ^24.13.2
   '@types/react': ^19.2.17
   '@types/react-dom': ^19.2.3
@@ -61,6 +67,9 @@ minimumReleaseAgeExclude:
   - '@vitejs/plugin-react'
   - '@portabletext/*'
   - '@sanity/*'
+  - '@yuku-codegen/*'
+  - '@yuku-parser/*'
+  - '@yuku-toolchain/types'
   - '@types/*'
   - '@typescript/*'
   - '@vanilla-extract/*'
@@ -84,6 +93,7 @@ minimumReleaseAgeExclude:
   - 'oxlint-tsgolint'
   - 'react'
   - 'react-dom'
+  - 'react-hook-form'
   - 'react-is'
   - 'react-rx'
   # tsdown and its rolldown/rolldown-plugin-dts/yuku toolchain release frequently and in

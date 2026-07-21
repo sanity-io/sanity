@@ -109,7 +109,7 @@ export async function runInpSession(options: {
     // Cycle through the scenario's fields, one click + short burst per field,
     // draining after each so a single field's rendering can't be double-counted.
     // Fail fast on page/console errors instead of burning the whole budget.
-    for (let round = 0; round < config.maxRounds && driven < config.targetInteractions; ) {
+    for (let round = 0; round < config.maxRounds && driven < config.targetInteractions;) {
       for (const target of scenario.interactions) {
         if (session.pageErrors.length > 0) {
           throw new SessionError('page-error', session.pageErrors.join('\n'))

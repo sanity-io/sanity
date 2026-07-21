@@ -1766,6 +1766,7 @@ import type {
   ValueError,
   ValuelessSearchOperatorBuilder,
   ValuelessSearchOperatorParams,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
   VERSION_FOLDER,
   VersionChip,
   VersionInfoDocumentStub,
@@ -7123,6 +7124,9 @@ describe('sanity', () => {
   })
   test('ValuelessSearchOperatorParams', () => {
     expectTypeOf<ValuelessSearchOperatorParams>().not.toBeNever()
+  })
+  test('VARIANTS_STUDIO_CLIENT_OPTIONS', () => {
+    expectTypeOf<typeof VARIANTS_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
   })
   test('VERSION_FOLDER', () => {
     expectTypeOf<typeof VERSION_FOLDER>().not.toBeNever()

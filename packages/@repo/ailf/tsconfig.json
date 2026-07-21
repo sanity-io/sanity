@@ -1,0 +1,9 @@
+{
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["./.ailf/**/*.ts"],
+  "exclude": ["./.ailf/tasks/*.reference.ts", "./.ailf/results"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "module": "esnext"
+  }
+}

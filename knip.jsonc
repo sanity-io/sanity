@@ -92,6 +92,11 @@
     "packages/@repo/bundle-manager": {
       "project": ["src/**/*.ts"],
     },
+    "packages/@repo/ailf": {
+      "entry": [".ailf/ailf.config.ts"],
+      "project": [".ailf/**/*.ts"],
+      "ignoreFiles": [".ailf/tasks/*.ts"],
+    },
     "packages/@repo/release-notes": {
       "project": ["src/**/*.ts"],
     },
