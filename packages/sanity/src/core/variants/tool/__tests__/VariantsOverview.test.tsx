@@ -11,18 +11,6 @@ import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {VariantsOverview} from '../overview/VariantsOverview'
 import {getVariantId} from '../util'
 
-const mockedSetVariant = vi.fn()
-
-vi.mock('../../../perspective/useSetVariant', () => ({
-  useSetVariant: vi.fn(() => mockedSetVariant),
-}))
-
-vi.mock('../../../perspective/usePerspective', () => ({
-  usePerspective: vi.fn(() => ({
-    selectedVariant: undefined,
-  })),
-}))
-
 const mockNavigate = vi.fn()
 
 const routerState = vi.hoisted(() => ({
@@ -111,7 +99,6 @@ describe('VariantsOverview', () => {
     documentCountsMock.loading = true
     documentCountsMock.error = null
     mockNavigate.mockClear()
-    mockedSetVariant.mockClear()
     variantOperationsMock.createVariant.mockReset()
     variantOperationsMock.deleteVariant.mockReset()
     variantOperationsMock.createVariant.mockImplementation(
