@@ -1,23 +1,20 @@
-import {Badge, Card, Flex, Grid, Stack, Text} from '@sanity/ui'
+import {DiamondIcon} from '@sanity/icons/Diamond'
+import {StackIcon} from '@sanity/icons/Stack'
+import {Box, Card, Flex, Grid, Stack, Text} from '@sanity/ui'
 import {type KeyboardEvent, useCallback, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {
-  buildConditionSuggestionIndex,
-  getConditionKeyProvenance,
-} from '../../components/dialog/conditionSuggestions'
 import {type SystemVariant} from '../../types'
-import {summarizeVariantDimensions} from '../../util/summarizeVariantDimensions'
-import {getStubVariantDimensionMap} from '../../util/variantDimensionMap'
+import {
+  summarizeVariantDimensions,
+  type VariantGroupSummary,
+} from '../../util/summarizeVariantDimensions'
 import {getVariantId} from '../util'
-
-// How many values to show inline on a compact tile before collapsing to a "+n" count.
-const MAX_VALUES_PER_DIMENSION = 6
 
 // Clickable, bounded card in the Studio idiom (mirrors Tasks' FocusableCard): a focusable
 // div rather than `as="button"`, so Card keeps its padding/radius/tone box props. Explicit
-// resting border, strengthened on hover/focus, so tiles read as ordered, tappable units.
+// resting border, strengthened on hover/focus.
 const DimensionCard = styled(Card)`
   &[data-as='button'] {
     border: 1px solid var(--card-border-color);
@@ -29,14 +26,36 @@ const DimensionCard = styled(Card)`
   }
 `
 
+// One-line, ellipsised text — keeps every card the same height regardless of content.
+const ClampText = styled(Text)`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+function pluralize(count: number, noun: string): string {
+  return `${count} ${noun}${count === 1 ? '' : 's'}`
+}
+
+/** Identity-only stat line — deliberately excludes values (those live in list/detail). */
+function statLine(group: VariantGroupSummary): string {
+  const dims = pluralize(group.dimensions.length, 'dimension')
+  return group.kind === 'set'
+    ? `${pluralize(group.variantCount, 'variant')} · ${dims}`
+    : `Standalone · ${dims}`
+}
+
 /**
- * Dimension-first map of the variant space as a grid of compact tiles — the entry
- * point to the definitions. Answers "what dimensions am I playing with?" at a
- * glance, then closes the loop: selecting a card opens the detail page for that set
- * (its first member) or standalone variant. FH-116 conceptual prototype.
+ * Card view of the variant space: uniform, identity-only tiles clustered by set. Shows
+ * name + type icon (set vs single) + a stat line + the dimension *keys* — values are
+ * deliberately omitted so every card is the same height and stays readable; values live
+ * in the list view and the detail page. Selecting a card opens its detail page. FH-116.
  */
-export function VariantDimensionMap(props: {variants: SystemVariant[]}): React.JSX.Element | null {
-  const {variants} = props
+export function VariantDimensionMap(props: {
+  variants: SystemVariant[]
+  searchQuery?: string
+}): React.JSX.Element | null {
+  const {variants, searchQuery = ''} = props
   const router = useRouter()
 
   const openGroup = useCallback(
@@ -47,9 +66,11 @@ export function VariantDimensionMap(props: {variants: SystemVariant[]}): React.J
   )
 
   const groups = useMemo(() => summarizeVariantDimensions(variants), [variants])
-  const index = useMemo(
-    () => buildConditionSuggestionIndex(variants, getStubVariantDimensionMap()),
-    [variants],
+
+  const query = searchQuery.trim().toLowerCase()
+  const visibleGroups = useMemo(
+    () => (query ? groups.filter((group) => group.name.toLowerCase().includes(query)) : groups),
+    [groups, query],
   )
 
   if (groups.length === 0) {
@@ -57,21 +78,10 @@ export function VariantDimensionMap(props: {variants: SystemVariant[]}): React.J
   }
 
   return (
-    <Stack space={4}>
-      <Stack space={2}>
-        <Text size={1} weight="semibold">
-          Dimension map
-        </Text>
-        <Text muted size={1}>
-          The dimensions in play, clustered by set. Select a card to open its definitions.
-        </Text>
-      </Stack>
-
-      {/* alignItems:start stops the grid stretching cards to the tallest in a row; each card
-          hugs its content so every title pins to the top (Card as="button" otherwise centers
-          its content vertically within a stretched card). */}
-      <Grid columns={[1, 2, 3]} gap={3} style={{alignItems: 'start'}}>
-        {groups.map((group) => (
+    <Grid columns={[1, 2, 3]} gap={3} style={{alignItems: 'start'}}>
+      {visibleGroups.map((group) => {
+        const keys = group.dimensions.map((dimension) => dimension.key)
+        return (
           <DimensionCard
             key={group.id}
             data-as="button"
@@ -88,59 +98,32 @@ export function VariantDimensionMap(props: {variants: SystemVariant[]}): React.J
             tabIndex={0}
             tone="transparent"
           >
-            <Stack space={3}>
-              <Flex align="flex-start" gap={2} justify="space-between">
-                <Text size={1} weight="semibold" textOverflow="ellipsis">
+            <Flex align="flex-start" gap={3}>
+              <Text muted size={3}>
+                {group.kind === 'set' ? <StackIcon /> : <DiamondIcon />}
+              </Text>
+              <Stack flex={1} space={3} style={{minWidth: 0}}>
+                <ClampText size={1} weight="semibold">
                   {group.name}
+                </ClampText>
+                <Text muted size={1}>
+                  {statLine(group)}
                 </Text>
-                <Badge
-                  fontSize={0}
-                  mode="outline"
-                  tone={group.kind === 'set' ? 'primary' : 'default'}
-                >
-                  {group.kind === 'set' ? `${group.variantCount}` : 'single'}
-                </Badge>
-              </Flex>
-
-              {group.dimensions.length === 0 ? (
-                <Text muted size={0}>
-                  All users
-                </Text>
-              ) : (
-                <Stack space={3}>
-                  {group.dimensions.map((dimension) => {
-                    const provenance = getConditionKeyProvenance(index, dimension.key)
-                    const shown = dimension.values.slice(0, MAX_VALUES_PER_DIMENSION)
-                    const overflow = dimension.values.length - shown.length
-                    return (
-                      <Stack key={dimension.key} space={2}>
-                        <Flex align="center" gap={2}>
-                          <Text size={0} weight="medium">
-                            {dimension.key}
-                          </Text>
-                          <Text muted size={0}>
-                            {provenance.source}
-                          </Text>
-                        </Flex>
-                        <Flex gap={1} wrap="wrap">
-                          {shown.map((value) => (
-                            <Badge key={value} fontSize={0} mode="outline" tone="default">
-                              {value}
-                            </Badge>
-                          ))}
-                          {overflow > 0 && (
-                            <Badge fontSize={0} tone="default">{`+${overflow}`}</Badge>
-                          )}
-                        </Flex>
-                      </Stack>
-                    )
-                  })}
-                </Stack>
-              )}
-            </Stack>
+                <ClampText muted size={1}>
+                  {keys.length > 0 ? keys.join(' · ') : 'All users'}
+                </ClampText>
+              </Stack>
+            </Flex>
           </DimensionCard>
-        ))}
-      </Grid>
-    </Stack>
+        )
+      })}
+      {visibleGroups.length === 0 && (
+        <Box>
+          <Text muted size={1}>
+            No sets or variants match “{searchQuery}”.
+          </Text>
+        </Box>
+      )}
+    </Grid>
   )
 }

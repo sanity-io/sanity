@@ -130,13 +130,21 @@ describe('VariantsOverview', () => {
     vi.clearAllMocks()
   })
 
-  const renderOverview = async () => {
+  // The overview defaults to the Cards view; these tests exercise the list/table, so
+  // switch to List after mount when the toggle is present (absent in the empty state).
+  const renderOverview = async ({view = 'list'}: {view?: 'cards' | 'list'} = {}) => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const view = render(<VariantsOverview />, {wrapper})
+    const result = render(<VariantsOverview />, {wrapper})
     await screen.findByPlaceholderText('Search variant definitions…', {}, {timeout: 5000})
-    return view
+    if (view === 'list') {
+      const listButton = screen.queryByRole('button', {name: 'List'})
+      if (listButton) {
+        await userEvent.click(listButton)
+      }
+    }
+    return result
   }
 
   const setVariants = (variants: SystemVariant[]) => {
