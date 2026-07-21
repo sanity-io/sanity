@@ -1,5 +1,5 @@
-import {DiamondIcon} from '@sanity/icons/Diamond'
-import {StackIcon} from '@sanity/icons/Stack'
+import {BlockElementIcon} from '@sanity/icons/BlockElement'
+import {SquareIcon} from '@sanity/icons/Square'
 import {Box, Card, Flex, Grid, Stack, Text} from '@sanity/ui'
 import {type KeyboardEvent, useCallback, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
@@ -93,7 +93,7 @@ export function VariantDimensionMap(props: {
           >
             <Flex align="flex-start" gap={3}>
               <Text muted size={3}>
-                {group.kind === 'set' ? <StackIcon /> : <DiamondIcon />}
+                {group.kind === 'set' ? <BlockElementIcon /> : <SquareIcon />}
               </Text>
               <Stack flex={1} space={3} style={{minWidth: 0}}>
                 <Text size={1} textOverflow="ellipsis" weight="semibold">
