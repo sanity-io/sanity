@@ -1,4 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {
@@ -59,8 +60,11 @@ export function ReleaseDashboardHeader(props: {
       <Box padding={3}>
         <Flex align="flex-start">
           <Flex flex={1} align="center" style={{minWidth: 0}}>
-            <Flex flex="none">
+            {variantsEnabled ? (
+              // A single back affordance — the release title already headlines the pane below, so
+              // the breadcrumb's repeat of it is dropped. Mirrors the Variants detail's back arrow.
               <Button
+                icon={ArrowLeftIcon}
                 mode="bleed"
                 onClick={handleNavigateToReleasesList}
                 text={t('overview.title')}
@@ -69,22 +73,36 @@ export function ReleaseDashboardHeader(props: {
                 style={BREADCRUMB_ALIGN_STYLE}
                 data-testid="back-to-releases-button"
               />
-            </Flex>
-            <Box paddingY={2} flex="none">
-              <Text size={1}>
-                <ChevronRightIcon />
-              </Text>
-            </Box>
-            <Box padding={2} style={{minWidth: 0, maxWidth: '300px'}}>
-              <Text
-                size={1}
-                weight="semibold"
-                textOverflow="ellipsis"
-                style={release.metadata.title ? undefined : {opacity: 0.5}}
-              >
-                {title}
-              </Text>
-            </Box>
+            ) : (
+              <>
+                <Flex flex="none">
+                  <Button
+                    mode="bleed"
+                    onClick={handleNavigateToReleasesList}
+                    text={t('overview.title')}
+                    textWeight="regular"
+                    padding={2}
+                    style={BREADCRUMB_ALIGN_STYLE}
+                    data-testid="back-to-releases-button"
+                  />
+                </Flex>
+                <Box paddingY={2} flex="none">
+                  <Text size={1}>
+                    <ChevronRightIcon />
+                  </Text>
+                </Box>
+                <Box padding={2} style={{minWidth: 0, maxWidth: '300px'}}>
+                  <Text
+                    size={1}
+                    weight="semibold"
+                    textOverflow="ellipsis"
+                    style={release.metadata.title ? undefined : {opacity: 0.5}}
+                  >
+                    {title}
+                  </Text>
+                </Box>
+              </>
+            )}
           </Flex>
 
           {!variantsEnabled && (

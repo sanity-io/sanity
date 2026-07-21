@@ -146,6 +146,7 @@ export const ReleaseMenu = ({
         icon={ArchiveIcon}
         text={t('action.archive')}
         data-testid="archive-release-menu-item"
+        tone="caution"
         disabled={
           releaseMenuDisabled ||
           ['scheduled', 'scheduling'].includes(release.state) ||
@@ -175,6 +176,7 @@ export const ReleaseMenu = ({
         icon={TrashIcon}
         text={t('action.delete-release')}
         data-testid="delete-release-menu-item"
+        tone="critical"
         tooltipProps={{
           content: !hasDeletePermission && t('permissions.error.delete'),
         }}

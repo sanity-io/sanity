@@ -141,6 +141,55 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Activity inspector button text */
   'dashboard.details.activity': 'Activity',
 
+  /** Accessible label for the bulk select-all checkbox on the release documents table */
+  'dashboard.details.bulk.select-all': 'Select all documents',
+  /** Accessible label for a per-row bulk select checkbox */
+  'dashboard.details.bulk.select-row': 'Select document',
+  /** Count shown in the bulk selection toolbar (singular) */
+  'dashboard.details.bulk.selected_one': '{{count}} selected',
+  /** Count shown in the bulk selection toolbar (plural) */
+  'dashboard.details.bulk.selected_other': '{{count}} selected',
+  /** Label for clearing the current bulk selection */
+  'dashboard.details.bulk.clear': 'Clear selection',
+  /** Bulk action: discard the selected document versions */
+  'dashboard.details.bulk.discard': 'Discard versions',
+  /** Bulk action: unpublish the selected documents */
+  'dashboard.details.bulk.unpublish': 'Unpublish',
+  /** Tooltip for the overflow button that holds bulk actions on narrow widths */
+  'dashboard.details.bulk.more': 'More actions',
+  /** Header for the bulk discard confirmation dialog */
+  'dashboard.details.bulk.discard-dialog.header': 'Discard versions',
+  /** Confirm button for the bulk discard dialog */
+  'dashboard.details.bulk.discard-dialog.confirm': 'Discard versions',
+  /** Body of the bulk discard dialog (singular) */
+  'dashboard.details.bulk.discard-dialog.description_one':
+    'Discard 1 document version from this release? This can’t be undone.',
+  /** Body of the bulk discard dialog (plural) */
+  'dashboard.details.bulk.discard-dialog.description_other':
+    'Discard {{count}} document versions from this release? This can’t be undone.',
+  /** Header for the bulk unpublish confirmation dialog */
+  'dashboard.details.bulk.unpublish-dialog.header': 'Unpublish documents',
+  /** Confirm button for the bulk unpublish dialog */
+  'dashboard.details.bulk.unpublish-dialog.confirm': 'Unpublish',
+  /** Body of the bulk unpublish dialog (singular) */
+  'dashboard.details.bulk.unpublish-dialog.description_one':
+    'Mark 1 document to be unpublished when this release is run?',
+  /** Body of the bulk unpublish dialog (plural) */
+  'dashboard.details.bulk.unpublish-dialog.description_other':
+    'Mark {{count}} documents to be unpublished when this release is run?',
+  /** Success toast after a bulk discard (singular) */
+  'dashboard.details.bulk.discard-toast.success_one': 'Discarded 1 version',
+  /** Success toast after a bulk discard (plural) */
+  'dashboard.details.bulk.discard-toast.success_other': 'Discarded {{count}} versions',
+  /** Error toast when some bulk discards fail */
+  'dashboard.details.bulk.discard-toast.error': 'Some versions could not be discarded',
+  /** Success toast after a bulk unpublish (singular) */
+  'dashboard.details.bulk.unpublish-toast.success_one': 'Marked 1 document to unpublish',
+  /** Success toast after a bulk unpublish (plural) */
+  'dashboard.details.bulk.unpublish-toast.success_other': 'Marked {{count}} documents to unpublish',
+  /** Error toast when some bulk unpublishes fail */
+  'dashboard.details.bulk.unpublish-toast.error': 'Some documents could not be unpublished',
+
   /** Header for deleting a release dialog */
   'delete-dialog.confirm-delete.header': 'Are you sure you want to delete this release?',
   /** Description for the dialog confirming the deleting of a release with one document */

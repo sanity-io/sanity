@@ -139,9 +139,14 @@ const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentR
   id: 'action',
   width: null,
   style: {minWidth: 100},
+  sorting: true,
+  // Sort by the action type (Add / Change / Unpublish) so like actions group together.
+  sortTransform(value) {
+    return getDocumentActionType(value) || ''
+  },
   header: (props) => (
     <Flex {...props.headerProps} paddingY={3} sizing="border">
-      <Headers.BasicHeader text={t('table-header.action')} />
+      <Headers.SortHeaderButton text={t('table-header.action')} {...props} />
     </Flex>
   ),
   cell: ({cellProps, datum}) => {
@@ -246,7 +251,9 @@ export const getDocumentTableColumnDefs: (
     id: 'document._type',
     // Header and body rows are independent flexboxes, so a content-sized column (width: null)
     // settles at different widths in each and misaligns. A fixed width keeps them in sync.
-    width: 150,
+    // Type only ever holds short schema titles (Book / Author / demoBlogPost), and DocumentType
+    // truncates + shows a tooltip on overflow, so a tighter width reclaims space for Document.
+    width: 120,
     sorting: true,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">

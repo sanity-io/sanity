@@ -1,9 +1,12 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
+import {CloseIcon} from '@sanity/icons/Close'
 import {CopyIcon} from '@sanity/icons/Copy'
+import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {RestoreIcon} from '@sanity/icons/Restore'
+import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Card, Container, Flex, Menu, Stack, Text, useToast} from '@sanity/ui'
 import {
   type CSSProperties,
   type Dispatch,
@@ -14,7 +17,7 @@ import {
   useState,
 } from 'react'
 
-import {Button} from '../../../../ui-components'
+import {Button, MenuButton, MenuItem} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useWorkspace} from '../../../studio/workspace'
 import {getVersionId} from '../../../util/draftUtils'
@@ -25,7 +28,7 @@ import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {DocumentTable} from '../components/Table/DocumentTable'
+import {DocumentTable, type DocumentTableSelection} from '../components/Table/DocumentTable'
 import {Table} from '../components/Table/Table'
 import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
 import {ReleaseDocumentFilterTabs} from './components/ReleaseDocumentFilterTabs'
@@ -33,6 +36,7 @@ import {CopyReleaseActions} from './CopyReleaseActions'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
+import {ReleaseBulkActionDialog, type ReleaseBulkAction} from './ReleaseBulkActionDialog'
 import {type ReleaseInspector} from './ReleaseDetail'
 import {type DocumentFilterType, documentMatchesFilter} from './releaseDocumentActions'
 import {type DocumentInRelease} from './types'
@@ -81,6 +85,13 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const [openAddDocumentDialog, setAddDocumentDialog] = useState(false)
   const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow[]>([])
   const [activeFilter, setActiveFilter] = useState<DocumentFilterType>('all')
+  // A pending bulk action (Discard / Unpublish): the selected row keys + the table's clear callback,
+  // resolved into documents and confirmed via ReleaseBulkActionDialog.
+  const [bulkAction, setBulkAction] = useState<{
+    action: ReleaseBulkAction
+    keys: readonly string[]
+    clear: () => void
+  } | null>(null)
 
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -215,6 +226,90 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [tableData, activeFilter],
   )
 
+  // Resolve the pending bulk action's selected row keys back to their documents (from the visible,
+  // tab-filtered rows) for the confirmation dialog.
+  const selectedDocuments = useMemo(() => {
+    if (!bulkAction) return []
+    const byId = new Map(filterTabRows.map((row) => [row.document._id, row]))
+    return bulkAction.keys
+      .map((key) => byId.get(key))
+      .filter((row): row is DocumentInReleaseDetail => Boolean(row))
+  }, [bulkAction, filterTabRows])
+
+  // Multi-select is only meaningful on an active release (matching the per-row actions, which are
+  // hidden otherwise). Discard + Unpublish mirror the per-row menu, applied to the whole selection.
+  const isActiveRelease = release.state === 'active'
+  const selection = useMemo<DocumentTableSelection | undefined>(() => {
+    if (!isActiveRelease) return undefined
+    return {
+      labels: {
+        selectAll: t('dashboard.details.bulk.select-all'),
+        selectRow: t('dashboard.details.bulk.select-row'),
+        selectedCount: (count) => t('dashboard.details.bulk.selected', {count}),
+        clear: t('dashboard.details.bulk.clear'),
+      },
+      selectAllTestId: 'release-bulk-select-all',
+      renderActions: ({selectedKeys, compact, clear}) => {
+        const discard = () => setBulkAction({action: 'discard', keys: selectedKeys, clear})
+        const unpublish = () => setBulkAction({action: 'unpublish', keys: selectedKeys, clear})
+
+        if (compact) {
+          return (
+            <MenuButton
+              id="release-bulk-more"
+              button={
+                <Button
+                  data-testid="release-bulk-more"
+                  icon={EllipsisHorizontalIcon}
+                  mode="bleed"
+                  tooltipProps={{content: t('dashboard.details.bulk.more')}}
+                />
+              }
+              menu={
+                <Menu>
+                  <MenuItem
+                    data-testid="release-bulk-discard"
+                    icon={CloseIcon}
+                    onClick={discard}
+                    text={t('dashboard.details.bulk.discard')}
+                    tone="critical"
+                  />
+                  <MenuItem
+                    data-testid="release-bulk-unpublish"
+                    icon={UnpublishIcon}
+                    onClick={unpublish}
+                    text={t('dashboard.details.bulk.unpublish')}
+                  />
+                </Menu>
+              }
+              popover={{placement: 'bottom-end', portal: true}}
+            />
+          )
+        }
+
+        return (
+          <Flex align="center" flex="none" gap={2}>
+            <Button
+              data-testid="release-bulk-discard"
+              icon={CloseIcon}
+              mode="ghost"
+              onClick={discard}
+              text={t('dashboard.details.bulk.discard')}
+              tone="critical"
+            />
+            <Button
+              data-testid="release-bulk-unpublish"
+              icon={UnpublishIcon}
+              mode="ghost"
+              onClick={unpublish}
+              text={t('dashboard.details.bulk.unpublish')}
+            />
+          </Flex>
+        )
+      },
+    }
+  }, [isActiveRelease, t])
+
   const isCardinalityOne = isCardinalityOneRelease(release)
   const hasNoDocuments = !isLoading && documents.length === 0
 
@@ -313,6 +408,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           searchPredicate={(row, searchTerm) => searchDocumentRelease(row.document, searchTerm)}
           searchTestId="release-documents-search"
           searchWidth={260}
+          selection={selection}
         />
       ) : (
         <>
@@ -354,6 +450,15 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         releaseId={releaseId}
         idsInRelease={documents.map(({document}) => document._id)}
       />
+      {bulkAction && selectedDocuments.length > 0 && (
+        <ReleaseBulkActionDialog
+          action={bulkAction.action}
+          documents={selectedDocuments}
+          releaseId={releaseId}
+          onClose={() => setBulkAction(null)}
+          onSuccess={bulkAction.clear}
+        />
+      )}
     </Flex>
   )
 }
