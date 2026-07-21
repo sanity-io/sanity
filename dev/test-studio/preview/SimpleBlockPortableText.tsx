@@ -6,6 +6,45 @@ import {type PortableTextBlock} from 'sanity'
 
 import {imageBuilder, useQuery} from './loader'
 
+// Renders `table` blocks so the Presentation preview exercises overlays
+// at container depth. Cell text binds overlays via its stega-encoded
+// content; the `data-sanity` attribute on each `<td>` additionally binds
+// the element itself, so empty cells stay clickable (stega needs
+// rendered text, and an empty cell has none).
+function createTableComponent(documentId: string, documentType: string) {
+  const dataAttribute = createDataAttribute({id: documentId, type: documentType})
+  const TableComponent = ({value}: {value: any}) => (
+    <table style={{borderCollapse: 'collapse', margin: '8px 0'}}>
+      <tbody>
+        {(value.rows ?? []).map((row: any) => (
+          <tr key={row._key}>
+            {(row.cells ?? []).map((cell: any) => (
+              <td
+                key={cell._key}
+                // Bind the element to the first span's `.text` when the
+                // cell has content (the studio resolves text paths into
+                // containers; a bare array path selects in the preview but
+                // focuses nothing in the form).
+                data-sanity={dataAttribute
+                  .scope(
+                    cell.value?.[0]?.children?.[0]
+                      ? `body[_key=="${value._key}"].rows[_key=="${row._key}"].cells[_key=="${cell._key}"].value[_key=="${cell.value[0]._key}"].children[_key=="${cell.value[0].children[0]._key}"].text`
+                      : `body[_key=="${value._key}"].rows[_key=="${row._key}"].cells[_key=="${cell._key}"].value`,
+                  )
+                  .toString()}
+                style={{border: '1px solid #ccc', padding: 8}}
+              >
+                <PortableText components={components} value={cell.value ?? []} />
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+  return TableComponent
+}
+
 const components: PortableTextComponents = {
   types: {
     image: ({value}) => {
@@ -104,7 +143,13 @@ export function SimpleBlockPortableText(): React.JSX.Element {
               </div>
             ))}
             <p>{item.bodyString}</p>
-            <PortableText components={components} value={item.body} />
+            <PortableText
+              components={{
+                ...components,
+                types: {...components.types, table: createTableComponent(item._id, item._type)},
+              }}
+              value={item.body}
+            />
             {item.notes?.map((note) => (
               <div key={note._key}>
                 <h2>{note.title}</h2>

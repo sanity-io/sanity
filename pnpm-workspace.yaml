@@ -27,8 +27,8 @@ catalog:
   '@playwright/test': 1.61.1
   '@rolldown/plugin-babel': ^0.2.3
   '@sanity/client': ^7.24.0
-  '@sanity/migrate': ^7.0.3
-  '@sanity/pkg-utils': ^10.9.0
+  '@sanity/migrate': ^8.0.0
+  '@sanity/pkg-utils': ^11.0.13
   '@sanity/telemetry': ^1.1.0
   '@sanity/ui': ^3.3.5
   '@types/node': ^24.13.2
@@ -67,6 +67,9 @@ minimumReleaseAgeExclude:
   - '@vitejs/plugin-react'
   - '@portabletext/*'
   - '@sanity/*'
+  - '@yuku-codegen/*'
+  - '@yuku-parser/*'
+  - '@yuku-toolchain/types'
   - '@types/*'
   - '@typescript/*'
   - '@vanilla-extract/*'
@@ -76,19 +79,27 @@ minimumReleaseAgeExclude:
   - 'get-it'
   - 'get-uri@7.0.0'
   - 'groq-js'
+  - 'lightningcss'
+  - 'lightningcss-*'
   - 'oxfmt'
   - 'oxlint'
   - 'oxlint-tsgolint'
   - 'react'
   - 'react-dom'
+  - 'react-hook-form'
   - 'react-is'
   - 'react-rx'
   - 'sanity-plugin-internationalized-array'
   - 'sanity-plugin-media'
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-utils'
+  - 'yuku-ast'
+  - 'yuku-codegen'
+  - 'yuku-parser'
+  - 'verkit@0.1.2'
   - 'vitest'
   - 'vite'
+  - 'rolldown-plugin-dts'
 
 overrides:
   vitest: 'catalog:'
