@@ -205,8 +205,10 @@ describe('VariantsOverview', () => {
       expect(screen.getAllByTestId('table-row')).toHaveLength(2)
     })
 
-    expect(screen.getByText('Alpha audience')).toBeInTheDocument()
-    expect(screen.getByText('Norwegian market')).toBeInTheDocument()
+    // Scope to table rows: the dimension-map cards also render these names.
+    const rows = screen.getAllByTestId('table-row')
+    expect(rows.some((row) => within(row).queryByText('Alpha audience'))).toBe(true)
+    expect(rows.some((row) => within(row).queryByText('Norwegian market'))).toBe(true)
   })
 
   it('renders live document counts for each variant', async () => {
@@ -284,7 +286,9 @@ describe('VariantsOverview', () => {
 
     await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
 
-    await user.click(screen.getByText('Alpha audience'))
+    // Click the name in the table row (the dimension-map card also shows it).
+    const row = screen.getAllByTestId('table-row')[0]!
+    await user.click(within(row).getByText('Alpha audience'))
 
     expect(mockNavigate).toHaveBeenCalledWith({
       variantId: getVariantId(variantAlphaAudience._id),

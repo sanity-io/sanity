@@ -3,7 +3,7 @@ import {AddIcon} from '@sanity/icons/Add'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Path} from '@sanity/mutate'
 import {type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Box, Flex, Select, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
 
@@ -20,6 +20,11 @@ import {
 import {getVariantTitleValue} from '../../util/getIsVariantInvalid'
 import {createPortableTextDescription} from '../../util/variantDefaults'
 import {getStubVariantDimensionMap} from '../../util/variantDimensionMap'
+import {
+  getVariantSetReference,
+  VARIANT_SET_METADATA_KEY,
+  type VariantSetReference,
+} from '../../util/variantSet'
 import {ConditionAutocompleteInput} from './ConditionAutocompleteInput'
 import {
   buildConditionSuggestionIndex,
@@ -130,9 +135,18 @@ export function VariantForm(props: {
   onChange: VariantFormChangeHandler
   onConditionValidityChange?: (invalid: boolean) => void
   showValidation?: boolean
+  // When true (create flow), offer to add this definition to an existing set. A member
+  // definition is just one carrying the set's `metadata.variantSet` reference.
+  showSetSelector?: boolean
   value: EditableSystemVariant
 }) {
-  const {onChange, onConditionValidityChange, showValidation = false, value} = props
+  const {
+    onChange,
+    onConditionValidityChange,
+    showValidation = false,
+    showSetSelector = false,
+    value,
+  } = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const {data: variants} = useAllVariants()
   // Feed the suggestion index from the external targeting map (CDP / experiment /
@@ -144,6 +158,36 @@ export function VariantForm(props: {
   )
   const titleId = useId()
   const descriptionId = useId()
+  const setSelectId = useId()
+
+  // Existing sets the new definition could join (deduped by reference id).
+  const existingSets = useMemo<VariantSetReference[]>(() => {
+    const byId = new Map<string, string>()
+    for (const variant of variants ?? []) {
+      const ref = getVariantSetReference(variant)
+      if (ref) {
+        byId.set(ref.id, ref.name)
+      }
+    }
+    return Array.from(byId, ([id, name]) => ({id, name})).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    )
+  }, [variants])
+
+  const selectedSetId = getVariantSetReference(value)?.id ?? ''
+
+  const handleSetChange = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      const id = event.currentTarget.value
+      const ref = existingSets.find((set) => set.id === id)
+      // Stamp (or clear) the set membership reference; nothing else about the definition changes.
+      onChange(
+        ['metadata', VARIANT_SET_METADATA_KEY],
+        ref ? {id: ref.id, name: ref.name} : undefined,
+      )
+    },
+    [existingSets, onChange],
+  )
   // `conditions` is stored as an object, but object keys are awkward to edit live:
   // duplicates collapse and partial key edits like "far" -> "favorite" can lose data.
   // Keep rows locally while editing, then commit back once they serialize cleanly.
@@ -260,6 +304,33 @@ export function VariantForm(props: {
           value={getPortableTextDescriptionValue(value.metadata?.description)}
         />
       </Stack>
+
+      {showSetSelector && existingSets.length > 0 && (
+        <Stack space={3}>
+          <Text as="label" htmlFor={setSelectId} size={1} weight="medium">
+            Add to variant set (optional)
+          </Text>
+          <Select
+            data-testid="variant-form-set-select"
+            fontSize={2}
+            id={setSelectId}
+            onChange={handleSetChange}
+            value={selectedSetId}
+          >
+            <option value="">None — standalone definition</option>
+            {existingSets.map((set) => (
+              <option key={set.id} value={set.id}>
+                {set.name}
+              </option>
+            ))}
+          </Select>
+          {selectedSetId && (
+            <Text muted size={1}>
+              This definition will be grouped under the selected set.
+            </Text>
+          )}
+        </Stack>
+      )}
 
       <Stack space={3}>
         <Stack space={2}>

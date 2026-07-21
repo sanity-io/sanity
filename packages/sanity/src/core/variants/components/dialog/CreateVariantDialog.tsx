@@ -35,6 +35,7 @@ export function CreateVariantDialog(props: CreateVariantDialogProps): React.JSX.
       initialValue={initialValue}
       onCancel={onCancel}
       onSubmit={handleSubmit}
+      showSetSelector
     />
   )
 }

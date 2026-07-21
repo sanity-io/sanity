@@ -238,7 +238,8 @@ export function VariantsOverview() {
             </Box>
           )}
 
-          {hasVariants && (
+          {/* The map is the landscape view; while searching, defer to the filtered list. */}
+          {hasVariants && !searchQuery.trim() && (
             <Box flex="none" paddingBottom={4}>
               <VariantDimensionMap variants={variantsList} />
             </Box>
