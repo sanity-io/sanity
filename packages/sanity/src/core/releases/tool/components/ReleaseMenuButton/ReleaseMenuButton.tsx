@@ -322,6 +322,7 @@ export const ReleaseMenuButton = ({
         key={`custom-action-${index}`}
         icon={action.icon}
         text={action.label}
+        tone={action.tone}
         disabled={action.disabled || isPerformingOperation}
         onClick={handleOnActionClick(action)}
         tooltipProps={action.title ? {content: action.title} : undefined}

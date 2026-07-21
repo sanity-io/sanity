@@ -67,7 +67,7 @@ export function ReleaseDashboardHeader(props: {
               // A single back affordance — the release title already headlines the pane below, so
               // the breadcrumb's repeat of it is dropped. Mirrors the Variants detail's back arrow.
               <DetailBackButton
-                text={t('overview.title')}
+                text={t('overview.back-to-all-releases')}
                 onClick={handleNavigateToReleasesList}
                 testId="back-to-releases-button"
               />
