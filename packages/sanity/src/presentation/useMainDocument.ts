@@ -57,7 +57,7 @@ function getParamsFromResult(
 }
 
 export function getRouteContext(
-  route: string | Array<string>,
+  route: DocumentResolver['route'],
   url: URL,
 ): DocumentResolverContext | undefined {
   const routes = Array.isArray(route) ? route : [route]
