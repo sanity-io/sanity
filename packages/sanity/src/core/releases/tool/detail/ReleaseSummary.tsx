@@ -1,8 +1,17 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
+import {RestoreIcon} from '@sanity/icons/Restore'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Container, Flex, Stack, Text, useToast} from '@sanity/ui'
-import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
+import {
+  type CSSProperties,
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -19,9 +28,11 @@ import {DocumentTable} from '../components/Table/DocumentTable'
 import {Table} from '../components/Table/Table'
 import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
 import {ReleaseDocumentFilterTabs} from './components/ReleaseDocumentFilterTabs'
+import {CopyReleaseActions} from './CopyReleaseActions'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
+import {type ReleaseInspector} from './ReleaseDetail'
 import {type DocumentFilterType, documentMatchesFilter} from './releaseDocumentActions'
 import {type DocumentInRelease} from './types'
 
@@ -35,6 +46,9 @@ export interface ReleaseSummaryProps {
   documents: DocumentInRelease[]
   release: ReleaseDocument
   isLoading?: boolean
+  /** Activity inspector state, so the command lane can host the Activity toggle (beta.variants). */
+  inspector?: ReleaseInspector
+  setInspector?: Dispatch<SetStateAction<ReleaseInspector | undefined>>
 }
 
 const FULL_HEIGHT_STYLE: CSSProperties = {height: '100%'}
@@ -57,7 +71,7 @@ const isBundleDocumentRow = (
   'validation' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, isLoading = false, release} = props
+  const {documents, isLoading = false, release, inspector, setInspector} = props
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
@@ -101,6 +115,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
+
+  const handleActivityClick = useCallback(
+    () => setInspector?.((prev) => (prev === 'activity' ? undefined : 'activity')),
+    [setInspector],
+  )
 
   const filterRows = useCallback(
     (data: DocumentInRelease[], searchTerm: string) => {
@@ -235,8 +254,9 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     </Container>
   )
 
-  // New (DocumentTable) path: Add-document is a command-lane action (always visible), not buried at
-  // the list end.
+  // New (DocumentTable) path: one action lane. Activity + Share (icons) sit alongside Add document
+  // (the labeled primary), so every "do something" control lives together at the right of the lane
+  // instead of being scattered into the header.
   const addDocumentButton = release.state === 'active' && (
     <Button
       disabled={isLoading}
@@ -246,6 +266,22 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       text={t('action.add-document')}
     />
   )
+  const commandLaneActions = (
+    <Flex align="center" gap={2}>
+      {setInspector && (
+        <Button
+          data-testid="activity-button"
+          icon={RestoreIcon}
+          mode="bleed"
+          onClick={handleActivityClick}
+          selected={inspector === 'activity'}
+          tooltipProps={{content: t('dashboard.details.activity')}}
+        />
+      )}
+      <CopyReleaseActions release={release} />
+      {addDocumentButton}
+    </Flex>
+  )
 
   return (
     <Flex direction="column" style={FULL_HEIGHT_STYLE}>
@@ -254,7 +290,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           columnDefs={documentTableColumnDefs}
           defaultSort={{column: 'search', direction: 'asc'}}
           emptyState={t('summary.no-documents')}
-          commandLaneActions={addDocumentButton}
+          commandLaneActions={commandLaneActions}
           filterTabs={
             <ReleaseDocumentFilterTabs
               activeFilter={activeFilter}

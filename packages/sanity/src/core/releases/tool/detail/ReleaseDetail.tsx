@@ -82,9 +82,15 @@ export function ReleaseDetail() {
     if (!releaseInDetail) return null
 
     return (
-      <ReleaseSummary isLoading={documentsLoading} documents={results} release={releaseInDetail} />
+      <ReleaseSummary
+        isLoading={documentsLoading}
+        documents={results}
+        release={releaseInDetail}
+        inspector={inspector}
+        setInspector={setInspector}
+      />
     )
-  }, [bundleDocumentsError, documentsLoading, releaseInDetail, results, t])
+  }, [bundleDocumentsError, documentsLoading, inspector, releaseInDetail, results, t])
 
   if (loading) {
     return (
@@ -99,7 +105,7 @@ export function ReleaseDetail() {
   if (releaseInDetail) {
     return (
       <Flex direction="column" flex={1} height="fill" overflow="hidden">
-        <Card flex="none" padding={3}>
+        <Card flex="none">
           <ReleaseDashboardHeader
             release={releaseInDetail}
             inspector={inspector}

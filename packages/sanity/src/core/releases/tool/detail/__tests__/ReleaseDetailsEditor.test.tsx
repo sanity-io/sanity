@@ -13,6 +13,7 @@ import {
 } from '../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {ReleaseDetailsEditor} from '../ReleaseDetailsEditor'
+
 // Mock the dependencies
 vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn().mockReturnValue({
@@ -24,119 +25,73 @@ vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-describe('ReleaseDetailsEditor', () => {
-  describe('when there is permission', () => {
-    const initialRelease = {
-      _id: 'release1',
-      metadata: {
-        title: 'Initial Title',
-        description: '',
-        releaseType: 'asap',
-        intendedPublishAt: undefined,
-      },
-    } as ReleaseDocument
+const initialRelease = {
+  _id: 'release1',
+  metadata: {
+    title: 'Initial Title',
+    description: 'A description',
+    releaseType: 'asap',
+    intendedPublishAt: undefined,
+  },
+} as ReleaseDocument
 
-    beforeEach(async () => {
+describe('ReleaseDetailsEditor', () => {
+  describe('as a display surface', () => {
+    beforeEach(() => {
       vi.clearAllMocks()
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
     })
 
-    it('should call updateRelease after title change', async () => {
-      const wrapper = await createTestProvider()
-      const {container} = render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
-      await flushMicrotasksThisIsACodeSmell()
-
-      const release = {
-        _id: 'release1',
-        metadata: {
-          title: 'New Title',
-          description: '',
-          releaseType: 'asap',
-          intendedPublishAt: undefined,
-        },
-      } as ReleaseDocument
-
-      const input = screen.getByTestId('release-form-title') as HTMLInputElement
-
-      await waitFor(() => {
-        expect(input).not.toBeDisabled()
-      })
-
-      const updateReleaseMock = (useReleaseOperations as unknown as vi.Mock).mock.results[0]?.value
-        .updateRelease
-
-      await userEvent.clear(input)
-      await userEvent.type(input, release.metadata.title!)
-
-      // Wait for debounce (200ms) + some buffer
-      await waitFor(
-        () => {
-          expect(updateReleaseMock).toHaveBeenCalledWith(release)
-        },
-        {timeout: 1000},
-      )
-    })
-
-    it('should call updateRelease after description change', async () => {
-      const wrapper = await createTestProvider()
-      const {container} = render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
-      await flushMicrotasksThisIsACodeSmell()
-
-      const release = {
-        _id: 'release1',
-        metadata: {
-          title: 'Initial Title',
-          description: 'woo hoo',
-          releaseType: 'asap',
-          intendedPublishAt: undefined,
-        },
-      } as ReleaseDocument
-
-      const input = screen.getByTestId('release-form-description') as HTMLTextAreaElement
-
-      await waitFor(() => {
-        expect(input).not.toBeDisabled()
-      })
-
-      const updateReleaseMock = (useReleaseOperations as unknown as vi.Mock).mock.results[0]?.value
-        .updateRelease
-
-      await userEvent.clear(input)
-      await userEvent.type(input, release.metadata.description!)
-
-      // Wait for debounce (200ms) + some buffer
-      await waitFor(
-        () => {
-          expect(updateReleaseMock).toHaveBeenCalledWith(release)
-        },
-        {timeout: 1000},
-      )
-    })
-  })
-
-  describe('when there is no permission', () => {
-    const initialRelease = {
-      _id: 'release1',
-      metadata: {
-        title: 'Initial Title',
-        description: '',
-        releaseType: 'asap',
-        intendedPublishAt: undefined,
-      },
-    } as ReleaseDocument
-
-    beforeEach(async () => {
-      vi.clearAllMocks()
-      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnFalse)
-    })
-
-    it('when there is no permission, should not call updateRelease', async () => {
+    it('renders the title and description as read-only display, not inline inputs', async () => {
       const wrapper = await createTestProvider()
       render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
       await flushMicrotasksThisIsACodeSmell()
 
-      const input = screen.getByTestId('release-form-description')
-      expect(input).toBeDisabled()
+      expect(screen.getByTestId('release-title-display')).toHaveTextContent('Initial Title')
+      expect(screen.getByTestId('release-description-display')).toHaveTextContent('A description')
+      // The editable fields are not present on the page itself — they live in the edit dialog.
+      expect(screen.queryByTestId('release-form-title')).toBeNull()
+    })
+
+    it('opens the edit dialog and saves changes via updateRelease', async () => {
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
+
+      const updateReleaseMock = (useReleaseOperations as unknown as vi.Mock).mock.results[0]?.value
+        .updateRelease
+
+      const editButton = await screen.findByTestId('edit-release-details-button')
+      await userEvent.click(editButton)
+
+      const titleInput = (await screen.findByTestId('release-form-title')) as HTMLTextAreaElement
+      await userEvent.clear(titleInput)
+      await userEvent.type(titleInput, 'New Title')
+
+      await userEvent.click(screen.getByTestId('save-release-details-button'))
+
+      await waitFor(() => {
+        expect(updateReleaseMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            metadata: expect.objectContaining({title: 'New Title'}),
+          }),
+        )
+      })
+    })
+  })
+
+  describe('when there is no permission', () => {
+    beforeEach(() => {
+      vi.clearAllMocks()
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnFalse)
+    })
+
+    it('does not show the edit affordance', async () => {
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.queryByTestId('edit-release-details-button')).toBeNull()
     })
   })
 })

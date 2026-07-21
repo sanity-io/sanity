@@ -69,13 +69,15 @@ export function ReleaseDashboardDetails({
 
   return (
     <Container width={3}>
-      <Stack padding={3} space={4}>
+      {/* Tight top padding: the header above already pads its bottom, so the title sits close under
+          the breadcrumb instead of floating in a doubled gap. */}
+      <Stack paddingX={3} paddingBottom={3} paddingTop={1} space={4}>
         {/* Clear zones: identity (title + description) on the left; a label -> value metadata panel
             on the right. Wraps to a single column on narrow widths (metadata stacks under the
             description). The pin control was removed (it's a global-perspective mode that belongs in
             the perspective bar, matching the Variants pin removal). */}
         <Flex align="flex-start" gap={4} wrap="wrap">
-          <Box flex={1} paddingY={1} style={{minWidth: 280}}>
+          <Box flex={1} style={{minWidth: 280}}>
             <ReleaseDetailsEditor release={release} />
           </Box>
           <Stack flex="none" space={4} style={{width: 260}} data-testid="release-detail-metadata">

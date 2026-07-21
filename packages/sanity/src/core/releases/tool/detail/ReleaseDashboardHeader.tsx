@@ -5,6 +5,7 @@ import {
   Box,
   // oxlint-disable-next-line no-restricted-imports
   Button, // Custom button with a different textWeight, consider adding textWeight to the shared
+  Container,
   Flex,
   Text,
 } from '@sanity/ui'
@@ -12,10 +13,16 @@ import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../../../i18n'
+import {useWorkspace} from '../../../studio/workspace'
 import {releasesLocaleNamespace} from '../../i18n'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {CopyReleaseActions} from './CopyReleaseActions'
 import {type ReleaseInspector} from './ReleaseDetail'
+
+// The bleed back-button carries its own horizontal padding, which would push the breadcrumb text
+// right of the title/table left edge. Cancel that padding so the breadcrumb sits on the same hard
+// left line as everything below it, framing the pane.
+const BREADCRUMB_ALIGN_STYLE = {marginLeft: -8}
 
 export function ReleaseDashboardHeader(props: {
   inspector: ReleaseInspector | undefined
@@ -27,6 +34,11 @@ export function ReleaseDashboardHeader(props: {
   const {t: tCore} = useTranslation()
   const title = release.metadata.title || tCore('release.placeholder-untitled-release')
   const router = useRouter()
+
+  // Behind beta.variants the Share/Activity actions move into the table's command lane (one action
+  // lane). Production keeps them in the header until the flag flips.
+  const {beta} = useWorkspace()
+  const variantsEnabled = Boolean(beta?.variants?.enabled)
 
   const handleNavigateToReleasesList = useCallback(() => {
     const isReleaseOpen = release.state !== 'archived' && release.state !== 'published'
@@ -41,47 +53,56 @@ export function ReleaseDashboardHeader(props: {
   }, [setInspector])
 
   return (
-    <Flex align="flex-start">
-      <Flex flex={1} align="center" style={{minWidth: 0}}>
-        <Flex flex="none">
-          <Button
-            mode="bleed"
-            onClick={handleNavigateToReleasesList}
-            text={t('overview.title')}
-            textWeight="regular"
-            padding={2}
-            data-testid="back-to-releases-button"
-          />
-        </Flex>
-        <Box paddingY={2} flex="none">
-          <Text size={1}>
-            <ChevronRightIcon />
-          </Text>
-        </Box>
-        <Box padding={2} style={{minWidth: 0, maxWidth: '300px'}}>
-          <Text
-            size={1}
-            weight="semibold"
-            textOverflow="ellipsis"
-            style={release.metadata.title ? undefined : {opacity: 0.5}}
-          >
-            {title}
-          </Text>
-        </Box>
-      </Flex>
+    // Share the same width={3} gutter as the details/table panes below, so the breadcrumb aligns
+    // with the title and the Share/Activity actions align flush with the metadata rail's right edge.
+    <Container width={3}>
+      <Box padding={3}>
+        <Flex align="flex-start">
+          <Flex flex={1} align="center" style={{minWidth: 0}}>
+            <Flex flex="none">
+              <Button
+                mode="bleed"
+                onClick={handleNavigateToReleasesList}
+                text={t('overview.title')}
+                textWeight="regular"
+                padding={2}
+                style={BREADCRUMB_ALIGN_STYLE}
+                data-testid="back-to-releases-button"
+              />
+            </Flex>
+            <Box paddingY={2} flex="none">
+              <Text size={1}>
+                <ChevronRightIcon />
+              </Text>
+            </Box>
+            <Box padding={2} style={{minWidth: 0, maxWidth: '300px'}}>
+              <Text
+                size={1}
+                weight="semibold"
+                textOverflow="ellipsis"
+                style={release.metadata.title ? undefined : {opacity: 0.5}}
+              >
+                {title}
+              </Text>
+            </Box>
+          </Flex>
 
-      <Flex flex="none" gap={2}>
-        <CopyReleaseActions release={release} />
-        <Button
-          icon={RestoreIcon}
-          mode="bleed"
-          onClick={handleActivityClick}
-          padding={2}
-          selected={inspector === 'activity'}
-          space={2}
-          text={t('dashboard.details.activity')}
-        />
-      </Flex>
-    </Flex>
+          {!variantsEnabled && (
+            <Flex flex="none" gap={2}>
+              <CopyReleaseActions release={release} />
+              <Button
+                icon={RestoreIcon}
+                mode="bleed"
+                onClick={handleActivityClick}
+                padding={2}
+                selected={inspector === 'activity'}
+                space={2}
+                text={t('dashboard.details.activity')}
+              />
+            </Flex>
+          )}
+        </Flex>
+      </Box>
+    </Container>
   )
 }

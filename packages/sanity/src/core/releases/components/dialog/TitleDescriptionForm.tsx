@@ -1,17 +1,15 @@
 import {type EditableReleaseDocument} from '@sanity/client'
-import {Box, Stack, Text} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
 
-// Dialog usage: cap the description and let it scroll internally past this height.
+// Cap the description height and let it scroll internally past this point, so the dialog stays a
+// sensible size regardless of how long the description is.
 const MAX_DESCRIPTION_HEIGHT = 200
-// Detail-page (slim) resting height: a single line. The full text is revealed on hover.
-const SLIM_TOOLTIP_MAX_WIDTH = 360
 
 const TitleTextArea = styled.textarea((props) => {
   const {color, font} = getTheme_v2(props.theme)
@@ -53,7 +51,7 @@ const TitleTextArea = styled.textarea((props) => {
   `
 })
 
-const DescriptionTextArea = styled.textarea<{$collapsed?: boolean}>((props) => {
+const DescriptionTextArea = styled.textarea((props) => {
   const {color, font} = getTheme_v2(props.theme)
 
   return css`
@@ -82,19 +80,6 @@ const DescriptionTextArea = styled.textarea<{$collapsed?: boolean}>((props) => {
     &::placeholder {
       color: ${color.input.default.enabled.placeholder};
     }
-
-    /* Slim resting state (detail page, not focused): clamp to a single line so the header stays a
-       fixed, minimal height regardless of the description's length — the table below always starts
-       in the same place. The full text is revealed on hover (tooltip) and on focus (grows to edit).
-       !important beats both the JS-set inline height and imperative resize. */
-    ${props.$collapsed &&
-    css`
-      height: ${font.text.sizes[2].lineHeight}px !important;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      cursor: text;
-    `}
   `
 })
 
@@ -106,33 +91,25 @@ function resizeTextarea(element: HTMLTextAreaElement): void {
   element.style.height = `${element.scrollHeight}px`
 }
 
+/**
+ * The editable title + description form for a release. Used inside the create/edit dialogs — the
+ * release detail page itself is a read-only display surface (see ReleaseDetailsEditor), and routes
+ * edits here through a dialog so editing is an explicit, intentional action.
+ */
 export function TitleDescriptionForm({
   release,
   onChange,
   disabled,
-  slim = false,
 }: {
   release: EditableReleaseDocument
   onChange: (changedValue: EditableReleaseDocument) => void
   disabled?: boolean
-  /**
-   * Detail-page usage: render the description as a single slim line at rest so the header — and the
-   * table below it — keep a fixed, minimal height regardless of the description's length. The full
-   * text is revealed on hover (tooltip); focusing the field grows it to a comfortable editing
-   * height, and it collapses back on blur. The dialog usage (default) keeps its capped, internally
-   * scrolling multi-line field.
-   */
-  slim?: boolean
 }): React.JSX.Element {
   const isReleaseOpen = getIsReleaseOpen(release)
   const titleRef = useRef<HTMLTextAreaElement>(null)
   const descriptionRef = useRef<HTMLTextAreaElement>(null)
   const [scrollHeight, setScrollHeight] = useState(46)
-  const [isDescriptionFocused, setIsDescriptionFocused] = useState(false)
   const {t} = useTranslation()
-
-  // At rest on the detail page the description is a single clamped line; focusing it lets it grow.
-  const isDescriptionCollapsed = slim && !isDescriptionFocused
 
   const {localData, updateLocalData, createFocusHandler, handleBlur} =
     useReleaseFormOptimisticUpdating({
@@ -154,13 +131,11 @@ export function TitleDescriptionForm({
   }, [release.metadata.title])
 
   useEffect(() => {
-    // Only measure/grow when expanded: while collapsed the CSS clamp (with !important) owns the
-    // height, and forcing height:auto here would read a clamped scrollHeight and fight it.
-    if (descriptionRef.current && !isDescriptionCollapsed) {
+    if (descriptionRef.current) {
       resizeTextarea(descriptionRef.current)
       setScrollHeight(descriptionRef.current.scrollHeight)
     }
-  }, [release.metadata.description, isDescriptionCollapsed])
+  }, [release.metadata.description])
 
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -194,16 +169,6 @@ export function TitleDescriptionForm({
     [isReleaseOpen, onChange, release, updateLocalData],
   )
 
-  const handleDescriptionFocus = useCallback(() => {
-    setIsDescriptionFocused(true)
-    createFocusHandler('description')()
-  }, [createFocusHandler])
-
-  const handleDescriptionBlur = useCallback(() => {
-    setIsDescriptionFocused(false)
-    handleBlur()
-  }, [handleBlur])
-
   const shouldShowDescription = isReleaseOpen || localData.description
 
   return (
@@ -220,45 +185,23 @@ export function TitleDescriptionForm({
         disabled={disabled}
       />
       {shouldShowDescription && (
-        <Tooltip
-          // Only the slim, collapsed, non-empty state reveals the full text on hover. While focused
-          // (editing) or in the dialog usage, the field shows its own content, so the tooltip is off.
-          disabled={!(isDescriptionCollapsed && Boolean(localData.description))}
-          placement="bottom-start"
-          content={
-            <Box padding={2} style={{maxWidth: SLIM_TOOLTIP_MAX_WIDTH}}>
-              <Text size={1} muted style={{whiteSpace: 'pre-wrap'}}>
-                {localData.description}
-              </Text>
-            </Box>
-          }
-        >
-          {/* Box anchors the tooltip and keeps descriptionRef free for the textarea's own sizing. */}
-          <Box>
-            <DescriptionTextArea
-              ref={descriptionRef}
-              $collapsed={isDescriptionCollapsed}
-              autoFocus={!localData.title}
-              value={localData.description}
-              placeholder={t('release.form.placeholder-describe-release')}
-              onChange={handleDescriptionChange}
-              onFocus={handleDescriptionFocus}
-              onBlur={handleDescriptionBlur}
-              style={
-                isDescriptionCollapsed
-                  ? undefined
-                  : {
-                      height: `${slim ? scrollHeight : Math.min(scrollHeight, MAX_DESCRIPTION_HEIGHT)}px`,
-                      maxHeight: slim ? undefined : MAX_DESCRIPTION_HEIGHT,
-                      overflowY: !slim && scrollHeight > MAX_DESCRIPTION_HEIGHT ? 'auto' : 'hidden',
-                    }
-              }
-              data-testid="release-form-description"
-              disabled={disabled}
-              readOnly={!isReleaseOpen}
-            />
-          </Box>
-        </Tooltip>
+        <DescriptionTextArea
+          ref={descriptionRef}
+          autoFocus={!localData.title}
+          value={localData.description}
+          placeholder={t('release.form.placeholder-describe-release')}
+          onChange={handleDescriptionChange}
+          onFocus={createFocusHandler('description')}
+          onBlur={handleBlur}
+          style={{
+            height: `${scrollHeight}px`,
+            maxHeight: MAX_DESCRIPTION_HEIGHT,
+            overflowY: scrollHeight > MAX_DESCRIPTION_HEIGHT ? 'auto' : 'hidden',
+          }}
+          data-testid="release-form-description"
+          disabled={disabled}
+          readOnly={!isReleaseOpen}
+        />
       )}
     </Stack>
   )
