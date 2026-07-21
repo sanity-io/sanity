@@ -103,9 +103,6 @@ minimumReleaseAgeExclude:
 
 overrides:
   vitest: 'catalog:'
-  # Force a single patched 8.x copy: Vercel packages pin exact 8.2.0/8.3.0, which
-  # otherwise leave CVE-2026-4926 / CVE-2026-4923 (fixed in 8.4.0+) in the tree.
-  path-to-regexp: 8.4.2
 
 preferWorkspacePackages: true
 
