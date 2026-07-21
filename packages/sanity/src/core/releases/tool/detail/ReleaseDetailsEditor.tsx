@@ -51,9 +51,9 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): Rea
       release={release}
       onChange={handleOnChange}
       disabled={Boolean(!hasUpdatePermission)}
-      // Detail page: clamp the description and open the full text in a modal, so the page layout
-      // never shifts with the description length.
-      clampToModal
+      // Detail page: render the description as a slim single line (full text on hover), so the
+      // header — and the table below — keep a fixed, minimal height regardless of its length.
+      slim
     />
   )
 }

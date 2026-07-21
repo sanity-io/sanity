@@ -91,7 +91,9 @@ export function ReleaseDashboardDetails({
               <Text muted size={1}>
                 {tRelease('dashboard.details.metadata.status')}
               </Text>
-              <ValidationProgressIndicator documents={documents} />
+              {/* minimal layout: an icon-only indicator (full message on hover) so the row stays a
+                  fixed, aligned height instead of bloating with the validation text or a spinner. */}
+              <ValidationProgressIndicator documents={documents} layout="minimal" />
             </Flex>
             {/* Created lives in the footer (with the author avatar), so it is not repeated here. */}
             <Flex align="center" gap={3} justify="space-between">
