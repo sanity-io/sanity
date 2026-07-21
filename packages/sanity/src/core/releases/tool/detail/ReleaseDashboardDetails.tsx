@@ -103,7 +103,7 @@ export function ReleaseDashboardDetails({
           </Stack>
         </Flex>
         {shouldDisplayError && (
-          <Card padding={4} radius={4} tone="critical">
+          <Card data-testid="release-error-details" padding={4} radius={4} tone="critical">
             <Flex gap={3}>
               <Text size={1}>
                 <ErrorOutlineIcon />
@@ -125,7 +125,12 @@ export function ReleaseDashboardDetails({
         )}
 
         {shouldDisplayWarnings && (
-          <Card padding={4} radius={4} tone="caution">
+          <Card
+            data-testid="release-permission-error-details"
+            padding={4}
+            radius={4}
+            tone="caution"
+          >
             <Flex gap={3}>
               <Text size={1}>
                 <WarningOutlineIcon />

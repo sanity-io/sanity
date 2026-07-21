@@ -75,7 +75,9 @@ export function DocumentTable<Row extends object>({
   searchPredicate,
   searchPlaceholder,
   searchTestId,
+  searchWidth,
   filterTabs,
+  commandLaneActions,
   selection,
   rowActions,
   footer,
@@ -91,7 +93,11 @@ export function DocumentTable<Row extends object>({
   searchPredicate: (row: Row, searchTerm: string) => boolean
   searchPlaceholder: string
   searchTestId?: string
+  /** Fixed width of the search input; defaults to 280. Set it to match a right-hand rail. */
+  searchWidth?: number
   filterTabs?: ReactNode
+  /** Extra command-lane controls rendered right of the search (e.g. an "Add document" button). */
+  commandLaneActions?: ReactNode
   selection?: DocumentTableSelection
   rowActions?: (props: {datum: unknown}) => ReactNode
   footer?: ReactNode
@@ -230,7 +236,10 @@ export function DocumentTable<Row extends object>({
                     ) : (
                       <Box flex={1} />
                     )}
-                    <Box flex="none" style={SEARCH_INPUT_STYLE}>
+                    <Box
+                      flex="none"
+                      style={searchWidth ? {maxWidth: searchWidth} : SEARCH_INPUT_STYLE}
+                    >
                       <TextInput
                         aria-label={searchPlaceholder}
                         clearButton={Boolean(searchTerm)}
@@ -243,6 +252,7 @@ export function DocumentTable<Row extends object>({
                         value={searchTerm}
                       />
                     </Box>
+                    {commandLaneActions ? <Box flex="none">{commandLaneActions}</Box> : null}
                   </>
                 )}
               </Flex>

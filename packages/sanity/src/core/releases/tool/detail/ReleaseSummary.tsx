@@ -220,6 +220,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     )
   }
 
+  // Old (non-variant) path: Add-document lives at the end of the list.
   const addDocumentFooter = release.state === 'active' && (
     <Container width={3}>
       <Card padding={3}>
@@ -234,6 +235,18 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     </Container>
   )
 
+  // New (DocumentTable) path: Add-document is a command-lane action (always visible), not buried at
+  // the list end.
+  const addDocumentButton = release.state === 'active' && (
+    <Button
+      disabled={isLoading}
+      icon={AddIcon}
+      mode="ghost"
+      onClick={handleAddDocumentClick}
+      text={t('action.add-document')}
+    />
+  )
+
   return (
     <Flex direction="column" style={FULL_HEIGHT_STYLE}>
       {variantsEnabled ? (
@@ -241,6 +254,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           columnDefs={documentTableColumnDefs}
           defaultSort={{column: 'search', direction: 'asc'}}
           emptyState={t('summary.no-documents')}
+          commandLaneActions={addDocumentButton}
           filterTabs={
             <ReleaseDocumentFilterTabs
               activeFilter={activeFilter}
@@ -251,7 +265,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
               releaseState={release.state}
             />
           }
-          footer={addDocumentFooter}
           getRowKey={(row) => row.document._id}
           id="document-table-card"
           loading={isLoading}
@@ -262,6 +275,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           searchPlaceholder={t('search-documents-placeholder')}
           searchPredicate={(row, searchTerm) => searchDocumentRelease(row.document, searchTerm)}
           searchTestId="release-documents-search"
+          searchWidth={260}
         />
       ) : (
         <>
