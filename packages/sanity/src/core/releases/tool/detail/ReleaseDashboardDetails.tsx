@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {useEffect, useRef, useState} from 'react'
+import {type CSSProperties, useEffect, useRef, useState} from 'react'
 
 import {Details} from '../../../form/components/Details'
 import {useTranslation} from '../../../i18n'
@@ -15,6 +15,11 @@ import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
 import {type DocumentInRelease} from './types'
 import {ValidationProgressIndicator} from './ValidationProgressIndicator'
+
+// Each metadata row is the same fixed height so the three key/value pairs sit on an even rhythm —
+// otherwise the Schedule row (which holds the taller type-picker button) spaces itself further from
+// Status than Status is from Documents.
+const METADATA_ROW_STYLE: CSSProperties = {minHeight: 31}
 
 export function ReleaseDashboardDetails({
   release,
@@ -80,31 +85,43 @@ export function ReleaseDashboardDetails({
           <Box flex={1} style={{minWidth: 280}}>
             <ReleaseDetailsEditor release={release} />
           </Box>
-          <Stack flex="none" space={4} style={{width: 260}} data-testid="release-detail-metadata">
-            {isNotArchivedRelease(release) && (
-              <Flex align="center" gap={3} justify="space-between">
+          {/* The metadata is its own bordered surface — a distinct "properties" panel — rather than
+              free-floating rows, so it reads as a discrete block next to the identity. */}
+          <Card
+            flex="none"
+            border
+            radius={3}
+            padding={3}
+            tone="transparent"
+            style={{width: 260}}
+            data-testid="release-detail-metadata"
+          >
+            <Stack space={2}>
+              {isNotArchivedRelease(release) && (
+                <Flex align="center" gap={3} justify="space-between" style={METADATA_ROW_STYLE}>
+                  <Text muted size={1}>
+                    {tRelease('dashboard.details.metadata.schedule')}
+                  </Text>
+                  <ReleaseTypePicker release={release} />
+                </Flex>
+              )}
+              <Flex align="center" gap={3} justify="space-between" style={METADATA_ROW_STYLE}>
                 <Text muted size={1}>
-                  {tRelease('dashboard.details.metadata.schedule')}
+                  {tRelease('dashboard.details.metadata.status')}
                 </Text>
-                <ReleaseTypePicker release={release} />
+                {/* minimal layout: an icon-only indicator (full message on hover) so the row stays a
+                    fixed, aligned height instead of bloating with the validation text or a spinner. */}
+                <ValidationProgressIndicator documents={documents} layout="minimal" />
               </Flex>
-            )}
-            <Flex align="center" gap={3} justify="space-between">
-              <Text muted size={1}>
-                {tRelease('dashboard.details.metadata.status')}
-              </Text>
-              {/* minimal layout: an icon-only indicator (full message on hover) so the row stays a
-                  fixed, aligned height instead of bloating with the validation text or a spinner. */}
-              <ValidationProgressIndicator documents={documents} layout="minimal" />
-            </Flex>
-            {/* Created lives in the footer (with the author avatar), so it is not repeated here. */}
-            <Flex align="center" gap={3} justify="space-between">
-              <Text muted size={1}>
-                {tRelease('dashboard.details.metadata.documents')}
-              </Text>
-              <Text size={1}>{documents.length}</Text>
-            </Flex>
-          </Stack>
+              {/* Created lives in the footer (with the author avatar), so it is not repeated here. */}
+              <Flex align="center" gap={3} justify="space-between" style={METADATA_ROW_STYLE}>
+                <Text muted size={1}>
+                  {tRelease('dashboard.details.metadata.documents')}
+                </Text>
+                <Text size={1}>{documents.length}</Text>
+              </Flex>
+            </Stack>
+          </Card>
         </Flex>
         {shouldDisplayError && (
           <Card data-testid="release-error-details" padding={4} radius={4} tone="critical">

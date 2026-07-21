@@ -1598,8 +1598,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.dialog.create.title': 'New release',
   /** Label for the save action in the edit release dialog */
   'release.dialog.edit.confirm': 'Save',
+  /** Field label for the release description in the edit release dialog */
+  'release.dialog.edit.description-label': 'Description',
   /** Title for the edit release dialog */
   'release.dialog.edit.title': 'Edit release',
+  /** Field label for the release title in the edit release dialog */
+  'release.dialog.edit.title-label': 'Title',
   /** Body text when deleting scheduled draft and draft is already up to date */
   'release.dialog.delete-schedule-draft.body-already-current':
     'Delete this scheduled draft? Your draft is already up to date.',

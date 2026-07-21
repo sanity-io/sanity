@@ -5,7 +5,7 @@ import {TargetIcon} from '@sanity/icons/Target'
 import {TextIcon} from '@sanity/icons/Text'
 import {type DefinedTelemetryLog, useTelemetry} from '@sanity/telemetry/react'
 import {Menu, useToast} from '@sanity/ui'
-import {useCallback} from 'react'
+import {type ComponentType, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
@@ -21,10 +21,16 @@ import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromRele
 
 interface CopyReleaseActionsProps {
   release: ReleaseDocument
+  /**
+   * Button icon. Defaults to ShareIcon (the current header). The menu only copies things (link / id
+   * / title) to the clipboard, so callers that want the icon to match that — rather than imply
+   * sharing — can pass CopyIcon.
+   */
+  icon?: ComponentType
 }
 
 export function CopyReleaseActions(props: CopyReleaseActionsProps) {
-  const {release} = props
+  const {release, icon = ShareIcon} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
@@ -69,7 +75,7 @@ export function CopyReleaseActions(props: CopyReleaseActionsProps) {
       button={
         <Button
           data-testid="copy-release-actions-button"
-          icon={ShareIcon}
+          icon={icon}
           mode="bleed"
           tooltipProps={{content: t('action.copy-release.label')}}
         />

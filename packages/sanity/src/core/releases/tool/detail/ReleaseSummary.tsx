@@ -1,5 +1,6 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
+import {CopyIcon} from '@sanity/icons/Copy'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Container, Flex, Stack, Text, useToast} from '@sanity/ui'
@@ -278,7 +279,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           tooltipProps={{content: t('dashboard.details.activity')}}
         />
       )}
-      <CopyReleaseActions release={release} />
+      <CopyReleaseActions release={release} icon={CopyIcon} />
       {addDocumentButton}
     </Flex>
   )
