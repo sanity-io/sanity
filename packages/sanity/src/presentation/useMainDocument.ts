@@ -62,13 +62,13 @@ export function getRouteContext(
 ): DocumentResolverContext | undefined {
   const routes = Array.isArray(route) ? route : [route]
 
-  for (const pattern of routes) {
+  // `let` as the path is replaced with the pathname for absolute URLs
+  for (let path of routes) {
     let {origin} = url
-    let path = pattern
 
     // Handle absolute URLs
     try {
-      const absolute = new URL(pattern)
+      const absolute = new URL(path)
 
       // If we are dealing with an absolute URL, ensure the origins match
       if (absolute.origin !== origin) continue
@@ -83,11 +83,11 @@ export function getRouteContext(
       const matcher = match<Record<string, string>>(path, {decode: decodeURIComponent})
       const result = matcher(url.pathname)
       if (result) {
-        const {params, path: matchedPath} = result
-        return {origin, params, path: matchedPath}
+        const {params, path} = result
+        return {origin, params, path}
       }
     } catch (e) {
-      throw new Error(`"${pattern}" is not a valid route pattern`, {cause: e})
+      throw new Error(`"${path}" is not a valid route pattern`, {cause: e})
     }
   }
   return undefined
