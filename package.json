@@ -116,7 +116,7 @@
     "dotenv": "^17.4.2",
     "dotenv-flow": "^4.1.0",
     "eslint-import-resolver-typescript": "^4.4.5",
-    "eslint-plugin-boundaries": "^7.0.2",
+    "eslint-plugin-boundaries": "^7.1.0",
     "eslint-plugin-i18next": "^6.1.5",
     "eslint-plugin-testing-library": "^7.16.2",
     "eslint-plugin-tsdoc": "^0.5.2",
