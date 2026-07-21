@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@sanity/ailf": "^7.28.0",
+    "@sanity/ailf": "^7.31.1",
     "@typescript/native-preview": "catalog:"
   },
   "engines": {
