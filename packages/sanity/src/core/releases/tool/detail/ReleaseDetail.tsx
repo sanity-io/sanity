@@ -107,7 +107,16 @@ export function ReleaseDetail() {
 
   if (releaseInDetail) {
     return (
-      <Flex direction="column" flex={1} height="fill" overflow="hidden">
+      // position:relative anchors the beta activity overlay to the whole detail pane, so the
+      // right-anchored drawer covers the top action rail (Run release + menu) too — not just the
+      // content below it.
+      <Flex
+        direction="column"
+        flex={1}
+        height="fill"
+        overflow="hidden"
+        style={{position: 'relative'}}
+      >
         <Card flex="none">
           <ReleaseDashboardHeader
             documents={results}
@@ -117,9 +126,7 @@ export function ReleaseDetail() {
           />
         </Card>
 
-        {/* position:relative anchors the beta activity overlay, which floats over this area
-            instead of pushing the content column aside. */}
-        <Flex flex={1} style={{position: 'relative', overflow: 'hidden'}}>
+        <Flex flex={1}>
           <Flex direction="column" flex={1} height="fill">
             <Card flex={1} overflow="auto">
               <ReleaseDashboardDetails
@@ -141,14 +148,27 @@ export function ReleaseDetail() {
             )}
           </Flex>
 
+          {/* Production: activity is an in-flow panel that pushes the content column aside. */}
+          {!variantsEnabled && (
+            <ReleaseDashboardActivityPanel
+              events={releaseEvents}
+              release={releaseInDetail}
+              show={inspector === 'activity'}
+            />
+          )}
+        </Flex>
+
+        {/* Beta: activity floats as a right-anchored drawer over the entire pane (covering the
+            rail), rather than pushing the layout. */}
+        {variantsEnabled && (
           <ReleaseDashboardActivityPanel
             events={releaseEvents}
             release={releaseInDetail}
             show={inspector === 'activity'}
-            overlay={variantsEnabled}
+            overlay
             onClose={() => setInspector(undefined)}
           />
-        </Flex>
+        )}
       </Flex>
     )
   }

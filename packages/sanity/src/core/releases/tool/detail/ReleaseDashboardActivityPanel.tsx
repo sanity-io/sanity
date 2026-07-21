@@ -92,38 +92,55 @@ export function ReleaseDashboardActivityPanel({
 
   if (overlay) {
     // Floats over the content (position:absolute against the relatively-positioned parent in
-    // ReleaseDetail), sliding in from the right; the rail and table beneath it do not move.
+    // ReleaseDetail), sliding in from the right; the rail and table beneath it do not move. A light
+    // scrim recedes everything behind the drawer (the rail, the properties block) so partial
+    // coverage reads as "behind the drawer" rather than clipped, and clicking it dismisses.
     return (
       <AnimatePresence>
         {show && (
-          <MotionCard
-            borderLeft
-            shadow={4}
-            initial={{x: '100%'}}
-            animate={{x: 0}}
-            exit={{x: '100%'}}
-            transition={{type: 'spring', bounce: 0, duration: 0.2}}
-            style={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 200,
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Resizable
-              as={FillHeight}
-              minWidth={320}
-              maxWidth={800}
-              initialWidth={360}
-              resizerPosition="left"
-              style={{display: 'flex', flexDirection: 'column', flex: 'none', height: '100%'}}
+          <>
+            <motion.div
+              onClick={onClose}
+              initial={{opacity: 0}}
+              animate={{opacity: 1}}
+              exit={{opacity: 0}}
+              transition={{duration: 0.2}}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 199,
+                background: 'rgba(0, 0, 0, 0.45)',
+              }}
+            />
+            <MotionCard
+              borderLeft
+              shadow={4}
+              initial={{x: '100%'}}
+              animate={{x: 0}}
+              exit={{x: '100%'}}
+              transition={{type: 'spring', bounce: 0, duration: 0.2}}
+              style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 200,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
             >
-              {content}
-            </Resizable>
-          </MotionCard>
+              <Resizable
+                as={FillHeight}
+                minWidth={320}
+                maxWidth={800}
+                initialWidth={360}
+                resizerPosition="left"
+                style={{display: 'flex', flexDirection: 'column', flex: 'none', height: '100%'}}
+              >
+                {content}
+              </Resizable>
+            </MotionCard>
+          </>
         )}
       </AnimatePresence>
     )
