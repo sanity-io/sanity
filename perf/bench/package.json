@@ -35,7 +35,7 @@
     "react-dom": "catalog:",
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
-    "sanity-plugin-internationalized-array": "^5.1.20",
+    "sanity-plugin-internationalized-array": "^5.1.21",
     "styled-components": "catalog:",
     "tsx": "^4.22.4"
   },
