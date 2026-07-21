@@ -26,13 +26,6 @@ const DimensionCard = styled(Card)`
   }
 `
 
-// One-line, ellipsised text — keeps every card the same height regardless of content.
-const ClampText = styled(Text)`
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
 function pluralize(count: number, noun: string): string {
   return `${count} ${noun}${count === 1 ? '' : 's'}`
 }
@@ -103,15 +96,15 @@ export function VariantDimensionMap(props: {
                 {group.kind === 'set' ? <StackIcon /> : <DiamondIcon />}
               </Text>
               <Stack flex={1} space={3} style={{minWidth: 0}}>
-                <ClampText size={1} weight="semibold">
+                <Text size={1} textOverflow="ellipsis" weight="semibold">
                   {group.name}
-                </ClampText>
-                <Text muted size={1}>
+                </Text>
+                <Text muted size={1} textOverflow="ellipsis">
                   {statLine(group)}
                 </Text>
-                <ClampText muted size={1}>
+                <Text muted size={1} textOverflow="ellipsis">
                   {keys.length > 0 ? keys.join(' · ') : 'All users'}
-                </ClampText>
+                </Text>
               </Stack>
             </Flex>
           </DimensionCard>
