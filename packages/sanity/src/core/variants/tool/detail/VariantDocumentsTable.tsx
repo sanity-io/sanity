@@ -53,6 +53,16 @@ const SEARCH_INPUT_STYLE: CSSProperties = {maxWidth: 280}
 // never changes the lane height and shifts the table rows below.
 const COMMAND_LANE_STYLE: CSSProperties = {minHeight: 33}
 
+// Filter-tab strip: scrolls horizontally when the bundles outrun the width, with a subtle
+// right-edge fade cueing that there's more to scroll to. When the tabs fit, the fade falls over
+// empty space and is invisible.
+const FILTER_TABS_STYLE: CSSProperties = {
+  minWidth: 0,
+  overflowX: 'auto',
+  maskImage: 'linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%)',
+  WebkitMaskImage: 'linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%)',
+}
+
 function filterDocuments(
   rows: DocumentInVariantGroup[],
   searchTerm: string,
@@ -286,7 +296,7 @@ export function VariantDocumentsTable({
                 ) : (
                   <>
                     {/* Filter tabs lead from the left, aligned with the columns below. */}
-                    <Box flex={1} style={{minWidth: 0, overflowX: 'auto'}}>
+                    <Box flex={1} style={FILTER_TABS_STYLE}>
                       {hasReleaseControls && (
                         <VariantReleaseLane
                           activeLane={resolvedActiveLane}

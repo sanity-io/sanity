@@ -116,16 +116,12 @@ export function VariantDetail() {
                   </Text>
                 </Flex>
                 <HeaderDivider />
-                {/* Secondary metadata (conditions + description) in one group that grows to fill
-                    and shrinks/clips (nowrap, overflow hidden) as the lane narrows — so it never
-                    wraps to a second line or pushes into the actions on the right. */}
-                <Flex
-                  align="center"
-                  flex={1}
-                  gap={3}
-                  style={{minWidth: 0, overflowX: 'hidden'}}
-                  wrap="nowrap"
-                >
+                {/* Secondary metadata (conditions + description) in one nowrap group that grows to
+                    fill and shrinks as the lane narrows. It does NOT clip here — @sanity/ui Text
+                    renders at cap-height with the full glyph overflowing (overflow: visible), so a
+                    clip on this collapsed (~9px) group would crop descenders. Horizontal truncation
+                    is handled by the taller parent cluster's overflow instead. */}
+                <Flex align="center" flex={1} gap={3} style={{minWidth: 0}} wrap="nowrap">
                   {Object.keys(variant.conditions).length > 0 ? (
                     // Conditions are read-only facts, not interactive chips — quiet key/value
                     // metadata (muted key, solid value, dot-separated).
