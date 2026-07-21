@@ -184,7 +184,7 @@ importers:
         specifier: ^2.10.4
         version: 2.10.5
       typedoc:
-        specifier: ^0.28.19
+        specifier: ^0.28.20
         version: 0.28.20(typescript@6.0.3)
       vercel:
         specifier: ^54.17.3
