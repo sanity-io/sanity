@@ -93,6 +93,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'activity.panel.error': 'An error occurred getting the release activity',
   /** The title for the activity panel shown in the releases detail screen */
   'activity.panel.title': 'Activity',
+  /** Tooltip/label for the button that closes the activity overlay panel */
+  'activity.panel.close': 'Close activity',
 
   /** Header for the dialog confirming the archive of a release */
   'archive-dialog.confirm-archive-header': 'Are you sure you want to archive this release?',

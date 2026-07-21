@@ -117,7 +117,9 @@ export function ReleaseDetail() {
           />
         </Card>
 
-        <Flex flex={1}>
+        {/* position:relative anchors the beta activity overlay, which floats over this area
+            instead of pushing the content column aside. */}
+        <Flex flex={1} style={{position: 'relative', overflow: 'hidden'}}>
           <Flex direction="column" flex={1} height="fill">
             <Card flex={1} overflow="auto">
               <ReleaseDashboardDetails
@@ -143,6 +145,8 @@ export function ReleaseDetail() {
             events={releaseEvents}
             release={releaseInDetail}
             show={inspector === 'activity'}
+            overlay={variantsEnabled}
+            onClose={() => setInspector(undefined)}
           />
         </Flex>
       </Flex>
