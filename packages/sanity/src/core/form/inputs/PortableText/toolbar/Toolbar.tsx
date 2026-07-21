@@ -239,7 +239,7 @@ export function Toolbar(props: ToolbarProps) {
     hotkeys,
     onMemberOpen,
     resolveInitialValue,
-    disabled: true,
+    disabled,
   })
 
   const blockStyles = useMemo(() => getBlockStyles(schemaTypes), [schemaTypes])

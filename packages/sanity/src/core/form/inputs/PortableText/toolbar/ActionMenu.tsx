@@ -95,7 +95,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
               action: action.title || action.key,
             })}
             data-testid={`action-button-${action.key}`}
-            disabled={disabled || annotationDisabled}
+            disabled={disabled || action.disabled || annotationDisabled}
             mode="bleed"
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}
