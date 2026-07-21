@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Box, Checkbox, Flex, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {memo} from 'react'
@@ -85,24 +85,12 @@ function ValidationErrorIndicator({
   )
 }
 
-/**
- * Row-selection state + handlers for the bulk-action UX, threaded into the leading checkbox column.
- *
- * @internal
- */
-export interface VariantDocumentSelection {
-  isSelected: (groupId: string) => boolean
-  onToggleRow: (groupId: string) => void
-  allSelected: boolean
-  someSelected: boolean
-  onToggleAll: () => void
-}
-
+// The leading select column (select-all header + row checkboxes) is injected by the shared
+// DocumentTable, so it is not defined here.
 export const getVariantDocumentTableColumnDefs = (
   t: TFunction<'variants'>,
   variantId: string | undefined,
   releasesById: Map<string, ReleaseDocument>,
-  selection?: VariantDocumentSelection,
 ): Column<DocumentInVariantGroup>[] => [
   {
     id: 'documentGroup',
@@ -111,45 +99,6 @@ export const getVariantDocumentTableColumnDefs = (
     sorting: true,
     sortTransform: (row) => row.rowKey ?? row.groupId,
   },
-  // Leading checkbox column for bulk selection. Only present when the table is wired for selection;
-  // loading rows render no checkbox (they aren't documents you can act on).
-  ...(selection
-    ? [
-        {
-          id: 'select',
-          width: 44,
-          style: {minWidth: 44, maxWidth: 44},
-          sorting: false,
-          // Select-all lives in the column-header row's checkbox cell — directly above the row
-          // checkboxes it governs — not floating in the command lane. Doubles as clear (clicking
-          // while anything is selected clears the selection, GitHub-style).
-          header: ({headerProps}) => (
-            <Flex {...headerProps} align="center" justify="center" paddingY={3} sizing="border">
-              <Checkbox
-                aria-label={t('detail.documents.bulk.select-all')}
-                checked={selection.allSelected}
-                data-testid="variant-bulk-select-all"
-                indeterminate={selection.someSelected && !selection.allSelected}
-                onChange={selection.onToggleAll}
-              />
-            </Flex>
-          ),
-          cell: ({cellProps, datum}) => (
-            <Flex {...cellProps} align="center" justify="center" paddingX={2} sizing="border">
-              {!datum.isLoading && (
-                <Checkbox
-                  aria-label={t('detail.documents.bulk.select-row')}
-                  checked={selection.isSelected(datum.groupId)}
-                  // Stop the row's own click/navigation from firing when toggling the checkbox.
-                  onClick={(event) => event.stopPropagation()}
-                  onChange={() => selection.onToggleRow(datum.groupId)}
-                />
-              )}
-            </Flex>
-          ),
-        } satisfies Column<DocumentInVariantGroup>,
-      ]
-    : []),
   {
     id: 'bundle',
     // Wider than the old 140 so typical release names ("Compliance Dashboard") render in full;
