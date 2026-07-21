@@ -73,9 +73,7 @@ function keyGenerator() {
 const LegacyEditorRefPlugin = forwardRef<PortableTextEditor | null>((_, ref) => {
   const portableTextEditor = usePortableTextEditor()
 
-  const portableTextEditorRef = useRef(portableTextEditor)
-
-  useImperativeHandle(ref, () => portableTextEditorRef.current, [])
+  useImperativeHandle(ref, () => portableTextEditor, [portableTextEditor])
 
   return null
 })
