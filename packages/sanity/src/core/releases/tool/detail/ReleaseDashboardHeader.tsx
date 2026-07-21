@@ -1,5 +1,4 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {
@@ -13,6 +12,7 @@ import {
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
+import {DetailBackButton} from '../../../components/detailLayout'
 import {useTranslation} from '../../../i18n'
 import {useWorkspace} from '../../../studio/workspace'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -63,15 +63,10 @@ export function ReleaseDashboardHeader(props: {
             {variantsEnabled ? (
               // A single back affordance — the release title already headlines the pane below, so
               // the breadcrumb's repeat of it is dropped. Mirrors the Variants detail's back arrow.
-              <Button
-                icon={ArrowLeftIcon}
-                mode="bleed"
-                onClick={handleNavigateToReleasesList}
+              <DetailBackButton
                 text={t('overview.title')}
-                textWeight="regular"
-                padding={2}
-                style={BREADCRUMB_ALIGN_STYLE}
-                data-testid="back-to-releases-button"
+                onClick={handleNavigateToReleasesList}
+                testId="back-to-releases-button"
               />
             ) : (
               <>
