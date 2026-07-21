@@ -19,6 +19,8 @@ interface ReleaseDocumentFilterTabsProps {
   isLoading?: boolean
   activeFilter: DocumentFilterType
   onFilterChange: (filter: DocumentFilterType) => void
+  /** Render just the tabs (no Container/padding) for hosting inside the shared table command lane. */
+  inline?: boolean
 }
 
 export function ReleaseDocumentFilterTabs({
@@ -27,6 +29,7 @@ export function ReleaseDocumentFilterTabs({
   isLoading = false,
   activeFilter,
   onFilterChange,
+  inline = false,
 }: ReleaseDocumentFilterTabsProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -36,20 +39,22 @@ export function ReleaseDocumentFilterTabs({
   }
 
   if (isLoading) {
+    const skeletons = (
+      <Flex align="center" gap={2}>
+        {FILTER_TAB_CONFIGS.filter((config) => config.key !== 'errors').map((config) => (
+          <Skeleton
+            key={`loading-skeleton-${config.key}`}
+            animated
+            style={{width: '70px', height: '32px'}}
+            radius={2}
+          />
+        ))}
+      </Flex>
+    )
+    if (inline) return skeletons
     return (
       <Container width={3}>
-        <Box padding={3}>
-          <Flex align="center" gap={2}>
-            {FILTER_TAB_CONFIGS.filter((config) => config.key !== 'errors').map((config) => (
-              <Skeleton
-                key={`loading-skeleton-${config.key}`}
-                animated
-                style={{width: '70px', height: '32px'}}
-                radius={2}
-              />
-            ))}
-          </Flex>
-        </Box>
+        <Box padding={3}>{skeletons}</Box>
       </Container>
     )
   }
@@ -62,6 +67,7 @@ export function ReleaseDocumentFilterTabs({
     <ReleaseDocumentFilterTabsInner
       documents={documents}
       activeFilter={activeFilter}
+      inline={inline}
       onFilterChange={onFilterChange}
       t={t}
     />
@@ -72,6 +78,7 @@ interface ReleaseDocumentFilterTabsInnerProps {
   documents: DocumentInRelease[]
   activeFilter: DocumentFilterType
   onFilterChange: (filter: DocumentFilterType) => void
+  inline: boolean
   t: ReturnType<typeof useTranslation>['t']
 }
 
@@ -79,6 +86,7 @@ function ReleaseDocumentFilterTabsInner({
   documents,
   activeFilter,
   onFilterChange,
+  inline,
   t,
 }: ReleaseDocumentFilterTabsInnerProps) {
   const counts = useMemo(() => countDocumentsByAction(documents), [documents])
@@ -104,32 +112,37 @@ function ReleaseDocumentFilterTabsInner({
     return 'default'
   }
 
+  const tabList = (
+    <TabList space={1}>
+      {FILTER_TAB_CONFIGS.map((config) => {
+        const isSelected = activeFilter === config.key
+
+        // Hide tabs with zero counts (except "All")
+        if (config.key !== 'all' && counts[config.key] === 0) {
+          return null
+        }
+
+        return (
+          <Tab
+            key={config.key}
+            id={`filter-tab-${config.key}`}
+            aria-controls="document-table-card"
+            label={getTabLabel(config)}
+            onClick={() => onFilterChange(config.key)}
+            selected={isSelected}
+            tone={getTabTone(config)}
+          />
+        )
+      })}
+    </TabList>
+  )
+
+  // Inline: bare tabs for the shared table's command lane (the lane supplies container + padding).
+  if (inline) return tabList
+
   return (
     <Container width={3}>
-      <Box padding={3}>
-        <TabList space={1}>
-          {FILTER_TAB_CONFIGS.map((config) => {
-            const isSelected = activeFilter === config.key
-
-            // Hide tabs with zero counts (except "All")
-            if (config.key !== 'all' && counts[config.key] === 0) {
-              return null
-            }
-
-            return (
-              <Tab
-                key={config.key}
-                id={`filter-tab-${config.key}`}
-                aria-controls="document-table-card"
-                label={getTabLabel(config)}
-                onClick={() => onFilterChange(config.key)}
-                selected={isSelected}
-                tone={getTabTone(config)}
-              />
-            )
-          })}
-        </TabList>
-      </Box>
+      <Box padding={3}>{tabList}</Box>
     </Container>
   )
 }

@@ -169,7 +169,8 @@ export const getDocumentTableColumnDefs: (
   releaseId: string,
   releaseState: ReleaseState,
   t: TFunction<'releases'>,
-) => Column<BundleDocumentRow>[] = (releaseId, releaseState, t) => [
+  options?: {searchInCommandLane?: boolean},
+) => Column<BundleDocumentRow>[] = (releaseId, releaseState, t, options) => [
   /**
    * Hiding action for archived and published releases of v1.0
    * This will be added once Events API has reverse order lookup supported
@@ -197,7 +198,12 @@ export const getDocumentTableColumnDefs: (
   {
     id: 'search',
     width: null,
-    style: {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
+    // When search lives in the command lane, this column grows to fill (like Variants) so "Edited"
+    // pins to the right edge; otherwise it holds the header search input at a capped width.
+    style: options?.searchInCommandLane
+      ? {minWidth: 240}
+      : {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
+    sorting: options?.searchInCommandLane ? true : undefined,
     sortTransform(value) {
       return (
         String(
@@ -205,9 +211,16 @@ export const getDocumentTableColumnDefs: (
         ).toLowerCase() || 0
       )
     },
-    header: (props) => (
-      <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
-    ),
+    header: (props) =>
+      options?.searchInCommandLane ? (
+        // Search moved to the command lane; the header is a plain sortable "Document" label that
+        // grows to fill (flex) in both header and body.
+        <Flex {...props.headerProps} flex={1} paddingY={3} sizing="border">
+          <Headers.SortHeaderButton text={t('table-header.document')} {...props} />
+        </Flex>
+      ) : (
+        <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
+      ),
     cell: ({cellProps, datum}) => (
       <Box {...cellProps} flex={1} padding={1} paddingRight={2} sizing="border">
         {datum.isPending || datum.isLoading ? (
