@@ -88,6 +88,7 @@ minimumReleaseAgeExclude:
   - 'sanity-plugin-media'
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-utils'
+  - 'verkit@0.1.2'
   - 'vitest'
   - 'vite'
 

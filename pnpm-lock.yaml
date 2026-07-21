@@ -1706,8 +1706,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       '@sanity/workbench':
-        specifier: 0.1.0-alpha.26
-        version: 0.1.0-alpha.26(@sanity/sdk@2.17.0)(react@19.2.7)(xstate@5.32.5)
+        specifier: 0.1.0-alpha.28
+        version: 0.1.0-alpha.28(@sanity/sdk@2.17.0)(react@19.2.7)(xstate@5.32.5)
       '@sentry/react':
         specifier: ^10.62.0
         version: 10.66.0(react@19.2.7)
@@ -6997,8 +6997,8 @@ packages:
     resolution: {integrity: sha512-8geJ8iHBJ4gu4SaubZqhYZoZoalcsotks4qEUIYwfSuWAR76oypBQTx7aBELKphAnBg3GlE98VWh1X+DkGFxZg==}
     engines: {node: '>=22.12'}
 
-  '@sanity/workbench@0.1.0-alpha.26':
-    resolution: {integrity: sha512-jERkSQyTo1/PwxGAVybqe7JRGCo9QAEnM+T6Jj5uQvZz7X7FokD3hUas2Pht5iEkc1jECzTwhhd1P50SPd0G7A==}
+  '@sanity/workbench@0.1.0-alpha.28':
+    resolution: {integrity: sha512-xMW9bqd7hwkBKpQAzgjOXQ17zrroh3GIkSYY7HvsFSyVTj/j7s8HMl9lc0q3PAHbXvvvaWrDWMTWjU79bsHO7A==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     peerDependencies:
       '@sanity/sdk': ^2.9.0
@@ -14021,6 +14021,10 @@ packages:
     engines: {node: '>= 18'}
     hasBin: true
 
+  verkit@0.1.2:
+    resolution: {integrity: sha512-WqkT8n3hqizuCu71W3bUzf5fjBmkbXcudsehe/NbxA8PgqoKnSOY5K0Ba2ckg1qaRaSpSz7as/n9K1R9JXjQKg==}
+    engines: {node: '>=18.12.0'}
+
   version-range@4.15.0:
     resolution: {integrity: sha512-Ck0EJbAGxHwprkzFO966t4/5QkRuzh+/I1RxhLgUKKwEn+Cd8NwM60mE3AqBZg5gYODoXW0EFsQvbZjRlvdqbg==}
     engines: {node: '>=4'}
@@ -19667,13 +19671,13 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/workbench@0.1.0-alpha.26(@sanity/sdk@2.17.0)(react@19.2.7)(xstate@5.32.5)':
+  '@sanity/workbench@0.1.0-alpha.28(@sanity/sdk@2.17.0)(react@19.2.7)(xstate@5.32.5)':
     dependencies:
       '@module-federation/runtime': 2.8.0
       '@sanity/sdk': 2.17.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/telemetry': 1.1.0(react@19.2.7)
       rxjs: 7.8.2
-      semver: 7.8.5
+      verkit: 0.1.2
       xstate: 5.32.5
       zod: 4.4.3
     transitivePeerDependencies:
@@ -27690,6 +27694,8 @@ snapshots:
       - rollup
       - supports-color
       - utf-8-validate
+
+  verkit@0.1.2: {}
 
   version-range@4.15.0: {}
 
