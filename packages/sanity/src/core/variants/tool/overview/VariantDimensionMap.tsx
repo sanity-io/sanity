@@ -1,6 +1,7 @@
 import {Badge, Card, Flex, Grid, Stack, Text} from '@sanity/ui'
-import {useMemo} from 'react'
+import {type KeyboardEvent, useCallback, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
+import {styled} from 'styled-components'
 
 import {
   buildConditionSuggestionIndex,
@@ -14,6 +15,20 @@ import {getVariantId} from '../util'
 // How many values to show inline on a compact tile before collapsing to a "+n" count.
 const MAX_VALUES_PER_DIMENSION = 6
 
+// Clickable, bounded card in the Studio idiom (mirrors Tasks' FocusableCard): a focusable
+// div rather than `as="button"`, so Card keeps its padding/radius/tone box props. Explicit
+// resting border, strengthened on hover/focus, so tiles read as ordered, tappable units.
+const DimensionCard = styled(Card)`
+  &[data-as='button'] {
+    border: 1px solid var(--card-border-color);
+    cursor: pointer;
+  }
+  &[data-as='button']:hover,
+  &[data-as='button']:focus-visible {
+    border-color: var(--card-focus-ring-color);
+  }
+`
+
 /**
  * Dimension-first map of the variant space as a grid of compact tiles — the entry
  * point to the definitions. Answers "what dimensions am I playing with?" at a
@@ -23,6 +38,14 @@ const MAX_VALUES_PER_DIMENSION = 6
 export function VariantDimensionMap(props: {variants: SystemVariant[]}): React.JSX.Element | null {
   const {variants} = props
   const router = useRouter()
+
+  const openGroup = useCallback(
+    (representativeVariantId: string) => {
+      router.navigate({variantId: getVariantId(representativeVariantId)})
+    },
+    [router],
+  )
+
   const groups = useMemo(() => summarizeVariantDimensions(variants), [variants])
   const index = useMemo(
     () => buildConditionSuggestionIndex(variants, getStubVariantDimensionMap()),
@@ -49,18 +72,21 @@ export function VariantDimensionMap(props: {variants: SystemVariant[]}): React.J
           its content vertically within a stretched card). */}
       <Grid columns={[1, 2, 3]} gap={3} style={{alignItems: 'start'}}>
         {groups.map((group) => (
-          <Card
+          <DimensionCard
             key={group.id}
-            as="button"
-            border
-            onClick={() =>
-              router.navigate({variantId: getVariantId(group.representativeVariantId)})
-            }
-            padding={3}
+            data-as="button"
+            onClick={() => openGroup(group.representativeVariantId)}
+            onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault()
+                openGroup(group.representativeVariantId)
+              }
+            }}
+            padding={4}
             radius={3}
-            shadow={1}
-            style={{textAlign: 'left'}}
-            tone="default"
+            role="button"
+            tabIndex={0}
+            tone="transparent"
           >
             <Stack space={3}>
               <Flex align="flex-start" gap={2} justify="space-between">
@@ -112,7 +138,7 @@ export function VariantDimensionMap(props: {variants: SystemVariant[]}): React.J
                 </Stack>
               )}
             </Stack>
-          </Card>
+          </DimensionCard>
         ))}
       </Grid>
     </Stack>

@@ -205,7 +205,17 @@ export function VariantsOverview() {
       {/* Same container width as releases document table (`container[3]` in Table), so chrome aligns with row content */}
       <Container flex="none" width={3}>
         <Flex direction="column" paddingX={3}>
-          <Card flex="none" paddingY={5}>
+          {/* Sticky so the create actions stay reachable once the map + list scroll away. */}
+          <Card
+            flex="none"
+            paddingY={5}
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 200,
+              backgroundColor: 'var(--card-bg-color)',
+            }}
+          >
             <Flex align="flex-start" gap={4} justify="space-between">
               <Stack space={3}>
                 <Text as="h1" size={4} weight="bold">
