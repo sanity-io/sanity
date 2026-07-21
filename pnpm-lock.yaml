@@ -795,7 +795,7 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
       '@sanity/ailf':
-        specifier: ^7.28.0
+        specifier: ^7.31.1
         version: 7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)
       '@typescript/native-preview':
         specifier: 'catalog:'
