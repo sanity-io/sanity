@@ -9,6 +9,7 @@ import {useTranslation} from '../../../../i18n'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {useFocusBlock} from './hooks'
 import {type BlockItem} from './types'
+import {useApplicableSchema} from './useApplicableSchema'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 
@@ -23,6 +24,7 @@ interface InsertMenuProps {
 
 export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   const {disabled, items, isFullscreen, collapsed} = props
+  const applicable = useApplicableSchema()
   const {t} = useTranslation()
   const focusBlock = useFocusBlock()
   const editor = usePortableTextEditor()
@@ -50,7 +52,12 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
             {typeName: title},
           )}
           mode="bleed"
-          disabled={disabled || (isVoidFocus && item.inline) || Boolean(item.type.deprecated)}
+          disabled={
+            disabled ||
+            (isVoidFocus && item.inline) ||
+            Boolean(item.type.deprecated) ||
+            !applicable[item.inline ? 'inlineObjects' : 'blockObjects'].has(item.type.name)
+          }
           data-testid={`${item.type.name}-insert-menu-button`}
           icon={item.icon}
           onClick={item.handle}
@@ -71,7 +78,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
         />
       )
     })
-  }, [disabled, isVoidFocus, items, t, tooltipPlacement])
+  }, [applicable, disabled, isVoidFocus, items, t, tooltipPlacement])
 
   const menuButtonProps = useMemo(
     () => ({
