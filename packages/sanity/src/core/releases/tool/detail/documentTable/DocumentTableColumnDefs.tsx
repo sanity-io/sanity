@@ -1,11 +1,10 @@
 import {type ReleaseState} from '@sanity/client'
-import {DiamondIcon} from '@sanity/icons/Diamond'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Badge, Box, Flex, Text} from '@sanity/ui'
+import {Badge, Box, Card, Flex, Text} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {memo, useCallback, useEffect, useRef, useState} from 'react'
+import {type CSSProperties, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -15,6 +14,7 @@ import {AvatarSkeleton, UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
+import {RhombusIcon} from '../../../../variants/plugin/components/PersonalizationIcons'
 import {
   getVariantConditionsText,
   getVariantIdFromDocument,
@@ -171,6 +171,13 @@ const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentR
   },
 })
 
+// Purple, matching the perspective bar's variant motif. The perspective bar gets its purple from a
+// `tone="suggest"` Card context (which defines --card-icon-color as the suggest purple); the
+// --card-badge-* vars only exist inside a Badge, so we replicate the Card approach: a transparent
+// suggest-toned wrapper, with the RhombusIcon (stroke=currentColor) picking up --card-icon-color.
+const VARIANT_ICON_CARD_STYLE: CSSProperties = {backgroundColor: 'transparent'}
+const VARIANT_ICON_STYLE: CSSProperties = {color: 'var(--card-icon-color)'}
+
 /** Resolves a document's variant definition from its `_system.variant._ref` (full variant id). */
 function resolveDocumentVariant(
   document: BundleDocumentRow['document'],
@@ -209,9 +216,11 @@ const VariantCell = memo(
         }
       >
         <Flex align="center" gap={2}>
-          <Text muted size={1}>
-            <DiamondIcon />
-          </Text>
+          <Card tone="suggest" padding={0} style={VARIANT_ICON_CARD_STYLE}>
+            <Text size={1} style={VARIANT_ICON_STYLE}>
+              <RhombusIcon />
+            </Text>
+          </Card>
           <Text size={1} textOverflow="ellipsis" weight="medium">
             {getVariantTitle(variant)}
           </Text>
@@ -375,7 +384,16 @@ export const getDocumentTableColumnDefs: (
       )
 
       return (
-        <Flex {...cellProps} flex={1} padding={1} justify="center" align="center" sizing="border">
+        // In the command-lane layout only the Document column grows; keep validation fixed at its
+        // width (flex:1 here would split the free space with Document and misalign the header/body).
+        <Flex
+          {...cellProps}
+          flex={options?.searchInCommandLane ? undefined : 1}
+          padding={1}
+          justify="center"
+          align="center"
+          sizing="border"
+        >
           {datum.validation.hasError && (
             <Tooltip
               portal
