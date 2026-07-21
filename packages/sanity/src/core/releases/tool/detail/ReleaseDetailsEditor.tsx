@@ -51,6 +51,8 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): Rea
       release={release}
       onChange={handleOnChange}
       disabled={Boolean(!hasUpdatePermission)}
+      // Detail page: description grows with content and the page scrolls (no internal scrollbar).
+      autoGrow
     />
   )
 }

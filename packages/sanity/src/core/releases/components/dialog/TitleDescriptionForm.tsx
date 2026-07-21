@@ -93,10 +93,16 @@ export function TitleDescriptionForm({
   release,
   onChange,
   disabled,
+  autoGrow = false,
 }: {
   release: EditableReleaseDocument
   onChange: (changedValue: EditableReleaseDocument) => void
   disabled?: boolean
+  /**
+   * Detail-page usage: the description grows with its content and the page scrolls, instead of
+   * capping at MAX_DESCRIPTION_HEIGHT with an internal scrollbar (which suits the dialog).
+   */
+  autoGrow?: boolean
 }): React.JSX.Element {
   const isReleaseOpen = getIsReleaseOpen(release)
   const titleRef = useRef<HTMLTextAreaElement>(null)
@@ -188,8 +194,10 @@ export function TitleDescriptionForm({
           onBlur={handleBlur}
           style={{
             height: `${scrollHeight}px`,
-            maxHeight: MAX_DESCRIPTION_HEIGHT,
-            overflowY: scrollHeight > MAX_DESCRIPTION_HEIGHT ? 'auto' : 'hidden',
+            // autoGrow: no cap, no internal scroll — the page scrolls (detail page). Otherwise cap
+            // at MAX_DESCRIPTION_HEIGHT with an internal scrollbar (dialog).
+            maxHeight: autoGrow ? undefined : MAX_DESCRIPTION_HEIGHT,
+            overflowY: !autoGrow && scrollHeight > MAX_DESCRIPTION_HEIGHT ? 'auto' : 'hidden',
           }}
           data-testid="release-form-description"
           disabled={disabled}
