@@ -30,7 +30,7 @@ catalog:
   '@sanity/migrate': ^8.0.0
   '@sanity/pkg-utils': ^11.0.13
   '@sanity/telemetry': ^1.1.0
-  '@sanity/ui': ^3.3.5
+  '@sanity/ui': ^3.4.0
   '@types/node': ^24.13.2
   '@types/react': ^19.2.17
   '@types/react-dom': ^19.2.3
