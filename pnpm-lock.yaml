@@ -796,7 +796,7 @@ importers:
         version: link:../tsconfig
       '@sanity/ailf':
         specifier: ^7.28.0
-        version: 7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)
+        version: 7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
@@ -1689,7 +1689,7 @@ importers:
         version: link:../@sanity/schema
       '@sanity/sdk':
         specifier: ^2.15.0
-        version: 2.17.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.5)
+        version: 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/telemetry':
         specifier: 'catalog:'
         version: 1.1.0(react@19.2.7)
@@ -1707,7 +1707,7 @@ importers:
         version: 3.0.3
       '@sanity/workbench':
         specifier: 0.1.0-alpha.28
-        version: 0.1.0-alpha.28(@sanity/sdk@2.17.0)(react@19.2.7)(xstate@5.32.5)
+        version: 0.1.0-alpha.28(@sanity/sdk@2.18.0)(react@19.2.7)(xstate@5.32.5)
       '@sentry/react':
         specifier: ^10.62.0
         version: 10.66.0(react@19.2.7)
@@ -6902,19 +6902,9 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@sanity/presentation-comlink@2.1.0':
-    resolution: {integrity: sha512-XwbGSK/cNW/awPfT8GssDTZoTlmg/7bcz1feCdfSDjOvNmlNfSqu/uPJZgKPnM0n54bFTUy8cs2zTKm1kc8nVA==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-
   '@sanity/presentation-comlink@2.2.0':
     resolution: {integrity: sha512-uHiiJNWER36S/M2R9B7iwf+R2GMV267kQCfIpQiGX+2C3aHwjFHjaEiPBF0aPOyBkHV2OfB3l7XSzyLIXYuQHQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
-
-  '@sanity/preview-url-secret@4.0.8':
-    resolution: {integrity: sha512-n2ulvDpA8z9UOhnyMPB4WC2w3e/noqL2+gE1f+WQyAE2v0OJsYOkTQzNCe9FU0UaVtbuBTNZI5xj+ei6Qxql/Q==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-    peerDependencies:
-      '@sanity/client': ^7.23.0
 
   '@sanity/preview-url-secret@4.1.0':
     resolution: {integrity: sha512-Zha42V94Q7vnSHOyCHtSihChX7asoVrDq7BCQ6xyAzoGZKdbP7FIOiSahfIN9Z1ZUEe5PJh6/HGx9+6e/y50NA==}
@@ -6946,9 +6936,6 @@ packages:
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
-
-  '@sanity/sdk@2.17.0':
-    resolution: {integrity: sha512-0Xwfr+eKpw6e3N0EnLmtSLCrxqH3ZRuzpgZyPzQ0jdW6GpWZwU0bfir5zILEhUpg9gJGKeqZpPPjRLkI2rAAQg==}
 
   '@sanity/sdk@2.18.0':
     resolution: {integrity: sha512-EFx7iA0cnVWK4/8kXWkMSojQrwOG/lYb2C3abcQrDJQuWfAmJV64jzvH1qwBGPRVVQuOSnFy0szVwCJDDwDpSQ==}
@@ -6985,9 +6972,6 @@ packages:
       react-dom: ^18 || >=19.0.0-0
       react-is: ^18 || >=19.0.0-0
       styled-components: ^5.2 || ^6
-
-  '@sanity/uuid@3.0.2':
-    resolution: {integrity: sha512-vzdhqOrX7JGbMyK40KuIwwyXHm7GMLOGuYgn3xlC09e4ZVNofUO5mgezQqnRv0JAMthIRhofqs9f6ufUjMKOvw==}
 
   '@sanity/uuid@3.0.3':
     resolution: {integrity: sha512-aJvKuFwzcZKRwuIjrRPfXfXKpSdnLF4CnedV5WcX1n5SzhufvRNHIot5lkx1+Y1DwiMVQOZ5gDSPJH+P6Ao70A==}
@@ -7598,9 +7582,6 @@ packages:
 
   '@types/use-sync-external-store@1.5.0':
     resolution: {integrity: sha512-5dyB8nLC/qogMrlCizZnYWQTA4lnb/v+It+sqNl5YnSRAPMlIqY/X0Xn+gZw8vOL+TgTTr28VEbn3uf8fUtAkw==}
-
-  '@types/uuid@8.3.4':
-    resolution: {integrity: sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==}
 
   '@types/webidl-conversions@7.0.3':
     resolution: {integrity: sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA==}
@@ -14072,11 +14053,6 @@ packages:
     resolution: {integrity: sha512-6ZxzVpzDXDa3bJWaHilVayA+BH/1zmxCJoVgvmqJnid/gPoKHxUrS/aC/T6LGQtNHT+XHG9fXPJB4d+IrU30Ew==}
     hasBin: true
 
-  uuid@8.3.2:
-    resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
-    hasBin: true
-
   uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
@@ -18906,7 +18882,7 @@ snapshots:
 
   '@sanity-labs/design-tokens@0.0.2-alpha.4': {}
 
-  '@sanity/ailf@7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)':
+  '@sanity/ailf@7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)':
     dependencies:
       '@google-cloud/bigquery': 8.3.1
       '@google-cloud/storage': 7.21.0
@@ -18924,7 +18900,7 @@ snapshots:
       jiti: 2.7.0
       js-yaml: 4.3.0
       oxc-parser: 0.129.0
-      promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)
+      promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)
       zod: 4.4.3
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
@@ -19329,7 +19305,7 @@ snapshots:
     dependencies:
       '@sanity/client': 7.24.0
       '@sanity/comlink': 4.0.1
-      '@sanity/presentation-comlink': 2.1.0(@sanity/client@7.24.0)(@sanity/types@packages+@sanity+types)
+      '@sanity/presentation-comlink': 2.2.0(@sanity/client@7.24.0)(@sanity/types@packages+@sanity+types)
       '@sanity/visual-editing-csm': 3.0.11(@sanity/client@7.24.0)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
     transitivePeerDependencies:
       - '@sanity/types'
@@ -19338,7 +19314,7 @@ snapshots:
   '@sanity/debug-preview-url-secret-plugin@2.0.19(@sanity/client@7.24.0)(react@19.2.7)(sanity@packages+sanity)':
     dependencies:
       '@sanity/icons': 5.1.0(react@19.2.7)
-      '@sanity/preview-url-secret': 4.0.8(@sanity/client@7.24.0)
+      '@sanity/preview-url-secret': 4.1.0(@sanity/client@7.24.0)
       react: 19.2.7
       sanity: link:packages/sanity
     transitivePeerDependencies:
@@ -19592,14 +19568,6 @@ snapshots:
       - supports-color
       - vue-tsc
 
-  '@sanity/presentation-comlink@2.1.0(@sanity/client@7.24.0)(@sanity/types@packages+@sanity+types)':
-    dependencies:
-      '@sanity/comlink': 4.0.1
-      '@sanity/visual-editing-types': 1.1.8(@sanity/client@7.24.0)(@sanity/types@packages+@sanity+types)
-    transitivePeerDependencies:
-      - '@sanity/client'
-      - '@sanity/types'
-
   '@sanity/presentation-comlink@2.2.0(@sanity/client@7.24.0)(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/comlink': 4.0.1
@@ -19607,11 +19575,6 @@ snapshots:
     transitivePeerDependencies:
       - '@sanity/client'
       - '@sanity/types'
-
-  '@sanity/preview-url-secret@4.0.8(@sanity/client@7.24.0)':
-    dependencies:
-      '@sanity/client': 7.24.0
-      '@sanity/uuid': 3.0.2
 
   '@sanity/preview-url-secret@4.1.0(@sanity/client@7.24.0)':
     dependencies:
@@ -19692,33 +19655,6 @@ snapshots:
       - use-sync-external-store
       - xstate
 
-  '@sanity/sdk@2.17.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.5)':
-    dependencies:
-      '@sanity/bifur-client': 1.0.0
-      '@sanity/client': 7.24.0
-      '@sanity/comlink': 4.0.1
-      '@sanity/diff-match-patch': 3.2.0
-      '@sanity/diff-patch': 6.0.0
-      '@sanity/id-utils': 1.0.0
-      '@sanity/image-url': 2.1.1
-      '@sanity/json-match': 1.0.5
-      '@sanity/message-protocol': 0.23.0
-      '@sanity/mutate': 0.18.1(xstate@5.32.5)
-      '@sanity/telemetry': 1.1.0(react@19.2.7)
-      '@sanity/types': link:packages/@sanity/types
-      groq: 3.88.1-typegen-experimental.0
-      groq-js: 1.30.3
-      reselect: 5.2.0
-      rxjs: 7.8.2
-      zustand: 5.0.14(@types/react@19.2.17)(immer@11.1.15)(react@19.2.7)(use-sync-external-store@1.6.0)
-    transitivePeerDependencies:
-      - '@types/react'
-      - immer
-      - react
-      - supports-color
-      - use-sync-external-store
-      - xstate
-
   '@sanity/sdk@2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.5)':
     dependencies:
       '@sanity/bifur-client': 1.0.0
@@ -19793,11 +19729,6 @@ snapshots:
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
 
-  '@sanity/uuid@3.0.2':
-    dependencies:
-      '@types/uuid': 8.3.4
-      uuid: 8.3.2
-
   '@sanity/uuid@3.0.3':
     dependencies:
       uuid: 11.1.1
@@ -19828,7 +19759,7 @@ snapshots:
       '@sanity/comlink': 4.0.1
       '@sanity/icons': 5.1.0(react@19.2.7)
       '@sanity/mutate': 0.18.1(xstate@5.32.5)
-      '@sanity/presentation-comlink': 2.1.0(@sanity/client@7.24.0)(@sanity/types@packages+@sanity+types)
+      '@sanity/presentation-comlink': 2.2.0(@sanity/client@7.24.0)(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret': 4.1.0(@sanity/client@7.24.0)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 3.3.5(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)
@@ -19884,10 +19815,10 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/workbench@0.1.0-alpha.28(@sanity/sdk@2.17.0)(react@19.2.7)(xstate@5.32.5)':
+  '@sanity/workbench@0.1.0-alpha.28(@sanity/sdk@2.18.0)(react@19.2.7)(xstate@5.32.5)':
     dependencies:
       '@module-federation/runtime': 2.8.0
-      '@sanity/sdk': 2.17.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.5)
+      '@sanity/sdk': 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.7)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/telemetry': 1.1.0(react@19.2.7)
       rxjs: 7.8.2
       verkit: 0.1.2
@@ -19987,13 +19918,13 @@ snapshots:
   '@slack/types@2.22.0':
     optional: true
 
-  '@slack/web-api@7.19.0(debug@4.3.4)':
+  '@slack/web-api@7.19.0':
     dependencies:
       '@slack/logger': 4.0.1
       '@slack/types': 2.22.0
       '@types/node': 24.13.3
       '@types/retry': 0.12.0
-      axios: 1.18.1(debug@4.3.4)
+      axios: 1.18.1
       eventemitter3: 5.0.4
       form-data: 4.0.6
       is-electron: 2.2.2
@@ -20440,8 +20371,6 @@ snapshots:
   '@types/use-sync-external-store@0.0.6': {}
 
   '@types/use-sync-external-store@1.5.0': {}
-
-  '@types/uuid@8.3.4': {}
 
   '@types/webidl-conversions@7.0.3':
     optional: true
@@ -21910,7 +21839,7 @@ snapshots:
       - supports-color
     optional: true
 
-  axios@1.18.1(debug@4.3.4):
+  axios@1.18.1:
     dependencies:
       follow-redirects: 1.16.0(debug@4.3.4)
       form-data: 4.0.6
@@ -25967,7 +25896,7 @@ snapshots:
 
   promisepipe@3.0.0: {}
 
-  promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9):
+  promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9):
     dependencies:
       '@anthropic-ai/sdk': 0.78.0(zod@4.4.3)
       '@apidevtools/json-schema-ref-parser': 15.5.0(@types/json-schema@7.0.15)
@@ -26071,7 +26000,7 @@ snapshots:
       '@openai/codex-sdk': 0.110.0
       '@playwright/browser-chromium': 1.61.1
       '@rollup/rollup-linux-x64-gnu': 4.62.2
-      '@slack/web-api': 7.19.0(debug@4.3.4)
+      '@slack/web-api': 7.19.0
       '@smithy/node-http-handler': 4.9.7
       '@swc/core': 1.15.43
       '@swc/core-darwin-arm64': 1.15.43
@@ -27994,8 +27923,6 @@ snapshots:
   uuid@13.0.2: {}
 
   uuid@14.0.1: {}
-
-  uuid@8.3.2: {}
 
   uuid@9.0.1: {}
 
