@@ -17,6 +17,7 @@ import {ArchivedReleaseBanner} from './ArchivedReleaseBanner'
 import {isCreateReleaseEvent, type ReleaseEvent} from './events/types'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
+import {ReleaseValidationBadge} from './ReleaseValidationBadge'
 import {type DocumentInRelease} from './types'
 import {ValidationProgressIndicator} from './ValidationProgressIndicator'
 
@@ -103,9 +104,14 @@ export function ReleaseDashboardDetails({
                   },
                   {
                     label: tRelease('dashboard.details.metadata.status'),
-                    // minimal layout: an icon-only indicator (full message on hover) so the row
-                    // stays a fixed, aligned height instead of bloating with the validation text.
-                    value: <ValidationProgressIndicator documents={documents} layout="minimal" />,
+                    // Beta: a persistent badge (green "Valid" / red "Errors" / …) so the panel
+                    // clearly signals "good to go". Production keeps the minimal icon indicator
+                    // (icon-only, full message on hover) unchanged.
+                    value: variantsEnabled ? (
+                      <ReleaseValidationBadge documents={documents} />
+                    ) : (
+                      <ValidationProgressIndicator documents={documents} layout="minimal" />
+                    ),
                   },
                   {
                     label: tRelease('dashboard.details.metadata.documents'),

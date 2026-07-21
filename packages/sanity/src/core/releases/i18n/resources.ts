@@ -137,6 +137,14 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'dashboard.details.metadata.created': 'Created',
   /** Label for the document-count metadata in the release detail header zone. */
   'dashboard.details.metadata.documents': 'Documents',
+  /** Status badge value when every document in the release is valid. */
+  'dashboard.details.metadata.status-valid': 'Valid',
+  /** Status badge value when one or more documents have validation errors. */
+  'dashboard.details.metadata.status-errors': 'Errors',
+  /** Status badge value while document validation is still running. */
+  'dashboard.details.metadata.status-validating': 'Validating',
+  /** Status badge value when the release has no documents to validate. */
+  'dashboard.details.metadata.status-empty': 'No documents',
 
   /** Activity inspector button text */
   'dashboard.details.activity': 'Activity',

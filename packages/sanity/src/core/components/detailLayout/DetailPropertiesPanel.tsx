@@ -1,10 +1,15 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type CSSProperties, type ReactNode} from 'react'
 
 // Each row is the same fixed height so the key/value pairs sit on an even rhythm — otherwise a row
 // holding a taller control (e.g. a picker button) would space itself further from its neighbours
 // than the plain rows are from each other.
 const ROW_STYLE: CSSProperties = {minHeight: 31}
+
+// The label sits in a fixed-width column with the value flush beside it (a definition list), rather
+// than pushed to opposite edges: a one-character value (an icon, a count) would otherwise strand a
+// cavernous gap between it and its label. Fixed width also aligns the values into a clean column.
+const LABEL_STYLE: CSSProperties = {width: 92, flexShrink: 0}
 
 /** A single `label · value` row. `null`/`false` rows are skipped, so callers can inline conditions. */
 export interface DetailPropertyRow {
@@ -61,12 +66,13 @@ export function DetailPropertiesPanel(props: {
                   key={rowIndex}
                   align="center"
                   gap={3}
-                  justify="space-between"
                   style={ROW_STYLE}
                 >
-                  <Text muted size={1}>
-                    {row.label}
-                  </Text>
+                  <Box style={LABEL_STYLE}>
+                    <Text muted size={1} textOverflow="ellipsis">
+                      {row.label}
+                    </Text>
+                  </Box>
                   {typeof row.value === 'string' ? <Text size={1}>{row.value}</Text> : row.value}
                 </Flex>
               ))}
