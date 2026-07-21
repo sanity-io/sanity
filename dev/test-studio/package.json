@@ -55,7 +55,7 @@
     "sanity": "workspace:*",
     "sanity-plugin-asset-source-unsplash": "^7.0.15",
     "sanity-plugin-internationalized-array": "^5.1.17",
-    "sanity-plugin-media": "^5.0.11",
+    "sanity-plugin-media": "^6.0.2",
     "styled-components": "catalog:"
   },
   "devDependencies": {

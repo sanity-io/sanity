@@ -81,6 +81,7 @@ minimumReleaseAgeExclude:
   - 'oxlint-tsgolint'
   - 'react'
   - 'react-dom'
+  - 'react-hook-form'
   - 'react-is'
   - 'react-rx'
   - 'sanity-plugin-internationalized-array'
