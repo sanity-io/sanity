@@ -89,16 +89,17 @@
       "monorepo": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
     },
-    "./bundle.css": {
-      "browser": "./lib/bundle.css",
-      "style": "./lib/bundle.css",
-      "node": "./lib/bundle.css.js",
-      "default": "./lib/bundle.css.js"
-    },
     "./workbench": {
       "source": "./src/_exports/workbench.ts",
       "monorepo": "./src/_exports/workbench.ts",
       "default": "./lib/workbench.js"
+    },
+    "./bundle.css": {
+      "types": "./lib/bundle-css.d.ts",
+      "browser": "./lib/bundle.css",
+      "style": "./lib/bundle.css",
+      "node": "./lib/bundle-css.js",
+      "default": "./lib/bundle-css.js"
     },
     "./package.json": "./package.json"
   },
@@ -115,13 +116,14 @@
       "./structure": "./lib/structure.js",
       "./media-library": "./lib/media-library.js",
       "./migrate": "./lib/migrate.js",
+      "./workbench": "./lib/workbench.js",
       "./bundle.css": {
+        "types": "./lib/bundle-css.d.ts",
         "browser": "./lib/bundle.css",
         "style": "./lib/bundle.css",
-        "node": "./lib/bundle.css.js",
-        "default": "./lib/bundle.css.js"
+        "node": "./lib/bundle-css.js",
+        "default": "./lib/bundle-css.js"
       },
-      "./workbench": "./lib/workbench.js",
       "./package.json": "./package.json"
     }
   },

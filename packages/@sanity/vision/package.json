@@ -37,10 +37,11 @@
       "default": "./lib/index.js"
     },
     "./bundle.css": {
+      "types": "./lib/bundle-css.d.ts",
       "browser": "./lib/bundle.css",
       "style": "./lib/bundle.css",
-      "node": "./lib/bundle.css.js",
-      "default": "./lib/bundle.css.js"
+      "node": "./lib/bundle-css.js",
+      "default": "./lib/bundle-css.js"
     },
     "./package.json": "./package.json"
   },
@@ -48,10 +49,11 @@
     "exports": {
       ".": "./lib/index.js",
       "./bundle.css": {
+        "types": "./lib/bundle-css.d.ts",
         "browser": "./lib/bundle.css",
         "style": "./lib/bundle.css",
-        "node": "./lib/bundle.css.js",
-        "default": "./lib/bundle.css.js"
+        "node": "./lib/bundle-css.js",
+        "default": "./lib/bundle-css.js"
       },
       "./package.json": "./package.json"
     }
