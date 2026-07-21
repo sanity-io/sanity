@@ -133,7 +133,7 @@ export const customPlugins = defineType({
       name: 'containerTable',
       title: 'Container Table',
       description:
-        'A defineContainer table (table > row > cell). Images and text blocks live at the root and inside cells. The field enables container support.',
+        'A defineContainer table (table > row > cell). Images and text blocks live at the root and inside cells. Cell blocks are deliberately narrower than root blocks (styles: normal/quote; decorators: strong/underline; lists: bullet; no annotations), so the toolbar disables the difference while the caret is inside a cell.',
       of: [
         defineArrayMember({
           type: 'block',
@@ -179,6 +179,26 @@ export const customPlugins = defineType({
                               of: [
                                 defineArrayMember({
                                   type: 'block',
+                                  // Deliberately narrower than the root
+                                  // block in every toolbar-gated category
+                                  // (styles, decorators, annotations,
+                                  // lists), so the toolbar's positional
+                                  // disabled state is easy to verify:
+                                  // caret in a cell disables everything
+                                  // the cell doesn't declare, caret at
+                                  // the root enables it all again.
+                                  styles: [
+                                    {title: 'Normal', value: 'normal'},
+                                    {title: 'Quote', value: 'blockquote'},
+                                  ],
+                                  marks: {
+                                    decorators: [
+                                      {title: 'Strong', value: 'strong'},
+                                      {title: 'Underline', value: 'underline'},
+                                    ],
+                                    annotations: [],
+                                  },
+                                  lists: [{title: 'Bullet', value: 'bullet'}],
                                   of: [
                                     defineArrayMember({
                                       type: 'object',
