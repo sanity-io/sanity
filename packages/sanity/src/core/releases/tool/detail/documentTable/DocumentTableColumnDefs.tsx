@@ -1,4 +1,5 @@
 import {type ReleaseState} from '@sanity/client'
+import {DiamondIcon} from '@sanity/icons/Diamond'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Badge, Box, Flex, Text} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
@@ -14,7 +15,12 @@ import {AvatarSkeleton, UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
-import {getVariantIdFromDocument} from '../../../../variants/tool/util'
+import {
+  getVariantConditionsText,
+  getVariantIdFromDocument,
+  getVariantTitle,
+} from '../../../../variants/tool/util'
+import {type SystemVariant} from '../../../../variants/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {getReleaseDocumentIntent} from '../../components/getReleaseDocumentIntent'
@@ -165,11 +171,62 @@ const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentR
   },
 })
 
+/** Resolves a document's variant definition from its `_system.variant._ref` (full variant id). */
+function resolveDocumentVariant(
+  document: BundleDocumentRow['document'],
+  variantsById: Map<string, SystemVariant>,
+): SystemVariant | undefined {
+  const variantRef = (document as {_system?: {variant?: {_ref?: string}}})._system?.variant?._ref
+  return variantRef ? variantsById.get(variantRef) : undefined
+}
+
+// Which variant a release document targets: ◆ diamond + the variant title, with the full
+// conditions ("flags") on hover. Empty for base (non-variant) documents.
+const VariantCell = memo(
+  function VariantCell({
+    document,
+    variantsById,
+  }: {
+    document: BundleDocumentRow['document']
+    variantsById: Map<string, SystemVariant>
+  }) {
+    const variant = resolveDocumentVariant(document, variantsById)
+    if (!variant) return null
+
+    const conditions = getVariantConditionsText(variant.conditions)
+
+    return (
+      <Tooltip
+        portal
+        placement="bottom-start"
+        disabled={!conditions}
+        content={
+          conditions ? (
+            <Box padding={2}>
+              <Text size={1}>{conditions}</Text>
+            </Box>
+          ) : undefined
+        }
+      >
+        <Flex align="center" gap={2}>
+          <Text muted size={1}>
+            <DiamondIcon />
+          </Text>
+          <Text size={1} textOverflow="ellipsis" weight="medium">
+            {getVariantTitle(variant)}
+          </Text>
+        </Flex>
+      </Tooltip>
+    )
+  },
+  (prev, next) => prev.document === next.document && prev.variantsById === next.variantsById,
+)
+
 export const getDocumentTableColumnDefs: (
   releaseId: string,
   releaseState: ReleaseState,
   t: TFunction<'releases'>,
-  options?: {searchInCommandLane?: boolean},
+  options?: {searchInCommandLane?: boolean; variantsById?: Map<string, SystemVariant>},
 ) => Column<BundleDocumentRow>[] = (releaseId, releaseState, t, options) => [
   /**
    * Hiding action for archived and published releases of v1.0
@@ -195,6 +252,37 @@ export const getDocumentTableColumnDefs: (
       </Flex>
     ),
   },
+  // "Variant" column — shows which variant each document targets. Only present when the caller
+  // passes a resolved variants map (i.e. variants enabled). This is the functional point of the
+  // release-detail reconciliation: the inverse of the Variants table's "Appears in" column.
+  ...(options?.variantsById
+    ? [
+        {
+          id: 'variant',
+          width: 180,
+          style: {minWidth: 120, maxWidth: 180},
+          sorting: true,
+          sortTransform(value) {
+            const variant = resolveDocumentVariant(value.document, options.variantsById!)
+            return variant ? getVariantTitle(variant).toLowerCase() : ''
+          },
+          header: (props) => (
+            <Flex {...props.headerProps} paddingY={3} sizing="border">
+              <Headers.SortHeaderButton text={t('table-header.variant')} {...props} />
+            </Flex>
+          ),
+          cell: ({cellProps, datum}) => (
+            <Flex align="center" {...cellProps}>
+              <Box paddingX={2} style={{minWidth: 0}}>
+                {!datum.isLoading && (
+                  <VariantCell document={datum.document} variantsById={options.variantsById!} />
+                )}
+              </Box>
+            </Flex>
+          ),
+        } satisfies Column<BundleDocumentRow>,
+      ]
+    : []),
   {
     id: 'search',
     width: null,

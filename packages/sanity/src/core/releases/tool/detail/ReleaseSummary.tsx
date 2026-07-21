@@ -10,6 +10,7 @@ import {useWorkspace} from '../../../studio/workspace'
 import {getVersionId} from '../../../util/draftUtils'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {useAllVariants} from '../../../variants/store/useAllVariants'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
@@ -73,6 +74,9 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   // production Releases until the flag is on.
   const {beta} = useWorkspace()
   const variantsEnabled = Boolean(beta?.variants?.enabled)
+  // Resolves each document's variant (via `_system.variant._ref`) to its definition for the
+  // "Variant" column. Provider-free + cached; returns empty when variants are disabled.
+  const {byId: variantsById} = useAllVariants()
 
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
@@ -91,8 +95,9 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     () =>
       getDocumentTableColumnDefs(release._id, release.state, t, {
         searchInCommandLane: variantsEnabled,
+        variantsById: variantsEnabled ? variantsById : undefined,
       }),
-    [release._id, release.state, t, variantsEnabled],
+    [release._id, release.state, t, variantsEnabled, variantsById],
   )
 
   const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
