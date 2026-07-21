@@ -38,8 +38,8 @@ const DEBUG_VALUES = {
   latestVersion: '4.5.5',
 } as const
 
-const getCurrentVersion = memoize(
-  () => semver.parse(DEBUG_CURRENT_VERSION ? DEBUG_VALUES.currentVersion : SANITY_VERSION)!,
+const getCurrentVersion = memoize(() =>
+  semver.parse(DEBUG_CURRENT_VERSION ? DEBUG_VALUES.currentVersion : SANITY_VERSION)!,
 )
 
 const getSanityImportMapEntryValue = memoize(() =>
