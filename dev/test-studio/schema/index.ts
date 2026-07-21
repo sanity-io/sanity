@@ -146,6 +146,11 @@ import simpleBlockNote from './standard/portableText/simpleBlockNote'
 import simpleBlockNoteBody from './standard/portableText/simpleBlockNoteBody'
 import simpleBlockNoteUrl from './standard/portableText/simpleBlockNoteUrl'
 import spotifyEmbed from './standard/portableText/spotifyEmbed'
+import {
+  standaloneTable,
+  standaloneTableArray,
+  standaloneTableDoc,
+} from './standard/portableText/standaloneTable'
 import references, {referenceAlias} from './standard/references'
 import slugs, {slugAlias} from './standard/slugs'
 import strings from './standard/strings'
@@ -212,6 +217,9 @@ export function createSchemaTypes(projectId: string) {
     richTextObject,
     ...Object.values(scrollBugTypes),
     customPlugins,
+    standaloneTable,
+    standaloneTableArray,
+    standaloneTableDoc,
     simpleBlock,
     manyEditors,
     simpleBlockNote,
