@@ -13,7 +13,9 @@ import {VersionContextMenuItem} from './VersionContextMenuItem'
 
 const ReleasesList = styled(Stack)`
   max-width: 300px;
-  max-height: 200px;
+  /* Viewport-aware so more than ~3 releases are visible before scrolling — a fixed
+   * 200px clipped longer lists with little indication that more items existed. */
+  max-height: min(50vh, 420px);
   overflow-y: auto;
 `
 
@@ -54,7 +56,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
   return (
     <MenuGroup
       icon={CopyIcon}
-      popover={{placement: 'right-start'}}
+      popover={{placement: 'right-start', constrainSize: true}}
       text={t('release.action.copy-to')}
       disabled={disabled}
       tooltipProps={{
