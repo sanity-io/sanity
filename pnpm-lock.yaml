@@ -1262,7 +1262,7 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/tsconfig
       '@sanity/icons':
-        specifier: ^5.1.0
+        specifier: ^5.2.0
         version: 5.2.0(react@19.2.8)
       '@sanity/pkg-utils':
         specifier: 'catalog:'
@@ -1417,7 +1417,7 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@sanity/icons':
-        specifier: ^5.1.0
+        specifier: ^5.2.0
         version: 5.2.0(react@19.2.8)
       '@sanity/lezer-groq':
         specifier: ^1.0.4
@@ -1649,7 +1649,7 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       '@sanity/icons':
-        specifier: ^5.1.0
+        specifier: ^5.2.0
         version: 5.2.0(react@19.2.8)
       '@sanity/id-utils':
         specifier: ^1.0.0
