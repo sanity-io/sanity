@@ -6,7 +6,6 @@ import {styled} from 'styled-components'
 
 import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
-import {type PopoverProps} from '../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../i18n'
 import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
 import {CopyToDraftsMenuItem} from './CopyToDraftsMenuItem'
@@ -17,11 +16,6 @@ const ReleasesList = styled(Stack)`
   max-height: 200px;
   overflow-y: auto;
 `
-
-const SUBMENU_POPOVER_PROPS: PopoverProps = {
-  placement: 'right-start',
-  fallbackPlacements: ['left-start'],
-}
 
 interface CopyToReleaseMenuGroupProps {
   releases: ReleaseDocument[]
@@ -60,7 +54,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
   return (
     <MenuGroup
       icon={CopyIcon}
-      popover={SUBMENU_POPOVER_PROPS}
+      popover={{placement: 'right-start', fallbackPlacements: ['left-start']}}
       text={t('release.action.copy-to')}
       disabled={disabled}
       tooltipProps={{
