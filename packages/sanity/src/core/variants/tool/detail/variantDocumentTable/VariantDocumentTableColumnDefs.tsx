@@ -256,7 +256,14 @@ export const getVariantDocumentTableColumnDefs = (
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
-      <Flex {...cellProps} align="center" paddingX={2} paddingY={3} style={{minWidth: 130}}>
+      <Flex
+        {...cellProps}
+        align="center"
+        paddingX={2}
+        paddingY={3}
+        style={{minWidth: 130}}
+        sizing="border"
+      >
         {!datum.isLoading && datum.document._updatedAt && (
           <Text muted size={1}>
             <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
