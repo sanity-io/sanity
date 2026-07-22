@@ -362,11 +362,9 @@ export const getDocumentTableColumnDefs: (
     id: 'document._updatedAt',
     sorting: true,
     width: 130,
-    header: ({headerProps}) => (
-      <Flex {...headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
-        <Text muted size={1} textOverflow="ellipsis" weight="medium">
-          {t('table-header.last-edited')}
-        </Text>
+    header: (props) => (
+      <Flex {...props.headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
+        <Headers.SortableTextHeader header={props.header} text={t('table-header.last-edited')} />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (

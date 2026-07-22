@@ -250,9 +250,10 @@ export const getVariantDocumentTableColumnDefs = (
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
-        <Text muted size={1} textOverflow="ellipsis" weight="medium">
-          {t('detail.documents.table.last-edited')}
-        </Text>
+        <Headers.SortableTextHeader
+          header={props.header}
+          text={t('detail.documents.table.last-edited')}
+        />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
