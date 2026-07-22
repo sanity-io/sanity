@@ -22,6 +22,20 @@ const variantsLocaleStrings = {
   'navbar.variant.clear': 'Clear variant selection',
   /** Label for the Variants overview create action. */
   'overview.action.create-variant': 'Create variant definition',
+  /** Tooltip for the Variants overview create action. */
+  'overview.action.create-variant.tooltip':
+    'Creates a single variant definition. To generate many at once, use Create variant set.',
+  /** Label for the Variants overview create-set action. */
+  'overview.action.create-variant-set': 'Create variant set',
+  /** Tooltip for the Variants overview create-set action. */
+  'overview.action.create-variant-set.tooltip':
+    'Define dimensions and generate a variant definition for every combination.',
+  /** Label for the Variants overview row edit action. */
+  'overview.action.edit-variant': 'Edit variant definition',
+  /** Label for the Variants overview row edit-set action (shown on set members). */
+  'overview.action.edit-variant-set': 'Edit variant set',
+  /** Label for the Variants overview delete-set action (on a set aggregate row). */
+  'overview.action.delete-variant-set': 'Delete variant set',
   /** Label for the Variants overview delete action. */
   'overview.action.delete-variant': 'Delete variant definition',
   /** Tooltip when delete is disabled because the variant contains one document. */
@@ -52,6 +66,14 @@ const variantsLocaleStrings = {
   'overview.table.no-conditions': 'No conditions',
   /** Title for the Variants overview. */
   'overview.title': 'Variant definitions',
+  /** Label for the card-view toggle in the overview. */
+  'overview.view.cards': 'Cards',
+  /** Tooltip for the card-view toggle in the overview. */
+  'overview.view.cards.tooltip': 'Card view',
+  /** Label for the list-view toggle in the overview. */
+  'overview.view.list': 'List',
+  /** Tooltip for the list-view toggle in the overview. */
+  'overview.view.list.tooltip': 'List view',
   /** Edit action on the Variant detail page. */
   'detail.action.edit-variant': 'Edit variant definition',
   /** Primary action label on the Variant detail action rail. */
@@ -78,6 +100,31 @@ const variantsLocaleStrings = {
   'detail.loading': 'Loading variant definition',
   /** Fallback text when a variant has no description. */
   'detail.no-description': 'No description yet.',
+  /** Badge on the overview row for a variant definition that belongs to a generated set. */
+  'overview.badge.set': 'Set',
+  /** Badge on the overview row for a variant definition forked from a generated set. */
+  'overview.badge.forked': 'Forked',
+  /** Count of definitions on a collapsed set group row (singular). */
+  'overview.set-group.count_one': '{{count}} definition',
+  /** Count of definitions on a collapsed set group row (plural). */
+  'overview.set-group.count_other': '{{count}} definitions',
+  /** Tooltip on the "Set" badge explaining set membership. */
+  'overview.badge.set.tooltip':
+    'Generated from a variant set. Edit the set to change all its definitions at once.',
+  /** Tooltip on the "Forked" badge explaining a forked definition. */
+  'overview.badge.forked.tooltip':
+    'Generated from a variant set, then edited on its own. Set changes no longer affect it.',
+  /** Title of the "how variant sets work" explainer. */
+  'explainer.title': 'How variant sets work',
+  /** First step in the variant sets explainer. */
+  'explainer.step1': 'Define your dimensions: each key and the values it can take.',
+  /** Second step in the variant sets explainer. */
+  'explainer.step2': 'Sanity generates one variant definition for every combination.',
+  /** Third step in the variant sets explainer. */
+  'explainer.step3':
+    'Edit the set to update them all. Edit one on its own and it becomes a separate definition.',
+  /** Dismiss action for the variant sets explainer. */
+  'explainer.dismiss': 'Got it',
   /** Empty state for variant document table. */
   'detail.documents.no-documents': 'No documents in this variant definition',
   /** Edited column header for variant document table. */
@@ -175,6 +222,138 @@ const variantsLocaleStrings = {
   'dialog.create.condition-value.placeholder': 'e.g. loyal-customers',
   /** Error toast title when variant creation fails. */
   'dialog.create.error.title': 'Unable to create variant definition',
+  /** Title for the create variant set dialog. */
+  'dialog.create-set.title': 'Create variant set',
+  /** Label for the set name field in the create variant set dialog. */
+  'dialog.create-set.name.label': 'Set name',
+  /** Placeholder for the set name field in the create variant set dialog. */
+  'dialog.create-set.name.placeholder': 'e.g. Regional launch',
+  /** Validation message when the set name is missing. */
+  'dialog.create-set.name.required': 'Set name is required',
+  /** Title for the dimensions section in the create variant set dialog. */
+  'dialog.create-set.dimensions.title': 'Dimensions',
+  /** Description for the dimensions section in the create variant set dialog. */
+  'dialog.create-set.dimensions.description':
+    'Add each key and the list of values it can take. Every combination becomes a variant definition.',
+  /** Label for the dimension key field in the create variant set dialog. */
+  'dialog.create-set.dimension-key.label': 'Key',
+  /** Label for the dimension values field in the create variant set dialog. */
+  'dialog.create-set.dimension-values.label': 'Values',
+  /**
+   * Rotating example placeholders, one pair per dimension row, cycled by row index in
+   * VariantSetForm so the form doesn't imply "market" is the only kind of dimension.
+   */
+  'dialog.create-set.example.0.key': 'e.g. market',
+  'dialog.create-set.example.0.values': 'e.g. uk, us, de',
+  'dialog.create-set.example.1.key': 'e.g. segment',
+  'dialog.create-set.example.1.values': 'e.g. loyal, new, vip',
+  'dialog.create-set.example.2.key': 'e.g. brand',
+  'dialog.create-set.example.2.values': 'e.g. brand-a, brand-b',
+  'dialog.create-set.example.3.key': 'e.g. channel',
+  'dialog.create-set.example.3.values': 'e.g. web, app, email',
+  /** Validation message when a dimension has a key but no values. */
+  'dialog.create-set.dimension-values.required': 'Add at least one value',
+  /** Add dimension action for the create variant set dialog. */
+  'dialog.create-set.action.add-dimension': 'Add dimension',
+  /** Tooltip when add dimension is disabled because the current row is incomplete. */
+  'dialog.create-set.action.add-dimension.disabled-hint':
+    'Complete the current key and values before adding another.',
+  /** Remove dimension action for the create variant set dialog. */
+  'dialog.create-set.remove-dimension': 'Remove dimension',
+  /** Import-from-JSON action in the create variant set dialog. */
+  'dialog.create-set.action.import-json': 'Import JSON',
+  /** Export-to-JSON action in the create variant set dialog. */
+  'dialog.create-set.action.export-json': 'Export JSON',
+  /** Import-from-CDP action (not yet available) in the create variant set dialog. */
+  'dialog.create-set.action.import-cdp': 'Import from CDP',
+  /** Sync-from-CDP action (not yet available) in the create variant set dialog. */
+  'dialog.create-set.action.sync-cdp': 'Sync from CDP',
+  /** Tooltip on the not-yet-available CDP actions. */
+  'dialog.create-set.cdp.coming-soon': 'Coming soon',
+  /** Error toast when an imported file cannot be read as a variant set. */
+  'dialog.create-set.import.error': 'Could not read that file as a variant set',
+  /** Cancel action for the create variant set dialog. */
+  'dialog.create-set.action.cancel': 'Cancel',
+  /** Preview shown before any complete dimension exists in the create variant set dialog. */
+  'dialog.create-set.preview.empty': 'Add at least one key and value to preview the combinations',
+  /** Preview of the number of variant definitions a set will generate (singular). */
+  'dialog.create-set.preview.count_one': '{{count}} variant definition will be generated',
+  /** Preview of the number of variant definitions a set will generate (plural). */
+  'dialog.create-set.preview.count_other': '{{count}} variant definitions will be generated',
+  /** Confirm action for the create variant set dialog (singular). */
+  'dialog.create-set.action.generate_one': 'Generate {{count}} variant definition',
+  /** Confirm action for the create variant set dialog (plural). */
+  'dialog.create-set.action.generate_other': 'Generate {{count}} variant definitions',
+  /** Warning shown before generating an unusually large set. */
+  'dialog.create-set.large-set.warning':
+    'This creates {{count}} variant definitions, which is a lot at once. Double-check your dimensions before generating.',
+  /** Confirm action after the large-set warning has been shown. */
+  'dialog.create-set.action.generate-confirm': 'Generate anyway',
+  /** Error toast title when generating a variant set fails. */
+  'dialog.create-set.error.title': 'Unable to generate variant definitions',
+  /** Result heading after a variant set is generated (singular). */
+  'dialog.create-set.result.title_one': '{{count}} variant definition generated',
+  /** Result heading after a variant set is generated (plural). */
+  'dialog.create-set.result.title_other': '{{count}} variant definitions generated',
+  /** Result description after a variant set is generated. */
+  'dialog.create-set.result.description':
+    'These are now listed under variant definitions. Editing one on its own will save it as a separate definition.',
+  /** Done action to close the create variant set dialog after generation. */
+  'dialog.create-set.action.done': 'Done',
+  /** Title for the edit variant set dialog. */
+  'dialog.edit-set.title': 'Edit variant set',
+  /** Description for the edit variant set dialog. */
+  'dialog.edit-set.description':
+    'Rename a value to update every definition that uses it. Removing a value deletes its definitions, unless they still contain documents.',
+  /** Add value action in the edit variant set dialog. */
+  'dialog.edit-set.add-value': 'Add value',
+  /** Remove value action in the edit variant set dialog. */
+  'dialog.edit-set.remove-value': 'Remove value',
+  /** Preview shown when a set edit has no pending changes. */
+  'dialog.edit-set.preview.none': 'No changes yet',
+  /** Preview: number of definitions a set edit will update (singular). */
+  'dialog.edit-set.preview.update_one': '{{count}} definition will be updated',
+  /** Preview: number of definitions a set edit will update (plural). */
+  'dialog.edit-set.preview.update_other': '{{count}} definitions will be updated',
+  /** Preview: number of definitions a set edit will create (singular). */
+  'dialog.edit-set.preview.create_one': '{{count}} definition will be created',
+  /** Preview: number of definitions a set edit will create (plural). */
+  'dialog.edit-set.preview.create_other': '{{count}} definitions will be created',
+  /** Preview: number of definitions a set edit will delete (singular). */
+  'dialog.edit-set.preview.delete_one': '{{count}} definition will be deleted',
+  /** Preview: number of definitions a set edit will delete (plural). */
+  'dialog.edit-set.preview.delete_other': '{{count}} definitions will be deleted',
+  /** Warning when a value removal is blocked because definitions still have documents. */
+  'dialog.edit-set.warning.blocked':
+    'Cannot remove values that still have documents: {{values}}. Move or remove those documents first.',
+  /** Warning when renames were skipped because the target value already exists. */
+  'dialog.edit-set.warning.conflict':
+    'Renames skipped because the value already exists: {{values}}',
+  /** Apply action in the edit variant set dialog. */
+  'dialog.edit-set.action.apply': 'Apply changes',
+  /** Cancel action in the edit variant set dialog. */
+  'dialog.edit-set.action.cancel': 'Cancel',
+  /** Error toast title when applying a set edit fails. */
+  'dialog.edit-set.error.title': 'Unable to update the variant set',
+  /** Title of the delete variant set dialog. */
+  'dialog.delete-set.title': 'Delete variant set',
+  /** Description of the delete variant set dialog. */
+  'dialog.delete-set.description':
+    'Delete the set "{{name}}" and its generated definitions? This cannot be undone.',
+  /** Confirm action in the delete variant set dialog. */
+  'dialog.delete-set.action.confirm': 'Delete set',
+  /** Summary line: how many definitions the delete removes (singular). */
+  'dialog.delete-set.summary.delete_one': '{{count}} definition will be deleted.',
+  /** Summary line: how many definitions the delete removes (plural). */
+  'dialog.delete-set.summary.delete_other': '{{count}} definitions will be deleted.',
+  /** Caution when a member definition has documents and is kept as standalone (singular). */
+  'dialog.delete-set.warning.retained_one':
+    '{{count}} definition has documents and will be kept as a standalone definition.',
+  /** Caution when member definitions have documents and are kept as standalone (plural). */
+  'dialog.delete-set.warning.retained_other':
+    '{{count}} definitions have documents and will be kept as standalone definitions.',
+  /** Error toast title when deleting a set fails. */
+  'dialog.delete-set.error.title': 'Unable to delete the variant set',
   /** Title for the edit variant dialog. */
   'dialog.edit.title': 'Edit variant definition',
   /** Confirm action for the edit variant dialog. */

@@ -46,6 +46,33 @@ describe('VariantMenuButton', () => {
     return result
   }
 
+  it('opens the edit dialog when edit is selected', async () => {
+    const user = userEvent.setup()
+
+    await renderMenuButton({documentCount: 0})
+
+    await user.click(screen.getByRole('button'))
+    await user.click(await screen.findByText('Edit variant definition'))
+
+    expect(await screen.findByTestId('save-variant-button')).toBeInTheDocument()
+    expect(variantOperationsMock.updateVariant).not.toHaveBeenCalled()
+  })
+
+  it('updates the variant when the edit dialog is submitted', async () => {
+    const user = userEvent.setup()
+    variantOperationsMock.updateVariant.mockResolvedValue(undefined)
+
+    await renderMenuButton({documentCount: 0})
+
+    await user.click(screen.getByRole('button'))
+    await user.click(await screen.findByText('Edit variant definition'))
+    await user.click(await screen.findByTestId('save-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.updateVariant).toHaveBeenCalled()
+    })
+  })
+
   it('deletes the variant when delete is selected', async () => {
     const user = userEvent.setup()
 

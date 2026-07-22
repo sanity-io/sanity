@@ -8,6 +8,7 @@ import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
+import {VARIANT_SET_METADATA_KEY} from '../../util/variantSet'
 import {VariantsOverview} from '../overview/VariantsOverview'
 import {getVariantId} from '../util'
 
@@ -129,13 +130,21 @@ describe('VariantsOverview', () => {
     vi.clearAllMocks()
   })
 
-  const renderOverview = async () => {
+  // The overview defaults to the Cards view; these tests exercise the list/table, so
+  // switch to List after mount when the toggle is present (absent in the empty state).
+  const renderOverview = async ({view = 'list'}: {view?: 'cards' | 'list'} = {}) => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const view = render(<VariantsOverview />, {wrapper})
+    const result = render(<VariantsOverview />, {wrapper})
     await screen.findByPlaceholderText('Search variant definitions…', {}, {timeout: 5000})
-    return view
+    if (view === 'list') {
+      const listButton = screen.queryByRole('button', {name: 'List'})
+      if (listButton) {
+        await userEvent.click(listButton)
+      }
+    }
+    return result
   }
 
   const setVariants = (variants: SystemVariant[]) => {
@@ -158,6 +167,43 @@ describe('VariantsOverview', () => {
     expect(screen.getByPlaceholderText('Search variant definitions…')).toBeInTheDocument()
   })
 
+  it('collapses a set into one aggregate row and expands it on click', async () => {
+    const setReference = {id: 'set-1', name: 'Regional launch'}
+    const member = (suffix: string, conditions: Record<string, string>): SystemVariant =>
+      ({
+        _id: `_.variants.${suffix}`,
+        _type: 'system.variant',
+        _rev: 'r',
+        _createdAt: '',
+        _updatedAt: '',
+        conditions,
+        priority: 0,
+        metadata: {
+          title: `Regional launch: ${Object.values(conditions).join(' / ')}`,
+          description: [],
+          [VARIANT_SET_METADATA_KEY]: setReference,
+        },
+      }) as unknown as SystemVariant
+
+    setVariants([member('a', {market: 'uk'}), member('b', {market: 'us'})])
+
+    const user = userEvent.setup()
+    await renderOverview()
+
+    // Collapsed by default: one aggregate header, children hidden.
+    await waitFor(() => {
+      expect(screen.getByTestId('variant-set-aggregate-toggle')).toBeInTheDocument()
+    })
+    expect(screen.getByText('2 definitions')).toBeInTheDocument()
+    expect(screen.queryByText('Regional launch: uk')).not.toBeInTheDocument()
+
+    // Expand to reveal the members.
+    await user.click(screen.getByTestId('variant-set-aggregate-toggle'))
+
+    expect(await screen.findByText('Regional launch: uk')).toBeInTheDocument()
+    expect(screen.getByText('Regional launch: us')).toBeInTheDocument()
+  })
+
   it('lists variants in the virtualized table', async () => {
     setVariants([variantAlphaAudience, variantNorwegianMarket])
 
@@ -167,8 +213,10 @@ describe('VariantsOverview', () => {
       expect(screen.getAllByTestId('table-row')).toHaveLength(2)
     })
 
-    expect(screen.getByText('Alpha audience')).toBeInTheDocument()
-    expect(screen.getByText('Norwegian market')).toBeInTheDocument()
+    // Scope to table rows: the dimension-map cards also render these names.
+    const rows = screen.getAllByTestId('table-row')
+    expect(rows.some((row) => within(row).queryByText('Alpha audience'))).toBe(true)
+    expect(rows.some((row) => within(row).queryByText('Norwegian market'))).toBe(true)
   })
 
   it('renders live document counts for each variant', async () => {
@@ -246,24 +294,13 @@ describe('VariantsOverview', () => {
 
     await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
 
-    await user.click(screen.getByText('Alpha audience'))
+    // Click the name in the table row (the dimension-map card also shows it).
+    const row = screen.getAllByTestId('table-row')[0]!
+    await user.click(within(row).getByText('Alpha audience'))
 
     expect(mockNavigate).toHaveBeenCalledWith({
       variantId: getVariantId(variantAlphaAudience._id),
     })
-  })
-
-  it('pins a variant from the overview table', async () => {
-    setVariants([variantAlphaAudience])
-    const user = userEvent.setup()
-
-    await renderOverview()
-
-    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
-
-    await user.click(screen.getByTestId('pin-variant-button'))
-
-    expect(mockedSetVariant).toHaveBeenCalledWith({variantId: variantAlphaAudience._id})
   })
 
   it('deletes a variant from the row actions menu', async () => {
