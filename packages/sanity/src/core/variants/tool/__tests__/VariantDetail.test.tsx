@@ -181,7 +181,8 @@ describe('VariantDetail', () => {
     // now a plain "Document" label. The command lane (and its search) is hidden with no documents.
     expect(screen.getByText('Document')).toBeInTheDocument()
     expect(screen.queryByPlaceholderText('Search documents')).not.toBeInTheDocument()
-    expect(screen.getByText('Edited')).toBeInTheDocument()
+    expect(screen.getByText('Edited by')).toBeInTheDocument()
+    expect(screen.getByText('Last edited')).toBeInTheDocument()
     expect(screen.getByText('No documents in this variant definition')).toBeInTheDocument()
     // Two side-by-side properties panels carry the metadata: a "Variant definition" panel (its
     // conditions + Created, rehomed from the old header clock) and a "Documents" panel (counts).

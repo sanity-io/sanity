@@ -1,4 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Box, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
@@ -7,6 +8,7 @@ import {memo} from 'react'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip'
+import {EditedByCell} from '../../../../components/documentTable/EditedByCell'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
@@ -46,19 +48,47 @@ const MemoDocumentType = memo(
   (prev, next) => prev.type === next.type,
 )
 
-// The critical-validation indicator. Rendered inline at the trailing edge of the document preview
-// (rather than in a separate far-right column) so the error is unmistakably tied to *its* document
-// instead of floating in the table's right-hand dead space.
-function ValidationErrorIndicator({
+// Per-row validation status, rendered in its own narrow column so every row answers the same
+// question in the same place — a scannable "ready vs. not" rail. A structural column beats an
+// inline error-only glyph: because it's always present, an empty-looking cell reads as "checked,
+// fine" (a muted check) rather than the ambiguous absence of an inline mark. Errors get the loud
+// critical glyph so they pop against the muted checks around them.
+function ValidationStatusIndicator({
   datum,
   t,
 }: {
   datum: DocumentInVariantGroup
   t: TFunction<'variants'>
 }) {
-  const validationErrorCount = datum.validation.validation.filter(
-    (validation) => validation.level === 'error',
-  ).length
+  if (datum.validation.hasError) {
+    const validationErrorCount = datum.validation.validation.filter(
+      (validation) => validation.level === 'error',
+    ).length
+
+    return (
+      <Tooltip
+        portal
+        placement="bottom-end"
+        content={
+          <Text muted size={1}>
+            <Flex align="center" gap={3} padding={1}>
+              <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+              {t(
+                validationErrorCount === 1
+                  ? 'detail.documents.table.validation.error_one'
+                  : 'detail.documents.table.validation.error_other',
+                {count: validationErrorCount},
+              )}
+            </Flex>
+          </Text>
+        }
+      >
+        <Text size={1} data-testid="variant-document-validation-error">
+          <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+        </Text>
+      </Tooltip>
+    )
+  }
 
   return (
     <Tooltip
@@ -66,20 +96,12 @@ function ValidationErrorIndicator({
       placement="bottom-end"
       content={
         <Text muted size={1}>
-          <Flex align="center" gap={3} padding={1}>
-            <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-            {t(
-              validationErrorCount === 1
-                ? 'detail.documents.table.validation.error_one'
-                : 'detail.documents.table.validation.error_other',
-              {count: validationErrorCount},
-            )}
-          </Flex>
+          <Box padding={1}>{t('detail.documents.table.validation.valid')}</Box>
         </Text>
       }
     >
-      <Text size={1} data-testid="variant-document-validation-error">
-        <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+      <Text muted size={1} data-testid="variant-document-validation-valid">
+        <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
       </Text>
     </Tooltip>
   )
@@ -98,6 +120,22 @@ export const getVariantDocumentTableColumnDefs = (
     width: null,
     sorting: true,
     sortTransform: (row) => row.rowKey ?? row.groupId,
+  },
+  {
+    // Narrow leading status rail: a scannable "ready vs. has errors" column. Sortable so a reader
+    // can pull error rows to the top. No header label — the glyphs speak for themselves and a text
+    // header would overflow the 44px slot.
+    id: 'validation',
+    width: 44,
+    style: {minWidth: 44, maxWidth: 44},
+    sorting: true,
+    sortTransform: (row) => (row.validation.hasError ? 0 : 1),
+    header: (props) => <Flex {...props.headerProps} paddingY={3} sizing="border" />,
+    cell: ({cellProps, datum}) => (
+      <Flex {...cellProps} align="center" justify="center" paddingY={3} sizing="border">
+        {!datum.isLoading && <ValidationStatusIndicator datum={datum} t={t} />}
+      </Flex>
+    ),
   },
   {
     id: 'bundle',
@@ -184,10 +222,28 @@ export const getVariantDocumentTableColumnDefs = (
             />
           )}
         </Box>
-        {!datum.isLoading && datum.validation.hasError && (
-          <Box flex="none">
-            <ValidationErrorIndicator datum={datum} t={t} />
-          </Box>
+      </Flex>
+    ),
+  },
+  {
+    // "Edited by" — the person who last edited the document. Its own named column (not just an
+    // avatar tucked beside the time) so authorship reads distinctly from live presence, which stays
+    // in the document preview. The name collapses to avatar-only when the column is squeezed.
+    id: 'editedBy',
+    sorting: false,
+    width: 170,
+    style: {minWidth: 44, maxWidth: 170},
+    header: (props) => (
+      <Flex {...props.headerProps} align="center" paddingX={3} paddingY={3} sizing="border">
+        <Text muted size={1} textOverflow="ellipsis" weight="medium">
+          {t('detail.documents.table.edited-by')}
+        </Text>
+      </Flex>
+    ),
+    cell: ({cellProps, datum}) => (
+      <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+        {!datum.isLoading && (
+          <EditedByCell documentId={datum.document._id} revision={datum.document._rev} />
         )}
       </Flex>
     ),
@@ -198,7 +254,7 @@ export const getVariantDocumentTableColumnDefs = (
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('detail.documents.table.edited')} {...props} />
+        <Headers.SortHeaderButton text={t('detail.documents.table.last-edited')} {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (

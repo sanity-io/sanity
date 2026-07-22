@@ -127,8 +127,10 @@ const variantsLocaleStrings = {
   'explainer.dismiss': 'Got it',
   /** Empty state for variant document table. */
   'detail.documents.no-documents': 'No documents in this variant definition',
-  /** Edited column header for variant document table. */
-  'detail.documents.table.edited': 'Edited',
+  /** "Last edited" (relative time) column header for variant document table. */
+  'detail.documents.table.last-edited': 'Last edited',
+  /** "Edited by" (last editor) column header for variant document table. */
+  'detail.documents.table.edited-by': 'Edited by',
   /** Document (title/preview) column header for variant document table. */
   'detail.documents.table.document': 'Document',
   /** Search placeholder for the variant document table search input in the command lane. */
@@ -147,6 +149,8 @@ const variantsLocaleStrings = {
   'detail.documents.table.validation.error_one': '{{count}} validation error',
   /** Validation error tooltip for multiple errors in the variant document table. */
   'detail.documents.table.validation.error_other': '{{count}} validation errors',
+  /** Validation status tooltip when a document has no validation errors (the "ready" state). */
+  'detail.documents.table.validation.valid': 'No validation errors',
   /** Accessible label for the command-lane select-all checkbox. */
   'detail.documents.bulk.select-all': 'Select all documents',
   /** Accessible label for a per-row selection checkbox. */

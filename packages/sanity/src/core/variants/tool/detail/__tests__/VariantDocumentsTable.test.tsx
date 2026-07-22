@@ -31,6 +31,12 @@ vi.mock('../variantDocumentTable/VariantDocumentBundleChips', () => ({
   )),
 }))
 
+// Mock the "Edited by" cell so the table test doesn't reach the transaction-log / user-profile
+// fetches it makes per row (those are covered by the cell's own unit tests).
+vi.mock('../../../../components/documentTable/EditedByCell', () => ({
+  EditedByCell: vi.fn(({documentId}) => <div data-testid="edited-by">{documentId}</div>),
+}))
+
 vi.mock('../../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => ({
     data: [],
