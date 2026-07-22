@@ -95,20 +95,20 @@ export function VariantDetail() {
     return [
       {
         title: t('detail.metadata.definition'),
-        // Split into two columns once a definition carries several conditions, so a 5-6 dimension
+        // Split the conditions into two columns once a definition carries several, so a 5-6 dimension
         // definition reads as a compact block rather than a tall stack — keeping it closer to the
         // fixed-height Documents panel beside it.
         multiColumn: true,
-        rows: conditionRows,
-      },
-      {
-        // Created is provenance, not a targeting condition, so it sits on its own line below the
-        // conditions rather than as an odd extra cell in the two-column split (which would leave an
-        // unbalanced 4/3). A person glyph (not a clock — a clock reads as "time/schedule"). The
-        // author identity isn't on the variant document yet, so this shows the relative time for
-        // now; wiring the creator's name/avatar is a follow-up.
         rows: [
+          ...conditionRows,
           {
+            // Created is provenance, not a targeting condition: `fullWidth` keeps it out of the
+            // two-column split so the conditions balance evenly and Created sits on its own line
+            // just below them (rather than as an odd extra cell, or detached in its own section). A
+            // person glyph (not a clock — a clock reads as "time/schedule"). The author identity
+            // isn't on the variant document yet, so this shows the relative time for now; wiring the
+            // creator's name/avatar is a follow-up.
+            fullWidth: true,
             icon: (
               <Text muted size={1}>
                 <UserIcon />

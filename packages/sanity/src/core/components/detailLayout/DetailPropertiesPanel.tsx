@@ -51,6 +51,12 @@ export interface DetailPropertyRow {
   icon?: ReactNode
   label: string
   value: ReactNode
+  /**
+   * In a `multiColumn` section, keep this row out of the two-column split and render it full-width
+   * on its own line directly below the columns (e.g. a "Created" provenance row that isn't one of
+   * the split conditions). Ignored in single-column sections.
+   */
+  fullWidth?: boolean
 }
 
 /** A group of rows, optionally headed by a section title. */
@@ -134,11 +140,15 @@ export function DetailPropertiesPanel(props: {
           if (rows.length === 0) return null
           // Only reserve the glyph column when a row in this section actually carries a glyph.
           const hasGlyphs = rows.some((row) => Boolean(row.icon))
-          // A multi-column section with enough rows splits into two balanced columns that wrap back
-          // to one when the panel is squeezed (flex-wrap, so no container-query fragility). The
-          // first (left) column takes the ceiling half, so an odd count leans left.
-          const splitIntoColumns = section.multiColumn && rows.length >= MULTI_COLUMN_THRESHOLD
-          const leftCount = Math.ceil(rows.length / 2)
+          // A multi-column section splits its regular rows into two balanced columns that wrap back
+          // to one when the panel is squeezed (flex-wrap, so no container-query fragility). Rows
+          // flagged `fullWidth` stay out of the split and render on their own line just below it —
+          // provenance like "Created" that isn't one of the split conditions. The first (left)
+          // column takes the ceiling half, so an odd count leans left.
+          const splitRows = section.multiColumn ? rows.filter((row) => !row.fullWidth) : rows
+          const fullWidthRows = section.multiColumn ? rows.filter((row) => row.fullWidth) : []
+          const splitIntoColumns = section.multiColumn && splitRows.length >= MULTI_COLUMN_THRESHOLD
+          const leftCount = Math.ceil(splitRows.length / 2)
 
           return (
             // Sections are positional and static, so the index is a stable key.
@@ -151,11 +161,14 @@ export function DetailPropertiesPanel(props: {
               )}
               {splitIntoColumns ? (
                 <Flex gap={4} wrap="wrap">
-                  <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows.slice(0, leftCount)} />
-                  <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows.slice(leftCount)} />
+                  <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={splitRows.slice(0, leftCount)} />
+                  <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={splitRows.slice(leftCount)} />
                 </Flex>
               ) : (
-                <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows} />
+                <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={splitRows} />
+              )}
+              {fullWidthRows.length > 0 && (
+                <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={fullWidthRows} />
               )}
             </Stack>
           )
