@@ -11,6 +11,11 @@ const ROW_STYLE: CSSProperties = {minHeight: 31}
 // cavernous gap between it and its label. Fixed width also aligns the values into a clean column.
 const LABEL_STYLE: CSSProperties = {width: 92, flexShrink: 0}
 
+// The value column takes the remaining width and owns its own wrapping: min-width:0 lets it shrink
+// inside the flex row so a wide value (e.g. a full scheduled date-time) wraps onto a second line
+// within this column instead of overflowing the card or breaking the two-column grid.
+const VALUE_STYLE: CSSProperties = {minWidth: 0}
+
 /** A single `label · value` row. `null`/`false` rows are skipped, so callers can inline conditions. */
 export interface DetailPropertyRow {
   label: string
@@ -35,7 +40,7 @@ export function DetailPropertiesPanel(props: {
   testId?: string
   width?: number
 }): React.JSX.Element {
-  const {sections, testId, width = 260} = props
+  const {sections, testId, width = 320} = props
 
   return (
     <Card
@@ -64,16 +69,22 @@ export function DetailPropertiesPanel(props: {
                 <Flex
                   // oxlint-disable-next-line no-array-index-key
                   key={rowIndex}
-                  align="center"
+                  align="flex-start"
                   gap={3}
                   style={ROW_STYLE}
                 >
-                  <Box style={LABEL_STYLE}>
+                  <Box style={LABEL_STYLE} paddingY={1}>
                     <Text muted size={1} textOverflow="ellipsis">
                       {row.label}
                     </Text>
                   </Box>
-                  {typeof row.value === 'string' ? <Text size={1}>{row.value}</Text> : row.value}
+                  {/* The value keeps its own (right) column and wraps *within* it — a wide value
+                      like a full scheduled date-time grows onto a second line inside the column,
+                      rather than overflowing the panel or spanning full width and breaking the
+                      two-column key/value grid. */}
+                  <Box flex={1} paddingY={1} style={VALUE_STYLE}>
+                    {typeof row.value === 'string' ? <Text size={1}>{row.value}</Text> : row.value}
+                  </Box>
                 </Flex>
               ))}
             </Stack>

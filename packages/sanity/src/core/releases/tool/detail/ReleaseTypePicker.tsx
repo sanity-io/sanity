@@ -164,9 +164,13 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
 
   const labelContent = useMemo(
     () => (
-      <Flex flex={1} gap={2} align={'center'}>
+      <Flex flex={1} gap={2} align={'center'} style={{minWidth: 0}}>
         {releaseTypeIcon}
-        <span data-testid="release-type-label">{publishDateLabel}</span>
+        {/* Wrap (rather than overflow) when width-constrained — e.g. inside the properties panel's
+            value column, a full scheduled date-time flows onto a second line within the column. */}
+        <span data-testid="release-type-label" style={{minWidth: 0, wordBreak: 'break-word'}}>
+          {publishDateLabel}
+        </span>
       </Flex>
     ),
     [publishDateLabel, releaseTypeIcon],
@@ -237,7 +241,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
           tone="default"
           data-testid="published-release-type-label"
           padding={2}
-          style={{borderRadius: '999px'}}
+          style={{borderRadius: '999px', maxWidth: '100%'}}
         >
           {labelContent}
         </Card>
@@ -253,7 +257,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
           }}
           selected={open}
           tone={tone}
-          style={{borderRadius: '999px'}}
+          style={{borderRadius: '999px', maxWidth: '100%'}}
           data-testid="release-type-picker"
         >
           {labelContent}
