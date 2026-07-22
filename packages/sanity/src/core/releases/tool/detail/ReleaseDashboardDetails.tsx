@@ -1,4 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
@@ -9,9 +11,11 @@ import {DetailPropertiesPanel} from '../../../components/detailLayout'
 import {Details} from '../../../form/components/Details'
 import {useTranslation} from '../../../i18n'
 import {useWorkspace} from '../../../studio/workspace'
+import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
+import {getDocumentValidationLoading} from '../../util/getDocumentValidationLoading'
 import {isNotArchivedRelease} from '../../util/util'
 import {ArchivedReleaseBanner} from './ArchivedReleaseBanner'
 import {isCreateReleaseEvent, type ReleaseEvent} from './events/types'
@@ -39,6 +43,27 @@ export function ReleaseDashboardDetails({
   // Behind beta.variants the footer is dropped, so its "Created" status is rehomed here.
   const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const createAuthor = events.find(isCreateReleaseEvent)?.author
+
+  // Status glyph (beta): a semantic-coloured icon accompanying the Status label — checkmark when
+  // valid, error when any document fails, clock while validating. Mirrors the value that
+  // ReleaseValidationBadge renders. The tone-scoped transparent Card colours the icon.
+  const validation = getDocumentValidationLoading(documents)
+  const isFullyValidated = documents.length > 0 && validation.validatedCount === documents.length
+  const statusTone = validation.hasError ? 'critical' : isFullyValidated ? 'positive' : 'default'
+  const statusGlyphIcon = validation.hasError ? (
+    <ErrorOutlineIcon />
+  ) : isFullyValidated ? (
+    <CheckmarkCircleIcon />
+  ) : (
+    <ClockIcon />
+  )
+  const statusGlyph =
+    documents.length === 0 ? undefined : (
+      <Card tone={statusTone} style={{background: 'transparent'}}>
+        <Text size={1}>{statusGlyphIcon}</Text>
+      </Card>
+    )
+
   const isAtTimeRelease = release?.metadata?.releaseType === 'scheduled'
   const isReleaseOpen = state !== 'archived' && state !== 'published'
   const isActive = release.state === 'active'
@@ -99,14 +124,18 @@ export function ReleaseDashboardDetails({
               {
                 rows: [
                   isNotArchivedRelease(release) && {
+                    // Leading glyph reflects the live release type (bolt / clock / dot), tone-coloured.
+                    icon: variantsEnabled ? (
+                      <ReleaseAvatar release={release} padding={0} />
+                    ) : undefined,
                     label: tRelease('dashboard.details.metadata.schedule'),
                     value: <ReleaseTypePicker release={release} />,
                   },
                   {
+                    icon: variantsEnabled ? statusGlyph : undefined,
                     label: tRelease('dashboard.details.metadata.status'),
-                    // Beta: a persistent badge (green "Valid" / red "Errors" / …) so the panel
-                    // clearly signals "good to go". Production keeps the minimal icon indicator
-                    // (icon-only, full message on hover) unchanged.
+                    // Beta: semantic-coloured text ("Valid" / "Errors" / …) so the panel clearly
+                    // signals "good to go". Production keeps the minimal icon indicator unchanged.
                     value: variantsEnabled ? (
                       <ReleaseValidationBadge documents={documents} />
                     ) : (
@@ -118,18 +147,17 @@ export function ReleaseDashboardDetails({
                     value: String(documents.length),
                   },
                   variantsEnabled && {
+                    // The author avatar is the Created row's leading glyph; the value stays plain text.
+                    icon: createAuthor ? (
+                      <UserAvatar size={0} user={createAuthor} />
+                    ) : (
+                      <AvatarSkeleton $size={0} />
+                    ),
                     label: tRelease('footer.status.created'),
                     value: (
-                      <Flex align="center" gap={2}>
-                        {createAuthor ? (
-                          <UserAvatar size={0} user={createAuthor} />
-                        ) : (
-                          <AvatarSkeleton $size={0} />
-                        )}
-                        <Text size={1}>
-                          <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
-                        </Text>
-                      </Flex>
+                      <Text size={1}>
+                        <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
+                      </Text>
                     ),
                   },
                 ],

@@ -1,19 +1,18 @@
 import {type ReleaseType} from '@sanity/client'
-import {PublishIcon} from '@sanity/icons/Publish'
-import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Card, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {isBefore} from 'date-fns/isBefore'
 import {startOfMinute} from 'date-fns/startOfMinute'
 import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useMemo, useRef, useState} from 'react'
+import {styled} from 'styled-components'
 
-import {Button, Popover, Tab} from '../../../../ui-components'
+import {Popover, Tab} from '../../../../ui-components'
 import {MONTH_PICKER_VARIANT} from '../../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 import {DatePicker} from '../../../components/inputs/DateInputs/DatePicker'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
-import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
@@ -24,8 +23,28 @@ import {
   isReleaseScheduledOrScheduling,
   type NotArchivedRelease,
 } from '../../util/util'
-import {ReleaseTime} from '../components/ReleaseTime'
 import {ReleaseDateInput} from './ReleaseDateInput'
+
+// The Schedule value reads as plain text (matching the other property values), but stays clickable
+// to open the picker: a flush, chrome-free button that only underlines on hover — no pill, and its
+// text sits on the same left edge as every other value.
+const ScheduleTrigger = styled.button`
+  appearance: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+`
 
 export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.JSX.Element {
   const {release} = props
@@ -114,18 +133,20 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
   const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
   const isReleaseScheduled = isReleaseScheduledOrScheduling(release)
 
-  const publishDateLabel = useMemo(() => {
+  // A compact, single-line label for the properties-panel value: no seconds, and no
+  // "Estimated ·"/"Scheduled ·" prefix (the row's leading glyph + label already convey the type).
+  const label = useMemo(() => {
     if (release.state === 'published') {
-      if (isPublishDateInPast && publishDate)
-        return tRelease('dashboard.details.published-on', {
-          date: getReleaseTime(release),
-        })
-
-      return tRelease('dashboard.details.published-asap')
+      return isPublishDateInPast && publishDate
+        ? tRelease('dashboard.details.published-on', {
+            date: getReleaseTime(release, {compact: true}),
+          })
+        : tRelease('dashboard.details.published-asap')
     }
-
-    return <ReleaseTime release={release} />
-  }, [getReleaseTime, isPublishDateInPast, publishDate, release, tRelease])
+    if (release.metadata.releaseType === 'asap') return t('release.type.asap')
+    if (release.metadata.releaseType === 'undecided') return t('release.type.undecided')
+    return getReleaseTime(release, {compact: true}) ?? t('release.type.scheduled')
+  }, [getReleaseTime, isPublishDateInPast, publishDate, release, t, tRelease])
 
   const handleButtonReleaseTypeChange = useCallback(
     (pickedReleaseType: ReleaseType) => {
@@ -155,25 +176,17 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
 
   const tone = release.state === 'published' ? 'positive' : getReleaseTone(release)
 
-  const releaseTypeIcon = useMemo(() => {
-    if (isUpdating) return <Spinner size={1} data-testid="updating-release-spinner" />
-    if (release.state === 'published') return <PublishIcon />
-
-    return <ReleaseAvatar release={release} padding={0} />
-  }, [isUpdating, release])
-
-  const labelContent = useMemo(
-    () => (
-      <Flex flex={1} gap={2} align={'center'} style={{minWidth: 0}}>
-        {releaseTypeIcon}
-        {/* Wrap (rather than overflow) when width-constrained — e.g. inside the properties panel's
-            value column, a full scheduled date-time flows onto a second line within the column. */}
-        <span data-testid="release-type-label" style={{minWidth: 0, wordBreak: 'break-word'}}>
-          {publishDateLabel}
-        </span>
-      </Flex>
-    ),
-    [publishDateLabel, releaseTypeIcon],
+  const valueText = (
+    <Text
+      data-testid="release-type-label"
+      size={1}
+      weight="medium"
+      textOverflow="ellipsis"
+      title={label}
+      style={{opacity: isUpdating ? 0.5 : 1}}
+    >
+      {label}
+    </Text>
   )
 
   return (
@@ -236,32 +249,30 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
       placement="bottom-start"
       ref={popoverRef}
     >
-      {release.state === 'published' ? (
+      {/* The tone-scoped Card (transparent bg) colours the value text; no filled pill. When the
+          schedule is editable it's a flush, chrome-free clickable trigger; when locked/published
+          it's static text. Either way it reads as plain text aligned with the other values. */}
+      {release.state === 'published' || isReleaseScheduled ? (
         <Card
-          tone="default"
-          data-testid="published-release-type-label"
-          padding={2}
-          style={{borderRadius: '999px', maxWidth: '100%'}}
+          tone={tone}
+          padding={0}
+          style={{background: 'transparent'}}
+          data-testid={
+            release.state === 'published' ? 'published-release-type-label' : 'release-type-picker'
+          }
         >
-          {labelContent}
+          {valueText}
         </Card>
       ) : (
-        <Button
-          disabled={isReleaseScheduled}
-          mode="bleed"
-          onClick={handleOnPickerClick}
-          ref={buttonRef}
-          tooltipProps={{
-            placement: 'bottom',
-            content: isReleaseScheduled && tRelease('type-picker.tooltip.scheduled'),
-          }}
-          selected={open}
-          tone={tone}
-          style={{borderRadius: '999px', maxWidth: '100%'}}
-          data-testid="release-type-picker"
-        >
-          {labelContent}
-        </Button>
+        <Card tone={tone} padding={0} style={{background: 'transparent'}}>
+          <ScheduleTrigger
+            ref={buttonRef}
+            onClick={handleOnPickerClick}
+            data-testid="release-type-picker"
+          >
+            {valueText}
+          </ScheduleTrigger>
+        </Card>
       )}
     </Popover>
   )

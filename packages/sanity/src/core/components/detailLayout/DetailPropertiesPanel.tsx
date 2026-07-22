@@ -1,23 +1,28 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type CSSProperties, type ReactNode} from 'react'
 
-// Each row is the same fixed height so the key/value pairs sit on an even rhythm — otherwise a row
-// holding a taller control (e.g. a picker button) would space itself further from its neighbours
-// than the plain rows are from each other.
-const ROW_STYLE: CSSProperties = {minHeight: 31}
+// Every row is the same fixed height so the rows sit on an even rhythm.
+const ROW_STYLE: CSSProperties = {minHeight: 29}
 
-// The label sits in a fixed-width column with the value flush beside it (a definition list), rather
-// than pushed to opposite edges: a one-character value (an icon, a count) would otherwise strand a
-// cavernous gap between it and its label. Fixed width also aligns the values into a clean column.
-const LABEL_STYLE: CSSProperties = {width: 92, flexShrink: 0}
+// A reserved leading slot for an optional glyph that accompanies the label (not the value), so the
+// value column stays pure text on one left edge. Fixed width means labels align whether or not a
+// given row carries a glyph.
+const GLYPH_STYLE: CSSProperties = {width: 20, flexShrink: 0}
 
-// The value column takes the remaining width and owns its own wrapping: min-width:0 lets it shrink
-// inside the flex row so a wide value (e.g. a full scheduled date-time) wraps onto a second line
-// within this column instead of overflowing the card or breaking the two-column grid.
+// The label sits in a fixed-width column so every value starts on the same left edge (a clean
+// definition-list grid), rather than being pushed around by varying label widths.
+const LABEL_STYLE: CSSProperties = {width: 84, flexShrink: 0}
+
+// The value column takes the remaining width; min-width:0 lets a long value truncate (with a title
+// tooltip) inside its column rather than overflow the card or wrap and break the single-line grid.
 const VALUE_STYLE: CSSProperties = {minWidth: 0}
 
-/** A single `label · value` row. `null`/`false` rows are skipped, so callers can inline conditions. */
+/**
+ * A single row: an optional leading `icon` (a glyph accompanying the label), a `label`, and a
+ * `value`. `null`/`false` rows are skipped, so callers can inline conditions.
+ */
 export interface DetailPropertyRow {
+  icon?: ReactNode
   label: string
   value: ReactNode
 }
@@ -30,8 +35,10 @@ export interface DetailPropertiesSection {
 
 /**
  * The bordered "properties" surface beside the identity block on an entity detail page. Renders N
- * labeled sections, each a set of `label · value` rows on an even, fixed-height rhythm. Shared by
- * the Releases and Variant-definition detail pages so both read as one family.
+ * labeled sections as an aligned `[glyph] [label] [value]` grid: one leading-glyph column, one
+ * label column, and a value column of pure single-line text (semantic colour carries meaning; no
+ * chips). Values that overflow truncate with a tooltip rather than wrap. Shared by the Releases and
+ * Variant-definition detail pages so both read as one family.
  *
  * @internal
  */
@@ -40,7 +47,7 @@ export function DetailPropertiesPanel(props: {
   testId?: string
   width?: number
 }): React.JSX.Element {
-  const {sections, testId, width = 320} = props
+  const {sections, testId, width = 300} = props
 
   return (
     <Card
@@ -56,6 +63,8 @@ export function DetailPropertiesPanel(props: {
         {sections.map((section, sectionIndex) => {
           const rows = section.rows.filter((row): row is DetailPropertyRow => Boolean(row))
           if (rows.length === 0) return null
+          // Only reserve the glyph column when a row in this section actually carries a glyph.
+          const hasGlyphs = rows.some((row) => Boolean(row.icon))
           return (
             // Sections are positional and static, so the index is a stable key.
             // oxlint-disable-next-line no-array-index-key
@@ -69,21 +78,30 @@ export function DetailPropertiesPanel(props: {
                 <Flex
                   // oxlint-disable-next-line no-array-index-key
                   key={rowIndex}
-                  align="flex-start"
+                  align="center"
                   gap={3}
                   style={ROW_STYLE}
                 >
-                  <Box style={LABEL_STYLE} paddingY={1}>
+                  {hasGlyphs && (
+                    <Flex style={GLYPH_STYLE} align="center" justify="center">
+                      {row.icon}
+                    </Flex>
+                  )}
+                  <Box style={LABEL_STYLE}>
                     <Text muted size={1} textOverflow="ellipsis">
                       {row.label}
                     </Text>
                   </Box>
-                  {/* The value keeps its own (right) column and wraps *within* it — a wide value
-                      like a full scheduled date-time grows onto a second line inside the column,
-                      rather than overflowing the panel or spanning full width and breaking the
-                      two-column key/value grid. */}
-                  <Box flex={1} paddingY={1} style={VALUE_STYLE}>
-                    {typeof row.value === 'string' ? <Text size={1}>{row.value}</Text> : row.value}
+                  {/* Pure-text value column on one left edge; long values truncate (title tooltip
+                      shows the full text) rather than wrap, keeping the single-line grid. */}
+                  <Box flex={1} style={VALUE_STYLE}>
+                    {typeof row.value === 'string' ? (
+                      <Text size={1} textOverflow="ellipsis" title={row.value}>
+                        {row.value}
+                      </Text>
+                    ) : (
+                      row.value
+                    )}
                   </Box>
                 </Flex>
               ))}
