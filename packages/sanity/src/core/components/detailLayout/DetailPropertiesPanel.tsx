@@ -1,6 +1,11 @@
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {Fragment, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
+
+// At or above this many rows, a `multiColumn` section splits into two side-by-side columns so a
+// long list (e.g. six targeting conditions) reads as a compact block instead of a tall stack.
+// Below it, a short list stays single-column — two columns of one or two rows just looks sparse.
+const MULTI_COLUMN_THRESHOLD = 5
 
 // The panel sizes to its content (so a short two-row panel doesn't leave a wide empty gap) but never
 // grows past a sensible max, at which point long values truncate instead of stretching the pane.
@@ -52,6 +57,47 @@ export interface DetailPropertyRow {
 export interface DetailPropertiesSection {
   title?: string
   rows: (DetailPropertyRow | null | false | undefined)[]
+  /**
+   * When set, a section with several rows splits into two side-by-side columns (each a self-aligned
+   * `[glyph] [label] [value]` grid), collapsing back to one column when the panel is too narrow to
+   * hold both. Off by default, so single-column sections (e.g. Releases) are unaffected.
+   */
+  multiColumn?: boolean
+}
+
+// One aligned [glyph] [label] [value] grid for a set of rows. Factored out so a multi-column
+// section can render two of them side by side while each keeps its own internal alignment.
+function PropertyRowsGrid({
+  rows,
+  hasGlyphs,
+}: {
+  rows: DetailPropertyRow[]
+  hasGlyphs: boolean
+}): React.JSX.Element {
+  return (
+    <SectionGrid $hasGlyphs={hasGlyphs}>
+      {rows.map((row, rowIndex) => (
+        // oxlint-disable-next-line no-array-index-key
+        <Fragment key={rowIndex}>
+          {hasGlyphs && <GlyphCell>{row.icon}</GlyphCell>}
+          <Text muted size={1}>
+            {row.label}
+          </Text>
+          {/* Pure-text value on one left edge; a long value truncates (title tooltip shows the full
+              text) rather than wrapping and breaking the single-line grid. */}
+          <Box style={{minWidth: 0}}>
+            {typeof row.value === 'string' ? (
+              <Text size={1} textOverflow="ellipsis" title={row.value}>
+                {row.value}
+              </Text>
+            ) : (
+              row.value
+            )}
+          </Box>
+        </Fragment>
+      ))}
+    </SectionGrid>
+  )
 }
 
 /**
@@ -88,6 +134,12 @@ export function DetailPropertiesPanel(props: {
           if (rows.length === 0) return null
           // Only reserve the glyph column when a row in this section actually carries a glyph.
           const hasGlyphs = rows.some((row) => Boolean(row.icon))
+          // A multi-column section with enough rows splits into two balanced columns that wrap back
+          // to one when the panel is squeezed (flex-wrap, so no container-query fragility). The
+          // first (left) column takes the ceiling half, so an odd count leans left.
+          const splitIntoColumns = section.multiColumn && rows.length >= MULTI_COLUMN_THRESHOLD
+          const leftCount = Math.ceil(rows.length / 2)
+
           return (
             // Sections are positional and static, so the index is a stable key.
             // oxlint-disable-next-line no-array-index-key
@@ -97,28 +149,14 @@ export function DetailPropertiesPanel(props: {
                   {section.title}
                 </Text>
               )}
-              <SectionGrid $hasGlyphs={hasGlyphs}>
-                {rows.map((row, rowIndex) => (
-                  // oxlint-disable-next-line no-array-index-key
-                  <Fragment key={rowIndex}>
-                    {hasGlyphs && <GlyphCell>{row.icon}</GlyphCell>}
-                    <Text muted size={1}>
-                      {row.label}
-                    </Text>
-                    {/* Pure-text value on one left edge; a long value truncates (title tooltip shows
-                        the full text) rather than wrapping and breaking the single-line grid. */}
-                    <Box style={{minWidth: 0}}>
-                      {typeof row.value === 'string' ? (
-                        <Text size={1} textOverflow="ellipsis" title={row.value}>
-                          {row.value}
-                        </Text>
-                      ) : (
-                        row.value
-                      )}
-                    </Box>
-                  </Fragment>
-                ))}
-              </SectionGrid>
+              {splitIntoColumns ? (
+                <Flex gap={4} wrap="wrap">
+                  <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows.slice(0, leftCount)} />
+                  <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows.slice(leftCount)} />
+                </Flex>
+              ) : (
+                <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows} />
+              )}
             </Stack>
           )
         })}

@@ -95,6 +95,10 @@ export function VariantDetail() {
     return [
       {
         title: t('detail.metadata.definition'),
+        // Split into two columns once a definition carries several conditions, so a 5-6 dimension
+        // definition reads as a compact block rather than a tall stack — keeping it closer to the
+        // fixed-height Documents panel beside it.
+        multiColumn: true,
         rows: [
           ...conditionRows,
           {
@@ -226,6 +230,7 @@ export function VariantDetail() {
                 </Box>
                 <Flex align="flex-start" flex="none" gap={4} wrap="wrap">
                   <DetailPropertiesPanel
+                    maxWidth={480}
                     sections={definitionSections}
                     testId="variant-detail-definition"
                   />
