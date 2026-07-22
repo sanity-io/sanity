@@ -10,11 +10,13 @@ export function defineResolveInitialUrlActor({
   studioBasePath,
   previewUrlOption,
   perspective,
+  variant,
 }: {
   client: SanityClient
   studioBasePath: string
   previewUrlOption: PreviewUrlOption | undefined
   perspective: PresentationPerspective
+  variant: string | undefined
 }): PromiseActorLogic<URL, {previewSearchParam: string | null}> {
   return fromPromise<URL, {previewSearchParam: string | null}>(
     async ({input}: {input: {previewSearchParam: string | null}}) => {
@@ -29,6 +31,7 @@ export function defineResolveInitialUrlActor({
           // @TODO handle checking permissions here, and then generating a secret
           previewUrlSecret: '',
           studioPreviewPerspective: encodeStudioPerspective(perspective),
+          studioPreviewVariant: variant,
           previewSearchParam: input.previewSearchParam,
         })
         return new URL(initial, origin)

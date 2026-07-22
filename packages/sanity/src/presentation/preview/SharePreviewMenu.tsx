@@ -39,6 +39,7 @@ export interface SharePreviewMenuProps {
   previewLocationRoute: string
   initialUrl: PreviewProps['initialUrl']
   perspective: ClientPerspective
+  variant: string | undefined
 }
 
 const QrCodeLogoSize = 24
@@ -65,6 +66,7 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
     initialUrl,
     previewLocationRoute,
     perspective,
+    variant,
   } = props
   const {t} = useTranslation(presentationLocaleNamespace)
   const {push: pushToast} = useToast()
@@ -83,9 +85,10 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
             secret,
             previewLocationRoute,
             encodeStudioPerspective(perspective),
+            variant,
           )
         : null,
-    [initialUrl, perspective, previewLocationRoute, secret],
+    [initialUrl, perspective, previewLocationRoute, secret, variant],
   )
 
   const [error, setError] = useState<unknown>(null)
