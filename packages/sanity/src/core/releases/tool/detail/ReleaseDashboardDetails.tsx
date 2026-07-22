@@ -3,11 +3,12 @@ import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {UserIcon} from '@sanity/icons/User'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useEffect, useRef, useState} from 'react'
 
-import {AvatarSkeleton, RelativeTime, UserAvatar} from '../../../components'
+import {RelativeTime, UserAvatar} from '../../../components'
 import {DetailPropertiesPanel} from '../../../components/detailLayout'
 import {Details} from '../../../form/components/Details'
 import {useTranslation} from '../../../i18n'
@@ -153,11 +154,15 @@ export function ReleaseDashboardDetails({
                     value: String(documents.length),
                   },
                   variantsEnabled && {
-                    // The author avatar is the Created row's leading glyph; the value stays plain text.
+                    // The author avatar is the Created row's leading glyph. When the create-event
+                    // author doesn't resolve, fall back to a muted person glyph ("created by —
+                    // unknown") rather than a skeleton, which would read as perpetually loading.
                     icon: createAuthor ? (
                       <UserAvatar size={0} user={createAuthor} />
                     ) : (
-                      <AvatarSkeleton $size={0} />
+                      <Text size={1} muted>
+                        <UserIcon />
+                      </Text>
                     ),
                     label: tRelease('footer.status.created'),
                     value: (
