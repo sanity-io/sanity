@@ -148,7 +148,11 @@ export const getVariantDocumentTableColumnDefs = (
     sortTransform: (row) => getRowBundleSortKey(row, releasesById),
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('detail.documents.table.appears-in')} {...props} />
+        <Headers.SortHeaderButton
+          paddingLeft={2}
+          text={t('detail.documents.table.appears-in')}
+          {...props}
+        />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
@@ -173,7 +177,11 @@ export const getVariantDocumentTableColumnDefs = (
     sorting: true,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('detail.documents.table.type')} {...props} />
+        <Headers.SortHeaderButton
+          paddingLeft={2}
+          text={t('detail.documents.table.type')}
+          {...props}
+        />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
@@ -198,7 +206,11 @@ export const getVariantDocumentTableColumnDefs = (
     sortTransform: ({document}) => getDocumentPreviewTitle(document).toLowerCase(),
     header: (props) => (
       <Flex {...props.headerProps} flex={1} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('detail.documents.table.document')} {...props} />
+        <Headers.SortHeaderButton
+          paddingLeft={2}
+          text={t('detail.documents.table.document')}
+          {...props}
+        />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
