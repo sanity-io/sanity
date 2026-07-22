@@ -342,23 +342,10 @@ export const getDocumentTableColumnDefs: (
     ),
   },
   {
-    // Edited by — the last editor (person), its own named column so authorship reads distinctly
-    // from live presence. Plain-text header so it aligns with the avatar at the content edge (a
-    // sort button never lands its label on the same edge).
-    id: 'editedBy',
-    sorting: false,
-    width: 170,
-    style: {minWidth: 44, maxWidth: 170},
-    header: ({headerProps}) => (
-      <Flex {...headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
-        <Text muted size={1} textOverflow="ellipsis" weight="medium">
-          {t('table-header.edited-by')}
-        </Text>
-      </Flex>
-    ),
-    cell: (props) => <EditedByReleaseCell {...props} releaseDocumentId={releaseId} />,
-  },
-  {
+    // "Last edited" (relative time) comes BEFORE "Edited by" so this text column sits between the
+    // document preview's live-presence avatar and the edited-by avatar — otherwise the two round
+    // avatars would neighbour across the column boundary and read as one crowded cluster. Also reads
+    // naturally: "last edited 6 days ago, by …".
     id: 'document._updatedAt',
     sorting: true,
     width: 130,
@@ -383,6 +370,23 @@ export const getDocumentTableColumnDefs: (
         )}
       </Flex>
     ),
+  },
+  {
+    // Edited by — the last editor (person), its own named column so authorship reads distinctly
+    // from live presence. Plain-text header so it aligns with the avatar at the content edge (a
+    // sort button never lands its label on the same edge).
+    id: 'editedBy',
+    sorting: false,
+    width: 170,
+    style: {minWidth: 44, maxWidth: 170},
+    header: ({headerProps}) => (
+      <Flex {...headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
+        <Text muted size={1} textOverflow="ellipsis" weight="medium">
+          {t('table-header.edited-by')}
+        </Text>
+      </Flex>
+    ),
+    cell: (props) => <EditedByReleaseCell {...props} releaseDocumentId={releaseId} />,
   },
 
   {

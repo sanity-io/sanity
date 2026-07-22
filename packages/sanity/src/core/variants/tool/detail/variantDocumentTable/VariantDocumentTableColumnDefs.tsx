@@ -222,29 +222,10 @@ export const getVariantDocumentTableColumnDefs = (
     ),
   },
   {
-    // "Edited by" — the person who last edited the document. Its own named column (not just an
-    // avatar tucked beside the time) so authorship reads distinctly from live presence, which stays
-    // in the document preview. The name collapses to avatar-only when the column is squeezed.
-    id: 'editedBy',
-    sorting: false,
-    width: 170,
-    style: {minWidth: 44, maxWidth: 170},
-    header: (props) => (
-      <Flex {...props.headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
-        <Text muted size={1} textOverflow="ellipsis" weight="medium">
-          {t('detail.documents.table.edited-by')}
-        </Text>
-      </Flex>
-    ),
-    cell: ({cellProps, datum}) => (
-      <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-        {!datum.isLoading && (
-          <EditedByCell documentId={datum.document._id} revision={datum.document._rev} />
-        )}
-      </Flex>
-    ),
-  },
-  {
+    // "Last edited" (relative time) comes BEFORE "Edited by" so this text column sits between the
+    // document preview's live-presence avatar and the edited-by avatar — otherwise the two round
+    // avatars would neighbour across the column boundary and read as one crowded cluster. Also reads
+    // naturally: "last edited 6 days ago, by …".
     id: 'document._updatedAt',
     sorting: true,
     width: 130,
@@ -269,6 +250,29 @@ export const getVariantDocumentTableColumnDefs = (
           <Text muted size={1}>
             <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
           </Text>
+        )}
+      </Flex>
+    ),
+  },
+  {
+    // "Edited by" — the person who last edited the document. Its own named column (not just an
+    // avatar tucked beside the time) so authorship reads distinctly from live presence, which stays
+    // in the document preview. The name collapses to avatar-only when the column is squeezed.
+    id: 'editedBy',
+    sorting: false,
+    width: 170,
+    style: {minWidth: 44, maxWidth: 170},
+    header: (props) => (
+      <Flex {...props.headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
+        <Text muted size={1} textOverflow="ellipsis" weight="medium">
+          {t('detail.documents.table.edited-by')}
+        </Text>
+      </Flex>
+    ),
+    cell: ({cellProps, datum}) => (
+      <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+        {!datum.isLoading && (
+          <EditedByCell documentId={datum.document._id} revision={datum.document._rev} />
         )}
       </Flex>
     ),
