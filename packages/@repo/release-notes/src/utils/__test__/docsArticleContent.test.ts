@@ -86,6 +86,113 @@ describe('toDocsArticleContent', () => {
     expect(result).not.toHaveProperty('level')
   })
 
+  it('maps GFM alert callouts to docsCallout with a schema-valid `type`', () => {
+    const callout = {
+      _type: 'callout' as const,
+      _key: 'callout-key',
+      tone: 'warning',
+      content: [
+        {
+          _type: 'block' as const,
+          _key: 'inner',
+          style: 'normal' as const,
+          markDefs: [],
+          children: [{_type: 'span' as const, _key: 'inner-span', text: 'watch out', marks: []}],
+        },
+      ],
+    }
+
+    expect(toDocsArticleContent(callout)).toEqual([
+      {
+        _type: 'docsCallout',
+        _key: 'callout-key',
+        type: 'warning',
+        content: [callout.content[0]],
+      },
+    ])
+  })
+
+  it('maps every known GFM alert tone to a schema-valid docsCallout type', () => {
+    const cases: {tone: string; expected: 'error' | 'info' | 'tip' | 'warning'}[] = [
+      {tone: 'note', expected: 'info'},
+      {tone: 'important', expected: 'info'},
+      {tone: 'tip', expected: 'tip'},
+      {tone: 'warning', expected: 'warning'},
+      {tone: 'caution', expected: 'error'},
+    ]
+
+    for (const {tone, expected} of cases) {
+      const [result] = toDocsArticleContent({
+        _type: 'callout',
+        _key: `k-${tone}`,
+        tone,
+        content: [],
+      } as NormalizedMarkdownBlock)
+      expect(result).toMatchObject({_type: 'docsCallout', type: expected})
+    }
+  })
+
+  it('falls back to `info` for unknown callout tones', () => {
+    const [result] = toDocsArticleContent({
+      _type: 'callout',
+      _key: 'k',
+      tone: 'mystery',
+      content: [],
+    } as NormalizedMarkdownBlock)
+
+    expect(result).toMatchObject({_type: 'docsCallout', type: 'info'})
+  })
+
+  it('normalizes link markDefs inside callout content', () => {
+    const [result] = toDocsArticleContent({
+      _type: 'callout',
+      _key: 'callout-key',
+      tone: 'note',
+      content: [
+        textBlock({
+          markDefs: [{_key: 'link-1', _type: 'link', href: 'https://example.com'}],
+        }),
+      ],
+    } as NormalizedMarkdownBlock)
+
+    expect(result).toMatchObject({
+      _type: 'docsCallout',
+      content: [{markDefs: [{_key: 'link-1', _type: 'link', url: 'https://example.com'}]}],
+    })
+  })
+
+  it('drops non-block inner content (docsCallout.content only accepts blocks)', () => {
+    const [result] = toDocsArticleContent({
+      _type: 'callout',
+      _key: 'callout-key',
+      tone: 'note',
+      content: [
+        textBlock({_key: 'text'}),
+        {_type: 'image' as const, _key: 'img', src: 'https://example.com/x.png'},
+        {_type: 'code' as const, _key: 'code', language: 'ts', code: 'const a = 1'},
+      ],
+    } as NormalizedMarkdownBlock)
+
+    expect(result).toMatchObject({_type: 'docsCallout'})
+    const content = (result as {content: {_type: string}[]}).content
+    expect(content).toHaveLength(1)
+    expect(content[0]).toMatchObject({_type: 'block', _key: 'text'})
+  })
+
+  it('coerces heading styles inside callout content back to `normal`', () => {
+    const [result] = toDocsArticleContent({
+      _type: 'callout',
+      _key: 'callout-key',
+      tone: 'warning',
+      content: [textBlock({_key: 'heading', style: 'h2'})],
+    } as NormalizedMarkdownBlock)
+
+    expect(result).toMatchObject({
+      _type: 'docsCallout',
+      content: [{_type: 'block', style: 'normal'}],
+    })
+  })
+
   it('produces schema-valid blocks from real PR markdown with a separator and a link', () => {
     const markdown = `Fixed a bug, see [the docs](https://example.com/docs).
 
@@ -107,5 +214,21 @@ describe('toDocsArticleContent', () => {
         }
       }
     }
+  })
+
+  it('converts a real PR markdown GFM alert into a docsCallout with a schema-valid type', () => {
+    const markdown = `Before.
+
+> [!WARNING]
+> Heads up.
+
+After.`
+    const blocks = markdownToPortableText(markdown).flatMap((block) => toDocsArticleContent(block))
+
+    // The docs schema rejects _type: "callout"; only docsCallout is allowed.
+    expect(blocks.some((block) => block._type === 'callout')).toBe(false)
+
+    const callout = blocks.find((block) => block._type === 'docsCallout')
+    expect(callout).toMatchObject({_type: 'docsCallout', type: 'warning'})
   })
 })
