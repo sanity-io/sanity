@@ -2,6 +2,7 @@ import {
   urlSearchParamPreviewPathname,
   urlSearchParamPreviewPerspective,
   urlSearchParamPreviewSecret,
+  urlSearchParamPreviewVariant,
 } from '@sanity/preview-url-secret/constants'
 import {type SanityClient} from 'sanity'
 import {fromPromise, type PromiseActorLogic} from 'xstate'
@@ -26,11 +27,13 @@ export function defineResolvePreviewModeUrlActor({
   studioBasePath,
   previewUrlOption,
   perspective,
+  variant,
 }: {
   client: SanityClient
   studioBasePath: string
   previewUrlOption: PreviewUrlOption | undefined
   perspective: PresentationPerspective
+  variant: string | undefined
 }): PromiseActorLogic<URL, ResolvePreviewModeUrlInput> {
   return fromPromise<URL, ResolvePreviewModeUrlInput>(async ({input}) => {
     const {previewUrlSecret, resolvedPreviewMode, initialUrl} = input
@@ -44,6 +47,7 @@ export function defineResolvePreviewModeUrlActor({
         studioBasePath,
         previewUrlSecret,
         studioPreviewPerspective: encodeStudioPerspective(perspective),
+        studioPreviewVariant: variant,
         previewSearchParam: initialUrl.toString(),
       })
       return new URL(initial, initialUrl)
@@ -60,6 +64,11 @@ export function defineResolvePreviewModeUrlActor({
 
     url.searchParams.set(urlSearchParamPreviewSecret, previewUrlSecret)
     url.searchParams.set(urlSearchParamPreviewPerspective, encodeStudioPerspective(perspective))
+    if (variant) {
+      url.searchParams.set(urlSearchParamPreviewVariant, variant)
+    } else {
+      url.searchParams.delete(urlSearchParamPreviewVariant)
+    }
     if (initialUrl.pathname !== url.pathname) {
       url.searchParams.set(
         urlSearchParamPreviewPathname,
