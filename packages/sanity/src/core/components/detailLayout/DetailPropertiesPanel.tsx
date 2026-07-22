@@ -1,4 +1,5 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {getTheme_v2} from '@sanity/ui/theme'
 import {Fragment, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -7,12 +8,28 @@ import {css, styled} from 'styled-components'
 // Below it, a short list stays single-column — two columns of one or two rows just looks sparse.
 const MULTI_COLUMN_THRESHOLD = 5
 
+// The size of the detail-page title (bold, size 4) this panel sits beside. Used to drop the panel by
+// the title's top half-leading below.
+const TITLE_SIZE = 4
+
 // The panel sizes to its content (so a short two-row panel doesn't leave a wide empty gap) but never
 // grows past a sensible max, at which point long values truncate instead of stretching the pane.
-const PropertiesCard = styled(Card)<{$maxWidth: number}>`
-  width: fit-content;
-  max-width: ${(props) => props.$maxWidth}px;
-`
+//
+// margin-top drops the panel by the title's top half-leading so its top border lines up with the
+// title's visible cap-height beside it (a text line-box is taller than its glyphs, so the title cap
+// sits a few px below its layout top). Compensating on the panel — moving it down — rather than
+// lifting the title up avoids clipping the title's caps under an overflow-hidden header. Derived from
+// theme font metrics so it tracks the type scale.
+const PropertiesCard = styled(Card)<{$maxWidth: number}>((props) => {
+  const {font} = getTheme_v2(props.theme)
+  const {fontSize, lineHeight} = font.text.sizes[TITLE_SIZE]
+  const titleTopLeading = Math.round((lineHeight - fontSize) / 2)
+  return css`
+    width: fit-content;
+    max-width: ${props.$maxWidth}px;
+    margin-top: ${titleTopLeading}px;
+  `
+})
 
 // One grid per section so every row shares column tracks and stays aligned:
 //  - glyph  (auto) — only present when the section has glyphs

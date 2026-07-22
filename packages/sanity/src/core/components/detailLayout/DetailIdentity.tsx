@@ -31,32 +31,22 @@ const ClampedDescription = styled.div((props) => {
   `
 })
 
-const TITLE_SIZE = 4
+// An optional action beside the title reveals on hover (or keyboard focus, for a11y), so at rest
+// the pane reads as plain content. Callers that pass no `titleAction` get a clean display surface.
+// (Title/panel top-edge alignment is handled on the panel side — it drops to meet the title's
+// cap-height — rather than lifting the title with a negative margin, which would clip its caps
+// under an overflow-hidden header.)
+const Identity = styled(Stack)`
+  [data-ui='detail-identity-action'] {
+    opacity: 0;
+    transition: opacity 150ms;
+  }
 
-// Lift the title by its top half-leading so its cap-height sits on the block's top edge. The
-// properties panel beside it hangs its top border from that same edge, so this makes the title's
-// visible top and the panel border read as one clean starting line — instead of the border appearing
-// to cut across the title (a text line-box is taller than its glyphs, so an untrimmed title's cap
-// starts a few px below the layout edge the panel border aligns to). Derived from the theme's font
-// metrics so it stays correct if the type scale changes.
-const Identity = styled(Stack)((props) => {
-  const {font} = getTheme_v2(props.theme)
-  const {fontSize, lineHeight} = font.text.sizes[TITLE_SIZE]
-  const topLeading = Math.round((lineHeight - fontSize) / 2)
-  return css`
-    margin-top: -${topLeading}px;
-
-    [data-ui='detail-identity-action'] {
-      opacity: 0;
-      transition: opacity 150ms;
-    }
-
-    &:hover [data-ui='detail-identity-action'],
-    &:focus-within [data-ui='detail-identity-action'] {
-      opacity: 1;
-    }
-  `
-})
+  &:hover [data-ui='detail-identity-action'],
+  &:focus-within [data-ui='detail-identity-action'] {
+    opacity: 1;
+  }
+`
 
 /**
  * The identity block (title + description) of an entity detail page, as a read-only **display**
