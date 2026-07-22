@@ -1,7 +1,7 @@
 import {type ResponseQueryOptions} from '@sanity/client'
 import {match, type Path} from 'path-to-regexp'
 import {useEffect, useEffectEvent, useRef, useState} from 'react'
-import {useClient} from 'sanity'
+import {useClient, VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity'
 import {type RouterState, useRouter} from 'sanity/router'
 
 import {API_VERSION} from './constants'
@@ -99,10 +99,20 @@ export function useMainDocument(props: {
   targetOrigin: string
   resolvers?: DocumentResolver[]
   perspective: PresentationPerspective
+  variant: string | undefined
 }): MainDocumentState | undefined {
-  const {navigate, navigationHistory, path, targetOrigin, resolvers = [], perspective} = props
+  const {
+    navigate,
+    navigationHistory,
+    path,
+    targetOrigin,
+    resolvers = [],
+    perspective,
+    variant,
+  } = props
   const {state: routerState} = useRouter()
-  const client = useClient({apiVersion: API_VERSION})
+  // Fetching with a variant requires the `vX` API version for now
+  const client = useClient(variant ? VARIANTS_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION})
   const relativeUrl =
     path || routerState._searchParams?.find(([key]) => key === 'preview')?.[1] || ''
 
@@ -161,6 +171,7 @@ export function useMainDocument(props: {
           const controller = new AbortController()
           const options: ResponseQueryOptions = {
             perspective: perspective,
+            variant,
             signal: controller.signal,
             tag: 'use-main-document',
           }
@@ -183,7 +194,7 @@ export function useMainDocument(props: {
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined
-  }, [client, perspective, relativeUrl, resolvers, targetOrigin])
+  }, [client, perspective, relativeUrl, resolvers, targetOrigin, variant])
 
   return mainDocumentState
 }
