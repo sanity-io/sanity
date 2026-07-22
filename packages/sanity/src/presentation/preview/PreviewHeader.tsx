@@ -37,6 +37,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     overlaysConnection,
     presentationRef,
     perspective,
+    variant,
     previewUrl,
     setViewport,
     targetOrigin,
@@ -207,6 +208,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
                 previewLocationOrigin={previewLocationOrigin}
                 previewLocationRoute={previewLocationRoute}
                 perspective={perspective}
+                variant={variant}
                 targetOrigin={targetOrigin}
               />
             </Box>
@@ -252,6 +254,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
             previewLocationRoute={previewLocationRoute}
             initialUrl={initialUrl}
             perspective={perspective}
+            variant={variant}
           />
         </Flex>
       )}
