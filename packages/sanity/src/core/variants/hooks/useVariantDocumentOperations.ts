@@ -1,3 +1,4 @@
+import {type SanityDocumentLike} from '@sanity/types'
 import {useCallback} from 'react'
 
 import {useClient} from '../../hooks/useClient'
@@ -12,18 +13,16 @@ import {type SystemVariant} from '../types'
 export function useVariantDocumentOperations() {
   const client = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
 
-  const createVariantDocument = useCallback(
-    async (options: {
-      baseId: string
-      baseRevisionId?: string
-      variant: SystemVariant
-      selectedPerspective: TargetPerspective
-    }) => {
-      await createVariantScopedDocument({
+  const createVariantDocument = useCallback<
+    (
+      options: Omit<Parameters<typeof createVariantScopedDocument>[0], 'client'>,
+    ) => ReturnType<typeof createVariantScopedDocument>
+  >(
+    (options) =>
+      createVariantScopedDocument({
         client,
         ...options,
-      })
-    },
+      }),
     [client],
   )
 
