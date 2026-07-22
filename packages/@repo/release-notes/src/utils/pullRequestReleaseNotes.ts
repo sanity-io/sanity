@@ -7,18 +7,18 @@ export function extractReleaseNotes(blocks: NormalizedMarkdownBlock[]) {
 
   for (const block of blocks) {
     if (isHeading(block)) {
-      if (activeHeaderIsReleaseNotes) {
-        // new header
-        break
-      }
+      if (activeHeaderIsReleaseNotes) break
       if (getBlockText(block).includes('Notes for release')) {
         activeHeaderIsReleaseNotes = true
         continue
       }
     }
-    if (activeHeaderIsReleaseNotes) {
-      releaseNotesBlocks.push(block)
-    }
+    if (!activeHeaderIsReleaseNotes) continue
+    // A horizontal rule ends the section. Tools like Cursor Bugbot append
+    // their review after a `---` separator; humans following the PR template
+    // convention likewise put a `---` at the end of their release notes.
+    if (block._type === 'horizontal-rule') break
+    releaseNotesBlocks.push(block)
   }
   return releaseNotesBlocks
 }
@@ -28,16 +28,15 @@ function isHeading(block: PortableTextMarkdownBlock) {
     return false
   }
 
-  const [pref, l] = block.style
-  const level = Number(l)
+  const [prefix, levelChar] = block.style
+  const level = Number(levelChar)
 
-  return pref === 'h' && level >= 1 && level <= 6
+  return prefix === 'h' && level >= 1 && level <= 6
 }
 
 export function shouldExcludeReleaseNotes(blocks: PortableTextMarkdownBlock[]): boolean {
   const [block] = blocks
   if (!block) {
-    // consider only when explicitly stating that no release notes needed
     return false
   }
   const firstBlock = getBlockText(block).toLowerCase().trim()
