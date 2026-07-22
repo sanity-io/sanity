@@ -47,9 +47,12 @@ export function ReleaseDetail() {
 
   useEffect(() => {
     if (isNotFound) {
-      router.navigate({
-        _searchParams: [[RELEASE_NOT_FOUND_SEARCH_PARAM_KEY, 'true']],
-      })
+      router.navigate(
+        {
+          _searchParams: [[RELEASE_NOT_FOUND_SEARCH_PARAM_KEY, 'true']],
+        },
+        {replace: true},
+      )
     }
   }, [isNotFound, router])
 
