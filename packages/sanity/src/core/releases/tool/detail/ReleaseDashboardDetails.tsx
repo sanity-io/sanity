@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
+import {DocumentsIcon} from '@sanity/icons/Documents'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
@@ -143,6 +144,11 @@ export function ReleaseDashboardDetails({
                     ),
                   },
                   {
+                    icon: variantsEnabled ? (
+                      <Text size={1} muted>
+                        <DocumentsIcon />
+                      </Text>
+                    ) : undefined,
                     label: tRelease('dashboard.details.metadata.documents'),
                     value: String(documents.length),
                   },
