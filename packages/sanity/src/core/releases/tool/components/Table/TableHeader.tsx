@@ -3,7 +3,6 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type CSSProperties, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -19,47 +18,6 @@ const BasicHeader = ({text}: {text: string}) => (
     </Text>
   </Box>
 )
-
-// A sortable header that renders as plain text (not a bleed Button) so its label sits on the same
-// left edge as the cell content below it — a Button reserves interaction affordance that shifts its
-// label a few px right, which reads as misaligned over short content (an avatar, a relative time).
-// `all: unset` strips the native button chrome; the surrounding header cell supplies the inset.
-const SortableTextHeaderRoot = styled.button`
-  all: unset;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  min-width: 0;
-`
-
-const SortableTextHeader = ({header, text}: {header: HeaderProps['header']; text: string}) => {
-  const {sort, setSortColumn} = useTableContext()
-  const isActive = header.sorting && sort?.column === header.id
-  const sortIcon = useMemo(
-    () => (
-      <MotionIcon
-        initial={false}
-        animate={{rotate: sort?.direction === 'asc' ? 0 : 180}}
-        transition={{duration: 0.25, ease: 'easeInOut'}}
-      />
-    ),
-    [sort?.direction],
-  )
-
-  return (
-    <SortableTextHeaderRoot type="button" onClick={() => setSortColumn(String(header.id))}>
-      <Text muted size={1} textOverflow="ellipsis" weight="medium">
-        {text}
-      </Text>
-      {isActive && (
-        <Text muted size={1}>
-          {sortIcon}
-        </Text>
-      )}
-    </SortableTextHeaderRoot>
-  )
-}
 
 const SortHeaderButton = ({
   header,
@@ -161,7 +119,6 @@ export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
 
 export const Headers = {
   SortHeaderButton,
-  SortableTextHeader,
   TableHeaderSearch,
   BasicHeader,
 }

@@ -230,10 +230,11 @@ export const getVariantDocumentTableColumnDefs = (
     sorting: true,
     width: 130,
     header: (props) => (
-      <Flex {...props.headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
-        <Headers.SortableTextHeader
-          header={props.header}
+      <Flex {...props.headerProps} paddingY={3} sizing="border">
+        <Headers.SortHeaderButton
+          paddingLeft={2}
           text={t('detail.documents.table.last-edited')}
+          {...props}
         />
       </Flex>
     ),

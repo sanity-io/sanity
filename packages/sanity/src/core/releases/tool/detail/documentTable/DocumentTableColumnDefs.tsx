@@ -350,8 +350,8 @@ export const getDocumentTableColumnDefs: (
     sorting: true,
     width: 130,
     header: (props) => (
-      <Flex {...props.headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
-        <Headers.SortableTextHeader header={props.header} text={t('table-header.last-edited')} />
+      <Flex {...props.headerProps} paddingY={3} sizing="border">
+        <Headers.SortHeaderButton paddingLeft={2} text={t('table-header.last-edited')} {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
