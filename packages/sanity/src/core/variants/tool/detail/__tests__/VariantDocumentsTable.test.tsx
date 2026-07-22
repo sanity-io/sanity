@@ -160,6 +160,8 @@ describe('VariantDocumentsTable', () => {
     expect(screen.getByText('published,drafts')).toBeInTheDocument()
     expect(screen.getByText('drafts')).toBeInTheDocument()
     expect(screen.getByText('Appears in')).toBeInTheDocument()
+    // Each row gets a trailing per-row actions (⋯) menu, mirroring the releases table.
+    expect(screen.getAllByTestId('variant-document-actions')).toHaveLength(2)
   })
 
   it('filters documents when searching by title or name', async () => {

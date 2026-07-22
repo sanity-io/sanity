@@ -18,6 +18,7 @@ import {searchDocumentRelease} from '../../../releases/tool/detail/documentTable
 import {variantsLocaleNamespace} from '../../i18n'
 import {computeReleaseLaneSegments, RELEASE_LANE_ALL, rowMatchesLane} from './releaseLane'
 import {type DocumentInVariantGroup} from './types'
+import {VariantDocumentActions} from './variantDocumentTable/VariantDocumentActions'
 import {getVariantDocumentTableColumnDefs} from './variantDocumentTable/VariantDocumentTableColumnDefs'
 import {VariantReleaseLane} from './VariantReleaseLane'
 
@@ -68,6 +69,13 @@ export function VariantDocumentsTable({
     // Clicking the already-active segment clears the filter back to "All".
     setActiveLane((previous) => (previous === laneId ? RELEASE_LANE_ALL : laneId))
   }, [])
+
+  const renderRowActions = useCallback(
+    ({datum}: {datum: unknown}) => (
+      <VariantDocumentActions row={datum as DocumentInVariantGroup} t={t} />
+    ),
+    [t],
+  )
 
   const hasReleaseControls = !loading && rows.length > 0 && segments.length > 1
 
@@ -178,6 +186,7 @@ export function VariantDocumentsTable({
       getRowKey={(row) => row.groupId}
       id="variant-documents-table"
       loading={loading}
+      rowActions={renderRowActions}
       rows={laneRows}
       // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
       rowId="rowKey"
