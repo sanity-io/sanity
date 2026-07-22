@@ -99,12 +99,16 @@ export function VariantDetail() {
         // definition reads as a compact block rather than a tall stack — keeping it closer to the
         // fixed-height Documents panel beside it.
         multiColumn: true,
+        rows: conditionRows,
+      },
+      {
+        // Created is provenance, not a targeting condition, so it sits on its own line below the
+        // conditions rather than as an odd extra cell in the two-column split (which would leave an
+        // unbalanced 4/3). A person glyph (not a clock — a clock reads as "time/schedule"). The
+        // author identity isn't on the variant document yet, so this shows the relative time for
+        // now; wiring the creator's name/avatar is a follow-up.
         rows: [
-          ...conditionRows,
           {
-            // A person glyph (not a clock — a clock reads as "time/schedule"): "Created" is about
-            // who and when. The author identity isn't on the variant document yet, so for now this
-            // shows the relative time; wiring the creator's name/avatar is a follow-up.
             icon: (
               <Text muted size={1}>
                 <UserIcon />
