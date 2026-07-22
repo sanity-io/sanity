@@ -18,6 +18,7 @@ import {useUnique} from '../../../../util'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {getPTEToolbarActionGroups} from './helpers'
 import {type BlockStyleItem, type PTEToolbarAction, type PTEToolbarActionGroup} from './types'
+import {useApplicableSchema} from './useApplicableSchema'
 
 export function useFocusBlock(): PortableTextBlock | undefined {
   const editor = usePortableTextEditor()
@@ -52,6 +53,7 @@ export function useActionGroups({
 }): PTEToolbarActionGroup[] {
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
+  const applicable = useApplicableSchema()
   const {t} = useTranslation()
 
   const handleInsertAnnotation = useCallback(
@@ -71,12 +73,13 @@ export function useActionGroups({
         ? getPTEToolbarActionGroups(editor, {
             schemaTypes,
             disabled,
+            applicable,
             onInsertAnnotation: handleInsertAnnotation,
             hotkeyOpts: hotkeys,
             t,
           })
         : [],
-    [disabled, editor, schemaTypes, handleInsertAnnotation, hotkeys, t],
+    [applicable, disabled, editor, schemaTypes, handleInsertAnnotation, hotkeys, t],
   )
 }
 

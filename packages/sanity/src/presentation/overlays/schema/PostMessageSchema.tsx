@@ -7,6 +7,7 @@ import {
   RELEASES_STUDIO_CLIENT_OPTIONS,
   useClient,
   useWorkspace,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
 
 import {API_VERSION} from '../../constants'
@@ -16,6 +17,7 @@ import {extractSchema} from './extract'
 export interface PostMessageSchemaProps {
   comlink: VisualEditingConnection
   perspective: ClientPerspective
+  variant: string | undefined
 }
 
 function getDocumentPathArray(paths: UnresolvedPath[]) {
@@ -39,7 +41,7 @@ function getDocumentPathArray(paths: UnresolvedPath[]) {
  * over postMessage so it can be used to enrich the Visual Editing experience
  */
 function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | null {
-  const {comlink, perspective} = props
+  const {comlink, perspective, variant} = props
 
   const workspace = useWorkspace()
 
@@ -60,7 +62,12 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
   }, [comlink, workspace])
 
   const client = useClient(
-    isReleasePerspective(perspective) ? RELEASES_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION},
+    // Fetching with a variant requires the `vX` API version for now
+    variant
+      ? VARIANTS_STUDIO_CLIENT_OPTIONS
+      : isReleasePerspective(perspective)
+        ? RELEASES_STUDIO_CLIENT_OPTIONS
+        : {apiVersion: API_VERSION},
   )
 
   // Resolve union types from an array of unresolved paths
@@ -79,6 +86,7 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
             {
               tag: 'presentation-schema',
               perspective,
+              variant,
             },
           )
           // `client.fetch` returns `null` when no document matches the active perspective,
@@ -99,7 +107,7 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
       })
       return {types: newState}
     })
-  }, [comlink, client, perspective])
+  }, [comlink, client, perspective, variant])
 
   return null
 }

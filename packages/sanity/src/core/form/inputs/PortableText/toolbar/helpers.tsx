@@ -1,4 +1,5 @@
 import {type HotkeyOptions, PortableTextEditor} from '@portabletext/editor'
+import {type ApplicableSchema} from '@portabletext/editor/selectors'
 import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
 import {BlockElementIcon} from '@sanity/icons/BlockElement'
 import {BoldIcon} from '@sanity/icons/Bold'
@@ -29,6 +30,7 @@ function getPTEFormatActions(
   editor: PortableTextEditor,
   schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
+  applicable: ApplicableSchema,
   hotkeyOpts: HotkeyOptions,
   t?: (key: string) => string,
 ): PTEToolbarAction[] {
@@ -44,7 +46,7 @@ function getPTEFormatActions(
 
     return {
       type: 'format',
-      disabled: disabled,
+      disabled: disabled || !applicable.decorators.has(decorator.value),
       icon: decorator?.icon,
       key: decorator.value,
       handle: (): void => {
@@ -61,13 +63,14 @@ function getPTEListActions(
   editor: PortableTextEditor,
   schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
+  applicable: ApplicableSchema,
   t?: (key: string) => string,
 ): PTEToolbarAction[] {
   return schemaTypes.lists.map((listItem) => {
     return {
       type: 'listStyle',
       key: listItem.value,
-      disabled: disabled,
+      disabled: disabled || !applicable.lists.has(listItem.value),
       icon: listItem?.icon,
       handle: (): void => {
         PortableTextEditor.toggleList(editor, listItem.value)
@@ -90,15 +93,17 @@ function getPTEAnnotationActions(
   editor: PortableTextEditor,
   schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
+  applicable: ApplicableSchema,
   onInsert: (type: ObjectSchemaType) => void,
   t?: (key: string) => string,
 ): PTEToolbarAction[] {
-  const focusChild = PortableTextEditor.focusChild(editor)
-  const hasText = focusChild && focusChild.text
   return schemaTypes.annotations.map((aType) => {
     return {
       type: 'annotation',
-      disabled: !hasText || disabled,
+      // Empty-block and cross-block disabling live at the render site
+      // (`ActionMenu`), which re-renders with the focused block; anything
+      // read here is frozen until the memoized action groups rebuild.
+      disabled: disabled || !applicable.annotations.has(aType.name),
       icon: getAnnotationIcon(aType),
       key: aType.name,
       handle: (active?: boolean): void => {
@@ -123,18 +128,29 @@ export function getPTEToolbarActionGroups(
   options: {
     schemaTypes: PortableTextMemberSchemaTypes
     disabled: boolean
+    applicable: ApplicableSchema
     onInsertAnnotation: (type: ObjectSchemaType) => void
     hotkeyOpts: HotkeyOptions
     t?: (key: string) => string
   },
 ): PTEToolbarActionGroup[] {
-  const {schemaTypes, disabled, onInsertAnnotation, hotkeyOpts, t} = options
+  const {schemaTypes, disabled, applicable, onInsertAnnotation, hotkeyOpts, t} = options
   return [
-    {name: 'format', actions: getPTEFormatActions(editor, schemaTypes, disabled, hotkeyOpts, t)},
-    {name: 'list', actions: getPTEListActions(editor, schemaTypes, disabled, t)},
+    {
+      name: 'format',
+      actions: getPTEFormatActions(editor, schemaTypes, disabled, applicable, hotkeyOpts, t),
+    },
+    {name: 'list', actions: getPTEListActions(editor, schemaTypes, disabled, applicable, t)},
     {
       name: 'annotation',
-      actions: getPTEAnnotationActions(editor, schemaTypes, disabled, onInsertAnnotation, t),
+      actions: getPTEAnnotationActions(
+        editor,
+        schemaTypes,
+        disabled,
+        applicable,
+        onInsertAnnotation,
+        t,
+      ),
     },
   ]
 }
