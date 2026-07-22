@@ -1,14 +1,36 @@
 import {type ReferenceValue} from '@sanity/types'
+import {type ComponentType, lazy} from 'react'
 
-import {SearchButtonValueReference} from '../../components/filters/common/ButtonValue'
-import {SearchFilterAssetInput} from '../../components/filters/filter/inputs/asset/Asset'
-import {SearchFilterReferenceInput} from '../../components/filters/filter/inputs/reference/Reference'
 import {
   defineSearchOperator,
   type SearchOperatorButtonValue,
   type SearchOperatorInput,
 } from './operatorTypes'
 import {toJSON} from './operatorUtils'
+
+// Operator definitions are evaluated pre-auth via prepareConfig; lazy-load filter input
+// components to keep them out of the eager bundle.
+const SearchButtonValueReference = lazy(() =>
+  import('../../components/filters/common/ButtonValue').then((m) => ({
+    default: m.SearchButtonValueReference,
+  })),
+) as ComponentType<any>
+// SearchFilterAssetInput is a factory; create one lazy component per variant.
+const SearchFilterAssetFileInput = lazy(() =>
+  import('../../components/filters/filter/inputs/asset/Asset').then((m) => ({
+    default: m.SearchFilterAssetInput('file'),
+  })),
+) as ComponentType<any>
+const SearchFilterAssetImageInput = lazy(() =>
+  import('../../components/filters/filter/inputs/asset/Asset').then((m) => ({
+    default: m.SearchFilterAssetInput('image'),
+  })),
+) as ComponentType<any>
+const SearchFilterReferenceInput = lazy(() =>
+  import('../../components/filters/filter/inputs/reference/Reference').then((m) => ({
+    default: m.SearchFilterReferenceInput,
+  })),
+) as ComponentType<any>
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once
 // we understand why `npm etl` fails with 'Unable to follow symbol' errors
@@ -39,7 +61,7 @@ export const referenceOperators = {
     buttonValueComponent: SearchButtonValueReference as SearchOperatorButtonValue<ReferenceValue>,
     groqFilter: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
     initialValue: null,
-    inputComponent: SearchFilterAssetInput('file'),
+    inputComponent: SearchFilterAssetFileInput,
     type: 'referencesAssetFile',
   }),
   referencesAssetImage: defineSearchOperator({
@@ -48,7 +70,7 @@ export const referenceOperators = {
     buttonValueComponent: SearchButtonValueReference as SearchOperatorButtonValue<ReferenceValue>,
     groqFilter: ({value}) => (value?._ref ? `references(${toJSON(value._ref)})` : null),
     initialValue: null,
-    inputComponent: SearchFilterAssetInput('image'),
+    inputComponent: SearchFilterAssetImageInput,
     type: 'referencesAssetImage',
   }),
   referencesDocument: defineSearchOperator({

@@ -1,5 +1,5 @@
 import {Box, Flex} from '@sanity/ui'
-import {useMemo} from 'react'
+import {Suspense, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {TextWithTone} from '../../../../../../components'
@@ -53,7 +53,13 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
         showContent ? (
           <CustomBox $flexShrink={1}>
             <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
-              {ButtonValue ? <ButtonValue value={filterValue} /> : children}
+              {ButtonValue ? (
+                <Suspense fallback={null}>
+                  <ButtonValue value={filterValue} />
+                </Suspense>
+              ) : (
+                children
+              )}
             </TextWithTone>
           </CustomBox>
         ) : null,

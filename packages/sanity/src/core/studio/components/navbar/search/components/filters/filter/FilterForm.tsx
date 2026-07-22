@@ -1,6 +1,6 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type ErrorInfo, useCallback, useState} from 'react'
+import {type ErrorInfo, Suspense, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 
 import {Button, ErrorBoundary} from '../../../../../../../../ui-components'
@@ -71,13 +71,15 @@ export function FilterForm({filter}: FilterFormProps) {
           {/* Value */}
           {Component && (
             <Card borderTop padding={3}>
-              <Component
-                // re-render on new operators
-                key={filter.operatorType}
-                fieldDefinition={fieldDefinition}
-                onChange={handleValueChange}
-                value={filter.value}
-              />
+              <Suspense fallback={null}>
+                <Component
+                  // re-render on new operators
+                  key={filter.operatorType}
+                  fieldDefinition={fieldDefinition}
+                  onChange={handleValueChange}
+                  value={filter.value}
+                />
+              </Suspense>
             </Card>
           )}
 
