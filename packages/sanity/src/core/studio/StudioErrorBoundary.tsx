@@ -93,7 +93,9 @@ export function StudioErrorBoundary(props: StudioErrorBoundaryProps) {
   }
 
   if (caughtError.error instanceof SchemaError) {
-    return <SchemaErrorsScreen schema={caughtError.error.schema} />
+    return (
+      <SchemaErrorsScreen schema={caughtError.error.schema} context={caughtError.error.context} />
+    )
   }
 
   if (
