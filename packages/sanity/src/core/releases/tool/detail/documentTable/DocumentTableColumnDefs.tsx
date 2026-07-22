@@ -1,4 +1,5 @@
 import {type ReleaseState} from '@sanity/client'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Badge, Box, Card, Flex, Text} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
@@ -10,7 +11,7 @@ import {styled} from 'styled-components'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip'
-import {AvatarSkeleton, UserAvatar} from '../../../../components'
+import {EditedByAvatar} from '../../../../components/documentTable/EditedByCell'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
@@ -341,15 +342,49 @@ export const getDocumentTableColumnDefs: (
     ),
   },
   {
+    // Edited by — the last editor (person), its own named column so authorship reads distinctly
+    // from live presence. Plain-text header so it aligns with the avatar at the content edge (a
+    // sort button never lands its label on the same edge).
+    id: 'editedBy',
+    sorting: false,
+    width: 170,
+    style: {minWidth: 44, maxWidth: 170},
+    header: ({headerProps}) => (
+      <Flex {...headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
+        <Text muted size={1} textOverflow="ellipsis" weight="medium">
+          {t('table-header.edited-by')}
+        </Text>
+      </Flex>
+    ),
+    cell: (props) => <EditedByReleaseCell {...props} releaseDocumentId={releaseId} />,
+  },
+  {
     id: 'document._updatedAt',
     sorting: true,
     width: 130,
-    header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
+    header: ({headerProps}) => (
+      <Flex {...headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
+        <Text muted size={1} textOverflow="ellipsis" weight="medium">
+          {t('table-header.last-edited')}
+        </Text>
       </Flex>
     ),
-    cell: (props) => <UpdatedAtCell {...props} releaseDocumentId={releaseId} />,
+    cell: ({cellProps, datum}) => (
+      <Flex
+        {...cellProps}
+        align="center"
+        paddingX={2}
+        paddingY={3}
+        style={{minWidth: 130}}
+        sizing="border"
+      >
+        {!datum.isLoading && datum.document._updatedAt && (
+          <Text muted size={1}>
+            <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
+          </Text>
+        )}
+      </Flex>
+    ),
   },
 
   {
@@ -427,13 +462,33 @@ export const getDocumentTableColumnDefs: (
               </Text>
             </Tooltip>
           )}
+          {/* Positive "ready" state so the column is a scannable ready-vs-error rail — an empty cell
+              would be ambiguous ("fine" or "not checked?"). */}
+          {!datum.validation.hasError && (
+            <Tooltip
+              portal
+              placement="bottom-end"
+              content={
+                <Text muted size={1}>
+                  <Box padding={1}>{t('document-validation.valid')}</Box>
+                </Text>
+              }
+            >
+              <Text muted size={1} data-testid={`validation-valid-${datum.document._id}`}>
+                <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
+              </Text>
+            </Tooltip>
+          )}
         </Flex>
       )
     },
   },
 ]
 
-function UpdatedAtCell({
+// "Edited by" cell: the last editor's avatar + name, resolved from the release document history.
+// Shares the EditedByAvatar presentation with the variant table so both read the same; presence
+// (who's viewing now) stays separate in the document preview.
+function EditedByReleaseCell({
   cellProps,
   datum,
   releaseDocumentId,
@@ -446,30 +501,11 @@ function UpdatedAtCell({
   const bundleId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
   const historyDocumentId =
     datum.isPending || document?._id?.endsWith('-pending') ? undefined : document?._id
-  const {documentHistory} = useReleaseHistory(historyDocumentId, bundleId, document?._rev)
+  const {documentHistory, loading} = useReleaseHistory(historyDocumentId, bundleId, document?._rev)
 
   return (
-    <Flex
-      {...cellProps}
-      align="center"
-      paddingX={2}
-      paddingY={3}
-      style={{minWidth: 130}}
-      sizing="border"
-    >
-      <Flex align="center" gap={2}>
-        {(isLoading || !documentHistory?.lastEditedBy) && <AvatarSkeleton $size={0} animated />}
-        {!isLoading && document._updatedAt && (
-          <>
-            {documentHistory?.lastEditedBy && (
-              <UserAvatar size={0} user={documentHistory.lastEditedBy} />
-            )}
-            <Text muted size={1}>
-              <RelativeTime time={document._updatedAt} useTemporalPhrase minimal />
-            </Text>
-          </>
-        )}
-      </Flex>
+    <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+      <EditedByAvatar loading={isLoading || loading} userId={documentHistory?.lastEditedBy} />
     </Flex>
   )
 }

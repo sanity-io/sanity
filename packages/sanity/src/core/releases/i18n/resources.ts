@@ -242,6 +242,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'document-validation.error_other': '{{count}} validation errors',
   /** Label for when a document in a release has a single validation warning */
   'document-validation.error_one': '{{count}} validation error',
+  /** Tooltip for the validation status when a document has no errors (the "ready" state) */
+  'document-validation.valid': 'No validation errors',
 
   /** Label when a release has been deleted by a different user */
   'deleted-release': "The '<strong>{{title}}</strong>' release has been deleted",
@@ -502,6 +504,10 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'table-header.documents': 'Documents',
   /** Header for the document table in the release tool - edited */
   'table-header.edited': 'Edited',
+  /** Header for the document table - last editor (person) column */
+  'table-header.edited-by': 'Edited by',
+  /** Header for the document table - last edited (relative time) column */
+  'table-header.last-edited': 'Last edited',
   /** Header for the document table in the release tool - Published */
   'table-header.published-at': 'Published',
   /** Header for the document table in the release tool - Published */
