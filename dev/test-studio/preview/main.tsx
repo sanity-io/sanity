@@ -1,5 +1,16 @@
 import {type ClientPerspective} from '@sanity/client'
-import {Box, Card, Flex, Text, studioTheme, Tab, TabList, TabPanel, ThemeProvider} from '@sanity/ui'
+import {
+  Box,
+  Card,
+  Flex,
+  Stack,
+  studioTheme,
+  Tab,
+  TabList,
+  TabPanel,
+  Text,
+  ThemeProvider,
+} from '@sanity/ui'
 import {enableVisualEditing} from '@sanity/visual-editing'
 import {Suspense, useEffect, useState} from 'react'
 import {createRoot} from 'react-dom/client'
@@ -108,8 +119,16 @@ function Main() {
 
 function VisualEditing() {
   const [perspective, setPerspective] = useState<ClientPerspective>('published')
+  const [variant, setVariant] = useState<string | undefined>(undefined)
 
-  useEffect(() => enableVisualEditing({onPerspectiveChange: setPerspective}), [])
+  useEffect(
+    () =>
+      enableVisualEditing({
+        onPerspectiveChange: setPerspective,
+        onVariantChange: setVariant,
+      }),
+    [],
+  )
   useLiveMode({})
 
   return (
@@ -120,9 +139,14 @@ function VisualEditing() {
       style={{bottom: 16, maxWidth: 420, position: 'fixed', right: 16, zIndex: 1000}}
       tone="transparent"
     >
-      <Text muted size={1}>
-        perspective: {JSON.stringify(perspective)}
-      </Text>
+      <Stack space={2}>
+        <Text muted size={1}>
+          perspective: {JSON.stringify(perspective)}
+        </Text>
+        <Text muted size={1} data-testid="preview-variant">
+          variant: {variant ? JSON.stringify(variant) : 'none'}
+        </Text>
+      </Stack>
     </Card>
   )
 }
