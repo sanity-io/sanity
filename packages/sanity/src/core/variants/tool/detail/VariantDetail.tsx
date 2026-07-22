@@ -193,9 +193,10 @@ export function VariantDetail() {
     <Flex direction="column" flex={1} height="fill" overflow="hidden">
       {/* Header region — the shared detail spine: a top rail (back on the left, action rail on the
           right), then a two-zone body (identity on the left, a bordered properties panel on the
-          right). Matches the Releases detail page so the two read as one family. The borderBottom
-          separates the whole region from the documents table below. */}
-      <Card borderBottom flex="none" paddingY={3}>
+          right). Matches the Releases detail page so the two read as one family. No borderBottom:
+          the command lane below already carries a divider, and the table's own row lines are enough —
+          a header border here would double-line the filter tabs (and Releases has none). */}
+      <Card flex="none" paddingY={3}>
         {/* container[3] so the header aligns with the table's row content below (the shared Table
             centers rows at container[3]) instead of spreading edge-to-edge on wide screens. */}
         <Container flex="none" width={3}>

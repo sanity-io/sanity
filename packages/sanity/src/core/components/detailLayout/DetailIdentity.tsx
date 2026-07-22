@@ -89,15 +89,21 @@ export function DetailIdentity(props: {
   return (
     <Identity space={3}>
       <Flex align="center" gap={2}>
-        <Text
-          as={titleAs}
-          size={4}
-          weight="bold"
-          style={title ? undefined : {opacity: 0.5}}
-          data-testid={titleTestId}
-        >
-          {title || titlePlaceholder}
-        </Text>
+        {/* Box flex={1} + min-width:0 lets the title shrink and truncate instead of overflowing its
+            zone; the full title is available on hover. */}
+        <Box flex={1} style={{minWidth: 0}}>
+          <Text
+            as={titleAs}
+            size={4}
+            weight="bold"
+            textOverflow="ellipsis"
+            title={title || undefined}
+            style={title ? undefined : {opacity: 0.5}}
+            data-testid={titleTestId}
+          >
+            {title || titlePlaceholder}
+          </Text>
+        </Box>
         {titleAction && (
           <Box flex="none" data-ui="detail-identity-action">
             {titleAction}
