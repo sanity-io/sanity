@@ -184,11 +184,12 @@ describe('VariantDetail', () => {
     expect(screen.getByText('Edited by')).toBeInTheDocument()
     expect(screen.getByText('Last edited')).toBeInTheDocument()
     expect(screen.getByText('No documents in this variant definition')).toBeInTheDocument()
-    // Two side-by-side properties panels carry the metadata: a "Variant definition" panel (its
-    // conditions + Created, rehomed from the old header clock) and a "Documents" panel (counts).
+    // Two side-by-side properties panels carry the metadata: a "Variant definition" panel (the
+    // targeting conditions) and a "Details" panel (document counts + when the variant was created).
     expect(screen.getByTestId('variant-detail-definition')).toBeInTheDocument()
     expect(screen.getByTestId('variant-detail-documents')).toBeInTheDocument()
-    expect(screen.getByText('Documents')).toBeInTheDocument()
+    expect(screen.getByText('Details')).toBeInTheDocument()
+    expect(screen.getByText('Total documents')).toBeInTheDocument()
     expect(screen.getByText('Created')).toBeInTheDocument()
     expect(screen.getByTestId('variant-detail-actions')).toBeInTheDocument()
   })

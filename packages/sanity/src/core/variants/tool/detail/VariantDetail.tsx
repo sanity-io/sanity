@@ -97,31 +97,10 @@ export function VariantDetail() {
         title: t('detail.metadata.definition'),
         // Split the conditions into two columns once a definition carries several, so a 5-6 dimension
         // definition reads as a compact block rather than a tall stack — keeping it closer to the
-        // fixed-height Documents panel beside it.
+        // fixed-height Details panel beside it. Conditions only: "Created" is provenance, not a
+        // targeting condition, so it lives in the Details panel with the other variant-level facts.
         multiColumn: true,
-        rows: [
-          ...conditionRows,
-          {
-            // Created is provenance, not a targeting condition: `fullWidth` keeps it out of the
-            // two-column split so the conditions balance evenly and Created sits on its own line
-            // just below them (rather than as an odd extra cell, or detached in its own section). A
-            // person glyph (not a clock — a clock reads as "time/schedule"). The author identity
-            // isn't on the variant document yet, so this shows the relative time for now; wiring the
-            // creator's name/avatar is a follow-up.
-            fullWidth: true,
-            icon: (
-              <Text muted size={1}>
-                <UserIcon />
-              </Text>
-            ),
-            label: t('detail.footer.created'),
-            value: (
-              <Text size={1}>
-                <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
-              </Text>
-            ),
-          },
-        ],
+        rows: conditionRows,
       },
     ]
   }, [t, variant])
@@ -138,7 +117,10 @@ export function VariantDetail() {
 
     return [
       {
-        title: t('detail.metadata.documents'),
+        // "Details" — variant-level facts: document counts plus when it was created. Titled
+        // "Details" (not "Documents") because it now holds provenance too, so the count row is
+        // labeled "Total documents" to stay unambiguous without the panel title carrying it.
+        title: t('detail.metadata.details'),
         rows: [
           {
             icon: (
@@ -146,7 +128,7 @@ export function VariantDetail() {
                 <DocumentsIcon />
               </Text>
             ),
-            label: t('detail.metadata.total'),
+            label: t('detail.metadata.total-documents'),
             value: countValue(tableRows.length),
           },
           {
@@ -158,10 +140,26 @@ export function VariantDetail() {
             label: t('detail.metadata.unpublished-changes'),
             value: countValue(unpublishedCount),
           },
+          variant && {
+            // A person glyph (not a clock — a clock reads as "time/schedule"). The author identity
+            // isn't on the variant document yet, so this shows the relative time for now; wiring the
+            // creator's name/avatar is a follow-up.
+            icon: (
+              <Text muted size={1}>
+                <UserIcon />
+              </Text>
+            ),
+            label: t('detail.footer.created'),
+            value: (
+              <Text size={1}>
+                <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
+              </Text>
+            ),
+          },
         ],
       },
     ]
-  }, [documentsLoading, t, tableRows.length, unpublishedCount])
+  }, [documentsLoading, t, tableRows.length, unpublishedCount, variant])
 
   if (loading) {
     return <LoadingBlock fill title={t('detail.loading')} />

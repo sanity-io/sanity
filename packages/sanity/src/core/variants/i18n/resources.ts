@@ -86,12 +86,12 @@ const variantsLocaleStrings = {
   'detail.unpin-variant': 'Unpin variant definition from studio',
   /** Back action on the Variant detail page (the arrow already conveys "back to"). */
   'detail.back': 'All variant definitions',
-  /** Title of the "variant definition" properties panel (its conditions + created date). */
+  /** Title of the "variant definition" properties panel (its targeting conditions). */
   'detail.metadata.definition': 'Variant definition',
-  /** Title of the "documents" properties panel (counts of the documents in the variant). */
-  'detail.metadata.documents': 'Documents',
-  /** Label for the total document count row in the documents properties panel. */
-  'detail.metadata.total': 'Total',
+  /** Title of the "details" properties panel (document counts + when the variant was created). */
+  'detail.metadata.details': 'Details',
+  /** Label for the total document count row in the details properties panel. */
+  'detail.metadata.total-documents': 'Total documents',
   /** Label for the count of documents with unpublished (draft) changes. */
   'detail.metadata.unpublished-changes': 'Unpublished changes',
   /** Created status label in the Variant detail footer. */
