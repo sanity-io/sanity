@@ -62,8 +62,8 @@ const variantsLocaleStrings = {
   'detail.pin-variant': 'Pin variant definition to studio',
   /** Tooltip for unpinning a variant from the studio. */
   'detail.unpin-variant': 'Unpin variant definition from studio',
-  /** Back action on the Variant detail page. */
-  'detail.back': 'Back to all variant definitions',
+  /** Back action on the Variant detail page (the arrow already conveys "back to"). */
+  'detail.back': 'All variant definitions',
   /** Title of the "variant definition" properties panel (its conditions + created date). */
   'detail.metadata.definition': 'Variant definition',
   /** Title of the "documents" properties panel (counts of the documents in the variant). */

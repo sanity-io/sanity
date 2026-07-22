@@ -174,9 +174,7 @@ describe('VariantDetail', () => {
     // The perspective "pin" was removed from the detail page (it's a global authoring mode that
     // belongs in perspective-bar chrome, not this management surface).
     expect(screen.queryByTestId('pin-variant-button')).not.toBeInTheDocument()
-    expect(
-      screen.getByRole('button', {name: 'Back to all variant definitions'}),
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'All variant definitions'})).toBeInTheDocument()
     expect(screen.getByText('Appears in')).toBeInTheDocument()
     expect(screen.getByText('Type')).toBeInTheDocument()
     // Search moved out of the column-header row into the command lane; the preview column header is
@@ -418,10 +416,10 @@ describe('VariantDetail', () => {
     await renderDetail()
 
     await waitFor(() =>
-      expect(screen.getByRole('button', {name: 'Back to all variant definitions'})).toBeEnabled(),
+      expect(screen.getByRole('button', {name: 'All variant definitions'})).toBeEnabled(),
     )
 
-    await user.click(screen.getByRole('button', {name: 'Back to all variant definitions'}))
+    await user.click(screen.getByRole('button', {name: 'All variant definitions'}))
 
     expect(mockNavigate).toHaveBeenCalledWith({})
   })
