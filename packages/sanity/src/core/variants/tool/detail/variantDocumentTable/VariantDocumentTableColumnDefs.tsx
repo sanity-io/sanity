@@ -234,7 +234,7 @@ export const getVariantDocumentTableColumnDefs = (
     width: 170,
     style: {minWidth: 44, maxWidth: 170},
     header: (props) => (
-      <Flex {...props.headerProps} align="center" paddingX={3} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
         <Text muted size={1} textOverflow="ellipsis" weight="medium">
           {t('detail.documents.table.edited-by')}
         </Text>
@@ -254,7 +254,11 @@ export const getVariantDocumentTableColumnDefs = (
     width: 130,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('detail.documents.table.last-edited')} {...props} />
+        <Headers.SortHeaderButton
+          paddingLeft={2}
+          text={t('detail.documents.table.last-edited')}
+          {...props}
+        />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (

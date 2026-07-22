@@ -22,6 +22,7 @@ const BasicHeader = ({text}: {text: string}) => (
 const SortHeaderButton = ({
   header,
   text,
+  paddingLeft,
 }: Omit<ButtonProps, 'text'> &
   HeaderProps & {
     text: string
@@ -44,6 +45,9 @@ const SortHeaderButton = ({
       onClick={() => setSortColumn(String(header.id))}
       mode="bleed"
       size="default"
+      // Optional left-inset override so a header label can line up with content that is inset less
+      // than the default button padding (e.g. an 8px cell). Defaults to the button's own padding.
+      paddingLeft={paddingLeft}
       text={text}
     />
   )
