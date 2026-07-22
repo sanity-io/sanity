@@ -269,9 +269,7 @@ export function ReleasesOverview() {
     navigateRef.current = router.navigate
   })
 
-  // Sync filter/group state to URL, preserving the current cardinality view.
-  // Uses replace so the sync does not create a duplicate history entry alongside
-  // the user's navigation, which would swallow browser back clicks.
+  // replace avoids a duplicate history entry alongside the user's navigation, which would swallow back clicks.
   useEffect(() => {
     navigateRef.current(
       {
