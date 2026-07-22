@@ -615,7 +615,7 @@ importers:
     dependencies:
       '@portabletext/editor':
         specifier: ^7.10.11
-        version: 7.10.11(@types/react@19.2.17)(react@19.2.8)
+        version: 7.10.11(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       '@portabletext/html':
         specifier: ^1.1.1
         version: 1.1.1
@@ -1575,7 +1575,7 @@ importers:
         version: 3.13.0(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.8)(react@19.2.8)
       '@portabletext/editor':
         specifier: ^7.10.11
-        version: 7.10.11(@types/react@19.2.17)(react@19.2.8)
+        version: 7.10.11(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       '@portabletext/html':
         specifier: ^1.1.1
         version: 1.1.1
@@ -17921,7 +17921,7 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@portabletext/editor@7.10.11(@types/react@19.2.17)(react@19.2.8)':
+  '@portabletext/editor@7.10.11(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)':
     dependencies:
       '@portabletext/html': 1.1.1
       '@portabletext/keyboard-shortcuts': 2.1.3
@@ -17958,7 +17958,7 @@ snapshots:
 
   '@portabletext/plugin-character-pair-decorator@8.0.39(@portabletext/editor@7.10.11)(@types/react@19.2.17)(react@19.2.8)':
     dependencies:
-      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)
+      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       '@portabletext/plugin-input-rule': 6.0.8(@portabletext/editor@7.10.11)(@types/react@19.2.17)(react@19.2.8)
       react: 19.2.8
     transitivePeerDependencies:
@@ -17966,12 +17966,12 @@ snapshots:
 
   '@portabletext/plugin-dnd@1.0.23(@portabletext/editor@7.10.11)(react@19.2.8)':
     dependencies:
-      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)
+      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       react: 19.2.8
 
   '@portabletext/plugin-input-rule@6.0.8(@portabletext/editor@7.10.11)(@types/react@19.2.17)(react@19.2.8)':
     dependencies:
-      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)
+      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       '@xstate/react': 6.1.0(@types/react@19.2.17)(react@19.2.8)(xstate@5.32.5)
       react: 19.2.8
       xstate: 5.32.5
@@ -17980,12 +17980,12 @@ snapshots:
 
   '@portabletext/plugin-list-index@1.0.23(@portabletext/editor@7.10.11)(react@19.2.8)':
     dependencies:
-      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)
+      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       react: 19.2.8
 
   '@portabletext/plugin-markdown-shortcuts@8.0.39(@portabletext/editor@7.10.11)(@types/react@19.2.17)(react@19.2.8)':
     dependencies:
-      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)
+      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       '@portabletext/plugin-character-pair-decorator': 8.0.39(@portabletext/editor@7.10.11)(@types/react@19.2.17)(react@19.2.8)
       '@portabletext/plugin-input-rule': 6.0.8(@portabletext/editor@7.10.11)(@types/react@19.2.17)(react@19.2.8)
       react: 19.2.8
@@ -17994,25 +17994,25 @@ snapshots:
 
   '@portabletext/plugin-one-line@7.0.38(@portabletext/editor@7.10.11)(react@19.2.8)':
     dependencies:
-      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)
+      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       react: 19.2.8
 
   '@portabletext/plugin-paste-link@4.0.38(@portabletext/editor@7.10.11)(react@19.2.8)':
     dependencies:
-      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)
+      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       react: 19.2.8
 
   '@portabletext/plugin-table@1.3.8(@portabletext/editor@7.10.11)(react-dom@19.2.8)(react@19.2.8)':
     dependencies:
       '@floating-ui/dom': 1.8.0
-      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)
+      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       '@portabletext/keyboard-shortcuts': 2.1.3
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
   '@portabletext/plugin-typography@8.0.39(@portabletext/editor@7.10.11)(@types/react@19.2.17)(react@19.2.8)':
     dependencies:
-      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)
+      '@portabletext/editor': 7.10.11(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       '@portabletext/plugin-input-rule': 6.0.8(@portabletext/editor@7.10.11)(@types/react@19.2.17)(react@19.2.8)
       react: 19.2.8
     transitivePeerDependencies:
