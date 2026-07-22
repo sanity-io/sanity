@@ -54,12 +54,24 @@ const variantsLocaleStrings = {
   'overview.title': 'Variant definitions',
   /** Edit action on the Variant detail page. */
   'detail.action.edit-variant': 'Edit variant definition',
+  /** Primary action label on the Variant detail action rail. */
+  'detail.action.edit-definition': 'Edit definition',
+  /** Accessible label / tooltip for the Variant detail overflow menu button. */
+  'detail.menu.label': 'Actions',
   /** Tooltip for pinning a variant to the studio. */
   'detail.pin-variant': 'Pin variant definition to studio',
   /** Tooltip for unpinning a variant from the studio. */
   'detail.unpin-variant': 'Unpin variant definition from studio',
   /** Back action on the Variant detail page. */
-  'detail.back': 'Back to variant definitions',
+  'detail.back': 'Back to all variant definitions',
+  /** Title of the "variant definition" properties panel (its conditions + created date). */
+  'detail.metadata.definition': 'Variant definition',
+  /** Title of the "documents" properties panel (counts of the documents in the variant). */
+  'detail.metadata.documents': 'Documents',
+  /** Label for the total document count row in the documents properties panel. */
+  'detail.metadata.total': 'Total',
+  /** Label for the count of documents with unpublished (draft) changes. */
+  'detail.metadata.unpublished-changes': 'Unpublished changes',
   /** Created status label in the Variant detail footer. */
   'detail.footer.created': 'Created',
   /** Loading message on the Variant detail page. */

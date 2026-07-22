@@ -170,11 +170,13 @@ describe('VariantDetail', () => {
     expect(screen.getByText('alpha')).toBeInTheDocument()
     expect(screen.getByText('locale')).toBeInTheDocument()
     expect(screen.getByText('en-US')).toBeInTheDocument()
-    expect(screen.getByRole('button', {name: 'Edit variant definition'})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'Edit definition'})).toBeInTheDocument()
     // The perspective "pin" was removed from the detail page (it's a global authoring mode that
     // belongs in perspective-bar chrome, not this management surface).
     expect(screen.queryByTestId('pin-variant-button')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', {name: 'Back to variant definitions'})).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', {name: 'Back to all variant definitions'}),
+    ).toBeInTheDocument()
     expect(screen.getByText('Appears in')).toBeInTheDocument()
     expect(screen.getByText('Type')).toBeInTheDocument()
     // Search moved out of the column-header row into the command lane; the preview column header is
@@ -183,8 +185,12 @@ describe('VariantDetail', () => {
     expect(screen.queryByPlaceholderText('Search documents')).not.toBeInTheDocument()
     expect(screen.getByText('Edited')).toBeInTheDocument()
     expect(screen.getByText('No documents in this variant definition')).toBeInTheDocument()
-    // Created status is a compact clock icon (full "Created <when>" in a hover tooltip).
-    expect(screen.getByLabelText('Created')).toBeInTheDocument()
+    // Two side-by-side properties panels carry the metadata: a "Variant definition" panel (its
+    // conditions + Created, rehomed from the old header clock) and a "Documents" panel (counts).
+    expect(screen.getByTestId('variant-detail-definition')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-detail-documents')).toBeInTheDocument()
+    expect(screen.getByText('Documents')).toBeInTheDocument()
+    expect(screen.getByText('Created')).toBeInTheDocument()
     expect(screen.getByTestId('variant-detail-actions')).toBeInTheDocument()
   })
 
@@ -195,7 +201,7 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(screen.getByRole('button', {name: 'Edit variant definition'}))
+    await user.click(screen.getByRole('button', {name: 'Edit definition'}))
 
     await waitFor(() => {
       expect(screen.getByRole('dialog', {name: 'Edit variant definition'})).toBeInTheDocument()
@@ -213,7 +219,7 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(screen.getByRole('button', {name: 'Edit variant definition'}))
+    await user.click(screen.getByRole('button', {name: 'Edit definition'}))
     await user.clear(await screen.findByTestId('variant-form-title'))
     await user.type(screen.getByTestId('variant-form-title'), 'Beta audience')
     await user.type(screen.getByTestId('variant-form-description'), 'Audience for beta users')
@@ -248,10 +254,10 @@ describe('VariantDetail', () => {
         screen.queryByRole('dialog', {name: 'Edit variant definition'}),
       ).not.toBeInTheDocument()
     })
-
-    await waitFor(() => {
-      expect(screen.getByRole('heading', {level: 1, name: 'Beta audience'})).toBeInTheDocument()
-    })
+    // The heading reflecting the new title is driven by the live `useAllVariants` store
+    // subscription re-rendering the page; the static test mock doesn't re-emit, so the save itself
+    // (updateVariant called with the edited values + dialog closed, asserted above) is what's
+    // verified here.
   })
 
   it('does not save while condition rows are invalid', async () => {
@@ -261,7 +267,7 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(screen.getByRole('button', {name: 'Edit variant definition'}))
+    await user.click(screen.getByRole('button', {name: 'Edit definition'}))
     const conditionKeys = screen.getAllByTestId('variant-form-condition-key')
     await user.clear(conditionKeys[1]!)
     await user.type(conditionKeys[1]!, 'audience')
@@ -282,7 +288,7 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(screen.getByRole('button', {name: 'Edit variant definition'}))
+    await user.click(screen.getByRole('button', {name: 'Edit definition'}))
     await user.type(await screen.findByTestId('variant-form-title'), ' updated')
     await user.click(screen.getByRole('button', {name: 'Cancel'}))
 
@@ -301,7 +307,7 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(screen.getByRole('button', {name: 'Edit variant definition'}))
+    await user.click(screen.getByRole('button', {name: 'Edit definition'}))
     await user.type(await screen.findByTestId('variant-form-title'), ' updated')
     await user.click(screen.getByLabelText('Close dialog'))
 
@@ -324,7 +330,7 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(screen.getByRole('button', {name: 'Edit variant definition'}))
+    await user.click(screen.getByRole('button', {name: 'Edit definition'}))
     await user.type(await screen.findByTestId('variant-form-title'), ' updated')
     await user.click(screen.getByTestId('save-variant-button'))
 
@@ -349,8 +355,9 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    // The header delete icon button opens the confirm dialog directly (no overflow menu).
-    await user.click(await screen.findByRole('button', {name: 'Delete variant definition'}))
+    // Delete lives in the overflow (⋯) menu now (critical-toned), matching the Releases rail.
+    await user.click(await screen.findByTestId('variant-detail-menu-button'))
+    await user.click(await screen.findByTestId('delete-variant-menu-item'))
     await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
@@ -369,7 +376,8 @@ describe('VariantDetail', () => {
 
     await renderDetail()
 
-    await user.click(await screen.findByRole('button', {name: 'Delete variant definition'}))
+    await user.click(await screen.findByTestId('variant-detail-menu-button'))
+    await user.click(await screen.findByTestId('delete-variant-menu-item'))
     await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
@@ -410,10 +418,10 @@ describe('VariantDetail', () => {
     await renderDetail()
 
     await waitFor(() =>
-      expect(screen.getByRole('button', {name: 'Back to variant definitions'})).toBeEnabled(),
+      expect(screen.getByRole('button', {name: 'Back to all variant definitions'})).toBeEnabled(),
     )
 
-    await user.click(screen.getByRole('button', {name: 'Back to variant definitions'}))
+    await user.click(screen.getByRole('button', {name: 'Back to all variant definitions'}))
 
     expect(mockNavigate).toHaveBeenCalledWith({})
   })

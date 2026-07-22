@@ -1,15 +1,18 @@
-import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
-import {ClockIcon} from '@sanity/icons/Clock'
+import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
+import {UserIcon} from '@sanity/icons/User'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Button} from '../../../../ui-components/button/Button'
-import {Tooltip} from '../../../../ui-components/tooltip'
 import {LoadingBlock, RelativeTime} from '../../../components'
+import {
+  DetailBackButton,
+  DetailIdentity,
+  DetailPropertiesPanel,
+  type DetailPropertiesSection,
+} from '../../../components/detailLayout'
 import {useTranslation} from '../../../i18n'
-import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -20,18 +23,13 @@ import {
   getVariantTitle,
 } from '../util'
 import {groupVariantDocumentsByGroup} from './groupVariantDocumentsByGroup'
-import {VariantDeleteButton} from './VariantDeleteButton'
+import {VariantActionRail} from './VariantActionRail'
+import {getVariantConditionIcon} from './variantConditionIcons'
 import {VariantDocumentsTable} from './VariantDocumentsTable'
-
-// Thin vertical rule separating the inline metadata segments in the header lane.
-function HeaderDivider() {
-  return <Card borderLeft flex="none" style={{height: 20}} />
-}
 
 export function VariantDetail() {
   const router = useRouter()
   const {t} = useTranslation(variantsLocaleNamespace)
-  const [editDialogOpen, setEditDialogOpen] = useState(false)
   const variantIdRaw =
     typeof router.state.variantId === 'string' ? router.state.variantId : undefined
   const variantId = decodeVariantIdFromRoute(variantIdRaw)
@@ -49,6 +47,106 @@ export function VariantDetail() {
     [variantDocuments],
   )
 
+  // "Unpublished changes" = document groups that carry a draft version. Counted separately from the
+  // total (a group can hold both a published and a draft version), so the two numbers each answer a
+  // distinct question — "how many documents" vs "how many have pending changes" — without implying
+  // they partition the total.
+  const unpublishedCount = useMemo(
+    () =>
+      tableRows.filter((row) => row.versions.some((version) => version.bundleId === 'drafts'))
+        .length,
+    [tableRows],
+  )
+
+  // Two short, side-by-side panels rather than one tall stacked one: one about the variant
+  // definition itself (its targeting conditions + when it was created), one about the documents it
+  // holds. Same bordered pattern, split along a semantic seam ("what defines it" vs "what's in it").
+  const definitionSections = useMemo<DetailPropertiesSection[]>(() => {
+    if (!variant) return []
+
+    const conditionEntries = Object.entries(variant.conditions)
+    const conditionRows =
+      conditionEntries.length > 0
+        ? conditionEntries.map(([key, value]) => {
+            // Each targeting dimension gets a recognizable glyph (audience → people, location →
+            // pin, …) so a multi-dimension definition reads at a glance.
+            const DimensionIcon = getVariantConditionIcon(key)
+            return {
+              icon: (
+                <Text muted size={1}>
+                  <DimensionIcon />
+                </Text>
+              ),
+              label: key,
+              value,
+            }
+          })
+        : [
+            {
+              label: '',
+              value: (
+                <Text muted size={1}>
+                  {t('overview.table.no-conditions')}
+                </Text>
+              ),
+            },
+          ]
+
+    return [
+      {
+        title: t('detail.metadata.definition'),
+        rows: [
+          ...conditionRows,
+          {
+            // A person glyph (not a clock — a clock reads as "time/schedule"): "Created" is about
+            // who and when. The author identity isn't on the variant document yet, so for now this
+            // shows the relative time; wiring the creator's name/avatar is a follow-up.
+            icon: (
+              <Text muted size={1}>
+                <UserIcon />
+              </Text>
+            ),
+            label: t('detail.footer.created'),
+            value: (
+              <Text size={1}>
+                <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
+              </Text>
+            ),
+          },
+        ],
+      },
+    ]
+  }, [t, variant])
+
+  const documentSections = useMemo<DetailPropertiesSection[]>(
+    () => [
+      {
+        title: t('detail.metadata.documents'),
+        rows: [
+          {
+            icon: (
+              <Text muted size={1}>
+                <DocumentsIcon />
+              </Text>
+            ),
+            label: t('detail.metadata.total'),
+            value: String(tableRows.length),
+          },
+          {
+            icon: (
+              <Text muted size={1}>
+                <EditIcon />
+              </Text>
+            ),
+            label: t('detail.metadata.unpublished-changes'),
+            value: String(unpublishedCount),
+          },
+        ],
+      },
+    ],
+    [t, tableRows.length, unpublishedCount],
+  )
+
   if (loading) {
     return <LoadingBlock fill title={t('detail.loading')} />
   }
@@ -57,12 +155,7 @@ export function VariantDetail() {
     return (
       <Flex direction="column" flex={1} height="fill">
         <Card borderBottom flex="none" padding={3}>
-          <Button
-            icon={ArrowLeftIcon}
-            mode="ghost"
-            onClick={() => router.navigate({})}
-            text={t('detail.back')}
-          />
+          <DetailBackButton onClick={() => router.navigate({})} text={t('detail.back')} />
         </Card>
         <Box padding={4}>
           <Card border padding={4} radius={3}>
@@ -84,117 +177,57 @@ export function VariantDetail() {
 
   return (
     <Flex direction="column" flex={1} height="fill" overflow="hidden">
-      {/* Slim header lane: back control + identity + inline metadata on the left, actions on the
-          right. The back arrow is merged in here (a leading icon button) rather than sitting in its
-          own full-width lane, so all the vertical space goes to the documents table below. */}
+      {/* Header region — the shared detail spine: a top rail (back on the left, action rail on the
+          right), then a two-zone body (identity on the left, a bordered properties panel on the
+          right). Matches the Releases detail page so the two read as one family. The borderBottom
+          separates the whole region from the documents table below. */}
       <Card borderBottom flex="none" paddingY={3}>
         {/* container[3] so the header aligns with the table's row content below (the shared Table
             centers rows at container[3]) instead of spreading edge-to-edge on wide screens. */}
         <Container flex="none" width={3}>
-          {/* paddingX={2} (8px) matches the table's first-column content inset so the back button,
-              conditions, and actions line up with the "Appears in" column and row content below. */}
+          {/* paddingX={2} (8px) matches the table's first-column content inset so the back button and
+              actions line up with the row content below. */}
           <Box paddingX={2}>
-            <Flex align="center" gap={3}>
-              {/* overflow:hidden guarantees the identity + metadata can never spill into the
-                  actions on the right — the metadata group below shrinks and clips first. */}
-              <Flex align="center" gap={3} flex={1} style={{minWidth: 0, overflowX: 'hidden'}}>
-                <Button
-                  aria-label={t('detail.back')}
-                  icon={ArrowLeftIcon}
-                  mode="bleed"
-                  onClick={() => router.navigate({})}
-                  tooltipProps={{content: t('detail.back')}}
-                />
-                {/* The variant "pin" (adopt-this-perspective) control was removed here deliberately:
-                selecting a variant is a *global authoring mode* (it re-targets every document edit
-                to the variant version — see useDocumentForm/useTargetDocumentState), which belongs in
-                global perspective-bar chrome, not on this definition-management surface. The correct
-                icon + behavior return once the perspective-bar initiative lands (FH tracked). */}
-                <Flex align="center" flex="none">
-                  <Text as="h1" size={2} textOverflow="ellipsis" weight="bold">
-                    {getVariantTitle(variant)}
-                  </Text>
+            <Stack space={4}>
+              <Flex align="center" gap={3}>
+                <Flex align="center" flex={1} style={{minWidth: 0}}>
+                  <DetailBackButton
+                    onClick={() => router.navigate({})}
+                    testId="back-to-variants-button"
+                    text={t('detail.back')}
+                  />
                 </Flex>
-                <HeaderDivider />
-                {/* Secondary metadata (conditions + description) in one nowrap group that grows to
-                    fill and shrinks as the lane narrows. It does NOT clip here — @sanity/ui Text
-                    renders at cap-height with the full glyph overflowing (overflow: visible), so a
-                    clip on this collapsed (~9px) group would crop descenders. Horizontal truncation
-                    is handled by the taller parent cluster's overflow instead. */}
-                <Flex align="center" flex={1} gap={3} style={{minWidth: 0}} wrap="nowrap">
-                  {Object.keys(variant.conditions).length > 0 ? (
-                    // Conditions are read-only facts, not interactive chips — quiet key/value
-                    // metadata (muted key, solid value, dot-separated).
-                    <Flex align="center" flex="none" gap={3} wrap="nowrap">
-                      {Object.entries(variant.conditions).map(([key, value], index) => (
-                        <Flex align="center" gap={2} key={key}>
-                          {index > 0 && (
-                            <Text aria-hidden muted size={1}>
-                              ·
-                            </Text>
-                          )}
-                          <Flex align="center" gap={1}>
-                            <Text muted size={1}>
-                              {key}
-                            </Text>
-                            <Text size={1} weight="medium">
-                              {typeof value === 'string' ? value : JSON.stringify(value)}
-                            </Text>
-                          </Flex>
-                        </Flex>
-                      ))}
-                    </Flex>
-                  ) : (
-                    <Text muted size={1}>
-                      {t('overview.table.no-conditions')}
-                    </Text>
-                  )}
-                  {description && (
-                    <>
-                      <HeaderDivider />
-                      <Text muted size={1} style={{minWidth: 0}} textOverflow="ellipsis">
-                        {description}
-                      </Text>
-                    </>
-                  )}
+                <Flex data-testid="variant-detail-actions" flex="none">
+                  <VariantActionRail
+                    documentCount={tableRows.length}
+                    documentsLoading={documentsLoading}
+                    variant={variant}
+                  />
                 </Flex>
               </Flex>
-              <Flex align="center" data-testid="variant-detail-actions" flex="none" gap={3}>
-                {/* Created status collapses to a clock icon; the full "Created <when>" shows on
-                    hover. Keeps the header compact and gives the metadata on the left more room. */}
-                <Tooltip
-                  content={
-                    <Box padding={2}>
-                      <Text size={1}>
-                        {t('detail.footer.created')}{' '}
-                        <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
-                      </Text>
-                    </Box>
-                  }
-                  portal
-                >
-                  <Text aria-label={t('detail.footer.created')} muted size={1}>
-                    <ClockIcon />
-                  </Text>
-                </Tooltip>
-                <HeaderDivider />
-                {/* Edit + Delete as a clean pair of icon buttons (was a text button + a "⋯" menu
-                    holding only Delete). Keeps the header uncluttered and leaves a single "⋯" in the
-                    app — the documents' bulk-action menu — instead of two competing ones. */}
-                <Button
-                  aria-label={t('detail.action.edit-variant')}
-                  icon={EditIcon}
-                  mode="bleed"
-                  onClick={() => setEditDialogOpen(true)}
-                  tooltipProps={{content: t('detail.action.edit-variant')}}
-                />
-                <VariantDeleteButton
-                  documentCount={tableRows.length}
-                  documentsLoading={documentsLoading}
-                  variant={variant}
-                />
+              <Flex align="flex-start" gap={4} wrap="wrap">
+                <Box flex={1} style={{minWidth: 280}}>
+                  <DetailIdentity
+                    description={description || undefined}
+                    descriptionTestId="variant-description-display"
+                    title={getVariantTitle(variant)}
+                    titleAs="h1"
+                    titlePlaceholder={t('overview.table.variant')}
+                    titleTestId="variant-title-display"
+                  />
+                </Box>
+                <Flex align="flex-start" flex="none" gap={4} wrap="wrap">
+                  <DetailPropertiesPanel
+                    sections={definitionSections}
+                    testId="variant-detail-definition"
+                  />
+                  <DetailPropertiesPanel
+                    sections={documentSections}
+                    testId="variant-detail-documents"
+                  />
+                </Flex>
               </Flex>
-            </Flex>
+            </Stack>
           </Box>
         </Container>
       </Card>
@@ -213,13 +246,6 @@ export function VariantDetail() {
           />
         )}
       </Flex>
-      {editDialogOpen && (
-        <EditVariantDialog
-          onCancel={() => setEditDialogOpen(false)}
-          onSubmit={() => setEditDialogOpen(false)}
-          variant={variant}
-        />
-      )}
     </Flex>
   )
 }

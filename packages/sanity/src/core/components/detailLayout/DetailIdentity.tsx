@@ -1,6 +1,6 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type ReactNode} from 'react'
+import {type ElementType, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -58,15 +58,26 @@ export function DetailIdentity(props: {
   titlePlaceholder: string
   description?: string
   titleAction?: ReactNode
+  /** Element the title renders as — pass `"h1"` to make it the page heading. Defaults to a span. */
+  titleAs?: ElementType
   titleTestId?: string
   descriptionTestId?: string
 }): React.JSX.Element {
-  const {title, titlePlaceholder, description, titleAction, titleTestId, descriptionTestId} = props
+  const {
+    title,
+    titlePlaceholder,
+    description,
+    titleAction,
+    titleAs,
+    titleTestId,
+    descriptionTestId,
+  } = props
 
   return (
     <Identity space={3}>
       <Flex align="center" gap={2}>
         <Text
+          as={titleAs}
           size={4}
           weight="bold"
           style={title ? undefined : {opacity: 0.5}}

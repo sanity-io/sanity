@@ -1,21 +1,42 @@
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type CSSProperties, type ReactNode} from 'react'
+import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Fragment, type ReactNode} from 'react'
+import {css, styled} from 'styled-components'
 
-// Every row is the same fixed height so the rows sit on an even rhythm.
-const ROW_STYLE: CSSProperties = {minHeight: 29}
+// The panel sizes to its content (so a short two-row panel doesn't leave a wide empty gap) but never
+// grows past a sensible max, at which point long values truncate instead of stretching the pane.
+const PropertiesCard = styled(Card)<{$maxWidth: number}>`
+  width: fit-content;
+  max-width: ${(props) => props.$maxWidth}px;
+`
 
-// A reserved leading slot for an optional glyph that accompanies the label (not the value), so the
-// value column stays pure text on one left edge. Fixed width means labels align whether or not a
-// given row carries a glyph.
-const GLYPH_STYLE: CSSProperties = {width: 20, flexShrink: 0}
+// One grid per section so every row shares column tracks and stays aligned:
+//  - glyph  (auto) — only present when the section has glyphs
+//  - label  (max-content) — sizes to the widest label, so labels never truncate and values start on
+//                           one clean left edge
+//  - value  (minmax(0, 1fr)) — takes the rest; min-width:0 lets a long value truncate in its column
+// grid-auto-rows keeps every row on an even minimum height, matching the old rhythm.
+const SectionGrid = styled.div<{$hasGlyphs: boolean}>`
+  display: grid;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 6px;
+  grid-auto-rows: minmax(25px, auto);
+  ${(props) =>
+    props.$hasGlyphs
+      ? css`
+          grid-template-columns: auto max-content minmax(0, 1fr);
+        `
+      : css`
+          grid-template-columns: max-content minmax(0, 1fr);
+        `}
+`
 
-// The label sits in a fixed-width column so every value starts on the same left edge (a clean
-// definition-list grid), rather than being pushed around by varying label widths.
-const LABEL_STYLE: CSSProperties = {width: 84, flexShrink: 0}
-
-// The value column takes the remaining width; min-width:0 lets a long value truncate (with a title
-// tooltip) inside its column rather than overflow the card or wrap and break the single-line grid.
-const VALUE_STYLE: CSSProperties = {minWidth: 0}
+const GlyphCell = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+`
 
 /**
  * A single row: an optional leading `icon` (a glyph accompanying the label), a `label`, and a
@@ -35,28 +56,30 @@ export interface DetailPropertiesSection {
 
 /**
  * The bordered "properties" surface beside the identity block on an entity detail page. Renders N
- * labeled sections as an aligned `[glyph] [label] [value]` grid: one leading-glyph column, one
- * label column, and a value column of pure single-line text (semantic colour carries meaning; no
- * chips). Values that overflow truncate with a tooltip rather than wrap. Shared by the Releases and
- * Variant-definition detail pages so both read as one family.
+ * labeled sections as an aligned `[glyph] [label] [value]` grid: a leading-glyph column, a
+ * content-sized label column, and a value column of pure single-line text (semantic colour carries
+ * meaning; no chips). The panel sizes to its content up to `maxWidth`; values that overflow truncate
+ * with a tooltip rather than wrap. Shared by the Releases and Variant-definition detail pages so both
+ * read as one family.
  *
  * @internal
  */
 export function DetailPropertiesPanel(props: {
   sections: DetailPropertiesSection[]
   testId?: string
-  width?: number
+  /** Upper bound on the panel width; it shrinks to fit its content below this. */
+  maxWidth?: number
 }): React.JSX.Element {
-  const {sections, testId, width = 300} = props
+  const {sections, testId, maxWidth = 300} = props
 
   return (
-    <Card
+    <PropertiesCard
       flex="none"
       border
       radius={3}
       padding={3}
       tone="transparent"
-      style={{width}}
+      $maxWidth={maxWidth}
       data-testid={testId}
     >
       <Stack space={4}>
@@ -74,41 +97,32 @@ export function DetailPropertiesPanel(props: {
                   {section.title}
                 </Text>
               )}
-              {rows.map((row, rowIndex) => (
-                <Flex
+              <SectionGrid $hasGlyphs={hasGlyphs}>
+                {rows.map((row, rowIndex) => (
                   // oxlint-disable-next-line no-array-index-key
-                  key={rowIndex}
-                  align="center"
-                  gap={3}
-                  style={ROW_STYLE}
-                >
-                  {hasGlyphs && (
-                    <Flex style={GLYPH_STYLE} align="center" justify="center">
-                      {row.icon}
-                    </Flex>
-                  )}
-                  <Box style={LABEL_STYLE}>
-                    <Text muted size={1} textOverflow="ellipsis">
+                  <Fragment key={rowIndex}>
+                    {hasGlyphs && <GlyphCell>{row.icon}</GlyphCell>}
+                    <Text muted size={1}>
                       {row.label}
                     </Text>
-                  </Box>
-                  {/* Pure-text value column on one left edge; long values truncate (title tooltip
-                      shows the full text) rather than wrap, keeping the single-line grid. */}
-                  <Box flex={1} style={VALUE_STYLE}>
-                    {typeof row.value === 'string' ? (
-                      <Text size={1} textOverflow="ellipsis" title={row.value}>
-                        {row.value}
-                      </Text>
-                    ) : (
-                      row.value
-                    )}
-                  </Box>
-                </Flex>
-              ))}
+                    {/* Pure-text value on one left edge; a long value truncates (title tooltip shows
+                        the full text) rather than wrapping and breaking the single-line grid. */}
+                    <Box style={{minWidth: 0}}>
+                      {typeof row.value === 'string' ? (
+                        <Text size={1} textOverflow="ellipsis" title={row.value}>
+                          {row.value}
+                        </Text>
+                      ) : (
+                        row.value
+                      )}
+                    </Box>
+                  </Fragment>
+                ))}
+              </SectionGrid>
             </Stack>
           )
         })}
       </Stack>
-    </Card>
+    </PropertiesCard>
   )
 }
