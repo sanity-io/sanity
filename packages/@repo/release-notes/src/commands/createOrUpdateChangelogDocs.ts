@@ -19,6 +19,7 @@ import pMap from 'p-map'
 import {getClient} from '../client'
 import {STUDIO_PLATFORM_DOCUMENT_ID} from '../constants'
 import {type PullRequestInfo, type StudioChangelogEntry} from '../types'
+import {flattenCallouts} from '../utils/flattenCallouts'
 import {getCommits, getSemverTags} from '../utils/getCommits'
 import {getCommitAuthor, getMergedPRForCommit} from '../utils/github'
 import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
@@ -163,11 +164,13 @@ async function getReleaseNotesMutations(
   const userType = pr?.user?.type?.toLowerCase()
   const isBot = userType === 'bot'
 
-  const releaseNoteBlocks = pr?.body
-    ? isBot
-      ? parseRenovateReleaseNotes(pr.body)
-      : extractReleaseNotes(markdownToPortableText(pr.body))
-    : []
+  const releaseNoteBlocks = flattenCallouts(
+    pr?.body
+      ? isBot
+        ? parseRenovateReleaseNotes(pr.body)
+        : extractReleaseNotes(markdownToPortableText(pr.body))
+      : [],
+  )
 
   const breaking = isBreakingChange(conventionalCommit)
 
