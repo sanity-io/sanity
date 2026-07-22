@@ -30,6 +30,12 @@ test(`document panel displays correct title for published document`, async ({
   const isMac = await page.evaluate(() => /Mac|iPod|iPhone|iPad/.test(navigator.platform || ''))
   await expect(hotkeys).toHaveText(isMac ? 'CtrlOptionP' : 'CtrlAltP')
 
+  // Wait for the draft to finish saving before publishing. Clicking publish
+  // while the draft is still syncing leaves the button disabled (NO_CHANGES /
+  // NOT_READY); under backend load that can exceed the action timeout and flake.
+  // The status line reaching "Created"/"Edited" is the canonical saved signal.
+  await expectCreatedStatus(page.getByTestId('pane-footer-document-status'))
+
   // Wait for the document to be published.
   await page.getByTestId('action-publish').click()
   await expectPublishedStatus(page.getByTestId('pane-footer-document-status'))
