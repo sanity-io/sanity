@@ -122,22 +122,6 @@ export const getVariantDocumentTableColumnDefs = (
     sortTransform: (row) => row.rowKey ?? row.groupId,
   },
   {
-    // Narrow leading status rail: a scannable "ready vs. has errors" column. Sortable so a reader
-    // can pull error rows to the top. No header label — the glyphs speak for themselves and a text
-    // header would overflow the 44px slot.
-    id: 'validation',
-    width: 44,
-    style: {minWidth: 44, maxWidth: 44},
-    sorting: true,
-    sortTransform: (row) => (row.validation.hasError ? 0 : 1),
-    header: (props) => <Flex {...props.headerProps} paddingY={3} sizing="border" />,
-    cell: ({cellProps, datum}) => (
-      <Flex {...cellProps} align="center" justify="center" paddingY={3} sizing="border">
-        {!datum.isLoading && <ValidationStatusIndicator datum={datum} t={t} />}
-      </Flex>
-    ),
-  },
-  {
     id: 'bundle',
     // Wider than the old 140 so typical release names ("Compliance Dashboard") render in full;
     // only genuine outliers truncate. The extra room is reclaimed from the Type column below,
@@ -278,6 +262,23 @@ export const getVariantDocumentTableColumnDefs = (
             <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
           </Text>
         )}
+      </Flex>
+    ),
+  },
+  {
+    // Validation status trails the row, grouped with the other status/meta columns (edited-by,
+    // last-edited) and matching the releases table. A scannable "ready vs. has errors" cell —
+    // sortable so a reader can pull error rows to the top. No header label: the glyphs speak for
+    // themselves and a text header would overflow the 44px slot.
+    id: 'validation',
+    width: 44,
+    style: {minWidth: 44, maxWidth: 44},
+    sorting: true,
+    sortTransform: (row) => (row.validation.hasError ? 0 : 1),
+    header: (props) => <Flex {...props.headerProps} paddingY={3} sizing="border" />,
+    cell: ({cellProps, datum}) => (
+      <Flex {...cellProps} align="center" justify="center" paddingY={3} sizing="border">
+        {!datum.isLoading && <ValidationStatusIndicator datum={datum} t={t} />}
       </Flex>
     ),
   },
