@@ -7,9 +7,12 @@ import {AvatarSkeleton, UserAvatar} from '../userAvatar/UserAvatar'
 
 // container-query wrapper: show the editor's name when the cell has room, collapse to just the
 // avatar when the column is squeezed narrow. The avatar always carries the name in its tooltip, so
-// nothing is lost when the label is hidden.
+// nothing is lost when the label is hidden. `width: 100%` is required: `container-type: inline-size`
+// imposes size containment, so without a definite width the element collapses to ~0 (a shrink-to-fit
+// flex item derives no intrinsic width once contained) and the query would report "narrow" always.
 const CellRoot = styled(Flex)`
   container-type: inline-size;
+  width: 100%;
   min-width: 0;
 `
 const NameText = styled(Text)`
