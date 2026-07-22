@@ -23,10 +23,46 @@ const NameText = styled(Text)`
 `
 
 /**
- * "Edited by" table cell: the avatar + display name of whoever last edited the document, resolved
- * from the transaction log. A person-named column (not just an avatar) is what distinguishes
- * authorship from live presence — the two used to read as the same round avatar. Collapses to
- * avatar-only when the column is too narrow to fit the name.
+ * Presentation for an "Edited by" cell: the avatar + display name of a resolved editor id. A
+ * person-named column (not just an avatar) is what distinguishes authorship from live presence — the
+ * two used to read as the same round avatar. Collapses to avatar-only when the column is too narrow
+ * to fit the name. Shared by the Releases and Variant document tables, each of which resolves the
+ * editor id through its own history source.
+ *
+ * @internal
+ */
+export function EditedByAvatar({
+  userId,
+  loading,
+}: {
+  userId: string | undefined
+  loading: boolean
+}): React.JSX.Element | null {
+  const [user] = useUser(userId ?? '')
+
+  if (loading) {
+    return <AvatarSkeleton $size={0} animated />
+  }
+
+  if (!userId) {
+    return null
+  }
+
+  return (
+    <CellRoot align="center" gap={2}>
+      <UserAvatar size={0} user={userId} withTooltip />
+      {user?.displayName && (
+        <NameText muted size={1} textOverflow="ellipsis">
+          {user.displayName}
+        </NameText>
+      )}
+    </CellRoot>
+  )
+}
+
+/**
+ * "Edited by" cell for the variant document table: resolves the last editor from the document's
+ * transaction log, then renders {@link EditedByAvatar}.
  *
  * @internal
  */
@@ -38,24 +74,6 @@ export function EditedByCell({
   revision?: string
 }): React.JSX.Element | null {
   const {lastEditedBy, loading} = useDocumentLastEditedBy(documentId, revision)
-  const [user] = useUser(lastEditedBy ?? '')
 
-  if (loading) {
-    return <AvatarSkeleton $size={0} animated />
-  }
-
-  if (!lastEditedBy) {
-    return null
-  }
-
-  return (
-    <CellRoot align="center" gap={2}>
-      <UserAvatar size={0} user={lastEditedBy} withTooltip />
-      {user?.displayName && (
-        <NameText muted size={1} textOverflow="ellipsis">
-          {user.displayName}
-        </NameText>
-      )}
-    </CellRoot>
-  )
+  return <EditedByAvatar loading={loading} userId={lastEditedBy} />
 }
