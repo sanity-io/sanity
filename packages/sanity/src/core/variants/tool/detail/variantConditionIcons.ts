@@ -6,7 +6,6 @@ import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
 import {FilterIcon} from '@sanity/icons/Filter'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PackageIcon} from '@sanity/icons/Package'
-import {PinIcon} from '@sanity/icons/Pin'
 import {RocketIcon} from '@sanity/icons/Rocket'
 import {SplitVerticalIcon} from '@sanity/icons/SplitVertical'
 import {StarIcon} from '@sanity/icons/Star'
@@ -34,7 +33,7 @@ const DIMENSION_ICONS: Record<string, ComponentType> = {
   segment: TargetIcon,
   cohort: TargetIcon,
   role: UserIcon,
-  location: PinIcon,
+  location: EarthGlobeIcon,
   region: EarthAmericasIcon,
   country: EarthGlobeIcon,
   market: EarthGlobeIcon,

@@ -1,7 +1,7 @@
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
 import {UserIcon} from '@sanity/icons/User'
-import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Container, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
@@ -118,8 +118,17 @@ export function VariantDetail() {
     ]
   }, [t, variant])
 
-  const documentSections = useMemo<DetailPropertiesSection[]>(
-    () => [
+  const documentSections = useMemo<DetailPropertiesSection[]>(() => {
+    // While documents are still streaming in, show a skeleton rather than "0" — a literal 0
+    // mid-load reads as "empty" when the real count just hasn't arrived yet.
+    const countValue = (count: number): React.ReactNode =>
+      documentsLoading ? (
+        <Skeleton animated radius={1} style={{width: 24, height: 11}} />
+      ) : (
+        String(count)
+      )
+
+    return [
       {
         title: t('detail.metadata.documents'),
         rows: [
@@ -130,7 +139,7 @@ export function VariantDetail() {
               </Text>
             ),
             label: t('detail.metadata.total'),
-            value: String(tableRows.length),
+            value: countValue(tableRows.length),
           },
           {
             icon: (
@@ -139,13 +148,12 @@ export function VariantDetail() {
               </Text>
             ),
             label: t('detail.metadata.unpublished-changes'),
-            value: String(unpublishedCount),
+            value: countValue(unpublishedCount),
           },
         ],
       },
-    ],
-    [t, tableRows.length, unpublishedCount],
-  )
+    ]
+  }, [documentsLoading, t, tableRows.length, unpublishedCount])
 
   if (loading) {
     return <LoadingBlock fill title={t('detail.loading')} />
