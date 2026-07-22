@@ -283,7 +283,15 @@ interface UseQuerySubscriptionProps extends Required<Pick<SharedProps, 'client'>
   liveEventsMessages: LiveEventMessage[]
 }
 function useQuerySubscription(props: UseQuerySubscriptionProps) {
-  const {liveDocument, client, query, params, perspective, variant, liveEventsMessages} = props
+  const {
+    liveDocument,
+    client: _client,
+    query,
+    params,
+    perspective,
+    variant,
+    liveEventsMessages,
+  } = props
   const [result, setResult] = useState<unknown>(null)
   const [resultSourceMap, setResultSourceMap] = useState<ContentSourceMap | null | undefined>(null)
   const [syncTags, setSyncTags] = useState<SyncTag[] | undefined>(undefined)
@@ -300,13 +308,13 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
 
   useEffect(() => {
     const controller = new AbortController()
-    const clientApiVersion = variant
-      ? VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion
-      : client.config().apiVersion
+
+    // Parent client follows activeVariant synchronously; per-query variant comes from loader/query-listen and lags.
+    // Without this, a client downgrade can run a fetch that still passes variant, which the dated API rejects.
+    // Once we have a dated api for variants we can update the default API_VERSION we use for all clients in presentation
+    const client = variant ? _client.withConfig(VARIANTS_STUDIO_CLIENT_OPTIONS) : _client
+
     client
-      .withConfig({
-        apiVersion: clientApiVersion,
-      })
       .fetch(query, params, {
         lastLiveEventId,
         tag: 'presentation-loader',
@@ -334,7 +342,7 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     return () => {
       controller.abort()
     }
-  }, [client, lastLiveEventId, params, perspective, query, variant])
+  }, [_client, lastLiveEventId, params, perspective, query, variant])
 
   return useMemo(() => {
     if (liveDocument && resultSourceMap) {
