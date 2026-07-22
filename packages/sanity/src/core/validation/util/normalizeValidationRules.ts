@@ -1,9 +1,11 @@
 import {
   type Rule,
+  type RuleSpec,
   type RuleTypeConstraint,
   type SchemaType,
   type ValidationContext,
 } from '@sanity/types'
+import isEqual from 'lodash-es/isEqual.js'
 
 import {Rule as RuleClass} from '../Rule'
 import {slugValidator} from '../validators/slugValidator'
@@ -84,6 +86,29 @@ function extractValueFromListOption(option: unknown, typeDef: SchemaType): unkno
     : (option as Record<string, unknown>).value
 }
 
+const isUriSpec = (spec: RuleSpec): spec is Extract<RuleSpec, {flag: 'uri'}> => spec.flag === 'uri'
+
+// A `url` type auto-injects the default `.uri()` onto every array element, so a
+// custom scheme on one element cannot override the default on its siblings (GH #3298).
+function omitLeakedDefaultUri(rules: Rule[], typeDef: SchemaType): Rule[] {
+  const isUrlType = getTypeChain(typeDef).some((type) => type.name === 'url')
+  if (!isUrlType) return rules
+
+  const defaultUri = new RuleClass(typeDef).uri()._rules.find(isUriSpec)?.constraint
+  const isDefaultUri = (spec: RuleSpec) => isUriSpec(spec) && isEqual(spec.constraint, defaultUri)
+  const isCustomUri = (spec: RuleSpec) => isUriSpec(spec) && !isEqual(spec.constraint, defaultUri)
+
+  const someElementSetsScheme = rules.some((rule) => rule._rules.some(isCustomUri))
+  if (!someElementSetsScheme) return rules
+
+  return rules.map((rule) => {
+    if (!rule._rules.some(isDefaultUri)) return rule
+    const cleaned = rule.clone()
+    cleaned._rules = rule._rules.filter((spec) => !isDefaultUri(spec))
+    return cleaned
+  })
+}
+
 export function normalizeValidationRules(
   typeDef: SchemaType | undefined,
   context?: ValidationContext,
@@ -95,7 +120,7 @@ export function normalizeValidationRules(
   const validation = typeDef.validation
 
   if (Array.isArray(validation)) {
-    return validation.flatMap((i) =>
+    const rules = validation.flatMap((i) =>
       normalizeValidationRules(
         {
           ...typeDef,
@@ -104,6 +129,7 @@ export function normalizeValidationRules(
         context,
       ),
     )
+    return omitLeakedDefaultUri(rules, typeDef)
   }
 
   const baseRule =
