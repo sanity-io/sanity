@@ -1,7 +1,7 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 
@@ -181,7 +181,11 @@ export const releasesOverviewColumnDefs: (
         width: 150,
         header: (props) => (
           <Flex {...props.headerProps} paddingY={3} sizing="border">
-            <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
+            <Headers.SortHeaderButton
+              paddingLeft={2}
+              text={t('table-header.last-edited')}
+              {...props}
+            />
           </Flex>
         ),
         cell: ({datum: {documentsMetadata, _updatedAt}, cellProps}) => {
@@ -252,55 +256,55 @@ export const releasesOverviewColumnDefs: (
             <Headers.BasicHeader text={t('table-header.documents')} />
           </Flex>
         ),
-        cell: ({
-          datum: {isDeleted, state, finalDocumentStates, documentsMetadata, _id},
-          cellProps,
-        }) => {
-          return (
-            <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border" gap={2}>
-              {state === 'active' && <ReleaseColumnValidationLoading releaseId={_id} />}
-
-              {/**
-               * Show a checkmark for scheduled releases
-               * A scheduled release can't be anything other than valid
-               * Since it can't be edited via the API or the UI
-               * However we should still gives a visual indicator of that instead of showing nothing
-               */}
-              {state === 'scheduled' && (
-                <Card
-                  padding={0}
-                  radius="full"
-                  tone="neutral"
-                  style={{
-                    background: 'transparent',
-                  }}
-                >
-                  <Flex gap={2}>
-                    <Text size={1}>
-                      <Tooltip content={t('summary.all-documents-validated')}>
-                        <CheckmarkCircleIcon />
-                      </Tooltip>
-                    </Text>
-                  </Flex>
-                </Card>
-              )}
-
-              {!isDeleted && (
-                <>
-                  <ReleaseDocumentsCounter
-                    documentCount={
-                      state === 'archived' || state === 'published'
-                        ? finalDocumentStates?.length
-                        : documentsMetadata?.documentCount
-                    }
-                  />
-                </>
-              )}
-            </Flex>
-          )
-        },
+        cell: ({datum: {isDeleted, state, finalDocumentStates, documentsMetadata}, cellProps}) => (
+          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border" gap={2}>
+            {!isDeleted && (
+              <ReleaseDocumentsCounter
+                documentCount={
+                  state === 'archived' || state === 'published'
+                    ? finalDocumentStates?.length
+                    : documentsMetadata?.documentCount
+                }
+              />
+            )}
+          </Flex>
+        ),
       },
       'all',
+    ),
+    // Readiness — a dedicated trailing column mirroring the detail tables' validation column, so
+    // "is this release ready?" is a consistent signal you can scan straight down rather than a glyph
+    // tucked inside the document-count cell. Active releases validate their documents; scheduled
+    // releases are locked and therefore valid.
+    checkColumnMode(
+      {
+        id: 'validation',
+        sorting: false,
+        width: 50,
+        style: {minWidth: 50, maxWidth: 50},
+        header: ({headerProps}) => <Flex {...headerProps} paddingY={3} sizing="border" />,
+        cell: ({datum: {isDeleted, state, _id}, cellProps}) => (
+          <Flex
+            {...cellProps}
+            align="center"
+            justify="center"
+            paddingX={2}
+            paddingY={3}
+            sizing="border"
+            data-testid="release-readiness"
+          >
+            {!isDeleted && state === 'active' && <ReleaseColumnValidationLoading releaseId={_id} />}
+            {!isDeleted && state === 'scheduled' && (
+              <Text size={1}>
+                <Tooltip content={t('summary.all-documents-validated')}>
+                  <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
+                </Tooltip>
+              </Text>
+            )}
+          </Flex>
+        ),
+      },
+      'active',
     ),
   ].filter(filterNull)
 }
