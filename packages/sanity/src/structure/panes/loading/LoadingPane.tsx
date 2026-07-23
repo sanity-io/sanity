@@ -1,10 +1,9 @@
 import {_raf2, type CardTone, Flex} from '@sanity/ui'
 import {memo, useEffect, useMemo, useState} from 'react'
 import {type Observable} from 'rxjs'
-import {LoadingBlock, useTranslation} from 'sanity'
+import {Delay, LoadingBlock, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Delay} from '../../components/Delay'
 import {Pane} from '../../components/pane/Pane'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {structureLocaleNamespace} from '../../i18n'
