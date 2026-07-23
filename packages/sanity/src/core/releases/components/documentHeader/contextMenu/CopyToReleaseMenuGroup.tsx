@@ -54,7 +54,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
   return (
     <MenuGroup
       icon={CopyIcon}
-      popover={{placement: 'right-start'}}
+      popover={{placement: 'right-start', fallbackPlacements: ['left-start']}}
       text={t('release.action.copy-to')}
       disabled={disabled}
       tooltipProps={{
