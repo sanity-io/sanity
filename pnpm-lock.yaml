@@ -1715,8 +1715,8 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0(@sanity/client@7.24.0)(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
-        specifier: ^4.1.0
-        version: 4.1.0(@sanity/client@7.24.0)
+        specifier: ^4.1.1
+        version: 4.1.1(@sanity/client@7.24.0)
       '@sanity/prism-groq':
         specifier: ^1.1.2
         version: 1.1.2
@@ -6809,6 +6809,12 @@ packages:
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/client': ^7.23.2
+
+  '@sanity/preview-url-secret@4.1.1':
+    resolution: {integrity: sha512-WfTnDZDCVXj+D4KfHv332YaC/aPqEA+Zzwcr1icOQi6pf1Ka9YZGMZaoA++Yzdk5VkWAgNOBYOEyrie1CbFtOQ==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      '@sanity/client': ^7.24.0
 
   '@sanity/prism-groq@1.1.2':
     resolution: {integrity: sha512-McMw9U5kuYAgIwyNodhFKdarM0cPme6UYBR6ms6YBNEO8Qqu5zGHydUeORaJ/w4qdFKGB1oWjBjy525ed6LXaQ==}
@@ -18608,10 +18614,10 @@ snapshots:
     dependencies:
       '@portabletext/types': 4.0.2
       '@sanity/client': 7.24.0
-      '@sanity/color': 3.0.6
-      '@sanity/icons': 5.2.0(react@19.2.7)
+      '@sanity/color': 3.0.7
+      '@sanity/icons': 5.2.1(react@19.2.7)
       '@sanity/mutator': link:packages/@sanity/mutator
-      '@sanity/ui': 3.4.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(styled-components@6.4.4)
+      '@sanity/ui': 3.4.3(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(styled-components@6.4.4)
       date-fns: 4.4.0
       lodash-es: 4.18.1
       react: 19.2.7
@@ -19042,7 +19048,7 @@ snapshots:
   '@sanity/language-filter@5.0.4(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)(styled-components@6.4.4)':
     dependencies:
       '@sanity/icons': 3.8.0(react@19.2.7)
-      '@sanity/ui': 3.4.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(styled-components@6.4.4)
+      '@sanity/ui': 3.4.3(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(styled-components@6.4.4)
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       react-rx: 4.2.3(react@19.2.7)(rxjs@7.8.2)
@@ -19109,6 +19115,11 @@ snapshots:
       - '@sanity/types'
 
   '@sanity/preview-url-secret@4.1.0(@sanity/client@7.24.0)':
+    dependencies:
+      '@sanity/client': 7.24.0
+      '@sanity/uuid': 3.0.3
+
+  '@sanity/preview-url-secret@4.1.1(@sanity/client@7.24.0)':
     dependencies:
       '@sanity/client': 7.24.0
       '@sanity/uuid': 3.0.3
