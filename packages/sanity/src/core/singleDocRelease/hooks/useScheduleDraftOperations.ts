@@ -10,6 +10,8 @@ import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseI
 import {isReleaseScheduledOrScheduling} from '../../releases/util/util'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDraftId, getVersionId} from '../../util'
+import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
+import {useScheduledDraftsTelemetry} from './useScheduledDraftsTelemetry'
 
 export interface ScheduleDraftOperationsValue {
   /**
@@ -18,6 +20,7 @@ export interface ScheduleDraftOperationsValue {
   createScheduledDraft: (
     documentId: string,
     publishAt: Date,
+    documentType: string,
     opts?: BaseActionOptions,
   ) => Promise<string>
   /**
@@ -55,6 +58,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const releaseOperations = useReleaseOperations()
   const {data: allReleases} = useAllReleases()
+  const telemetry = useScheduledDraftsTelemetry()
 
   const createScheduledDraftRelease = useCallback(
     async (title: string, scheduleAt: Date, opts?: BaseActionOptions): Promise<string> => {
@@ -80,7 +84,12 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   )
 
   const handleCreateScheduledDraft = useCallback(
-    async (documentId: string, publishAt: Date, opts?: BaseActionOptions): Promise<string> => {
+    async (
+      documentId: string,
+      publishAt: Date,
+      documentType: string,
+      opts?: BaseActionOptions,
+    ): Promise<string> => {
       // Create the release (but don't schedule it yet)
       const releaseTitle = t('scheduled-drafts.release.title')
       const releaseDocumentId = await createScheduledDraftRelease(releaseTitle, publishAt, opts)
@@ -93,9 +102,11 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
       // Now schedule the release after adding the document
       await releaseOperations.schedule(releaseDocumentId, publishAt, opts)
 
+      telemetry.scheduledDraftCreated(documentType)
+
       return releaseDocumentId
     },
-    [releaseOperations, createScheduledDraftRelease, t],
+    [releaseOperations, createScheduledDraftRelease, t, telemetry],
   )
 
   // used to immediately publish a scheduled draft
@@ -154,8 +165,10 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
       }
 
       await releaseOperations.deleteRelease(releaseDocumentId, opts)
+
+      telemetry.scheduledDraftCancelled(shouldCopyToDraft)
     },
-    [releaseOperations, allReleases, client],
+    [releaseOperations, allReleases, client, telemetry],
   )
 
   const handleRescheduleScheduledDraft = useCallback(
@@ -164,6 +177,8 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
       newPublishAt: Date,
       opts?: BaseActionOptions,
     ): Promise<void> => {
+      const fromPaused = isPausedCardinalityOneRelease(release)
+
       await releaseOperations.updateRelease(
         {
           _id: release._id,
@@ -176,8 +191,10 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
       )
 
       await releaseOperations.schedule(release._id, newPublishAt, opts)
+
+      telemetry.scheduledDraftRescheduled(fromPaused)
     },
-    [releaseOperations],
+    [releaseOperations, telemetry],
   )
 
   const handlePauseScheduledDraft = useCallback(

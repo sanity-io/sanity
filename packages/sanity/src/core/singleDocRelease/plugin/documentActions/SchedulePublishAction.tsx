@@ -87,7 +87,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
           await rescheduleScheduledDraft(currentRelease, publishAt)
         } else {
           // Normal flow: create new scheduled draft
-          const releaseDocumentId = await createScheduledDraft(id, publishAt)
+          const releaseDocumentId = await createScheduledDraft(id, publishAt, type)
           onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(releaseDocumentId))
         }
 
@@ -109,6 +109,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
     },
     [
       id,
+      type,
       createScheduledDraft,
       toast,
       t,
