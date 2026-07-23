@@ -493,11 +493,19 @@ export function ReleasesOverview() {
         clear: t('overview.bulk.clear'),
       },
       selectAllTestId: 'release-bulk-select-all',
-      renderActions: ({selectedKeys, compact, clear}) => (
-        <ReleaseBulkActions selectedIds={selectedKeys} compact={compact} onClear={clear} />
-      ),
+      renderActions: ({selectedKeys, compact, clear}) => {
+        const selectedKeySet = new Set(selectedKeys)
+        const selectedReleases = tableReleases.filter((release) => selectedKeySet.has(release._id))
+        return (
+          <ReleaseBulkActions
+            selectedReleases={selectedReleases}
+            compact={compact}
+            onClear={clear}
+          />
+        )
+      },
     }
-  }, [cardinalityView, releaseGroupMode, t])
+  }, [cardinalityView, releaseGroupMode, t, tableReleases])
 
   const isArchivedReleasesView = releaseGroupMode === 'archived' && cardinalityView === 'releases'
   const defaultTableSort = isArchivedReleasesView

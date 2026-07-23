@@ -330,8 +330,9 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'overview.bulk.more': 'More actions',
   /** Label for the bulk archive action */
   'overview.bulk.archive': 'Archive',
-  /** Label for the bulk delete action */
-  'overview.bulk.delete': 'Delete',
+  /** Label for the bulk archive-and-delete action (the destructive bulk action in the active-releases
+   * view; plain delete is reserved for the archived view, which has no bulk selection today) */
+  'overview.bulk.archive-and-delete': 'Archive and delete',
   /** Header for the bulk archive confirmation dialog */
   'overview.bulk.archive-dialog.header': 'Archive releases',
   /** Confirm button for the bulk archive dialog */
@@ -348,22 +349,35 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'overview.bulk.archive-toast.success_other': 'Archived {{count}} releases',
   /** Error toast when some bulk archives fail */
   'overview.bulk.archive-toast.error': 'Some releases could not be archived',
-  /** Header for the bulk delete confirmation dialog */
-  'overview.bulk.delete-dialog.header': 'Delete releases',
-  /** Confirm button for the bulk delete dialog */
-  'overview.bulk.delete-dialog.confirm': 'Delete releases',
-  /** Body of the bulk delete dialog (singular) */
-  'overview.bulk.delete-dialog.description_one':
-    'This will permanently delete 1 release and its document versions. This cannot be undone.',
-  /** Body of the bulk delete dialog (plural) */
-  'overview.bulk.delete-dialog.description_other':
-    'This will permanently delete {{count}} releases and their document versions. This cannot be undone.',
-  /** Success toast after a bulk delete (singular) */
-  'overview.bulk.delete-toast.success_one': 'Deleted 1 release',
-  /** Success toast after a bulk delete (plural) */
-  'overview.bulk.delete-toast.success_other': 'Deleted {{count}} releases',
-  /** Error toast when some bulk deletes fail */
-  'overview.bulk.delete-toast.error': 'Some releases could not be deleted',
+  /** Tooltip on the bulk archive action when no selected release is eligible (all scheduled/scheduling) */
+  'overview.bulk.archive-none-eligible':
+    'Only active releases can be archived. Unschedule scheduled releases first.',
+  /** Note in the bulk archive dialog when some selected releases will be skipped (singular) */
+  'overview.bulk.archive-skipped-note_one':
+    '{{count}} scheduled release will be skipped — unschedule it first.',
+  /** Note in the bulk archive dialog when some selected releases will be skipped (plural) */
+  'overview.bulk.archive-skipped-note_other':
+    '{{count}} scheduled releases will be skipped — unschedule them first.',
+  /** Tooltip on the bulk archive-and-delete action when no selected release is eligible (all
+   * scheduled/scheduling) */
+  'overview.bulk.archive-and-delete-none-eligible':
+    'Only active releases can be archived and deleted. Unschedule scheduled releases first.',
+  /** Header for the bulk archive-and-delete confirmation dialog */
+  'overview.bulk.archive-and-delete-dialog.header': 'Archive and delete releases?',
+  /** Confirm button for the bulk archive-and-delete dialog */
+  'overview.bulk.archive-and-delete-dialog.confirm': 'Archive and delete',
+  /** Body of the bulk archive-and-delete dialog (singular) */
+  'overview.bulk.archive-and-delete-dialog.description_one':
+    'This will archive and permanently delete 1 release and its document versions. This cannot be undone.',
+  /** Body of the bulk archive-and-delete dialog (plural) */
+  'overview.bulk.archive-and-delete-dialog.description_other':
+    'This will archive and permanently delete {{count}} releases and their document versions. This cannot be undone.',
+  /** Success toast after a bulk archive-and-delete (singular) */
+  'overview.bulk.archive-and-delete-toast.success_one': 'Archived and deleted 1 release',
+  /** Success toast after a bulk archive-and-delete (plural) */
+  'overview.bulk.archive-and-delete-toast.success_other': 'Archived and deleted {{count}} releases',
+  /** Error toast when some bulk archive-and-deletes fail */
+  'overview.bulk.archive-and-delete-toast.error': 'Some releases could not be archived and deleted',
   /** Tooltip for the calendar button in the release overview */
   'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */
