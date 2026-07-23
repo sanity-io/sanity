@@ -14,7 +14,7 @@
     "start": "pnpm preview"
   },
   "dependencies": {
-    "@portabletext/react": "^6.2.0",
+    "@portabletext/react": "^7.0.1",
     "@sanity/client": "catalog:",
     "@sanity/image-url": "^2.1.1",
     "@sanity/react-loader": "^2.1.1",
