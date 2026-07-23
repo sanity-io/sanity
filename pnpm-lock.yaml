@@ -1326,8 +1326,8 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/tsdown.config
       '@sanity/icons':
-        specifier: ^5.2.0
-        version: 5.2.0(react@19.2.7)
+        specifier: ^5.2.1
+        version: 5.2.1(react@19.2.7)
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -1475,8 +1475,8 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@sanity/icons':
-        specifier: ^5.2.0
-        version: 5.2.0(react@19.2.7)
+        specifier: ^5.2.1
+        version: 5.2.1(react@19.2.7)
       '@sanity/lezer-groq':
         specifier: ^1.0.4
         version: 1.0.4
@@ -1685,8 +1685,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       '@sanity/icons':
-        specifier: ^5.2.0
-        version: 5.2.0(react@19.2.7)
+        specifier: ^5.2.1
+        version: 5.2.1(react@19.2.7)
       '@sanity/id-utils':
         specifier: ^1.0.0
         version: 1.0.0
@@ -18608,10 +18608,10 @@ snapshots:
     dependencies:
       '@portabletext/types': 4.0.2
       '@sanity/client': 7.24.0
-      '@sanity/color': 3.0.6
-      '@sanity/icons': 5.2.0(react@19.2.7)
+      '@sanity/color': 3.0.7
+      '@sanity/icons': 5.2.1(react@19.2.7)
       '@sanity/mutator': link:packages/@sanity/mutator
-      '@sanity/ui': 3.4.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(styled-components@6.4.4)
+      '@sanity/ui': 3.4.3(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(styled-components@6.4.4)
       date-fns: 4.4.0
       lodash-es: 4.18.1
       react: 19.2.7
@@ -19042,7 +19042,7 @@ snapshots:
   '@sanity/language-filter@5.0.4(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)(styled-components@6.4.4)':
     dependencies:
       '@sanity/icons': 3.8.0(react@19.2.7)
-      '@sanity/ui': 3.4.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(styled-components@6.4.4)
+      '@sanity/ui': 3.4.3(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(styled-components@6.4.4)
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       react-rx: 4.2.3(react@19.2.7)(rxjs@7.8.2)
@@ -19260,7 +19260,7 @@ snapshots:
       '@floating-ui/react-dom': 2.1.9(react-dom@19.2.7)(react@19.2.7)
       '@juggle/resize-observer': 3.4.0
       '@sanity/color': 3.0.6
-      '@sanity/icons': 5.2.0(react@19.2.7)
+      '@sanity/icons': 5.2.1(react@19.2.7)
       csstype: 3.2.3
       motion: 12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react@19.2.7)
       react: 19.2.7
@@ -26244,7 +26244,7 @@ snapshots:
   sanity-plugin-utils@2.0.11(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(sanity@packages+sanity)(styled-components@6.4.4):
     dependencies:
       '@sanity/asset-utils': 2.3.0
-      '@sanity/icons': 5.2.0(react@19.2.7)
+      '@sanity/icons': 5.2.1(react@19.2.7)
       '@sanity/image-url': 2.1.1
       '@sanity/ui': 3.4.3(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7)(react-is@19.2.7)(react@19.2.7)(styled-components@6.4.4)
       react: 19.2.7
