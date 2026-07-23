@@ -212,7 +212,7 @@ function VariantRoadmap({
   const laneCount = Math.max(1, ...lanes.map((l) => l + 1))
   const ROADMAP_ROW = 68
   const CARD_WIDTH = 216
-  const height = laneCount * ROADMAP_ROW + 32
+  const height = laneCount * ROADMAP_ROW + 44
   // A detailed planning view can scroll horizontally; a wide track keeps cards from cropping.
   const minWidth = granularity === 'week' ? 1100 : granularity === 'quarter' ? 2000 : 1500
 
@@ -232,6 +232,33 @@ function VariantRoadmap({
       <Box style={{overflowX: 'auto', overflowY: 'hidden'}}>
         <Box style={{position: 'relative', height, minWidth, marginTop: 20}}>
           <Axis start={start} end={end} now={now} height={height} granularity={granularity} />
+          {/* milestone baseline: each release is a POINT (diamond) on this line — the cards below are
+              just labels hanging off their point, so nothing reads as a duration/bar */}
+          <Box
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 9,
+              borderTop: '2px solid var(--card-border-color)',
+            }}
+          />
+          {dated.map(({r, x}) => (
+            <Card
+              key={`dot-${r.id}`}
+              tone={collisionIds.has(r.id) ? 'caution' : markerTone(r)}
+              shadow={1}
+              style={{
+                position: 'absolute',
+                left: `${x}%`,
+                top: 4,
+                width: 12,
+                height: 12,
+                transform: 'translateX(-50%) rotate(45deg)',
+                border: '2px solid var(--card-bg-color)',
+              }}
+            />
+          ))}
           {dated.map(({r, x}, i) => {
             const Icon = TYPE_ICON[r.type]
             const collides = collisionIds.has(r.id)
@@ -256,7 +283,7 @@ function VariantRoadmap({
                   style={{
                     position: 'absolute',
                     left: `${x}%`,
-                    top: lanes[i] * ROADMAP_ROW + 12,
+                    top: lanes[i] * ROADMAP_ROW + 26,
                     width: CARD_WIDTH,
                     border: collides
                       ? '1px solid var(--card-badge-caution-icon-color)'
@@ -276,7 +303,8 @@ function VariantRoadmap({
                         {fmtDayMonth(r.publishAt as Date)}
                       </Text>
                       <Text size={0} muted>
-                        <DocumentsIcon /> {r.documentCount}
+                        <DocumentsIcon />{' '}
+                        <span style={{marginInlineStart: 4}}>{r.documentCount}</span>
                       </Text>
                       {r.kind === 'scheduledDraft' && (
                         <Badge fontSize={0} tone="primary">
@@ -325,6 +353,16 @@ function VariantStrip({
     <Stack space={3}>
       <Box style={{position: 'relative', height: 56, marginTop: 16}}>
         <Axis start={start} end={end} now={now} height={56} granularity={granularity} />
+        {/* baseline the dots sit on, so they read as points on a line */}
+        <Box
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 29,
+            borderTop: '2px solid var(--card-border-color)',
+          }}
+        />
         {[...byDay.entries()].map(([key, group]) => {
           const date = group[0].publishAt as Date
           const x = xPct(date, start, end)
@@ -360,16 +398,18 @@ function VariantStrip({
                 <Card
                   radius="full"
                   tone={collides ? 'caution' : 'primary'}
+                  shadow={2}
                   style={{
-                    width: collides ? 24 : 14,
-                    height: collides ? 24 : 14,
+                    width: collides ? 30 : 18,
+                    height: collides ? 30 : 18,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    border: '2px solid var(--card-bg-color)',
                   }}
                 >
                   {collides && (
-                    <Text size={0} weight="semibold">
+                    <Text size={1} weight="semibold">
                       {group.length}
                     </Text>
                   )}
@@ -467,7 +507,8 @@ function VariantHorizon({releases, now}: {releases: MockRelease[]; now: Date}) {
                           </Text>
                         )}
                         <Text size={0} muted>
-                          <DocumentsIcon /> {r.documentCount}
+                          <DocumentsIcon />{' '}
+                          <span style={{marginInlineStart: 4}}>{r.documentCount}</span>
                         </Text>
                         {r.kind === 'scheduledDraft' && (
                           <Badge fontSize={0} tone="primary">
