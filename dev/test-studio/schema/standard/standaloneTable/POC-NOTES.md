@@ -99,7 +99,12 @@ best-effort: runtime editor behavior was not exercised in this environment.
 - **Environment constraints shaped verification**: container memory is hard-capped at 2GiB;
   `pnpm install`/`pnpm add` (any lockfile resolution) OOMs, so no new dependencies; the full
   test-studio typecheck OOM'd the implementation run (tsgo over the monorepo-condition
-  source graph). Unit tests run green (27/27); typecheck status recorded in the thread.
+  source graph), and a *scoped* attempt (tsconfig including only these four files) also
+  OOM'd — under the `monorepo` condition, any file importing `sanity` pulls the whole
+  source-graph type surface, which does not fit in 2GiB. **Typecheck: environment-blocked.**
+  Verification floor for this POC: 27/27 unit tests green + lefthook format/lint (biome,
+  0 warnings) on commit. Run `pnpm --filter sanity-test-studio check:types` on a normal
+  dev machine before promoting this beyond POC.
 
 ## Patch-stream reality (the sizing question, answered)
 
