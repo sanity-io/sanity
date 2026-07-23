@@ -330,11 +330,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'overview.bulk.more': 'More actions',
   /** Label for the bulk archive action */
   'overview.bulk.archive': 'Archive',
-  /** Label for the bulk schedule action */
-  'overview.bulk.schedule': 'Schedule',
-  /** Tooltip explaining why bulk schedule is not yet available */
-  'overview.bulk.schedule-disabled-tooltip':
-    'Bulk scheduling is coming soon. Schedule each release from its menu for now.',
+  /** Label for the bulk delete action */
+  'overview.bulk.delete': 'Delete',
   /** Header for the bulk archive confirmation dialog */
   'overview.bulk.archive-dialog.header': 'Archive releases',
   /** Confirm button for the bulk archive dialog */
@@ -351,6 +348,22 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'overview.bulk.archive-toast.success_other': 'Archived {{count}} releases',
   /** Error toast when some bulk archives fail */
   'overview.bulk.archive-toast.error': 'Some releases could not be archived',
+  /** Header for the bulk delete confirmation dialog */
+  'overview.bulk.delete-dialog.header': 'Delete releases',
+  /** Confirm button for the bulk delete dialog */
+  'overview.bulk.delete-dialog.confirm': 'Delete releases',
+  /** Body of the bulk delete dialog (singular) */
+  'overview.bulk.delete-dialog.description_one':
+    'This will permanently delete 1 release and its document versions. This cannot be undone.',
+  /** Body of the bulk delete dialog (plural) */
+  'overview.bulk.delete-dialog.description_other':
+    'This will permanently delete {{count}} releases and their document versions. This cannot be undone.',
+  /** Success toast after a bulk delete (singular) */
+  'overview.bulk.delete-toast.success_one': 'Deleted 1 release',
+  /** Success toast after a bulk delete (plural) */
+  'overview.bulk.delete-toast.success_other': 'Deleted {{count}} releases',
+  /** Error toast when some bulk deletes fail */
+  'overview.bulk.delete-toast.error': 'Some releases could not be deleted',
   /** Tooltip for the calendar button in the release overview */
   'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */

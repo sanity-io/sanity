@@ -1,6 +1,6 @@
 import {ArchiveIcon} from '@sanity/icons/Archive'
-import {CalendarIcon} from '@sanity/icons/Calendar'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {Flex, Menu, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
@@ -9,13 +9,57 @@ import {Translate, useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 
+type BulkAction = 'archive' | 'delete'
+
+// Per-action copy + tone, so one confirm dialog serves both. Archive is reversible (unarchive);
+// delete is permanent. Duplicate/Schedule are intentionally NOT bulk actions: duplicate needs each
+// release's documents (a per-release fetch, not loopable over a selection), and scheduling many to
+// one time collides (releases publish one at a time) — both stay in the per-row menu.
+const ACTION_CONFIG: Record<
+  BulkAction,
+  {
+    icon: typeof ArchiveIcon
+    tone?: 'critical'
+    labelKey: string
+    testId: string
+    headerKey: string
+    confirmKey: string
+    descriptionKey: string
+    toastSuccessKey: string
+    toastErrorKey: string
+    confirmTone: 'caution' | 'critical'
+  }
+> = {
+  archive: {
+    icon: ArchiveIcon,
+    labelKey: 'overview.bulk.archive',
+    testId: 'release-overview-bulk-archive',
+    headerKey: 'overview.bulk.archive-dialog.header',
+    confirmKey: 'overview.bulk.archive-dialog.confirm',
+    descriptionKey: 'overview.bulk.archive-dialog.description',
+    toastSuccessKey: 'overview.bulk.archive-toast.success',
+    toastErrorKey: 'overview.bulk.archive-toast.error',
+    confirmTone: 'caution',
+  },
+  delete: {
+    icon: TrashIcon,
+    tone: 'critical',
+    labelKey: 'overview.bulk.delete',
+    testId: 'release-overview-bulk-delete',
+    headerKey: 'overview.bulk.delete-dialog.header',
+    confirmKey: 'overview.bulk.delete-dialog.confirm',
+    descriptionKey: 'overview.bulk.delete-dialog.description',
+    toastSuccessKey: 'overview.bulk.delete-toast.success',
+    toastErrorKey: 'overview.bulk.delete-toast.error',
+    confirmTone: 'critical',
+  },
+}
+
 /**
  * Bulk-action toolbar contents for the releases overview, rendered inside the DocumentTable command
  * lane when a selection exists. Mirrors the detail-page bulk toolbar (ghost buttons when wide, an
- * overflow menu when compact). Archive is wired (reversible via unarchive); Schedule is a disabled
- * stub — bulk scheduling to a single time would collide (releases publish one at a time), so it
- * needs a dedicated stagger-aware flow (tracked separately). The per-row ⋯ menu already offers a
- * full action set including per-release scheduling.
+ * overflow menu when compact). Ships Archive (reversible) + Delete (permanent, critical-toned); each
+ * opens a confirmation before running across the selection.
  */
 export function ReleaseBulkActions({
   selectedIds,
@@ -27,21 +71,25 @@ export function ReleaseBulkActions({
   onClear: () => void
 }): React.JSX.Element {
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {archive} = useReleaseOperations()
+  const {archive, deleteRelease} = useReleaseOperations()
   const toast = useToast()
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [isArchiving, setIsArchiving] = useState(false)
+  const [pendingAction, setPendingAction] = useState<BulkAction | null>(null)
+  const [isRunning, setIsRunning] = useState(false)
 
   const count = selectedIds.length
 
-  const handleConfirmArchive = useCallback(async () => {
-    setIsArchiving(true)
-    const results = await Promise.allSettled(selectedIds.map((id) => archive(id)))
+  const runAction = useCallback(async () => {
+    if (!pendingAction) return
+    const config = ACTION_CONFIG[pendingAction]
+    const run = pendingAction === 'archive' ? archive : deleteRelease
+
+    setIsRunning(true)
+    const results = await Promise.allSettled(selectedIds.map((id) => run(id)))
     const failed = results.filter((result) => result.status === 'rejected').length
     const succeeded = count - failed
 
-    setIsArchiving(false)
-    setConfirmOpen(false)
+    setIsRunning(false)
+    setPendingAction(null)
 
     if (succeeded > 0) {
       toast.push({
@@ -49,7 +97,7 @@ export function ReleaseBulkActions({
         status: 'success',
         title: (
           <Text muted size={1}>
-            {t('overview.bulk.archive-toast.success', {count: succeeded})}
+            {t(config.toastSuccessKey, {count: succeeded})}
           </Text>
         ),
       })
@@ -60,17 +108,16 @@ export function ReleaseBulkActions({
         status: 'error',
         title: (
           <Text muted size={1}>
-            {t('overview.bulk.archive-toast.error')}
+            {t(config.toastErrorKey)}
           </Text>
         ),
       })
     }
     onClear()
-  }, [archive, count, onClear, selectedIds, t, toast])
+  }, [archive, count, deleteRelease, onClear, pendingAction, selectedIds, t, toast])
 
-  const openArchiveConfirm = useCallback(() => setConfirmOpen(true), [])
-
-  const scheduleTooltip = {content: t('overview.bulk.schedule-disabled-tooltip')}
+  const archiveConfig = ACTION_CONFIG.archive
+  const deleteConfig = ACTION_CONFIG.delete
 
   const actions = compact ? (
     <MenuButton
@@ -86,17 +133,17 @@ export function ReleaseBulkActions({
       menu={
         <Menu>
           <MenuItem
-            data-testid="release-overview-bulk-schedule"
-            disabled
-            icon={CalendarIcon}
-            text={t('overview.bulk.schedule')}
-            tooltipProps={scheduleTooltip}
+            data-testid={archiveConfig.testId}
+            icon={archiveConfig.icon}
+            onClick={() => setPendingAction('archive')}
+            text={t(archiveConfig.labelKey)}
           />
           <MenuItem
-            data-testid="release-overview-bulk-archive"
-            icon={ArchiveIcon}
-            onClick={openArchiveConfirm}
-            text={t('overview.bulk.archive')}
+            data-testid={deleteConfig.testId}
+            icon={deleteConfig.icon}
+            onClick={() => setPendingAction('delete')}
+            text={t(deleteConfig.labelKey)}
+            tone="critical"
           />
         </Menu>
       }
@@ -105,19 +152,19 @@ export function ReleaseBulkActions({
   ) : (
     <Flex align="center" flex="none" gap={2}>
       <Button
-        data-testid="release-overview-bulk-schedule"
-        disabled
-        icon={CalendarIcon}
+        data-testid={archiveConfig.testId}
+        icon={archiveConfig.icon}
         mode="ghost"
-        text={t('overview.bulk.schedule')}
-        tooltipProps={scheduleTooltip}
+        onClick={() => setPendingAction('archive')}
+        text={t(archiveConfig.labelKey)}
       />
       <Button
-        data-testid="release-overview-bulk-archive"
-        icon={ArchiveIcon}
+        data-testid={deleteConfig.testId}
+        icon={deleteConfig.icon}
         mode="ghost"
-        onClick={openArchiveConfirm}
-        text={t('overview.bulk.archive')}
+        onClick={() => setPendingAction('delete')}
+        text={t(deleteConfig.labelKey)}
+        tone="critical"
       />
     </Flex>
   )
@@ -125,23 +172,23 @@ export function ReleaseBulkActions({
   return (
     <>
       {actions}
-      {confirmOpen && (
+      {pendingAction && (
         <Dialog
-          id="release-overview-bulk-archive-dialog"
-          data-testid="release-overview-bulk-archive-dialog"
-          header={t('overview.bulk.archive-dialog.header')}
-          onClose={() => !isArchiving && setConfirmOpen(false)}
+          id="release-overview-bulk-action-dialog"
+          data-testid="release-overview-bulk-action-dialog"
+          header={t(ACTION_CONFIG[pendingAction].headerKey)}
+          onClose={() => !isRunning && setPendingAction(null)}
           padding={false}
           footer={{
             confirmButton: {
-              text: t('overview.bulk.archive-dialog.confirm'),
-              tone: 'caution',
-              onClick: handleConfirmArchive,
-              loading: isArchiving,
-              disabled: isArchiving,
+              text: t(ACTION_CONFIG[pendingAction].confirmKey),
+              tone: ACTION_CONFIG[pendingAction].confirmTone,
+              onClick: runAction,
+              loading: isRunning,
+              disabled: isRunning,
             },
             cancelButton: {
-              disabled: isArchiving,
+              disabled: isRunning,
             },
           }}
         >
@@ -149,7 +196,7 @@ export function ReleaseBulkActions({
             <Text muted size={1}>
               <Translate
                 t={t}
-                i18nKey="overview.bulk.archive-dialog.description"
+                i18nKey={ACTION_CONFIG[pendingAction].descriptionKey}
                 values={{count}}
               />
             </Text>
