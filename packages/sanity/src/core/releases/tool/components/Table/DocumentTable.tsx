@@ -3,7 +3,7 @@ import {Badge, Box, Card, Checkbox, Container, Flex, TextInput, useMediaIndex} f
 import {type CSSProperties, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {Button} from '../../../../../ui-components'
-import {Table} from './Table'
+import {Table, type TableRowProps} from './Table'
 import {type TableSort} from './TableProvider'
 import {type Column} from './types'
 
@@ -80,6 +80,9 @@ export function DocumentTable<Row extends object>({
   commandLaneActions,
   selection,
   rowActions,
+  rowProps,
+  hideTableInlinePadding,
+  alwaysShowCommandLane = false,
   footer,
   emptyState,
   defaultSort,
@@ -100,6 +103,16 @@ export function DocumentTable<Row extends object>({
   commandLaneActions?: ReactNode
   selection?: DocumentTableSelection
   rowActions?: (props: {datum: unknown}) => ReactNode
+  /** Per-row Card props (e.g. tone). Forwarded to the underlying Table. */
+  rowProps?: (row: Row) => Partial<TableRowProps>
+  hideTableInlinePadding?: boolean
+  /**
+   * Keep the command lane (filter tabs + search) mounted even when there are zero rows — so a filter
+   * or search that empties the result set doesn't also hide the controls needed to change it. Detail
+   * tables leave this off (an empty document set means the whole surface is empty); list surfaces that
+   * own their filters, like the releases overview, turn it on.
+   */
+  alwaysShowCommandLane?: boolean
   footer?: ReactNode
   emptyState: (() => React.JSX.Element) | string
   defaultSort?: TableSort
@@ -196,6 +209,7 @@ export function DocumentTable<Row extends object>({
   )
 
   const hasDocuments = !loading && rows.length > 0
+  const showCommandLane = hasDocuments || (alwaysShowCommandLane && !loading)
   const showBulkToolbar = Boolean(selection) && selectedVisibleCount > 0
 
   return (
@@ -204,7 +218,7 @@ export function DocumentTable<Row extends object>({
           filter tabs lead from the left (aligned with the columns), search is right-aligned. On
           selection: selected count + Clear on the left, caller's bulk actions on the right.
           container[3] + paddingX={2} aligns the lane with the table's row content below. */}
-      {hasDocuments && (
+      {showCommandLane && (
         <Card flex="none" borderBottom paddingY={2}>
           <Container flex="none" width={3}>
             <Box paddingX={2}>
@@ -266,9 +280,11 @@ export function DocumentTable<Row extends object>({
           data={displayRows}
           defaultSort={defaultSort}
           emptyState={emptyState}
+          hideTableInlinePadding={hideTableInlinePadding}
           loading={loading}
           rowActions={rowActions}
           rowId={rowId}
+          rowProps={rowProps}
           scrollContainerRef={scrollContainerRef}
         />
       </Card>

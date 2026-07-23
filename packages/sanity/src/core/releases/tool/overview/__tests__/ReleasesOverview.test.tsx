@@ -222,6 +222,19 @@ async function mountAndFlush(...args: Parameters<typeof render>) {
   return view
 }
 
+/**
+ * The month calendar is no longer rendered inline: it now lives behind the `CalendarPopover`
+ * trigger button (name="calendar"). Find that trigger, click it to open the popover, then wait
+ * for the calendar's day tiles to mount before returning the calendar element.
+ */
+async function openCalendar() {
+  const calendarButton = document.querySelector('button[name="calendar"]') as HTMLButtonElement
+  expect(calendarButton).toBeInTheDocument()
+  await userEvent.click(calendarButton)
+
+  return waitFor(() => getByDataUi(document.body, 'Calendar'))
+}
+
 describe('ReleasesOverview', () => {
   beforeEach(() => {
     mockUseActiveReleases.mockRestore()
@@ -294,14 +307,17 @@ describe('ReleasesOverview', () => {
     })
 
     it('does not allow for switching between history modes', async () => {
+      // The Open/Archived mode tabs now live in the table's command lane, which is hidden
+      // entirely while releases are loading (rather than shown-but-disabled) — so there is no
+      // control available to switch history modes during loading.
       await waitFor(
         () => {
-          screen.getByText('Active')
+          expect(screen.getByRole('table')).toBeInTheDocument()
         },
         {timeout: 4000},
       )
-      expect(screen.getByText('Active').closest('button')).toBeDisabled()
-      expect(screen.getByText('Archived').closest('button')).toBeDisabled()
+      expect(screen.queryByText('Active')).not.toBeInTheDocument()
+      expect(screen.queryByText('Archived')).not.toBeInTheDocument()
     })
 
     it('does show the page heading', () => {
@@ -569,18 +585,16 @@ describe('ReleasesOverview', () => {
     describe('calendar filter', () => {
       const getCalendar = () => getByDataUi(document.body, 'Calendar')
 
-      it('has today in bold to signify that there is a release', () => {
-        const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
-          'day-tile-today',
-        )
+      it('has today in bold to signify that there is a release', async () => {
+        const calendar = await openCalendar()
+        const todayTile = within(calendar).getByTestId('day-tile-today')
         expect(todayTile.firstChild).toHaveStyle('font-weight: 700')
       })
 
       describe('selecting a release date', () => {
         beforeEach(async () => {
-          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
-            'day-tile-today',
-          )
+          const calendar = await openCalendar()
+          const todayTile = within(calendar).getByTestId('day-tile-today')
           await userEvent.click(todayTile)
         })
 
@@ -658,17 +672,15 @@ describe('ReleasesOverview', () => {
           })
         })
 
-        it('shows today as having no releases', () => {
-          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
-            'day-tile-today',
-          )
+        it('shows today as having no releases', async () => {
+          const calendar = await openCalendar()
+          const todayTile = within(calendar).getByTestId('day-tile-today')
           expect(todayTile.parentNode).not.toHaveStyle('font-weight: 700')
         })
 
         it('shows no releases when filtered by today', async () => {
-          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
-            'day-tile-today',
-          )
+          const calendar = await openCalendar()
+          const todayTile = within(calendar).getByTestId('day-tile-today')
           await userEvent.click(todayTile)
 
           expect(screen.queryAllByTestId('table-row')).toHaveLength(0)
