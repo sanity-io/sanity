@@ -26,6 +26,7 @@ export function useUrlState(
     const onPopState = () => setValue(read())
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
+    // oxlint-disable-next-line react/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, fallback])
 
