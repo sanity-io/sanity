@@ -8,6 +8,7 @@ import {type TFunction} from 'i18next'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {RelativeTime} from '../../../components'
+import {EditedByCell} from '../../../components/documentTable/EditedByCell'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getPublishDateFromRelease} from '../../util/util'
 import {ReleaseTime} from '../components/ReleaseTime'
@@ -202,6 +203,32 @@ export const releasesOverviewColumnDefs: (
             </Flex>
           )
         },
+      },
+      'active',
+    ),
+    // Edited by — immediately after "Last edited" (reads "edited <time> by <person>"), mirroring the
+    // detail tables. Non-sortable: resolving the editor front-loads per-row history. A release is a
+    // document, so the shared translog resolver works directly on release._id/_rev.
+    checkColumnMode(
+      {
+        id: 'editedBy',
+        sorting: false,
+        width: 170,
+        style: {minWidth: 44, maxWidth: 170},
+        header: ({headerProps}) => (
+          <Flex {...headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
+            <Text muted size={1} weight="medium">
+              {t('table-header.edited-by')}
+            </Text>
+          </Flex>
+        ),
+        cell: ({datum: release, cellProps}) => (
+          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+            {!release.isLoading && !release.isDeleted && (
+              <EditedByCell documentId={release._id} revision={release._rev} />
+            )}
+          </Flex>
+        ),
       },
       'active',
     ),
