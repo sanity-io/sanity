@@ -57,24 +57,12 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
-  // quick-lru's own typings subclass Map with incompatible `keys`/`values`/`[Symbol.iterator]`
-  // signatures against TypeScript's iterator helper types (TS2416: quick-lru returns
-  // IterableIterator where Map expects MapIterator). Its d.ts is pulled into this program by
-  // an unused `import QuickLRU from 'quick-lru'` that rolldown-plugin-dts leaves behind in
-  // sanity's bundled d.ts after tree-shaking the (internal, unexported) declarations that
-  // referenced it. The import is dead, so these errors can't affect consumers; drop the filter
-  // once quick-lru ships MapIterator-compatible declarations or rolldown-plugin-dts prunes
-  // unused external type imports.
+  // Temporary workaround for quick-lru's TS2416 declarations with TypeScript's new iterator helper
+  // types in lib.esnext.iterator.d.ts. quick-lru's methods currently return IterableIterator while
+  // Map now expects MapIterator. This originates from node_modules and does not affect runtime
+  // behavior in this repository. Remove once quick-lru ships declarations compatible with
+  // TypeScript versions that include Iterator helper methods on MapIterator.
   if (code === 2416 && file.fileName.includes('/node_modules/quick-lru/')) {
-    return false
-  }
-
-  // Temporary workaround for broken d.ts output in @sanity/workbench (reproduced with
-  // 0.1.0-alpha.24 and 0.1.0-alpha.25). The bundled declarations emit the same type alias twice
-  // (e.g. Canvas, Workspace), which fails TS2300 under skipLibCheck: false. This only affects type
-  // checking in node_modules and does not impact runtime behavior. Remove once @sanity/workbench
-  // ships a release without duplicate identifiers in its generated .d.ts files.
-  if (code === 2300 && file.fileName.includes('/node_modules/@sanity/workbench/')) {
     return false
   }
 
