@@ -183,8 +183,8 @@ describe('document types', () => {
       defineType({
         type: 'document',
         name: 'custom-document',
+        //@ts-expect-error not assignable to FieldDefinition
         fields: [
-          //@ts-expect-error not assignable to FieldDefinition
           {
             type: 'object',
             name: 'error-fields-type',
