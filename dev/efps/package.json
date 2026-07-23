@@ -18,7 +18,7 @@
     "write:report": "tsx ./formatefpsResult.ts"
   },
   "dependencies": {
-    "sanity-plugin-internationalized-array": "^5.1.21",
+    "sanity-plugin-internationalized-array": "^5.1.22",
     "styled-components": "catalog:",
     "tsx": "^4.23.1"
   },
@@ -38,7 +38,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "source-map": "^0.7.6",
+    "source-map": "^0.8.0",
     "tinyglobby": "^0.2.17"
   }
 }
