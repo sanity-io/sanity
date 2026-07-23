@@ -143,6 +143,42 @@ ${a}
       ),
     ).toEqual(false)
   })
+  it('stops at a horizontal rule inside the section (excludes Cursor Bugbot content)', () => {
+    const notes = extractReleaseNotes(
+      markdownToPortableText(`### Notes for release
+
+Adds a new feature that does the thing.
+
+<!-- CURSOR_SUMMARY -->
+---
+
+> [!NOTE]
+> **Medium Risk**
+> Touches core behavior.
+<!-- /CURSOR_SUMMARY -->
+`),
+    )
+
+    expect(portableTextToMarkdown(notes).trim()).toEqual('Adds a new feature that does the thing.')
+    expect(notes.some((block) => block._type === 'callout')).toBe(false)
+    expect(notes.some((block) => block._type === 'horizontal-rule')).toBe(false)
+  })
+
+  it('stops at a horizontal rule before any callout content leaks through', () => {
+    const notes = extractReleaseNotes(
+      markdownToPortableText(`### Notes for release
+
+Real notes.
+
+---
+
+Anything after the rule.
+`),
+    )
+
+    expect(portableTextToMarkdown(notes).trim()).toEqual('Real notes.')
+  })
+
   it('skips inline html comments', () => {
     const notes = extractReleaseNotes(
       markdownToPortableText(`

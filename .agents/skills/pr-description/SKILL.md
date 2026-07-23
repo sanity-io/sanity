@@ -84,6 +84,8 @@ This section is used by the docs team to write release notes.
 - How to use it (code snippets if applicable)
 - Limitations or breaking changes
 
+**Always end this section with a `---` horizontal rule.** The release-notes automation stops at the first `---` after the "Notes for release" heading, so the rule fences off anything appended below (Cursor Bugbot reviews, later edits) and keeps it out of the changelog.
+
 ### 4. Create the PR
 
 **Always create as draft.** Do not mark as ready for review until CI passes.
@@ -105,6 +107,8 @@ gh pr create --draft --title "type(scope): description" --body "$(cat <<'EOF'
 ### Notes for release
 
 [release notes or N/A]
+
+---
 EOF
 )"
 ```
