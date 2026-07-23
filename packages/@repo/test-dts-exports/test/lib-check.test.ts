@@ -57,6 +57,21 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
+  // Temporary workaround for quick-lru's TS2416 declarations with TypeScript's new iterator helper
+  // types in lib.esnext.iterator.d.ts. quick-lru's methods currently return IterableIterator while
+  // Map now expects MapIterator. This originates from node_modules and does not affect runtime
+  // behavior in this repository. Remove once quick-lru ships declarations compatible with
+  // TypeScript versions that include Iterator helper methods on MapIterator.
+  if (code === 2416 && file.fileName.includes('/node_modules/quick-lru/')) {
+    return false
+  }
+
+  // Temporary workaround for @sanity/vision declaration output that emits a side-effect import to
+  // "get-it", which TypeScript reports as TS2882 under skipLibCheck: false in this suite.
+  if (code === 2882 && file.fileName.includes('/packages/@sanity/vision/lib/index.d.ts')) {
+    return false
+  }
+
   return true
 })
 

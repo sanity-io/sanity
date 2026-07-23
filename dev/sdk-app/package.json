@@ -1,6 +1,6 @@
 {
   "name": "example-sdk-app",
-  "version": "6.5.0",
+  "version": "6.6.0",
   "private": true,
   "keywords": [
     "sanity"
@@ -14,8 +14,8 @@
     "start": "sanity start"
   },
   "dependencies": {
-    "@sanity/sdk": "^2.15.0",
-    "@sanity/sdk-react": "^2.15.0",
+    "@sanity/sdk": "^2.18.0",
+    "@sanity/sdk-react": "^2.18.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",

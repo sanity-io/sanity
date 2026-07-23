@@ -1,6 +1,6 @@
 {
   "name": "@repo/debug-proxy",
-  "version": "6.5.0",
+  "version": "6.6.0",
   "private": true,
   "description": "Local debugging proxy for the Sanity API — simulate latency, SSE faults, and error responses",
   "license": "MIT",
@@ -36,7 +36,7 @@
     "@repo/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
-    "tsx": "^4.22.4",
+    "tsx": "^4.23.1",
     "vite": "catalog:",
     "vitest": "catalog:"
   },

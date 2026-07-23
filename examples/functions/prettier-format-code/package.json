@@ -3,9 +3,9 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^7.23.2",
+    "@sanity/client": "^7.24.0",
     "@sanity/functions": "^1.4.0",
-    "prettier": "^3.9.4"
+    "prettier": "^3.9.6"
   },
   "blueprintResourceItem": {
     "name": "prettier-format-code",

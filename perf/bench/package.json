@@ -28,16 +28,16 @@
     "@vitejs/plugin-basic-ssl": "^2.3.0",
     "chalk": "^5.6.2",
     "esbuild": "0.28.1",
-    "groq-js": "^1.30.3",
+    "groq-js": "^2.0.0",
     "mendoza": "^3.0.8",
     "playwright": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
-    "sanity-plugin-internationalized-array": "^5.1.9",
+    "sanity-plugin-internationalized-array": "^5.1.22",
     "styled-components": "catalog:",
-    "tsx": "^4.22.4"
+    "tsx": "^4.23.1"
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",

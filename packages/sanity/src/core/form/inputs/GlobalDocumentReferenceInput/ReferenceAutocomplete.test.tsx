@@ -76,6 +76,8 @@ vi.mock('@sanity/ui', async (importOriginal) => {
 
     useLayoutEffect(() => {
       if (typeof renderPopover !== 'function') {
+        // TODO(oxlint): remove this suppression in a follow-up when this test setup is refactored
+        // oxlint-disable-next-line react/react-compiler
         setPopover(null)
         return
       }

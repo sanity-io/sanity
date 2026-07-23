@@ -1,6 +1,6 @@
 {
   "name": "@repo/release-notes",
-  "version": "6.5.0",
+  "version": "6.6.0",
   "private": true,
   "description": "Internal tool for updating release-notes",
   "license": "MIT",
@@ -26,7 +26,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.105.0",
+    "@anthropic-ai/sdk": "^0.112.3",
     "@conventional-changelog/git-client": "^2.7.0",
     "@octokit/rest": "^22.0.1",
     "@optique/core": "catalog:",

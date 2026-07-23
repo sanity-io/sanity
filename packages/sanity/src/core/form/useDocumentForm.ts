@@ -7,12 +7,13 @@ import {
   type SanityDocumentLike,
   type ValidationMarker,
 } from '@sanity/types'
-import {pathFor} from '@sanity/util/paths'
+import {pathFor, resolveKeyedPath} from '@sanity/util/paths'
 import throttle from 'lodash-es/throttle.js'
 import {
   type RefObject,
   useCallback,
   useEffect,
+  useEffectEvent,
   useInsertionEffect,
   useMemo,
   useRef,
@@ -702,6 +703,34 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       focusPathRef.current = nextPath
     }
   }
+
+  const applyInitialFocusPath = useEffectEvent(() => {
+    if (!initialFocusPath || initialFocusPath.length === 0) return
+    const resolvedPath = resolveKeyedPath(formStateRef.current?.value, initialFocusPath)
+
+    // Apply unconditionally rather than through `handleProgrammaticFocus`: its change
+    // detection compares against `focusPathRef`, which may already match the target path
+    // (the state was seeded from `initialFocusPath`, and e.g. dialog autofocus can align
+    // the ref before the form is ready) — and the expand operations must still run.
+    setFocusPath(resolvedPath)
+    handleSetOpenPath(resolvedPath)
+    onFocusPath?.(resolvedPath)
+    focusPathRef.current = resolvedPath
+  })
+
+  // Seeding `focusPath`/`openPath` state from `initialFocusPath` (on mount, above) is not
+  // enough to reveal the target field: expanding collapsed ancestors (fieldsets, field
+  // groups, collapsible objects) requires running the expand operations against a form
+  // state computed from the loaded document. Apply the initial focus once, as soon as the
+  // form becomes ready. The URL→form sync in DocumentPaneProvider intentionally skips this
+  // initial case (its openPath guard sees the seeded path as already in sync).
+  const initialFocusPathAppliedRef = useRef(false)
+  useEffect(() => {
+    if (!ready || initialFocusPathAppliedRef.current) return
+    initialFocusPathAppliedRef.current = true
+    applyInitialFocusPath()
+  }, [ready])
+
   return {
     editState,
     upstreamEditState,

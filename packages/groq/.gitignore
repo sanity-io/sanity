@@ -12,5 +12,4 @@ coverage
 node_modules
 
 # Compiled code
-lib
 dist

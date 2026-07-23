@@ -1,4 +1,4 @@
-import TTLCache from '@isaacs/ttlcache'
+import {TTLCache} from '@isaacs/ttlcache'
 import {type MonoTypeOperatorFunction, type Observable} from 'rxjs'
 import {mergeMap, scan} from 'rxjs/operators'
 

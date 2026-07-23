@@ -43,20 +43,14 @@ export default defineConfig({
 
   // Schema types
   schema: {
-    types: [
-      /* ... */
-    ],
+    types: [/* ... */],
   },
 
   // Plugins
-  plugins: [
-    /* ... */
-  ],
+  plugins: [/* ... */],
 
   // Tools
-  tools: [
-    /* ... */
-  ],
+  tools: [/* ... */],
 })
 ```
 

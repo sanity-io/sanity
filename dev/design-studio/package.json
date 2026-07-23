@@ -1,6 +1,6 @@
 {
   "name": "design-studio",
-  "version": "6.5.0",
+  "version": "6.6.0",
   "private": true,
   "description": "Sanity Design Studio",
   "keywords": [
@@ -30,7 +30,7 @@
     "start": "sanity preview --port 4000"
   },
   "dependencies": {
-    "@sanity/icons": "^5.0.0",
+    "@sanity/icons": "^5.2.0",
     "@sanity/ui": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
@@ -39,7 +39,7 @@
     "vite": "catalog:"
   },
   "devDependencies": {
-    "@vanilla-extract/vite-plugin": "catalog:",
+    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "rimraf": "catalog:"
   }
 }

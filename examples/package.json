@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "@sanity/client": "^7.23.2"
+    "@sanity/client": "^7.24.0"
   },
   "devDependencies": {
-    "@sanity/blueprints": "^0.21.0",
+    "@sanity/blueprints": "^0.23.0",
     "@sanity/functions": "^1.4.0",
     "sanity": "workspace:*",
     "vite": "catalog:"

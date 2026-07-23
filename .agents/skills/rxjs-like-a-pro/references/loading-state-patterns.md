@@ -23,9 +23,7 @@ import {OperatorFunction, Observable, of} from 'rxjs'
 import {switchMap, map, catchError, startWith} from 'rxjs/operators'
 
 type LoadingState<T> =
-  | {loading: true}
-  | {loading: false; data: T}
-  | {loading: false; error: unknown}
+  {loading: true} | {loading: false; data: T} | {loading: false; error: unknown}
 
 function withLoadingState<T, R>(
   project: (value: T) => Observable<R>,

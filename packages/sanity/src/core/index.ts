@@ -100,6 +100,7 @@ export {
 } from './validation'
 export {isDocumentInSelectedVariant} from './variants/documents/isDocumentInSelectedVariant'
 export {useVariantDocumentOperations} from './variants/hooks/useVariantDocumentOperations'
+export {VARIANTS_STUDIO_CLIENT_OPTIONS} from './variants/store/constants'
 export {getVariantTitle} from './variants/tool/util'
 export {type SystemVariant} from './variants/types'
 export * from './version'
