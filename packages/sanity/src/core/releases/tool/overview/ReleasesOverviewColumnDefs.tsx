@@ -1,6 +1,5 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Flex, Text} from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
@@ -9,8 +8,7 @@ import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {RelativeTime} from '../../../components'
 import {EditedByCell} from '../../../components/documentTable/EditedByCell'
-import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
-import {getPublishDateFromRelease} from '../../util/util'
+import {getReleaseTiming} from '../../util/getReleaseTiming'
 import {ReleaseTime} from '../components/ReleaseTime'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
@@ -58,58 +56,22 @@ export const releasesOverviewColumnDefs: (
       },
       'all',
     ),
-    // Release TYPE as a real, sortable field (not just the row icon) — and distinct from schedule
-    // STATUS: the 'scheduled' type shows as "At time" so it doesn't double-speak with the "Scheduled"
-    // vs "Not scheduled" status shown in the When column.
-    checkColumnMode(
-      {
-        id: 'metadata.releaseType',
-        sorting: true,
-        width: 120,
-        sortTransform: (release) => {
-          const order: Record<string, number> = {asap: 0, scheduled: 1, undecided: 2}
-          return order[release.metadata?.releaseType] ?? 3
-        },
-        header: (props) => (
-          <Flex {...props.headerProps} paddingY={3} sizing="border">
-            <Headers.SortHeaderButton paddingLeft={2} text={t('table-header.type')} {...props} />
-          </Flex>
-        ),
-        cell: ({datum: release, cellProps}) => {
-          if (release.isLoading) return null
-          const labelKey: Record<string, string> = {
-            asap: 'overview.release-type.asap',
-            scheduled: 'overview.release-type.scheduled',
-            undecided: 'overview.release-type.undecided',
-          }
-          const key = labelKey[release.metadata?.releaseType]
-          return (
-            <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-              <Text size={1} muted>
-                {key ? t(key) : '-'}
-              </Text>
-            </Flex>
-          )
-        },
-      },
-      'all',
-    ),
+    // Schedule — the two-state timing in ONE adaptive column (see naming-model-decision.md):
+    // 🔒 date (armed) / ⚠ date (intended, not scheduled) / "Unscheduled" (no date). This replaces
+    // the old Type + When pair, which restated each other ("Undecided Undecided") and wrapped.
     checkColumnMode(
       {
         id: 'publishAt',
         sorting: true,
         sortTransform: (release) => {
-          if (release.metadata.releaseType === 'undecided') return Infinity
-
-          const publishDate = getPublishDateFromRelease(release)
-
-          if (release.metadata.releaseType === 'asap' || !publishDate) return 0
-          return new Date(publishDate).getTime()
+          const {date} = getReleaseTiming(release)
+          // Unscheduled-with-no-date sinks to the end (default sort is ascending).
+          return date ? date.getTime() : Infinity
         },
-        width: 280,
+        width: 240,
         header: (props) => (
           <Flex {...props.headerProps} paddingY={3} sizing="border">
-            <Headers.SortHeaderButton text={t('table-header.when')} {...props} />
+            <Headers.SortHeaderButton text={t('table-header.schedule')} {...props} />
           </Flex>
         ),
         cell: ({cellProps, datum: release}) => {
@@ -117,7 +79,7 @@ export const releasesOverviewColumnDefs: (
 
           return (
             <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
-              <ReleaseTime release={release} />
+              <ReleaseTime release={release} compact />
             </Flex>
           )
         },
@@ -213,6 +175,32 @@ export const releasesOverviewColumnDefs: (
     ),
     checkColumnMode(
       {
+        id: 'documentCount',
+        sorting: false,
+        width: 120,
+        header: ({headerProps}) => (
+          <Flex {...headerProps} paddingY={3} sizing="border">
+            <Headers.BasicHeader text={t('table-header.documents')} />
+          </Flex>
+        ),
+        cell: ({datum: {isDeleted, state, finalDocumentStates, documentsMetadata}, cellProps}) => (
+          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border" gap={2}>
+            {!isDeleted && (
+              <ReleaseDocumentsCounter
+                documentCount={
+                  state === 'archived' || state === 'published'
+                    ? finalDocumentStates?.length
+                    : documentsMetadata?.documentCount
+                }
+              />
+            )}
+          </Flex>
+        ),
+      },
+      'all',
+    ),
+    checkColumnMode(
+      {
         id: 'documentsMetadata.updatedAt',
         sorting: true,
         width: 150,
@@ -268,104 +256,50 @@ export const releasesOverviewColumnDefs: (
       },
       'active',
     ),
+    // Status — ONE consolidated trailing signal (merges the former standalone error glyph and the
+    // readiness column). Answers "is this release OK?" in one place, by priority:
+    // publish failed (critical) › validation issues/loading › ready. Schedule-timing warnings
+    // (intended-not-armed / overdue) live in the Schedule column, not here.
     checkColumnMode(
       {
-        id: 'error',
+        id: 'status',
         sorting: false,
-        width: 40,
+        width: 50,
+        style: {minWidth: 50, maxWidth: 50},
         header: ({headerProps}) => <Flex {...headerProps} paddingY={3} sizing="border" />,
-        cell: ({datum, cellProps}) => {
-          const {error, state} = datum
+        cell: ({datum: {isDeleted, error, state, _id}, cellProps}) => {
           const hasError = typeof error !== 'undefined' && state === 'active'
-          const hasWarning = state === 'active' && getIsScheduledDateInPast(datum)
 
           return (
             <Flex
               {...cellProps}
               align="center"
-              gap={2}
+              justify="center"
               paddingX={2}
               paddingY={3}
               sizing="border"
-              data-testid="error-indicator"
+              data-testid="release-readiness"
             >
-              {hasError && (
+              {!isDeleted && hasError && (
                 <Tooltip content={<Text size={1}>{t('failed-publish-title')}</Text>} portal>
                   <Text size={1}>
                     <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
                   </Text>
                 </Tooltip>
               )}
-              {hasWarning && (
-                <Tooltip content={<Text size={1}>{t('passed-intended-publish-date')}</Text>} portal>
-                  <Text size={1}>
-                    <ToneIcon icon={WarningOutlineIcon} tone="caution" />
-                  </Text>
-                </Tooltip>
+              {!isDeleted && !hasError && state === 'active' && (
+                <ReleaseColumnValidationLoading releaseId={_id} />
+              )}
+              {!isDeleted && state === 'scheduled' && (
+                <Text size={1}>
+                  <Tooltip content={t('summary.all-documents-validated')}>
+                    <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
+                  </Tooltip>
+                </Text>
               )}
             </Flex>
           )
         },
-      },
-      'all',
-    ),
-    checkColumnMode(
-      {
-        id: 'documentCount',
-        sorting: false,
-        width: 120,
-        header: ({headerProps}) => (
-          <Flex {...headerProps} paddingY={3} sizing="border">
-            <Headers.BasicHeader text={t('table-header.documents')} />
-          </Flex>
-        ),
-        cell: ({datum: {isDeleted, state, finalDocumentStates, documentsMetadata}, cellProps}) => (
-          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border" gap={2}>
-            {!isDeleted && (
-              <ReleaseDocumentsCounter
-                documentCount={
-                  state === 'archived' || state === 'published'
-                    ? finalDocumentStates?.length
-                    : documentsMetadata?.documentCount
-                }
-              />
-            )}
-          </Flex>
-        ),
-      },
-      'all',
-    ),
-    // Readiness — a dedicated trailing column mirroring the detail tables' validation column, so
-    // "is this release ready?" is a consistent signal you can scan straight down rather than a glyph
-    // tucked inside the document-count cell. Active releases validate their documents; scheduled
-    // releases are locked and therefore valid.
-    checkColumnMode(
-      {
-        id: 'validation',
-        sorting: false,
-        width: 50,
-        style: {minWidth: 50, maxWidth: 50},
-        header: ({headerProps}) => <Flex {...headerProps} paddingY={3} sizing="border" />,
-        cell: ({datum: {isDeleted, state, _id}, cellProps}) => (
-          <Flex
-            {...cellProps}
-            align="center"
-            justify="center"
-            paddingX={2}
-            paddingY={3}
-            sizing="border"
-            data-testid="release-readiness"
-          >
-            {!isDeleted && state === 'active' && <ReleaseColumnValidationLoading releaseId={_id} />}
-            {!isDeleted && state === 'scheduled' && (
-              <Text size={1}>
-                <Tooltip content={t('summary.all-documents-validated')}>
-                  <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
-                </Tooltip>
-              </Text>
-            )}
-          </Flex>
-        ),
       },
       'active',
     ),

@@ -486,39 +486,43 @@ describe('ReleasesOverview', () => {
     })
 
     it('shows each open release', () => {
+      // Default sort is the Schedule column ascending: dated releases first (by date),
+      // then date-less releases (old asap/undecided) sink to the end via Infinity.
+      // scheduledRelease (2023-10-10, armed) < activeScheduledRelease (TODAY, intended-not-armed)
+      // < activeASAPRelease/activeUndecidedRelease/activeUndecidedErrorRelease (no date, original order).
       const releaseRows = screen.getAllByTestId('table-row')
       expect(releaseRows).toHaveLength(5)
 
       const [unsortedFirstRelease, unsortedSecondRelease, unsortedThirdRelease] = releaseRows
 
-      within(unsortedFirstRelease).getByText(activeASAPRelease.metadata.title)
-      within(unsortedSecondRelease).getByText(scheduledRelease.metadata.title)
-      within(unsortedThirdRelease).getByText(activeScheduledRelease.metadata.title)
+      within(unsortedFirstRelease).getByText(scheduledRelease.metadata.title)
+      within(unsortedSecondRelease).getByText(activeScheduledRelease.metadata.title)
+      within(unsortedThirdRelease).getByText(activeASAPRelease.metadata.title)
 
-      // document count
-      within(unsortedFirstRelease).getByText('2')
-      within(unsortedSecondRelease).getByText('4')
-      within(unsortedThirdRelease).getByText('1')
+      // document count (assigned by original `releases` array index + 1)
+      within(unsortedFirstRelease).getByText('4')
+      within(unsortedSecondRelease).getByText('1')
+      within(unsortedThirdRelease).getByText('2')
     })
 
-    it('shows time as ASAP for asap release types', () => {
-      const asapReleaseRow = screen.getAllByTestId('table-row')[0]
+    it('shows time as Unscheduled for asap release types (no date)', () => {
+      const asapReleaseRow = screen.getAllByTestId('table-row')[2]
 
-      within(asapReleaseRow).getByText('As soon as possible')
+      within(asapReleaseRow).getByText('Unscheduled')
     })
 
-    it('shows time as Undecided for undecided release types', () => {
-      const asapReleaseRow = screen.getAllByTestId('table-row')[3]
+    it('shows time as Unscheduled for undecided release types (no date)', () => {
+      const undecidedReleaseRow = screen.getAllByTestId('table-row')[3]
 
-      // "Undecided" now appears in both the Type column and the When cell for undecided releases
-      expect(within(asapReleaseRow).getAllByText('Undecided').length).toBeGreaterThanOrEqual(1)
+      within(undecidedReleaseRow).getByText('Unscheduled')
     })
 
     it('shows time for scheduled releases', () => {
-      const scheduledReleaseRow = screen.getAllByTestId('table-row')[2]
+      const scheduledReleaseRow = screen.getAllByTestId('table-row')[1]
 
       const date = format(TODAY, 'MMM d, yyyy')
-      within(scheduledReleaseRow).getByText(`${date}, 10:00:00 PM`)
+      // Schedule column renders in `compact` mode: no seconds, no inline tz abbreviation.
+      within(scheduledReleaseRow).getByText(`${date}, 10:00 PM`)
     })
 
     it('has release menu actions for each release', () => {
@@ -529,7 +533,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('shows lock next to scheduled releases', () => {
-      const scheduledReleaseRow = screen.getAllByTestId('table-row')[1]
+      const scheduledReleaseRow = screen.getAllByTestId('table-row')[0]
       within(scheduledReleaseRow).getByTestId('release-avatar-suggest')
 
       within(scheduledReleaseRow).getByTestId('release-lock-icon')
@@ -537,7 +541,8 @@ describe('ReleasesOverview', () => {
 
     it('shows error indicator next to active releases in error state', () => {
       const row = screen.getAllByTestId('table-row')[4]
-      within(row).getByTestId('error-indicator')
+      const readiness = within(row).getByTestId('release-readiness')
+      expect(readiness.querySelector('[data-sanity-icon="error-outline"]')).toBeInTheDocument()
     })
 
     it('allows for switching between history modes', () => {
@@ -575,9 +580,12 @@ describe('ReleasesOverview', () => {
       await rerender()
 
       const releaseRows = screen.getAllByTestId('table-row')
-      const pinnedReleaseRow = releaseRows[0]
+      const pinnedReleaseRow = releaseRows.find((row) =>
+        within(row).queryByText(activeASAPRelease.metadata.title),
+      )
 
-      expect(within(pinnedReleaseRow).getByTestId('pin-release-button')).toHaveAttribute(
+      expect(pinnedReleaseRow).toBeDefined()
+      expect(within(pinnedReleaseRow!).getByTestId('pin-release-button')).toHaveAttribute(
         'data-selected',
         '',
       )
@@ -642,7 +650,7 @@ describe('ReleasesOverview', () => {
         within(getByDataUi(document.body, 'DialogCard')).getByText('Select time zone')
       })
 
-      it('shows dates with timezone abbreviation when it is not the locale', async () => {
+      it('shows dates in compact format, without an inline timezone abbreviation, even when it is not the locale', async () => {
         mockUseTimeZone.mockReturnValue({
           ...useTimeZoneMockReturn,
           getLocalTimeZone: vi.fn(() => ({
@@ -658,10 +666,13 @@ describe('ReleasesOverview', () => {
 
         await rerender()
 
-        const scheduledReleaseRow = screen.getAllByTestId('table-row')[2]
+        const scheduledReleaseRow = screen.getAllByTestId('table-row')[1]
 
         const date = format(TODAY, 'MMM d, yyyy')
-        within(scheduledReleaseRow).getByText(`${date}, 10:00:00 PM (SCT)`)
+        // The Schedule column renders in `compact` mode: no seconds, and the timezone
+        // abbreviation is no longer shown inline (it lives in the toolbar's TZ button instead).
+        within(scheduledReleaseRow).getByText(`${date}, 10:00 PM`)
+        expect(within(scheduledReleaseRow).queryByText(/\(SCT\)/)).not.toBeInTheDocument()
       })
 
       describe('when a different timezone is selected', () => {
@@ -745,27 +756,31 @@ describe('ReleasesOverview', () => {
         unsortedFifthRelease,
       ] = screen.getAllByTestId('table-row')
 
-      // default sort asap, then scheduled by publish asc
-      within(unsortedFirstRelease).getByText(activeASAPRelease.metadata.title)
-      within(unsortedSecondRelease).getByText(scheduledRelease.metadata.title)
-      within(unsortedThirdRelease).getByText(activeScheduledRelease.metadata.title)
+      // default sort: dated releases first (ascending by date); date-less releases
+      // (old asap/undecided types) have no sort key and sink to the end, in original order
+      within(unsortedFirstRelease).getByText(scheduledRelease.metadata.title)
+      within(unsortedSecondRelease).getByText(activeScheduledRelease.metadata.title)
+      within(unsortedThirdRelease).getByText(activeASAPRelease.metadata.title)
       within(unsortedFourthRelease).getByText(activeUndecidedRelease.metadata.title)
       within(unsortedFifthRelease).getByText(activeUndecidedErrorRelease.metadata.title)
 
-      // sort by asc publish at
-      await userEvent.click(screen.getByText('When'))
+      // toggle the Schedule column to descending: date-less releases sort as the largest
+      // key, so they now float to the top (in original order), followed by dated releases
+      // descending by date
+      await userEvent.click(screen.getByText('Schedule'))
       const [
-        descPublishSortedFirstRelease,
-        descPublishSortedSecondRelease,
-        descPublishSortedThirdRelease,
-      ] = screen
-        .getAllByTestId('table-row')
-        // first two releases are undecided
-        .slice(2)
+        descSortedFirstRelease,
+        descSortedSecondRelease,
+        descSortedThirdRelease,
+        descSortedFourthRelease,
+        descSortedFifthRelease,
+      ] = screen.getAllByTestId('table-row')
 
-      within(descPublishSortedFirstRelease).getByText(activeScheduledRelease.metadata.title)
-      within(descPublishSortedSecondRelease).getByText(scheduledRelease.metadata.title)
-      within(descPublishSortedThirdRelease).getByText(activeASAPRelease.metadata.title)
+      within(descSortedFirstRelease).getByText(activeASAPRelease.metadata.title)
+      within(descSortedSecondRelease).getByText(activeUndecidedRelease.metadata.title)
+      within(descSortedThirdRelease).getByText(activeUndecidedErrorRelease.metadata.title)
+      within(descSortedFourthRelease).getByText(activeScheduledRelease.metadata.title)
+      within(descSortedFifthRelease).getByText(scheduledRelease.metadata.title)
     })
 
     it('should navigate to release when row clicked', async () => {

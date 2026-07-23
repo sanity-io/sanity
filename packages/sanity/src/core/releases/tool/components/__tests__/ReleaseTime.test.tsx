@@ -36,33 +36,33 @@ const renderTest = async (props: ComponentProps<typeof ReleaseTime>) => {
 }
 
 describe('ReleaseTime', () => {
-  it('renders "As soon as possible" when releaseType is "asap"', async () => {
+  it('renders "Unscheduled" when releaseType is "asap" (no date)', async () => {
     await renderTest({release: activeASAPRelease})
 
-    expect(screen.getByText('As soon as possible')).toBeInTheDocument()
+    expect(screen.getByText('Unscheduled')).toBeInTheDocument()
   })
 
-  it('renders "Undecided" when releaseType is "undecided"', async () => {
+  it('renders "Unscheduled" when releaseType is "undecided" (no date)', async () => {
     await renderTest({release: activeUndecidedRelease})
 
-    expect(screen.getByText('Undecided')).toBeInTheDocument()
+    expect(screen.getByText('Unscheduled')).toBeInTheDocument()
   })
 
-  it('renders the formatted date with timezone abbreviation when releaseType is scheduled', async () => {
+  it('renders a lock icon and the formatted date for armed (scheduled) releases', async () => {
     await renderTest({
       release: scheduledRelease,
     })
 
-    expect(screen.getByText('Scheduled')).toBeInTheDocument()
+    expect(screen.getByTestId('release-lock-icon')).toBeInTheDocument()
     expect(screen.getByText('Oct 10, 2023', {exact: false})).toBeInTheDocument()
   })
 
-  it('renders "Not scheduled" for active scheduled releases (intended, not committed)', async () => {
+  it('renders a caution glyph for active releases with an intended (not armed) date', async () => {
     await renderTest({
       release: activeScheduledRelease,
     })
 
-    expect(screen.getByText('Not scheduled')).toBeInTheDocument()
+    expect(screen.getByTestId('release-not-scheduled')).toBeInTheDocument()
   })
 
   it('renders the date without a schedule-status prefix for archived releases', async () => {

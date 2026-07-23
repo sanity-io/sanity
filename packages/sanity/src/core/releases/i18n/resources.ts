@@ -570,6 +570,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'table-header.time': 'Time',
   /** Header for the document table in the release tool - when */
   'table-header.when': 'When',
+  /** Header for the overview Schedule column — the two-state timing (scheduled date / intended date / unscheduled) */
+  'table-header.schedule': 'Schedule',
   /** Header for the  document table in the release tool - release title */
   'table-header.title': 'Release',
   /** Header for the document table in the release tool - type */
@@ -599,6 +601,15 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Tooltip explaining the "Not scheduled" state */
   'time.not-scheduled-tooltip':
     'This release has an intended date but isn’t scheduled yet — it won’t publish until you schedule it.',
+  /** Two-state timing (Schedule column). Shown when a release has no publish date at all — it will
+   * publish when a person clicks Publish. See naming-model-decision.md. */
+  'schedule.unscheduled': 'Unscheduled',
+  /** Tooltip on the caution glyph: a date is set but the release is NOT armed to publish. */
+  'schedule.intended-tooltip':
+    'This date is intended, but the release isn’t scheduled — it won’t publish automatically until you schedule it.',
+  /** Tooltip on the caution glyph when the intended date has already passed. */
+  'schedule.overdue-tooltip':
+    'The intended publish date has passed and the release isn’t scheduled — it won’t publish until you schedule it.',
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
   /** Toast message after copying release ID */
