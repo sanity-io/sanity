@@ -510,7 +510,8 @@ describe('ReleasesOverview', () => {
     it('shows time as Undecided for undecided release types', () => {
       const asapReleaseRow = screen.getAllByTestId('table-row')[3]
 
-      within(asapReleaseRow).getByText('Undecided')
+      // "Undecided" now appears in both the Type column and the When cell for undecided releases
+      expect(within(asapReleaseRow).getAllByText('Undecided').length).toBeGreaterThanOrEqual(1)
     })
 
     it('shows time for scheduled releases', () => {

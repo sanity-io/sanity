@@ -574,6 +574,12 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'table-header.title': 'Release',
   /** Header for the document table in the release tool - type */
   'table-header.type': 'Type',
+  /** Release-type labels for the overview Type column (the release's publish trigger, distinct from its
+   * schedule status). 'scheduled' type shows as "At time" so it doesn't collide with the "Scheduled"
+   * status. */
+  'overview.release-type.asap': 'ASAP',
+  'overview.release-type.scheduled': 'At time',
+  'overview.release-type.undecided': 'Undecided',
   /** Header for the document table in the release tool - variant (which variant a document targets) */
   'table-header.variant': 'Variant',
   /** Header for the document table in the release tool - action */

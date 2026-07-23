@@ -58,6 +58,42 @@ export const releasesOverviewColumnDefs: (
       },
       'all',
     ),
+    // Release TYPE as a real, sortable field (not just the row icon) — and distinct from schedule
+    // STATUS: the 'scheduled' type shows as "At time" so it doesn't double-speak with the "Scheduled"
+    // vs "Not scheduled" status shown in the When column.
+    checkColumnMode(
+      {
+        id: 'metadata.releaseType',
+        sorting: true,
+        width: 120,
+        sortTransform: (release) => {
+          const order: Record<string, number> = {asap: 0, scheduled: 1, undecided: 2}
+          return order[release.metadata?.releaseType] ?? 3
+        },
+        header: (props) => (
+          <Flex {...props.headerProps} paddingY={3} sizing="border">
+            <Headers.SortHeaderButton paddingLeft={2} text={t('table-header.type')} {...props} />
+          </Flex>
+        ),
+        cell: ({datum: release, cellProps}) => {
+          if (release.isLoading) return null
+          const labelKey: Record<string, string> = {
+            asap: 'overview.release-type.asap',
+            scheduled: 'overview.release-type.scheduled',
+            undecided: 'overview.release-type.undecided',
+          }
+          const key = labelKey[release.metadata?.releaseType]
+          return (
+            <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+              <Text size={1} muted>
+                {key ? t(key) : '-'}
+              </Text>
+            </Flex>
+          )
+        },
+      },
+      'all',
+    ),
     checkColumnMode(
       {
         id: 'publishAt',
