@@ -136,8 +136,8 @@ importers:
         specifier: ^4.4.5
         version: 4.4.5(eslint@10.7.0)
       eslint-plugin-boundaries:
-        specifier: ^7.0.2
-        version: 7.0.2(eslint-import-resolver-typescript@4.4.5)(eslint@10.7.0)
+        specifier: ^7.1.0
+        version: 7.1.0(eslint-import-resolver-typescript@4.4.5)(eslint@10.7.0)
       eslint-plugin-i18next:
         specifier: ^6.1.5
         version: 6.1.5
@@ -3169,8 +3169,8 @@ packages:
   '@borewit/text-codec@0.2.2':
     resolution: {integrity: sha512-DDaRehssg1aNrH4+2hnj1B7vnUGEjU6OIlyRdkMd0aUdIUvKXrJfXsy8LVtXAy7DRvYVluWbMspsRhz2lcW0mQ==}
 
-  '@boundaries/elements@3.0.1':
-    resolution: {integrity: sha512-T53UueJVRIn1B2G5FWo6T3rqAA1aHcuypRweQcbW6Z/leUygsHW54Gezkm/8uxB9Fw8ewE+izfKKmA9XVv7HdQ==}
+  '@boundaries/elements@3.1.0':
+    resolution: {integrity: sha512-9YtjJG2sSHssCcmU4dCeqHHwHF5Il0Gc1C8AywksbZyvQ9CFvpNURFuJbT21OpMdp0KHWJB14clMy85oiGwX9w==}
     engines: {node: '>=18.18'}
 
   '@bramus/specificity@2.4.2':
@@ -9633,8 +9633,8 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
 
-  eslint-plugin-boundaries@7.0.2:
-    resolution: {integrity: sha512-VLaPMvNh+ONw6F/S0gpkS0/QDudqVjcaL1DoGo+8sJqZmxxabOtrFZ24PDI1jQLg3pyqujzJ3/4Cq7Bk249gjQ==}
+  eslint-plugin-boundaries@7.1.0:
+    resolution: {integrity: sha512-IrWk4KzygcfYUkrDdFM+1bjtQmZl7MVghgidCVVSKKKRwLHYsZthoS0AusUJG/n01k3i4Ih2wykoiGs+OD4g4w==}
     engines: {node: '>=18.18'}
     peerDependencies:
       eslint: '>=6.0.0'
@@ -15646,7 +15646,7 @@ snapshots:
   '@borewit/text-codec@0.2.2':
     optional: true
 
-  '@boundaries/elements@3.0.1(eslint-import-resolver-typescript@4.4.5)(eslint@10.7.0)':
+  '@boundaries/elements@3.1.0(eslint-import-resolver-typescript@4.4.5)(eslint@10.7.0)':
     dependencies:
       eslint-import-resolver-node: 0.3.9
       eslint-module-utils: 2.12.1(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.5)(eslint@10.7.0)
@@ -19905,8 +19905,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@6.0.3)
-      '@typescript-eslint/types': 8.56.1
+      '@typescript-eslint/tsconfig-utils': 8.64.0(typescript@6.0.3)
+      '@typescript-eslint/types': 8.64.0
       debug: 4.4.3(supports-color@8.1.1)
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -22315,9 +22315,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-boundaries@7.0.2(eslint-import-resolver-typescript@4.4.5)(eslint@10.7.0):
+  eslint-plugin-boundaries@7.1.0(eslint-import-resolver-typescript@4.4.5)(eslint@10.7.0):
     dependencies:
-      '@boundaries/elements': 3.0.1(eslint-import-resolver-typescript@4.4.5)(eslint@10.7.0)
+      '@boundaries/elements': 3.1.0(eslint-import-resolver-typescript@4.4.5)(eslint@10.7.0)
       chalk: 4.1.2
       eslint: 10.7.0(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.9
@@ -23046,7 +23046,7 @@ snapshots:
     dependencies:
       base64-js: 1.5.1
       ecdsa-sig-formatter: 1.0.11
-      gaxios: 7.1.3
+      gaxios: 7.2.0
       gcp-metadata: 8.1.3
       google-logging-utils: 1.1.3
       gtoken: 8.0.0
@@ -23116,7 +23116,7 @@ snapshots:
 
   gtoken@8.0.0:
     dependencies:
-      gaxios: 7.1.3
+      gaxios: 7.2.0
       jws: 4.0.1
     transitivePeerDependencies:
       - supports-color

@@ -59,6 +59,7 @@ linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
+  - '@boundaries/elements'
   - '@oxfmt/*'
   - '@oxlint/*'
   - '@oxlint-tsgolint/*'
@@ -76,6 +77,7 @@ minimumReleaseAgeExclude:
   - '@vercel/stega'
   - 'csstype'
   - 'data-uri-to-buffer@7.0.0'
+  - 'eslint-plugin-boundaries'
   - 'get-it'
   - 'get-uri@7.0.0'
   - 'groq-js'
