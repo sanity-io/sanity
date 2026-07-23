@@ -55,6 +55,19 @@ export default defineCliConfig({
       plugins: [vanillaExtractPlugin()],
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
+      // With experimental.bundledDev, shared chunks can evaluate before the entry
+      // chunk's react-refresh preamble, causing:
+      // "@vitejs/plugin-react can't detect preamble". Force entry-first order.
+      // See https://github.com/vitejs/vite-plugin-react/issues/1191
+      ...(command === 'serve'
+        ? {
+            build: {
+              rolldownOptions: {
+                output: {strictExecutionOrder: true},
+              },
+            },
+          }
+        : {}),
     } satisfies UserConfig)
 
     if (isViteDevToolsEnabled) {

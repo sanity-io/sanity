@@ -32,6 +32,17 @@ export default defineCliConfig({
       plugins: [vanillaExtractPlugin()],
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
+      // bundledDev: shared chunks can run before the react-refresh preamble.
+      // See https://github.com/vitejs/vite-plugin-react/issues/1191
+      ...(command === 'serve'
+        ? {
+            build: {
+              rolldownOptions: {
+                output: {strictExecutionOrder: true},
+              },
+            },
+          }
+        : {}),
     } satisfies UserConfig)
 
     // Support hot reloading of files from monorepo workspaces during development
