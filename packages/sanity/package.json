@@ -181,7 +181,7 @@
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.3",
     "@sanity/workbench": "0.1.0-alpha.29",
-    "@sentry/react": "^10.66.0",
+    "@sentry/react": "^10.67.0",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.6",
     "@xstate/react": "^6.1.0",
