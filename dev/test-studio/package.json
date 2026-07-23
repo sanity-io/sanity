@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "6.5.0",
+  "version": "6.6.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -16,9 +16,9 @@
     "start": "sanity preview"
   },
   "dependencies": {
-    "@portabletext/editor": "^7.10.9",
+    "@portabletext/editor": "^7.10.11",
     "@portabletext/html": "^1.1.1",
-    "@portabletext/plugin-character-pair-decorator": "^8.0.37",
+    "@portabletext/plugin-character-pair-decorator": "^8.0.39",
     "@portabletext/react": "^6.2.0",
     "@portabletext/toolkit": "^5.0.2",
     "@sanity/assist": "^6.1.15",

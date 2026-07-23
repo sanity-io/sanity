@@ -1419,9 +1419,12 @@ describe('ReleasesOverview', () => {
       const {unmount} = await mountAndFlush(<TestComponent />, {wrapper})
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith({
-          _searchParams: expect.arrayContaining([['view', 'drafts']]),
-        })
+        expect(mockNavigate).toHaveBeenCalledWith(
+          {
+            _searchParams: expect.arrayContaining([['view', 'drafts']]),
+          },
+          {replace: true},
+        )
       })
 
       unmount()
@@ -1443,6 +1446,30 @@ describe('ReleasesOverview', () => {
       for (const call of mockNavigate.mock.calls) {
         const searchParams: [string, string][] = call[0]?._searchParams || []
         expect(searchParams).not.toContainEqual(['view', 'drafts'])
+      }
+    })
+
+    it('uses replace when syncing filter/group state to URL to avoid duplicate history entries', async () => {
+      mockNavigate.mockClear()
+      vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+      vi.mocked(useRouter).mockReturnValue({
+        state: {},
+        navigate: mockNavigate,
+        resolveIntentLink: mockResolveIntentLink,
+      } as unknown as ReturnType<typeof useRouter>)
+
+      const wrapper = await createTestProvider({
+        resources: [releasesUsEnglishLocaleBundle],
+      })
+
+      await mountAndFlush(<TestComponent />, {wrapper})
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalled()
+      })
+
+      for (const call of mockNavigate.mock.calls) {
+        expect(call[1]).toEqual({replace: true})
       }
     })
   })

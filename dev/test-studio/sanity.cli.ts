@@ -103,10 +103,19 @@ export default defineCliConfig({
       return mergeConfig(nextConfig, {
         // Aliasing to react-dom/profiling is necessary in the production build, otherwise React can't run the profiler on the deployed studio
         resolve: {alias: {'react-dom/client': require.resolve('react-dom/profiling')}},
-        // Not minifying identifiers ensures that the React DevTools components inspector has readable component names
-        esbuild: {minifyIdentifiers: false},
-        // Enable production source maps to easier debug deployed test studios
-        build: {sourcemap: true},
+        build: {
+          // Enable production source maps to easier debug deployed test studios
+          sourcemap: true,
+          rolldownOptions: {
+            output: {
+              // Disabling `mangle` (while keeping compression and whitespace removal) ensures that
+              // the React DevTools components inspector has readable component names.
+              // This overrides the `build.minify: 'oxc'` default set by `sanity build`, replacing
+              // `esbuild: {minifyIdentifiers: false}` which the rolldown-powered Vite silently ignores.
+              minify: {compress: true, mangle: false, codegen: true},
+            },
+          },
+        },
       } satisfies UserConfig)
     }
 
