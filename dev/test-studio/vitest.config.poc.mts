@@ -17,7 +17,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["schema/standard/standaloneTable/*.test.ts"],
+    include: ["schema/standard/standaloneTable/**/*.test.ts"],
     environment: "node",
   },
 })
