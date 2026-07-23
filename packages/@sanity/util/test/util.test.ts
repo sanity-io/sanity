@@ -1,6 +1,10 @@
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import * as fs from 'node:fs'
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import * as os from 'node:os'
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import * as path from 'node:path'
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {fileURLToPath} from 'node:url'
 
 import {expect, test} from 'vitest'
@@ -27,6 +31,7 @@ test('path tools: can expand home dirs', () => {
 })
 
 test('path tools: can absolutify relative paths', () => {
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   expect(absolutify('./util.test.js')).toBe(path.join(process.cwd(), 'util.test.js'))
 })
 

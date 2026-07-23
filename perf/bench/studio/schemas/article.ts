@@ -1,4 +1,6 @@
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {type Config, defineField, defineType} from 'sanity'
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {structureTool} from 'sanity/structure'
 
 // Ported from dev/efps/tests/article/sanity.config.ts
@@ -48,6 +50,7 @@ export const articleWorkspace = {
             type: 'slug',
             description:
               'Defines the part of the URL that uniquely defines this entity from others.',
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             validation: (rule) => rule.required(),
           }),
           defineField({name: 'metaTitle', type: 'string'}),

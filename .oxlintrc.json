@@ -2,6 +2,7 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "options": {
     "typeAware": true,
+    "typeCheck": true,
     "reportUnusedDisableDirectives": "error"
   },
   "env": {
@@ -69,7 +70,15 @@
     "*.css",
     "*.snap",
     "*.md",
-    "dev/test-studio/sanity.theme.mjs"
+    "dev/test-studio/sanity.theme.mjs",
+    // Out of scope for type checking (SGH-461); examples are not CI-gated
+    "examples/**",
+    // Intentional .test-d.ts / expectTypeOf fixtures — vitest typechecks these separately
+    "packages/@repo/test-dts-exports/**",
+    // Export smoke tests that intentionally exercise package entry shapes
+    "packages/@repo/test-exports/**",
+    // AILF reference solutions are fixtures, not app source
+    "packages/@repo/ailf/.ailf/tasks/*.reference.ts"
   ],
   "categories": {
     "correctness": "error",

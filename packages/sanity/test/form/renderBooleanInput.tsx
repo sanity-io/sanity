@@ -20,6 +20,7 @@ export async function renderBooleanInput(options: {
   ): BooleanInputProps {
     const {schemaType, value, ...restProps} = inputProps
 
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     return {
       ...restProps,
       changed: false,

@@ -25,6 +25,9 @@
         // Used by the boundaries jsPlugin via `settings["import/resolver"]` in .oxlintrc.json,
         // which knip can't trace (unlike jsPlugins, which it detects)
         "eslint-import-resolver-typescript",
+        // Root-only for VS Code tsgo language server (typescript.experimental.useTsgo);
+        // type checking in CI is owned by oxlint options.typeCheck
+        "@typescript/native-preview",
       ],
       "ignoreBinaries": [
         // No root packages provide these binaries

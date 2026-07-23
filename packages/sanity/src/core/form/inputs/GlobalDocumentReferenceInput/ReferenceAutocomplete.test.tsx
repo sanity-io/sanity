@@ -114,6 +114,7 @@ vi.mock('@sanity/ui', async (importOriginal) => {
   // hoisting inside `importOriginal`).
   const useBoundaryElement = () => ({version: 0.0, element: mockBoundaryElement})
 
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   return {...mod, Autocomplete: AutocompleteStub as Autocomplete, useBoundaryElement}
 })
 
@@ -123,6 +124,7 @@ vi.mock('../../../i18n', () => ({
 }))
 
 vi.mock('../../../../ui-components', async (importOriginal) => {
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   const mod = (await importOriginal()) as UIComponentsModule
   const Forward = forwardRef<HTMLDivElement, UIComponentsModule.PopoverProps>(
     function PopoverCapture(props, ref) {
@@ -135,6 +137,7 @@ vi.mock('../../../../ui-components', async (importOriginal) => {
       return <div ref={ref} data-testid="popover-capture" data-floating-ui-role="popover" />
     },
   )
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   return {...mod, Popover: Forward as UIComponentsModule.Popover}
 })
 

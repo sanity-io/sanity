@@ -66,6 +66,7 @@ describe('ObjectInput', () => {
               inSelectedGroup: false,
               groups: [],
               index: 0,
+              // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
               field: {
                 schemaType: inputProps.schemaType.fields[0].type,
                 validation: [],
@@ -97,6 +98,7 @@ describe('ObjectInput', () => {
 
     const renderPreview = vi.fn(({value}: {value: {_ref?: string}}) => (
       <div data-testid="unknown-reference-preview">{value?._ref}</div>
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     )) as RenderPreviewCallback
 
     await renderObjectInput({

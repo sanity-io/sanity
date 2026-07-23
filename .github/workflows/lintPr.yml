@@ -17,8 +17,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
+      # Build so oxlint --type-check can resolve workspace .d.ts when monorepo
+      # customConditions are insufficient (same sequencing as #11468).
+      - name: Build packages
+        run: pnpm build
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
       - name: Oxlint files
         run: pnpm check:oxlint
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
 
   knip:
     runs-on: ubuntu-latest

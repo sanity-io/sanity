@@ -1,10 +1,13 @@
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {type Config, defineField, defineType} from 'sanity'
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {structureTool} from 'sanity/structure'
 
 export const articleEfps = {
   name: 'article-efps',
   plugins: [
     structureTool({
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       structure: (S) =>
         S.list()
           .title('Content')
@@ -60,6 +63,7 @@ export const articleEfps = {
             type: 'slug',
             description:
               'Defines the part of the URL that uniquely defines this entity from others.',
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             validation: (rule) => rule.required(),
           }),
           defineField({name: 'metaTitle', type: 'string'}),

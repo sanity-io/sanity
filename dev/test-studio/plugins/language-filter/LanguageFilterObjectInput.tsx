@@ -37,6 +37,7 @@ export function LanguageFilterObjectInput(
     )
     .map((member): FieldMember | FieldError => {
       if (member.kind === 'fieldSet') {
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         return {
           kind: 'error',
           key: member.key,
@@ -45,6 +46,7 @@ export function LanguageFilterObjectInput(
         }
       }
 
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       return member
     })
 

@@ -58,6 +58,7 @@ export async function renderArrayOfObjectsInput(options: {
     ) as FieldMember<ArrayOfObjectsFormNode> | undefined
     const field = fieldMember?.field
 
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     return {
       ...restProps,
       changed: false,

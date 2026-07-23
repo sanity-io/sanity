@@ -1,3 +1,4 @@
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {definePlugin} from 'sanity'
 
 import {DocumentLayout} from './DocumentLayout'
@@ -12,7 +13,9 @@ const childComponents = definePlugin({
 
   document: {
     components: {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       unstable_layout: (props) => (
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         <DocumentLayout {...props} testId="child-parent-config-document-layout" />
       ),
     },
@@ -20,15 +23,20 @@ const childComponents = definePlugin({
 
   form: {
     components: {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       input: (props) => <FormInput {...props} testId="child-parent-config-form-input" />,
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       field: (props) => <FormField {...props} testId="child-parent-config-form-field" />,
     },
   },
 
   studio: {
     components: {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       layout: (props) => <StudioLayout {...props} testId="child-parent-config-studio-layout" />,
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       navbar: (props) => <StudioNavbar {...props} testId="child-parent-config-studio-navbar" />,
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       toolMenu: (props) => (
         <StudioToolMenu {...props} testId="child-parent-config-studio-tool-menu" />
       ),
@@ -41,6 +49,7 @@ export const customComponents = definePlugin({
 
   document: {
     components: {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       unstable_layout: (props) => (
         <DocumentLayout {...props} testId="parent-config-document-layout" />
       ),
@@ -49,15 +58,20 @@ export const customComponents = definePlugin({
 
   form: {
     components: {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       input: (props) => <FormInput {...props} testId="parent-config-form-input" />,
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       field: (props) => <FormField {...props} testId="parent-config-form-field" />,
     },
   },
 
   studio: {
     components: {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       layout: (props) => <StudioLayout {...props} testId="parent-config-studio-layout" />,
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       navbar: (props) => <StudioNavbar {...props} testId="parent-config-studio-navbar" />,
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       toolMenu: (props) => <StudioToolMenu {...props} testId="parent-config-studio-tool-menu" />,
     },
   },

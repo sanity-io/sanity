@@ -36,6 +36,7 @@ const createMockCache = (
   >,
 ): UserApplicationCache => {
   return {
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     get: vi.fn((client: SanityClient) => {
       const {projectId} = client.config()
       return Promise.resolve(

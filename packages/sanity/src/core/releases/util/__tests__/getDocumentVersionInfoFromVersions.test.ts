@@ -95,10 +95,14 @@ describe('getDocumentVersionInfoFromVersions', () => {
       ...publishedVersion,
       _id: 'other-article',
       _system: {
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         bundleId: null,
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         release: null,
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         variant: null,
         group: {_ref: 'other-article', _weak: true},
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         scopeId: null,
       },
     }

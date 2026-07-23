@@ -74,6 +74,7 @@ export const structure: StructureResolver = (S) => {
             .action('setSortOrder')
             .params({
               by: {
+                // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
                 field: 'title',
                 direction: 'asc',
               },

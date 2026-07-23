@@ -117,7 +117,6 @@
   "scripts": {
     "build": "tsdown",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
-    "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.check.json --erasableSyntaxOnly)",
     "coverage": "vitest --coverage",
     "docs:typedocs:cleanup": "rimraf docs",
     "docs:typedocs:generate": "typedoc --options typedoc.config.json",
@@ -258,7 +257,6 @@
     "@types/speakingurl": "^13.0.6",
     "@types/use-sync-external-store": "^1.5.0",
     "@types/wicg-task-scheduling": "^2024.1.0",
-    "@typescript/native-preview": "catalog:",
     "@vanilla-extract/css": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/browser-playwright": "catalog:",

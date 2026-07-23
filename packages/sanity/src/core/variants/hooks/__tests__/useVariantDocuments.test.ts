@@ -89,8 +89,10 @@ describe('useVariantDocuments', () => {
     }
 
     documentPreviewStoreMock.unstable_observeDocumentIdSet.mockReturnValue(
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       of({status: 'connected' as const, documentIds: [document._id]}),
     )
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     documentPreviewStoreMock.unstable_observeDocument.mockReturnValue(of(document))
 
     const wrapper = await createTestProvider()

@@ -10,7 +10,8 @@ import {type BrowserCommand} from 'vitest/node'
 export const readFileAsBase64: BrowserCommand<[filePath: string]> = ({testPath}, filePath) => {
   const resolved = path.isAbsolute(filePath)
     ? filePath
-    : path.resolve(path.dirname(testPath), filePath)
+    : // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      path.resolve(path.dirname(testPath), filePath)
   const buffer = readFileSync(resolved)
   return buffer.toString('base64')
 }

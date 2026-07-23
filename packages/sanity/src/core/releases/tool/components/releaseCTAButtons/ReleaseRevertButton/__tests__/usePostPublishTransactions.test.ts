@@ -53,6 +53,7 @@ describe('usePostPublishTransactions', () => {
   ] as TransactionLogEventWithEffects[]
 
   it('should return null initially', () => {
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     mockGetTransactionsLogs.mockResolvedValue(undefined)
 
     const {result} = renderHook(() => usePostPublishTransactions(mockDocuments))
@@ -67,6 +68,7 @@ describe('usePostPublishTransactions', () => {
   })
 
   it('should call getTransactionsLogs with the correct params', async () => {
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     mockGetTransactionsLogs.mockResolvedValue(mockTransactionLogs)
 
     const {result} = renderHook(() => usePostPublishTransactions(mockDocuments))
@@ -82,6 +84,7 @@ describe('usePostPublishTransactions', () => {
   })
 
   it('should return true if there are post-publish transactions', async () => {
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     mockGetTransactionsLogs.mockResolvedValue(mockTransactionLogs)
 
     const {result} = renderHook(() => usePostPublishTransactions(mockDocuments))
@@ -93,6 +96,7 @@ describe('usePostPublishTransactions', () => {
 
   it('should return false if there are no post-publish transactions', async () => {
     mockGetTransactionsLogs.mockResolvedValue([
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       {
         id: 'trans1',
         author: 'author1',

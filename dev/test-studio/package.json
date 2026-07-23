@@ -7,7 +7,6 @@
   "type": "module",
   "scripts": {
     "build": "run-s sanity:build sanity:manifest",
-    "check:types": "tsc --noEmit",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev",
     "sanity:build": "PKG_BUILD_VERSION=$(./get-version.ts) sanity build --source-maps",

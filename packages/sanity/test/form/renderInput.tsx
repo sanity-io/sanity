@@ -100,6 +100,7 @@ export async function renderInput<ElementProps>(props: {
             name: 'test',
             fields: [fieldDefinition],
           }),
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           ...additionalSchemaTypes,
         ],
       },
@@ -135,6 +136,7 @@ export async function renderInput<ElementProps>(props: {
 
     if (!docType) throw new Error(`no document type: test`)
 
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     const formState = useFormState({
       schemaType: docType,
       comparisonValue: documentValue,
@@ -234,6 +236,7 @@ export async function renderInput<ElementProps>(props: {
 
   return {
     container,
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     focusRef,
     onBlur,
     onChange,

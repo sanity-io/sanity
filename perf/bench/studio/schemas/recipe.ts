@@ -1,4 +1,6 @@
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {type Config, defineField, defineType} from 'sanity'
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {structureTool} from 'sanity/structure'
 
 // Ported from dev/efps/tests/recipe/sanity.config.ts

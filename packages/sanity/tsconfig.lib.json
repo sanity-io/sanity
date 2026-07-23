@@ -14,6 +14,8 @@
   ],
   "compilerOptions": {
     "customConditions": ["monorepo"],
+    // Type checking is owned by oxlint (options.typeCheck); skip during dts emit
+    "noCheck": true,
     // The published package ships compiled JSX (`jsx: 'preserve'` in the settings is for source
     // that studio bundlers compile themselves); rolldown reads this to compile JSX with the
     // automatic runtime during builds

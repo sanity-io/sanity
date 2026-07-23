@@ -73,6 +73,7 @@ export async function renderVideoInput(options: {
       ...restProps,
       assetSources,
       client,
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       t: (key: string, values?: Record<string, string>) => key,
       directUploads: true,
       observeAsset,

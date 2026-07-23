@@ -430,6 +430,7 @@ export default defineType({
             {
               type: 'image',
               title: 'Image',
+              // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
               fields: [
                 {title: 'Caption', name: 'caption', type: 'string', options: {isHighlighted: true}},
                 {

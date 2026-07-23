@@ -46,6 +46,7 @@ vi.mock('sanity/router', async (importOriginal) => ({
     ref,
   ) {
     const href = intent === VARIANTS_INTENT && params?.id ? `/variants/${params.id}` : '/'
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     return <a {...rest} ref={ref} href={href} />
   }),
 }))

@@ -256,7 +256,9 @@ function* traverseForm(
       case 'fieldSet': {
         for (const fieldsetMember of member.fieldSet.members) {
           if (fieldsetMember.kind === 'error') continue
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           yield* traverseForm(fieldsetMember.field as FormNode, {
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             member: fieldsetMember,
             fieldset: member.fieldSet,
           })

@@ -104,6 +104,7 @@ const mockAnnouncements: StudioAnnouncementDocument[] = [
 describe('StudioAnnouncementsProvider', () => {
   let wrapper = ({children}: {children: ReactNode}) => children
   beforeAll(async () => {
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     wrapper = await createAnnouncementWrapper()
   })
   describe('if seen announcements is loading', () => {
@@ -657,6 +658,7 @@ describe('StudioAnnouncementsProvider-Disabled', () => {
   beforeAll(async () => {
     // Reset all mocks
     vi.clearAllMocks()
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     wrapper = await createAnnouncementWrapper({
       announcements: {enabled: false},
     })

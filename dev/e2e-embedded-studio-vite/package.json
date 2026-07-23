@@ -19,7 +19,6 @@
     "@playwright/test": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "vite": "catalog:"
   }

@@ -31,6 +31,7 @@ const {usePaneRouter} = vi.mocked(
 
 const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>
 
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 const archivedScheduledDraft: ReleaseDocument = {
   _rev: 'rev1',
   _id: '_.releases.rScheduledDraft',
@@ -47,6 +48,7 @@ const archivedScheduledDraft: ReleaseDocument = {
   },
 }
 
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 const archivedRelease: ReleaseDocument = {
   _rev: 'rev2',
   _id: '_.releases.rArchivedRelease',

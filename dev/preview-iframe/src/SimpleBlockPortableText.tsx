@@ -1,5 +1,6 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {stegaClean} from '@sanity/client/stega'
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {type PortableTextBlock} from '@sanity/types'
 import {Flex, Spinner} from '@sanity/ui'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'

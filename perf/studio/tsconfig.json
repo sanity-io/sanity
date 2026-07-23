@@ -1,6 +1,8 @@
 {
   "extends": "@repo/tsconfig/base.json",
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "../tests/config/constants.ts"],
+  "exclude": ["dist", "lib", "node_modules"],
   "compilerOptions": {
-    "rootDir": "."
+    "rootDir": ".."
   }
 }

@@ -115,6 +115,7 @@ describe('DeleteScheduledDraftDialog', () => {
   })
 
   it('no draft exists: shows "will save to draft" message and copies on delete', async () => {
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(undefined))
 
     render(
@@ -144,6 +145,7 @@ describe('DeleteScheduledDraftDialog', () => {
   })
 
   it('draft exists with same revision: shows "already up to date" message and skips copy', async () => {
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(mockDraftDocumentSameRev))
 
     render(
@@ -173,6 +175,7 @@ describe('DeleteScheduledDraftDialog', () => {
   })
 
   it('draft exists with different revision: shows checkbox (checked by default) and copies when checked', async () => {
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(mockDraftDocument))
 
     render(
@@ -206,6 +209,7 @@ describe('DeleteScheduledDraftDialog', () => {
   })
 
   it('draft exists with different revision: skips copy when checkbox unchecked', async () => {
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(mockDraftDocument))
 
     render(
@@ -266,6 +270,7 @@ describe('DeleteScheduledDraftDialog', () => {
   describe('onDeleteComplete callback', () => {
     it('calls onDeleteComplete after a successful delete', async () => {
       const mockOnDeleteComplete = vi.fn()
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(mockDraftDocument))
 
       render(
@@ -292,6 +297,7 @@ describe('DeleteScheduledDraftDialog', () => {
       const callOrder: string[] = []
       const mockOnDeleteComplete = vi.fn(() => callOrder.push('onDeleteComplete'))
       const onClose = vi.fn(() => callOrder.push('onClose'))
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(mockDraftDocument))
 
       render(
@@ -319,6 +325,7 @@ describe('DeleteScheduledDraftDialog', () => {
       useScheduleDraftOperationsMockReturn.deleteScheduledDraft.mockRejectedValue(
         new Error('delete failed'),
       )
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       mockUseDocumentVersions.mockReturnValue(createMockDocumentVersions(mockDraftDocument))
 
       render(

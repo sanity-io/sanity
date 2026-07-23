@@ -5,7 +5,7 @@ import {type UserConfig} from 'tsdown'
  * Shared tsdown configuration for the published packages in this monorepo, built on top of
  * `@sanity/tsdown-config`, with these defaults:
  *
- * - `tsconfig: 'tsconfig.lib.json'` - the same tsconfig the `check:types` scripts use
+ * - `tsconfig: 'tsconfig.lib.json'` - build/dts config (`noCheck: true`; type checking is via oxlint)
  * - `dts: {tsgo: true}` - generate `.d.ts` files with tsgo (`@typescript/native-preview`),
  *   matching the repo's tsgo-based type checking (no `typescript` dependency needed)
  * - `exports.devExports: 'monorepo'` - local builds regenerate the `exports` map in

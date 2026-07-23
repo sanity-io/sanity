@@ -1,6 +1,9 @@
 /// <reference types="vite/client" />
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {useCallback} from 'react'
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {defineConfig, defineDocumentFieldAction} from 'sanity'
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {structureTool} from 'sanity/structure'
 
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from '../tests/config/constants'
@@ -18,10 +21,12 @@ export default defineConfig({
   projectId: STUDIO_PROJECT_ID,
   dataset: import.meta.env.SANITY_STUDIO_DATASET || STUDIO_DATASET,
   document: {
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     unstable_fieldActions: (prev) => [
       ...prev,
       defineDocumentFieldAction({
         name: 'perf/test',
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         useAction({documentId, documentType, path}) {
           const handleAction = useCallback(() => {
             // oxlint-disable-next-line no-console

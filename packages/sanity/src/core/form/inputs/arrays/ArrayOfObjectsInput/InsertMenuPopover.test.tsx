@@ -28,6 +28,7 @@ vi.mock('../../../../i18n/hooks/useTranslation', () => ({
 }))
 
 vi.mock('../../../../../ui-components', async (importOriginal) => {
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   const mod = (await importOriginal()) as UIComponentsModule
   const Forward = forwardRef<HTMLDivElement, UIComponentsModule.PopoverProps>(
     function PopoverCapture(props, ref) {
@@ -37,6 +38,7 @@ vi.mock('../../../../../ui-components', async (importOriginal) => {
       return <div ref={ref} data-testid="popover-capture" />
     },
   )
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   return {...mod, Popover: Forward as UIComponentsModule.Popover}
 })
 

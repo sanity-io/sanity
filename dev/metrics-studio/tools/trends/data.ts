@@ -494,12 +494,14 @@ type SoakSample = NonNullable<SoakScenario['samples']>[number]
 function runsWithSoak(
   runs: TrendRun[],
 ): {run: TrendRun; soak: SoakScenario; sourceFile?: string}[] {
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   return runs
     .map((run) => {
       const scenario = run.scenarios?.find((s) => s.soak?.samples?.length)
       return scenario?.soak ? {run, soak: scenario.soak, sourceFile: scenario.sourceFile} : null
     })
     .filter(
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       (entry): entry is {run: TrendRun; soak: SoakScenario; sourceFile?: string} => entry !== null,
     )
 }

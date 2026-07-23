@@ -62,6 +62,7 @@ export async function createTestProvider({
     paneDataItems: [],
     routerPanes: [],
     resolvedPanes: [],
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     focusedPane: null,
     setFocusedPane: noop,
   }
@@ -86,6 +87,7 @@ export async function createTestProvider({
     isCreatingDataset: false,
     client: null,
     ready: true,
+    error: null,
   }
 
   const TestProvider: ComponentType<PropsWithChildren> = ({children}) => (

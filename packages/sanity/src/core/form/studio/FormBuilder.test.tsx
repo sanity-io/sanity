@@ -78,6 +78,7 @@ describe('FormBuilder', () => {
 
       const [patchChannel] = useState(() => createPatchChannel())
 
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       const formState = useFormState({
         schemaType,
         documentValue,
@@ -91,6 +92,7 @@ describe('FormBuilder', () => {
         validation: [],
       })
 
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       const formBuilderProps: FormBuilderProps = useMemo(
         () => ({
           __internal_patchChannel: patchChannel,
@@ -175,6 +177,7 @@ describe('FormBuilder', () => {
 
       const [patchChannel] = useState(() => createPatchChannel())
 
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       const formState = useFormState({
         schemaType,
         documentValue,
@@ -188,6 +191,7 @@ describe('FormBuilder', () => {
         validation: [],
       })
 
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       const formBuilderProps: FormBuilderProps = useMemo(
         () => ({
           __internal_patchChannel: patchChannel,

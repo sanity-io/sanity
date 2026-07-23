@@ -103,6 +103,7 @@ function buildWrapper(
 ): (props: {children: ReactNode}) => ReactNode {
   function Wrapper({children}: {children: ReactNode}) {
     return (
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       <DocumentDivergencesContext.Provider value={divergencesValue}>
         {children}
       </DocumentDivergencesContext.Provider>

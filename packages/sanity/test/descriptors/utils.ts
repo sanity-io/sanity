@@ -2,6 +2,7 @@ import {
   type EncodableObject,
   type EncodableValue,
   type SetSynchronization,
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 } from '@sanity/descriptors'
 import {createSchemaFromManifestTypes, extractManifestSchemaTypes} from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
@@ -34,12 +35,14 @@ export async function expectManifestSchemaConversion(
   expect(convertedObjectValues.length).toEqual(schemaObjectValues.length)
   for (const convertedObjectValue of convertedObjectValues) {
     const schemaObjectValue = schemaObjectValues.find(
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       (t) => t.name === convertedObjectValue.name && t.type === convertedObjectValue.type,
     )
 
     expect(schemaObjectValue).toBeDefined()
 
     const titles = extractTitleMap(convertedObjectValue.typeDef)
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     const stype = cloneDeep(schemaObjectValue?.typeDef)
 
     normalizeSchemaDescriptorTypeDef(stype, titles)

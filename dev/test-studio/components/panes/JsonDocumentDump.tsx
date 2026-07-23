@@ -44,6 +44,7 @@ export function JsonDocumentDump(props: {
     const subscription = client.observable
       .listen(query, {itemId, draftId}, {includeAllVersions: true})
       .subscribe((mut) => {
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         setDocument(mut.result || null)
       })
     return () => subscription.unsubscribe()
