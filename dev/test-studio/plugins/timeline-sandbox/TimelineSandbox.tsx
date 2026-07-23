@@ -25,8 +25,7 @@ import {getMockReleases, type MockRelease, type Readiness, type ReleaseType} fro
 
 type Granularity = 'week' | 'month' | 'quarter'
 
-const ROW_HEIGHT = 44
-const MARKER_GAP_PCT = 8 // min horizontal gap before bumping a marker to the next lane
+const MARKER_GAP_PCT = 9 // min horizontal gap before bumping a marker to the next lane
 
 // ─── shared helpers ──────────────────────────────────────────────────────────
 
@@ -211,7 +210,11 @@ function VariantRoadmap({
     .sort((a, b) => (a.r.publishAt as Date).getTime() - (b.r.publishAt as Date).getTime())
   const lanes = assignLanes(dated)
   const laneCount = Math.max(1, ...lanes.map((l) => l + 1))
-  const height = laneCount * ROW_HEIGHT + 24
+  const ROADMAP_ROW = 68
+  const CARD_WIDTH = 216
+  const height = laneCount * ROADMAP_ROW + 32
+  // A detailed planning view can scroll horizontally; a wide track keeps cards from cropping.
+  const minWidth = granularity === 'week' ? 1100 : granularity === 'quarter' ? 2000 : 1500
 
   // collisions: same calendar day
   const collisionIds = new Set<string>()
@@ -226,48 +229,72 @@ function VariantRoadmap({
 
   return (
     <Stack space={3}>
-      <Box style={{position: 'relative', height, marginTop: 16}}>
-        <Axis start={start} end={end} now={now} height={height} granularity={granularity} />
-        {dated.map(({r, x}, i) => {
-          const Icon = TYPE_ICON[r.type]
-          const collides = collisionIds.has(r.id)
-          return (
-            <Tooltip
-              key={r.id}
-              content={
-                <Box padding={2}>
-                  <Text size={1}>
-                    {r.title} · {fmtDayMonthTime(r.publishAt as Date)} · {r.documentCount} docs
-                    {collides ? ' · ⚠ same-day collision' : ''}
-                  </Text>
-                </Box>
-              }
-              portal
-            >
-              <Card
-                tone={collides ? 'caution' : markerTone(r)}
-                radius={2}
-                shadow={1}
-                padding={2}
-                style={{
-                  position: 'absolute',
-                  left: `${x}%`,
-                  top: lanes[i] * ROW_HEIGHT + 8,
-                  maxWidth: 150,
-                  border: collides ? '1px solid var(--card-badge-caution-icon-color)' : undefined,
-                }}
+      <Box style={{overflowX: 'auto', overflowY: 'hidden'}}>
+        <Box style={{position: 'relative', height, minWidth, marginTop: 20}}>
+          <Axis start={start} end={end} now={now} height={height} granularity={granularity} />
+          {dated.map(({r, x}, i) => {
+            const Icon = TYPE_ICON[r.type]
+            const collides = collisionIds.has(r.id)
+            return (
+              <Tooltip
+                key={r.id}
+                content={
+                  <Box padding={2}>
+                    <Text size={1}>
+                      {r.title} · {fmtDayMonthTime(r.publishAt as Date)} · {r.documentCount} docs
+                      {collides ? ' · ⚠ same-day collision' : ''}
+                    </Text>
+                  </Box>
+                }
+                portal
               >
-                <Flex align="center" gap={2}>
-                  <Text size={1}>{collides ? <WarningOutlineIcon /> : <Icon />}</Text>
-                  <Text size={1} textOverflow="ellipsis" style={{maxWidth: 84}}>
-                    {r.title}
-                  </Text>
-                  <ReadinessDot readiness={r.readiness} />
-                </Flex>
-              </Card>
-            </Tooltip>
-          )
-        })}
+                <Card
+                  tone={collides ? 'caution' : markerTone(r)}
+                  radius={2}
+                  shadow={1}
+                  padding={3}
+                  style={{
+                    position: 'absolute',
+                    left: `${x}%`,
+                    top: lanes[i] * ROADMAP_ROW + 12,
+                    width: CARD_WIDTH,
+                    border: collides
+                      ? '1px solid var(--card-badge-caution-icon-color)'
+                      : '1px solid var(--card-border-color)',
+                  }}
+                >
+                  <Stack space={3}>
+                    <Flex align="center" gap={2}>
+                      <Text size={1}>{collides ? <WarningOutlineIcon /> : <Icon />}</Text>
+                      <Text size={1} weight="medium" textOverflow="ellipsis" style={{flex: 1}}>
+                        {r.title}
+                      </Text>
+                      <ReadinessDot readiness={r.readiness} />
+                    </Flex>
+                    <Flex align="center" gap={3}>
+                      <Text size={0} muted>
+                        {fmtDayMonth(r.publishAt as Date)}
+                      </Text>
+                      <Text size={0} muted>
+                        <DocumentsIcon /> {r.documentCount}
+                      </Text>
+                      {r.kind === 'scheduledDraft' && (
+                        <Badge fontSize={0} tone="primary">
+                          draft
+                        </Badge>
+                      )}
+                      {collides && (
+                        <Badge fontSize={0} tone="caution">
+                          stagger
+                        </Badge>
+                      )}
+                    </Flex>
+                  </Stack>
+                </Card>
+              </Tooltip>
+            )
+          })}
+        </Box>
       </Box>
       <UndatedTray releases={releases} />
     </Stack>
@@ -334,8 +361,8 @@ function VariantStrip({
                   radius="full"
                   tone={collides ? 'caution' : 'primary'}
                   style={{
-                    width: collides ? 18 : 12,
-                    height: collides ? 18 : 12,
+                    width: collides ? 24 : 14,
+                    height: collides ? 24 : 14,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -407,7 +434,7 @@ function VariantHorizon({releases, now}: {releases: MockRelease[]; now: Date}) {
           tone="transparent"
           radius={2}
           padding={2}
-          style={{minWidth: 190, flex: 1}}
+          style={{minWidth: 230, flex: 1}}
         >
           <Stack space={3}>
             <Flex align="center" justify="space-between">
@@ -422,8 +449,8 @@ function VariantHorizon({releases, now}: {releases: MockRelease[]; now: Date}) {
               {col.items.map((r) => {
                 const Icon = TYPE_ICON[r.type]
                 return (
-                  <Card key={r.id} radius={2} shadow={1} padding={2} tone={markerTone(r)}>
-                    <Stack space={2}>
+                  <Card key={r.id} radius={2} shadow={1} padding={3} tone={markerTone(r)}>
+                    <Stack space={3}>
                       <Flex align="center" gap={2}>
                         <Text size={1}>
                           <Icon />
