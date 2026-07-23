@@ -480,11 +480,17 @@ export function ReleasesOverview() {
     return currentArchivedPicker
   }, [loadingOrHasReleases, releaseFilterDate, clearFilterDate, currentArchivedPicker])
 
-  // Multi-select is only meaningful in the active releases view — the same scope where per-row
-  // archive/schedule apply. Bulk Archive is wired; bulk Schedule is a disabled stub (see
-  // ReleaseBulkActions). Archived and drafts views get no selection column.
+  // Multi-select is available for both the All and Releases views, in both Active and Archived
+  // modes — each mode gets its own action set from ReleaseBulkActions (active: archive/
+  // archive-and-delete; archived: unarchive/delete). Scheduled drafts get no selection column yet
+  // (deferred to a later grammar-unification pass).
+  //
+  // filteredReleases is exactly what's rendered in the table for the current view/mode (it's
+  // already scoped by filterReleasesForOverview to the active-vs-archived source array and any
+  // date filter), so it's the correct array to resolve selectedKeys -> release objects from —
+  // no need to branch between tableReleases/archivedReleases ourselves.
   const bulkSelection = useMemo<DocumentTableSelection | undefined>(() => {
-    if (cardinalityView !== 'releases' || releaseGroupMode !== 'active') return undefined
+    if (cardinalityView === 'drafts') return undefined
     return {
       labels: {
         selectAll: t('overview.bulk.select-all'),
@@ -495,17 +501,20 @@ export function ReleasesOverview() {
       selectAllTestId: 'release-bulk-select-all',
       renderActions: ({selectedKeys, compact, clear}) => {
         const selectedKeySet = new Set(selectedKeys)
-        const selectedReleases = tableReleases.filter((release) => selectedKeySet.has(release._id))
+        const selectedReleases = filteredReleases.filter((release) =>
+          selectedKeySet.has(release._id),
+        )
         return (
           <ReleaseBulkActions
             selectedReleases={selectedReleases}
+            mode={releaseGroupMode}
             compact={compact}
             onClear={clear}
           />
         )
       },
     }
-  }, [cardinalityView, releaseGroupMode, t, tableReleases])
+  }, [cardinalityView, releaseGroupMode, t, filteredReleases])
 
   const isArchivedReleasesView = releaseGroupMode === 'archived' && cardinalityView === 'releases'
   const defaultTableSort = isArchivedReleasesView

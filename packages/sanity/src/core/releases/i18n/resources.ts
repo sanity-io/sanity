@@ -380,6 +380,59 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'overview.bulk.archive-and-delete-toast.success_other': 'Archived and deleted {{count}} releases',
   /** Error toast when some bulk archive-and-deletes fail */
   'overview.bulk.archive-and-delete-toast.error': 'Some releases could not be archived and deleted',
+  /** Label for the bulk unarchive action, offered in the archived-releases view */
+  'overview.bulk.unarchive': 'Unarchive',
+  /** Header for the bulk unarchive confirmation dialog */
+  'overview.bulk.unarchive-dialog.header': 'Unarchive releases',
+  /** Confirm button for the bulk unarchive dialog */
+  'overview.bulk.unarchive-dialog.confirm': 'Unarchive releases',
+  /** Body of the bulk unarchive dialog (singular) */
+  'overview.bulk.unarchive-dialog.description_one': 'This will unarchive 1 release.',
+  /** Body of the bulk unarchive dialog (plural) */
+  'overview.bulk.unarchive-dialog.description_other': 'This will unarchive {{count}} releases.',
+  /** Success toast after a bulk unarchive (singular) */
+  'overview.bulk.unarchive-toast.success_one': 'Unarchived 1 release',
+  /** Success toast after a bulk unarchive (plural) */
+  'overview.bulk.unarchive-toast.success_other': 'Unarchived {{count}} releases',
+  /** Error toast when some bulk unarchives fail */
+  'overview.bulk.unarchive-toast.error': 'Some releases could not be unarchived',
+  /** Tooltip on the bulk unarchive action when no selected release is eligible (all published,
+   * which can't be unarchived) */
+  'overview.bulk.unarchive-none-eligible': 'Only archived releases can be unarchived.',
+  /** Note in the bulk unarchive dialog when some selected releases will be skipped (singular) */
+  'overview.bulk.unarchive-skipped-note_one':
+    '{{count}} published release will be skipped — it cannot be unarchived.',
+  /** Note in the bulk unarchive dialog when some selected releases will be skipped (plural) */
+  'overview.bulk.unarchive-skipped-note_other':
+    '{{count}} published releases will be skipped — they cannot be unarchived.',
+  /** Label for the bulk delete action, offered in the archived-releases view (a plain delete —
+   * these releases are already archived or published, so no archive-first step is needed) */
+  'overview.bulk.delete': 'Delete',
+  /** Header for the bulk delete confirmation dialog */
+  'overview.bulk.delete-dialog.header': 'Delete releases?',
+  /** Confirm button for the bulk delete dialog */
+  'overview.bulk.delete-dialog.confirm': 'Delete',
+  /** Body of the bulk delete dialog (singular) */
+  'overview.bulk.delete-dialog.description_one':
+    'This will permanently delete 1 release and its document versions. This cannot be undone.',
+  /** Body of the bulk delete dialog (plural) */
+  'overview.bulk.delete-dialog.description_other':
+    'This will permanently delete {{count}} releases and their document versions. This cannot be undone.',
+  /** Success toast after a bulk delete (singular) */
+  'overview.bulk.delete-toast.success_one': 'Deleted 1 release',
+  /** Success toast after a bulk delete (plural) */
+  'overview.bulk.delete-toast.success_other': 'Deleted {{count}} releases',
+  /** Error toast when some bulk deletes fail */
+  'overview.bulk.delete-toast.error': 'Some releases could not be deleted',
+  /** Tooltip on the bulk delete action when no selected release is eligible (none archived or
+   * published) */
+  'overview.bulk.delete-none-eligible': 'Only archived or published releases can be deleted.',
+  /** Note in the bulk delete dialog when some selected releases will be skipped (singular) */
+  'overview.bulk.delete-skipped-note_one':
+    '{{count}} release will be skipped — it is not eligible for deletion.',
+  /** Note in the bulk delete dialog when some selected releases will be skipped (plural) */
+  'overview.bulk.delete-skipped-note_other':
+    '{{count}} releases will be skipped — they are not eligible for deletion.',
   /** Tooltip for the calendar button in the release overview */
   'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */
