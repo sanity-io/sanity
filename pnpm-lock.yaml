@@ -134,7 +134,7 @@ importers:
         version: 4.1.0
       eslint-import-resolver-typescript:
         specifier: ^4.4.5
-        version: 4.4.5(eslint@10.7.0)
+        version: 4.4.5(eslint@10.7.0)(supports-color@8.1.1)
       eslint-plugin-boundaries:
         specifier: ^7.1.0
         version: 7.1.0(eslint-import-resolver-typescript@4.4.5)(eslint@10.7.0)
@@ -143,10 +143,10 @@ importers:
         version: 6.1.5
       eslint-plugin-testing-library:
         specifier: ^7.16.2
-        version: 7.16.2(eslint@10.7.0)(typescript@6.0.3)
+        version: 7.16.2(eslint@10.7.0)(supports-color@8.1.1)(typescript@6.0.3)
       eslint-plugin-tsdoc:
         specifier: ^0.5.2
-        version: 0.5.2(eslint@10.7.0)(typescript@6.0.3)
+        version: 0.5.2(eslint@10.7.0)(supports-color@8.1.1)(typescript@6.0.3)
       knip:
         specifier: ^6.27.0
         version: 6.27.0
@@ -188,7 +188,7 @@ importers:
         version: 0.28.20(typescript@6.0.3)
       vercel:
         specifier: ^56.3.1
-        version: 56.4.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)
+        version: 56.4.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(supports-color@8.1.1)
       vite:
         specifier: 'catalog:'
         version: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
@@ -568,7 +568,7 @@ importers:
     dependencies:
       '@sanity/sdk':
         specifier: ^2.18.0
-        version: 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
+        version: 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(supports-color@8.1.1)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/sdk-react':
         specifier: ^2.18.0
         version: 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react-dom@19.2.8)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
@@ -678,13 +678,13 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/editor':
-        specifier: ^7.10.11
+        specifier: ^7.10.12
         version: 7.10.12(@types/react@19.2.17)(react@19.2.8)
       '@portabletext/html':
         specifier: ^1.1.1
         version: 1.1.1
       '@portabletext/plugin-character-pair-decorator':
-        specifier: ^8.0.39
+        specifier: ^8.0.40
         version: 8.0.40(@portabletext/editor@7.10.12)(@types/react@19.2.17)(react@19.2.8)
       '@portabletext/react':
         specifier: ^6.2.0
@@ -721,7 +721,7 @@ importers:
         version: 2.2.4(react@19.2.8)
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 8.0.0(xstate@5.32.5)
+        version: 8.0.0(supports-color@8.1.1)(xstate@5.32.5)
       '@sanity/preview-url-secret':
         specifier: ^4.1.1
         version: 4.1.1(@sanity/client@7.24.0)
@@ -860,7 +860,7 @@ importers:
         version: link:../tsconfig
       '@sanity/ailf':
         specifier: ^7.31.1
-        version: 7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)
+        version: 7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)(supports-color@8.1.1)
       '@typescript/native-preview':
         specifier: 'catalog:'
         version: 7.0.0-dev.20260421.2
@@ -1607,7 +1607,7 @@ importers:
         specifier: ^3.13.0
         version: 3.13.0(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.8)(react@19.2.8)
       '@portabletext/editor':
-        specifier: ^7.10.11
+        specifier: ^7.10.12
         version: 7.10.12(@types/react@19.2.17)(react@19.2.8)
       '@portabletext/html':
         specifier: ^1.1.1
@@ -1616,25 +1616,25 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5
       '@portabletext/plugin-dnd':
-        specifier: ^1.0.23
+        specifier: ^1.0.24
         version: 1.0.24(@portabletext/editor@7.10.12)(react@19.2.8)
       '@portabletext/plugin-list-index':
-        specifier: ^1.0.23
+        specifier: ^1.0.24
         version: 1.0.24(@portabletext/editor@7.10.12)(react@19.2.8)
       '@portabletext/plugin-markdown-shortcuts':
-        specifier: ^8.0.39
+        specifier: ^8.0.40
         version: 8.0.40(@portabletext/editor@7.10.12)(@types/react@19.2.17)(react@19.2.8)
       '@portabletext/plugin-one-line':
-        specifier: ^7.0.38
+        specifier: ^7.0.39
         version: 7.0.39(@portabletext/editor@7.10.12)(react@19.2.8)
       '@portabletext/plugin-paste-link':
-        specifier: ^4.0.38
+        specifier: ^4.0.39
         version: 4.0.39(@portabletext/editor@7.10.12)(react@19.2.8)
       '@portabletext/plugin-table':
-        specifier: ^1.3.8
+        specifier: ^1.3.9
         version: 1.3.9(@portabletext/editor@7.10.12)(react-dom@19.2.8)(react@19.2.8)
       '@portabletext/plugin-typography':
-        specifier: ^8.0.39
+        specifier: ^8.0.40
         version: 8.0.40(@portabletext/editor@7.10.12)(@types/react@19.2.17)(react@19.2.8)
       '@portabletext/react':
         specifier: ^6.2.0
@@ -1659,7 +1659,7 @@ importers:
         version: 1.0.0
       '@sanity/cli':
         specifier: ^7.12.1
-        version: 7.12.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(oxfmt@0.59.0)(rolldown@1.2.0)(typescript@6.0.3)(xstate@5.32.5)
+        version: 7.12.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(oxfmt@0.59.0)(rolldown@1.2.0)(supports-color@8.1.1)(typescript@6.0.3)(xstate@5.32.5)
       '@sanity/client':
         specifier: 'catalog:'
         version: 7.24.0
@@ -1704,7 +1704,7 @@ importers:
         version: 0.23.0
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 8.0.0(xstate@5.32.5)
+        version: 8.0.0(supports-color@8.1.1)(xstate@5.32.5)
       '@sanity/mutate':
         specifier: ^0.18.1
         version: 0.18.1(xstate@5.32.5)
@@ -1725,7 +1725,7 @@ importers:
         version: link:../@sanity/schema
       '@sanity/sdk':
         specifier: ^2.18.0
-        version: 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
+        version: 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(supports-color@8.1.1)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/telemetry':
         specifier: 'catalog:'
         version: 1.1.0(react@19.2.8)
@@ -14714,7 +14714,7 @@ snapshots:
       regexpu-core: 6.4.0
       semver: 6.3.1
 
-  '@babel/helper-define-polyfill-provider@0.6.8(@babel/core@7.29.7)':
+  '@babel/helper-define-polyfill-provider@0.6.8(@babel/core@7.29.7)(supports-color@8.1.1)':
     dependencies:
       '@babel/core': 7.29.7
       '@babel/helper-compilation-targets': 7.29.7
@@ -15250,7 +15250,7 @@ snapshots:
       '@babel/helper-create-regexp-features-plugin': 7.29.7(@babel/core@7.29.7)
       '@babel/helper-plugin-utils': 7.29.7
 
-  '@babel/preset-env@7.29.7(@babel/core@7.29.7)':
+  '@babel/preset-env@7.29.7(@babel/core@7.29.7)(supports-color@8.1.1)':
     dependencies:
       '@babel/compat-data': 7.29.7
       '@babel/core': 7.29.7
@@ -15319,7 +15319,7 @@ snapshots:
       '@babel/plugin-transform-unicode-regex': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-unicode-sets-regex': 7.29.7(@babel/core@7.29.7)
       '@babel/preset-modules': 0.1.6-no-external-plugins(@babel/core@7.29.7)
-      babel-plugin-polyfill-corejs2: 0.4.17(@babel/core@7.29.7)
+      babel-plugin-polyfill-corejs2: 0.4.17(@babel/core@7.29.7)(supports-color@8.1.1)
       babel-plugin-polyfill-corejs3: 0.14.2(@babel/core@7.29.7)
       babel-plugin-polyfill-regenerator: 0.6.8(@babel/core@7.29.7)
       core-js-compat: 3.49.0
@@ -16151,7 +16151,7 @@ snapshots:
   '@ibm-cloud/watsonx-ai@1.7.15':
     dependencies:
       form-data: 4.0.6
-      ibm-cloud-sdk-core: 5.6.0
+      ibm-cloud-sdk-core: 5.6.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -16553,7 +16553,7 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@kwsites/file-exists@1.1.1':
+  '@kwsites/file-exists@1.1.1(supports-color@8.1.1)':
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
@@ -16997,7 +16997,7 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 27.0.0
 
-  '@openai/agents-core@0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(ws@8.21.1)(zod@4.4.3)':
+  '@openai/agents-core@0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(supports-color@8.1.1)(ws@8.21.1)(zod@4.4.3)':
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       openai: 6.48.0(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(ws@8.21.1)(zod@4.4.3)
@@ -17012,9 +17012,9 @@ snapshots:
       - supports-color
       - ws
 
-  '@openai/agents-openai@0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(ws@8.21.1)(zod@4.4.3)':
+  '@openai/agents-openai@0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(supports-color@8.1.1)(ws@8.21.1)(zod@4.4.3)':
     dependencies:
-      '@openai/agents-core': 0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(ws@8.21.1)(zod@4.4.3)
+      '@openai/agents-core': 0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(supports-color@8.1.1)(ws@8.21.1)(zod@4.4.3)
       debug: 4.4.3(supports-color@8.1.1)
       openai: 6.48.0(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(ws@8.21.1)(zod@4.4.3)
       zod: 4.4.3
@@ -17026,9 +17026,9 @@ snapshots:
       - supports-color
       - ws
 
-  '@openai/agents-realtime@0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(zod@4.4.3)':
+  '@openai/agents-realtime@0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(supports-color@8.1.1)(zod@4.4.3)':
     dependencies:
-      '@openai/agents-core': 0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(ws@8.21.1)(zod@4.4.3)
+      '@openai/agents-core': 0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(supports-color@8.1.1)(ws@8.21.1)(zod@4.4.3)
       '@types/ws': 8.18.1
       debug: 4.4.3(supports-color@8.1.1)
       ws: 8.21.1
@@ -17042,11 +17042,11 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@openai/agents@0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(ws@8.21.1)(zod@4.4.3)':
+  '@openai/agents@0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(supports-color@8.1.1)(ws@8.21.1)(zod@4.4.3)':
     dependencies:
-      '@openai/agents-core': 0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(ws@8.21.1)(zod@4.4.3)
-      '@openai/agents-openai': 0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(ws@8.21.1)(zod@4.4.3)
-      '@openai/agents-realtime': 0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(zod@4.4.3)
+      '@openai/agents-core': 0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(supports-color@8.1.1)(ws@8.21.1)(zod@4.4.3)
+      '@openai/agents-openai': 0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(supports-color@8.1.1)(ws@8.21.1)(zod@4.4.3)
+      '@openai/agents-realtime': 0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(supports-color@8.1.1)(zod@4.4.3)
       debug: 4.4.3(supports-color@8.1.1)
       openai: 6.48.0(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(ws@8.21.1)(zod@4.4.3)
       zod: 4.4.3
@@ -18003,7 +18003,7 @@ snapshots:
 
   '@sanity-labs/design-tokens@0.0.2-alpha.4': {}
 
-  '@sanity/ailf@7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)':
+  '@sanity/ailf@7.31.1(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)(supports-color@8.1.1)':
     dependencies:
       '@google-cloud/bigquery': 8.3.1
       '@google-cloud/storage': 7.21.0
@@ -18021,7 +18021,7 @@ snapshots:
       jiti: 2.7.0
       js-yaml: 4.3.0
       oxc-parser: 0.129.0
-      promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)
+      promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)(supports-color@8.1.1)
       zod: 4.4.3
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
@@ -18114,11 +18114,11 @@ snapshots:
 
   '@sanity/browserslist-config@1.0.5': {}
 
-  '@sanity/cli-build@4.1.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.0)(tsx@4.23.1)(typescript@6.0.3)(yaml@2.9.0)':
+  '@sanity/cli-build@4.1.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@6.0.3)(yaml@2.9.0)':
     dependencies:
       '@oclif/core': 4.11.14
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.0)(vite@8.1.5)
-      '@sanity/cli-core': 2.5.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(yaml@2.9.0)
+      '@sanity/cli-core': 2.5.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/generate-help-url': 4.0.0
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
@@ -18168,7 +18168,7 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/cli-core@2.5.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(yaml@2.9.0)':
+  '@sanity/cli-core@2.5.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)':
     dependencies:
       '@inquirer/prompts': 8.5.2(@types/node@24.13.3)
       '@oclif/core': 4.11.14
@@ -18206,21 +18206,21 @@ snapshots:
       - terser
       - yaml
 
-  '@sanity/cli@7.12.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(oxfmt@0.59.0)(rolldown@1.2.0)(typescript@6.0.3)(xstate@5.32.5)':
+  '@sanity/cli@7.12.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(oxfmt@0.59.0)(rolldown@1.2.0)(supports-color@8.1.1)(typescript@6.0.3)(xstate@5.32.5)':
     dependencies:
       '@oclif/core': 4.11.14
       '@oclif/plugin-help': 6.2.53
       '@oclif/plugin-not-found': 3.2.88(@types/node@24.13.3)
-      '@sanity/cli-build': 4.1.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.0)(tsx@4.23.1)(typescript@6.0.3)(yaml@2.9.0)
-      '@sanity/cli-core': 2.5.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(yaml@2.9.0)
+      '@sanity/cli-build': 4.1.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@6.0.3)(yaml@2.9.0)
+      '@sanity/cli-core': 2.5.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/client': 7.24.0
-      '@sanity/codegen': 7.0.3(@oclif/core@4.11.14)(@sanity/cli-core@2.5.1)(oxfmt@0.59.0)(react@19.2.8)
+      '@sanity/codegen': 7.0.3(@oclif/core@4.11.14)(@sanity/cli-core@2.5.1)(oxfmt@0.59.0)(react@19.2.8)(supports-color@8.1.1)
       '@sanity/descriptors': 1.3.0
-      '@sanity/export': 6.2.0
+      '@sanity/export': 6.2.0(supports-color@8.1.1)
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.0.0
-      '@sanity/import': 6.0.3(@sanity/client@7.24.0)
-      '@sanity/migrate': 8.0.0(xstate@5.32.5)
+      '@sanity/import': 6.0.3(@sanity/client@7.24.0)(supports-color@8.1.1)
+      '@sanity/migrate': 8.0.0(supports-color@8.1.1)(xstate@5.32.5)
       '@sanity/runtime-cli': 17.2.0(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.1)(yaml@2.9.0)
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
@@ -18238,7 +18238,7 @@ snapshots:
       execa: 9.6.1
       form-data: 4.0.6
       get-latest-version: 6.0.1
-      groq-js: 1.30.3
+      groq-js: 1.30.3(supports-color@8.1.1)
       gunzip-maybe: 1.4.2
       import-meta-resolve: 4.2.0
       is-installed-globally: 1.0.0
@@ -18345,25 +18345,25 @@ snapshots:
       - react-dom
       - react-is
 
-  '@sanity/codegen@7.0.3(@oclif/core@4.11.14)(@sanity/cli-core@2.5.1)(oxfmt@0.59.0)(react@19.2.8)':
+  '@sanity/codegen@7.0.3(@oclif/core@4.11.14)(@sanity/cli-core@2.5.1)(oxfmt@0.59.0)(react@19.2.8)(supports-color@8.1.1)':
     dependencies:
       '@babel/core': 7.29.7
       '@babel/generator': 7.29.7
-      '@babel/preset-env': 7.29.7(@babel/core@7.29.7)
+      '@babel/preset-env': 7.29.7(@babel/core@7.29.7)(supports-color@8.1.1)
       '@babel/preset-react': 7.29.7(@babel/core@7.29.7)
       '@babel/preset-typescript': 7.29.7(@babel/core@7.29.7)
       '@babel/register': 7.29.7(@babel/core@7.29.7)
       '@babel/traverse': 7.29.7
       '@babel/types': 7.29.7
       '@oclif/core': 4.11.14
-      '@sanity/cli-core': 2.5.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(yaml@2.9.0)
+      '@sanity/cli-core': 2.5.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/worker-channels': 2.0.0
       chokidar: 3.6.0
       debug: 4.4.3(supports-color@8.1.1)
       globby: 11.1.0
       groq: link:packages/groq
-      groq-js: 1.30.3
+      groq-js: 1.30.3(supports-color@8.1.1)
       json5: 2.2.3
       lodash-es: 4.18.1
       prettier: 3.9.5
@@ -18444,7 +18444,7 @@ snapshots:
       event-source-polyfill: 1.0.31
       eventsource: 2.0.2
 
-  '@sanity/export@6.2.0':
+  '@sanity/export@6.2.0(supports-color@8.1.1)':
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       get-it: 8.8.0
@@ -18487,7 +18487,7 @@ snapshots:
     dependencies:
       '@sanity/signed-urls': 2.0.4
 
-  '@sanity/import@6.0.3(@sanity/client@7.24.0)':
+  '@sanity/import@6.0.3(@sanity/client@7.24.0)(supports-color@8.1.1)':
     dependencies:
       '@sanity/asset-utils': 2.3.0
       '@sanity/client': 7.24.0
@@ -18539,7 +18539,7 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.1
 
-  '@sanity/migrate@8.0.0(xstate@5.32.5)':
+  '@sanity/migrate@8.0.0(supports-color@8.1.1)(xstate@5.32.5)':
     dependencies:
       '@sanity/client': 7.24.0
       '@sanity/mutate': 0.18.1(xstate@5.32.5)
@@ -18548,7 +18548,7 @@ snapshots:
       arrify: 3.0.0
       debug: 4.4.3(supports-color@8.1.1)
       fast-fifo: 1.3.2
-      groq-js: 1.30.3
+      groq-js: 1.30.3(supports-color@8.1.1)
       p-map: 7.0.5
     transitivePeerDependencies:
       - supports-color
@@ -18609,7 +18609,7 @@ snapshots:
       cardinal: 2.1.1
       empathic: 2.0.1
       eventsource: 4.1.0
-      groq-js: 1.30.3
+      groq-js: 1.30.3(supports-color@8.1.1)
       jiti: 2.7.0
       mime-types: 3.0.2
       ora: 9.4.1
@@ -18642,7 +18642,7 @@ snapshots:
     dependencies:
       '@sanity/client': 7.24.0
       '@sanity/message-protocol': 0.23.0
-      '@sanity/sdk': 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
+      '@sanity/sdk': 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(supports-color@8.1.1)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/types': link:packages/@sanity/types
       groq: 3.88.1-typegen-experimental.0
       react: 19.2.8
@@ -18657,7 +18657,7 @@ snapshots:
       - use-sync-external-store
       - xstate
 
-  '@sanity/sdk@2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)':
+  '@sanity/sdk@2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(supports-color@8.1.1)(use-sync-external-store@1.6.0)(xstate@5.32.5)':
     dependencies:
       '@sanity/bifur-client': 1.0.0
       '@sanity/client': 7.24.0
@@ -18672,7 +18672,7 @@ snapshots:
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/types': link:packages/@sanity/types
       groq: 3.88.1-typegen-experimental.0
-      groq-js: 1.30.3
+      groq-js: 1.30.3(supports-color@8.1.1)
       reselect: 5.2.0
       rxjs: 7.8.2
       zustand: 5.0.14(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)
@@ -18831,7 +18831,7 @@ snapshots:
   '@sanity/workbench-cli@1.7.1(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(typescript@6.0.3)(yaml@2.9.0)':
     dependencies:
       '@module-federation/vite': 1.18.1(typescript@6.0.3)(vite@8.1.5)
-      '@sanity/cli-core': 2.5.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(yaml@2.9.0)
+      '@sanity/cli-core': 2.5.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@vitejs/plugin-react': 6.0.4(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.1.5)
       form-data: 4.0.6
       tar-fs: 3.1.3
@@ -18866,7 +18866,7 @@ snapshots:
   '@sanity/workbench@0.1.0-alpha.29(@sanity/sdk@2.18.0)(react@19.2.8)(xstate@5.32.5)':
     dependencies:
       '@module-federation/runtime': 2.8.0
-      '@sanity/sdk': 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
+      '@sanity/sdk': 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(supports-color@8.1.1)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       rxjs: 7.8.2
       verkit: 0.1.2
@@ -18966,13 +18966,13 @@ snapshots:
   '@slack/types@2.22.0':
     optional: true
 
-  '@slack/web-api@7.19.0':
+  '@slack/web-api@7.19.0(debug@4.3.4)':
     dependencies:
       '@slack/logger': 4.0.1
       '@slack/types': 2.22.0
       '@types/node': 24.13.3
       '@types/retry': 0.12.0
-      axios: 1.18.1
+      axios: 1.18.1(debug@4.3.4)
       eventemitter3: 5.0.4
       form-data: 4.0.6
       is-electron: 2.2.2
@@ -19157,7 +19157,7 @@ snapshots:
     dependencies:
       '@testing-library/dom': 10.4.1
 
-  '@tokenizer/inflate@0.4.1':
+  '@tokenizer/inflate@0.4.1(supports-color@8.1.1)':
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       token-types: 6.1.2
@@ -19424,7 +19424,7 @@ snapshots:
     dependencies:
       '@types/node': 24.13.3
 
-  '@typescript-eslint/project-service@8.56.1(typescript@6.0.3)':
+  '@typescript-eslint/project-service@8.56.1(supports-color@8.1.1)(typescript@6.0.3)':
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@6.0.3)
       '@typescript-eslint/types': 8.56.1
@@ -19433,7 +19433,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/project-service@8.64.0(typescript@6.0.3)':
+  '@typescript-eslint/project-service@8.64.0(supports-color@8.1.1)(typescript@6.0.3)':
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.64.0(typescript@6.0.3)
       '@typescript-eslint/types': 8.64.0
@@ -19464,9 +19464,9 @@ snapshots:
 
   '@typescript-eslint/types@8.64.0': {}
 
-  '@typescript-eslint/typescript-estree@8.56.1(typescript@6.0.3)':
+  '@typescript-eslint/typescript-estree@8.56.1(supports-color@8.1.1)(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/project-service': 8.56.1(typescript@6.0.3)
+      '@typescript-eslint/project-service': 8.56.1(supports-color@8.1.1)(typescript@6.0.3)
       '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@6.0.3)
       '@typescript-eslint/types': 8.56.1
       '@typescript-eslint/visitor-keys': 8.56.1
@@ -19479,9 +19479,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/typescript-estree@8.64.0(typescript@6.0.3)':
+  '@typescript-eslint/typescript-estree@8.64.0(supports-color@8.1.1)(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/project-service': 8.64.0(typescript@6.0.3)
+      '@typescript-eslint/project-service': 8.64.0(supports-color@8.1.1)(typescript@6.0.3)
       '@typescript-eslint/tsconfig-utils': 8.64.0(typescript@6.0.3)
       '@typescript-eslint/types': 8.64.0
       '@typescript-eslint/visitor-keys': 8.64.0
@@ -19494,23 +19494,23 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.56.1(eslint@10.7.0)(typescript@6.0.3)':
+  '@typescript-eslint/utils@8.56.1(eslint@10.7.0)(supports-color@8.1.1)(typescript@6.0.3)':
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.7.0)
       '@typescript-eslint/scope-manager': 8.56.1
       '@typescript-eslint/types': 8.56.1
-      '@typescript-eslint/typescript-estree': 8.56.1(typescript@6.0.3)
+      '@typescript-eslint/typescript-estree': 8.56.1(supports-color@8.1.1)(typescript@6.0.3)
       eslint: 10.7.0(jiti@2.7.0)
       typescript: 6.0.3
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.64.0(eslint@10.7.0)(typescript@6.0.3)':
+  '@typescript-eslint/utils@8.64.0(eslint@10.7.0)(supports-color@8.1.1)(typescript@6.0.3)':
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.7.0)
       '@typescript-eslint/scope-manager': 8.64.0
       '@typescript-eslint/types': 8.64.0
-      '@typescript-eslint/typescript-estree': 8.64.0(typescript@6.0.3)
+      '@typescript-eslint/typescript-estree': 8.64.0(supports-color@8.1.1)(typescript@6.0.3)
       eslint: 10.7.0(jiti@2.7.0)
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -20653,7 +20653,7 @@ snapshots:
       - supports-color
     optional: true
 
-  axios@1.18.1:
+  axios@1.18.1(debug@4.3.4):
     dependencies:
       follow-redirects: 1.16.0(debug@4.3.4)
       form-data: 4.0.6
@@ -20672,11 +20672,11 @@ snapshots:
       cosmiconfig: 7.1.0
       resolve: 1.22.12
 
-  babel-plugin-polyfill-corejs2@0.4.17(@babel/core@7.29.7):
+  babel-plugin-polyfill-corejs2@0.4.17(@babel/core@7.29.7)(supports-color@8.1.1):
     dependencies:
       '@babel/compat-data': 7.29.7
       '@babel/core': 7.29.7
-      '@babel/helper-define-polyfill-provider': 0.6.8(@babel/core@7.29.7)
+      '@babel/helper-define-polyfill-provider': 0.6.8(@babel/core@7.29.7)(supports-color@8.1.1)
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
@@ -20684,7 +20684,7 @@ snapshots:
   babel-plugin-polyfill-corejs3@0.14.2(@babel/core@7.29.7):
     dependencies:
       '@babel/core': 7.29.7
-      '@babel/helper-define-polyfill-provider': 0.6.8(@babel/core@7.29.7)
+      '@babel/helper-define-polyfill-provider': 0.6.8(@babel/core@7.29.7)(supports-color@8.1.1)
       core-js-compat: 3.49.0
     transitivePeerDependencies:
       - supports-color
@@ -20692,7 +20692,7 @@ snapshots:
   babel-plugin-polyfill-regenerator@0.6.8(@babel/core@7.29.7):
     dependencies:
       '@babel/core': 7.29.7
-      '@babel/helper-define-polyfill-provider': 0.6.8(@babel/core@7.29.7)
+      '@babel/helper-define-polyfill-provider': 0.6.8(@babel/core@7.29.7)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -21585,7 +21585,7 @@ snapshots:
     dependencies:
       once: 1.4.0
 
-  engine.io-client@6.6.6:
+  engine.io-client@6.6.6(supports-color@8.1.1):
     dependencies:
       '@socket.io/component-emitter': 3.1.2
       debug: 4.4.3(supports-color@8.1.1)
@@ -21599,7 +21599,7 @@ snapshots:
 
   engine.io-parser@5.2.3: {}
 
-  engine.io@6.6.9:
+  engine.io@6.6.9(supports-color@8.1.1):
     dependencies:
       '@types/cors': 2.8.19
       '@types/node': 24.13.3
@@ -21753,7 +21753,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@4.4.5(eslint@10.7.0):
+  eslint-import-resolver-typescript@4.4.5(eslint@10.7.0)(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       eslint: 10.7.0(jiti@2.7.0)
@@ -21772,7 +21772,7 @@ snapshots:
     optionalDependencies:
       eslint: 10.7.0(jiti@2.7.0)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 4.4.5(eslint@10.7.0)
+      eslint-import-resolver-typescript: 4.4.5(eslint@10.7.0)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -21795,20 +21795,20 @@ snapshots:
     dependencies:
       requireindex: 1.1.0
 
-  eslint-plugin-testing-library@7.16.2(eslint@10.7.0)(typescript@6.0.3):
+  eslint-plugin-testing-library@7.16.2(eslint@10.7.0)(supports-color@8.1.1)(typescript@6.0.3):
     dependencies:
       '@typescript-eslint/scope-manager': 8.64.0
-      '@typescript-eslint/utils': 8.64.0(eslint@10.7.0)(typescript@6.0.3)
+      '@typescript-eslint/utils': 8.64.0(eslint@10.7.0)(supports-color@8.1.1)(typescript@6.0.3)
       eslint: 10.7.0(jiti@2.7.0)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  eslint-plugin-tsdoc@0.5.2(eslint@10.7.0)(typescript@6.0.3):
+  eslint-plugin-tsdoc@0.5.2(eslint@10.7.0)(supports-color@8.1.1)(typescript@6.0.3):
     dependencies:
       '@microsoft/tsdoc': 0.16.0
       '@microsoft/tsdoc-config': 0.18.1
-      '@typescript-eslint/utils': 8.56.1(eslint@10.7.0)(typescript@6.0.3)
+      '@typescript-eslint/utils': 8.56.1(eslint@10.7.0)(supports-color@8.1.1)(typescript@6.0.3)
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -22115,9 +22115,9 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  file-type@21.3.2:
+  file-type@21.3.2(supports-color@8.1.1):
     dependencies:
-      '@tokenizer/inflate': 0.4.1
+      '@tokenizer/inflate': 0.4.1(supports-color@8.1.1)
       strtok3: 10.3.5
       token-types: 6.1.2
       uint8array-extras: 1.5.0
@@ -22398,7 +22398,7 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
-  get-uri@6.0.5:
+  get-uri@6.0.5(supports-color@8.1.1):
     dependencies:
       basic-ftp: 5.3.1
       data-uri-to-buffer: 6.0.2
@@ -22526,7 +22526,7 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
-  groq-js@1.30.3:
+  groq-js@1.30.3(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
@@ -22717,7 +22717,7 @@ snapshots:
     optionalDependencies:
       typescript: 6.0.3
 
-  ibm-cloud-sdk-core@5.6.0:
+  ibm-cloud-sdk-core@5.6.0(supports-color@8.1.1):
     dependencies:
       '@types/debug': 4.1.12
       '@types/node': 18.19.80
@@ -22727,7 +22727,7 @@ snapshots:
       debug: 4.3.4
       dotenv: 16.4.5
       extend: 3.0.2
-      file-type: 21.3.2
+      file-type: 21.3.2(supports-color@8.1.1)
       form-data: 4.0.6
       isstream: 0.1.2
       jsonwebtoken: 9.0.3
@@ -24196,12 +24196,12 @@ snapshots:
 
   p-try@2.2.0: {}
 
-  pac-proxy-agent@7.2.0:
+  pac-proxy-agent@7.2.0(supports-color@8.1.1):
     dependencies:
       '@tootallnate/quickjs-emscripten': 0.23.0
       agent-base: 7.1.4
       debug: 4.4.3(supports-color@8.1.1)
-      get-uri: 6.0.5
+      get-uri: 6.0.5(supports-color@8.1.1)
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
       pac-resolver: 7.0.1
@@ -24415,7 +24415,7 @@ snapshots:
 
   playwright-core@1.61.1: {}
 
-  playwright-extra@4.3.6(playwright-core@1.61.1)(playwright@1.61.1):
+  playwright-extra@4.3.6(playwright-core@1.61.1)(playwright@1.61.1)(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
     optionalDependencies:
@@ -24512,7 +24512,7 @@ snapshots:
 
   promisepipe@3.0.0: {}
 
-  promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9):
+  promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.61.1)(socks@2.8.9)(supports-color@8.1.1):
     dependencies:
       '@anthropic-ai/sdk': 0.78.0(zod@4.4.3)
       '@apidevtools/json-schema-ref-parser': 15.5.0(@types/json-schema@7.0.15)
@@ -24524,7 +24524,7 @@ snapshots:
       '@inquirer/input': 5.1.2(@types/node@24.13.3)
       '@inquirer/select': 5.2.1(@types/node@24.13.3)
       '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.3)
-      '@openai/agents': 0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(ws@8.21.1)(zod@4.4.3)
+      '@openai/agents': 0.5.4(@aws-sdk/credential-provider-node@3.972.70)(@smithy/signature-v4@5.6.6)(supports-color@8.1.1)(ws@8.21.1)(zod@4.4.3)
       '@opencode-ai/sdk': 1.18.3
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
@@ -24582,16 +24582,16 @@ snapshots:
       pem: 1.14.8
       posthog-node: 5.24.17
       protobufjs: 8.7.1
-      proxy-agent: 6.5.0
+      proxy-agent: 6.5.0(supports-color@8.1.1)
       proxy-from-env: 2.1.0
       python-shell: 5.0.0
       react: 19.2.8
       rfdc: 1.4.1
       rxjs: 7.8.2
       semver: 7.8.5
-      simple-git: 3.36.0
-      socket.io: 4.8.3
-      socket.io-client: 4.8.3
+      simple-git: 3.36.0(supports-color@8.1.1)
+      socket.io: 4.8.3(supports-color@8.1.1)
+      socket.io-client: 4.8.3(supports-color@8.1.1)
       text-extensions: 3.1.0
       tsx: 4.23.1
       undici: 7.28.0
@@ -24616,7 +24616,7 @@ snapshots:
       '@openai/codex-sdk': 0.110.0
       '@playwright/browser-chromium': 1.61.1
       '@rollup/rollup-linux-x64-gnu': 4.62.2
-      '@slack/web-api': 7.19.0
+      '@slack/web-api': 7.19.0(debug@4.3.4)
       '@smithy/node-http-handler': 4.9.7
       '@swc/core': 1.15.46
       '@swc/core-darwin-arm64': 1.15.46
@@ -24626,14 +24626,14 @@ snapshots:
       '@swc/core-win32-x64-msvc': 1.15.46
       google-auth-library: 10.9.0
       hono: 4.12.31
-      ibm-cloud-sdk-core: 5.6.0
+      ibm-cloud-sdk-core: 5.6.0(supports-color@8.1.1)
       langfuse: 3.38.20
       natural: 8.1.1(@opentelemetry/api@1.9.1)(gcp-metadata@8.1.3)(socks@2.8.9)
       node-sql-parser: 5.4.0
       pdf-parse: 2.4.5
       playwright: 1.61.1
-      playwright-extra: 4.3.6(playwright-core@1.61.1)(playwright@1.61.1)
-      puppeteer-extra-plugin-stealth: 2.11.2(playwright-extra@4.3.6)
+      playwright-extra: 4.3.6(playwright-core@1.61.1)(playwright@1.61.1)(supports-color@8.1.1)
+      puppeteer-extra-plugin-stealth: 2.11.2(playwright-extra@4.3.6)(supports-color@8.1.1)
       read-excel-file: 7.0.3
       sharp: 0.34.5
     transitivePeerDependencies:
@@ -24742,14 +24742,14 @@ snapshots:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
 
-  proxy-agent@6.5.0:
+  proxy-agent@6.5.0(supports-color@8.1.1):
     dependencies:
       agent-base: 7.1.4
       debug: 4.4.3(supports-color@8.1.1)
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
       lru-cache: 7.18.3
-      pac-proxy-agent: 7.2.0
+      pac-proxy-agent: 7.2.0(supports-color@8.1.1)
       proxy-from-env: 1.1.0
       socks-proxy-agent: 8.0.5
     transitivePeerDependencies:
@@ -24791,48 +24791,48 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  puppeteer-extra-plugin-stealth@2.11.2(playwright-extra@4.3.6):
+  puppeteer-extra-plugin-stealth@2.11.2(playwright-extra@4.3.6)(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
-      puppeteer-extra-plugin: 3.2.3(playwright-extra@4.3.6)
-      puppeteer-extra-plugin-user-preferences: 2.4.1(playwright-extra@4.3.6)
+      puppeteer-extra-plugin: 3.2.3(playwright-extra@4.3.6)(supports-color@8.1.1)
+      puppeteer-extra-plugin-user-preferences: 2.4.1(playwright-extra@4.3.6)(supports-color@8.1.1)
     optionalDependencies:
-      playwright-extra: 4.3.6(playwright-core@1.61.1)(playwright@1.61.1)
+      playwright-extra: 4.3.6(playwright-core@1.61.1)(playwright@1.61.1)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
 
-  puppeteer-extra-plugin-user-data-dir@2.4.1(playwright-extra@4.3.6):
+  puppeteer-extra-plugin-user-data-dir@2.4.1(playwright-extra@4.3.6)(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       fs-extra: 10.1.0
-      puppeteer-extra-plugin: 3.2.3(playwright-extra@4.3.6)
+      puppeteer-extra-plugin: 3.2.3(playwright-extra@4.3.6)(supports-color@8.1.1)
       rimraf: 3.0.2
     optionalDependencies:
-      playwright-extra: 4.3.6(playwright-core@1.61.1)(playwright@1.61.1)
+      playwright-extra: 4.3.6(playwright-core@1.61.1)(playwright@1.61.1)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
 
-  puppeteer-extra-plugin-user-preferences@2.4.1(playwright-extra@4.3.6):
+  puppeteer-extra-plugin-user-preferences@2.4.1(playwright-extra@4.3.6)(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       deepmerge: 4.3.1
-      puppeteer-extra-plugin: 3.2.3(playwright-extra@4.3.6)
-      puppeteer-extra-plugin-user-data-dir: 2.4.1(playwright-extra@4.3.6)
+      puppeteer-extra-plugin: 3.2.3(playwright-extra@4.3.6)(supports-color@8.1.1)
+      puppeteer-extra-plugin-user-data-dir: 2.4.1(playwright-extra@4.3.6)(supports-color@8.1.1)
     optionalDependencies:
-      playwright-extra: 4.3.6(playwright-core@1.61.1)(playwright@1.61.1)
+      playwright-extra: 4.3.6(playwright-core@1.61.1)(playwright@1.61.1)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
 
-  puppeteer-extra-plugin@3.2.3(playwright-extra@4.3.6):
+  puppeteer-extra-plugin@3.2.3(playwright-extra@4.3.6)(supports-color@8.1.1):
     dependencies:
       '@types/debug': 4.1.13
       debug: 4.4.3(supports-color@8.1.1)
       merge-deep: 3.0.3
     optionalDependencies:
-      playwright-extra: 4.3.6(playwright-core@1.61.1)(playwright@1.61.1)
+      playwright-extra: 4.3.6(playwright-core@1.61.1)(playwright@1.61.1)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -25364,7 +25364,7 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  sandbox@3.4.0:
+  sandbox@3.4.0(supports-color@8.1.1):
     dependencies:
       '@vercel/sandbox': 2.4.0
       async-retry: 1.3.3
@@ -25636,9 +25636,9 @@ snapshots:
       once: 1.4.0
       simple-concat: 1.0.1
 
-  simple-git@3.36.0:
+  simple-git@3.36.0(supports-color@8.1.1):
     dependencies:
-      '@kwsites/file-exists': 1.1.1
+      '@kwsites/file-exists': 1.1.1(supports-color@8.1.1)
       '@kwsites/promise-deferred': 1.1.1
       '@simple-git/args-pathspec': 1.0.3
       '@simple-git/argv-parser': 1.1.1
@@ -25671,7 +25671,7 @@ snapshots:
 
   smol-toml@1.7.0: {}
 
-  socket.io-adapter@2.5.8:
+  socket.io-adapter@2.5.8(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       ws: 8.21.1
@@ -25680,11 +25680,11 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  socket.io-client@4.8.3:
+  socket.io-client@4.8.3(supports-color@8.1.1):
     dependencies:
       '@socket.io/component-emitter': 3.1.2
       debug: 4.4.3(supports-color@8.1.1)
-      engine.io-client: 6.6.6
+      engine.io-client: 6.6.6(supports-color@8.1.1)
       socket.io-parser: 4.2.7
     transitivePeerDependencies:
       - bufferutil
@@ -25698,14 +25698,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  socket.io@4.8.3:
+  socket.io@4.8.3(supports-color@8.1.1):
     dependencies:
       accepts: 1.3.8
       base64id: 2.0.0
       cors: 2.8.6
       debug: 4.4.3(supports-color@8.1.1)
-      engine.io: 6.6.9
-      socket.io-adapter: 2.5.8
+      engine.io: 6.6.9(supports-color@8.1.1)
+      socket.io-adapter: 2.5.8(supports-color@8.1.1)
       socket.io-parser: 4.2.7
     transitivePeerDependencies:
       - bufferutil
@@ -26449,7 +26449,7 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vercel@56.4.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2):
+  vercel@56.4.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(supports-color@8.1.1):
     dependencies:
       '@vercel/backends': 0.8.25(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)
       '@vercel/blob': 2.4.0
@@ -26482,7 +26482,7 @@ snapshots:
       jose: 5.9.6
       jsonc-parser: 3.3.1
       luxon: 3.7.2
-      sandbox: 3.4.0
+      sandbox: 3.4.0(supports-color@8.1.1)
       smol-toml: 1.5.2
       undici: 5.29.0
       zod: 4.1.11
