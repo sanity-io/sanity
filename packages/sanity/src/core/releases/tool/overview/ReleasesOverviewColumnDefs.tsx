@@ -38,7 +38,7 @@ export const releasesOverviewColumnDefs: (
         id: 'metadata.title',
         sorting: true,
         width: null,
-        style: {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
+        style: {minWidth: 200, maxWidth: 420},
         header: (props) => (
           <Flex
             {...props.headerProps}
@@ -63,12 +63,13 @@ export const releasesOverviewColumnDefs: (
       {
         id: 'publishAt',
         sorting: true,
-        sortTransform: (release) => {
+        sortTransform: (release, direction) => {
           const {date} = getReleaseTiming(release)
-          // Unscheduled-with-no-date sinks to the end (default sort is ascending).
-          return date ? date.getTime() : Infinity
+          // Unscheduled-with-no-date always sinks to the end, regardless of sort direction.
+          if (date) return date.getTime()
+          return direction === 'asc' ? Infinity : -Infinity
         },
-        width: 240,
+        width: 280,
         header: (props) => (
           <Flex {...props.headerProps} paddingY={3} sizing="border">
             <Headers.SortHeaderButton text={t('table-header.schedule')} {...props} />
@@ -175,32 +176,6 @@ export const releasesOverviewColumnDefs: (
     ),
     checkColumnMode(
       {
-        id: 'documentCount',
-        sorting: false,
-        width: 120,
-        header: ({headerProps}) => (
-          <Flex {...headerProps} paddingY={3} sizing="border">
-            <Headers.BasicHeader text={t('table-header.documents')} />
-          </Flex>
-        ),
-        cell: ({datum: {isDeleted, state, finalDocumentStates, documentsMetadata}, cellProps}) => (
-          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border" gap={2}>
-            {!isDeleted && (
-              <ReleaseDocumentsCounter
-                documentCount={
-                  state === 'archived' || state === 'published'
-                    ? finalDocumentStates?.length
-                    : documentsMetadata?.documentCount
-                }
-              />
-            )}
-          </Flex>
-        ),
-      },
-      'all',
-    ),
-    checkColumnMode(
-      {
         id: 'documentsMetadata.updatedAt',
         sorting: true,
         width: 150,
@@ -255,6 +230,36 @@ export const releasesOverviewColumnDefs: (
         ),
       },
       'active',
+    ),
+    checkColumnMode(
+      {
+        id: 'documentCount',
+        sorting: true,
+        sortTransform: (release) =>
+          release.state === 'archived' || release.state === 'published'
+            ? (release.finalDocumentStates?.length ?? 0)
+            : (release.documentsMetadata?.documentCount ?? 0),
+        width: 120,
+        header: (props) => (
+          <Flex {...props.headerProps} paddingY={3} sizing="border">
+            <Headers.SortHeaderButton text={t('table-header.documents')} {...props} />
+          </Flex>
+        ),
+        cell: ({datum: {isDeleted, state, finalDocumentStates, documentsMetadata}, cellProps}) => (
+          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border" gap={2}>
+            {!isDeleted && (
+              <ReleaseDocumentsCounter
+                documentCount={
+                  state === 'archived' || state === 'published'
+                    ? finalDocumentStates?.length
+                    : documentsMetadata?.documentCount
+                }
+              />
+            )}
+          </Flex>
+        ),
+      },
+      'all',
     ),
     // Status — ONE consolidated trailing signal (merges the former standalone error glyph and the
     // readiness column). Answers "is this release OK?" in one place, by priority:

@@ -32,7 +32,7 @@ export const ReleaseTime: React.FC<{release: TableRelease; compact?: boolean}> =
   // Archived / published: just the date, no schedule-state glyph.
   if (isInArchivedView) {
     return (
-      <Text size={1} muted>
+      <Text size={1} muted style={{whiteSpace: 'nowrap'}}>
         {dateLabel ?? '-'}
       </Text>
     )
@@ -41,7 +41,7 @@ export const ReleaseTime: React.FC<{release: TableRelease; compact?: boolean}> =
   // Unscheduled with no date → the category word carries it.
   if (!timing.date) {
     return (
-      <Text size={1} muted weight="medium">
+      <Text size={1} muted weight="medium" style={{whiteSpace: 'nowrap'}}>
         {t('schedule.unscheduled')}
       </Text>
     )
@@ -54,7 +54,7 @@ export const ReleaseTime: React.FC<{release: TableRelease; compact?: boolean}> =
         <Text size={1} muted>
           <LockIcon data-testid="release-lock-icon" />
         </Text>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" style={{whiteSpace: 'nowrap'}}>
           {dateLabel}
         </Text>
       </Flex>
@@ -75,7 +75,7 @@ export const ReleaseTime: React.FC<{release: TableRelease; compact?: boolean}> =
         <Text size={1}>
           <ToneIcon icon={WarningOutlineIcon} tone="caution" />
         </Text>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" style={{whiteSpace: 'nowrap'}}>
           {dateLabel}
         </Text>
       </Flex>

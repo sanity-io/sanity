@@ -1,16 +1,10 @@
-import {PinIcon} from '@sanity/icons/Pin'
-import {PinFilledIcon} from '@sanity/icons/PinFilled'
 import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
-import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Button, Tooltip} from '../../../../../ui-components'
+import {Tooltip} from '../../../../../ui-components'
 import {PREVIEW_SIZES} from '../../../../components/previews/constants'
 import {TitleSkeleton} from '../../../../components/previews/general/DetailPreview.styled'
 import {Translate, useTranslation} from '../../../../i18n'
-import {usePerspective} from '../../../../perspective/usePerspective'
-import {useSetPerspective} from '../../../../perspective/useSetPerspective'
-import {useWorkspace} from '../../../../studio/workspace'
 import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../components/ReleaseTitle'
 import {releasesLocaleNamespace} from '../../../i18n'
@@ -26,24 +20,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {selectedReleaseId} = usePerspective()
-  const setPerspective = useSetPerspective()
-  const {state} = release
   const releaseId = release.isLoading ? 'loading' : getReleaseIdFromReleaseDocumentId(release._id)
-  const isArchived = state === 'archived'
-  const isReleasePinned = releaseId === selectedReleaseId
-  const {document} = useWorkspace()
-  const {
-    drafts: {enabled: isDraftModelEnabled},
-  } = document
-
-  const handlePinRelease = useCallback(() => {
-    if (isReleasePinned) {
-      setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
-    } else {
-      setPerspective(releaseId)
-    }
-  }, [isDraftModelEnabled, isReleasePinned, releaseId, setPerspective])
 
   if (release.isLoading) {
     return (
@@ -65,7 +42,6 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
         tone: 'inherit',
       }
 
-  const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   return (
@@ -79,27 +55,6 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
         }
       >
         <Flex align="center" gap={3}>
-          <Button
-            tooltipProps={{
-              disabled: isArchived || release.state === 'published',
-              content: isReleasePinned
-                ? t('dashboard.details.unpin-release')
-                : t('dashboard.details.pin-release'),
-            }}
-            disabled={isArchived || release.state === 'published'}
-            icon={pinButtonIcon}
-            mode="bleed"
-            data-testid="pin-release-button"
-            onClick={handlePinRelease}
-            radius="full"
-            selected={isReleasePinned}
-            aria-label={
-              isReleasePinned
-                ? `${t('dashboard.details.unpin-release')}: "${releaseTitle}"`
-                : `${t('dashboard.details.pin-release')}: "${releaseTitle}"`
-            }
-            aria-live="assertive"
-          />
           <Card {...cardProps} padding={2} radius={2} flex={1}>
             <Flex align="center" gap={2}>
               <Box flex="none">

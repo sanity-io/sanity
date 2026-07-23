@@ -12,10 +12,7 @@ import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {mockUseTimeZone, useTimeZoneMockReturn} from '../../../../hooks/__mocks__/useTimeZone.mock'
-import {
-  mockUsePerspective,
-  usePerspectiveMockReturn,
-} from '../../../../perspective/__mocks__/usePerspective.mock'
+import {usePerspectiveMockReturn} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {useScheduledDraftsEnabled} from '../../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {
   activeASAPRelease,
@@ -550,47 +547,6 @@ describe('ReleasesOverview', () => {
       expect(screen.getByText('Archived').closest('button')).not.toBeDisabled()
     })
 
-    it('allows for pinning perspectives', async () => {
-      mockedSetPerspective.mockClear()
-
-      const rows = screen.getAllByTestId('table-row')
-      const firstRow = rows[0]
-      const pinButton = within(firstRow).getByTestId('pin-release-button')
-
-      expect(pinButton).toBeInTheDocument()
-      const buttonElement = pinButton.closest('button')
-      expect(buttonElement).not.toBeNull()
-      expect(buttonElement).not.toBeDisabled()
-
-      await userEvent.click(buttonElement!)
-
-      await waitFor(() => {
-        expect(mockedSetPerspective).toHaveBeenCalledOnce()
-      })
-    })
-
-    it('will show pinned release in release list', async () => {
-      mockUsePerspective.mockReturnValue({
-        ...usePerspectiveMockReturn,
-        selectedPerspective: activeASAPRelease,
-        selectedReleaseId: 'rASAP',
-      })
-
-      // re-render to apply the update to global bundle id
-      await rerender()
-
-      const releaseRows = screen.getAllByTestId('table-row')
-      const pinnedReleaseRow = releaseRows.find((row) =>
-        within(row).queryByText(activeASAPRelease.metadata.title),
-      )
-
-      expect(pinnedReleaseRow).toBeDefined()
-      expect(within(pinnedReleaseRow!).getByTestId('pin-release-button')).toHaveAttribute(
-        'data-selected',
-        '',
-      )
-    })
-
     describe('calendar filter', () => {
       const getCalendar = () => getByDataUi(document.body, 'Calendar')
 
@@ -739,12 +695,6 @@ describe('ReleasesOverview', () => {
         within(publishedReleaseRow).getByText('archived Release')
         within(publishedReleaseRow).getByTestId('release-avatar-default')
       })
-
-      it('does not allow for perspective pinning', () => {
-        screen.getAllByTestId('table-row').forEach((row) => {
-          expect(within(row).getByTestId('pin-release-button').closest('button')).toBeDisabled()
-        })
-      })
     })
 
     it('sorts the list of releases', async () => {
@@ -764,9 +714,8 @@ describe('ReleasesOverview', () => {
       within(unsortedFourthRelease).getByText(activeUndecidedRelease.metadata.title)
       within(unsortedFifthRelease).getByText(activeUndecidedErrorRelease.metadata.title)
 
-      // toggle the Schedule column to descending: date-less releases sort as the largest
-      // key, so they now float to the top (in original order), followed by dated releases
-      // descending by date
+      // toggle the Schedule column to descending: dated releases sort latest-to-earliest;
+      // date-less releases still sink to the bottom (in original order) in both directions
       await userEvent.click(screen.getByText('Schedule'))
       const [
         descSortedFirstRelease,
@@ -776,11 +725,11 @@ describe('ReleasesOverview', () => {
         descSortedFifthRelease,
       ] = screen.getAllByTestId('table-row')
 
-      within(descSortedFirstRelease).getByText(activeASAPRelease.metadata.title)
-      within(descSortedSecondRelease).getByText(activeUndecidedRelease.metadata.title)
-      within(descSortedThirdRelease).getByText(activeUndecidedErrorRelease.metadata.title)
-      within(descSortedFourthRelease).getByText(activeScheduledRelease.metadata.title)
-      within(descSortedFifthRelease).getByText(scheduledRelease.metadata.title)
+      within(descSortedFirstRelease).getByText(activeScheduledRelease.metadata.title)
+      within(descSortedSecondRelease).getByText(scheduledRelease.metadata.title)
+      within(descSortedThirdRelease).getByText(activeASAPRelease.metadata.title)
+      within(descSortedFourthRelease).getByText(activeUndecidedRelease.metadata.title)
+      within(descSortedFifthRelease).getByText(activeUndecidedErrorRelease.metadata.title)
     })
 
     it('should navigate to release when row clicked', async () => {

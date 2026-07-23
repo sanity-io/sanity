@@ -29,7 +29,6 @@ import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
-import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {
   filterReleasesForOverview,
@@ -163,10 +162,6 @@ export function ReleasesOverview() {
 
       if (isReleaseDocument(selectedPerspective) && selectedPerspective._id === datum._id) {
         return {tone: getReleaseTone(datum)}
-      }
-
-      if (datum.state === 'active' && getIsScheduledDateInPast(datum)) {
-        return {tone: 'caution'}
       }
 
       return {tone: 'default'}
