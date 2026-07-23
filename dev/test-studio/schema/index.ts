@@ -148,6 +148,7 @@ import simpleBlockNoteUrl from './standard/portableText/simpleBlockNoteUrl'
 import spotifyEmbed from './standard/portableText/spotifyEmbed'
 import references, {referenceAlias} from './standard/references'
 import slugs, {slugAlias} from './standard/slugs'
+import {standaloneTable, standaloneTableObject} from './standard/standaloneTable/schema'
 import strings from './standard/strings'
 import texts from './standard/texts'
 import urls from './standard/urls'
@@ -222,6 +223,8 @@ export function createSchemaTypes(projectId: string) {
     referenceAlias,
     slugs,
     slugAlias,
+    standaloneTable,
+    standaloneTableObject,
     strings,
     texts,
     urls,

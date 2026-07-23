@@ -3,7 +3,7 @@ import {isKeySegment, type Path, type PathSegment} from '@sanity/types'
 /**
  * Standalone table field POC — pure helpers.
  *
- * The disguise: a `standaloneTableObject` field (rows > row > cells > cell >
+ * The disguise: a `standaloneTableObject` field (rows / row / cells / cell /
  * value[]) is edited through a *real* Portable Text editor. To do that we
  * "package" the whole table object as a single Portable Text block — a
  * container node keyed with a stable, well-known key (`ROOT_KEY`) — so the
@@ -65,7 +65,8 @@ export interface RootBlock {
  * synthetic block is always well-formed.
  */
 export function packageTableValue(value: StandaloneTableValue | undefined): RootBlock[] {
-  const {_key, _type, rows, ...rest} = (value ?? {}) as Partial<RootBlock>
+  const source: Partial<RootBlock> = value ?? {}
+  const {_key, _type, rows, ...rest} = source
   return [
     {
       ...rest,
@@ -89,13 +90,12 @@ export function unpackageTableValue(
   }
   // Prefer the stably-keyed root; fall back to the first block so a value that
   // lost its key (e.g. an old draft) still unpacks.
-  const root =
-    (blocks.find(
-      (block): block is RootBlock =>
-        typeof block === 'object' && block !== null && (block as RootBlock)._key === ROOT_KEY,
-    ) as RootBlock | undefined) ?? (blocks[0] as RootBlock | undefined)
+  const objects = blocks.filter(
+    (block): block is RootBlock => typeof block === 'object' && block !== null,
+  )
+  const root = objects.find((block) => block._key === ROOT_KEY) ?? objects[0]
 
-  if (!root || typeof root !== 'object') {
+  if (!root) {
     return undefined
   }
 
@@ -105,6 +105,50 @@ export function unpackageTableValue(
     _type: TABLE_TYPE,
     rows: Array.isArray(rows) ? rows : [],
   }
+}
+
+/** True when the table has no rows — the trigger for scaffolding. */
+export function isEmptyTable(value: StandaloneTableValue | undefined): boolean {
+  return !value || !Array.isArray(value.rows) || value.rows.length === 0
+}
+
+/** An empty text block, keyed by the supplied generator. */
+function emptyCellBlock(keyGenerator: () => string) {
+  return {
+    _key: keyGenerator(),
+    _type: 'block',
+    style: 'normal',
+    markDefs: [],
+    children: [{_key: keyGenerator(), _type: 'span', text: '', marks: []}],
+  }
+}
+
+/**
+ * Build a `rows × cols` grid of empty cells. Keys come from the injected
+ * generator so the caller controls uniqueness (and tests get determinism).
+ * This is what the input seeds an empty field with (default 3×3) and what it
+ * re-seeds after the user deletes every row.
+ */
+export function scaffoldRows(rows: number, cols: number, keyGenerator: () => string): TableRow[] {
+  return Array.from({length: rows}, () => ({
+    _key: keyGenerator(),
+    _type: 'row' as const,
+    cells: Array.from({length: cols}, () => ({
+      _key: keyGenerator(),
+      _type: 'cell' as const,
+      value: [emptyCellBlock(keyGenerator)],
+    })),
+  }))
+}
+
+/**
+ * True when a path runs into a cell's editable block array (`…/value/…`).
+ * Used by the one-block invariant behaviors to tell structural edits (at the
+ * table/row level, which must be blocked) from ordinary text edits inside a
+ * cell (which must be allowed).
+ */
+export function isInsideCellPath(path: Path | undefined): boolean {
+  return Array.isArray(path) && path.includes('value')
 }
 
 /**

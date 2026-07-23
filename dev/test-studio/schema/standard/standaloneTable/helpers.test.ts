@@ -2,17 +2,26 @@ import {type Path} from '@sanity/types'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {
+  isEmptyTable,
+  isInsideCellPath,
   isRootedPath,
   packageTableValue,
   rerootPatch,
   rerootPatches,
   rerootPath,
   ROOT_KEY,
+  scaffoldRows,
   type TableCell,
   type StandaloneTableValue,
   TABLE_TYPE,
   unpackageTableValue,
 } from './helpers'
+
+/** Deterministic keys for scaffold tests. */
+function counterKeyGen() {
+  let n = 0
+  return () => `k${n++}`
+}
 
 function cell(key: string, text = ''): TableCell {
   return {
@@ -97,6 +106,64 @@ describe('packageTableValue / unpackageTableValue', () => {
       {_key: 'lostkey', _type: TABLE_TYPE, rows: [{_key: 'r', _type: 'row'}]},
     ])
     expect(back?.rows).toHaveLength(1)
+  })
+})
+
+describe('isEmptyTable / scaffoldRows', () => {
+  it('treats undefined, missing rows, and empty rows as empty', () => {
+    expect(isEmptyTable(undefined)).toBe(true)
+    expect(isEmptyTable({_type: TABLE_TYPE})).toBe(true)
+    expect(isEmptyTable({_type: TABLE_TYPE, rows: []})).toBe(true)
+  })
+
+  it('treats a populated table as non-empty', () => {
+    expect(isEmptyTable(sampleValue())).toBe(false)
+  })
+
+  it('builds a rows × cols grid of empty cells with unique keys', () => {
+    const rows = scaffoldRows(3, 3, counterKeyGen())
+    expect(rows).toHaveLength(3)
+    for (const row of rows) {
+      expect(row._type).toBe('row')
+      expect(row.cells).toHaveLength(3)
+      for (const c of row.cells ?? []) {
+        expect(c._type).toBe('cell')
+        expect(c.value?.[0]).toMatchObject({_type: 'block', style: 'normal'})
+      }
+    }
+    const keys = JSON.stringify(rows).match(/"_key":"[^"]+"/g) ?? []
+    expect(new Set(keys).size).toBe(keys.length) // all keys unique
+  })
+
+  it('scaffolds a table that unpackages cleanly after packaging', () => {
+    const value: StandaloneTableValue = {
+      _type: TABLE_TYPE,
+      rows: scaffoldRows(2, 2, counterKeyGen()),
+    }
+    expect(isEmptyTable(value)).toBe(false)
+    expect(unpackageTableValue(packageTableValue(value))).toEqual(value)
+  })
+})
+
+describe('isInsideCellPath', () => {
+  it('is true for a path running into a cell value array', () => {
+    expect(
+      isInsideCellPath([
+        {_key: ROOT_KEY},
+        'rows',
+        {_key: 'r1'},
+        'cells',
+        {_key: 'c1'},
+        'value',
+        {_key: 'b1'},
+      ]),
+    ).toBe(true)
+  })
+
+  it('is false for structural table/row-level paths', () => {
+    expect(isInsideCellPath([{_key: ROOT_KEY}, 'rows', {_key: 'r1'}])).toBe(false)
+    expect(isInsideCellPath([{_key: ROOT_KEY}])).toBe(false)
+    expect(isInsideCellPath(undefined)).toBe(false)
   })
 })
 
