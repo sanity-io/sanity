@@ -30,7 +30,7 @@ import {
   rerootPatches,
   scaffoldRows,
   type StandaloneTableValue,
-  TABLE_TYPE,
+  TABLE_SHAPE,
 } from './helpers'
 
 /**
@@ -91,10 +91,12 @@ const cellStyle: React.CSSProperties = {
   minWidth: 80,
 }
 
+// Container binding derived from TABLE_SHAPE — the single shape-declaration
+// site (see helpers.ts; TODO(POC) there covers convention-based inference).
 const tableContainers = [
   defineContainer({
-    type: TABLE_TYPE,
-    arrayField: 'rows',
+    type: TABLE_SHAPE.table.type,
+    arrayField: TABLE_SHAPE.table.arrayField,
     render: ({attributes, children}) => (
       <div
         {...attributes}
@@ -105,8 +107,8 @@ const tableContainers = [
     ),
     of: [
       defineContainer({
-        type: 'row',
-        arrayField: 'cells',
+        type: TABLE_SHAPE.row.type,
+        arrayField: TABLE_SHAPE.row.arrayField,
         render: ({attributes, children}) => (
           <div {...attributes} style={{display: 'table-row'}}>
             {children}
@@ -114,8 +116,8 @@ const tableContainers = [
         ),
         of: [
           defineContainer({
-            type: 'cell',
-            arrayField: 'value',
+            type: TABLE_SHAPE.cell.type,
+            arrayField: TABLE_SHAPE.cell.arrayField,
             render: ({attributes, children}) => (
               <div {...attributes} style={cellStyle}>
                 {children}
@@ -280,9 +282,9 @@ export function StandaloneTableInput(props: ObjectInputProps<StandaloneTableValu
     onChange(
       PatchEvent.from([
         // Create the object shell without clobbering it if it already exists…
-        setIfMissing({_type: TABLE_TYPE}, EMPTY_PATH),
+        setIfMissing({_type: TABLE_SHAPE.table.type}, EMPTY_PATH),
         // …then seed just the `rows` field (granular, not a whole-value set).
-        set(rows, ['rows']),
+        set(rows, [TABLE_SHAPE.table.arrayField]),
       ]),
     )
   }, [readOnly, value, onChange])

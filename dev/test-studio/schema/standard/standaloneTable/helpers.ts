@@ -21,6 +21,21 @@ import {isKeySegment, type Path, type PathSegment} from '@sanity/types'
 export const TABLE_TYPE = 'standaloneTableObject'
 
 /**
+ * The container triplets: the ONE place the table's shape (type names +
+ * nesting fields) is declared. Everything shape-aware — scaffolding, the
+ * cell-path check, the input's `defineContainer` binding — derives from this.
+ *
+ * TODO(POC): hardcoded to the demo schema. The ship version infers these from
+ * the field's schema type by convention (object → array-of-objects → same →
+ * content array), with explicit configuration as the escape hatch.
+ */
+export const TABLE_SHAPE = {
+  table: {type: TABLE_TYPE, arrayField: 'rows'},
+  row: {type: 'row', arrayField: 'cells'},
+  cell: {type: 'cell', arrayField: 'value'},
+} as const
+
+/**
  * Stable `_key` of the synthetic root block. It never changes across the
  * lifetime of a field, so re-rooting can rely on it and the editor never sees
  * the key churn (which would remount the block and lose selection).
@@ -132,13 +147,13 @@ function emptyCellBlock(keyGenerator: () => string) {
 export function scaffoldRows(rows: number, cols: number, keyGenerator: () => string): TableRow[] {
   return Array.from({length: rows}, () => ({
     _key: keyGenerator(),
-    _type: 'row' as const,
-    cells: Array.from({length: cols}, () => ({
+    _type: TABLE_SHAPE.row.type,
+    [TABLE_SHAPE.row.arrayField]: Array.from({length: cols}, () => ({
       _key: keyGenerator(),
-      _type: 'cell' as const,
-      value: [emptyCellBlock(keyGenerator)],
+      _type: TABLE_SHAPE.cell.type,
+      [TABLE_SHAPE.cell.arrayField]: [emptyCellBlock(keyGenerator)],
     })),
-  }))
+  })) as TableRow[]
 }
 
 /**
@@ -148,7 +163,16 @@ export function scaffoldRows(rows: number, cols: number, keyGenerator: () => str
  * cell (which must be allowed).
  */
 export function isInsideCellPath(path: Path | undefined): boolean {
-  return Array.isArray(path) && path.includes('value')
+  if (!Array.isArray(path)) {
+    return false
+  }
+  // The path must contain the cell content field immediately after a keyed
+  // segment (the cell), i.e. `…{_key: cell}/value/…` — not just any segment
+  // that happens to be named like the field.
+  const field = TABLE_SHAPE.cell.arrayField
+  return path.some(
+    (segment, index) => segment === field && index > 0 && isKeySegment(path[index - 1]),
+  )
 }
 
 /**
