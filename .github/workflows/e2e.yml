@@ -104,11 +104,6 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
-      # preferWorkspacePackages resolves sanity-plugin-media's "groq" import to the
-      # packages/groq workspace package, whose entry points only exist once built.
-      - name: Build groq package
-        run: pnpm --filter groq build
-
       - name: Pull Vercel Environment Information
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}

@@ -1,5 +1,5 @@
 import babel from '@rolldown/plugin-babel'
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
+import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
 import escapeRegExp from 'lodash-es/escapeRegExp.js'
 import {esmExternalRequirePlugin, type Plugin, type UserConfig} from 'vite'
@@ -10,7 +10,7 @@ export const defaultConfig: UserConfig = {
   appType: 'custom',
   define: {
     '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
-    'process.env.PKG_VERSION': JSON.stringify(packageJson.version),
+    '__PKG_VERSION__': JSON.stringify(packageJson.version),
     'process.env.NODE_ENV': '"production"',
     'process.env': {},
   },

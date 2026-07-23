@@ -7,7 +7,6 @@
     "packages/@repo/test-dts-exports",
     "packages/@repo/test-config",
     "packages/@repo/tsconfig",
-    "packages/@repo/package.config",
     "packages/@repo/package.bundle",
     "packages/sanity/fixtures/examples/*",
   ],
@@ -51,18 +50,13 @@
       "playwright": false,
     },
     "packages/sanity": {
-      "entry": [
-        "src/_exports/*.ts",
-        "bin/sanity",
-        "package.config.ts",
-        "mock-browser-env-stub-loader.mjs",
-      ],
+      "entry": ["src/_exports/*.ts", "bin/sanity", "mock-browser-env-stub-loader.mjs"],
       "project": [
         "src/**/*.{ts,tsx}",
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
       ],
       "ignoreBinaries": ["tzutil"],
-      "ignoreDependencies": ["@vitest/expect", "babel-plugin-styled-components"],
+      "ignoreDependencies": ["@vitest/expect"],
     },
     "packages/@repo/debug-proxy": {
       "project": ["src/**/*.ts"],
@@ -71,41 +65,29 @@
     "packages/@sanity/schema": {
       "entry": [
         "src/_exports/*.ts",
-        "package.config.ts",
         // Knip can't trace `import * as types from './types'` in Schema.ts
         "src/legacy/types/index.ts",
       ],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/mutator": {
-      "entry": ["package.config.ts"],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/types": {
-      "entry": ["package.config.ts"],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/diff": {
-      "entry": ["package.config.ts"],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/vision": {
-      "entry": ["package.config.ts"],
       "project": ["src/**/*.{ts,tsx}"],
     },
     "packages/@sanity/util": {
-      "entry": ["src/_exports/*.ts", "package.config.ts"],
+      "entry": ["src/_exports/*.ts"],
       "project": ["src/**/*.ts"],
     },
     "packages/groq": {
-      "entry": [
-        "src/groq.ts",
-        "src/define.ts",
-        "src/_exports.cts.ts",
-        "src/_exports.mts.ts",
-        "package.config.ts",
-      ],
-      "project": ["src/**/*.ts"],
+      "project": ["*.js", "*.cjs"],
     },
     "packages/@repo/bundle-manager": {
       "project": ["src/**/*.ts"],

@@ -13,6 +13,10 @@
     "./src/**/vitest.config.mts"
   ],
   "compilerOptions": {
-    "customConditions": ["monorepo"]
+    "customConditions": ["monorepo"],
+    // The published package ships compiled JSX (`jsx: 'preserve'` in the settings is for source
+    // that studio bundlers compile themselves); rolldown reads this to compile JSX with the
+    // automatic runtime during builds
+    "jsx": "react-jsx"
   }
 }

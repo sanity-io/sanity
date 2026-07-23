@@ -1,5 +1,5 @@
 import {type ResponseQueryOptions} from '@sanity/client'
-import {match, type Path} from 'path-to-regexp'
+import {match} from 'path-to-regexp'
 import {useEffect, useEffectEvent, useRef, useState} from 'react'
 import {useClient, VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity'
 import {type RouterState, useRouter} from 'sanity/router'
@@ -56,26 +56,27 @@ function getParamsFromResult(
   return fnOrObj(resolver.params, context) ?? context.params
 }
 
-export function getRouteContext(route: Path, url: URL): DocumentResolverContext | undefined {
+export function getRouteContext(
+  route: DocumentResolver['route'],
+  url: URL,
+): DocumentResolverContext | undefined {
   const routes = Array.isArray(route) ? route : [route]
 
-  for (route of routes) {
+  // `let` as the path is replaced with the pathname for absolute URLs
+  for (let path of routes) {
     let {origin} = url
-    let path = route
 
     // Handle absolute URLs
-    if (typeof route === 'string') {
-      try {
-        const absolute = new URL(route)
+    try {
+      const absolute = new URL(path)
 
-        // If we are dealing with an absolute URL, ensure the origins match
-        if (absolute.origin !== origin) continue
+      // If we are dealing with an absolute URL, ensure the origins match
+      if (absolute.origin !== origin) continue
 
-        origin = absolute.origin
-        path = absolute.pathname
-      } catch {
-        // Ignore, as we assume a relative path
-      }
+      origin = absolute.origin
+      path = absolute.pathname
+    } catch {
+      // Ignore, as we assume a relative path
     }
 
     try {
@@ -86,7 +87,7 @@ export function getRouteContext(route: Path, url: URL): DocumentResolverContext 
         return {origin, params, path}
       }
     } catch (e) {
-      throw new Error(`"${route}" is not a valid route pattern`, {cause: e})
+      throw new Error(`"${path}" is not a valid route pattern`, {cause: e})
     }
   }
   return undefined
