@@ -63,10 +63,7 @@ for (const [bareIdentifier, [dtsFilePath, fixturePath]] of fixtures) {
 
 import { describe, expectTypeOf, test } from "vitest";
 import type { ${importsWithDecls
-    .map((name) => {
-      const binding = localBindingFor(name)
-      return binding === name ? name : `${importSpecifierFor(name)} as ${binding}`
-    })
+    .map((name) => (name === 'default' ? 'default as _default' : name))
     .join(', ')} } from "${bareIdentifier}";
 
 
@@ -74,7 +71,7 @@ describe(${JSON.stringify(bareIdentifier)}, () => {
 `
 
   for (const name of allExports) {
-    const exportName = localBindingFor(name)
+    const exportName = name === 'default' ? '_default' : name
     const testName = JSON.stringify(name)
     const decls = exps.get(name)
     if (!decls || decls.length === 0) {
@@ -124,26 +121,6 @@ describe(${JSON.stringify(bareIdentifier)}, () => {
 `
 
   await writeFile(fixturePath, testContent)
-}
-
-/**
- * Local binding name to import an export as: `default` needs an alias, and so do arbitrary
- * string-named exports (e.g. groq's `'module.exports'` require(esm) interop export), which
- * aren't valid identifiers.
- */
-function localBindingFor(name) {
-  if (name === 'default') return '_default'
-  if (isIdentifier(name)) return name
-  return `_${name.replace(/[^\w$]/g, '_')}`
-}
-
-/** The import specifier for an export name: string-named exports must be quoted */
-function importSpecifierFor(name) {
-  return isIdentifier(name) ? name : JSON.stringify(name)
-}
-
-function isIdentifier(name) {
-  return /^[A-Za-z_$][\w$]*$/.test(name)
 }
 
 function getTestContent(syntaxKindName, exportName, genericParams) {
