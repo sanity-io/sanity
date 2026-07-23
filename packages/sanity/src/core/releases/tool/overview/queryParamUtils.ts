@@ -60,11 +60,11 @@ export const getInitialCardinalityView =
       VIEW_SEARCH_PARAM_KEY,
     )
 
-    // 'drafts' and 'all' are the only non-default values we store in the query param
-    // absence of the param (or any other value) means 'releases' (default)
+    // 'all' is the default (no param). 'drafts' and 'releases' are the non-default
+    // values we store in the query param; absence of the param means 'all'.
     if (cardinalityView === 'drafts') return 'drafts'
-    if (cardinalityView === 'all') return 'all'
-    return 'releases'
+    if (cardinalityView === 'releases') return 'releases'
+    return 'all'
   }
 
 export const buildReleasesSearchParams = (
@@ -81,8 +81,8 @@ export const buildReleasesSearchParams = (
     params.push([GROUP_SEARCH_PARAM_KEY, releaseGroupMode])
   }
 
-  // Only add view param when it's not 'releases' (the default, no param needed)
-  if (cardinalityView === 'drafts' || cardinalityView === 'all') {
+  // Only add view param when it's not 'all' (the default, no param needed)
+  if (cardinalityView === 'drafts' || cardinalityView === 'releases') {
     params.push([VIEW_SEARCH_PARAM_KEY, cardinalityView])
   }
 

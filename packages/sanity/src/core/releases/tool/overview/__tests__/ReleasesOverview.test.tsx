@@ -926,6 +926,13 @@ describe('ReleasesOverview', () => {
 
       beforeEach(async () => {
         vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+        // Default cardinalityView is now 'all' (both cardinalities combined); these
+        // tests exercise the 'releases'-only filtering, so pin the view explicitly.
+        vi.mocked(useRouter).mockReturnValue({
+          state: {_searchParams: [['view', 'releases']]},
+          navigate: mockNavigate,
+          resolveIntentLink: mockResolveIntentLink,
+        } as unknown as ReturnType<typeof useRouter>)
         mockUseActiveReleases.mockReturnValue({
           ...useActiveReleasesMockReturn,
           data: [
@@ -952,6 +959,10 @@ describe('ReleasesOverview', () => {
         })
 
         return mountAndFlush(<TestComponent />, {wrapper})
+      })
+
+      afterEach(() => {
+        vi.mocked(useRouter).mockReturnValue(mockRouterReturn)
       })
 
       it('should show the cardinality view dropdown', () => {
@@ -1223,6 +1234,20 @@ describe('ReleasesOverview', () => {
     }
 
     describe('regular releases (cardinalityView === "releases")', () => {
+      // Default cardinalityView is now 'all'; force the query param so this
+      // describe still exercises the 'releases'-specific empty-state/upsell branching.
+      beforeEach(() => {
+        vi.mocked(useRouter).mockReturnValue({
+          state: {_searchParams: [['view', 'releases']]},
+          navigate: mockNavigate,
+          resolveIntentLink: mockResolveIntentLink,
+        } as unknown as ReturnType<typeof useRouter>)
+      })
+
+      afterEach(() => {
+        vi.mocked(useRouter).mockReturnValue(mockRouterReturn)
+      })
+
       describe('when empty and plan requires upsell', () => {
         beforeEach(async () => {
           setupEmptyState()

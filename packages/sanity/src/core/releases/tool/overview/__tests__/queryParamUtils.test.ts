@@ -17,14 +17,14 @@ const createMockRouter = (searchParams: string): RouterContextValue =>
 
 describe('queryParamUtils', () => {
   describe('getInitialCardinalityView', () => {
-    it('should return "releases" by default when both features are enabled', () => {
+    it('should return "all" by default when both features are enabled', () => {
       const router = createMockRouter('')
       const result = getInitialCardinalityView({
         router,
         isScheduledDraftsEnabled: true,
         isReleasesEnabled: true,
       })()
-      expect(result).toBe('releases')
+      expect(result).toBe('all')
     })
 
     it('should return "drafts" when view param is "drafts" and both features are enabled', () => {
@@ -117,19 +117,19 @@ describe('queryParamUtils', () => {
 
   describe('buildReleasesSearchParams', () => {
     it('should return empty array when no special params are needed', () => {
-      const result = buildReleasesSearchParams(undefined, 'active', 'releases')
+      const result = buildReleasesSearchParams(undefined, 'active', 'all')
       expect(result).toEqual([])
     })
 
     it('should include date param when filter date is provided', () => {
       const date = new Date(2024, 0, 15)
       const expectedDateString = format(date, 'yyyy-MM-dd')
-      const result = buildReleasesSearchParams(date, 'active', 'releases')
+      const result = buildReleasesSearchParams(date, 'active', 'all')
       expect(result).toEqual([['date', expectedDateString]])
     })
 
     it('should include group param when mode is archived', () => {
-      const result = buildReleasesSearchParams(undefined, 'archived', 'releases')
+      const result = buildReleasesSearchParams(undefined, 'archived', 'all')
       expect(result).toEqual([['group', 'archived']])
     })
 
@@ -138,9 +138,14 @@ describe('queryParamUtils', () => {
       expect(result).toEqual([['view', 'drafts']])
     })
 
-    it('should include view param when cardinality view is all', () => {
+    it('should include view param when cardinality view is releases', () => {
+      const result = buildReleasesSearchParams(undefined, 'active', 'releases')
+      expect(result).toEqual([['view', 'releases']])
+    })
+
+    it('should omit view param when cardinality view is all', () => {
       const result = buildReleasesSearchParams(undefined, 'active', 'all')
-      expect(result).toEqual([['view', 'all']])
+      expect(result).toEqual([])
     })
 
     it('should round-trip the "all" view through the URL param', () => {
