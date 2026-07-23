@@ -1234,8 +1234,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       get-it:
-        specifier: ^8.8.0
-        version: 8.8.0
+        specifier: ^9.1.0
+        version: 9.2.0(vitest@4.1.10)
       groq-js:
         specifier: ^2.0.0
         version: 2.0.0
@@ -10080,6 +10080,15 @@ packages:
   get-it@8.8.0:
     resolution: {integrity: sha512-vRyooMBzoIdEbARGT3JcvWqMD67YzC5SKlMqofyfck1ebLh2zzlpD4hVQ3xiuuiADk4jNs0rTezVlxCMqOlZfA==}
     engines: {node: '>=14.0.0'}
+
+  get-it@9.2.0:
+    resolution: {integrity: sha512-od/t2gFolI6YH8f2DafcGPFTe0qjP2EWTBU+joJzdSHm97Nni0fC99UDXTEYvOxnVFk7am/f2lHkUs8OKDVnEQ==}
+    engines: {node: '>=22.12.0'}
+    peerDependencies:
+      vitest: ^4.1.10
+    peerDependenciesMeta:
+      vitest:
+        optional: true
 
   get-latest-version@6.0.1:
     resolution: {integrity: sha512-6Zub9FhioDbCJzGTZtetVvAkLeA5UnvQEbKfFZUc62hcZm3gO3Txr21oRGOcT6SdiKhjI0vWd/Jxct+wuLJgHA==}
@@ -22906,6 +22915,12 @@ snapshots:
       is-retry-allowed: 2.2.0
       through2: 4.0.2
       tunnel-agent: 0.6.0
+
+  get-it@9.2.0(vitest@4.1.10):
+    dependencies:
+      undici: 7.28.0
+    optionalDependencies:
+      vitest: 4.1.10(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.13.2)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.10)(jsdom@29.1.1)(vite@8.1.5)
 
   get-latest-version@6.0.1:
     dependencies:
