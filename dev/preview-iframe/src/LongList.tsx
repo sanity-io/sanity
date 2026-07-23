@@ -26,6 +26,10 @@ export function LongList(): React.JSX.Element {
     return <p>Loading...</p>
   }
 
+  if (!data) {
+    return <p>No data</p>
+  }
+
   return (
     <Stack padding={4} space={4}>
       <Box>

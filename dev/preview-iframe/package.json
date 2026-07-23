@@ -1,0 +1,38 @@
+{
+  "name": "preview-iframe",
+  "version": "6.6.0",
+  "private": true,
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "check:types": "tsgo --noEmit",
+    "clean": "rimraf dist",
+    "dev": "vite --port 3334",
+    "preview": "vite preview --port 3334",
+    "start": "pnpm preview"
+  },
+  "dependencies": {
+    "@portabletext/react": "^6.2.0",
+    "@sanity/client": "catalog:",
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/react-loader": "^2.1.0",
+    "@sanity/types": "workspace:*",
+    "@sanity/ui": "catalog:",
+    "@sanity/visual-editing": "^5.6.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-refractor": "^4.0.0",
+    "refractor": "^5.0.0",
+    "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "rimraf": "catalog:",
+    "vite": "catalog:"
+  }
+}

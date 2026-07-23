@@ -87,8 +87,8 @@ const defaultConfig = defineConfig({
       name: 'presentation',
       title: 'Presentation',
       previewUrl: {
-        origin: 'https://test-studio.sanity.dev',
-        preview: '/preview/index.html',
+        origin: 'https://test-studio-preview-iframe.sanity.dev',
+        preview: '/',
       },
     }),
     languageFilter({
