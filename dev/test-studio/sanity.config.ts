@@ -46,6 +46,7 @@ import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
+import {timelineSandboxTool} from './plugins/timeline-sandbox'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
@@ -235,6 +236,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         //defaultApiVersion: '2025-02-05',
       }),
       routerDebugTool(),
+      timelineSandboxTool(),
       formBuilderReproTool(),
       errorReportingTestPlugin(),
       media(),
