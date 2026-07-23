@@ -1,13 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon} from '@sanity/icons/Calendar'
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Menu, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {MenuButton} from '../../../../ui-components/menuButton'
-import {MenuItem} from '../../../../ui-components/menuItem'
 import {useTranslation} from '../../../i18n'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {
@@ -96,35 +93,25 @@ export const CardinalityViewPicker = ({
     )
   }
 
-  //  If both are enabled, show the menu button
+  //  If both are enabled, show them as side-by-side tabs (equal prominence) rather than a dropdown.
   return (
-    <MenuButton
-      id="cardinality-view-menu"
-      button={
-        <Button
-          mode="bleed"
-          paddingY={2}
-          text={cardinalityView === 'releases' ? t('action.releases') : t('action.drafts')}
-          icon={CalendarIcon}
-          iconRight={ChevronDownIcon}
-          disabled={loading}
-          style={{fontWeight: 600}}
-        />
-      }
-      menu={
-        <Menu>
-          <MenuItem
-            text={t('action.releases')}
-            selected={cardinalityView === 'releases'}
-            onClick={handleViewChange('releases')}
-          />
-          <MenuItem
-            text={t('action.drafts')}
-            selected={cardinalityView === 'drafts'}
-            onClick={handleViewChange('drafts')}
-          />
-        </Menu>
-      }
-    />
+    <Flex align="center" gap={1}>
+      <Button
+        mode="bleed"
+        paddingY={2}
+        text={t('action.releases')}
+        selected={cardinalityView === 'releases'}
+        onClick={handleViewChange('releases')}
+        disabled={loading}
+      />
+      <Button
+        mode="bleed"
+        paddingY={2}
+        text={t('action.drafts')}
+        selected={cardinalityView === 'drafts'}
+        onClick={handleViewChange('drafts')}
+        disabled={loading}
+      />
+    </Flex>
   )
 }

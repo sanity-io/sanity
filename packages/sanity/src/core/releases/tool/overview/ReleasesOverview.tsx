@@ -289,52 +289,54 @@ export function ReleasesOverview() {
         : {}),
     }
     return (
-      <AnimatePresence>
-        <MotionButton
-          key="open-group"
-          {...groupModeButtonBaseProps}
-          onClick={handleReleaseGroupModeChange}
-          selected={releaseGroupMode === 'active'}
-          text={t('action.open')}
-          value="active"
-        />
-        {cardinalityView === 'drafts' && (
+      <Flex align="center" gap={1}>
+        <AnimatePresence>
+          <MotionButton
+            key="open-group"
+            {...groupModeButtonBaseProps}
+            onClick={handleReleaseGroupModeChange}
+            selected={releaseGroupMode === 'active'}
+            text={t('action.open')}
+            value="active"
+          />
+          {cardinalityView === 'drafts' && (
+            <Tooltip
+              disabled={pausedReleases.length !== 0}
+              content={t('no-paused-release')}
+              placement="bottom"
+            >
+              <div>
+                <MotionButton
+                  key="paused-group"
+                  {...groupModeButtonBaseProps}
+                  disabled={groupModeButtonBaseProps.disabled || !pausedReleases.length}
+                  onClick={handleReleaseGroupModeChange}
+                  selected={releaseGroupMode === 'paused'}
+                  text={t('action.paused')}
+                  value="paused"
+                />
+              </div>
+            </Tooltip>
+          )}
           <Tooltip
-            disabled={pausedReleases.length !== 0}
-            content={t('no-paused-release')}
+            disabled={archivedReleases.length !== 0}
+            content={t('no-archived-release')}
             placement="bottom"
           >
             <div>
               <MotionButton
-                key="paused-group"
+                key="archived-group"
                 {...groupModeButtonBaseProps}
-                disabled={groupModeButtonBaseProps.disabled || !pausedReleases.length}
+                disabled={groupModeButtonBaseProps.disabled || !archivedReleases.length}
                 onClick={handleReleaseGroupModeChange}
-                selected={releaseGroupMode === 'paused'}
-                text={t('action.paused')}
-                value="paused"
+                selected={releaseGroupMode === 'archived'}
+                text={t('action.archived')}
+                value="archived"
               />
             </div>
           </Tooltip>
-        )}
-        <Tooltip
-          disabled={archivedReleases.length !== 0}
-          content={t('no-archived-release')}
-          placement="bottom"
-        >
-          <div>
-            <MotionButton
-              key="archived-group"
-              {...groupModeButtonBaseProps}
-              disabled={groupModeButtonBaseProps.disabled || !archivedReleases.length}
-              onClick={handleReleaseGroupModeChange}
-              selected={releaseGroupMode === 'archived'}
-              text={t('action.archived')}
-              value="archived"
-            />
-          </div>
-        </Tooltip>
-      </AnimatePresence>
+        </AnimatePresence>
+      </Flex>
     )
   }, [
     loading,

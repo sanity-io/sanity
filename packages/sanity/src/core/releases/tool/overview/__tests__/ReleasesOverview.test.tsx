@@ -898,13 +898,13 @@ describe('ReleasesOverview', () => {
           await mountAndFlush(<TestComponent />, {wrapper})
         })
 
-        it('should show the cardinality view dropdown', () => {
-          const releasesButton = screen.getByRole('button', {name: /Releases/i})
-          expect(releasesButton).toBeInTheDocument()
+        it('should show the cardinality view tabs', () => {
+          // Both datasets available -> two side-by-side tabs, not a dropdown
+          expect(screen.getByRole('button', {name: 'Releases'})).toBeInTheDocument()
+          expect(screen.getByRole('button', {name: 'Scheduled drafts'})).toBeInTheDocument()
 
-          // Should find the dropdown menu button by id
-          const dropdownButton = document.getElementById('cardinality-view-menu')
-          expect(dropdownButton).toBeInTheDocument()
+          // The dropdown menu button has been replaced by the tabs
+          expect(document.getElementById('cardinality-view-menu')).not.toBeInTheDocument()
         })
 
         it('should show the create release button', () => {
@@ -1069,13 +1069,13 @@ describe('ReleasesOverview', () => {
         await mountAndFlush(<TestComponent />, {wrapper})
       })
 
-      it('should still show the cardinality view dropdown', () => {
-        const releasesButton = screen.getByRole('button', {name: /Releases/i})
-        expect(releasesButton).toBeInTheDocument()
+      it('should still show the cardinality view tabs', () => {
+        // Both datasets available -> two side-by-side tabs, not a dropdown
+        expect(screen.getByRole('button', {name: 'Releases'})).toBeInTheDocument()
+        expect(screen.getByRole('button', {name: 'Scheduled drafts'})).toBeInTheDocument()
 
-        // Should find the dropdown menu button by id
-        const dropdownButton = document.getElementById('cardinality-view-menu')
-        expect(dropdownButton).toBeInTheDocument()
+        // The dropdown menu button has been replaced by the tabs
+        expect(document.getElementById('cardinality-view-menu')).not.toBeInTheDocument()
       })
 
       it('should show the create release button', () => {
