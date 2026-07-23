@@ -112,6 +112,8 @@ minimumReleaseAgeExclude:
   - 'verkit'
   - 'vitest'
   - 'vite'
+  # Fresh major; exclude so install can resolve before the age gate would allow it
+  - 'web-vitals'
   # covers yuku-ast/yuku-codegen/yuku-parser, which ship together with rolldown-plugin-dts
   - 'yuku-*'
 
