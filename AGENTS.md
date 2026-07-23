@@ -79,7 +79,8 @@ sanity/
 │   ├── @sanity/          # Scoped packages (cli, types, schema, etc.)
 │   └── @repo/            # Internal tooling (test-config, tsconfig, etc.)
 ├── dev/                  # Development studios for testing
-│   └── test-studio/      # Primary dev studio (pnpm dev runs this)
+│   ├── test-studio/      # Primary dev studio (pnpm dev runs this)
+│   └── preview-iframe/   # Presentation preview iframe (vanilla Vite, port 3334)
 ├── e2e/                  # End-to-end Playwright tests
 ├── perf/                 # Performance testing
 └── examples/             # Example studios
@@ -145,19 +146,22 @@ Components that need auth context use `createMockAuthStore` in tests, so no real
 ### Running the Dev Studio (Auth Required)
 
 ```bash
-pnpm dev  # Starts at http://localhost:3333
+pnpm dev  # Starts test-studio at http://localhost:3333 and preview-iframe at http://localhost:3334
 ```
 
 - **Requires browser authentication** on first visit—you'll be prompted to log in with a Sanity account
 - Connects to a real Sanity project (configured in `dev/test-studio/sanity.config.ts`)
 - Uses staging API by default (`api.sanity.work`)
 - Session persists in browser, so subsequent visits won't require re-authentication
+- `pnpm dev` / `pnpm dev:test-studio` also starts `dev/preview-iframe` (vanilla Vite on port 3334) so Presentation can load its cross-origin iframe. Studio-only: `pnpm dev:test-studio:studio`. Preview-only: `pnpm dev:preview-iframe`.
+- Deployed preview iframe: Sanity Sandbox Vercel project `test-studio-preview-iframe` (`https://test-studio-preview-iframe.sanity.dev`)
 
 Use the dev studio when you need to:
 
 - Visually verify UI changes
 - Test real document editing workflows
 - Debug issues that only appear with real data
+- Exercise Presentation / visual editing against the local preview iframe
 
 ### Inspecting Production Builds with Vite DevTools
 
