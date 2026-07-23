@@ -1,6 +1,9 @@
 import {LockIcon} from '@sanity/icons/Lock'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Flex, Text} from '@sanity/ui'
 
+import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -47,9 +50,27 @@ export const ReleaseTime: React.FC<{release: TableRelease}> = ({release}) => {
       {!isInArchivedView && (
         <>
           <Box paddingY={1}>
-            <Text size={1} muted>
-              {isScheduledOrScheduling ? tRelease('time.scheduled') : tRelease('time.estimated')}
-            </Text>
+            {isScheduledOrScheduling ? (
+              <Text size={1} muted>
+                {tRelease('time.scheduled')}
+              </Text>
+            ) : (
+              // Intended date set, but the release is NOT scheduled — it will not publish until the
+              // user confirms the schedule. Flag it (caution) rather than the soft "Estimated".
+              <Tooltip
+                content={<Text size={1}>{tRelease('time.not-scheduled-tooltip')}</Text>}
+                portal
+              >
+                <Flex gap={1} align="center" data-testid="release-not-scheduled">
+                  <Text size={1}>
+                    <ToneIcon icon={WarningOutlineIcon} tone="caution" />
+                  </Text>
+                  <Text size={1} weight="medium">
+                    {tRelease('time.not-scheduled')}
+                  </Text>
+                </Flex>
+              </Tooltip>
+            )}
           </Box>
           <Box paddingY={1}>
             <Text size={1} muted>

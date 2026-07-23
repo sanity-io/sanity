@@ -587,6 +587,12 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'time.scheduled': 'Scheduled',
   /** Text for the release time label for scheduled releases  which has not been scheduled yet*/
   'time.estimated': 'Estimated',
+  /** Release time label for an at-time release that has an intended date but has NOT been scheduled yet
+   * (it will not publish until the user confirms the schedule) */
+  'time.not-scheduled': 'Not scheduled',
+  /** Tooltip explaining the "Not scheduled" state */
+  'time.not-scheduled-tooltip':
+    'This release has an intended date but isn’t scheduled yet — it won’t publish until you schedule it.',
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
   /** Toast message after copying release ID */

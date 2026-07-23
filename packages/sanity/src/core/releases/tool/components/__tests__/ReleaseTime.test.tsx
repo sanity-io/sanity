@@ -57,20 +57,20 @@ describe('ReleaseTime', () => {
     expect(screen.getByText('Oct 10, 2023', {exact: false})).toBeInTheDocument()
   })
 
-  it('renders "Estimated" for active scheduled releases', async () => {
+  it('renders "Not scheduled" for active scheduled releases (intended, not committed)', async () => {
     await renderTest({
       release: activeScheduledRelease,
     })
 
-    expect(screen.getByText('Estimated')).toBeInTheDocument()
+    expect(screen.getByText('Not scheduled')).toBeInTheDocument()
   })
 
-  it('renders the date without "Estimated" prefix for archived releases', async () => {
+  it('renders the date without a schedule-status prefix for archived releases', async () => {
     await renderTest({
       release: archivedScheduledRelease,
     })
 
-    expect(screen.queryByText('Estimated')).not.toBeInTheDocument()
+    expect(screen.queryByText('Not scheduled')).not.toBeInTheDocument()
     expect(screen.queryByText('Scheduled')).not.toBeInTheDocument()
     expect(screen.getByText('Oct 10, 2023', {exact: false})).toBeInTheDocument()
   })
