@@ -99,6 +99,7 @@ export {
   type CommandListRenderItemCallback,
 } from '../core/components/commandList/types'
 export {ContextMenuButton} from '../core/components/contextMenuButton/ContextMenuButton'
+export {Delay} from '../core/components/Delay'
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
 export {ErrorActions, type ErrorActionsProps} from '../core/components/errorActions/ErrorActions'

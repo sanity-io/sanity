@@ -1,5 +1,10 @@
 import {useEffect, useState} from 'react'
 
+/**
+ * Renders its children after the given delay has elapsed.
+ *
+ * @internal
+ */
 export function Delay({
   children,
   ms = 0,

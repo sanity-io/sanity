@@ -11,6 +11,7 @@ import {
 import {tap} from 'rxjs/operators'
 import {
   createPatchChannel,
+  Delay,
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
   FormBuilder,
@@ -28,7 +29,6 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {Delay} from '../../../../components/Delay'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
