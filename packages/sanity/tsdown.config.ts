@@ -3,20 +3,8 @@ import {defineConfig} from '@repo/tsdown.config'
 import pkg from './package.json' with {type: 'json'}
 
 export default defineConfig({
-  entry: {
-    'index': './src/_exports/index.ts',
-    '_internal': './src/_exports/_internal.ts',
-    '_singletons': './src/_exports/_singletons.ts',
-    '_createContext': './src/_exports/_createContext.ts',
-    'cli': './src/_exports/cli.ts',
-    'desk': './src/_exports/desk.ts',
-    'presentation': './src/_exports/presentation.ts',
-    'router': './src/_exports/router.ts',
-    'structure': './src/_exports/structure.ts',
-    'media-library': './src/_exports/media-library.ts',
-    'migrate': './src/_exports/migrate.ts',
-    'workbench': './src/_exports/workbench.ts',
-  },
+  // Filenames under `_exports/` map 1:1 to export names (index, cli, structure, …)
+  entry: './src/_exports/*.ts',
   // Also wipe legacy root-level entry artifacts from older pkg-utils layouts (a string[] replaces
   // the shared `clean: ['lib']` default, so `lib` must be listed explicitly)
   clean: [
