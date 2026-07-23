@@ -37,6 +37,36 @@ describe('queryParamUtils', () => {
       expect(result).toBe('drafts')
     })
 
+    it('should return "all" when view param is "all" and both features are enabled', () => {
+      const router = createMockRouter('view=all')
+      const result = getInitialCardinalityView({
+        router,
+        isScheduledDraftsEnabled: true,
+        isReleasesEnabled: true,
+      })()
+      expect(result).toBe('all')
+    })
+
+    it('should return "releases" when view param is "all" but scheduled drafts is disabled', () => {
+      const router = createMockRouter('view=all')
+      const result = getInitialCardinalityView({
+        router,
+        isScheduledDraftsEnabled: false,
+        isReleasesEnabled: true,
+      })()
+      expect(result).toBe('releases')
+    })
+
+    it('should return "drafts" when view param is "all" but releases is disabled', () => {
+      const router = createMockRouter('view=all')
+      const result = getInitialCardinalityView({
+        router,
+        isScheduledDraftsEnabled: true,
+        isReleasesEnabled: false,
+      })()
+      expect(result).toBe('drafts')
+    })
+
     it('should return "releases" when scheduled drafts is disabled', () => {
       const router = createMockRouter('view=drafts')
       const result = getInitialCardinalityView({
@@ -106,6 +136,25 @@ describe('queryParamUtils', () => {
     it('should include view param when cardinality view is drafts', () => {
       const result = buildReleasesSearchParams(undefined, 'active', 'drafts')
       expect(result).toEqual([['view', 'drafts']])
+    })
+
+    it('should include view param when cardinality view is all', () => {
+      const result = buildReleasesSearchParams(undefined, 'active', 'all')
+      expect(result).toEqual([['view', 'all']])
+    })
+
+    it('should round-trip the "all" view through the URL param', () => {
+      const params = buildReleasesSearchParams(undefined, 'active', 'all')
+      const searchParams = new URLSearchParams(params as [string, string][])
+      const router = createMockRouter(searchParams.toString())
+
+      const result = getInitialCardinalityView({
+        router,
+        isScheduledDraftsEnabled: true,
+        isReleasesEnabled: true,
+      })()
+
+      expect(result).toBe('all')
     })
   })
 })

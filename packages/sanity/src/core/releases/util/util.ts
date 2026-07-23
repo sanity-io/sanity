@@ -114,6 +114,9 @@ export function shouldShowReleaseInView(
   cardinalityView: CardinalityView,
 ): (release: ReleaseDocument) => boolean {
   return (release: ReleaseDocument): boolean => {
+    // 'all' shows both cardinalities in one combined list.
+    if (cardinalityView === 'all') return true
+
     const isCardinalityOne = isCardinalityOneRelease(release)
     // Show cardinality 'one' releases in 'drafts' view, and cardinality 'many'/undefined in 'releases' view
     return cardinalityView === 'drafts' ? isCardinalityOne : !isCardinalityOne

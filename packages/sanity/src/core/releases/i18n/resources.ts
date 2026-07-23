@@ -8,6 +8,8 @@ import {defineLocalesResources} from '../../i18n'
 const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Action text for adding a document to release */
   'action.add-document': 'Add document',
+  /** Menu item label for showing the combined releases + scheduled drafts view */
+  'action.all': 'All',
   /** Action text for archiving a release */
   'action.archive': 'Archive release',
   /** Tooltip for copy release actions button */
@@ -600,6 +602,12 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'table-header.variant': 'Variant',
   /** Header for the document table in the release tool - action */
   'table-header.action': 'Action',
+  /** Header for the overview Kind column (shown only in the combined All view) */
+  'table-header.kind': 'Kind',
+  /** Kind column value for a multi-document release, in the combined All view */
+  'overview.kind.release': 'Release',
+  /** Kind column value for a cardinality-one (single document) release, in the combined All view */
+  'overview.kind.document': 'Document',
 
   /** Filter tab label for all documents */
   'filter-tab.all': 'All',

@@ -1,4 +1,6 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {DocumentsIcon} from '@sanity/icons/Documents'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Flex, Text} from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
@@ -8,6 +10,7 @@ import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {RelativeTime} from '../../../components'
 import {EditedByCell} from '../../../components/documentTable/EditedByCell'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {getReleaseTiming} from '../../util/getReleaseTiming'
 import {ReleaseTime} from '../components/ReleaseTime'
 import {Headers} from '../components/Table/TableHeader'
@@ -15,7 +18,7 @@ import {type Column} from '../components/Table/types'
 import {ReleaseColumnValidationLoading} from './columnCells/ReleaseColumnValidationLoading'
 import {ReleaseDocumentsCounter} from './columnCells/ReleaseDocumentsCounter'
 import {ReleaseNameCell} from './columnCells/ReleaseName'
-import {type Mode} from './queryParamUtils'
+import {type CardinalityView, type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
 
 const enableColumnFormMode =
@@ -30,7 +33,8 @@ const enableColumnFormMode =
 export const releasesOverviewColumnDefs: (
   t: TFunction<'releases'>,
   releaseGroupMode: Mode,
-) => Column<TableRelease>[] = (t, releaseGroupMode) => {
+  cardinalityView: CardinalityView,
+) => Column<TableRelease>[] = (t, releaseGroupMode, cardinalityView) => {
   const checkColumnMode = enableColumnFormMode(releaseGroupMode)
   return [
     checkColumnMode(
@@ -56,6 +60,45 @@ export const releasesOverviewColumnDefs: (
       },
       'all',
     ),
+    // Kind — Release vs Document. Only shown in the combined "All" view, where cardinality
+    // actually varies; in the single-cardinality "Releases"/"Scheduled drafts" tabs this would
+    // always read the same value for every row, so it's omitted there.
+    cardinalityView === 'all'
+      ? checkColumnMode(
+          {
+            id: 'kind',
+            sorting: true,
+            sortTransform: (release) => (isCardinalityOneRelease(release) ? 1 : 0),
+            width: 120,
+            header: (props) => (
+              <Flex {...props.headerProps} paddingY={3} sizing="border">
+                <Headers.SortHeaderButton text={t('table-header.kind')} {...props} />
+              </Flex>
+            ),
+            cell: ({cellProps, datum: release}) => {
+              const isDocument = isCardinalityOneRelease(release)
+              return (
+                <Flex
+                  {...cellProps}
+                  align="center"
+                  paddingX={2}
+                  paddingY={3}
+                  gap={2}
+                  sizing="border"
+                >
+                  <Text muted size={1}>
+                    {isDocument ? <DocumentIcon /> : <DocumentsIcon />}
+                  </Text>
+                  <Text muted size={1}>
+                    {isDocument ? t('overview.kind.document') : t('overview.kind.release')}
+                  </Text>
+                </Flex>
+              )
+            },
+          },
+          'all',
+        )
+      : undefined,
     // Schedule — the two-state timing in ONE adaptive column (see naming-model-decision.md):
     // 🔒 date (armed) / ⚠ date (intended, not scheduled) / "Unscheduled" (no date). This replaces
     // the old Type + When pair, which restated each other ("Undecided Undecided") and wrapped.

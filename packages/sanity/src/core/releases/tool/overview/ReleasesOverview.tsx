@@ -459,7 +459,7 @@ export function ReleasesOverview() {
     if (cardinalityView === 'drafts') {
       return scheduledDraftsOverviewColumnDefs(t, releaseGroupMode)
     }
-    return releasesOverviewColumnDefs(t, releaseGroupMode)
+    return releasesOverviewColumnDefs(t, releaseGroupMode, cardinalityView)
   }, [cardinalityView, releaseGroupMode, t])
 
   const getReleaseKey = useCallback((release: TableRelease) => release._id, [])

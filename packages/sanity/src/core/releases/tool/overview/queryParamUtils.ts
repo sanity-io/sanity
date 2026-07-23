@@ -2,7 +2,7 @@ import {format} from 'date-fns/format'
 import {type RouterContextValue, type SearchParam} from 'sanity/router'
 
 export type Mode = 'active' | 'paused' | 'archived'
-export type CardinalityView = 'releases' | 'drafts'
+export type CardinalityView = 'releases' | 'drafts' | 'all'
 
 export const GROUP_SEARCH_PARAM_KEY = 'group'
 export const RELEASE_NOT_FOUND_SEARCH_PARAM_KEY = 'releaseNotFound'
@@ -60,9 +60,11 @@ export const getInitialCardinalityView =
       VIEW_SEARCH_PARAM_KEY,
     )
 
-    // 'drafts' is the only value we store in the query param
-    // absence of the param means 'releases' (default)
-    return cardinalityView === 'drafts' ? 'drafts' : 'releases'
+    // 'drafts' and 'all' are the only non-default values we store in the query param
+    // absence of the param (or any other value) means 'releases' (default)
+    if (cardinalityView === 'drafts') return 'drafts'
+    if (cardinalityView === 'all') return 'all'
+    return 'releases'
   }
 
 export const buildReleasesSearchParams = (
@@ -79,9 +81,9 @@ export const buildReleasesSearchParams = (
     params.push([GROUP_SEARCH_PARAM_KEY, releaseGroupMode])
   }
 
-  // Only add view param when it's 'drafts' (releases is default, no param needed)
-  if (cardinalityView === 'drafts') {
-    params.push([VIEW_SEARCH_PARAM_KEY, 'drafts'])
+  // Only add view param when it's not 'releases' (the default, no param needed)
+  if (cardinalityView === 'drafts' || cardinalityView === 'all') {
+    params.push([VIEW_SEARCH_PARAM_KEY, cardinalityView])
   }
 
   return params

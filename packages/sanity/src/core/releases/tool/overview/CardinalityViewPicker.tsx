@@ -8,6 +8,7 @@ import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {
+  NavigatedToAllReleases,
   NavigatedToReleasesOverview,
   NavigatedToScheduledDrafts,
 } from '../../__telemetry__/navigation.telemetry'
@@ -45,6 +46,12 @@ const getPickerView = ({
   return cardinalityView === 'releases' ? 'both' : 'singleDocReleases'
 }
 
+function getNavigationTelemetryEvent(view: CardinalityView) {
+  if (view === 'all') return NavigatedToAllReleases
+  if (view === 'drafts') return NavigatedToScheduledDrafts
+  return NavigatedToReleasesOverview
+}
+
 export const CardinalityViewPicker = ({
   cardinalityView,
   loading,
@@ -72,8 +79,7 @@ export const CardinalityViewPicker = ({
 
   const handleViewChange = useCallback(
     (view: CardinalityView) => () => {
-      const telemetryEvent =
-        view === 'releases' ? NavigatedToReleasesOverview : NavigatedToScheduledDrafts
+      const telemetryEvent = getNavigationTelemetryEvent(view)
       telemetry.log(telemetryEvent, {source: 'view-picker'})
 
       onCardinalityViewChange(view)()
@@ -94,10 +100,20 @@ export const CardinalityViewPicker = ({
   }
 
   //  If both are enabled, show them as side-by-side tabs (equal prominence) rather than a dropdown.
+  //  The selected tab uses mode="ghost" for a clearer emphasis than the tonal `selected` highlight
+  //  alone; unselected tabs stay mode="bleed".
   return (
     <Flex align="center" gap={1}>
       <Button
-        mode="bleed"
+        mode={cardinalityView === 'all' ? 'ghost' : 'bleed'}
+        paddingY={2}
+        text={t('action.all')}
+        selected={cardinalityView === 'all'}
+        onClick={handleViewChange('all')}
+        disabled={loading}
+      />
+      <Button
+        mode={cardinalityView === 'releases' ? 'ghost' : 'bleed'}
         paddingY={2}
         text={t('action.releases')}
         selected={cardinalityView === 'releases'}
@@ -105,7 +121,7 @@ export const CardinalityViewPicker = ({
         disabled={loading}
       />
       <Button
-        mode="bleed"
+        mode={cardinalityView === 'drafts' ? 'ghost' : 'bleed'}
         paddingY={2}
         text={t('action.drafts')}
         selected={cardinalityView === 'drafts'}

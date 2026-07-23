@@ -18,3 +18,10 @@ export const NavigatedToScheduledDrafts = defineEvent<NavigationSourceInfo>({
   version: 1,
   description: 'User navigated to the scheduled drafts list view',
 })
+
+// Event when user navigates to the combined all-releases (releases + scheduled drafts) view
+export const NavigatedToAllReleases = defineEvent<NavigationSourceInfo>({
+  name: 'Navigated to All Releases',
+  version: 1,
+  description: 'User navigated to the combined releases and scheduled drafts list view',
+})
