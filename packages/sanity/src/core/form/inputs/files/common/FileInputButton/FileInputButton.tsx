@@ -23,7 +23,9 @@ export const FileInputButton = forwardRef(function FileInputButton(
     Omit<HTMLProps<HTMLButtonElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
   forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
-  const {icon, id: idProp, accept, capture, multiple, onSelect, text, disabled, ...rest} = props
+  // `text` and `icon` stay in `rest` so the ButtonWithText | IconButton union
+  // stays correlated when spread onto the styled component.
+  const {id: idProp, accept, capture, multiple, onSelect, disabled, ...rest} = props
   const id = `${idProp || ''}-${useId()}`
 
   const handleChange = useCallback(
@@ -36,7 +38,7 @@ export const FileInputButton = forwardRef(function FileInputButton(
   )
 
   return (
-    <FileButton {...rest} icon={icon} text={text} htmlFor={id} disabled={disabled}>
+    <FileButton {...rest} htmlFor={id} disabled={disabled}>
       {/* Visibly hidden input */}
       <input
         data-testid="file-button-input"

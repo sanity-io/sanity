@@ -35,6 +35,7 @@ import {
   useClient,
   useDataset,
   useProjectId,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
 
 import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
@@ -48,6 +49,10 @@ export interface LiveQueriesProps {
   liveDocument: Partial<SanityDocument> | null | undefined
   controller: Controller | undefined
   perspective: ClientPerspective
+  /**
+   * The selected editing variant as a bare variant id, or `undefined` when no variant is selected
+   */
+  variant: string | undefined
   onLoadersConnection: (event: StatusEvent) => void
   onDocumentsOnPage: (
     key: string,
@@ -57,7 +62,13 @@ export interface LiveQueriesProps {
 }
 
 export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element {
-  const {controller, perspective: activePerspective, onLoadersConnection, onDocumentsOnPage} = props
+  const {
+    controller,
+    perspective: activePerspective,
+    variant: activeVariant,
+    onLoadersConnection,
+    onDocumentsOnPage,
+  } = props
 
   const [comlink, setComlink] = useState<ChannelInstance<LoaderControllerMsg, LoaderNodeMsg>>()
   const [liveQueries, liveQueriesDispatch] = useLiveQueries()
@@ -107,6 +118,10 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
             type: 'query-listen',
             payload: {
               perspective: data.perspective,
+              // Round-tripped from the loader, like perspective: fetches use exactly what the
+              // subscription registered so results and cache keys stay coherent on both sides
+              // while re-registrations propagate after a variant switch
+              variant: data.variant || undefined,
               query: data.query,
               params: data.params,
               heartbeat: data.heartbeat ?? false,
@@ -121,10 +136,14 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
   }, [controller, dataset, liveQueriesDispatch, onDocumentsOnPage, onLoadersConnection, projectId])
 
   const studioClient = useClient(
-    isReleasePerspective(activePerspective)
-      ? RELEASES_STUDIO_CLIENT_OPTIONS
-      : {apiVersion: API_VERSION},
+    // Fetching with a variant requires the `vX` API version for now
+    activeVariant
+      ? VARIANTS_STUDIO_CLIENT_OPTIONS
+      : isReleasePerspective(activePerspective)
+        ? RELEASES_STUDIO_CLIENT_OPTIONS
+        : {apiVersion: API_VERSION},
   )
+
   const client = useMemo(
     () =>
       studioClient.withConfig({
@@ -138,9 +157,10 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
         projectId,
         dataset,
         perspective: activePerspective,
+        variant: activeVariant,
       })
     }
-  }, [comlink, activePerspective, projectId, dataset])
+  }, [comlink, activePerspective, activeVariant, projectId, dataset])
 
   /**
    * Defer the liveDocument to avoid unnecessary rerenders on rapid edits
@@ -151,12 +171,13 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
 
   return (
     <>
-      {[...liveQueries.entries()].map(([key, {query, params, perspective}]) => (
+      {[...liveQueries.entries()].map(([key, {query, params, perspective, variant}]) => (
         <QuerySubscription
           key={`${liveEvents.resets}:${key}`}
           projectId={projectId}
           dataset={dataset}
           perspective={perspective}
+          variant={variant}
           query={query}
           params={params}
           comlink={comlink}
@@ -183,6 +204,7 @@ interface QuerySubscriptionProps extends Pick<
   projectId: string
   dataset: string
   perspective: ClientPerspective
+  variant: string | undefined
   query: string
   params: QueryParams
   comlink: LoaderConnection | undefined
@@ -192,6 +214,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
     projectId,
     dataset,
     perspective,
+    variant,
     query,
     client,
     liveDocument,
@@ -209,6 +232,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
     liveDocument,
     params,
     perspective,
+    variant,
     query,
     liveEventsMessages,
   }) || {}
@@ -217,6 +241,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
     (
       comlink: LoaderConnection | undefined,
       perspective: ClientPerspective,
+      variant: string | undefined,
       query: string,
       params: QueryParams,
       result: unknown,
@@ -227,6 +252,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
         projectId,
         dataset,
         perspective,
+        variant,
         query,
         params,
         result,
@@ -238,10 +264,10 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
 
   useEffect(() => {
     if (resultSourceMap) {
-      handleQueryChange(comlink, perspective, query, params, result, resultSourceMap, tags)
+      handleQueryChange(comlink, perspective, variant, query, params, result, resultSourceMap, tags)
     }
     return undefined
-  }, [comlink, params, perspective, query, result, resultSourceMap, tags])
+  }, [comlink, params, perspective, query, result, resultSourceMap, tags, variant])
 
   return null
 }
@@ -253,10 +279,19 @@ interface UseQuerySubscriptionProps extends Required<Pick<SharedProps, 'client'>
   query: string
   params: QueryParams
   perspective: ClientPerspective
+  variant: string | undefined
   liveEventsMessages: LiveEventMessage[]
 }
 function useQuerySubscription(props: UseQuerySubscriptionProps) {
-  const {liveDocument, client, query, params, perspective, liveEventsMessages} = props
+  const {
+    liveDocument,
+    client: _client,
+    query,
+    params,
+    perspective,
+    variant,
+    liveEventsMessages,
+  } = props
   const [result, setResult] = useState<unknown>(null)
   const [resultSourceMap, setResultSourceMap] = useState<ContentSourceMap | null | undefined>(null)
   const [syncTags, setSyncTags] = useState<SyncTag[] | undefined>(undefined)
@@ -274,12 +309,18 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
   useEffect(() => {
     const controller = new AbortController()
 
+    // Parent client follows activeVariant synchronously; per-query variant comes from loader/query-listen and lags.
+    // Without this, a client downgrade can run a fetch that still passes variant, which the dated API rejects.
+    // Once we have a dated api for variants we can update the default API_VERSION we use for all clients in presentation
+    const client = variant ? _client.withConfig(VARIANTS_STUDIO_CLIENT_OPTIONS) : _client
+
     client
       .fetch(query, params, {
         lastLiveEventId,
         tag: 'presentation-loader',
         signal: controller.signal,
         perspective,
+        variant,
         filterResponse: false,
         returnQuery: false,
       })
@@ -301,7 +342,7 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     return () => {
       controller.abort()
     }
-  }, [client, lastLiveEventId, params, perspective, query])
+  }, [_client, lastLiveEventId, params, perspective, query, variant])
 
   return useMemo(() => {
     if (liveDocument && resultSourceMap) {

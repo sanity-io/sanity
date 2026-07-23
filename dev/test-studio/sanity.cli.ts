@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
+import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
@@ -28,7 +28,7 @@ export default defineCliConfig({
   reactStrictMode: true,
   reactCompiler: {
     target: '19',
-    // By default the compiler is loaded up on all workspace files, even sanity/lib/structure.js which is pre-compiled with `@sanity/pkg-utils`,
+    // By default the compiler is loaded up on all workspace files, even sanity/lib/structure.js which is pre-compiled with `tsdown`,
     // and so we filter by just studio files
     sources: (filename) => {
       // The default behavior is to always skip node_modules: https://github.com/facebook/react/blob/d6cae440e34c6250928e18bed4a16480f83ae18a/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L326
@@ -103,10 +103,19 @@ export default defineCliConfig({
       return mergeConfig(nextConfig, {
         // Aliasing to react-dom/profiling is necessary in the production build, otherwise React can't run the profiler on the deployed studio
         resolve: {alias: {'react-dom/client': require.resolve('react-dom/profiling')}},
-        // Not minifying identifiers ensures that the React DevTools components inspector has readable component names
-        esbuild: {minifyIdentifiers: false},
-        // Enable production source maps to easier debug deployed test studios
-        build: {sourcemap: true},
+        build: {
+          // Enable production source maps to easier debug deployed test studios
+          sourcemap: true,
+          rolldownOptions: {
+            output: {
+              // Disabling `mangle` (while keeping compression and whitespace removal) ensures that
+              // the React DevTools components inspector has readable component names.
+              // This overrides the `build.minify: 'oxc'` default set by `sanity build`, replacing
+              // `esbuild: {minifyIdentifiers: false}` which the rolldown-powered Vite silently ignores.
+              minify: {compress: true, mangle: false, codegen: true},
+            },
+          },
+        },
       } satisfies UserConfig)
     }
 

@@ -273,6 +273,51 @@ describe('CreateVariantDialog', () => {
     expect(screen.getByTestId('variant-form-title-error')).toHaveTextContent('Title is required')
   })
 
+  it('renders the priority field with a help tooltip', async () => {
+    await renderDialog()
+
+    expect(screen.getByTestId('variant-form-priority')).toHaveValue(0)
+    expect(screen.getByTestId('variant-form-priority-help')).toBeInTheDocument()
+  })
+
+  it('rejects an empty priority value', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal-customers')
+    await user.clear(screen.getByTestId('variant-form-priority'))
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    expect(screen.getByTestId('variant-form-priority-error')).toHaveTextContent(
+      'Priority must be a number',
+    )
+    expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
+  })
+
+  it('persists priority when creating a variant', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal-customers')
+    await user.clear(screen.getByTestId('variant-form-priority'))
+    await user.type(screen.getByTestId('variant-form-priority'), '75.5')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
+
+    expect(createdVariant.priority).toBe(75.5)
+  })
+
   it('creates a variant and calls submit with the generated id', async () => {
     const user = userEvent.setup()
 
