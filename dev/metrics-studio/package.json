@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",
-    "@vanilla-extract/vite-plugin": "catalog:",
+    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "rimraf": "catalog:",
     "vitest": "catalog:"
   }

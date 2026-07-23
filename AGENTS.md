@@ -278,6 +278,25 @@ Tests require a build first because some tests use compiled output:
 pnpm build && pnpm test
 ```
 
+#### Vanilla-extract in jsdom tests
+
+The `sanity` and `@sanity/vision` jsdom suites import
+[`@vanilla-extract/css/disableRuntimeStyles`](https://vanilla-extract.style/documentation/test-environments/#disabling-runtime-styles)
+(`packages/sanity/test/setup/environment.ts`, and as a direct vitest `setupFiles` entry in
+`packages/@sanity/vision/vitest.config.mts`), so vanilla-extract skips injecting real stylesheets
+into jsdom. Class name identifiers still resolve, but computed styles are not available.
+
+Conventions that follow from this:
+
+- **Do not assert on vanilla-extract class names or computed styles in jsdom tests.** Assert on
+  `data-testid` attributes instead. Visual/style behavior belongs in the vitest browser mode
+  suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit) or the Playwright e2e tests, where
+  runtime styles stay enabled.
+- **Keep `vanillaExtractPlugin()` in the vitest configs.** The plugin's transform assigns file
+  scopes to `.css.ts` modules; without it any test that (transitively) imports a `.css.ts` file
+  throws "Styles were unable to be assigned to a file". `disableRuntimeStyles` only skips style
+  injection, not the transform.
+
 ### E2E Tests (Playwright)
 
 ```bash
@@ -456,5 +475,5 @@ These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The st
   - Because the Read tool redacts the token, you cannot paste the URL into browser instructions directly. A reliable trick is a tiny local HTTP server that reads `STUDIO_AUTH_TOKEN` from env and serves an HTML page doing `location.replace(<studio-url-with-token>)`, then point the browser at that server (keeps the secret out of prompts/screenshots). After load you land authenticated in the workspace and can create/publish documents (e.g. an `Author`).
   - Most changes should still be verified with `pnpm build && pnpm test` (no auth needed); only use the studio for visual/manual verification.
 - **Seeding test documents for the `/test` workspace via API.** In local dev (non-staging), the `/test` workspace talks to the production API host, so `STUDIO_AUTH_TOKEN` works as a Bearer token against `https://ppsg7ml5.api.sanity.io/v2024-01-01/data/mutate/test` (it returns 401 "Session not found" on `api.sanity.work`). Caveat when testing history/review-changes features: documents created by raw API mutations (e.g. `createOrReplace` of a published id) do not produce publish events, so the Review changes inspector shows "There are no changes" / "Same revision selected". Instead, create only the draft (`drafts.<id>`) via the API, click Publish in the studio UI to create a real publish event, then edit fields in the form to create draft changes.
-- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect building, testing, or running the studio.
+- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
 - **Do not run type checks (`tsgo`/`pnpm check:types`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
