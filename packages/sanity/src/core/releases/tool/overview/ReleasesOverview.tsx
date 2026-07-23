@@ -602,7 +602,6 @@ export function ReleasesOverview() {
           emptyState={tableEmptyState}
           filterTabs={filterTabsNode}
           getRowKey={getReleaseKey}
-          hideTableInlinePadding
           id="releases-overview-table"
           loading={loadingTableData}
           rows={filteredReleases}
