@@ -131,7 +131,13 @@ export function useSyntheticArraySchemaType(objectSchemaType: ObjectSchemaType):
     // The compiled member types the editor's flat schema needs at top level.
     // Cell text config (block + inline objects) comes from the cell's `value`
     // array; the table object is added so the single packaged block validates.
-    const of = [...(cellValueArray?.of ?? []), objectSchemaType]
+    // The R1 field's compiled type carries the alias name
+    // (`standaloneTableObjectR1`, declared so both spike inputs mount side by
+    // side), but `packageTableValue` stamps blocks with the canonical
+    // `TABLE_SHAPE.table.type` and the container binding below expects the
+    // same. The grafted member takes the canonical name so schema, value, and
+    // containers agree.
+    const of = [...(cellValueArray?.of ?? []), {...objectSchemaType, name: TABLE_SHAPE.table.type}]
 
     const synthetic = {
       jsonType: 'array' as const,
