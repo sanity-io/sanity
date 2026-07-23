@@ -1,6 +1,6 @@
 {
   "name": "studio-e2e-testing",
-  "version": "6.5.0",
+  "version": "6.6.0",
   "private": true,
   "keywords": [
     "sanity"
@@ -16,7 +16,7 @@
   "dependencies": {
     "@repo/utils": "workspace:*",
     "@sanity/google-maps-input": "^6.1.7",
-    "@sanity/icons": "^5.1.0",
+    "@sanity/icons": "^5.2.0",
     "@sanity/ui": "catalog:",
     "@sanity/vision": "workspace:*",
     "babel-plugin-react-compiler": "catalog:",

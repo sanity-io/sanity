@@ -94,10 +94,10 @@
         "@sanity/export",
         "@sanity/icons",
         "@sanity/mutate",
-        "@sanity/pkg-utils",
         "@sanity/presentation-comlink",
         "@sanity/preview-url-secret",
         "@sanity/template-validator",
+        "@sanity/tsdown-config",
         "@sanity/ui",
         "@sanity/visual-editing-csm",
         "esbuild",
@@ -124,7 +124,7 @@
     {
       "description": "Group TypeScript related deps in a single PR, as they often have to update together",
       "groupName": "typescript-tooling",
-      "matchPackageNames": ["@sanity/pkg-utils", "typescript"]
+      "matchPackageNames": ["@sanity/tsdown-config", "tsdown", "typescript"]
     },
     {
       "description": "Always upgrade oxlint together",

@@ -149,11 +149,18 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       debugSecrets(),
       presentationTool({
         allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
-        previewUrl: '/preview/index.html',
+        previewUrl: {
+          origin:
+            process.env.SANITY_STUDIO_PREVIEW_IFRAME_ORIGIN ??
+            (process.env.NODE_ENV === 'development'
+              ? 'http://localhost:3334'
+              : 'https://test-studio-preview-iframe.sanity.dev'),
+          preview: '/',
+        },
         resolve: {
           mainDocuments: defineDocuments([
             {
-              route: '/preview/index.html',
+              route: '/',
               filter: `_type == "simpleBlock" && isMain`,
             },
           ]),
@@ -166,7 +173,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
                   locations: [
                     {
                       title: doc.title,
-                      href: `/preview/index.html?${new URLSearchParams({title: doc.title})}`,
+                      href: `/?${new URLSearchParams({title: doc.title})}`,
                     },
                   ],
                 }

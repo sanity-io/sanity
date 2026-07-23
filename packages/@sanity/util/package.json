@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "6.5.0",
+  "version": "6.6.0",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "cms",
@@ -26,7 +26,6 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
@@ -55,43 +54,34 @@
   },
   "exports": {
     ".": {
-      "source": "./src/_exports/index.ts",
       "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
-    "./fs": {
-      "source": "./src/_exports/fs.ts",
-      "monorepo": "./src/_exports/fs.ts",
-      "default": "./lib/fs.js"
-    },
     "./client": {
-      "source": "./src/_exports/client.ts",
       "monorepo": "./src/_exports/client.ts",
       "default": "./lib/client.js"
     },
     "./concurrency-limiter": {
-      "source": "./src/_exports/concurrency-limiter.ts",
       "monorepo": "./src/_exports/concurrency-limiter.ts",
       "default": "./lib/concurrency-limiter.js"
     },
     "./content": {
-      "source": "./src/_exports/content.ts",
       "monorepo": "./src/_exports/content.ts",
       "default": "./lib/content.js"
     },
     "./createSafeJsonParser": {
-      "source": "./src/_exports/createSafeJsonParser.ts",
       "monorepo": "./src/_exports/createSafeJsonParser.ts",
-      "require": "./lib/createSafeJsonParser.cjs",
       "default": "./lib/createSafeJsonParser.js"
     },
+    "./fs": {
+      "monorepo": "./src/_exports/fs.ts",
+      "default": "./lib/fs.js"
+    },
     "./legacyDateFormat": {
-      "source": "./src/_exports/legacyDateFormat.ts",
       "monorepo": "./src/_exports/legacyDateFormat.ts",
       "default": "./lib/legacyDateFormat.js"
     },
     "./paths": {
-      "source": "./src/_exports/paths.ts",
       "monorepo": "./src/_exports/paths.ts",
       "default": "./lib/paths.js"
     },
@@ -100,26 +90,22 @@
   "publishConfig": {
     "exports": {
       ".": "./lib/index.js",
-      "./fs": "./lib/fs.js",
       "./client": "./lib/client.js",
       "./concurrency-limiter": "./lib/concurrency-limiter.js",
       "./content": "./lib/content.js",
-      "./createSafeJsonParser": {
-        "require": "./lib/createSafeJsonParser.cjs",
-        "default": "./lib/createSafeJsonParser.js"
-      },
+      "./createSafeJsonParser": "./lib/createSafeJsonParser.js",
+      "./fs": "./lib/fs.js",
       "./legacyDateFormat": "./lib/legacyDateFormat.js",
       "./paths": "./lib/paths.js",
       "./package.json": "./package.json"
     }
   },
   "scripts": {
-    "build": "pnpm clean && pkg-utils build --strict --check --clean",
+    "build": "tsdown",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
-    "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
-    "watch": "pkg-utils watch"
+    "watch": "tsdown --watch"
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",
@@ -130,13 +116,12 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/pkg-utils": "catalog:",
+    "@repo/tsdown.config": "workspace:*",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
-    "rimraf": "catalog:",
+    "tsdown": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
