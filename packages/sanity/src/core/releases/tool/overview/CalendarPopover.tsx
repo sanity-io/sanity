@@ -1,4 +1,4 @@
-import {FilterIcon} from '@sanity/icons/Filter'
+import {CalendarIcon} from '@sanity/icons/Calendar'
 // oxlint-disable-next-line no-restricted-imports
 import {Button, useClickOutsideEvent} from '@sanity/ui'
 import {type ReactNode, useRef, useState} from 'react'
@@ -27,7 +27,7 @@ export function CalendarPopover({content, asDialog}: {content: ReactNode; asDial
       <Button
         name="calendar"
         data-as="a"
-        icon={FilterIcon}
+        icon={CalendarIcon}
         mode="bleed"
         padding={2}
         radius="full"
@@ -60,7 +60,7 @@ export function CalendarPopover({content, asDialog}: {content: ReactNode; asDial
   }
 
   return (
-    <Popover content={content} placement="bottom" open={isCalendarOpen} ref={popoverRef}>
+    <Popover content={content} placement="bottom-end" open={isCalendarOpen} portal ref={popoverRef}>
       {triggerButton}
     </Popover>
   )
