@@ -282,8 +282,8 @@ pnpm build && pnpm test
 
 The `sanity` and `@sanity/vision` jsdom suites import
 [`@vanilla-extract/css/disableRuntimeStyles`](https://vanilla-extract.style/documentation/test-environments/#disabling-runtime-styles)
-in their setup files (`packages/sanity/test/setup/environment.ts`,
-`packages/@sanity/vision/test/setup.ts`), so vanilla-extract skips injecting real stylesheets
+(`packages/sanity/test/setup/environment.ts`, and as a direct vitest `setupFiles` entry in
+`packages/@sanity/vision/vitest.config.mts`), so vanilla-extract skips injecting real stylesheets
 into jsdom. Class name identifiers still resolve, but computed styles are not available.
 
 Conventions that follow from this:

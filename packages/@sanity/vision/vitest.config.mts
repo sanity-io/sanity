@@ -5,12 +5,12 @@ import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
 
 // The vanilla-extract plugin is still required in jsdom: `.css.ts` modules need its transform
 // for file scoping (they throw "Styles were unable to be assigned to a file" without it). Style
-// *injection* is skipped via `disableRuntimeStyles` in `test/setup.ts`, since no jsdom test
-// asserts on styles or vanilla-extract class names.
+// *injection* is skipped via `disableRuntimeStyles` below, since no jsdom test asserts on styles
+// or vanilla-extract class names.
 export default defineConfig({
   test: {
     environment: 'jsdom',
-    setupFiles: ['./test/setup.ts'],
+    setupFiles: ['@vanilla-extract/css/disableRuntimeStyles'],
   },
   plugins: [
     vanillaExtractPlugin(),
