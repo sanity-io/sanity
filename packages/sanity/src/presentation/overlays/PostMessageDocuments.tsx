@@ -6,7 +6,12 @@ import {
 } from '@sanity/client'
 import {type FunctionComponent, memo, useEffect} from 'react'
 import {filter, first, merge, shareReplay} from 'rxjs'
-import {isReleasePerspective, RELEASES_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
+import {
+  isReleasePerspective,
+  RELEASES_STUDIO_CLIENT_OPTIONS,
+  useClient,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
+} from 'sanity'
 
 import {API_VERSION} from '../constants'
 import {type VisualEditingConnection} from '../types'
@@ -14,13 +19,19 @@ import {type VisualEditingConnection} from '../types'
 interface PostMessageDocumentsProps {
   comlink: VisualEditingConnection
   perspective: ClientPerspective
+  variant: string | undefined
 }
 
 const PostMessageDocuments: FunctionComponent<PostMessageDocumentsProps> = (props) => {
-  const {comlink, perspective} = props
+  const {comlink, perspective, variant} = props
 
   const client = useClient(
-    isReleasePerspective(perspective) ? RELEASES_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION},
+    // Fetching with a variant requires the `vX` API version for now
+    variant
+      ? VARIANTS_STUDIO_CLIENT_OPTIONS
+      : isReleasePerspective(perspective)
+        ? RELEASES_STUDIO_CLIENT_OPTIONS
+        : {apiVersion: API_VERSION},
   )
 
   useEffect(() => {

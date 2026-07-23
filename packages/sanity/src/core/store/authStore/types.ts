@@ -49,6 +49,12 @@ export interface AuthStore {
    * Custom auth stores can implement a function that is designated to run when
    * the Studio loads (e.g. to trade a session ID for a token in cookie-less
    * mode). Within the Studio, this is called within the `AuthBoundary`.
+   *
+   * The returned promise MUST always settle — promptly when there is no
+   * callback to process: the `AuthBoundary` holds its loading screen on an
+   * unauthenticated state until it does (the state may be a stale
+   * pre-exchange probe result). A promise that never settles leaves
+   * logged-out users on the loading screen indefinitely.
    */
   handleCallbackUrl?: () => Promise<HandleCallbackResult>
 }
@@ -135,6 +141,20 @@ export interface HandleCallbackResult {
   probeDurationMs?: number
   /** Which auth method was selected by the probes. Only set when `success` is `true` and flow is `'exchange'`. */
   authMethod?: 'cookie' | 'token'
+  /**
+   * Time from applying the exchanged credential until the post-exchange
+   * state was probed and emitted. Only set for the successful `'exchange'`
+   * flow, whose resolution is deferred until the state reflects the exchange.
+   * Not included in `durationMs`, which keeps its original meaning
+   * (exchange + probe) for cross-release comparability.
+   */
+  stateSettleDurationMs?: number
+  /**
+   * Whether the post-exchange probe timed out before completing. The
+   * callback resolved anyway so the UI can't hang, but the current auth
+   * state may not reflect the exchange yet.
+   */
+  stateSettleTimedOut?: boolean
   /** Human-readable reason for failure. Only set when `success` is `false`. */
   failureReason?: string
   /**

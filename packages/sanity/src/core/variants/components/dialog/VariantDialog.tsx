@@ -40,7 +40,8 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showValidation, setShowValidation] = useState(false)
   const [conditionsInvalid, setConditionsInvalid] = useState(false)
-  const invalid = getIsVariantInvalid(variant) || conditionsInvalid
+  const [priorityInvalid, setPriorityInvalid] = useState(false)
+  const invalid = getIsVariantInvalid(variant) || conditionsInvalid || priorityInvalid
 
   const handleVariantChange = useCallback<VariantFormChangeHandler>((path, nextValue) => {
     setVariant(
@@ -92,6 +93,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
             <VariantForm
               onChange={handleVariantChange}
               onConditionValidityChange={setConditionsInvalid}
+              onPriorityValidityChange={setPriorityInvalid}
               showValidation={showValidation}
               value={variant}
             />

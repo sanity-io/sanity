@@ -9,27 +9,25 @@ type DocsArticleCodeBlock = {
   blocks: {_key: string; code: NormalizedMarkdownBlock}[]
 }
 
-export type DocsArticleBlock = NormalizedMarkdownBlock | DocsArticleCodeBlock
+type DocsCalloutType = 'error' | 'info' | 'tip' | 'warning'
 
-/**
- * Convert a single changelog-entry block into the shape expected by the docs
- * article content schema (used by `apiChange.releaseAutomation.suggestedContent`).
- *
- * Changelog-entry contents come straight from `@portabletext/markdown`, which
- * targets a different — and more permissive — schema than the docs article, so a
- * few things have to be reconciled before they validate as suggested content:
- *
- * - Markdown thematic breaks (`---`) become `horizontal-rule` blocks. Sanity type
- *   names cannot contain hyphens and the docs article schema does not allow that
- *   block, so they are dropped.
- * - Fenced code becomes a `code` block; the docs article wraps code in `codeBlock`.
- * - Only text blocks carry `style`/`listItem`/`level` props, so list overrides are
- *   applied to text blocks only (never to images, tables, etc.).
- * - The markdown `link` annotation stores its destination in `href`, but the docs
- *   article `link` annotation requires `url` (see {@link normalizeLinkMarkDefs}).
- *
- * Returns an array so callers can `flatMap` and drop unsupported blocks.
- */
+type DocsArticleCallout = {
+  _type: 'docsCallout'
+  _key: string
+  type: DocsCalloutType
+  content: NormalizedMarkdownBlock[]
+}
+
+export type DocsArticleBlock = NormalizedMarkdownBlock | DocsArticleCodeBlock | DocsArticleCallout
+
+const CALLOUT_TONE_TO_DOCS_TYPE: Record<string, DocsCalloutType> = {
+  caution: 'error',
+  important: 'info',
+  note: 'info',
+  tip: 'tip',
+  warning: 'warning',
+}
+
 export function toDocsArticleContent(
   block: NormalizedMarkdownBlock,
   overrides?: ListOverrides,
@@ -42,6 +40,22 @@ export function toDocsArticleContent(
     return [{_type: 'codeBlock', _key: block._key, blocks: [{_key: block._key, code: block}]}]
   }
 
+  if (block._type === 'callout') {
+    // docsCallout.content only allows `block` types with `normal` style.
+    return [
+      {
+        _type: 'docsCallout',
+        _key: block._key,
+        type: CALLOUT_TONE_TO_DOCS_TYPE[block.tone] ?? 'info',
+        content: block.content.flatMap((innerBlock) =>
+          innerBlock._type === 'block'
+            ? [normalizeLinkMarkDefs({...innerBlock, style: 'normal'})]
+            : [],
+        ),
+      },
+    ]
+  }
+
   if (block._type === 'block') {
     return [normalizeLinkMarkDefs(overrides ? {...block, ...overrides} : block)]
   }
@@ -49,11 +63,6 @@ export function toDocsArticleContent(
   return [block]
 }
 
-/**
- * Rename `href` → `url` on `link` mark definitions so they satisfy the docs
- * article `link` annotation, which requires a `url` field. Mark definitions that
- * already have a `url`, or that are not links, are left untouched.
- */
 function normalizeLinkMarkDefs(block: PortableTextBlock): PortableTextBlock {
   if (!Array.isArray(block.markDefs) || block.markDefs.length === 0) {
     return block

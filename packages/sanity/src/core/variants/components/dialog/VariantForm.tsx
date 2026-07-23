@@ -1,13 +1,15 @@
 import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
 import {AddIcon} from '@sanity/icons/Add'
+import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Path} from '@sanity/mutate'
 import {type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Box, Flex, Inline, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n'
 import {type VariantsLocaleResourceKeys, variantsLocaleNamespace} from '../../i18n'
@@ -18,6 +20,7 @@ import {
   getConditionValueValidationError,
 } from '../../util/conditionValidation'
 import {getVariantTitleValue} from '../../util/getIsVariantInvalid'
+import {getPriorityInputValidationError} from '../../util/priorityValidation'
 import {createPortableTextDescription} from '../../util/variantDefaults'
 import {ConditionAutocompleteInput} from './ConditionAutocompleteInput'
 import {
@@ -127,20 +130,29 @@ export type VariantFormChangeHandler = (path: Path, value: unknown) => void
 
 export function VariantForm(props: {
   onChange: VariantFormChangeHandler
-  onConditionValidityChange?: (invalid: boolean) => void
+  onConditionValidityChange: (invalid: boolean) => void
+  onPriorityValidityChange: (invalid: boolean) => void
   showValidation?: boolean
   value: EditableSystemVariant
 }) {
-  const {onChange, onConditionValidityChange, showValidation = false, value} = props
+  const {
+    onChange,
+    onConditionValidityChange,
+    onPriorityValidityChange,
+    showValidation = false,
+    value,
+  } = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const {data: variants} = useAllVariants()
   const suggestionIndex = useMemo(() => buildConditionSuggestionIndex(variants), [variants])
   const titleId = useId()
   const descriptionId = useId()
+  const priorityId = useId()
   // `conditions` is stored as an object, but object keys are awkward to edit live:
   // duplicates collapse and partial key edits like "far" -> "favorite" can lose data.
   // Keep rows locally while editing, then commit back once they serialize cleanly.
   const [conditionRows, setConditionRows] = useState(() => getConditionRows(value.conditions))
+  const [priorityInput, setPriorityInput] = useState(() => String(value.priority))
   const conditionsValidation = useMemo(
     () => getConditionRowsValidation(conditionRows),
     [conditionRows],
@@ -148,6 +160,9 @@ export function VariantForm(props: {
 
   const hasTitle = Boolean(getVariantTitleValue(value))
   const showTitleError = showValidation && !hasTitle
+  const priorityValidationError = getPriorityInputValidationError(priorityInput)
+  const showPriorityError = showValidation && priorityValidationError
+
   const lastConditionRow = conditionRows[conditionRows.length - 1]
   const canAddCondition = Boolean(
     lastConditionRow && !hasConditionRowsValidationErrors(conditionsValidation),
@@ -161,7 +176,7 @@ export function VariantForm(props: {
 
       const nextRowsValidation = getConditionRowsValidation(rows)
       const nextRowsInvalid = hasConditionRowsValidationErrors(nextRowsValidation)
-      onConditionValidityChange?.(nextRowsInvalid)
+      onConditionValidityChange(nextRowsInvalid)
 
       if (nextRows.length === 0 || !nextRowsInvalid) {
         onChange(['conditions'], getConditionsFromRows(nextRows))
@@ -185,6 +200,22 @@ export function VariantForm(props: {
       )
     },
     [onChange],
+  )
+
+  const handlePriorityChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const rawValue = event.currentTarget.value
+      const nextValue = event.currentTarget.valueAsNumber
+
+      setPriorityInput(rawValue)
+      const priorityValidationError = getPriorityInputValidationError(rawValue)
+      onPriorityValidityChange(Boolean(priorityValidationError))
+
+      if (Number.isFinite(nextValue)) {
+        onChange(['priority'], nextValue)
+      }
+    },
+    [onChange, onPriorityValidityChange],
   )
 
   const handleConditionChange = useCallback(
@@ -252,6 +283,37 @@ export function VariantForm(props: {
           rows={3}
           value={getPortableTextDescriptionValue(value.metadata?.description)}
         />
+      </Stack>
+
+      <Stack space={3}>
+        <Inline space={1}>
+          <Text as="label" htmlFor={priorityId} size={1} weight="medium">
+            {t('dialog.create.priority.label')}
+          </Text>
+          <Tooltip content={t('dialog.create.priority.tooltip')} placement="right">
+            <HelpCircleIcon data-testid="variant-form-priority-help" />
+          </Tooltip>
+        </Inline>
+        <TextInput
+          aria-invalid={showPriorityError ? 'true' : undefined}
+          customValidity={
+            showPriorityError && priorityValidationError
+              ? t(`dialog.create.priority.${priorityValidationError}`)
+              : undefined
+          }
+          data-testid="variant-form-priority"
+          fontSize={2}
+          id={priorityId}
+          inputMode="decimal"
+          onChange={handlePriorityChange}
+          type="number"
+          value={priorityInput}
+        />
+        {showPriorityError && priorityValidationError && (
+          <TextWithTone data-testid="variant-form-priority-error" size={1} tone="critical">
+            {t(`dialog.create.priority.${priorityValidationError}`)}
+          </TextWithTone>
+        )}
       </Stack>
 
       <Stack space={3}>
