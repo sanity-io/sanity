@@ -36,7 +36,7 @@ import {
   getReleaseDefaults,
   shouldShowReleaseInView,
 } from '../../util/util'
-import {DocumentTable} from '../components/Table/DocumentTable'
+import {DocumentTable, type DocumentTableSelection} from '../components/Table/DocumentTable'
 import {type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {CalendarPopover} from './CalendarPopover'
@@ -52,6 +52,7 @@ import {
   getInitialReleaseNotFound,
   type Mode,
 } from './queryParamUtils'
+import {ReleaseBulkActions} from './ReleaseBulkActions'
 import {createReleaseCalendarFilterDay, DateFilterButton} from './ReleaseCalendarFilter'
 import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {ReleaseNotFoundBanner} from './ReleaseNotFoundBanner'
@@ -482,6 +483,25 @@ export function ReleasesOverview() {
     return currentArchivedPicker
   }, [loadingOrHasReleases, releaseFilterDate, clearFilterDate, currentArchivedPicker])
 
+  // Multi-select is only meaningful in the active releases view — the same scope where per-row
+  // archive/schedule apply. Bulk Archive is wired; bulk Schedule is a disabled stub (see
+  // ReleaseBulkActions). Archived and drafts views get no selection column.
+  const bulkSelection = useMemo<DocumentTableSelection | undefined>(() => {
+    if (cardinalityView !== 'releases' || releaseGroupMode !== 'active') return undefined
+    return {
+      labels: {
+        selectAll: t('overview.bulk.select-all'),
+        selectRow: t('overview.bulk.select-row'),
+        selectedCount: (count) => t('overview.bulk.selected', {count}),
+        clear: t('overview.bulk.clear'),
+      },
+      selectAllTestId: 'release-bulk-select-all',
+      renderActions: ({selectedKeys, compact, clear}) => (
+        <ReleaseBulkActions selectedIds={selectedKeys} compact={compact} onClear={clear} />
+      ),
+    }
+  }, [cardinalityView, releaseGroupMode, t])
+
   const isArchivedReleasesView = releaseGroupMode === 'archived' && cardinalityView === 'releases'
   const defaultTableSort = isArchivedReleasesView
     ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
@@ -591,6 +611,7 @@ export function ReleasesOverview() {
           searchPlaceholder={t('overview.search-releases-placeholder')}
           searchPredicate={searchReleasePredicate}
           searchTestId="release-search"
+          selection={bulkSelection}
         />
       )}
 

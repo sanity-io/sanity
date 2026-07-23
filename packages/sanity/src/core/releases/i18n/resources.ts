@@ -316,6 +316,41 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Label for the back button on a release detail page (returns to the releases list). The
    * leading arrow already conveys "back", so the label names the destination only. */
   'overview.back-to-all-releases': 'All releases',
+  /** Accessible label for the bulk select-all checkbox on the releases overview table */
+  'overview.bulk.select-all': 'Select all releases',
+  /** Accessible label for a per-row bulk select checkbox on the releases overview table */
+  'overview.bulk.select-row': 'Select release',
+  /** Count shown in the bulk selection toolbar (singular) */
+  'overview.bulk.selected_one': '{{count}} selected',
+  /** Count shown in the bulk selection toolbar (plural) */
+  'overview.bulk.selected_other': '{{count}} selected',
+  /** Label for clearing the current bulk selection */
+  'overview.bulk.clear': 'Clear selection',
+  /** Tooltip for the overflow button that holds bulk actions on narrow widths */
+  'overview.bulk.more': 'More actions',
+  /** Label for the bulk archive action */
+  'overview.bulk.archive': 'Archive',
+  /** Label for the bulk schedule action */
+  'overview.bulk.schedule': 'Schedule',
+  /** Tooltip explaining why bulk schedule is not yet available */
+  'overview.bulk.schedule-disabled-tooltip':
+    'Bulk scheduling is coming soon. Schedule each release from its menu for now.',
+  /** Header for the bulk archive confirmation dialog */
+  'overview.bulk.archive-dialog.header': 'Archive releases',
+  /** Confirm button for the bulk archive dialog */
+  'overview.bulk.archive-dialog.confirm': 'Archive releases',
+  /** Body of the bulk archive dialog (singular) */
+  'overview.bulk.archive-dialog.description_one':
+    'This will archive 1 release. You can unarchive it later.',
+  /** Body of the bulk archive dialog (plural) */
+  'overview.bulk.archive-dialog.description_other':
+    'This will archive {{count}} releases. You can unarchive them later.',
+  /** Success toast after a bulk archive (singular) */
+  'overview.bulk.archive-toast.success_one': 'Archived 1 release',
+  /** Success toast after a bulk archive (plural) */
+  'overview.bulk.archive-toast.success_other': 'Archived {{count}} releases',
+  /** Error toast when some bulk archives fail */
+  'overview.bulk.archive-toast.error': 'Some releases could not be archived',
   /** Tooltip for the calendar button in the release overview */
   'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */
