@@ -442,25 +442,24 @@ function ScrollSignpost({
   const {t} = useTranslation(releasesLocaleNamespace)
   if (count === 0) return null
   const icon = side === 'start' ? ChevronLeftIcon : ChevronRightIcon
-  const label =
-    side === 'start'
-      ? t('timeline.overflow-earlier', {count})
-      : t('timeline.overflow-later', {count})
+  // Compact: just a chevron + the off-screen count (e.g. "‹ 4" / "3 ›"), so the nav doesn't eat
+  // into the axis width. The full phrasing lives in the tooltip.
   return (
-    <Box flex="none" style={{alignSelf: 'center'}}>
-      <Button
-        data-testid={`release-timeline-overflow-${side}`}
-        mode="bleed"
-        tone="default"
-        icon={side === 'start' ? icon : undefined}
-        iconRight={side === 'end' ? icon : undefined}
-        text={label}
-        onClick={onClick}
-        tooltipProps={{
-          content: t(side === 'start' ? 'timeline.scroll-earlier' : 'timeline.scroll-later'),
-        }}
-      />
-    </Box>
+    <Button
+      data-testid={`release-timeline-overflow-${side}`}
+      mode="bleed"
+      tone="default"
+      icon={side === 'start' ? icon : undefined}
+      iconRight={side === 'end' ? icon : undefined}
+      text={String(count)}
+      onClick={onClick}
+      tooltipProps={{
+        content:
+          side === 'start'
+            ? t('timeline.overflow-earlier', {count})
+            : t('timeline.overflow-later', {count}),
+      }}
+    />
   )
 }
 
@@ -542,11 +541,23 @@ function ReleaseTimelineRoadmap({
     [nowPct],
   )
 
-  const pageBy = useCallback((direction: -1 | 1) => {
-    const el = scrollRef.current
-    if (!el?.scrollBy) return
-    el.scrollBy({left: direction * el.clientWidth * 0.8, behavior: 'smooth'})
-  }, [])
+  // Smart jump: scroll straight to the nearest item beyond the current viewport in `direction`,
+  // skipping empty stretches (movement along the axis, not a scale change). No-op if none.
+  const jumpToItem = useCallback(
+    (direction: -1 | 1) => {
+      const el = scrollRef.current
+      if (!el?.scrollTo) return
+      const total = el.scrollWidth
+      const view0 = el.scrollLeft
+      const view1 = el.scrollLeft + el.clientWidth
+      const pxs = positioned.map(({x}) => (x / 100) * total).sort((a, b) => a - b)
+      const targetPx =
+        direction === 1 ? pxs.find((px) => px > view1) : [...pxs].reverse().find((px) => px < view0)
+      if (targetPx === undefined) return
+      el.scrollTo({left: Math.max(0, targetPx - el.clientWidth * 0.3), behavior: 'smooth'})
+    },
+    [positioned],
+  )
 
   // Recenter on now only on first mount and when the zoom changes — NOT on every data update, so
   // a live edit arriving while the user has scrolled elsewhere doesn't yank them back. Overflow is
@@ -566,7 +577,10 @@ function ReleaseTimelineRoadmap({
 
   return (
     <Stack space={2}>
-      <Flex justify="flex-start">
+      {/* Axis navigation family (earlier · Today · later): moving along time. Kept out of the axis
+          itself so the timeline is full-width; the counts show how many events are off each edge. */}
+      <Flex justify="flex-end" align="center" gap={1}>
+        <ScrollSignpost side="start" count={overflow.left} onClick={() => jumpToItem(-1)} />
         <Button
           data-testid="release-timeline-today"
           mode="bleed"
@@ -574,9 +588,9 @@ function ReleaseTimelineRoadmap({
           onClick={() => scrollToNow('smooth')}
           tooltipProps={{content: t('timeline.today-tooltip')}}
         />
+        <ScrollSignpost side="end" count={overflow.right} onClick={() => jumpToItem(1)} />
       </Flex>
       <Flex align="stretch" gap={1}>
-        <ScrollSignpost side="start" count={overflow.left} onClick={() => pageBy(-1)} />
         <Box
           data-testid="release-timeline-track"
           ref={scrollRef}
@@ -626,7 +640,6 @@ function ReleaseTimelineRoadmap({
               ))}
           </Box>
         </Box>
-        <ScrollSignpost side="end" count={overflow.right} onClick={() => pageBy(1)} />
       </Flex>
     </Stack>
   )
