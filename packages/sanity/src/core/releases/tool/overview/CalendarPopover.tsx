@@ -23,6 +23,7 @@ export function CalendarPopover({content, asDialog}: {content: ReactNode; asDial
 
   const triggerButton = (
     <Button
+      name="calendar"
       icon={CalendarIcon}
       mode="bleed"
       radius="full"
