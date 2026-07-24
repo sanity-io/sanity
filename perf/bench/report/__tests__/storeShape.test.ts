@@ -77,6 +77,37 @@ const RUN: BenchRunDocument = {
         ],
       },
     },
+    {
+      scenario: 'singleString',
+      kind: 'pageload',
+      mode: 'inp',
+      metrics: [
+        {
+          label: 'INP',
+          unit: 'ms',
+          presentAsEfps: false,
+          experiment: {
+            sessions: [[210], [220]],
+            summary: {n: 2, median: 215, p75: 220, p90: 220, p99: 220, min: 210, max: 220},
+          },
+        },
+        {
+          label: 'component: title',
+          unit: 'ms',
+          presentAsEfps: false,
+          experiment: {
+            sessions: [
+              [20, 30],
+              [25, 35],
+            ],
+            summary: {n: 4, median: 27.5, p75: 32.5, p90: 34, p99: 34.9, min: 20, max: 35},
+          },
+        },
+      ],
+      failures: [],
+      interruptions: {experiment: {count: 0, totalMs: 0}},
+      loafAttribution: [],
+    },
   ],
 }
 
