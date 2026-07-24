@@ -27,6 +27,13 @@ const enableColumnFormMode =
     if (expectedMode === 'all' || expectedMode === currentMode) {
       return column
     }
+    // 'paused' is a cardinality-one-only sub-state of 'active' (an active scheduled draft
+    // whose intended date hasn't been armed yet) — it renders the same column set as 'active'.
+    // The Schedule column's ⚠ glyph (via ReleaseTime) is what actually conveys "intended, not
+    // scheduled"; there is no separate paused-only column.
+    if (expectedMode === 'active' && currentMode === 'paused') {
+      return column
+    }
     return undefined
   }
 

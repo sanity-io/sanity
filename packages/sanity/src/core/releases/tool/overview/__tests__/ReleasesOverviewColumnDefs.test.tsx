@@ -90,4 +90,38 @@ describe('releasesOverviewColumnDefs', () => {
       expect(columns.some((column) => column.id === 'metadata.title')).toBe(true)
     })
   })
+
+  describe('paused mode (Phase B: drafts tab shares the release grammar)', () => {
+    it('renders the same column set for "paused" as for "active"', () => {
+      const activeColumns = releasesOverviewColumnDefs(t, 'active', 'drafts')
+      const pausedColumns = releasesOverviewColumnDefs(t, 'paused', 'drafts')
+
+      expect(pausedColumns.map((column) => column.id)).toEqual(
+        activeColumns.map((column) => column.id),
+      )
+    })
+
+    it('includes the Schedule, Documents, and Edited by columns in paused mode', () => {
+      const columns = releasesOverviewColumnDefs(t, 'paused', 'drafts')
+      const columnIds = columns.map((column) => column.id)
+
+      expect(columnIds).toContain('publishAt')
+      expect(columnIds).toContain('documentCount')
+      expect(columnIds).toContain('editedBy')
+      expect(columnIds).toContain('status')
+    })
+
+    it('excludes archived-only columns (published-at / archivedAt) in paused mode', () => {
+      const columns = releasesOverviewColumnDefs(t, 'paused', 'drafts')
+      const columnIds = columns.map((column) => column.id)
+
+      expect(columnIds).not.toContain('publishedAt')
+      expect(columnIds).not.toContain('_updatedAt')
+    })
+
+    it('does not include a "kind" column in paused mode for the "drafts" view', () => {
+      const columns = releasesOverviewColumnDefs(t, 'paused', 'drafts')
+      expect(columns.some((column) => column.id === 'kind')).toBe(false)
+    })
+  })
 })

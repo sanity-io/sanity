@@ -1032,12 +1032,116 @@ describe('ReleasesOverview', () => {
         expect(screen.getAllByTestId('table-row')).toHaveLength(2)
       })
 
-      it('should use different column definitions for drafts view', () => {
-        const table = screen.getByRole('table')
-        expect(table).toBeInTheDocument()
+      it('does not show a Paused sub-tab in the Releases view (cardinality-one only)', () => {
+        expect(screen.queryByText('Paused')).not.toBeInTheDocument()
+      })
+    })
 
-        const releasesButton = screen.getByRole('button', {name: /Releases/i})
-        expect(releasesButton).toBeInTheDocument()
+    describe('drafts view uses the shared release column grammar (Phase B)', () => {
+      const armedDraft: ReleaseDocument = {
+        ...activeScheduledRelease,
+        _id: '_.releases.rArmedDraft',
+        state: 'scheduled',
+        publishAt: '2024-12-25T10:00:00Z',
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          title: 'Armed Draft',
+          cardinality: 'one',
+        },
+      }
+
+      // A "paused" scheduled draft: active state, has an intended (not armed) publish date.
+      const pausedDraft: ReleaseDocument = {
+        ...activeScheduledRelease,
+        _id: '_.releases.rPausedDraft',
+        state: 'active',
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          title: 'Paused Draft',
+          cardinality: 'one',
+          releaseType: 'scheduled',
+          intendedPublishAt: '2024-12-26T10:00:00Z',
+        },
+      }
+
+      beforeEach(async () => {
+        vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+        vi.mocked(useRouter).mockReturnValue({
+          state: {_searchParams: [['view', 'drafts']]},
+          navigate: mockNavigate,
+          resolveIntentLink: mockResolveIntentLink,
+        } as unknown as ReturnType<typeof useRouter>)
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [armedDraft, pausedDraft],
+        })
+        mockUseArchivedReleases.mockReturnValue({
+          ...useArchivedReleasesMockReturn,
+          data: [],
+        })
+        mockUseReleasesMetadata.mockReturnValue({
+          ...useReleasesMetadataMockReturn,
+          data: {
+            [armedDraft._id]: {documentCount: 1, updatedAt: null},
+            [pausedDraft._id]: {documentCount: 1, updatedAt: null},
+          },
+        })
+
+        const wrapper = await createTestProvider({
+          resources: [releasesUsEnglishLocaleBundle],
+        })
+
+        return mountAndFlush(<TestComponent />, {wrapper})
+      })
+
+      afterEach(() => {
+        vi.mocked(useRouter).mockReturnValue(mockRouterReturn)
+      })
+
+      it('renders the shared release headers (Schedule/Documents/Edited by), not the old bespoke drafts headers', () => {
+        expect(screen.getByText('Schedule')).toBeInTheDocument()
+        expect(screen.getByText('Documents')).toBeInTheDocument()
+        expect(screen.getByText('Last edited')).toBeInTheDocument()
+        expect(screen.getByText('Edited by')).toBeInTheDocument()
+
+        expect(screen.queryByText('Scheduled for')).not.toBeInTheDocument()
+        expect(screen.queryByText('Intended for')).not.toBeInTheDocument()
+        expect(screen.queryByText('Published at')).not.toBeInTheDocument()
+      })
+
+      it('shows only armed (state=scheduled) drafts in the default Active mode', () => {
+        // Cardinality-one rows render the shared document-preview cell (Phase A), whose title
+        // comes from the mocked document-preview hook rather than release.metadata.title — so
+        // row count + schedule glyph, not the release title, is what distinguishes the fixtures
+        // here. An armed draft renders the 🔒 lock glyph, not the ⚠ warning glyph.
+        const rows = screen.getAllByTestId('table-row')
+        expect(rows).toHaveLength(1)
+        within(rows[0]).getByTestId('release-lock-icon')
+        expect(within(rows[0]).queryByTestId('release-not-scheduled')).not.toBeInTheDocument()
+      })
+
+      it('keeps the Paused sub-tab and filters to paused drafts when selected', async () => {
+        const pausedButton = screen.getByRole('button', {name: 'Paused'})
+        expect(pausedButton).not.toBeDisabled()
+
+        await userEvent.click(pausedButton)
+
+        await waitFor(() => {
+          expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+        })
+
+        // The Schedule column's ⚠ glyph (via ReleaseTime) is what conveys "intended, not
+        // scheduled" for a paused draft — same grammar as any other release, per the unified
+        // column defs; there's no separate "Intended for" header.
+        const [pausedRow] = screen.getAllByTestId('table-row')
+        within(pausedRow).getByTestId('release-not-scheduled')
+      })
+
+      it('leaves the row ⋯ menu untouched (still the scheduled-draft menu; cardinality-aware menu unification is Phase C)', () => {
+        const rows = screen.getAllByTestId('table-row')
+        rows.forEach((row) => {
+          within(row).getByTestId('scheduled-draft-menu-button')
+        })
       })
     })
 

@@ -59,7 +59,6 @@ import {ReleasesEmptyState} from './ReleasesEmptyState'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
 import {ScheduledDraftsEmptyState} from './ScheduledDraftsEmptyState'
-import {scheduledDraftsOverviewColumnDefs} from './ScheduledDraftsOverviewColumnDefs'
 import {SchedulesUpsell} from './SchedulesUpsell'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
@@ -455,12 +454,10 @@ export function ReleasesOverview() {
     [loading, releases, releaseFilterDate, handleSelectFilterDate, cardinalityView],
   )
 
-  const tableColumns = useMemo(() => {
-    if (cardinalityView === 'drafts') {
-      return scheduledDraftsOverviewColumnDefs(t, releaseGroupMode)
-    }
-    return releasesOverviewColumnDefs(t, releaseGroupMode, cardinalityView)
-  }, [cardinalityView, releaseGroupMode, t])
+  const tableColumns = useMemo(
+    () => releasesOverviewColumnDefs(t, releaseGroupMode, cardinalityView),
+    [cardinalityView, releaseGroupMode, t],
+  )
 
   const getReleaseKey = useCallback((release: TableRelease) => release._id, [])
   const searchReleasePredicate = useCallback(
