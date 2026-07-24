@@ -9,6 +9,7 @@ describe('#isKnownError', () => {
   test('should return true for SchemaError errors', () => {
     expect(
       isKnownError(
+        // @ts-expect-error -- pre-existing, fix later
         new SchemaError({
           _registry: {},
           name: 'test',

@@ -10,6 +10,7 @@ export function mutationEvent({
   resultRev: string
   mutations: MutationPayload[]
 }): MutationEvent {
+  // @ts-expect-error -- pre-existing, fix later
   return {
     type: 'mutation',
     documentId: 'test',

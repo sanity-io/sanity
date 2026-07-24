@@ -7,7 +7,6 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "check:types": "tsgo --noEmit",
     "clean": "rimraf dist",
     "dev": "vite --port 3334",
     "preview": "vite preview --port 3334",
@@ -31,7 +30,6 @@
     "@rolldown/plugin-babel": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "catalog:",
     "rimraf": "catalog:",

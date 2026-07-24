@@ -1,6 +1,7 @@
 {
   "extends": "@repo/tsconfig/base.json",
-  "include": ["./groq.d.ts", "./groq.d.cts", "./test", "./package.json"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "**/*.d.ts", "package.json"],
+  "exclude": ["dist", "lib", "node_modules"],
   "compilerOptions": {
     "rootDir": "."
   }

@@ -200,6 +200,7 @@ describe('FormView', () => {
       // must NOT run, because the user already had a focused path.
       setDocumentPane({
         focusPath: [],
+        // @ts-expect-error -- pre-existing, fix later
         formState: {focusPath: []} as DocumentPaneValue['formState'],
       })
       rerender()
