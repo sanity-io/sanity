@@ -4,7 +4,11 @@ import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
 import {renderObjectInput} from '../../../../../../test/form'
-import {type RenderFieldCallback, type RenderInputCallback} from '../../../types'
+import {
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
+} from '../../../types'
 import {ObjectInput} from '../ObjectInput'
 
 const defs = {
@@ -66,6 +70,7 @@ describe('ObjectInput', () => {
               inSelectedGroup: false,
               groups: [],
               index: 0,
+              // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
               field: {
                 schemaType: inputProps.schemaType.fields[0].type,
                 validation: [],

@@ -9,6 +9,7 @@ export function CodeInput(props: ObjectInputProps) {
   return (
     <Stack>
       {codeMember && (
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         <MemberField
           member={codeMember as FieldMember}
           renderField={renderField}

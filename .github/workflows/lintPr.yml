@@ -11,14 +11,15 @@ concurrency:
 jobs:
   oxlint:
     runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
+      # No build needed: oxlint --type-check resolves workspace packages to their
+      # sources via the monorepo customConditions in every workspace tsconfig.
       - name: Oxlint files
         run: pnpm check:oxlint
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
 
   knip:
     runs-on: ubuntu-latest

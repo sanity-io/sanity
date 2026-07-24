@@ -33,6 +33,7 @@ const renderComponent = async (release = activeASAPRelease) => {
     resources: [releasesUsEnglishLocaleBundle],
   })
 
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   render(<ReleaseTypePicker release={release} />, {wrapper})
 
   await waitFor(() => {

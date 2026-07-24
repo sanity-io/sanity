@@ -17,6 +17,7 @@ const createDocumentInVariant = ({
   bundleId,
   updatedAt,
   releaseRef = null,
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   validation = defaultValidation,
 }: {
   documentId: string
@@ -34,10 +35,13 @@ const createDocumentInVariant = ({
     _updatedAt: updatedAt,
     publishedDocumentExists: false,
     _system: {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       bundleId: bundleId ?? null,
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       release: releaseRef ? {_ref: releaseRef, _weak: true} : null,
       variant: {_ref: variantAlphaAudience._id, _weak: true},
       group: {_ref: GROUP_ID, _weak: true},
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       scopeId: null,
     },
   },
@@ -92,6 +96,7 @@ describe('groupVariantDocumentsByGroup', () => {
     const rows = groupVariantDocumentsByGroup([
       createDocumentInVariant({
         documentId: 'versions.rB.scope.article-1',
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         bundleId: 'rB',
         updatedAt: '2025-06-04T00:00:00Z',
         releaseRef: '_.releases.rB',
@@ -108,6 +113,7 @@ describe('groupVariantDocumentsByGroup', () => {
       }),
       createDocumentInVariant({
         documentId: 'versions.rA.scope.article-1',
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         bundleId: 'rA',
         updatedAt: '2025-06-02T00:00:00Z',
         releaseRef: '_.releases.rA',

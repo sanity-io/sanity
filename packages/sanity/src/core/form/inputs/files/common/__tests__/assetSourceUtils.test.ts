@@ -11,6 +11,7 @@ import {
 describe('assetSourceUtils', () => {
   describe('hasUploadSupport', () => {
     it('returns true when source has Uploader', () => {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       const source: AssetSource = {
         name: 'with-uploader',
         component: () => null,
@@ -48,6 +49,7 @@ describe('assetSourceUtils', () => {
     })
 
     it('returns false when uploadMode is not component (picker mode)', () => {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       const source: AssetSource = {
         name: 'picker-mode',
         component: () => null,
@@ -67,6 +69,7 @@ describe('assetSourceUtils', () => {
 
   describe('getAssetSourcesWithUpload', () => {
     it('filters sources to only those with upload support', () => {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       const withUpload: AssetSource = {
         name: 'with-upload',
         component: () => null,

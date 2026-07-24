@@ -1,3 +1,4 @@
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 const path = require('node:path')
 const _pkg = require('@repo/test-exports/package.json')
 

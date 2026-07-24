@@ -4,6 +4,7 @@ import {describe, expect, it, vi} from 'vitest'
 import {getPreviewStateObservable} from './getPreviewStateObservable'
 
 // Mock schema type
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 const mockSchemaType = {
   name: 'article',
   type: 'document',

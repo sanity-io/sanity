@@ -99,12 +99,6 @@
         "build"
       ],
       "outputLogs": "new-only"
-    },
-    "check:types": {
-      "outputs": [],
-      "dependsOn": [
-        "^build"
-      ]
     }
   }
 }

@@ -55,6 +55,7 @@ describe('DialogTimeZone', () => {
     vi.mocked(useTimeZone).mockReturnValue({
       timeZone: mockTimeZones[0],
       setTimeZone: mockSetTimeZone,
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       getTimeZone: mockGetTimeZone,
       getLocalTimeZone: mockGetLocalTimeZone,
       allTimeZones: mockTimeZones,

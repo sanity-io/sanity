@@ -188,6 +188,7 @@ describe('StructureTitle', () => {
 
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
       vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
@@ -221,6 +222,7 @@ describe('StructureTitle', () => {
       })
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
       vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
 

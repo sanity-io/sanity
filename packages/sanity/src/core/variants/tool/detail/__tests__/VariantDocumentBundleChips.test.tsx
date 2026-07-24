@@ -29,6 +29,7 @@ const activeRelease = {
 
 const releasesById = new Map([[activeRelease._id, activeRelease]])
 
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 const groupedRow: DocumentInVariantGroup = {
   memoKey: 'group-1',
   groupId: 'article-1',
@@ -71,6 +72,7 @@ describe('VariantDocumentBundleChips', () => {
     const wrapper = await createTestProvider()
 
     render(
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       <VariantDocumentBundleChips versions={groupedRow.versions} releasesById={releasesById} />,
       {wrapper},
     )

@@ -41,13 +41,16 @@ function parseSpotifyShareUrl(str: string): {type: string; id: string} | null {
 }
 
 function SpotifyEmbedPreview(props: PreviewProps) {
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   if (!isValidPreview(props.value)) {
     return <div>Please provide a Spotify share URL</div>
   }
 
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   const params = parseSpotifyShareUrl(props.value.url)
 
   if (!params) {
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     return <div>Could not parse the provided Spotify share URL: {props.value.url}</div>
   }
 

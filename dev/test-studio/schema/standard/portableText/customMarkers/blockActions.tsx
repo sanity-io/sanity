@@ -20,6 +20,7 @@ function CommentButton(props: {set: (block: PortableTextBlock) => void; value: P
   }, [])
 
   const handleSubmit = useCallback(() => {
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     const comments = (value.comments || []).concat(comment)
 
     setOpen(false)

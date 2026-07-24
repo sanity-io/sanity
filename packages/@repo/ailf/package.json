@@ -5,13 +5,11 @@
   "description": "AI Literacy Framework (AILF) evaluation configuration",
   "type": "module",
   "scripts": {
-    "ailf": "ailf",
-    "check:types": "(cd ../../.. && tsgo --project packages/@repo/ailf/tsconfig.json --erasableSyntaxOnly)"
+    "ailf": "ailf"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@sanity/ailf": "^7.31.1",
-    "@typescript/native-preview": "catalog:"
+    "@sanity/ailf": "^7.31.1"
   },
   "engines": {
     "node": ">=22.12"

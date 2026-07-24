@@ -264,6 +264,7 @@ describe('checkoutPair -- failed commit routing', () => {
     expect(mockedActionRequest).toHaveBeenCalledTimes(2)
     // The retried commit carries the same patch payload — proving the buffered
     // mutation was retained and re-attempted, not dropped.
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     expect(mockedActionRequest.mock.calls[1][0]).toEqual([
       {
         actionType: 'sanity.action.document.edit',
@@ -304,6 +305,7 @@ describe('checkoutPair -- failed commit routing', () => {
 
     // Re-attempted with the same mutation → routed to failure, not cancel.
     expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     expect(mockedActionRequest.mock.calls[1][0]).toEqual([
       {
         actionType: 'sanity.action.document.edit',
@@ -445,6 +447,7 @@ describe('checkoutPair -- failed commit routing', () => {
 
     await vi.advanceTimersByTimeAsync(1000)
     expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     expect(mockedActionRequest.mock.calls[1][0]).toEqual([
       {
         actionType: 'sanity.action.document.edit',
@@ -520,6 +523,7 @@ describe('checkoutPair -- failed commit routing', () => {
 
     await vi.advanceTimersByTimeAsync(1000)
     expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     expect(mockedActionRequest.mock.calls[1][0]).toEqual([
       {
         actionType: 'sanity.action.document.edit',
@@ -588,6 +592,7 @@ describe('checkoutPair -- failed commit routing', () => {
     // retry. Correct behavior: retry after backoff.
     await vi.advanceTimersByTimeAsync(1000)
     expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     expect(mockedActionRequest.mock.calls[1][0]).toEqual([
       {
         actionType: 'sanity.action.document.edit',

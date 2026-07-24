@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
+    "@types/react": "catalog:",
     "rimraf": "catalog:"
   }
 }

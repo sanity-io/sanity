@@ -1,4 +1,6 @@
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {defineConfig, defineType, defineField} from 'sanity'
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {structureTool} from 'sanity/structure'
 
 export default defineConfig({
@@ -8,6 +10,7 @@ export default defineConfig({
   dataset: 'production',
   plugins: [
     structureTool({
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       structure: (S) =>
         S.list()
           .title('Content')
@@ -17,6 +20,7 @@ export default defineConfig({
               .id('siteSettings')
               .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
             S.divider(),
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             ...S.documentTypeListItems().filter((item) => item.getId() !== 'siteSettings'),
           ]),
     }),

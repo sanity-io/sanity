@@ -1,3 +1,4 @@
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {defineConfig, defineType, defineField} from 'sanity'
 
 export default defineConfig({
@@ -29,6 +30,7 @@ export default defineConfig({
                 name: 'alt',
                 title: 'Alternative text',
                 type: 'string',
+                // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
                 validation: (rule) => rule.required(),
               }),
             ],

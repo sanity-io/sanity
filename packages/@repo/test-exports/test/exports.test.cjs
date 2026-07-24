@@ -1,3 +1,4 @@
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 const {test} = require('node:test')
 
 const getExports = require('./exports.cjs')

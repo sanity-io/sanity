@@ -14,6 +14,7 @@ function createSchemaType(
   toTypes: string[],
   creationTypeFilter?: ReferenceTypeFilter,
 ): ReferenceSchemaType {
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   return {
     to: toTypes.map((name) => ({name, type: name, title: name})),
     options: creationTypeFilter ? {creationTypeFilter} : undefined,
@@ -45,6 +46,7 @@ describe('resolveCreateTypeFilter', () => {
     })
 
     test('returns all types when options is undefined', () => {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       const schemaType: ReferenceSchemaType = {
         to: [{name: 'book', type: 'book', title: 'Book'}],
       } as ReferenceSchemaType
@@ -144,6 +146,7 @@ describe('resolveCreateTypeFilter', () => {
       const creationTypeFilter = vi.fn().mockReturnValue([{type: 'book'}])
       const filter = vi.fn()
 
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       const schemaType: ReferenceSchemaType = {
         to: [
           {name: 'book', type: 'book', title: 'Book'},

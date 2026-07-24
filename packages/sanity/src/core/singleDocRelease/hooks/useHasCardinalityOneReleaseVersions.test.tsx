@@ -48,6 +48,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
       ...mockActiveReleasesReturn,
       data: [],
     })
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     useDocumentVersions.mockReturnValue({
       ...mockDocumentVersionsReturn,
       data: [],
@@ -63,6 +64,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
       ...mockActiveReleasesReturn,
       data: [activeASAPRelease], // This has cardinality 'many'
     })
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     useDocumentVersions.mockReturnValue({
       ...mockDocumentVersionsReturn,
       data: ['versions.rASAP.test-document'],
@@ -78,6 +80,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
       ...mockActiveReleasesReturn,
       data: [cardinalityOneRelease],
     })
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     useDocumentVersions.mockReturnValue({
       ...mockDocumentVersionsReturn,
       data: ['versions.scheduled-draft.test-document'],
@@ -93,6 +96,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
       ...mockActiveReleasesReturn,
       data: [cardinalityOneRelease],
     })
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     useDocumentVersions.mockReturnValue({
       ...mockDocumentVersionsReturn,
       data: ['versions.scheduled-draft.test-document', 'drafts.test-document', 'test-document'],

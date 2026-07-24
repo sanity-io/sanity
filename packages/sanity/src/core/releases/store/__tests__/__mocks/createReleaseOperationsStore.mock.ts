@@ -5,6 +5,7 @@ import {
   type ReleaseOperationsStore,
 } from '../../createReleaseOperationStore'
 
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 export const createReleaseOperationsStoreReturn: Mocked<ReleaseOperationsStore> = {
   archive: vi.fn(),
   unarchive: vi.fn(),

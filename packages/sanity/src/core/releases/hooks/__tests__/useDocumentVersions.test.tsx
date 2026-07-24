@@ -64,6 +64,7 @@ async function setupMocks({
       .mockReturnValue(pendingIdSet ? NEVER : of(versionIds)),
     observePaths: vi
       .fn<DocumentPreviewStore['observePaths']>()
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       .mockImplementation((value: {_id: string}) => {
         const id = value._id
         return of(

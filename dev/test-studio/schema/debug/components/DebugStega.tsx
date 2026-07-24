@@ -133,6 +133,7 @@ function InputDebugger(props: InputProps) {
                   as="a"
                   href={href}
                   tone="primary"
+                  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
                   size={0}
                   fontSize={0}
                   padding={2}

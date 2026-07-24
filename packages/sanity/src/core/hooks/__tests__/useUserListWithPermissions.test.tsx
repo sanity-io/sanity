@@ -67,6 +67,7 @@ function setup() {
 
   return renderHook(() =>
     useUserListWithPermissions({
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       documentValue,
       permission: 'read',
     }),

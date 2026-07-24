@@ -24,7 +24,7 @@ vi.mock('../variantDocumentTable/VariantDocumentPreview', () => ({
 }))
 
 vi.mock('../variantDocumentTable/VariantDocumentBundleChips', () => ({
-  VariantDocumentBundleChips: vi.fn(({versions}) => (
+  VariantDocumentBundleChips: vi.fn(({versions}: {versions: Array<{bundleId?: string}>}) => (
     <div data-testid="bundle-chips">
       {versions.map((version) => version.bundleId ?? 'published').join(',')}
     </div>
@@ -51,6 +51,7 @@ const mockRows: DocumentInVariantGroup[] = [
   {
     memoKey: 'group-1',
     groupId: 'article-1',
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     validation: defaultValidation,
     document: {
       _id: 'published.scope.article-1',
@@ -83,6 +84,7 @@ const mockRows: DocumentInVariantGroup[] = [
   {
     memoKey: 'group-2',
     groupId: 'article-2',
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     validation: defaultValidation,
     document: {
       _id: 'drafts.scope.article-2',

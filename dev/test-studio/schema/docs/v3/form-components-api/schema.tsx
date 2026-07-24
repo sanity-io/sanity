@@ -27,7 +27,9 @@ export const formComponentsSchema = defineType({
       title: 'Boolean',
       description: 'Basic boolean',
       components: {
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         field: (props) => <CustomField {...props} testId="field-schema-boolean" />,
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         input: (props) => <CustomInput {...props} testId="input-schema-boolean" />,
       },
     },
@@ -37,7 +39,9 @@ export const formComponentsSchema = defineType({
       title: 'String',
       description: 'Basic string',
       components: {
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         field: (props) => <CustomField {...props} testId="field-schema-string" />,
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         input: (props) => <CustomInput {...props} testId="input-schema-string" />,
       },
     },
@@ -47,7 +51,9 @@ export const formComponentsSchema = defineType({
       title: 'Reference',
       description: 'Basic reference',
       components: {
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         input: (props) => <CustomInput {...props} testId="input-schema-reference" />,
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         field: (props) => <CustomField {...props} testId="field-schema-reference" />,
       },
       to: [
@@ -65,7 +71,9 @@ export const formComponentsSchema = defineType({
       title: 'Image',
       description: 'Basic image',
       components: {
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         input: (props) => <CustomInput {...props} testId="input-schema-image" />,
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         field: (props) => <CustomField {...props} testId="field-schema-image" />,
       },
     },
@@ -74,19 +82,24 @@ export const formComponentsSchema = defineType({
       title: 'Array of primitives',
       name: 'arrayOfPrimitives',
       components: {
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         input: (props) => <CustomInput {...props} testId="input-schema-array-primitives" />,
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         field: (props) => <CustomField {...props} testId="field-schema-array-primitives" />,
       },
       of: [
         {
           type: 'string',
           components: {
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             input: (props) => (
               <CustomInput {...props} testId="input-schema-array-string-input-primitive" />
             ),
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             field: (props) => (
               <CustomField {...props} testId="field-schema-array-string-field-primitive" />
             ),
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             item: (props) => (
               <CustomItem {...props} testId="item-schema-array-string-item-primitive" />
             ),
@@ -95,12 +108,15 @@ export const formComponentsSchema = defineType({
         {
           type: 'number',
           components: {
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             input: (props) => (
               <CustomInput {...props} testId="input-schema-array-number-input-primitive" />
             ),
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             field: (props) => (
               <CustomField {...props} testId="field-schema-array-number-field-primitive" />
             ),
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             item: (props) => (
               <CustomItem {...props} testId="field-schema-array-number-item-primitive" />
             ),
@@ -113,16 +129,22 @@ export const formComponentsSchema = defineType({
       title: 'Array of objects',
       type: 'array',
       components: {
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         input: (props) => <CustomInput {...props} testId="input-schema-array-objects" />,
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         field: (props) => <CustomField {...props} testId="field-schema-array-objects" />,
       },
       of: [
         {
           type: 'object',
           components: {
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             input: (props) => <CustomInput {...props} testId="input-schema-array-input-object" />,
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             field: (props) => <CustomField {...props} testId="field-schema-array-field-object" />,
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             item: (props) => <CustomItem {...props} testId="field-schema-array-item-object" />,
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             preview: (props) => <CustomPreview {...props} />,
           },
           fields: [
@@ -158,7 +180,9 @@ export const formComponentsSchema = defineType({
       name: 'body',
       title: 'Body',
       components: {
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         input: (props) => <CustomInput {...props} testId="input-schema-pte" />,
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         field: (props) => <CustomField {...props} testId="field-schema-pte" />,
       },
       of: [

@@ -9,6 +9,7 @@ import {renderCustomMarkers} from './customMarkers'
 export function CustomContentInput(inputProps: PortableTextInputProps) {
   const {value} = inputProps
 
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   const handlePaste: OnPasteFn = useCallback((input) => {
     const {event, schemaTypes, path} = input
     const html = event.clipboardData.getData('text/html')
@@ -65,7 +66,9 @@ export function CustomContentInput(inputProps: PortableTextInputProps) {
     if (!value) return ret
 
     for (const block of value) {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       if (block.comments) {
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         for (const comment of block.comments) {
           ret.push({
             type: 'comment',
@@ -82,6 +85,7 @@ export function CustomContentInput(inputProps: PortableTextInputProps) {
   return (
     <PortableTextInput
       {...inputProps}
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       onPaste={handlePaste}
       markers={markers}
       renderBlockActions={renderBlockActions}

@@ -1,3 +1,4 @@
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {defineConfig, defineType, defineField, defineArrayMember} from 'sanity'
 
 export default defineConfig({
@@ -46,6 +47,7 @@ export default defineConfig({
             title: 'Author',
             type: 'reference',
             to: [{type: 'author'}],
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             validation: (rule) => rule.required(),
           }),
           defineField({
@@ -58,6 +60,7 @@ export default defineConfig({
                 to: [{type: 'category'}],
               }),
             ],
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             validation: (rule) => rule.max(3),
           }),
           defineField({

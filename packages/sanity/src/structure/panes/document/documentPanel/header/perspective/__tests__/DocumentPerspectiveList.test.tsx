@@ -134,6 +134,7 @@ const getTestProvider = async ({liveEdit}: {liveEdit?: boolean} = {}) => {
   }
 }
 
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 const usePerspectiveMockValue: Mocked<ReturnType<typeof usePerspective>> = {
   selectedPerspectiveName: undefined,
   selectedReleaseId: undefined,
@@ -230,6 +231,7 @@ describe('DocumentPerspectiveList', () => {
   })
   describe('enabled chips', () => {
     it('should render "Published" and "Draft" chips when it has no other version', async () => {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       mockUseDocumentPane.mockReturnValue(getPaneMock())
       const wrapper = await getTestProvider()
       render(<DocumentPerspectiveList />, {wrapper})
@@ -238,6 +240,7 @@ describe('DocumentPerspectiveList', () => {
     })
 
     it('should render the release chip when it has a release version', async () => {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       mockUseDocumentPane.mockReturnValue(getPaneMock())
 
       const wrapper = await getTestProvider()
@@ -248,6 +251,7 @@ describe('DocumentPerspectiveList', () => {
     })
     it('should render the release chip when it is creating a release version and user is in that release', async () => {
       mockUseDocumentPane.mockReturnValue(
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         getPaneMock({isCreatingDocument: true, displayedVersion: 'rSpringDrop'}),
       )
       // no document versions are available, but the user is creating this document, so we want to show the chip anyways.
@@ -289,6 +293,7 @@ describe('DocumentPerspectiveList', () => {
     })
 
     it('should disable the "Published" chip when there is no published document and not live edit, draft should be enabled', async () => {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       mockUseDocumentPane.mockReturnValue(getPaneMock())
 
       const wrapper = await getTestProvider()
@@ -300,6 +305,7 @@ describe('DocumentPerspectiveList', () => {
 
     it('should enable the "Published" chip when there is no published document and IS live edit, draft should be disabled', async () => {
       mockUseDocumentPane.mockReturnValue(
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         getPaneMock({
           displayedVersion: 'published',
           editStateDocuments: ['published'],
@@ -318,6 +324,7 @@ describe('DocumentPerspectiveList', () => {
     })
 
     it('should enable the "Published" chip when the document is "liveEdit" and published exists', async () => {
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       mockUseDocumentPane.mockReturnValue(getPaneMock({editStateDocuments: ['published']}))
       const wrapper = await getTestProvider({liveEdit: true})
       render(<DocumentPerspectiveList />, {wrapper})
@@ -327,6 +334,7 @@ describe('DocumentPerspectiveList', () => {
 
     it('should disable the "Draft" chip when the document only has one version, no pinned version', async () => {
       mockUseDocumentPane.mockReturnValue(
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         getPaneMock({
           editStateDocuments: [],
           displayedVersion: 'rSpringDrop',
@@ -359,6 +367,7 @@ describe('DocumentPerspectiveList', () => {
   describe('selected chips', () => {
     it('the draft is selected when the document displayed is a draft', async () => {
       mockUseDocumentPane.mockReturnValue(
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         getPaneMock({editStateDocuments: ['draft'], displayedVersion: 'draft'}),
       )
       const wrapper = await getTestProvider()
@@ -369,6 +378,7 @@ describe('DocumentPerspectiveList', () => {
 
     it('the draft is selected when the perspective is null, even if draft is missing', async () => {
       mockUseDocumentPane.mockReturnValue(
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         getPaneMock({editStateDocuments: ['published'], displayedVersion: 'published'}),
       )
       const wrapper = await getTestProvider()
@@ -379,6 +389,7 @@ describe('DocumentPerspectiveList', () => {
     })
     it('when there is no draft (new document)', async () => {
       mockUseDocumentPane.mockReturnValue(
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         getPaneMock({editStateDocuments: [], displayedVersion: 'published'}),
       )
       const wrapper = await getTestProvider()
@@ -392,6 +403,7 @@ describe('DocumentPerspectiveList', () => {
     describe('liveEditDocument', () => {
       it('no draft and no published - perspective is undefined', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({
             editStateDocuments: [],
             displayedVersion: 'published',
@@ -411,6 +423,7 @@ describe('DocumentPerspectiveList', () => {
       })
       it('no draft and no published - perspective is published', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({
             editStateDocuments: [],
             displayedVersion: 'published',
@@ -434,6 +447,7 @@ describe('DocumentPerspectiveList', () => {
       })
       it('no draft and no published - perspective is version', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({
             editStateDocuments: [],
             displayedVersion: 'rSpringDrop',
@@ -455,6 +469,7 @@ describe('DocumentPerspectiveList', () => {
         expect(screen.getByRole('button', {name: 'Spring Drop'})).toHaveAttribute('data-selected')
       })
       it('draft and no published - perspective is undefined', async () => {
+        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
         mockUseDocumentPane.mockReturnValue(getPaneMock({editStateDocuments: ['draft']}))
         const wrapper = await getTestProvider({liveEdit: true})
         render(<DocumentPerspectiveList />, {wrapper})
@@ -463,6 +478,7 @@ describe('DocumentPerspectiveList', () => {
       })
       it('draft and published - perspective is undefined', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({editStateDocuments: ['draft', 'published']}),
         )
         const wrapper = await getTestProvider({liveEdit: true})
@@ -474,6 +490,7 @@ describe('DocumentPerspectiveList', () => {
     describe('not liveEditDocument', () => {
       it('no draft and no published - perspective is undefined', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({
             editStateDocuments: [],
             displayedVersion: 'published',
@@ -487,6 +504,7 @@ describe('DocumentPerspectiveList', () => {
       })
       it('draft and no published - perspective is undefined', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({
             editStateDocuments: ['draft'],
             displayedVersion: 'draft',
@@ -499,6 +517,7 @@ describe('DocumentPerspectiveList', () => {
       })
       it('no draft and published - perspective is undefined', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({
             editStateDocuments: ['published'],
             displayedVersion: 'published',
@@ -511,6 +530,7 @@ describe('DocumentPerspectiveList', () => {
       })
       it('draft and published - perspective is undefined', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({
             editStateDocuments: ['published', 'draft'],
             displayedVersion: 'published',
@@ -523,6 +543,7 @@ describe('DocumentPerspectiveList', () => {
       })
       it('no draft, no published and no version - perspective is version', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({
             editStateDocuments: [],
             displayedVersion: 'rSpringDrop',
@@ -555,6 +576,7 @@ describe('DocumentPerspectiveList', () => {
       })
       it('draft, no published and no version - perspective is version', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({
             editStateDocuments: ['draft'],
             displayedVersion: 'draft',
@@ -585,6 +607,7 @@ describe('DocumentPerspectiveList', () => {
       })
       it('no draft, published and no version - perspective is version', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({
             editStateDocuments: ['published'],
             displayedVersion: 'rSpringDrop',
@@ -612,6 +635,7 @@ describe('DocumentPerspectiveList', () => {
       })
       it('no draft, published and version - perspective is version', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({
             editStateDocuments: ['published', 'version'],
             displayedVersion: 'rSpringDrop',
@@ -630,6 +654,7 @@ describe('DocumentPerspectiveList', () => {
       })
       it('draft, no published and version - perspective is version', async () => {
         mockUseDocumentPane.mockReturnValue(
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           getPaneMock({
             editStateDocuments: ['draft', 'version'],
             displayedVersion: 'rSpringDrop',

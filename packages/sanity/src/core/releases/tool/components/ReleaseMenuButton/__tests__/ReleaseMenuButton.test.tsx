@@ -381,6 +381,7 @@ describe('ReleaseMenuButton', () => {
                 hasError: false,
                 validation: [],
               },
+              // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
               previewValues: {
                 isLoading: false,
                 values: undefined,
@@ -448,6 +449,7 @@ describe('ReleaseMenuButton', () => {
                 hasError: false,
                 validation: [],
               },
+              // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
               previewValues: {
                 isLoading: false,
                 values: undefined,

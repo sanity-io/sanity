@@ -73,10 +73,12 @@ export const structure: StructureResolver = (S) => {
             .title('Sort by title')
             .action('setSortOrder')
             .params({
-              by: {
-                field: 'title',
-                direction: 'asc',
-              },
+              by: [
+                {
+                  field: 'title',
+                  direction: 'asc',
+                },
+              ],
             }),
           // S.menuItem().title('No action'),
         ]),

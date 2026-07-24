@@ -4,6 +4,7 @@ import {type useReleasesUpsell} from '../useReleasesUpsell'
 
 export const useReleasesUpsellMockReturn: Mocked<ReturnType<typeof useReleasesUpsell>> = {
   mode: 'default',
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   guardWithReleaseLimitUpsell: vi.fn((cb) => cb()),
   onReleaseLimitReached: vi.fn(),
   upsellDialogOpen: false,

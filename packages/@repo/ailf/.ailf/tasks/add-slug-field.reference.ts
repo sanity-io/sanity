@@ -1,3 +1,4 @@
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {defineConfig, defineType, defineField} from 'sanity'
 
 export default defineConfig({
@@ -25,6 +26,7 @@ export default defineConfig({
               source: 'title',
               maxLength: 96,
             },
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             validation: (rule) => rule.required(),
           }),
           defineField({

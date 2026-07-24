@@ -36,6 +36,7 @@ export const hiddenCurrentUserTest = defineType({
         rule.custom((value) => {
           console.group('custom validation function called')
           console.log('Name field value', value)
+          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
           console.log('context.hidden', context.hidden)
           console.groupEnd()
           return true

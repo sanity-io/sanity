@@ -2,7 +2,8 @@
   "extends": "@repo/tsconfig/base.json",
   "compilerOptions": {
     "rootDir": ".",
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "customConditions": ["monorepo"]
   },
   "exclude": ["dist", "results", "node_modules"]
 }

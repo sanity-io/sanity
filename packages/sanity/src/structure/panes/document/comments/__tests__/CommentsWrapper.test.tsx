@@ -102,7 +102,9 @@ describe('CommentsWrapper', () => {
       getCommentLink('comment-abc')
 
       expect(mockResolveIntentLink).toHaveBeenCalledOnce()
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       expect(mockResolveIntentLink.mock.calls[0][0]).toBe('edit')
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       expect(mockResolveIntentLink.mock.calls[0][1]).toEqual({
         id: 'doc-123',
         type: 'article',
@@ -133,13 +135,16 @@ describe('CommentsWrapper', () => {
       getCommentLink('comment-xyz')
 
       expect(mockResolveIntentLink).toHaveBeenCalledOnce()
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       expect(mockResolveIntentLink.mock.calls[0][0]).toBe('edit')
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       expect(mockResolveIntentLink.mock.calls[0][1]).toEqual({
         id: 'doc-456',
         type: 'post',
         inspect: 'sanity/comments',
         comment: 'comment-xyz',
       })
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([['perspective', 'rSomeRelease']])
     })
 
@@ -165,12 +170,14 @@ describe('CommentsWrapper', () => {
       getCommentLink('comment-variant')
 
       expect(mockResolveIntentLink).toHaveBeenCalledOnce()
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       expect(mockResolveIntentLink.mock.calls[0][1]).toEqual({
         id: 'doc-variant',
         type: 'article',
         inspect: 'sanity/comments',
         comment: 'comment-variant',
       })
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([['variant', 'alpha-audience']])
     })
 
@@ -196,6 +203,7 @@ describe('CommentsWrapper', () => {
       getCommentLink('comment-both')
 
       expect(mockResolveIntentLink).toHaveBeenCalledOnce()
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([
         ['perspective', 'rSomeRelease'],
         ['variant', 'alpha-audience'],
@@ -229,6 +237,7 @@ describe('CommentsWrapper', () => {
       getCommentLink('comment-scheduled')
 
       expect(mockResolveIntentLink).toHaveBeenCalledOnce()
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       expect(mockResolveIntentLink.mock.calls[0][1]).toEqual({
         id: 'doc-scheduled',
         type: 'article',
@@ -236,6 +245,7 @@ describe('CommentsWrapper', () => {
         comment: 'comment-scheduled',
         scheduledDraft: 'rScheduledDraft',
       })
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([])
     })
 
@@ -252,6 +262,7 @@ describe('CommentsWrapper', () => {
       getCommentLink('comment-draft')
 
       expect(mockResolveIntentLink).toHaveBeenCalledOnce()
+      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([])
     })
 

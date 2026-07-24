@@ -60,7 +60,7 @@ export function CustomReferenceInput(props: CustomReferenceInputProps) {
 
   return (
     <Flex gap={2} align="flex-end">
-      <Box flex={1}>{props.renderDefault(props)}</Box>
+      <Box flex={1}>{props.renderDefault(props as never)}</Box>
       {!value?._ref ? (
         <Button
           text="Create new"

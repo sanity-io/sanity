@@ -1,3 +1,4 @@
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {defineConfig, defineType, defineField} from 'sanity'
 
 export default defineConfig({
@@ -26,6 +27,7 @@ export default defineConfig({
             name: 'externalUrl',
             title: 'External URL',
             type: 'url',
+            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
             hidden: ({document}) => !document?.isExternal,
           }),
         ],

@@ -84,6 +84,7 @@ describe('DocumentHeaderTitle', () => {
     // oxlint-disable-next-line ban-ts-comment
     // @ts-expect-error
     mockUseRouter.mockReturnValue({stickyParams: {}, state: {}, navigate: vi.fn()})
+    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: undefined})
     mockUseActiveReleases.mockReturnValue({
       data: [],

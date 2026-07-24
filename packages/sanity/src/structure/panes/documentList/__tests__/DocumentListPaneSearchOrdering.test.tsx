@@ -4,6 +4,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
+// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {type PaneMenuItem} from '../../types'
 import {
   DocumentListPaneSearchOrdering,

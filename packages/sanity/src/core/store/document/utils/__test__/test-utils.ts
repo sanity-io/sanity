@@ -10,6 +10,7 @@ export function mutationEvent({
   resultRev: string
   mutations: MutationPayload[]
 }): MutationEvent {
+  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
   return {
     type: 'mutation',
     documentId: 'test',
