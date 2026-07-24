@@ -65,7 +65,7 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
   // Scheduling operates on the base draft, so it is not available while a variant is selected —
   // it would silently schedule the base document instead of the variant (SAPP-3986).
   const {selectedVariantName} = usePerspective()
-  const isVariantSelected = selectedVariantName !== undefined
+  const isVariantSelected = Boolean(selectedVariantName)
   // Check if the current project supports Scheduled Publishing
 
   const [dialogOpen, setDialogOpen] = useState(false)
