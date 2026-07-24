@@ -23,6 +23,8 @@ const singleDocReleaseLocaleStrings = defineLocalesResources('singleDocRelease',
   /** Tooltip text for when schedule publish is disabled due to cardinality one releases */
   'action.schedule-publish.disabled.cardinality-one':
     'A Scheduled Draft for this document already exists.',
+  /** Tooltip text for when schedule publish is disabled because a variant is selected */
+  'action.schedule-publish.disabled.variant': 'Scheduling is not yet available for variants.',
   /** Empty state title for scheduled drafts */
   'empty-state.title': 'Scheduled Drafts',
   /** Empty state description for scheduled drafts */
