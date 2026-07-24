@@ -25,6 +25,50 @@ interface ReleaseDocumentPreviewProps {
   variantId?: string
 }
 
+type ReleaseDocumentPreviewContentProps = Pick<
+  ReleaseDocumentPreviewProps,
+  'documentId' | 'documentTypeName' | 'releaseId' | 'layout' | 'isGoingToBePublished'
+>
+
+/**
+ * Renders just the resolved document preview (thumbnail + title), without the
+ * enclosing link/card. Shared between {@link ReleaseDocumentPreview} (which adds an
+ * intent link to the document) and any consumer that needs the raw preview content
+ * wrapped in its own interactive element instead (e.g. a table row that navigates
+ * to the release, not the document).
+ *
+ * @internal
+ */
+export function ReleaseDocumentPreviewContent({
+  documentId,
+  documentTypeName,
+  releaseId,
+  layout,
+  isGoingToBePublished = false,
+}: ReleaseDocumentPreviewContentProps) {
+  const documentPresence = useDocumentPresence(documentId)
+
+  const previewPresence = useMemo(
+    () => documentPresence?.length > 0 && <DocumentPreviewPresence presence={documentPresence} />,
+    [documentPresence],
+  )
+
+  const {isLoading: previewLoading, value: resolvedPreview} = useDocumentPreviewValues({
+    documentId: isGoingToBePublished ? getPublishedId(documentId) : documentId,
+    documentType: documentTypeName,
+    perspectiveStack: isGoingToBePublished ? [] : [getReleaseIdFromReleaseDocumentId(releaseId)],
+  })
+
+  return (
+    <SanityDefaultPreview
+      {...(resolvedPreview || {})}
+      status={previewPresence}
+      isPlaceholder={previewLoading}
+      layout={layout}
+    />
+  )
+}
+
 export function ReleaseDocumentPreview({
   documentId,
   documentTypeName,
@@ -36,8 +80,6 @@ export function ReleaseDocumentPreview({
   isGoingToBePublished = false,
   variantId,
 }: ReleaseDocumentPreviewProps) {
-  const documentPresence = useDocumentPresence(documentId)
-
   const {params, searchParams} = useMemo(
     () =>
       getReleaseDocumentIntent({
@@ -79,24 +121,14 @@ export function ReleaseDocumentPreview({
     [params, searchParams],
   )
 
-  const previewPresence = useMemo(
-    () => documentPresence?.length > 0 && <DocumentPreviewPresence presence={documentPresence} />,
-    [documentPresence],
-  )
-
-  const {isLoading: previewLoading, value: resolvedPreview} = useDocumentPreviewValues({
-    documentId: isGoingToBePublished ? getPublishedId(documentId) : documentId,
-    documentType: documentTypeName,
-    perspectiveStack: isGoingToBePublished ? [] : [getReleaseIdFromReleaseDocumentId(releaseId)],
-  })
-
   return (
     <Card tone="inherit" as={LinkComponent} radius={2} data-as="a">
-      <SanityDefaultPreview
-        {...(resolvedPreview || {})}
-        status={previewPresence}
-        isPlaceholder={previewLoading}
+      <ReleaseDocumentPreviewContent
+        documentId={documentId}
+        documentTypeName={documentTypeName}
+        releaseId={releaseId}
         layout={layout}
+        isGoingToBePublished={isGoingToBePublished}
       />
     </Card>
   )

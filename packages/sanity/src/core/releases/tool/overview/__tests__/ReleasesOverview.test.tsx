@@ -96,6 +96,28 @@ vi.mock('../../detail/useReleaseDocuments', () => ({
   useReleaseDocuments: vi.fn(() => useReleaseDocumentsMockReturnWithResults),
 }))
 
+// The shared release-name cell renders a real document preview (thumbnail + title)
+// for cardinality-one releases. Mock the preview data/presence hooks it depends on so
+// rows for those releases don't need a fully resolvable document in this suite.
+vi.mock('../../../../tasks/hooks/useDocumentPreviewValues', () => ({
+  useDocumentPreviewValues: vi.fn(() => ({
+    isLoading: false,
+    value: {title: 'Mock document title', subtitle: undefined, media: undefined},
+  })),
+}))
+
+vi.mock('../../../../store/presence/useDocumentPresence', () => ({
+  useDocumentPresence: vi.fn(() => []),
+}))
+
+vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
+  SanityDefaultPreview: vi.fn(
+    ({title, isPlaceholder}: {title?: string; isPlaceholder?: boolean}) => (
+      <div data-ui={isPlaceholder ? 'Placeholder' : 'Preview'}>{title}</div>
+    ),
+  ),
+}))
+
 vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))

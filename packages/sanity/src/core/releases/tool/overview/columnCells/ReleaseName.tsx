@@ -5,6 +5,7 @@ import {Tooltip} from '../../../../../ui-components'
 import {PREVIEW_SIZES} from '../../../../components/previews/constants'
 import {TitleSkeleton} from '../../../../components/previews/general/DetailPreview.styled'
 import {Translate, useTranslation} from '../../../../i18n'
+import {isCardinalityOneRelease} from '../../../../util/releaseUtils'
 import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../components/ReleaseTitle'
 import {releasesLocaleNamespace} from '../../../i18n'
@@ -12,6 +13,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromR
 import {type TableRowProps} from '../../components/Table/Table'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
+import {ReleaseDocumentNameContent} from './ReleaseDocumentNameContent'
 
 export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
   cellProps,
@@ -57,18 +59,24 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
         <Flex align="center" gap={3}>
           <Card {...cardProps} padding={2} radius={2} flex={1}>
             <Flex align="center" gap={2}>
-              <Box flex="none">
-                <ReleaseAvatar release={release} />
-              </Box>
-              <Stack flex={1} space={2}>
-                <Flex align="center" gap={2} style={{minWidth: 0}}>
-                  <ReleaseTitle
-                    title={release.metadata.title}
-                    fallback={tCore('release.placeholder-untitled-release')}
-                    textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
-                  />
-                </Flex>
-              </Stack>
+              {isCardinalityOneRelease(release) ? (
+                <ReleaseDocumentNameContent release={release} />
+              ) : (
+                <>
+                  <Box flex="none">
+                    <ReleaseAvatar release={release} />
+                  </Box>
+                  <Stack flex={1} space={2}>
+                    <Flex align="center" gap={2} style={{minWidth: 0}}>
+                      <ReleaseTitle
+                        title={release.metadata.title}
+                        fallback={tCore('release.placeholder-untitled-release')}
+                        textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
+                      />
+                    </Flex>
+                  </Stack>
+                </>
+              )}
             </Flex>
           </Card>
         </Flex>
