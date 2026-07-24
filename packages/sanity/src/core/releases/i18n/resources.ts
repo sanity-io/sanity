@@ -749,6 +749,28 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'timeline.unscheduled-count_one': 'Unscheduled: {{count}}',
   /** Plural form of `timeline.unscheduled-count_one`. */
   'timeline.unscheduled-count_other': 'Unscheduled: {{count}}',
+  /** Left-edge overflow chip: count of dated releases falling before the visible window start
+   * (always in the past, i.e. overdue too far back to plot). Clicking widens the window to
+   * include them. Singular form. */
+  'timeline.overflow-earlier_one': '{{count}} overdue earlier',
+  /** Plural form of `timeline.overflow-earlier_one`. */
+  'timeline.overflow-earlier_other': '{{count}} overdue earlier',
+  /** Right-edge overflow chip: count of dated releases falling after the visible window end
+   * (future, beyond the horizon). Clicking widens the window to include them. Singular form. */
+  'timeline.overflow-later_one': '{{count}} later',
+  /** Plural form of `timeline.overflow-later_one`. */
+  'timeline.overflow-later_other': '{{count}} later',
+  /** Tooltip on an edge overflow chip, prompting the user to widen the window to include the
+   * off-window releases the chip summarizes */
+  'timeline.overflow-expand': 'Widen the timeline to include these',
+  /** Edge affordance shown while the window is widened to include off-window releases, letting
+   * the user return to the default window */
+  'timeline.overflow-collapse': 'Reset the timeline range',
+  /** Trailing line in an edge overflow chip's tooltip when it lists more off-window releases than
+   * fit in the preview. Singular form. */
+  'timeline.overflow-more_one': '+{{count}} more',
+  /** Plural form of `timeline.overflow-more_one`. */
+  'timeline.overflow-more_other': '+{{count}} more',
 
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",

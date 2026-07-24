@@ -1,4 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LockIcon} from '@sanity/icons/Lock'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
@@ -350,6 +351,95 @@ function ReleaseTimelineMarker({
   )
 }
 
+/**
+ * A pinned chip flanking the axis (left = `start`, right = `end`) that summarizes dated releases
+ * falling outside the visible window: left is always past-due (overdue too far back to plot),
+ * right is future beyond the horizon. Rather than clamp those onto the axis edge at a false
+ * position — which piled them into an unreadable tower — they're pulled off the axis and counted
+ * here. Clicking widens the window on that side to include them at their true positions; while
+ * widened the chip becomes a reset affordance. Hidden entirely when there's nothing beyond the
+ * edge and the window isn't widened.
+ */
+function EdgeOverflowChip({
+  side,
+  count,
+  expanded,
+  items,
+  onToggle,
+  toZoned,
+}: {
+  side: 'start' | 'end'
+  count: number
+  expanded: boolean
+  items: DatedRelease[]
+  onToggle: () => void
+  toZoned: ToZonedDate
+}) {
+  const {t} = useTranslation(releasesLocaleNamespace)
+  if (count === 0 && !expanded) return null
+
+  const icon = side === 'start' ? ChevronLeftIcon : ChevronRightIcon
+
+  if (expanded) {
+    return (
+      <Box flex="none" style={{marginTop: 20}}>
+        <Button
+          data-testid={`release-timeline-overflow-${side}`}
+          mode="bleed"
+          icon={icon}
+          onClick={onToggle}
+          aria-label={t('timeline.overflow-collapse')}
+          tooltipProps={{content: t('timeline.overflow-collapse')}}
+        />
+      </Box>
+    )
+  }
+
+  const label =
+    side === 'start'
+      ? t('timeline.overflow-earlier', {count})
+      : t('timeline.overflow-later', {count})
+  const preview = items.slice(0, 8)
+  const tooltipContent = (
+    <Box padding={2}>
+      <Stack space={2}>
+        <Text size={1} weight="semibold">
+          {t('timeline.overflow-expand')}
+        </Text>
+        {preview.map(({release, date}) => (
+          <Text key={release._id} size={1} muted>
+            {`${release.metadata?.title || t('release-placeholder.title')} — ${zonedFormat(
+              date,
+              toZoned,
+              'd MMM yyyy',
+            )}`}
+          </Text>
+        ))}
+        {items.length > preview.length && (
+          <Text size={1} muted>
+            {t('timeline.overflow-more', {count: items.length - preview.length})}
+          </Text>
+        )}
+      </Stack>
+    </Box>
+  )
+
+  return (
+    <Box flex="none" style={{marginTop: 20, maxWidth: 170}}>
+      <Button
+        data-testid={`release-timeline-overflow-${side}`}
+        mode="ghost"
+        tone={side === 'start' ? 'caution' : 'default'}
+        icon={side === 'start' ? icon : undefined}
+        iconRight={side === 'end' ? icon : undefined}
+        text={label}
+        onClick={onToggle}
+        tooltipProps={{content: tooltipContent}}
+      />
+    </Box>
+  )
+}
+
 function ReleaseTimelineRoadmap({
   dated,
   granularity,
@@ -364,19 +454,59 @@ function ReleaseTimelineRoadmap({
   onNavigate: (release: TableRelease) => void
 }) {
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {start, end} = useMemo(() => getRange(granularity, now), [granularity, now])
-  const ticks = useMemo(
-    () => getTicks(granularity, start, end, toZoned),
-    [granularity, start, end, toZoned],
+
+  // Widen-the-window state, per edge, tagged with the granularity it was set under. Keeping the
+  // granularity in the state (rather than resetting via an effect, which the react-compiler rule
+  // flags) means switching Week/Month/Quarter auto-collapses back to that granularity's default
+  // range: a stale tag simply reads as "not expanded".
+  const [expanded, setExpanded] = useState<{
+    start: boolean
+    end: boolean
+    g: ReleaseTimelineGranularity
+  }>({start: false, end: false, g: granularity})
+  const expandStart = expanded.g === granularity && expanded.start
+  const expandEnd = expanded.g === granularity && expanded.end
+  const toggleEdge = useCallback(
+    (edge: 'start' | 'end') =>
+      setExpanded((prev) => {
+        const current = prev.g === granularity ? prev : {start: false, end: false, g: granularity}
+        return {...current, g: granularity, [edge]: !current[edge]}
+      }),
+    [granularity],
   )
 
   const sorted = useMemo(
     () => [...dated].sort((a, b) => a.date.getTime() - b.date.getTime()),
     [dated],
   )
-  const positioned = useMemo(
-    () => sorted.map((entry) => ({entry, x: xPct(entry.date, start, end)})),
+
+  const base = useMemo(() => getRange(granularity, now), [granularity, now])
+  // When an edge is widened, stretch that side of the range out to the furthest dated release on
+  // that side so every off-window item plots at its true position; otherwise keep the default
+  // window and let anything beyond it fall into the edge overflow chips.
+  const start =
+    expandStart && sorted.length > 0 && sorted[0].date < base.start ? sorted[0].date : base.start
+  const end =
+    expandEnd && sorted.length > 0 && sorted[sorted.length - 1].date > base.end
+      ? sorted[sorted.length - 1].date
+      : base.end
+
+  const ticks = useMemo(
+    () => getTicks(granularity, start, end, toZoned),
+    [granularity, start, end, toZoned],
+  )
+
+  // Only entries inside the visible window are plotted; the rest are summarized in the edge chips.
+  const beforeItems = useMemo(() => sorted.filter((e) => e.date < start), [sorted, start])
+  const afterItems = useMemo(() => sorted.filter((e) => e.date > end), [sorted, end])
+  const inWindow = useMemo(
+    () => sorted.filter((e) => e.date >= start && e.date <= end),
     [sorted, start, end],
+  )
+
+  const positioned = useMemo(
+    () => inWindow.map((entry) => ({entry, x: xPct(entry.date, start, end)})),
+    [inWindow, start, end],
   )
   const minWidth = granularity === 'week' ? 900 : granularity === 'quarter' ? 1600 : 1200
   // The gap that keeps pills from overlapping has to be expressed as a percent of the visible
@@ -390,7 +520,7 @@ function ReleaseTimelineRoadmap({
 
   const collisionIds = useMemo(() => {
     const byDay = new Map<string, string[]>()
-    sorted.forEach(({release, date}) => {
+    inWindow.forEach(({release, date}) => {
       const key = zonedDayKey(date, toZoned)
       byDay.set(key, [...(byDay.get(key) || []), release._id])
     })
@@ -399,50 +529,68 @@ function ReleaseTimelineRoadmap({
       if (ids_.length > 1) ids_.forEach((id) => ids.add(id))
     })
     return ids
-  }, [sorted, toZoned])
+  }, [inWindow, toZoned])
 
   return (
-    <Box style={{overflowX: 'auto', overflowY: 'hidden'}}>
-      <Box style={{position: 'relative', height, minWidth, marginTop: 20}}>
-        <Axis
-          start={start}
-          end={end}
-          now={now}
-          height={height}
-          ticks={ticks}
-          nowLabel={t('timeline.now-marker')}
-        />
-        {/* baseline the pills hang off, so they read as points on a line */}
-        <Box
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 9,
-            borderTop: '2px solid var(--card-border-color)',
-          }}
-        />
-        {positioned.map(({entry, x}) => (
-          <ReleaseTimelineMarker
-            key={`marker-${entry.release._id}`}
-            entry={entry}
-            x={x}
-            collides={collisionIds.has(entry.release._id)}
+    <Flex align="flex-start" gap={2}>
+      <EdgeOverflowChip
+        side="start"
+        count={beforeItems.length}
+        expanded={expandStart}
+        items={beforeItems}
+        onToggle={() => toggleEdge('start')}
+        toZoned={toZoned}
+      />
+      <Box flex={1} style={{overflowX: 'auto', overflowY: 'hidden'}}>
+        <Box style={{position: 'relative', height, minWidth, marginTop: 20}}>
+          <Axis
+            start={start}
+            end={end}
+            now={now}
+            height={height}
+            ticks={ticks}
+            nowLabel={t('timeline.now-marker')}
           />
-        ))}
-        {positioned.map(({entry, x}, i) => (
-          <ReleaseTimelinePill
-            key={entry.release._id}
-            entry={entry}
-            x={x}
-            lane={lanes[i]}
-            collides={collisionIds.has(entry.release._id)}
-            toZoned={toZoned}
-            onNavigate={onNavigate}
+          {/* baseline the pills hang off, so they read as points on a line */}
+          <Box
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 9,
+              borderTop: '2px solid var(--card-border-color)',
+            }}
           />
-        ))}
+          {positioned.map(({entry, x}) => (
+            <ReleaseTimelineMarker
+              key={`marker-${entry.release._id}`}
+              entry={entry}
+              x={x}
+              collides={collisionIds.has(entry.release._id)}
+            />
+          ))}
+          {positioned.map(({entry, x}, i) => (
+            <ReleaseTimelinePill
+              key={entry.release._id}
+              entry={entry}
+              x={x}
+              lane={lanes[i]}
+              collides={collisionIds.has(entry.release._id)}
+              toZoned={toZoned}
+              onNavigate={onNavigate}
+            />
+          ))}
+        </Box>
       </Box>
-    </Box>
+      <EdgeOverflowChip
+        side="end"
+        count={afterItems.length}
+        expanded={expandEnd}
+        items={afterItems}
+        onToggle={() => toggleEdge('end')}
+        toZoned={toZoned}
+      />
+    </Flex>
   )
 }
 

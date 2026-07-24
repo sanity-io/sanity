@@ -37,10 +37,20 @@ beforeAll(async () => {
   })
 })
 
+/** An instant `days` from now, so fixtures land inside the timeline's default window (which is
+ * bounded around "now"); the static fixture dates (2023) fall outside it and would be pulled into
+ * the edge overflow chips instead of rendering as pills. */
+const daysFromNow = (days: number, hour = 10) => {
+  const d = new Date()
+  d.setDate(d.getDate() + days)
+  d.setHours(hour, 0, 0, 0)
+  return d.toISOString()
+}
+
 // scheduledRelease: state 'scheduled' + publishAt set -> armed.
 // activeScheduledRelease: intendedPublishAt set, but state 'active' (not armed) -> intended-not-armed.
 // activeASAPRelease: no publishAt/intendedPublishAt at all -> undated, excluded from the timeline.
-const datedArmed: TableRelease = {...scheduledRelease}
+const datedArmed: TableRelease = {...scheduledRelease, publishAt: daysFromNow(3)}
 const datedIntended: TableRelease = {
   ...activeScheduledRelease,
   metadata: {
@@ -148,6 +158,7 @@ describe('ReleaseTimeline', () => {
     const longTitleRelease: TableRelease = {
       ...scheduledRelease,
       _id: '_.releases.rLongTitle',
+      publishAt: daysFromNow(4),
       metadata: {
         ...scheduledRelease.metadata,
         title:
@@ -163,16 +174,40 @@ describe('ReleaseTimeline', () => {
     expect(pill.querySelector(`[title="${longTitleRelease.metadata.title}"]`)).toBeInTheDocument()
   })
 
+  it('pulls a dated release outside the window into the edge overflow chip instead of clamping it onto the axis, and widens the window when clicked', async () => {
+    // Armed release dated well before the default window start -> off-window (overdue too far
+    // back to plot). It must NOT render as a pill, but be summarized in the start-edge chip.
+    const farPast: TableRelease = {
+      ...scheduledRelease,
+      _id: '_.releases.rFarPast',
+      publishAt: daysFromNow(-120),
+    }
+
+    await renderTimeline({releases: [farPast, datedArmed]})
+
+    // In-window pill renders; off-window one does not.
+    expect(screen.getByTestId(`release-timeline-pill-${datedArmed._id}`)).toBeInTheDocument()
+    expect(screen.queryByTestId(`release-timeline-pill-${farPast._id}`)).not.toBeInTheDocument()
+
+    // The start-edge overflow chip summarizes it.
+    const chip = screen.getByTestId('release-timeline-overflow-start')
+    expect(chip).toHaveTextContent('1 overdue earlier')
+
+    // Clicking widens the window so the off-window release now plots as a pill.
+    await userEvent.click(chip)
+    expect(screen.getByTestId(`release-timeline-pill-${farPast._id}`)).toBeInTheDocument()
+  })
+
   it('flags two releases publishing on the same calendar day as a collision', async () => {
     const sameDayA: ReleaseDocument = {
       ...scheduledRelease,
       _id: '_.releases.rSameDayA',
-      publishAt: '2023-10-10T09:00:00Z',
+      publishAt: daysFromNow(6, 9),
     }
     const sameDayB: ReleaseDocument = {
       ...scheduledRelease,
       _id: '_.releases.rSameDayB',
-      publishAt: '2023-10-10T14:00:00Z',
+      publishAt: daysFromNow(6, 14),
       metadata: {...scheduledRelease.metadata, title: 'same day release B'},
     }
 
