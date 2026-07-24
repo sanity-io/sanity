@@ -35,8 +35,8 @@ catalogs:
       specifier: ^3.4.3
       version: 3.4.3
     '@sanity/vanilla-extract-vite-plugin':
-      specifier: ^0.2.5
-      version: 0.2.6
+      specifier: ^0.2.7
+      version: 0.2.7
     '@types/node':
       specifier: ^24.13.3
       version: 24.13.3
@@ -216,7 +216,7 @@ importers:
     devDependencies:
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.6(babel-plugin-macros@3.1.0)(vite@8.1.5)
+        version: 0.2.7(babel-plugin-macros@3.1.0)(vite@8.1.5)
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
@@ -265,7 +265,7 @@ importers:
     devDependencies:
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.6(babel-plugin-macros@3.1.0)(vite@8.1.5)
+        version: 0.2.7(babel-plugin-macros@3.1.0)(vite@8.1.5)
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.17
@@ -458,7 +458,7 @@ importers:
         version: link:../../packages/@repo/test-config
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.6(babel-plugin-macros@3.1.0)(vite@8.1.5)
+        version: 0.2.7(babel-plugin-macros@3.1.0)(vite@8.1.5)
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.17
@@ -804,7 +804,7 @@ importers:
     devDependencies:
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.6(babel-plugin-macros@3.1.0)(vite@8.1.5)
+        version: 0.2.7(babel-plugin-macros@3.1.0)(vite@8.1.5)
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -962,7 +962,7 @@ importers:
         version: 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.0)(vite@8.1.5)
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.6(babel-plugin-macros@3.1.0)(vite@8.1.5)
+        version: 0.2.7(babel-plugin-macros@3.1.0)(vite@8.1.5)
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -1505,7 +1505,7 @@ importers:
         version: 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.0)(vite@8.1.5)
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.6(babel-plugin-macros@3.1.0)(vite@8.1.5)
+        version: 0.2.7(babel-plugin-macros@3.1.0)(vite@8.1.5)
       '@testing-library/react':
         specifier: ^16.3.2
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.8)(react@19.2.8)
@@ -1892,7 +1892,7 @@ importers:
         version: 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.0)(vite@8.1.5)
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.6(babel-plugin-macros@3.1.0)(vite@8.1.5)
+        version: 0.2.7(babel-plugin-macros@3.1.0)(vite@8.1.5)
       '@sanity/visual-editing-csm':
         specifier: ^3.0.12
         version: 3.0.12(@sanity/client@7.24.0)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
@@ -6586,6 +6586,10 @@ packages:
     resolution: {integrity: sha512-Gfd6/2IHd1+99YavyIKBw2gLcvcHCVhmGYSkY0gWXTvLB81hAAOHDfTlzmiTbSCNZxAK+V8WqBupxVol/ZgTGQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
+  '@sanity/vanilla-extract-integration@0.1.7':
+    resolution: {integrity: sha512-qt9ZwyRhSLfJQwjvtBNLbEim/gn4M+HGVQQaIC+8/WQANpHvkwMbFx0p54gcTUZOg3rZLr5JV4y7E/EQxNg07A==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+
   '@sanity/vanilla-extract-rolldown-plugin@0.3.3':
     resolution: {integrity: sha512-I7HTy6EmzRxeR5KdqdidPuZFB3ytLOxYBjw4k1YrDgjlx/wTSSP+jlcho3QIXRm+7JsHtITc/IsdMZj6FzhB3w==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -6601,8 +6605,8 @@ packages:
     peerDependencies:
       tsdown: ^0.22.5
 
-  '@sanity/vanilla-extract-vite-plugin@0.2.6':
-    resolution: {integrity: sha512-tZjKiEt+Z0RiKcK0hc7a7GcGAQP8BQ6OWtn+X461YScAl1eMvRSjSPFmTMD5OW8cyi/7N8SBfhHlVvHZCO/V0g==}
+  '@sanity/vanilla-extract-vite-plugin@0.2.7':
+    resolution: {integrity: sha512-yydZRc0SxquKsLaIMGMsGR5e4AhAl46nYlBnVH4aoAus5TTCFun0xNNmrfNnKA63CEvYLz2LTMyOzFhTnOXN1w==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       vite: ^8.0.0
@@ -18740,7 +18744,16 @@ snapshots:
     dependencies:
       uuid: 11.1.1
 
-  '@sanity/vanilla-extract-integration@0.1.6(babel-plugin-macros@3.1.0)':
+  '@sanity/vanilla-extract-integration@0.1.6':
+    dependencies:
+      '@vanilla-extract/css': 1.21.1(babel-plugin-macros@3.1.0)
+      javascript-stringify: 2.1.0
+      rolldown: 1.2.0
+      yuku-parser: 0.8.0
+    transitivePeerDependencies:
+      - babel-plugin-macros
+
+  '@sanity/vanilla-extract-integration@0.1.7(babel-plugin-macros@3.1.0)':
     dependencies:
       '@vanilla-extract/css': 1.21.1(babel-plugin-macros@3.1.0)
       javascript-stringify: 2.1.0
@@ -18751,7 +18764,7 @@ snapshots:
 
   '@sanity/vanilla-extract-rolldown-plugin@0.3.3(rolldown@1.2.0)':
     dependencies:
-      '@sanity/vanilla-extract-integration': 0.1.6(babel-plugin-macros@3.1.0)
+      '@sanity/vanilla-extract-integration': 0.1.6
       lightningcss: 1.33.0
     optionalDependencies:
       rolldown: 1.2.0
@@ -18766,9 +18779,9 @@ snapshots:
       - babel-plugin-macros
       - rolldown
 
-  '@sanity/vanilla-extract-vite-plugin@0.2.6(babel-plugin-macros@3.1.0)(vite@8.1.5)':
+  '@sanity/vanilla-extract-vite-plugin@0.2.7(babel-plugin-macros@3.1.0)(vite@8.1.5)':
     dependencies:
-      '@sanity/vanilla-extract-integration': 0.1.6(babel-plugin-macros@3.1.0)
+      '@sanity/vanilla-extract-integration': 0.1.7(babel-plugin-macros@3.1.0)
       '@vanilla-extract/css': 1.21.1(babel-plugin-macros@3.1.0)
       vite: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
     transitivePeerDependencies:
