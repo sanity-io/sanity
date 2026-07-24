@@ -749,28 +749,30 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'timeline.unscheduled-count_one': 'Unscheduled: {{count}}',
   /** Plural form of `timeline.unscheduled-count_one`. */
   'timeline.unscheduled-count_other': 'Unscheduled: {{count}}',
-  /** Left-edge overflow chip: count of dated releases falling before the visible window start
-   * (always in the past, i.e. overdue too far back to plot). Clicking widens the window to
-   * include them. Singular form. */
-  'timeline.overflow-earlier_one': '{{count}} overdue earlier',
+  /** Left-edge scroll signpost: count of dated releases currently off the left of the scroll
+   * viewport (earlier in time). Clicking scrolls the timeline back toward them. Singular form. */
+  'timeline.overflow-earlier_one': '{{count}} earlier',
   /** Plural form of `timeline.overflow-earlier_one`. */
-  'timeline.overflow-earlier_other': '{{count}} overdue earlier',
-  /** Right-edge overflow chip: count of dated releases falling after the visible window end
-   * (future, beyond the horizon). Clicking widens the window to include them. Singular form. */
+  'timeline.overflow-earlier_other': '{{count}} earlier',
+  /** Right-edge scroll signpost: count of dated releases currently off the right of the scroll
+   * viewport (later in time). Clicking scrolls the timeline forward toward them. Singular form. */
   'timeline.overflow-later_one': '{{count}} later',
   /** Plural form of `timeline.overflow-later_one`. */
   'timeline.overflow-later_other': '{{count}} later',
-  /** Tooltip on an edge overflow chip, prompting the user to widen the window to include the
-   * off-window releases the chip summarizes */
-  'timeline.overflow-expand': 'Widen the timeline to include these',
-  /** Edge affordance shown while the window is widened to include off-window releases, letting
-   * the user return to the default window */
-  'timeline.overflow-collapse': 'Reset the timeline range',
-  /** Trailing line in an edge overflow chip's tooltip when it lists more off-window releases than
-   * fit in the preview. Singular form. */
-  'timeline.overflow-more_one': '+{{count}} more',
-  /** Plural form of `timeline.overflow-more_one`. */
-  'timeline.overflow-more_other': '+{{count}} more',
+  /** Tooltip on the left scroll signpost */
+  'timeline.scroll-earlier': 'Scroll to earlier releases',
+  /** Tooltip on the right scroll signpost */
+  'timeline.scroll-later': 'Scroll to later releases',
+  /** Button that recenters the timeline scroll position on today */
+  'timeline.today': 'Today',
+  /** Tooltip on the Today button */
+  'timeline.today-tooltip': 'Jump to today',
+  /** Tooltip line on a timeline pill for a scheduled draft (single document) */
+  'timeline.status-draft': 'Scheduled draft',
+  /** Tooltip line on a timeline pill whose intended date has passed without being scheduled */
+  'timeline.status-overdue': 'Overdue — the intended date has passed and it isn’t scheduled',
+  /** Tooltip line on a timeline pill that shares its publish day with another release */
+  'timeline.status-stagger': 'Publishes the same day as another release',
 
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",

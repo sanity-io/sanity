@@ -169,14 +169,14 @@ describe('ReleaseTimeline', () => {
     await renderTimeline({releases: [longTitleRelease]})
 
     const pill = screen.getByTestId(`release-timeline-pill-${longTitleRelease._id}`)
-    expect(pill).toHaveStyle({width: '216px', maxWidth: '216px'})
+    expect(pill).toHaveStyle({width: '240px', maxWidth: '240px'})
 
     expect(pill.querySelector(`[title="${longTitleRelease.metadata.title}"]`)).toBeInTheDocument()
   })
 
-  it('pulls a dated release outside the window into the edge overflow chip instead of clamping it onto the axis, and widens the window when clicked', async () => {
-    // Armed release dated well before the default window start -> off-window (overdue too far
-    // back to plot). It must NOT render as a pill, but be summarized in the start-edge chip.
+  it('renders a far-past dated release on the same continuous axis (no window-rescale) and exposes a Today anchor', async () => {
+    // The timeline spans the full range of dated releases, so a release dated months ago is a
+    // pill on the same continuous, scrollable axis — not clamped off or hidden behind a rescale.
     const farPast: TableRelease = {
       ...scheduledRelease,
       _id: '_.releases.rFarPast',
@@ -185,17 +185,16 @@ describe('ReleaseTimeline', () => {
 
     await renderTimeline({releases: [farPast, datedArmed]})
 
-    // In-window pill renders; off-window one does not.
     expect(screen.getByTestId(`release-timeline-pill-${datedArmed._id}`)).toBeInTheDocument()
-    expect(screen.queryByTestId(`release-timeline-pill-${farPast._id}`)).not.toBeInTheDocument()
-
-    // The start-edge overflow chip summarizes it.
-    const chip = screen.getByTestId('release-timeline-overflow-start')
-    expect(chip).toHaveTextContent('1 overdue earlier')
-
-    // Clicking widens the window so the off-window release now plots as a pill.
-    await userEvent.click(chip)
     expect(screen.getByTestId(`release-timeline-pill-${farPast._id}`)).toBeInTheDocument()
+
+    // The Today button (the scroll home-anchor) is always present.
+    expect(screen.getByTestId('release-timeline-today')).toBeInTheDocument()
+  })
+
+  it('keeps the strip a fixed height regardless of how many pills stack', async () => {
+    await renderTimeline({releases: [datedArmed, datedIntended]})
+    expect(screen.getByTestId('release-timeline-track')).toHaveStyle({height: '166px'})
   })
 
   it('flags two releases publishing on the same calendar day as a collision', async () => {
@@ -213,9 +212,14 @@ describe('ReleaseTimeline', () => {
 
     await renderTimeline({releases: [sameDayA as TableRelease, sameDayB as TableRelease]})
 
-    const pillA = screen.getByTestId(`release-timeline-pill-${sameDayA._id}`)
-    const pillB = screen.getByTestId(`release-timeline-pill-${sameDayB._id}`)
-    expect(pillA).toHaveTextContent('Stagger')
-    expect(pillB).toHaveTextContent('Stagger')
+    // The collision is marked on the pill (the "Stagger" wording lives in the pill's tooltip).
+    expect(screen.getByTestId(`release-timeline-pill-${sameDayA._id}`)).toHaveAttribute(
+      'data-collides',
+      'true',
+    )
+    expect(screen.getByTestId(`release-timeline-pill-${sameDayB._id}`)).toHaveAttribute(
+      'data-collides',
+      'true',
+    )
   })
 })

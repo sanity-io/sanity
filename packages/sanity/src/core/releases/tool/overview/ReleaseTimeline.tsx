@@ -10,7 +10,7 @@ import {addWeeks} from 'date-fns/addWeeks'
 import {format} from 'date-fns/format'
 import {startOfMonth} from 'date-fns/startOfMonth'
 import {startOfWeek} from 'date-fns/startOfWeek'
-import {Fragment, useCallback, useMemo, useState} from 'react'
+import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -30,22 +30,40 @@ import {type TableRelease} from './ReleasesOverview'
  * (`dev/test-studio/plugins/timeline-sandbox/TimelineSandbox.tsx`) — see
  * docs/initiatives/releases-overview-redesign/timeline-design.md.
  *
+ * The strip is a single continuous, horizontally-scrollable timeline spanning the full range of
+ * dated releases: there is no window-rescale (which was disorienting — the axis jumped and there
+ * was no anchor). Granularity toggles the zoom (pixels-per-day + tick interval); a "Today" button
+ * recenters on now; and the left/right signposts count releases scrolled off each edge and scroll
+ * toward them. Height is fixed so the surrounding page never reflows.
+ *
  * @internal
  */
 export type ReleaseTimelineGranularity = 'week' | 'month' | 'quarter'
 
 const GRANULARITIES: ReleaseTimelineGranularity[] = ['week', 'month', 'quarter']
 
-const LANE_HEIGHT = 64
-/** Fixed pill width (matches "Variant A · Roadmap" in the timeline sandbox) — pills never grow
- * beyond this, no matter how long the release title is; long titles are ellipsis-truncated
- * instead (see `ReleaseTimelinePill`). */
-const PILL_WIDTH = 216
-/** Minimum breathing room (px) required between two pills before they're considered to collide
- * horizontally and one gets bumped to the next lane. */
-const PILL_GAP_PX = 16
-const AXIS_HEIGHT_PADDING = 44
+/** One-line pill height (title + date on a single row). Also the lane stride. */
+const LANE_HEIGHT = 34
+/** Fixed pill width — pills never grow beyond this; long titles ellipsis-truncate. */
+const PILL_WIDTH = 240
+/** Breathing room (px) between pills before one bumps to the next lane. */
+const PILL_GAP_PX = 12
 const MARKER_SIZE = 12
+/** Vertical geometry of the strip. Pills hang below the axis baseline. */
+const AXIS_LABEL_TOP = 0
+const BASELINE_TOP = 18
+const MARKER_TOP = 13
+const PILLS_TOP = 30
+/** Number of lanes visible before the track scrolls vertically — sets the fixed strip height. */
+const VISIBLE_LANES = 4
+const TRACK_HEIGHT = PILLS_TOP + VISIBLE_LANES * LANE_HEIGHT
+/** Pixels-per-day per granularity: the zoom. A wide span in `week` scrolls rather than cramming. */
+const PX_PER_DAY: Record<ReleaseTimelineGranularity, number> = {week: 34, month: 9, quarter: 3.5}
+/** Extra days of breathing room padded onto each end of the data span, per granularity. */
+const RANGE_PAD_DAYS: Record<ReleaseTimelineGranularity, number> = {week: 5, month: 14, quarter: 30}
+/** Track never renders narrower than this, so a small data span still fills the container. */
+const MIN_TRACK_WIDTH = 640
+const MS_PER_DAY = 86_400_000
 
 interface DatedRelease {
   release: TableRelease
@@ -61,10 +79,21 @@ interface DatedRelease {
  * values, exactly like `useReleaseTime` already does for the Schedule column. */
 type ToZonedDate = (date: Date) => Date
 
-function getRange(granularity: ReleaseTimelineGranularity, now: Date): {start: Date; end: Date} {
-  if (granularity === 'week') return {start: addDays(now, -3), end: addDays(now, 21)}
-  if (granularity === 'quarter') return {start: addMonths(now, -1), end: addMonths(now, 5)}
-  return {start: addWeeks(now, -2), end: addWeeks(now, 10)} // month
+/**
+ * The rendered range: the full span of dated releases, padded, and always including "now" so the
+ * Today anchor is reachable. No window-rescale — granularity only changes the zoom, never which
+ * releases are in range.
+ */
+function getRange(
+  granularity: ReleaseTimelineGranularity,
+  now: Date,
+  earliest: Date,
+  latest: Date,
+): {start: Date; end: Date} {
+  const pad = RANGE_PAD_DAYS[granularity]
+  const lo = new Date(Math.min(now.getTime(), earliest.getTime()))
+  const hi = new Date(Math.max(now.getTime(), latest.getTime()))
+  return {start: addDays(lo, -pad), end: addDays(hi, pad)}
 }
 
 function getTicks(
@@ -103,11 +132,9 @@ function xPct(date: Date, start: Date, end: Date): number {
 
 /**
  * Assign non-overlapping lanes to date-sorted markers, bumping to the next lane whenever two
- * markers would render closer than `gapPct` (percent of the visible range) apart — ported from
- * the sandbox's lane packer, but made pixel-aware: `gapPct` is derived from the actual rendered
- * pill width against the track's `minWidth`, so it scales with granularity instead of using one
- * fixed percentage (a fixed percentage under-packs on the wider `week`/`month` ranges real,
- * clustered data hits, letting same-week pills overlap).
+ * markers would render closer than `gapPct` (percent of the visible range) apart — pixel-aware:
+ * `gapPct` is derived from the actual rendered pill width against the track's pixel width, so it
+ * scales with zoom instead of using one fixed percentage.
  */
 function assignLanes(items: {x: number}[], gapPct: number): number[] {
   const laneLastX: number[] = []
@@ -156,13 +183,17 @@ function Axis({
               style={{
                 position: 'absolute',
                 left: `${x}%`,
-                top: 0,
+                top: BASELINE_TOP,
                 bottom: 0,
                 borderLeft: '1px dashed var(--card-border-color)',
                 opacity: 0.5,
               }}
             />
-            <Text size={0} muted style={{position: 'absolute', left: `calc(${x}% + 4px)`, top: -2}}>
+            <Text
+              size={0}
+              muted
+              style={{position: 'absolute', left: `calc(${x}% + 4px)`, top: AXIS_LABEL_TOP}}
+            >
               {tick.label}
             </Text>
           </Fragment>
@@ -174,7 +205,7 @@ function Axis({
         style={{
           position: 'absolute',
           left: `${nowX}%`,
-          top: 0,
+          top: AXIS_LABEL_TOP,
           height,
           borderLeft: '2px solid var(--card-badge-primary-icon-color)',
         }}
@@ -185,7 +216,7 @@ function Axis({
         style={{
           position: 'absolute',
           left: `calc(${nowX}% + 4px)`,
-          bottom: -4,
+          top: AXIS_LABEL_TOP,
           color: 'var(--card-badge-primary-icon-color)',
         }}
       >
@@ -193,6 +224,12 @@ function Axis({
       </Text>
     </>
   )
+}
+
+function pillTone(entry: DatedRelease, collides: boolean): 'default' | 'caution' | 'critical' {
+  if (entry.overdue) return 'critical'
+  if (entry.intendedNotArmed || collides) return 'caution'
+  return 'default'
 }
 
 function ReleaseTimelinePill({
@@ -216,8 +253,7 @@ function ReleaseTimelinePill({
   const title = release.metadata?.title || t('release-placeholder.title')
   const dateLabel = zonedFormat(date, toZoned, 'd MMM, HH:mm')
   const documentCount = release.documentsMetadata?.documentCount ?? 0
-
-  const tone = intendedNotArmed ? 'caution' : 'default'
+  const tone = pillTone(entry, collides)
 
   return (
     <Tooltip
@@ -233,14 +269,22 @@ function ReleaseTimelinePill({
             <Text size={1} muted>
               {t(
                 documentCount === 1 ? 'summary.document-count_one' : 'summary.document-count_other',
-                {
-                  count: documentCount,
-                },
+                {count: documentCount},
               )}
             </Text>
+            {isDraft && (
+              <Text size={1} muted>
+                {t('timeline.status-draft')}
+              </Text>
+            )}
+            {overdue && (
+              <Text size={1} style={{color: 'var(--card-badge-critical-icon-color)'}}>
+                {t('timeline.status-overdue')}
+              </Text>
+            )}
             {collides && (
               <Text size={1} style={{color: 'var(--card-badge-caution-icon-color)'}}>
-                {t('timeline.tooltip-collision')}
+                {t('timeline.status-stagger')}
               </Text>
             )}
           </Stack>
@@ -250,78 +294,54 @@ function ReleaseTimelinePill({
     >
       <Card
         data-testid={`release-timeline-pill-${release._id}`}
+        data-collides={collides || undefined}
         tone={tone}
         radius={2}
         shadow={1}
-        padding={3}
+        paddingX={2}
+        paddingY={2}
         as="button"
         onClick={() => onNavigate(release)}
         style={{
           position: 'absolute',
           left: `${x}%`,
-          top: lane * LANE_HEIGHT + 12,
+          top: lane * LANE_HEIGHT + PILLS_TOP,
           width: PILL_WIDTH,
           maxWidth: PILL_WIDTH,
           textAlign: 'left',
           cursor: 'pointer',
-          border: collides
-            ? '1px solid var(--card-badge-caution-icon-color)'
-            : '1px solid var(--card-border-color)',
         }}
       >
-        <Stack space={3}>
-          <Flex align="center" gap={2}>
-            <Text size={1}>
-              {intendedNotArmed ? (
-                <ToneIcon icon={WarningOutlineIcon} tone="caution" />
-              ) : (
-                <Text size={1} muted>
-                  <LockIcon data-testid={scheduled ? 'release-timeline-lock-icon' : undefined} />
-                </Text>
-              )}
+        <Flex align="center" gap={2}>
+          <Text size={1} muted>
+            {intendedNotArmed ? (
+              <ToneIcon icon={WarningOutlineIcon} tone={overdue ? 'critical' : 'caution'} />
+            ) : (
+              <LockIcon data-testid={scheduled ? 'release-timeline-lock-icon' : undefined} />
+            )}
+          </Text>
+          {/* No `overflow: hidden` here — the `Text` handles its own ellipsis; an outer clip box
+              was cropping the top of the glyphs. `minWidth: 0` lets the flex item shrink so the
+              title truncates instead of pushing past the pill's fixed width. `title` surfaces the
+              full text on hover as a fallback to the pill-level Tooltip. */}
+          <Box flex={1} title={title} style={{minWidth: 0}}>
+            <Text size={1} weight="medium" textOverflow="ellipsis">
+              {title}
             </Text>
-            {/* `minWidth: 0` is load-bearing: without it this flex item won't shrink below its
-                content's intrinsic width, so a long title silently pushes past the pill's fixed
-                `width` and bleeds over neighboring pills instead of being clipped by
-                `textOverflow="ellipsis"`. `title` surfaces the full text on hover as a fallback
-                to the pill-level Tooltip above. */}
-            <Box title={title} style={{minWidth: 0, overflow: 'hidden', flex: 1}}>
-              <Text size={1} weight="medium" textOverflow="ellipsis">
-                {title}
-              </Text>
-            </Box>
-          </Flex>
-          <Flex align="center" gap={2} wrap="wrap">
-            <Text size={0} muted style={{whiteSpace: 'nowrap'}}>
-              {dateLabel}
-            </Text>
-            {isDraft && (
-              <Badge fontSize={0} tone="primary">
-                {t('timeline.draft-badge')}
-              </Badge>
-            )}
-            {overdue && (
-              <Badge fontSize={0} tone="caution">
-                {t('timeline.overdue-badge')}
-              </Badge>
-            )}
-            {collides && (
-              <Badge fontSize={0} tone="caution">
-                {t('timeline.collision-badge')}
-              </Badge>
-            )}
-          </Flex>
-        </Stack>
+          </Box>
+          <Text size={0} muted style={{whiteSpace: 'nowrap'}}>
+            {dateLabel}
+          </Text>
+        </Flex>
       </Card>
     </Tooltip>
   )
 }
 
 /**
- * A state-colored ◇ diamond marking a release's exact position on the time axis, restored from
- * the sandbox's milestone baseline — the pill below is a label hanging off this point, so nothing
- * reads as a duration/bar. Rendered independent of lane-packing (always on the baseline, unlike
- * the pill it belongs to) so the axis stays legible even when the pills above are dense.
+ * A state-colored ◇ diamond marking a release's exact position on the time axis. The pill below is
+ * a label hanging off this point, so nothing reads as a duration/bar. Rendered independent of
+ * lane-packing (always on the baseline) so the axis stays legible even when pills are dense.
  */
 function ReleaseTimelineMarker({
   entry,
@@ -332,16 +352,15 @@ function ReleaseTimelineMarker({
   x: number
   collides: boolean
 }) {
-  const tone = collides || entry.intendedNotArmed ? 'caution' : 'default'
   return (
     <Card
       data-testid={`release-timeline-marker-${entry.release._id}`}
-      tone={tone}
+      tone={pillTone(entry, collides)}
       shadow={1}
       style={{
         position: 'absolute',
         left: `${x}%`,
-        top: 4,
+        top: MARKER_TOP,
         width: MARKER_SIZE,
         height: MARKER_SIZE,
         transform: 'translateX(-50%) rotate(45deg)',
@@ -352,89 +371,39 @@ function ReleaseTimelineMarker({
 }
 
 /**
- * A pinned chip flanking the axis (left = `start`, right = `end`) that summarizes dated releases
- * falling outside the visible window: left is always past-due (overdue too far back to plot),
- * right is future beyond the horizon. Rather than clamp those onto the axis edge at a false
- * position — which piled them into an unreadable tower — they're pulled off the axis and counted
- * here. Clicking widens the window on that side to include them at their true positions; while
- * widened the chip becomes a reset affordance. Hidden entirely when there's nothing beyond the
- * edge and the window isn't widened.
+ * A pinned scroll signpost flanking the axis (left = `start`, right = `end`): counts the dated
+ * releases currently scrolled off that edge and scrolls the track toward them when clicked.
+ * Hidden when nothing is off that edge.
  */
-function EdgeOverflowChip({
+function ScrollSignpost({
   side,
   count,
-  expanded,
-  items,
-  onToggle,
-  toZoned,
+  onClick,
 }: {
   side: 'start' | 'end'
   count: number
-  expanded: boolean
-  items: DatedRelease[]
-  onToggle: () => void
-  toZoned: ToZonedDate
+  onClick: () => void
 }) {
   const {t} = useTranslation(releasesLocaleNamespace)
-  if (count === 0 && !expanded) return null
-
+  if (count === 0) return null
   const icon = side === 'start' ? ChevronLeftIcon : ChevronRightIcon
-
-  if (expanded) {
-    return (
-      <Box flex="none" style={{marginTop: 20}}>
-        <Button
-          data-testid={`release-timeline-overflow-${side}`}
-          mode="bleed"
-          icon={icon}
-          onClick={onToggle}
-          aria-label={t('timeline.overflow-collapse')}
-          tooltipProps={{content: t('timeline.overflow-collapse')}}
-        />
-      </Box>
-    )
-  }
-
   const label =
     side === 'start'
       ? t('timeline.overflow-earlier', {count})
       : t('timeline.overflow-later', {count})
-  const preview = items.slice(0, 8)
-  const tooltipContent = (
-    <Box padding={2}>
-      <Stack space={2}>
-        <Text size={1} weight="semibold">
-          {t('timeline.overflow-expand')}
-        </Text>
-        {preview.map(({release, date}) => (
-          <Text key={release._id} size={1} muted>
-            {`${release.metadata?.title || t('release-placeholder.title')} — ${zonedFormat(
-              date,
-              toZoned,
-              'd MMM yyyy',
-            )}`}
-          </Text>
-        ))}
-        {items.length > preview.length && (
-          <Text size={1} muted>
-            {t('timeline.overflow-more', {count: items.length - preview.length})}
-          </Text>
-        )}
-      </Stack>
-    </Box>
-  )
-
   return (
-    <Box flex="none" style={{marginTop: 20, maxWidth: 170}}>
+    <Box flex="none" style={{alignSelf: 'center'}}>
       <Button
         data-testid={`release-timeline-overflow-${side}`}
-        mode="ghost"
-        tone={side === 'start' ? 'caution' : 'default'}
+        mode="bleed"
+        tone="default"
         icon={side === 'start' ? icon : undefined}
         iconRight={side === 'end' ? icon : undefined}
         text={label}
-        onClick={onToggle}
-        tooltipProps={{content: tooltipContent}}
+        onClick={onClick}
+        tooltipProps={{
+          content: t(side === 'start' ? 'timeline.scroll-earlier' : 'timeline.scroll-later'),
+        }}
       />
     </Box>
   )
@@ -454,73 +423,39 @@ function ReleaseTimelineRoadmap({
   onNavigate: (release: TableRelease) => void
 }) {
   const {t} = useTranslation(releasesLocaleNamespace)
-
-  // Widen-the-window state, per edge, tagged with the granularity it was set under. Keeping the
-  // granularity in the state (rather than resetting via an effect, which the react-compiler rule
-  // flags) means switching Week/Month/Quarter auto-collapses back to that granularity's default
-  // range: a stale tag simply reads as "not expanded".
-  const [expanded, setExpanded] = useState<{
-    start: boolean
-    end: boolean
-    g: ReleaseTimelineGranularity
-  }>({start: false, end: false, g: granularity})
-  const expandStart = expanded.g === granularity && expanded.start
-  const expandEnd = expanded.g === granularity && expanded.end
-  const toggleEdge = useCallback(
-    (edge: 'start' | 'end') =>
-      setExpanded((prev) => {
-        const current = prev.g === granularity ? prev : {start: false, end: false, g: granularity}
-        return {...current, g: granularity, [edge]: !current[edge]}
-      }),
-    [granularity],
-  )
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const [overflow, setOverflow] = useState<{left: number; right: number}>({left: 0, right: 0})
 
   const sorted = useMemo(
     () => [...dated].sort((a, b) => a.date.getTime() - b.date.getTime()),
     [dated],
   )
 
-  const base = useMemo(() => getRange(granularity, now), [granularity, now])
-  // When an edge is widened, stretch that side of the range out to the furthest dated release on
-  // that side so every off-window item plots at its true position; otherwise keep the default
-  // window and let anything beyond it fall into the edge overflow chips.
-  const start =
-    expandStart && sorted.length > 0 && sorted[0].date < base.start ? sorted[0].date : base.start
-  const end =
-    expandEnd && sorted.length > 0 && sorted[sorted.length - 1].date > base.end
-      ? sorted[sorted.length - 1].date
-      : base.end
-
+  const {start, end} = useMemo(
+    () => getRange(granularity, now, sorted[0].date, sorted[sorted.length - 1].date),
+    [granularity, now, sorted],
+  )
   const ticks = useMemo(
     () => getTicks(granularity, start, end, toZoned),
     [granularity, start, end, toZoned],
   )
 
-  // Only entries inside the visible window are plotted; the rest are summarized in the edge chips.
-  const beforeItems = useMemo(() => sorted.filter((e) => e.date < start), [sorted, start])
-  const afterItems = useMemo(() => sorted.filter((e) => e.date > end), [sorted, end])
-  const inWindow = useMemo(
-    () => sorted.filter((e) => e.date >= start && e.date <= end),
-    [sorted, start, end],
-  )
+  const spanDays = (end.getTime() - start.getTime()) / MS_PER_DAY
+  const trackWidth = Math.max(MIN_TRACK_WIDTH, Math.round(spanDays * PX_PER_DAY[granularity]))
+  const nowPct = xPct(now, start, end)
 
   const positioned = useMemo(
-    () => inWindow.map((entry) => ({entry, x: xPct(entry.date, start, end)})),
-    [inWindow, start, end],
+    () => sorted.map((entry) => ({entry, x: xPct(entry.date, start, end)})),
+    [sorted, start, end],
   )
-  const minWidth = granularity === 'week' ? 900 : granularity === 'quarter' ? 1600 : 1200
-  // The gap that keeps pills from overlapping has to be expressed as a percent of the visible
-  // range, but pills are a fixed pixel width — so scale the two together against the track's
-  // pixel `minWidth`, instead of a single hardcoded percentage that under-packs on the wider
-  // week/month ranges real, clustered data hits.
-  const gapPct = ((PILL_WIDTH + PILL_GAP_PX) / minWidth) * 100
+  const gapPct = ((PILL_WIDTH + PILL_GAP_PX) / trackWidth) * 100
   const lanes = useMemo(() => assignLanes(positioned, gapPct), [positioned, gapPct])
   const laneCount = Math.max(1, ...lanes.map((lane) => lane + 1))
-  const height = laneCount * LANE_HEIGHT + AXIS_HEIGHT_PADDING
+  const innerHeight = PILLS_TOP + laneCount * LANE_HEIGHT
 
   const collisionIds = useMemo(() => {
     const byDay = new Map<string, string[]>()
-    inWindow.forEach(({release, date}) => {
+    sorted.forEach(({release, date}) => {
       const key = zonedDayKey(date, toZoned)
       byDay.set(key, [...(byDay.get(key) || []), release._id])
     })
@@ -529,68 +464,115 @@ function ReleaseTimelineRoadmap({
       if (ids_.length > 1) ids_.forEach((id) => ids.add(id))
     })
     return ids
-  }, [inWindow, toZoned])
+  }, [sorted, toZoned])
+
+  // Count pills scrolled off each edge of the viewport, so the signposts reflect what's currently
+  // out of view. Driven by the scroll event (and a deferred pass after each (re)layout).
+  const updateOverflow = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const total = el.scrollWidth
+    if (total === 0) return
+    const view0 = el.scrollLeft
+    const view1 = el.scrollLeft + el.clientWidth
+    let left = 0
+    let right = 0
+    positioned.forEach(({x}) => {
+      const px = (x / 100) * total
+      if (px < view0) left += 1
+      else if (px > view1) right += 1
+    })
+    setOverflow({left, right})
+  }, [positioned])
+
+  const scrollToNow = useCallback(
+    (behavior: ScrollBehavior) => {
+      const el = scrollRef.current
+      if (!el?.scrollTo) return
+      const target = Math.max(0, (nowPct / 100) * el.scrollWidth - el.clientWidth * 0.3)
+      el.scrollTo({left: target, behavior})
+    },
+    [nowPct],
+  )
+
+  const pageBy = useCallback((direction: -1 | 1) => {
+    const el = scrollRef.current
+    if (!el?.scrollBy) return
+    el.scrollBy({left: direction * el.clientWidth * 0.8, behavior: 'smooth'})
+  }, [])
+
+  // On (re)zoom or data change: recenter on now and recompute overflow. Both are DOM side effects;
+  // the overflow recompute is deferred to the next frame (post-layout) rather than run
+  // synchronously in the effect body.
+  useEffect(() => {
+    scrollToNow('auto')
+    const raf = requestAnimationFrame(updateOverflow)
+    return () => cancelAnimationFrame(raf)
+  }, [scrollToNow, updateOverflow])
 
   return (
-    <Flex align="flex-start" gap={2}>
-      <EdgeOverflowChip
-        side="start"
-        count={beforeItems.length}
-        expanded={expandStart}
-        items={beforeItems}
-        onToggle={() => toggleEdge('start')}
-        toZoned={toZoned}
-      />
-      <Box flex={1} style={{overflowX: 'auto', overflowY: 'hidden'}}>
-        <Box style={{position: 'relative', height, minWidth, marginTop: 20}}>
-          <Axis
-            start={start}
-            end={end}
-            now={now}
-            height={height}
-            ticks={ticks}
-            nowLabel={t('timeline.now-marker')}
-          />
-          {/* baseline the pills hang off, so they read as points on a line */}
-          <Box
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 9,
-              borderTop: '2px solid var(--card-border-color)',
-            }}
-          />
-          {positioned.map(({entry, x}) => (
-            <ReleaseTimelineMarker
-              key={`marker-${entry.release._id}`}
-              entry={entry}
-              x={x}
-              collides={collisionIds.has(entry.release._id)}
+    <Stack space={2}>
+      <Flex justify="flex-end">
+        <Button
+          data-testid="release-timeline-today"
+          mode="bleed"
+          text={t('timeline.today')}
+          onClick={() => scrollToNow('smooth')}
+          tooltipProps={{content: t('timeline.today-tooltip')}}
+        />
+      </Flex>
+      <Flex align="stretch" gap={1}>
+        <ScrollSignpost side="start" count={overflow.left} onClick={() => pageBy(-1)} />
+        <Box
+          data-testid="release-timeline-track"
+          ref={scrollRef}
+          flex={1}
+          onScroll={updateOverflow}
+          style={{overflowX: 'auto', overflowY: 'auto', height: TRACK_HEIGHT}}
+        >
+          <Box style={{position: 'relative', height: innerHeight, minWidth: trackWidth}}>
+            <Axis
+              start={start}
+              end={end}
+              now={now}
+              height={innerHeight}
+              ticks={ticks}
+              nowLabel={t('timeline.now-marker')}
             />
-          ))}
-          {positioned.map(({entry, x}, i) => (
-            <ReleaseTimelinePill
-              key={entry.release._id}
-              entry={entry}
-              x={x}
-              lane={lanes[i]}
-              collides={collisionIds.has(entry.release._id)}
-              toZoned={toZoned}
-              onNavigate={onNavigate}
+            {/* baseline the pills hang off, so they read as points on a line */}
+            <Box
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: BASELINE_TOP,
+                borderTop: '2px solid var(--card-border-color)',
+              }}
             />
-          ))}
+            {positioned.map(({entry, x}) => (
+              <ReleaseTimelineMarker
+                key={`marker-${entry.release._id}`}
+                entry={entry}
+                x={x}
+                collides={collisionIds.has(entry.release._id)}
+              />
+            ))}
+            {positioned.map(({entry, x}, i) => (
+              <ReleaseTimelinePill
+                key={entry.release._id}
+                entry={entry}
+                x={x}
+                lane={lanes[i]}
+                collides={collisionIds.has(entry.release._id)}
+                toZoned={toZoned}
+                onNavigate={onNavigate}
+              />
+            ))}
+          </Box>
         </Box>
-      </Box>
-      <EdgeOverflowChip
-        side="end"
-        count={afterItems.length}
-        expanded={expandEnd}
-        items={afterItems}
-        onToggle={() => toggleEdge('end')}
-        toZoned={toZoned}
-      />
-    </Flex>
+        <ScrollSignpost side="end" count={overflow.right} onClick={() => pageBy(1)} />
+      </Flex>
+    </Stack>
   )
 }
 
@@ -615,10 +597,10 @@ function UnscheduledChip({count}: {count: number}) {
 
 /**
  * A collapsible, read-only timeline strip rendered above the releases `DocumentTable`: dated
- * releases and scheduled drafts as lane-packed pills on a horizontal time axis, with a
- * Week/Month/Quarter granularity toggle and a "now" marker. Undated releases (no armed or
- * intended date) are excluded — they stay list-only, summarized in the "Unscheduled" chip below
- * the strip. Renders nothing when there is nothing dated to show.
+ * releases and scheduled drafts as lane-packed pills on one continuous, horizontally-scrollable
+ * time axis, with a Week/Month/Quarter zoom toggle, a "now" marker, and a Today recenter button.
+ * Undated releases (no armed or intended date) are excluded — they stay list-only, summarized in
+ * the "Unscheduled" chip below the strip. Renders nothing when there is nothing dated to show.
  *
  * @internal
  */
