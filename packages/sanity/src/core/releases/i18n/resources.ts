@@ -433,6 +433,40 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Note in the bulk delete dialog when some selected releases will be skipped (plural) */
   'overview.bulk.delete-skipped-note_other':
     '{{count}} releases will be skipped — they are not eligible for deletion.',
+  /** Label for the bulk delete-schedule action, offered in the Active/Paused scheduled-drafts
+   * view (removes the scheduling only — the document itself is not deleted) */
+  'overview.bulk.delete-schedule': 'Delete schedule',
+  /** Header for the bulk delete-schedule confirmation dialog */
+  'overview.bulk.delete-schedule-dialog.header': 'Delete schedule?',
+  /** Confirm button for the bulk delete-schedule dialog */
+  'overview.bulk.delete-schedule-dialog.confirm': 'Delete schedule',
+  /** Body of the bulk delete-schedule dialog (singular) — makes clear this removes the schedule
+   * only; the document stays as a draft, it is not deleted */
+  'overview.bulk.delete-schedule-dialog.description_one':
+    'This will remove the schedule for 1 document. The document will remain as a draft — its content will not be deleted.',
+  /** Body of the bulk delete-schedule dialog (plural) */
+  'overview.bulk.delete-schedule-dialog.description_other':
+    'This will remove the schedule for {{count}} documents. The documents will remain as drafts — their content will not be deleted.',
+  /** Success toast after a bulk delete-schedule (singular) */
+  'overview.bulk.delete-schedule-toast.success_one': 'Deleted 1 schedule',
+  /** Success toast after a bulk delete-schedule (plural) */
+  'overview.bulk.delete-schedule-toast.success_other': 'Deleted {{count}} schedules',
+  /** Error toast when some bulk delete-schedules fail */
+  'overview.bulk.delete-schedule-toast.error': 'Some schedules could not be deleted',
+  /** Tooltip on the bulk delete-schedule action when no selected draft is eligible */
+  'overview.bulk.delete-schedule-none-eligible': 'No selected schedules can be deleted.',
+  /** Note in the bulk delete-schedule dialog when some selected drafts will be skipped (singular) */
+  'overview.bulk.delete-schedule-skipped-note_one':
+    '{{count}} draft will be skipped — it is not eligible.',
+  /** Note in the bulk delete-schedule dialog when some selected drafts will be skipped (plural) */
+  'overview.bulk.delete-schedule-skipped-note_other':
+    '{{count}} drafts will be skipped — they are not eligible.',
+  /** Label for the batch-level checkbox in the bulk delete-schedule confirm dialog, applied to
+   * the whole selection. Defaults to checked (the safe choice against silent data loss). */
+  'overview.bulk.delete-schedule-keep-content': 'Keep edited content as drafts',
+  /** Helper line under the keep-content checkbox, explaining what unchecking it does */
+  'overview.bulk.delete-schedule-keep-content-description':
+    'If unchecked, edits made only in the scheduled version will be discarded instead of being saved to the draft.',
   /** Tooltip for the calendar button in the release overview */
   'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */

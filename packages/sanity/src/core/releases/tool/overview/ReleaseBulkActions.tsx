@@ -2,19 +2,21 @@ import {ArchiveIcon} from '@sanity/icons/Archive'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnarchiveIcon} from '@sanity/icons/Unarchive'
-import {Flex, Menu, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {Checkbox, Flex, Menu, Stack, Text, useToast} from '@sanity/ui'
+import {type ChangeEvent, useCallback, useMemo, useState} from 'react'
 
 import {Button, Dialog, MenuButton, MenuItem} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
+import {useScheduleDraftOperations} from '../../../singleDocRelease/hooks/useScheduleDraftOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
-import {type Mode} from './queryParamUtils'
+import {type CardinalityView, type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
 
 type ActiveBulkAction = 'archive' | 'archiveAndDelete'
 type ArchivedBulkAction = 'unarchive' | 'delete'
-type BulkAction = ActiveBulkAction | ArchivedBulkAction
+type DraftsBulkAction = 'deleteSchedule'
+type BulkAction = ActiveBulkAction | ArchivedBulkAction | DraftsBulkAction
 
 // Per-action copy + tone, so one confirm dialog serves both actions in a mode. Archive is
 // reversible (unarchive). Archive-and-delete is the destructive bulk action in the active view: an
@@ -96,20 +98,55 @@ const ACTION_CONFIG: Record<
     noneEligibleKey: 'overview.bulk.delete-none-eligible',
     skippedNoteKey: 'overview.bulk.delete-skipped-note',
   },
+  deleteSchedule: {
+    icon: TrashIcon,
+    tone: 'critical',
+    labelKey: 'overview.bulk.delete-schedule',
+    testId: 'release-overview-bulk-delete-schedule',
+    headerKey: 'overview.bulk.delete-schedule-dialog.header',
+    confirmKey: 'overview.bulk.delete-schedule-dialog.confirm',
+    descriptionKey: 'overview.bulk.delete-schedule-dialog.description',
+    toastSuccessKey: 'overview.bulk.delete-schedule-toast.success',
+    toastErrorKey: 'overview.bulk.delete-schedule-toast.error',
+    confirmTone: 'critical',
+    noneEligibleKey: 'overview.bulk.delete-schedule-none-eligible',
+    skippedNoteKey: 'overview.bulk.delete-schedule-skipped-note',
+  },
 }
 
-// Which actions are offered, and each action's eligibility rule, depend on the group mode.
-// - Active mode: a release can only be archived (or archived-and-deleted) while it isn't
-//   scheduled/scheduling — mirrors the per-row rule in ReleaseMenu.tsx (a scheduled release must
-//   be unscheduled first).
-// - Archived mode: the view holds releases in either the `archived` or `published` state (see
-//   ARCHIVED_RELEASE_STATES). Unarchive only makes sense for `archived` releases — a `published`
-//   release has nothing to "unarchive" back to (mirrors ReleaseMenu.tsx, which never shows
-//   Unarchive for `published`). Delete applies to both, since the delete API accepts either.
+// Which actions are offered, and each action's eligibility rule, depend on BOTH the cardinality
+// view and the group mode.
+// - All / Releases views (bundle releases, cardinality 'many'/undefined):
+//   - Active mode: a release can only be archived (or archived-and-deleted) while it isn't
+//     scheduled/scheduling — mirrors the per-row rule in ReleaseMenu.tsx (a scheduled release must
+//     be unscheduled first).
+//   - Archived mode: the view holds releases in either the `archived` or `published` state (see
+//     ARCHIVED_RELEASE_STATES). Unarchive only makes sense for `archived` releases — a `published`
+//     release has nothing to "unarchive" back to (mirrors ReleaseMenu.tsx, which never shows
+//     Unarchive for `published`). Delete applies to both, since the delete API accepts either.
+// - Scheduled drafts view (cardinality 'one'):
+//   - Active/Paused mode: the release-op Archive actions don't fit — the Active tab in this view
+//     holds ARMED drafts (state `scheduled`/`scheduling`, or paused-but-still-active), none of
+//     which are archive-eligible, so bulk Archive would always skip every row. Instead offer a
+//     single "Delete schedule" action that runs the same safe unschedule → archive → delete walk
+//     as the per-row menu (see useScheduleDraftOperations.deleteScheduledDraft): it removes the
+//     *scheduling*, the underlying document remains a plain draft.
+//   - Archived mode: an archived (or published) cardinality-one release unarchives/deletes with
+//     the exact same release ops as any other archived release, so it reuses 'unarchive'/'delete'.
 const ACTIONS_BY_MODE: Record<Mode, BulkAction[]> = {
   active: ['archive', 'archiveAndDelete'],
   archived: ['unarchive', 'delete'],
   paused: [],
+}
+
+const DRAFTS_ACTIONS_BY_MODE: Record<Mode, BulkAction[]> = {
+  active: ['deleteSchedule'],
+  paused: ['deleteSchedule'],
+  archived: ['unarchive', 'delete'],
+}
+
+function getActionsForView(cardinalityView: CardinalityView, mode: Mode): BulkAction[] {
+  return cardinalityView === 'drafts' ? DRAFTS_ACTIONS_BY_MODE[mode] : ACTIONS_BY_MODE[mode]
 }
 
 const ELIGIBILITY: Record<BulkAction, (release: TableRelease) => boolean> = {
@@ -117,17 +154,33 @@ const ELIGIBILITY: Record<BulkAction, (release: TableRelease) => boolean> = {
   archiveAndDelete: (release) => release.state === 'active',
   unarchive: (release) => release.state === 'archived',
   delete: (release) => release.state === 'archived' || release.state === 'published',
+  // Every row in the drafts Active/Paused view is a still-scheduled/active cardinality-one
+  // release that the unschedule → archive → delete walk can handle, so nothing is normally
+  // skipped — this guard exists only as a defensive fallback should an archived/published row
+  // ever end up selected.
+  deleteSchedule: (release) => release.state !== 'archived' && release.state !== 'published',
 }
 
 /**
  * Bulk-action toolbar contents for the releases overview, rendered inside the DocumentTable command
  * lane when a selection exists. Mirrors the detail-page bulk toolbar (ghost buttons when wide, an
- * overflow menu when compact). The action set depends on the current `mode`:
- * - `active`: Archive (reversible) + Archive and delete (permanent, critical-toned: archives then
- *   deletes, since an active release can't be deleted directly).
- * - `archived`: Unarchive (reversible, only eligible for `archived` releases) + Delete (permanent,
- *   critical-toned, eligible for `archived` or `published` releases — no archive-first needed,
- *   they're already archived/published).
+ * overflow menu when compact). The action set depends on BOTH the current `cardinalityView` and
+ * `mode`:
+ * - All / Releases views:
+ *   - `active`: Archive (reversible) + Archive and delete (permanent, critical-toned: archives
+ *     then deletes, since an active release can't be deleted directly).
+ *   - `archived`: Unarchive (reversible, only eligible for `archived` releases) + Delete
+ *     (permanent, critical-toned, eligible for `archived` or `published` releases — no
+ *     archive-first needed, they're already archived/published).
+ * - Scheduled drafts view:
+ *   - `active`/`paused`: a single critical-toned "Delete schedule" action — removes the
+ *     scheduling via the same unschedule → archive → delete walk the per-row menu uses, leaving
+ *     the underlying document as a plain draft (it does not delete document content). Its confirm
+ *     dialog carries one extra, batch-level control: a "Keep edited content as drafts" checkbox
+ *     (defaulted to checked) that's applied to the whole selection, controlling whether
+ *     version-only edits are copied into each release's plain draft before the scheduling is torn
+ *     down.
+ *   - `archived`: Unarchive + Delete, same as the All/Releases archived mode.
  * Each action is disabled when none of the current selection is eligible for it, with a tooltip
  * explaining why; when only some of the selection is eligible, the confirm dialog notes how many
  * will be skipped. Each action opens a confirmation before running.
@@ -135,22 +188,44 @@ const ELIGIBILITY: Record<BulkAction, (release: TableRelease) => boolean> = {
 export function ReleaseBulkActions({
   selectedReleases,
   mode,
+  cardinalityView,
   compact,
   onClear,
 }: {
   selectedReleases: TableRelease[]
   mode: Mode
+  cardinalityView: CardinalityView
   compact: boolean
   onClear: () => void
 }): React.JSX.Element {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {archive, unarchive, deleteRelease} = useReleaseOperations()
+  const {deleteScheduledDraft} = useScheduleDraftOperations()
   const toast = useToast()
   const [pendingAction, setPendingAction] = useState<BulkAction | null>(null)
   const [isRunning, setIsRunning] = useState(false)
+  // Batch-level choice for the delete-schedule confirm dialog only: whether to preserve
+  // version-only edits (copy them into the plain draft) before tearing down the scheduling.
+  // Defaults to checked — the safe default against silently discarding edits made only in the
+  // scheduled version. Reset to checked whenever a (new) confirm dialog is opened or dismissed,
+  // so a previous action's choice never leaks into the next one.
+  const [keepContent, setKeepContent] = useState(true)
+
+  const openConfirmDialog = useCallback((action: BulkAction) => {
+    setKeepContent(true)
+    setPendingAction(action)
+  }, [])
+
+  const closeConfirmDialog = useCallback(() => {
+    setPendingAction(null)
+    setKeepContent(true)
+  }, [])
 
   const count = selectedReleases.length
-  const actionsForMode = ACTIONS_BY_MODE[mode]
+  const actionsForMode = useMemo(
+    () => getActionsForView(cardinalityView, mode),
+    [cardinalityView, mode],
+  )
 
   const eligibleIdsByAction = useMemo(() => {
     const map: Partial<Record<BulkAction, string[]>> = {}
@@ -181,6 +256,14 @@ export function ReleaseBulkActions({
           await unarchive(id)
           return
         }
+        if (pendingAction === 'deleteSchedule') {
+          // keepContent is the batch-level checkbox in the confirm dialog: applied to every
+          // selected release, it controls whether deleteScheduledDraft copies version-only
+          // edits into the plain draft before tearing down the scheduling machinery
+          // (unschedule → archive → delete).
+          await deleteScheduledDraft(id, keepContent)
+          return
+        }
         await deleteRelease(id)
       }),
     )
@@ -188,7 +271,7 @@ export function ReleaseBulkActions({
     const succeeded = eligibleIds.length - failed
 
     setIsRunning(false)
-    setPendingAction(null)
+    closeConfirmDialog()
 
     if (succeeded > 0) {
       toast.push({
@@ -213,7 +296,19 @@ export function ReleaseBulkActions({
       })
     }
     onClear()
-  }, [archive, deleteRelease, eligibleIdsByAction, onClear, pendingAction, t, toast, unarchive])
+  }, [
+    archive,
+    closeConfirmDialog,
+    deleteRelease,
+    deleteScheduledDraft,
+    eligibleIdsByAction,
+    keepContent,
+    onClear,
+    pendingAction,
+    t,
+    toast,
+    unarchive,
+  ])
 
   const renderActionButton = useCallback(
     (action: BulkAction) => {
@@ -228,7 +323,7 @@ export function ReleaseBulkActions({
             key={action}
             data-testid={config.testId}
             icon={config.icon}
-            onClick={() => setPendingAction(action)}
+            onClick={() => openConfirmDialog(action)}
             text={t(config.labelKey)}
             tone={config.tone}
             disabled={disabled}
@@ -243,7 +338,7 @@ export function ReleaseBulkActions({
           data-testid={config.testId}
           icon={config.icon}
           mode="ghost"
-          onClick={() => setPendingAction(action)}
+          onClick={() => openConfirmDialog(action)}
           text={t(config.labelKey)}
           tone={config.tone}
           disabled={disabled}
@@ -251,7 +346,7 @@ export function ReleaseBulkActions({
         />
       )
     },
-    [compact, eligibleIdsByAction, t],
+    [compact, eligibleIdsByAction, openConfirmDialog, t],
   )
 
   const actions = compact ? (
@@ -286,7 +381,7 @@ export function ReleaseBulkActions({
           id="release-overview-bulk-action-dialog"
           data-testid="release-overview-bulk-action-dialog"
           header={t(pendingConfig.headerKey)}
-          onClose={() => !isRunning && setPendingAction(null)}
+          onClose={() => !isRunning && closeConfirmDialog()}
           padding={false}
           footer={{
             confirmButton: {
@@ -317,6 +412,23 @@ export function ReleaseBulkActions({
                   values={{count: pendingSkippedCount}}
                 />
               </Text>
+            )}
+            {pendingAction === 'deleteSchedule' && (
+              <Stack space={2}>
+                <Flex align="center" gap={3} as="label">
+                  <Checkbox
+                    data-testid="release-overview-bulk-keep-content-checkbox"
+                    checked={keepContent}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      setKeepContent(event.currentTarget.checked)
+                    }
+                  />
+                  <Text size={1}>{t('overview.bulk.delete-schedule-keep-content')}</Text>
+                </Flex>
+                <Text size={1} muted>
+                  {t('overview.bulk.delete-schedule-keep-content-description')}
+                </Text>
+              </Stack>
             )}
           </Stack>
         </Dialog>

@@ -13,6 +13,10 @@ import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtual
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {mockUseTimeZone, useTimeZoneMockReturn} from '../../../../hooks/__mocks__/useTimeZone.mock'
 import {usePerspectiveMockReturn} from '../../../../perspective/__mocks__/usePerspective.mock'
+import {
+  mockUseScheduleDraftOperations,
+  useScheduleDraftOperationsMockReturn,
+} from '../../../../singleDocRelease/hooks/__mocks__/useScheduleDraftOperations.mock'
 import {useScheduledDraftsEnabled} from '../../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {
   activeASAPRelease,
@@ -181,6 +185,10 @@ vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
 
+vi.mock('../../../../singleDocRelease/hooks/useScheduleDraftOperations', () => ({
+  useScheduleDraftOperations: vi.fn(() => useScheduleDraftOperationsMockReturn),
+}))
+
 const getWrapper = async () => {
   const BaseProvider = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
@@ -292,6 +300,8 @@ describe('ReleasesOverview', () => {
         panelSecondaryClicked: vi.fn(),
       },
     }))
+
+    mockUseScheduleDraftOperations.mockReturnValue(useScheduleDraftOperationsMockReturn)
   })
 
   setupVirtualListEnv()
@@ -1510,6 +1520,7 @@ describe('ReleasesOverview', () => {
     const setup = async (
       searchParams: [string, string][] = [],
       activeReleases: ReleaseDocument[] = releases,
+      archivedReleases: ReleaseDocument[] = [archivedScheduledRelease, publishedASAPRelease],
     ) => {
       mockUseActiveReleases.mockReturnValue({
         ...useActiveReleasesMockReturn,
@@ -1522,7 +1533,7 @@ describe('ReleasesOverview', () => {
       })
       mockUseArchivedReleases.mockReturnValue({
         ...useArchivedReleasesMockReturn,
-        data: [archivedScheduledRelease, publishedASAPRelease],
+        data: archivedReleases,
       })
       mockUseReleasesMetadata.mockReturnValue({
         ...useReleasesMetadataMockReturn,
@@ -1589,19 +1600,162 @@ describe('ReleasesOverview', () => {
       expect(screen.queryByTestId('release-overview-bulk-unarchive')).not.toBeInTheDocument()
     })
 
-    it('does not show a select-all checkbox in the Scheduled drafts view', async () => {
-      // Scheduled-drafts rows render a document-preview column that needs a real document
-      // fixture (schema-resolved preview) to mount without crashing, which is out of scope for
-      // this suite — so this asserts the bulk gate on the drafts view's empty state, which is
-      // enough to prove `bulkSelection` isn't wired up for `cardinalityView === 'drafts'`.
-      vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+    describe('Scheduled drafts view', () => {
+      const armedDraft: ReleaseDocument = {
+        ...activeScheduledRelease,
+        _id: '_.releases.rArmedDraftBulk',
+        state: 'scheduled',
+        publishAt: '2024-12-25T10:00:00Z',
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          title: 'Armed Draft (bulk)',
+          cardinality: 'one',
+        },
+      }
 
-      await setup([['view', 'drafts']], [])
+      const pausedDraft: ReleaseDocument = {
+        ...activeScheduledRelease,
+        _id: '_.releases.rPausedDraftBulk',
+        state: 'active',
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          title: 'Paused Draft (bulk)',
+          cardinality: 'one',
+          releaseType: 'scheduled',
+          intendedPublishAt: '2024-12-26T10:00:00Z',
+        },
+      }
 
-      await waitFor(() => {
-        expect(screen.queryByRole('table')).not.toBeInTheDocument()
+      const archivedDraft: ReleaseDocument = {
+        ...archivedScheduledRelease,
+        _id: '_.releases.rArchivedDraftBulk',
+        state: 'archived',
+        metadata: {
+          ...archivedScheduledRelease.metadata,
+          title: 'Archived Draft (bulk)',
+          cardinality: 'one',
+        },
+      }
+
+      beforeEach(() => {
+        vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+        useScheduleDraftOperationsMockReturn.deleteScheduledDraft.mockClear()
+        useReleaseOperationsMockReturn.archive.mockClear()
+        useReleaseOperationsMockReturn.unarchive.mockClear()
+        useReleaseOperationsMockReturn.deleteRelease.mockClear()
       })
-      expect(screen.queryByTestId('release-bulk-select-all')).not.toBeInTheDocument()
+
+      it('shows a select-all checkbox once drafts are loaded (Active mode)', async () => {
+        await setup([['view', 'drafts']], [armedDraft, pausedDraft], [])
+
+        await waitFor(() => {
+          expect(screen.getByTestId('release-bulk-select-all')).toBeInTheDocument()
+        })
+      })
+
+      it('shows the single "Delete schedule" bulk action in Active mode once a row is selected', async () => {
+        await setup([['view', 'drafts']], [armedDraft, pausedDraft], [])
+
+        await screen.findByTestId('release-bulk-select-all')
+
+        const [firstRowCheckbox] = screen.getAllByRole('checkbox').slice(1)
+        await userEvent.click(firstRowCheckbox)
+
+        expect(
+          await screen.findByTestId('release-overview-bulk-delete-schedule'),
+        ).toBeInTheDocument()
+        expect(screen.queryByTestId('release-overview-bulk-archive')).not.toBeInTheDocument()
+        expect(
+          screen.queryByTestId('release-overview-bulk-archive-and-delete'),
+        ).not.toBeInTheDocument()
+      })
+
+      it('shows the single "Delete schedule" bulk action in Paused mode once a row is selected', async () => {
+        await setup([['view', 'drafts']], [armedDraft, pausedDraft], [])
+
+        await userEvent.click(await screen.findByRole('button', {name: 'Paused'}))
+        await waitFor(() => {
+          expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+        })
+
+        const [firstRowCheckbox] = screen.getAllByRole('checkbox').slice(1)
+        await userEvent.click(firstRowCheckbox)
+
+        expect(
+          await screen.findByTestId('release-overview-bulk-delete-schedule'),
+        ).toBeInTheDocument()
+      })
+
+      it('runs deleteScheduledDraft for each selected release when confirming Delete schedule (Active mode)', async () => {
+        // The Active tab only shows armed (state 'scheduled') drafts — use two of those to
+        // exercise a multi-row selection within a single mode.
+        const secondArmedDraft: ReleaseDocument = {
+          ...armedDraft,
+          _id: '_.releases.rArmedDraftBulk2',
+        }
+        useScheduleDraftOperationsMockReturn.deleteScheduledDraft.mockResolvedValue(undefined)
+
+        await setup([['view', 'drafts']], [armedDraft, secondArmedDraft], [])
+
+        await screen.findByTestId('release-bulk-select-all')
+        await userEvent.click(screen.getByTestId('release-bulk-select-all'))
+
+        await userEvent.click(await screen.findByTestId('release-overview-bulk-delete-schedule'))
+        await userEvent.click(screen.getByTestId('confirm-button'))
+
+        await waitFor(() => {
+          expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledTimes(2)
+        })
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
+          armedDraft._id,
+          true,
+        )
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
+          secondArmedDraft._id,
+          true,
+        )
+      })
+
+      it('runs deleteScheduledDraft for a selected paused draft (Paused mode)', async () => {
+        useScheduleDraftOperationsMockReturn.deleteScheduledDraft.mockResolvedValue(undefined)
+
+        await setup([['view', 'drafts']], [armedDraft, pausedDraft], [])
+
+        await userEvent.click(await screen.findByRole('button', {name: 'Paused'}))
+        await waitFor(() => {
+          expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+        })
+
+        await screen.findByTestId('release-bulk-select-all')
+        await userEvent.click(screen.getByTestId('release-bulk-select-all'))
+
+        await userEvent.click(await screen.findByTestId('release-overview-bulk-delete-schedule'))
+        await userEvent.click(screen.getByTestId('confirm-button'))
+
+        await waitFor(() => {
+          expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledTimes(1)
+        })
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
+          pausedDraft._id,
+          true,
+        )
+      })
+
+      it('shows the archived-mode bulk actions (unarchive + delete) for archived drafts', async () => {
+        await setup([['view', 'drafts']], [], [archivedDraft])
+
+        await userEvent.click(await screen.findByRole('button', {name: 'Archived'}))
+        await screen.findByTestId('release-bulk-select-all')
+
+        const [firstRowCheckbox] = screen.getAllByRole('checkbox').slice(1)
+        await userEvent.click(firstRowCheckbox)
+
+        expect(await screen.findByTestId('release-overview-bulk-unarchive')).toBeInTheDocument()
+        expect(screen.getByTestId('release-overview-bulk-delete')).toBeInTheDocument()
+        expect(
+          screen.queryByTestId('release-overview-bulk-delete-schedule'),
+        ).not.toBeInTheDocument()
+      })
     })
   })
 

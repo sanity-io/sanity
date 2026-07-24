@@ -481,17 +481,16 @@ export function ReleasesOverview() {
     return currentArchivedPicker
   }, [loadingOrHasReleases, releaseFilterDate, clearFilterDate, currentArchivedPicker])
 
-  // Multi-select is available for both the All and Releases views, in both Active and Archived
-  // modes — each mode gets its own action set from ReleaseBulkActions (active: archive/
-  // archive-and-delete; archived: unarchive/delete). Scheduled drafts get no selection column yet
-  // (deferred to a later grammar-unification pass).
+  // Multi-select is available for All, Releases, and Scheduled drafts views, in Active/Paused/
+  // Archived modes — each view+mode combination gets its own action set from ReleaseBulkActions
+  // (All/Releases active: archive/archive-and-delete; All/Releases archived: unarchive/delete;
+  // Scheduled drafts active/paused: delete schedule; Scheduled drafts archived: unarchive/delete).
   //
   // filteredReleases is exactly what's rendered in the table for the current view/mode (it's
   // already scoped by filterReleasesForOverview to the active-vs-archived source array and any
   // date filter), so it's the correct array to resolve selectedKeys -> release objects from —
   // no need to branch between tableReleases/archivedReleases ourselves.
   const bulkSelection = useMemo<DocumentTableSelection | undefined>(() => {
-    if (cardinalityView === 'drafts') return undefined
     return {
       labels: {
         selectAll: t('overview.bulk.select-all'),
@@ -509,6 +508,7 @@ export function ReleasesOverview() {
           <ReleaseBulkActions
             selectedReleases={selectedReleases}
             mode={releaseGroupMode}
+            cardinalityView={cardinalityView}
             compact={compact}
             onClear={clear}
           />
