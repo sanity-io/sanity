@@ -165,29 +165,24 @@ describe('VariantDetail', () => {
     })
 
     expect(screen.getByText('Developer audience')).toBeInTheDocument()
-    expect(screen.getByText('audience: "alpha", locale: "en-US"')).toBeInTheDocument()
+    // Conditions render as read-only key/value metadata (muted key, solid value), not pills.
+    expect(screen.getByText('audience')).toBeInTheDocument()
+    expect(screen.getByText('alpha')).toBeInTheDocument()
+    expect(screen.getByText('locale')).toBeInTheDocument()
+    expect(screen.getByText('en-US')).toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'Edit variant definition'})).toBeInTheDocument()
-    expect(screen.getByTestId('pin-variant-button')).toBeInTheDocument()
+    // The perspective "pin" was removed from the detail page (it's a global authoring mode that
+    // belongs in perspective-bar chrome, not this management surface).
+    expect(screen.queryByTestId('pin-variant-button')).not.toBeInTheDocument()
     expect(screen.getByRole('button', {name: 'Back to variant definitions'})).toBeInTheDocument()
-    expect(screen.getByText('Bundle')).toBeInTheDocument()
+    expect(screen.getByText('Appears in')).toBeInTheDocument()
     expect(screen.getByText('Type')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search documents')).toBeInTheDocument()
     expect(screen.getByText('Edited')).toBeInTheDocument()
     expect(screen.getByText('No documents in this variant definition')).toBeInTheDocument()
-    expect(screen.getByText(/^Created/)).toBeInTheDocument()
-    expect(screen.getByTestId('variant-detail-footer-actions')).toBeInTheDocument()
-  })
-
-  it('pins a variant from the detail page', async () => {
-    routerState.variantId = getVariantId(variantAlphaAudience._id)
-    setVariants([variantAlphaAudience])
-    const user = userEvent.setup()
-
-    await renderDetail()
-
-    await user.click(screen.getByTestId('pin-variant-button'))
-
-    expect(mockedSetVariant).toHaveBeenCalledWith({variantId: variantAlphaAudience._id})
+    // Created status is a compact clock icon (full "Created <when>" in a hover tooltip).
+    expect(screen.getByLabelText('Created')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-detail-actions')).toBeInTheDocument()
   })
 
   it('opens the edit dialog with existing variant values', async () => {

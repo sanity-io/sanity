@@ -148,7 +148,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
         datum: VirtualDatum &
           (TableData | (TableData & AdditionalRowTableData) | {_id: string; isLoading: boolean}),
       ) {
-        const cardRowProps = rowProps(datum as TableData)
+        const {style: rowPropsStyle, ...cardRowProps} = rowProps(datum as TableData)
         const cardKey = loading ? `skeleton-${datum.index}` : String(get(datum, rowId))
 
         return (
@@ -170,6 +170,9 @@ const TableInner = <TableData, AdditionalRowTableData>({
                 calc((100% - var(--maxInlineSize)) / 2),
                 var(--paddingInline)
               )`,
+              // Consumer-supplied row styles are merged (not clobbered) so they can tint/flag a row
+              // without dropping the virtualization layout (height/position/transform).
+              ...rowPropsStyle,
             }}
             {...cardRowProps}
           >

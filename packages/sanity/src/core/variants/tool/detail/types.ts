@@ -39,4 +39,6 @@ export interface DocumentInVariant extends BundleDocument {
 export interface DocumentInVariantGroup extends DocumentInVariant {
   groupId: string
   versions: VariantDocumentVersion[]
+  /** Unique table row id / sort key. Equals `groupId` in the (single) flat view. */
+  rowKey?: string
 }

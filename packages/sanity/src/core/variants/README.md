@@ -159,18 +159,18 @@ Data flow:
 
 To revert to one row per document version, pass the flat `useVariantDocuments()` results directly to the table and switch `rowId` from `groupId` to `document._id`.
 
-## Footer
+## Header lane
 
-`VariantDetailFooter.tsx` mirrors the release detail footer pattern.
+The detail page uses a single slim header lane (`VariantDetail.tsx`) instead of a stacked header
+plus footer, so the vertical space goes to the documents table.
 
 Covered behavior:
 
-- created status on the left
-- right-side action slot
-- detail-specific menu button
+- identity (pin + title) and inline metadata (conditions, description, lineage badges) on the left
+- created status and actions (Edit + `VariantDetailMenuButton`) on the right
 - delete action navigates back to the overview after success
 
-The delete action currently does not confirm or check whether the variant has documents.
+The detail-page delete action currently does not confirm or check whether the variant has documents.
 
 ## Test Coverage
 
