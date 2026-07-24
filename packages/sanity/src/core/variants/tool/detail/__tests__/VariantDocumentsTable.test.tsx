@@ -51,7 +51,7 @@ const mockRows: DocumentInVariantGroup[] = [
   {
     memoKey: 'group-1',
     groupId: 'article-1',
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     validation: defaultValidation,
     document: {
       _id: 'published.scope.article-1',
@@ -84,7 +84,7 @@ const mockRows: DocumentInVariantGroup[] = [
   {
     memoKey: 'group-2',
     groupId: 'article-2',
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     validation: defaultValidation,
     document: {
       _id: 'drafts.scope.article-2',

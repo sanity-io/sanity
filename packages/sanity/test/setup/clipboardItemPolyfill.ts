@@ -3,7 +3,7 @@ type MaybeClipboardItemData = {[mimeType: string]: Blob}
 type MaybeClipboardItemDelayedData = {[mimeType: string]: Promise<Blob>}
 
 // Use a type assertion to avoid conflicts with existing definitions
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+// @ts-expect-error -- pre-existing, fix later
 const ClipboardItemPolyfill = class ClipboardItem {
   private data: MaybeClipboardItemData
 

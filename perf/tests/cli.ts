@@ -15,7 +15,7 @@ import {getCurrentBranchSync, getGitInfoSync} from './runner/utils/gitUtils'
 import {sanityIdify} from './runner/utils/sanityIdIfy'
 import {KNOWN_TEST_IDS} from './runner/utils/testIds'
 
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+// @ts-expect-error -- pre-existing, fix later
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 config({path: `${__dirname}/.env`})

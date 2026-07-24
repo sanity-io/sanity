@@ -36,7 +36,7 @@ describe('registerStudioManifest', () => {
     projectId: 'app-project',
     urlType: 'internal',
     appHost: 'test-studio',
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     apiHost: 'https://api.sanity.io',
   }
 

@@ -16,7 +16,7 @@ export default {
       type: 'slug',
       readOnly: ({value}: {value: {current?: string}}) => Boolean(value?.current),
       options: {
-        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+        // @ts-expect-error -- pre-existing, fix later
         source: (document) => document.title,
         maxLength: 96,
       },
@@ -275,7 +275,7 @@ export default {
               title: 'title',
               name: 'name',
             },
-            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+            // @ts-expect-error -- pre-existing, fix later
             prepare({title, name}) {
               return {
                 title: title,

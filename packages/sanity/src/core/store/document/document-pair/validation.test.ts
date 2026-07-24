@@ -46,11 +46,11 @@ const schema = createSchema({
         {
           name: 'adminOnlyTitle',
           type: 'string',
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           hidden: ({currentUser}) => currentUser?.id !== 'admin-user',
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           validation: (Rule) =>
-            // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+            // @ts-expect-error -- pre-existing, fix later
             Rule.custom((value, context) => {
               if (context.hidden) return true
               return value ? true : 'Admin title is required'
@@ -74,7 +74,7 @@ function createSubscription(
   const getClient = () => client
   const {typeName = 'movie', currentUser, documentId = 'example-id'} = options
 
-  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+  // @ts-expect-error -- pre-existing, fix later
   const stream = validation(
     {
       client,
@@ -115,7 +115,7 @@ function createVersionSubscription(
 ) {
   const getClient = () => client
 
-  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+  // @ts-expect-error -- pre-existing, fix later
   const stream = validation(
     {
       client,
@@ -173,7 +173,7 @@ describe('validation', () => {
     )
 
     // simulate first emission from validation listener
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -225,7 +225,7 @@ describe('validation', () => {
     )
 
     // simulate first emission from validation listener
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -247,7 +247,7 @@ describe('validation', () => {
     await doneValidating()
 
     // push a valid value
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -305,7 +305,7 @@ describe('validation', () => {
     )
 
     // simulate first emission from validation listener
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -362,7 +362,7 @@ describe('validation', () => {
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
     const subscription = lastValueFrom(
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       validation(
         {
           client,
@@ -378,7 +378,7 @@ describe('validation', () => {
     )
 
     // simulate first emission from validation listener
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -416,7 +416,7 @@ describe('validation', () => {
     ])
 
     const immediatePlayback = await firstValueFrom(
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       validation(
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -426,7 +426,7 @@ describe('validation', () => {
     )
 
     const immediatePlaybackAgain = await firstValueFrom(
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       validation(
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -451,7 +451,7 @@ describe('validation', () => {
       () => EMPTY,
     )
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     mockEditStateSubject.next({
       id: 'example-id',
       draft: null,
@@ -493,7 +493,7 @@ describe('validation', () => {
       doneValidating: winterDoneValidating,
     } = createVersionSubscription(client, 'versions.winter.example-id', () => EMPTY)
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     summerEditStateSubject.next({
       id: 'example-id',
       version: {
@@ -514,7 +514,7 @@ describe('validation', () => {
       ready: true,
     })
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     winterEditStateSubject.next({
       id: 'example-id',
       version: {
@@ -577,7 +577,7 @@ describe('validation', () => {
       currentUser: {id: 'admin-user'},
     })
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -616,7 +616,7 @@ describe('validation', () => {
       documentId: 'example-id-two',
     })
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     mockEditStateSubject.next({
       id: 'example-id-two',
       draft: {
@@ -663,14 +663,14 @@ describe('validation', () => {
         i18n: getFallbackLocaleSource(),
       }
 
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       const observableUserA = validation(
         {...sharedCtx, currentUser: {id: 'user-a'}},
         idPair,
         'movie',
         'draft',
       )
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       const observableUserB = validation(
         {...sharedCtx, currentUser: {id: 'user-b'}},
         idPair,
@@ -697,9 +697,9 @@ describe('validation', () => {
         currentUser: {id: 'user-c'},
       }
 
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       const firstObservable = validation(sharedCtx, idPair, 'movie', 'draft')
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       const secondObservable = validation(sharedCtx, idPair, 'movie', 'draft')
 
       expect(firstObservable).toBe(secondObservable)
@@ -720,14 +720,14 @@ describe('validation', () => {
         i18n: getFallbackLocaleSource(),
       }
 
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       const observableWithUser = validation(
         {...sharedCtx, currentUser: {id: 'user-d'}},
         idPair,
         'movie',
         'draft',
       )
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       const observableWithoutUser = validation(
         {...sharedCtx, currentUser: null},
         idPair,

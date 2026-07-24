@@ -43,7 +43,7 @@ const mockSchema: SchemaPluginOptions = {
 describe('resolveIntent', () => {
   it('takes in an intent request and returns `RouterPanes` that match the request', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list()
@@ -71,7 +71,7 @@ describe('resolveIntent', () => {
 
   it('resolves singletons', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list()
@@ -99,7 +99,7 @@ describe('resolveIntent', () => {
 
   it('resolves nested singletons', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list()
@@ -147,7 +147,7 @@ describe('resolveIntent', () => {
 
   it('returns the shallowest match', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list()
@@ -203,7 +203,7 @@ describe('resolveIntent', () => {
 
   it('resolves to the fallback editor if no match is found', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list()
@@ -228,7 +228,7 @@ describe('resolveIntent', () => {
 
   it('matches document nodes that have the same ID as the target ID', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list()
@@ -259,7 +259,7 @@ describe('resolveIntent', () => {
 
   it('resolves pane nodes that implement `canHandleIntent`', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const S = createStructureBuilder({source})
 
     const list = S.list()
@@ -302,7 +302,7 @@ describe('resolveIntent', () => {
 
   it('resolves custom components that implement `canHandleIntent`', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const S = createStructureBuilder({source})
 
     const customComponent = S.component(() => null)
@@ -345,7 +345,7 @@ describe('resolveIntent', () => {
 
   it('bubbles (re-throws) structure errors wrapped in a PaneResolutionError', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const S = createStructureBuilder({source})
 
     const rootPaneNode = S.list().title('Content').items([

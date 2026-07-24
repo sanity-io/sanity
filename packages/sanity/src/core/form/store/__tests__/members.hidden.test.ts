@@ -91,7 +91,7 @@ test('it omits the hidden member field from the members array', () => {
   })
 
   const documentValue = {_id: 'foo', _type: 'book'}
-  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+  // @ts-expect-error -- pre-existing, fix later
   const result = prepareFormState({
     ...DEFAULT_PROPS,
     hidden: prepareHiddenState({currentUser: MOCK_USER, documentValue, schemaType}),
@@ -113,7 +113,7 @@ test('it omits nested hidden members from the members array', () => {
     author: {hidden: () => true},
   })
   const documentValue = {_id: 'foo', _type: 'book'}
-  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+  // @ts-expect-error -- pre-existing, fix later
   const result = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: schemaType,
@@ -139,7 +139,7 @@ test('it "upward propagates" hidden fields', () => {
   const result = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType,
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     value: document,
     hidden: prepareHiddenState({currentUser: MOCK_USER, documentValue: document, schemaType}),
   })

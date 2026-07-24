@@ -36,7 +36,7 @@ describe('useDocumentRevertStates', () => {
     }
   }
 
-  // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+  // @ts-expect-error -- pre-existing, fix later
   const mockUseClient = useClient as Mock<typeof useClient>
   const mockGetTransactionsLogs = getTransactionsLogs as Mock<typeof getTransactionsLogs>
 
@@ -48,7 +48,7 @@ describe('useDocumentRevertStates', () => {
 
     mockUseClient.mockReturnValue(mockClient)
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     mockGetTransactionsLogs.mockResolvedValue([
       {id: 'trans0_doc1', documentIDs: ['doc1'], timestamp: new Date().toISOString()},
       {id: 'trans1_doc1', documentIDs: ['doc1'], timestamp: new Date().toISOString()},
@@ -187,7 +187,7 @@ describe('useDocumentRevertStates', () => {
   it('should handle a mix of existing and missing revisions', async () => {
     mockGetTransactionsLogs.mockResolvedValue([
       // Only doc1 has a transaction
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       {
         id: 'trans0_doc1',
         effects: {},

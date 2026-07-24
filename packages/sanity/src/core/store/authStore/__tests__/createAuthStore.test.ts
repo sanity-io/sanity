@@ -1671,7 +1671,7 @@ describe('createAuthStore: workbench OS token', () => {
       observeWorkbenchToken: () => of(OS_TOKEN),
     })
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     expect(await firstValueFrom(store.token)).toBe(OS_TOKEN)
   })
 

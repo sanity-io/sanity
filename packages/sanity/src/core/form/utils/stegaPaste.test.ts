@@ -117,7 +117,7 @@ describe('stripStegaFromPasteEvent', () => {
     const input = createInput()
     input.focus()
     const execCommand = vi.fn().mockReturnValue(true)
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     ;(document as {execCommand?: typeof execCommand}).execCommand = execCommand
     try {
       const event = createPasteEvent(input, stega('Hello'))
@@ -128,7 +128,7 @@ describe('stripStegaFromPasteEvent', () => {
       // The manual fallback must not run when `execCommand` succeeds
       expect(input.value).toBe('')
     } finally {
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       delete (document as {execCommand?: typeof execCommand}).execCommand
     }
   })

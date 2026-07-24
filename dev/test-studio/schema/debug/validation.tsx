@@ -38,7 +38,7 @@ export default defineType({
         return true
       }
 
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       const needsUrl = (doc.title[0] || '').toUpperCase() === doc.title[0]
       return needsUrl && !doc.myUrlField
         ? 'When the first character of the title is uppercase, you will need to fill out the "Plain url"-field'
@@ -303,7 +303,7 @@ export default defineType({
         Rule.custom(
           (value) =>
             new Promise((resolve) => {
-              // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+              // @ts-expect-error -- pre-existing, fix later
               if (!value || !value._ref) {
                 return resolve(true)
               }
@@ -459,11 +459,11 @@ export default defineType({
             return true
           }
 
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           const location = points([[geoPoint.lng, geoPoint.lat]])
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           const norwayFeature = featureCollection(norway)
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           const ptsWithin = pointsWithinPolygon(location, norwayFeature)
           return ptsWithin.features.length > 0 ? true : 'Location must be in Norway'
         }),

@@ -35,7 +35,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -60,7 +60,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -88,7 +88,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -109,7 +109,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -129,7 +129,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -150,7 +150,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -170,7 +170,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -209,7 +209,7 @@ describe('PrimitiveField', () => {
 
       const {rerender} = render(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -222,7 +222,7 @@ describe('PrimitiveField', () => {
 
       rerender(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -242,7 +242,7 @@ describe('PrimitiveField', () => {
 
       const {rerender} = render(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -261,7 +261,7 @@ describe('PrimitiveField', () => {
 
       rerender(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -280,7 +280,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -305,7 +305,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
-          // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -315,9 +315,9 @@ describe('PrimitiveField', () => {
 
       // When
       const input = screen.getByTestId('number-input') as HTMLInputElement
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       await userEvent.paste(input!, (Number.MIN_SAFE_INTEGER - 1).toString())
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       await userEvent.paste(input!, (Number.MAX_SAFE_INTEGER + 1).toString())
 
       // Then
@@ -342,7 +342,7 @@ async function setupTest(type: string, value: string | number | boolean | undefi
     open: true,
     groups: [],
     inSelectedGroup: false,
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     field: {
       id: 'id',
       schemaType,

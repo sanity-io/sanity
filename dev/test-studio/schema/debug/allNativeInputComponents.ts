@@ -109,7 +109,7 @@ export const allNativeInputComponents = defineType({
       type: 'image',
       name: 'image',
       components: {
-        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+        // @ts-expect-error -- pre-existing, fix later
         input: DelegatedImageInput,
       },
     }),

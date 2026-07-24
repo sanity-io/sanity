@@ -50,7 +50,7 @@ export const ptCustomMarkersTestType = defineType({
               {
                 title: 'Boost',
                 value: 'boost',
-                // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+                // @ts-expect-error -- pre-existing, fix later
                 blockEditor: {
                   icon: RocketIcon,
                   render: boostRender,

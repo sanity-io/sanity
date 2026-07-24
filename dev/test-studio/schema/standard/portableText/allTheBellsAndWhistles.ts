@@ -467,7 +467,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
       type: 'array',
       title: 'Content, comments disabled',
       components: {
-        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+        // @ts-expect-error -- pre-existing, fix later
         field: (props) => {
           return props.renderDefault({...props, __internal_comments: undefined})
         },

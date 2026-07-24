@@ -49,7 +49,7 @@ export async function renderCrossDatasetReferenceInput(options: {
   const result = await renderObjectInput({
     fieldDefinition: fieldDefinition as FieldDefinition<'object'>,
     props,
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     render: (baseProps, context) => initialRender(transformProps(baseProps, context), context),
   })
 

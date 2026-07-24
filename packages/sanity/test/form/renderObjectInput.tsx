@@ -58,7 +58,7 @@ export async function renderObjectInput(options: {
     ) as FieldMember<ObjectFormNode> | undefined
     const field = fieldMember?.field
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     return {
       ...restProps,
       changed: false,

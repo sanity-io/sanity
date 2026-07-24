@@ -13,7 +13,7 @@ describe('resolveUploadAssetSources', () => {
     name: 'source-with-uploader',
     title: 'Source With Uploader',
     component: vi.fn(),
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     Uploader: MockUploader,
   }
 
@@ -286,7 +286,7 @@ describe('resolveUploadAssetSources', () => {
         name: 'another-source-with-uploader',
         title: 'Another Source With Uploader',
         component: vi.fn(),
-        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+        // @ts-expect-error -- pre-existing, fix later
         Uploader: AnotherMockUploader,
       }
 

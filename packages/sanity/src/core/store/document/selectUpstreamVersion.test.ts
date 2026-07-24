@@ -12,7 +12,7 @@ const stubDocument: SanityDocument = {
   _updatedAt: '2025-10-14',
 }
 
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+// @ts-expect-error -- pre-existing, fix later
 const stubEditState: Omit<EditStateFor, 'published' | 'draft' | 'version'> = {
   id: 'editStateX',
   liveEdit: false,

@@ -525,7 +525,7 @@ describe('hasValidationContext', () => {
       // Destructuring in parameter list should still report length === 2
       const validation = (_rule: Rule, {hidden}: {hidden?: boolean}) => _rule
       expect(validation.length).toBe(2)
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       expect(hasValidationContext(validation)).toBe(true)
     })
 
@@ -535,7 +535,7 @@ describe('hasValidationContext', () => {
         return _rule
       }
       expect(validation.length).toBe(2)
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       expect(hasValidationContext(validation)).toBe(true)
     })
 

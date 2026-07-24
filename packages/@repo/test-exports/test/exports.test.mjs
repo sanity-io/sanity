@@ -1,4 +1,4 @@
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+// @ts-expect-error -- pre-existing, fix later
 import {test} from 'node:test'
 
 import getExports from './exports.cjs'

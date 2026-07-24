@@ -72,7 +72,7 @@ describe('SanityDefaultPreview - Sanity URL handling (fix/edx-1307)', () => {
     const sanityUrl = 'https://cdn.sanity.io/images/project/dataset/abc123-1920x1080.jpg'
 
     vi.mocked(isSanityImageUrl).mockReturnValue(true)
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     vi.mocked(parseImageAssetUrl).mockReturnValue({
       assetId: 'image-abc123-1920x1080-jpg',
       projectId: 'project',
@@ -82,7 +82,7 @@ describe('SanityDefaultPreview - Sanity URL handling (fix/edx-1307)', () => {
       height: 1080,
     })
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     vi.mocked(_previewComponents.default).mockImplementation((props: {media?: unknown}) => {
       capturedMedia = props.media
       if (typeof capturedMedia === 'function') {

@@ -27,7 +27,7 @@ export const validationTest = defineType({
               }, 1000)
             }),
         ),
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+      // @ts-expect-error -- pre-existing, fix later
       initialValue: async (params: undefined, context: ConfigContext) => {
         return new Promise((resolve) => {
           setTimeout(() => {

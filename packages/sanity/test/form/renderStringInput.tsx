@@ -24,7 +24,7 @@ export async function renderStringInput(options: {
   ): StringInputProps {
     const {schemaType, value, elementProps, ...restProps} = inputProps
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     return {
       ...restProps,
       elementProps: {

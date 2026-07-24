@@ -29,7 +29,7 @@ describe('createVariantOperationsStore', () => {
       action: vi.fn().mockResolvedValue(ACTION_RESULT),
     }
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const store = createVariantOperationsStore({client: client as SanityClient})
 
     await expect(store.createVariant(variant)).resolves.toEqual(ACTION_RESULT)
@@ -51,7 +51,7 @@ describe('createVariantOperationsStore', () => {
       action: vi.fn().mockResolvedValue(ACTION_RESULT),
     }
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const store = createVariantOperationsStore({client: client as SanityClient})
 
     await expect(store.updateVariant(variant)).resolves.toEqual(ACTION_RESULT)
@@ -84,7 +84,7 @@ describe('createVariantOperationsStore', () => {
       action: vi.fn().mockResolvedValue(ACTION_RESULT),
     }
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const store = createVariantOperationsStore({client: client as SanityClient})
 
     await expect(store.updateVariant(variantWithoutMetadata)).resolves.toEqual(ACTION_RESULT)
@@ -110,7 +110,7 @@ describe('createVariantOperationsStore', () => {
       action: vi.fn().mockResolvedValue(ACTION_RESULT),
     }
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const store = createVariantOperationsStore({client: client as SanityClient})
 
     await expect(store.deleteVariant(DOCUMENT_ID)).resolves.toEqual(ACTION_RESULT)

@@ -55,7 +55,7 @@ export function _buildTypeGroup(
                     .id(typeName)
                     .child(
                       S.documentList()
-                        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+                        // @ts-expect-error -- pre-existing, fix later
                         .defaultLayout(defaultLayout)
                         .menuItems(S.documentTypeList(typeName).getMenuItems() || [])
                         .canHandleIntent((intentName, params) => {

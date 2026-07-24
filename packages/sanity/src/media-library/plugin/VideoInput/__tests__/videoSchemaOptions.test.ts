@@ -23,7 +23,7 @@ describe('sanity.video schema options', () => {
       ],
     })
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     const field = schema.get('testDoc').fields.find((f) => f.name === 'video')
     expect(field?.type.options?.disableNew).toBe(true)
   })

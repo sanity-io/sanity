@@ -80,7 +80,7 @@ describe('VersionContextMenu', () => {
 
     const wrapper = await createTestProvider()
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
     await flushMicrotasksThisIsACodeSmell()
 
@@ -104,7 +104,7 @@ describe('VersionContextMenu', () => {
 
     const wrapper = await createTestProvider()
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
     await flushMicrotasksThisIsACodeSmell()
 
@@ -130,7 +130,7 @@ describe('VersionContextMenu', () => {
       isVersion: false,
     }
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     render(<VersionContextMenu {...publishedProps} />, {wrapper})
     await flushMicrotasksThisIsACodeSmell()
 
@@ -142,7 +142,7 @@ describe('VersionContextMenu', () => {
 
     const wrapper = await createTestProvider()
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
     await flushMicrotasksThisIsACodeSmell()
 
@@ -160,7 +160,7 @@ describe('VersionContextMenu', () => {
 
     const wrapper = await createTestProvider()
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
     await flushMicrotasksThisIsACodeSmell()
 
@@ -181,7 +181,7 @@ describe('VersionContextMenu', () => {
 
     const wrapper = await createTestProvider()
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
     await flushMicrotasksThisIsACodeSmell()
 
@@ -202,7 +202,7 @@ describe('VersionContextMenu', () => {
 
     const wrapper = await createTestProvider()
 
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     render(<VersionContextMenu {...defaultProps} isGoingToUnpublish />, {wrapper})
     await flushMicrotasksThisIsACodeSmell()
 

@@ -48,12 +48,12 @@ const draftDefault = versionStub({
   _id: 'drafts.article-1',
   _system: {
     bundleId: 'drafts',
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     release: null,
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     variant: null,
     group: groupRef,
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     scopeId: null,
   },
 })
@@ -61,7 +61,7 @@ const draftAlpha = versionStub({
   _id: 'drafts.baz.article-1',
   _system: {
     bundleId: 'drafts',
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     release: null,
     variant: variantRef(VARIANT_ALPHA_ID),
     group: groupRef,
@@ -72,7 +72,7 @@ const draftNorwegian = versionStub({
   _id: 'drafts.qux.article-1',
   _system: {
     bundleId: 'drafts',
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     release: null,
     variant: variantRef(VARIANT_NORWEGIAN_ID),
     group: groupRef,
@@ -87,7 +87,7 @@ const releaseDefault = versionStub({
   _system: {
     bundleId: 'rASAP',
     release: releaseRef,
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
+    // @ts-expect-error -- pre-existing, fix later
     variant: null,
     group: groupRef,
     scopeId: 'rASAP',
