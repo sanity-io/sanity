@@ -164,7 +164,7 @@
     "@sanity/icons": "^5.2.1",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/image-url": "^2.1.1",
-    "@sanity/logos": "^2.2.2",
+    "@sanity/logos": "^2.2.4",
     "@sanity/media-library-types": "^1.6.0",
     "@sanity/message-protocol": "^0.24.0",
     "@sanity/migrate": "catalog:",
