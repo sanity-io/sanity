@@ -499,9 +499,7 @@ function runsWithSoak(
       const scenario = run.scenarios?.find((s) => s.soak?.samples?.length)
       return scenario?.soak ? {run, soak: scenario.soak, sourceFile: scenario.sourceFile} : null
     })
-    .filter(
-      (entry): entry is {run: TrendRun; soak: SoakScenario; sourceFile?: string} => entry !== null,
-    )
+    .filter((entry) => entry !== null)
 }
 
 /**

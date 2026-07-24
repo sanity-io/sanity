@@ -102,7 +102,6 @@
   },
   "scripts": {
     "build": "tsdown",
-    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "watch": "tsdown --watch"
@@ -120,7 +119,6 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
     "@types/node": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "tsdown": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

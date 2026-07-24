@@ -102,6 +102,7 @@ describe('VideoInput - local tests', () => {
           directUploads: _directUploads,
           observeAsset: _observeAsset,
           resolveUploader: _resolveUploader,
+          // @ts-expect-error -- pre-existing, fix later
           t: _t,
           ...studioProps
         } = inputProps

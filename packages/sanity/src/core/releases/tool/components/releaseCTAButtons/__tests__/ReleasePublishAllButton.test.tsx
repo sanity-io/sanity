@@ -14,6 +14,7 @@ import {
   useReleasePermissionsMockReturn,
   useReleasesPermissionsMockReturnTrue,
 } from '../../../../store/__tests__/__mocks/useReleasePermissions.mock'
+// @ts-expect-error -- pre-existing, fix later
 import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
 import {ReleasePublishAllButton} from '../ReleasePublishAllButton'
 

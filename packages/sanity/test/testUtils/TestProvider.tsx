@@ -62,8 +62,8 @@ export async function createTestProvider({
     paneDataItems: [],
     routerPanes: [],
     resolvedPanes: [],
-    focusedPane: null,
-    setFocusedPane: noop,
+    maximizedPane: null,
+    setMaximizedPane: noop,
   }
 
   const locales = [usEnglishLocale]
@@ -86,6 +86,7 @@ export async function createTestProvider({
     isCreatingDataset: false,
     client: null,
     ready: true,
+    error: null,
   }
 
   const TestProvider: ComponentType<PropsWithChildren> = ({children}) => (

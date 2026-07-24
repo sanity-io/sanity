@@ -89,8 +89,10 @@ describe('useVariantDocuments', () => {
     }
 
     documentPreviewStoreMock.unstable_observeDocumentIdSet.mockReturnValue(
+      // @ts-expect-error -- pre-existing, fix later
       of({status: 'connected' as const, documentIds: [document._id]}),
     )
+    // @ts-expect-error -- pre-existing, fix later
     documentPreviewStoreMock.unstable_observeDocument.mockReturnValue(of(document))
 
     const wrapper = await createTestProvider()

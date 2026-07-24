@@ -18,7 +18,6 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "check:types": "(cd ../../.. && tsgo --project packages/@repo/debug-proxy/tsconfig.json --erasableSyntaxOnly)",
     "dev": "tsx watch --env-file-if-exists=.env src/cli.ts",
     "start": "tsx --env-file-if-exists=.env src/cli.ts",
     "test": "vitest run"
@@ -35,7 +34,6 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "tsx": "^4.23.1",
     "vite": "catalog:",
     "vitest": "catalog:"

@@ -4,7 +4,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
-import {type PaneMenuItem} from '../../types'
+import {type PaneMenuItem} from '../../../types'
 import {
   DocumentListPaneSearchOrdering,
   getSearchOrderingId,

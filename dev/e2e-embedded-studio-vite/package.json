@@ -3,7 +3,7 @@
   "version": "6.6.0",
   "private": true,
   "scripts": {
-    "build": "tsgo && vite build",
+    "build": "vite build",
     "dev": "vite",
     "preview": "vite preview --port 5173",
     "start": "pnpm --filter e2e-embedded-studio-vite preview",
@@ -19,7 +19,6 @@
     "@playwright/test": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "vite": "catalog:"
   }

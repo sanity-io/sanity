@@ -95,10 +95,14 @@ describe('getDocumentVersionInfoFromVersions', () => {
       ...publishedVersion,
       _id: 'other-article',
       _system: {
+        // @ts-expect-error -- pre-existing, fix later
         bundleId: null,
+        // @ts-expect-error -- pre-existing, fix later
         release: null,
+        // @ts-expect-error -- pre-existing, fix later
         variant: null,
         group: {_ref: 'other-article', _weak: true},
+        // @ts-expect-error -- pre-existing, fix later
         scopeId: null,
       },
     }

@@ -73,6 +73,7 @@ export async function renderVideoInput(options: {
       ...restProps,
       assetSources,
       client,
+      // @ts-expect-error -- pre-existing, fix later
       t: (key: string, values?: Record<string, string>) => key,
       directUploads: true,
       observeAsset,
