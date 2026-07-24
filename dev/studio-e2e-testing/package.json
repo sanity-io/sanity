@@ -27,5 +27,8 @@
     "sanity-plugin-media": "^6.0.4",
     "sanity-test-studio": "workspace:*",
     "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:"
   }
 }

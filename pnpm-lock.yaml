@@ -649,6 +649,10 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.4.4(react-dom@19.2.8)(react@19.2.8)
+    devDependencies:
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.17
 
   dev/test-create-integration-studio:
     dependencies:
@@ -2098,6 +2102,9 @@ importers:
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../../packages/@repo/tsconfig
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.17
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3

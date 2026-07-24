@@ -1,9 +1,7 @@
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons/Book'
 import {PlayIcon} from '@sanity/icons/Play'
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {visionTool} from '@sanity/vision'
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {defineConfig, type ReleaseActionComponent} from 'sanity'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {media} from 'sanity-plugin-media'
@@ -14,16 +12,13 @@ import {resolveInitialValueTemplates} from 'sanity-test-studio/initialValueTempl
 import {customInspector} from 'sanity-test-studio/inspectors/custom'
 import {languageFilter} from 'sanity-test-studio/plugins/language-filter'
 import {defaultDocumentNode, newDocumentOptions, structure} from 'sanity-test-studio/structure'
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {presentationTool} from 'sanity/presentation'
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {structureTool} from 'sanity/structure'
 
 import {customComponents} from './components-api'
 import {e2eI18nBundles} from './i18n/bundles'
 import {schemaTypes} from './schemaTypes'
 
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 const TestReleaseAction: ReleaseActionComponent = (props) => {
   const {release, documents} = props
 
@@ -63,7 +58,6 @@ const defaultConfig = defineConfig({
 
   document: {
     actions: documentActions,
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     inspectors: (prev, ctx) => {
       if (ctx.documentType === 'inspectorsTest') {
         return [customInspector, ...prev]
@@ -71,7 +65,6 @@ const defaultConfig = defineConfig({
 
       return prev
     },
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     unstable_fieldActions: (prev, ctx) => {
       if (['fieldActionsTest', 'stringsTest'].includes(ctx.documentType)) {
         return [...prev, assistFieldActionGroup]

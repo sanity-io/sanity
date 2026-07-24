@@ -1,7 +1,5 @@
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {type Config, defineField, defineType} from 'sanity'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {structureTool} from 'sanity/structure'
 
 // Ported from dev/efps/tests/arrayI18n/sanity.config.ts

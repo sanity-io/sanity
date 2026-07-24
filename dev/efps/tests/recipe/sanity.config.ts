@@ -1,13 +1,10 @@
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {type Config, defineField, defineType} from 'sanity'
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {structureTool} from 'sanity/structure'
 
 export const recipeEfps = {
   name: 'recipe-efps',
   plugins: [
     structureTool({
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
       structure: (S) =>
         S.list()
           .title('Content')
