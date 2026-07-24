@@ -608,7 +608,7 @@ function ReleaseTimelineRoadmap({
 
   return (
     <Stack space={2}>
-      <Flex justify="flex-end">
+      <Flex justify="flex-start">
         <Button
           data-testid="release-timeline-today"
           mode="bleed"
@@ -752,7 +752,7 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
       paddingBottom={collapsed ? 2 : 3}
     >
       <Stack space={3}>
-        <Flex align="center" justify="space-between" gap={3}>
+        <Flex align="center" gap={3}>
           <Button
             data-testid="release-timeline-toggle"
             mode="bleed"
@@ -762,7 +762,7 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
             tooltipProps={{content: t(collapsed ? 'timeline.expand' : 'timeline.collapse')}}
           />
           {!collapsed && (
-            <Flex gap={3} align="center">
+            <Flex gap={2} align="center">
               <Flex gap={1} align="center">
                 <Button
                   data-testid="release-timeline-density-compact"
@@ -781,6 +781,15 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
                   tooltipProps={{content: t('timeline.density-detailed-tooltip')}}
                 />
               </Flex>
+              {/* divider so the density and zoom groups don't read as one segmented control */}
+              <Box
+                style={{
+                  alignSelf: 'center',
+                  width: 1,
+                  height: 20,
+                  backgroundColor: 'var(--card-border-color)',
+                }}
+              />
               <Flex gap={1} align="center">
                 {GRANULARITIES.map((g) => (
                   <Button
