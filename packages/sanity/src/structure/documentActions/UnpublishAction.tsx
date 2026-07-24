@@ -129,7 +129,12 @@ export const useUnpublishAction: DocumentActionComponent = ({
       icon: UnpublishIcon,
       disabled: Boolean(unpublish.disabled) || isPermissionsLoading || !isTargetReady,
       label: t('action.unpublish.label'),
-      title: unpublish.disabled ? t(DISABLED_REASON_KEY[unpublish.disabled]) : '',
+      title:
+        unpublish.disabled &&
+        unpublish.disabled !== 'NOT_READY' &&
+        unpublish.disabled in DISABLED_REASON_KEY
+          ? t(DISABLED_REASON_KEY[unpublish.disabled as keyof typeof DISABLED_REASON_KEY])
+          : '',
       onHandle: () => setConfirmDialogOpen(true),
       dialog,
     }

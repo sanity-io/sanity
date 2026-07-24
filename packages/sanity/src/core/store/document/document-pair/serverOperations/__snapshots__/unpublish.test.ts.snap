@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`unpublish > execute > uses sanity.action.document.version.unpublish for version context 1`] = `
+{
+  "listen": [],
+  "observable": {
+    "action": [
+      {
+        "actions": {
+          "actionType": "sanity.action.document.version.unpublish",
+          "publishedId": "my-id",
+          "versionId": "versions.r1.my-id",
+        },
+        "options": {
+          "skipCrossDatasetReferenceValidation": true,
+          "tag": "document.unpublish",
+        },
+      },
+    ],
+    "create": [],
+    "fetch": [],
+    "getDocuments": [],
+    "listen": [],
+    "request": [],
+  },
+  "request": [],
+  "transaction": [],
+}
+`;

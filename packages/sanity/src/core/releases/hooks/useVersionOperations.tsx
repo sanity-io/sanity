@@ -9,7 +9,13 @@ import {useReleaseOperations} from '../store/useReleaseOperations'
 
 export interface VersionOperationsValue {
   createVersion: (releaseId: ReleaseId, documentId: string) => Promise<void>
+  /**
+   * @deprecated Use `useDocumentOperation(publishedId, type, releaseId).discardChanges` instead.
+   */
   discardVersion: (releaseId: string, documentId: string) => Promise<SingleActionResult>
+  /**
+   * @deprecated Use `useDocumentOperation(publishedId, type, releaseId).unpublish` instead.
+   */
   unpublishVersion: (documentId: string) => Promise<SingleActionResult>
   revertUnpublishVersion: (documentId: string) => Promise<SingleActionResult>
 }
@@ -31,9 +37,11 @@ export function useVersionOperations(): VersionOperationsValue {
     })
   }
 
+  /** @deprecated Use `useDocumentOperation(publishedId, type, releaseId).discardChanges` instead. */
   const handleDiscardVersion = async (releaseId: string, documentId: string) =>
     discardVersion(releaseId, documentId)
 
+  /** @deprecated Use `useDocumentOperation(publishedId, type, releaseId).unpublish` instead. */
   const handleUnpublishVersion = async (documentId: string) => unpublishVersion(documentId)
 
   const handleRevertUnpublishVersion = async (documentId: string) =>

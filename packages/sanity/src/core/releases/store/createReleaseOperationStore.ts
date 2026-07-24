@@ -50,11 +50,17 @@ export interface ReleaseOperationsStore {
     documentId: string,
     opts?: BaseActionOptions,
   ) => Promise<SingleActionResult>
+  /**
+   * @deprecated Use `useDocumentOperation(publishedId, type, releaseId).discardChanges` instead.
+   */
   discardVersion: (
     releaseId: string,
     documentId: string,
     opts?: BaseActionOptions,
   ) => Promise<SingleActionResult>
+  /**
+   * @deprecated Use `useDocumentOperation(publishedId, type, releaseId).unpublish` instead.
+   */
   unpublishVersion: (documentId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
   revertUnpublishVersion: (
     documentId: string,
