@@ -1,7 +1,9 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {DiamondIcon} from '@sanity/icons/Diamond'
 import {LockIcon} from '@sanity/icons/Lock'
+import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
@@ -42,6 +44,10 @@ export type ReleaseTimelineGranularity = 'week' | 'month' | 'quarter'
 
 const GRANULARITIES: ReleaseTimelineGranularity[] = ['week', 'month', 'quarter']
 
+/** Density: `detailed` = labelled pill cards (default); `compact` = a single-line diamonds-only
+ * axis, each diamond carrying the hover tooltip + click-to-open. */
+export type ReleaseTimelineDensity = 'detailed' | 'compact'
+
 /** Lane stride: one-line pill (~37px) plus vertical breathing room, so adjacent lanes never
  * overlap. */
 const LANE_HEIGHT = 40
@@ -60,6 +66,8 @@ const PILLS_TOP = 36
 /** Number of lanes visible before the track scrolls vertically — sets the fixed strip height. */
 const VISIBLE_LANES = 4
 const TRACK_HEIGHT = PILLS_TOP + VISIBLE_LANES * LANE_HEIGHT
+/** Compact (diamonds-only) view: a single-line strip, just the axis + interactive diamonds. */
+const COMPACT_HEIGHT = 48
 /** Pixels-per-day per granularity: the zoom. A wide span in `week` scrolls rather than cramming. */
 const PX_PER_DAY: Record<ReleaseTimelineGranularity, number> = {week: 34, month: 9, quarter: 3.5}
 /** A little breathing room before the earliest item so its diamond isn't half-clipped at the edge. */
@@ -250,6 +258,56 @@ function pillTone(entry: DatedRelease, collides: boolean): 'default' | 'caution'
   return 'default'
 }
 
+/** Shared hover-card content for a dated release — used by both the detailed-view pill and the
+ * compact-view diamond (which has no visible label of its own). */
+function TimelineTooltipContent({
+  entry,
+  collides,
+  toZoned,
+}: {
+  entry: DatedRelease
+  collides: boolean
+  toZoned: ToZonedDate
+}) {
+  const {t} = useTranslation(releasesLocaleNamespace)
+  const {release, date, overdue} = entry
+  const isDraft = isCardinalityOneRelease(release)
+  const title = release.metadata?.title || t('release-placeholder.title')
+  const documentCount = release.documentsMetadata?.documentCount ?? 0
+  return (
+    <Box padding={2}>
+      <Stack space={2}>
+        <Text size={1} weight="semibold">
+          {title}
+        </Text>
+        <Text size={1} muted>
+          {zonedFormat(date, toZoned, 'd MMM, HH:mm')}
+        </Text>
+        <Text size={1} muted>
+          {t(documentCount === 1 ? 'summary.document-count_one' : 'summary.document-count_other', {
+            count: documentCount,
+          })}
+        </Text>
+        {isDraft && (
+          <Text size={1} muted>
+            {t('timeline.status-draft')}
+          </Text>
+        )}
+        {overdue && (
+          <Text size={1} style={{color: 'var(--card-badge-critical-icon-color)'}}>
+            {t('timeline.status-overdue')}
+          </Text>
+        )}
+        {collides && (
+          <Text size={1} style={{color: 'var(--card-badge-caution-icon-color)'}}>
+            {t('timeline.status-stagger')}
+          </Text>
+        )}
+      </Stack>
+    </Box>
+  )
+}
+
 function ReleaseTimelinePill({
   entry,
   x,
@@ -266,48 +324,14 @@ function ReleaseTimelinePill({
   onNavigate: (release: TableRelease) => void
 }) {
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {release, date, scheduled, intendedNotArmed, overdue} = entry
-  const isDraft = isCardinalityOneRelease(release)
+  const {release, scheduled, intendedNotArmed, overdue} = entry
   const title = release.metadata?.title || t('release-placeholder.title')
-  const dateLabel = zonedFormat(date, toZoned, 'd MMM, HH:mm')
-  const documentCount = release.documentsMetadata?.documentCount ?? 0
+  const dateLabel = zonedFormat(entry.date, toZoned, 'd MMM, HH:mm')
   const tone = pillTone(entry, collides)
 
   return (
     <Tooltip
-      content={
-        <Box padding={2}>
-          <Stack space={2}>
-            <Text size={1} weight="semibold">
-              {title}
-            </Text>
-            <Text size={1} muted>
-              {dateLabel}
-            </Text>
-            <Text size={1} muted>
-              {t(
-                documentCount === 1 ? 'summary.document-count_one' : 'summary.document-count_other',
-                {count: documentCount},
-              )}
-            </Text>
-            {isDraft && (
-              <Text size={1} muted>
-                {t('timeline.status-draft')}
-              </Text>
-            )}
-            {overdue && (
-              <Text size={1} style={{color: 'var(--card-badge-critical-icon-color)'}}>
-                {t('timeline.status-overdue')}
-              </Text>
-            )}
-            {collides && (
-              <Text size={1} style={{color: 'var(--card-badge-caution-icon-color)'}}>
-                {t('timeline.status-stagger')}
-              </Text>
-            )}
-          </Stack>
-        </Box>
-      }
+      content={<TimelineTooltipContent entry={entry} collides={collides} toZoned={toZoned} />}
       portal
     >
       <Card
@@ -358,24 +382,38 @@ function ReleaseTimelinePill({
 }
 
 /**
- * A state-colored ◇ diamond marking a release's exact position on the time axis. The pill below is
- * a label hanging off this point, so nothing reads as a duration/bar. Rendered independent of
- * lane-packing (always on the baseline) so the axis stays legible even when pills are dense.
+ * A state-colored ◇ diamond marking a release's exact position on the time axis. In the detailed
+ * view it's a passive anchor (the pill below carries the label + tooltip + click); in the compact
+ * (diamonds-only) view it's `interactive` — it carries the tooltip and is clickable to open the
+ * release, since there's no pill. Rendered independent of lane-packing (always on the baseline).
  */
 function ReleaseTimelineMarker({
   entry,
   x,
   collides,
+  interactive,
+  toZoned,
+  onNavigate,
 }: {
   entry: DatedRelease
   x: number
   collides: boolean
+  interactive?: boolean
+  toZoned?: ToZonedDate
+  onNavigate?: (release: TableRelease) => void
 }) {
-  return (
+  const {t} = useTranslation(releasesLocaleNamespace)
+  const diamond = (
     <Card
       data-testid={`release-timeline-marker-${entry.release._id}`}
+      data-collides={collides || undefined}
       tone={pillTone(entry, collides)}
       shadow={1}
+      as={interactive ? 'button' : undefined}
+      onClick={interactive && onNavigate ? () => onNavigate(entry.release) : undefined}
+      aria-label={
+        interactive ? entry.release.metadata?.title || t('release-placeholder.title') : undefined
+      }
       style={{
         position: 'absolute',
         left: `${x}%`,
@@ -386,9 +424,22 @@ function ReleaseTimelineMarker({
         border: '2px solid var(--card-bg-color)',
         // Above the pills so the true-position diamond is never hidden behind a card label.
         zIndex: 2,
+        cursor: interactive ? 'pointer' : undefined,
+        padding: 0,
       }}
     />
   )
+  if (interactive && toZoned) {
+    return (
+      <Tooltip
+        content={<TimelineTooltipContent entry={entry} collides={collides} toZoned={toZoned} />}
+        portal
+      >
+        {diamond}
+      </Tooltip>
+    )
+  }
+  return diamond
 }
 
 /**
@@ -433,16 +484,19 @@ function ScrollSignpost({
 function ReleaseTimelineRoadmap({
   dated,
   granularity,
+  density,
   now,
   toZoned,
   onNavigate,
 }: {
   dated: DatedRelease[]
   granularity: ReleaseTimelineGranularity
+  density: ReleaseTimelineDensity
   now: Date
   toZoned: ToZonedDate
   onNavigate: (release: TableRelease) => void
 }) {
+  const compact = density === 'compact'
   const {t} = useTranslation(releasesLocaleNamespace)
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const [overflow, setOverflow] = useState<{left: number; right: number}>({left: 0, right: 0})
@@ -472,7 +526,9 @@ function ReleaseTimelineRoadmap({
   const gapPct = ((PILL_WIDTH + PILL_GAP_PX) / trackWidth) * 100
   const lanes = useMemo(() => assignLanes(positioned, gapPct), [positioned, gapPct])
   const laneCount = Math.max(1, ...lanes.map((lane) => lane + 1))
-  const innerHeight = PILLS_TOP + laneCount * LANE_HEIGHT
+  // Compact = a single diamonds-only line; detailed = lane-packed pills below the axis.
+  const innerHeight = compact ? COMPACT_HEIGHT : PILLS_TOP + laneCount * LANE_HEIGHT
+  const trackHeight = compact ? COMPACT_HEIGHT : TRACK_HEIGHT
 
   const collisionIds = useMemo(() => {
     const byDay = new Map<string, string[]>()
@@ -556,7 +612,7 @@ function ReleaseTimelineRoadmap({
           ref={scrollRef}
           flex={1}
           onScroll={updateOverflow}
-          style={{overflowX: 'auto', overflowY: 'auto', height: TRACK_HEIGHT}}
+          style={{overflowX: 'auto', overflowY: compact ? 'hidden' : 'auto', height: trackHeight}}
         >
           <Box style={{position: 'relative', height: innerHeight, minWidth: trackWidth}}>
             <Axis
@@ -567,7 +623,7 @@ function ReleaseTimelineRoadmap({
               ticks={ticks}
               nowLabel={t('timeline.now-marker')}
             />
-            {/* baseline the pills hang off, so they read as points on a line */}
+            {/* baseline the diamonds sit on (and pills hang off), so they read as points on a line */}
             <Box
               style={{
                 position: 'absolute',
@@ -583,19 +639,23 @@ function ReleaseTimelineRoadmap({
                 entry={entry}
                 x={x}
                 collides={collisionIds.has(entry.release._id)}
+                interactive={compact}
+                toZoned={compact ? toZoned : undefined}
+                onNavigate={compact ? onNavigate : undefined}
               />
             ))}
-            {positioned.map(({entry, x}, i) => (
-              <ReleaseTimelinePill
-                key={entry.release._id}
-                entry={entry}
-                x={x}
-                lane={lanes[i]}
-                collides={collisionIds.has(entry.release._id)}
-                toZoned={toZoned}
-                onNavigate={onNavigate}
-              />
-            ))}
+            {!compact &&
+              positioned.map(({entry, x}, i) => (
+                <ReleaseTimelinePill
+                  key={entry.release._id}
+                  entry={entry}
+                  x={x}
+                  lane={lanes[i]}
+                  collides={collisionIds.has(entry.release._id)}
+                  toZoned={toZoned}
+                  onNavigate={onNavigate}
+                />
+              ))}
           </Box>
         </Box>
         <ScrollSignpost side="end" count={overflow.right} onClick={() => pageBy(1)} />
@@ -638,6 +698,7 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
   const {utcToCurrentZoneDate} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
   const [collapsed, setCollapsed] = useState(false)
   const [granularity, setGranularity] = useState<ReleaseTimelineGranularity>('month')
+  const [density, setDensity] = useState<ReleaseTimelineDensity>('detailed')
 
   const now = useMemo(() => new Date(), [])
 
@@ -689,17 +750,39 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
             tooltipProps={{content: t(collapsed ? 'timeline.expand' : 'timeline.collapse')}}
           />
           {!collapsed && (
-            <Flex gap={1} align="center">
-              {GRANULARITIES.map((g) => (
+            <Flex gap={3} align="center">
+              <Flex gap={1} align="center">
                 <Button
-                  key={g}
-                  data-testid={`release-timeline-granularity-${g}`}
-                  mode={granularity === g ? 'default' : 'bleed'}
-                  tone={granularity === g ? 'primary' : 'default'}
-                  text={t(`timeline.granularity.${g}`)}
-                  onClick={() => setGranularity(g)}
+                  data-testid="release-timeline-density-compact"
+                  mode={density === 'compact' ? 'default' : 'bleed'}
+                  tone={density === 'compact' ? 'primary' : 'default'}
+                  icon={DiamondIcon}
+                  onClick={() => setDensity('compact')}
+                  tooltipProps={{content: t('timeline.density-compact')}}
+                  aria-label={t('timeline.density-compact')}
                 />
-              ))}
+                <Button
+                  data-testid="release-timeline-density-detailed"
+                  mode={density === 'detailed' ? 'default' : 'bleed'}
+                  tone={density === 'detailed' ? 'primary' : 'default'}
+                  icon={ThLargeIcon}
+                  onClick={() => setDensity('detailed')}
+                  tooltipProps={{content: t('timeline.density-detailed')}}
+                  aria-label={t('timeline.density-detailed')}
+                />
+              </Flex>
+              <Flex gap={1} align="center">
+                {GRANULARITIES.map((g) => (
+                  <Button
+                    key={g}
+                    data-testid={`release-timeline-granularity-${g}`}
+                    mode={granularity === g ? 'default' : 'bleed'}
+                    tone={granularity === g ? 'primary' : 'default'}
+                    text={t(`timeline.granularity.${g}`)}
+                    onClick={() => setGranularity(g)}
+                  />
+                ))}
+              </Flex>
             </Flex>
           )}
         </Flex>
@@ -708,6 +791,7 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
             <ReleaseTimelineRoadmap
               dated={dated}
               granularity={granularity}
+              density={density}
               now={now}
               toZoned={utcToCurrentZoneDate}
               onNavigate={handleNavigate}

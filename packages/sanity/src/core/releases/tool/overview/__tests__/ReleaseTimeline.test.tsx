@@ -194,6 +194,22 @@ describe('ReleaseTimeline', () => {
     expect(screen.getByTestId('release-timeline-today')).toBeInTheDocument()
   })
 
+  it('switches to a compact diamonds-only view (pills hidden, markers stay) and back', async () => {
+    await renderTimeline({releases: [datedArmed, datedIntended]})
+
+    // Defaults to detailed: pills present.
+    expect(screen.getByTestId(`release-timeline-pill-${datedArmed._id}`)).toBeInTheDocument()
+
+    // Compact: pills gone, diamonds remain.
+    await userEvent.click(screen.getByTestId('release-timeline-density-compact'))
+    expect(screen.queryByTestId(`release-timeline-pill-${datedArmed._id}`)).not.toBeInTheDocument()
+    expect(screen.getByTestId(`release-timeline-marker-${datedArmed._id}`)).toBeInTheDocument()
+
+    // Back to detailed: pills return.
+    await userEvent.click(screen.getByTestId('release-timeline-density-detailed'))
+    expect(screen.getByTestId(`release-timeline-pill-${datedArmed._id}`)).toBeInTheDocument()
+  })
+
   it('keeps the strip a fixed height regardless of how many pills stack', async () => {
     await renderTimeline({releases: [datedArmed, datedIntended]})
     expect(screen.getByTestId('release-timeline-track')).toHaveStyle({height: '196px'})
