@@ -12,6 +12,7 @@ import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {media} from 'sanity-plugin-media'
+import {richTablePlugin} from 'sanity-plugin-rich-table'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
@@ -141,6 +142,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
     },
     plugins: [
+      richTablePlugin({portableTextSchemaTypeName: 'tableCellContent'}),
       structureTool({
         icon: BookIcon,
         structure,

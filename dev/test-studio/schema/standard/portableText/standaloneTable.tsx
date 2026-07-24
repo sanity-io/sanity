@@ -7,15 +7,13 @@ import {defineArrayMember, defineField, defineType, type PortableTextPluginsProp
 import {StandaloneTableInput} from './StandaloneTableInput'
 
 /**
- * POC: a table as a standalone object field, edited through a Portable
- * Text editor in disguise (see `StandaloneTableInput`). Three types:
- *
- * - `standaloneTable`: the object type fields declare, canonical table
- *   shape under a non-colliding name.
- * - `standaloneTableArray`: hidden. Never used by a document; exists so
- *   the input can borrow a compiled PT array schema carrying the plugin
- *   binding and the cell-shaped root block config.
- * - `standaloneTableDoc`: the demo document.
+ * POC: a standalone table field, a Portable Text array constrained to a
+ * single table block, edited through the built-in table plugin with the
+ * writing-surface chrome stripped (see `StandaloneTableInput`). The demo
+ * document pairs every placement with `sanity-plugin-rich-table`'s
+ * equivalent configuration for side-by-side comparison: object storage
+ * with a custom table UI versus Portable Text storage with the disguised
+ * built-in editor.
  */
 // The text config for table cells. The root block member of every
 // standalone table field mirrors it exactly: toolbar membership is
@@ -109,6 +107,20 @@ function StandaloneTablePlugins(props: PortableTextPluginsProps) {
   )
 }
 
+// Rich-table's cells mirror ours: the same text config plus images,
+// passed to `richTablePlugin` via `portableTextSchemaTypeName` so the
+// side-by-side comparison differs only in architecture, not in schema
+// generosity.
+export const tableCellContent = defineType({
+  type: 'array',
+  name: 'tableCellContent',
+  title: 'Table cell content',
+  of: [
+    defineArrayMember({type: 'block', ...tableTextMemberConfig}),
+    defineArrayMember({type: 'image'}),
+  ],
+})
+
 export const standaloneTable = defineType({
   type: 'object',
   name: 'standaloneTable',
@@ -156,13 +168,14 @@ export const standaloneTable = defineType({
 // one-block behaviors deny root text); it exists because toolbar
 // membership and the comments middleware gate (`isArrayOfBlocksSchemaType`)
 // both require it, and its config mirrors the cell block config so the
-// toolbar offers exactly what cells accept. A factory so the root field
-// and the nested-in-sections field stay identical.
-function standaloneTableField() {
+// toolbar offers exactly what cells accept. A factory so every placement
+// stays identical.
+function standaloneTableField(options: {name: string; title: string; fieldset?: string}) {
   return defineField({
     type: 'array',
-    name: 'table',
-    title: 'Table',
+    name: options.name,
+    title: options.title,
+    fieldset: options.fieldset,
     of: [
       defineArrayMember({type: 'block', ...tableTextMemberConfig}),
       defineArrayMember({type: 'image'}),
@@ -182,10 +195,15 @@ export const standaloneTableDoc = defineType({
   type: 'document',
   name: 'standaloneTableDoc',
   title: 'Standalone Table',
+  fieldsets: [
+    {name: 'standalone', title: 'Standalone field'},
+    {name: 'inArray', title: 'Inside an object array'},
+    {name: 'inPortableText', title: 'Inside Portable Text'},
+  ],
   fields: [
     defineField({type: 'string', name: 'title'}),
-    // A one-line PT field for side-by-side comparison: real array-of-blocks
-    // storage presented as a single-line input (`options.oneLine`), the core
+    // A one-line PT field as a control: real array-of-blocks storage
+    // presented as a single-line input (`options.oneLine`), the core
     // precedent proving inline comments survive a narrowed presentation.
     defineField({
       type: 'array',
@@ -198,40 +216,73 @@ export const standaloneTableDoc = defineType({
         }),
       ],
     }),
-    standaloneTableField(),
-    // The standalone table field nested inside a normal object array (the
-    // sections/page-builder placement): exercises the disguise inside
-    // array-item form state, dialogs, and nested comment paths.
+    standaloneTableField({
+      name: 'ptTable',
+      title: 'Portable Text table',
+      fieldset: 'standalone',
+    }),
+    defineField({
+      type: 'richTable',
+      name: 'richTable',
+      title: 'Rich table',
+      fieldset: 'standalone',
+    }),
+    // The sections placement: both tables ride as the single field on an
+    // object member (ours must wrap in an object since arrays cannot nest
+    // arrays directly), exercising array-item form state, dialogs, and
+    // nested comment paths.
     defineField({
       type: 'array',
-      name: 'sections',
-      title: 'Sections (table inside an object array)',
+      name: 'ptSections',
+      title: 'Portable Text table sections',
+      fieldset: 'inArray',
       of: [
         defineArrayMember({
           type: 'object',
           name: 'sectionWithTable',
           title: 'Section with table',
-          fields: [defineField({type: 'string', name: 'heading'}), standaloneTableField()],
-          preview: {
-            select: {title: 'heading'},
-          },
+          fields: [standaloneTableField({name: 'table', title: 'Table'})],
         }),
       ],
     }),
-    // The same table type embedded in ordinary rich text: one type, two
-    // placements, one serializer registration on the consumer side. No
-    // one-block behaviors and no chrome stripping here; the insert menu
-    // legitimately offers the table.
     defineField({
       type: 'array',
-      name: 'body',
-      title: 'Body (table embedded in rich text)',
+      name: 'richSections',
+      title: 'Rich table sections',
+      fieldset: 'inArray',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'sectionWithRichTable',
+          title: 'Section with rich table',
+          fields: [defineField({type: 'richTable', name: 'table', title: 'Table'})],
+        }),
+      ],
+    }),
+    // Both tables embedded in ordinary rich text: one text block config,
+    // one table member each. No one-block behaviors and no chrome
+    // stripping; the insert menu legitimately offers the table.
+    defineField({
+      type: 'array',
+      name: 'ptBody',
+      title: 'Body with Portable Text table',
+      fieldset: 'inPortableText',
       of: [defineArrayMember({type: 'block'}), defineArrayMember({type: 'standaloneTable'})],
       components: {
         portableText: {
           plugins: TableContainersPlugins,
         },
       },
+    }),
+    defineField({
+      type: 'array',
+      name: 'richBody',
+      title: 'Body with rich table',
+      fieldset: 'inPortableText',
+      of: [
+        defineArrayMember({type: 'block'}),
+        defineArrayMember({type: 'richTableBlock', name: 'richTableBlock'}),
+      ],
     }),
   ],
 })

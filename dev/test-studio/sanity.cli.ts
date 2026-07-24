@@ -113,7 +113,28 @@ export default defineCliConfig({
     // Support hot reloading of files from monorepo workspaces during development
     if (mode !== 'production' && command === 'serve') {
       return mergeConfig(nextConfig, {
-        resolve: {conditions: ['monorepo', ...defaultClientConditions]},
+        resolve: {
+          conditions: ['monorepo', ...defaultClientConditions],
+          alias: [
+            // Per sanity-plugin-rich-table's compatibility guidance: in
+            // `sanity dev` the `react-compiler-runtime` shim swaps React's
+            // dispatcher under the plugin's nested cell editors
+            // (`useMemoCache` size-mismatch spam, cells rendering as
+            // `[type: _key]` placeholders). Alias the bare specifier to
+            // React's own runtime; the resolved development CJS file is used
+            // because the `react/compiler-runtime` conditional wrapper
+            // defeats vite's named-export detection (`c` would be missing).
+            {
+              find: /^react-compiler-runtime$/,
+              // Deep-resolved via `package.json` because react's exports map
+              // does not expose `./cjs/*` subpaths to `require.resolve`.
+              replacement: path.join(
+                path.dirname(require.resolve('react/package.json')),
+                'cjs/react-compiler-runtime.development.js',
+              ),
+            },
+          ],
+        },
       } satisfies UserConfig)
     }
 
