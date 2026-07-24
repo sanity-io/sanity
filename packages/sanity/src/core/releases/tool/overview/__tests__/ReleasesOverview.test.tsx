@@ -481,8 +481,12 @@ describe('ReleasesOverview', () => {
 
       expect(screen.queryByText('Cardinality One Release')).not.toBeInTheDocument()
 
-      expect(screen.getByText(activeASAPRelease.metadata.title)).toBeInTheDocument()
-      expect(screen.getByText(activeScheduledRelease.metadata.title)).toBeInTheDocument()
+      // Dated releases (activeScheduledRelease has an intended date TODAY) now also render as a
+      // pill in the timeline strip above the table, so their title appears twice in the document —
+      // scope the assertion to the table itself.
+      const table = screen.getByRole('table')
+      expect(within(table).getByText(activeASAPRelease.metadata.title)).toBeInTheDocument()
+      expect(within(table).getByText(activeScheduledRelease.metadata.title)).toBeInTheDocument()
     })
 
     it('filters out archived releases with cardinality "one"', async () => {
@@ -913,8 +917,11 @@ describe('ReleasesOverview', () => {
           const releaseRows = screen.getAllByTestId('table-row')
           expect(releaseRows).toHaveLength(2) // Only cardinality many releases
 
-          expect(screen.getByText('active Release')).toBeInTheDocument()
-          expect(screen.getByText('active asap Release')).toBeInTheDocument()
+          // activeScheduledRelease is dated, so it also renders as a timeline pill above the
+          // table — scope these assertions to the table itself to avoid the duplicate match.
+          const table = screen.getByRole('table')
+          expect(within(table).getByText('active Release')).toBeInTheDocument()
+          expect(within(table).getByText('active asap Release')).toBeInTheDocument()
 
           // Should not show cardinality one releases in releases view
           expect(screen.queryByText('Cardinality One Release')).not.toBeInTheDocument()

@@ -57,6 +57,7 @@ import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {ReleaseNotFoundBanner} from './ReleaseNotFoundBanner'
 import {ReleasesEmptyState} from './ReleasesEmptyState'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
+import {ReleaseTimeline} from './ReleaseTimeline'
 import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
 import {ScheduledDraftsEmptyState} from './ScheduledDraftsEmptyState'
 import {SchedulesUpsell} from './SchedulesUpsell'
@@ -605,6 +606,10 @@ export function ReleasesOverview() {
           hasDateFilter={Boolean(releaseFilterDate)}
           onNavigateToPaused={handleNavigateToPaused}
         />
+      )}
+
+      {!hasNoReleases && releaseGroupMode !== 'archived' && (
+        <ReleaseTimeline releases={filteredReleases} />
       )}
 
       {hasNoReleases ? (

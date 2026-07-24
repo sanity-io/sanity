@@ -722,6 +722,29 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Tooltip on the caution glyph when the intended date has already passed. */
   'schedule.overdue-tooltip':
     'The intended publish date has passed and the release isn’t scheduled — it won’t publish until you schedule it.',
+  /** Label/button text for the collapsible roadmap timeline strip above the releases table */
+  'timeline.title': 'Timeline',
+  /** Tooltip for the button that collapses the timeline strip */
+  'timeline.collapse': 'Collapse timeline',
+  /** Tooltip for the button that expands the timeline strip */
+  'timeline.expand': 'Expand timeline',
+  /** "now" marker label on the timeline axis */
+  'timeline.now-marker': 'Now',
+  /** Segmented control option: a ~3-4 week range centered on today */
+  'timeline.granularity.week': 'Week',
+  /** Segmented control option: a ~3-month range centered on today */
+  'timeline.granularity.month': 'Month',
+  /** Segmented control option: a ~6-month range centered on today */
+  'timeline.granularity.quarter': 'Quarter',
+  /** Badge shown on a timeline pill for a scheduled draft (single document), distinguishing it from a release */
+  'timeline.draft-badge': 'Draft',
+  /** Badge shown on a timeline pill whose intended date has already passed without being scheduled */
+  'timeline.overdue-badge': 'Overdue',
+  /** Badge shown on a timeline pill when another release/draft publishes the same calendar day */
+  'timeline.collision-badge': 'Stagger',
+  /** Tooltip line shown when a timeline pill shares its publish day with another release/draft */
+  'timeline.tooltip-collision': 'Publishes the same day as another release — consider staggering.',
+
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
   /** Toast message after copying release ID */
