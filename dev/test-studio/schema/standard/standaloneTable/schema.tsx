@@ -130,13 +130,9 @@ export const standaloneTable = defineType({
   title: 'Standalone Table',
   fields: [
     defineField({type: 'string', name: 'title', title: 'Title'}),
-    defineField({
-      type: 'standaloneTableObject',
-      name: 'table',
-      title: 'Table (POC — bare editor)',
-      description:
-        'A nested table object (rows > row > cells > cell > value[]) edited through a disguised Portable Text editor. The stored value is plain nested arrays; the editor and its patches are re-rooted onto real field paths. See POC-NOTES.md.',
-    }),
+    // The route-0 field (`standaloneTableObject`, the bare-editor POC input)
+    // is deliberately not mounted: its findings live in POC-NOTES.md and its
+    // half-rendered table only confuses a side-by-side with route 1.
     defineField({
       type: 'standaloneTableObjectR1',
       name: 'tableR1',
