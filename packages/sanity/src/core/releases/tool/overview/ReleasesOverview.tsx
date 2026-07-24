@@ -229,8 +229,9 @@ export function ReleasesOverview() {
   )
 
   const clearFilterDate = useCallback(() => {
+    // Date filter and lifecycle are independent now — clearing the date leaves the current
+    // lifecycle view (Active/Paused/Archived) untouched.
     setReleaseFilterDate(undefined)
-    setReleaseGroupMode('active')
   }, [])
 
   const handleNavigateToPaused = useCallback(() => {
@@ -371,12 +372,15 @@ export function ReleasesOverview() {
   )
 
   const filteredReleases = useMemo(() => {
-    const dateFilter = releaseFilterDate
-      ? {
-          filterDate: releaseFilterDate,
-          getTimezoneAdjustedDateTimeRange,
-        }
-      : undefined
+    // The date filter is managed from the timeline (a non-archived surface), so it only applies
+    // outside Archived — no invisible filtering of the archived list, which has no calendar control.
+    const dateFilter =
+      releaseFilterDate && releaseGroupMode !== 'archived'
+        ? {
+            filterDate: releaseFilterDate,
+            getTimezoneAdjustedDateTimeRange,
+          }
+        : undefined
 
     return filterReleasesForOverview({
       releases: tableReleases,
@@ -423,18 +427,13 @@ export function ReleasesOverview() {
     [],
   )
 
-  // Command-lane filter slot: the lifecycle tabs, or — when a day is picked — the active date-filter
-  // chip in their place. (The calendar *trigger* now lives in the timeline header; this is a first
-  // visual pass, so the trigger and its result chip are momentarily split — the full decouple
-  // moves the chip up too and keeps the tabs independent.)
+  // Command-lane filter slot: the lifecycle tabs, ALWAYS. Date filtering is now independent — its
+  // trigger + active chip live together in the timeline header (see `dateControl`), so the tabs no
+  // longer get swapped out. Both filters apply together.
   const filterTabsNode = useMemo(() => {
     if (!loadingOrHasReleases) return undefined
-    return releaseFilterDate ? (
-      <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
-    ) : (
-      currentArchivedPicker
-    )
-  }, [loadingOrHasReleases, releaseFilterDate, clearFilterDate, currentArchivedPicker])
+    return currentArchivedPicker
+  }, [loadingOrHasReleases, currentArchivedPicker])
 
   // Multi-select is available for All, Releases, and Scheduled drafts views, in Active/Paused/
   // Archived modes — each view+mode combination gets its own action set from ReleaseBulkActions
@@ -565,7 +564,12 @@ export function ReleasesOverview() {
         <ReleaseTimeline
           releases={filteredReleases}
           dateControl={
-            <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
+            <Flex align="center" gap={1}>
+              <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
+              {releaseFilterDate && (
+                <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
+              )}
+            </Flex>
           }
         />
       )}

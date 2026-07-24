@@ -597,9 +597,11 @@ describe('ReleasesOverview', () => {
           await userEvent.click(todayTile)
         })
 
-        it('does not show open and archive filter group buttons', () => {
-          expect(screen.queryByText('Active')).not.toBeInTheDocument()
-          expect(screen.queryByText('Archived')).not.toBeInTheDocument()
+        it('keeps the lifecycle tabs visible alongside the date filter (decoupled)', () => {
+          // Date filter and lifecycle are independent now — picking a date no longer swaps the tabs
+          // out; both apply together.
+          expect(screen.getByText('Active')).toBeInTheDocument()
+          expect(screen.getByText('Archived')).toBeInTheDocument()
         })
 
         it('filters releases by date', () => {
