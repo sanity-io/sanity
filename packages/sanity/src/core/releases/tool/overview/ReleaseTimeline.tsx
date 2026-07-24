@@ -56,9 +56,9 @@ const LANE_HEIGHT = 40
 const PILL_WIDTH = 240
 /** Breathing room (px) between pills before one bumps to the next lane. */
 const PILL_GAP_PX = 12
-const MARKER_SIZE = 14
-/** Compact (diamonds-only) diamonds are the primary element, so render them a touch larger. */
-const MARKER_SIZE_COMPACT = 18
+/** One diamond size across compact and detailed — a consistent, comfortable tap target with no
+ * size-shift when switching density. */
+const MARKER_SIZE = 16
 /** Vertical geometry of the strip. Pills hang below the axis baseline. The track is a scroll
  * container (`overflow: auto`), so its top edge clips its content — the tick/now labels need a
  * few px of breathing room from `top: 0` or the top of their glyphs gets shaved off. */
@@ -386,7 +386,7 @@ function ReleaseTimelineMarker({
   onNavigate?: (release: TableRelease) => void
 }) {
   const {t} = useTranslation(releasesLocaleNamespace)
-  const size = interactive ? MARKER_SIZE_COMPACT : MARKER_SIZE
+  const size = MARKER_SIZE
   const diamond = (
     <Card
       data-testid={`release-timeline-marker-${entry.release._id}`}
