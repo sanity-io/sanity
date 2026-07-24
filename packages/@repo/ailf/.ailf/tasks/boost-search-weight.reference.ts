@@ -1,4 +1,3 @@
-// @ts-expect-error -- pre-existing, fix later
 import {defineConfig, defineType, defineField, defineArrayMember} from 'sanity'
 
 export default defineConfig({

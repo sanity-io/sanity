@@ -96,9 +96,9 @@
       "project": ["src/**/*.ts"],
     },
     "packages/@repo/ailf": {
-      "entry": [".ailf/ailf.config.ts"],
+      "entry": [".ailf/ailf.config.ts", ".ailf/tasks/*.reference.ts"],
       "project": [".ailf/**/*.ts"],
-      "ignoreFiles": [".ailf/tasks/*.ts"],
+      "ignoreFiles": [".ailf/tasks/*.task.ts"],
     },
     "packages/@repo/release-notes": {
       "project": ["src/**/*.ts"],

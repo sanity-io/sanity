@@ -1,4 +1,3 @@
-// @ts-expect-error -- pre-existing, fix later
 import {defineConfig, defineType, defineField, defineArrayMember} from 'sanity'
 
 export default defineConfig({
@@ -22,7 +21,6 @@ export default defineConfig({
             name: 'excerpt',
             title: 'Excerpt',
             type: 'text',
-            // @ts-expect-error -- pre-existing, fix later
             validation: (rule) =>
               rule.required().max(200).error('An excerpt of 200 characters or less is required'),
           }),

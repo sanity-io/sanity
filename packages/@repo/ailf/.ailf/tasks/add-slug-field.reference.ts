@@ -1,4 +1,3 @@
-// @ts-expect-error -- pre-existing, fix later
 import {defineConfig, defineType, defineField} from 'sanity'
 
 export default defineConfig({
@@ -26,7 +25,6 @@ export default defineConfig({
               source: 'title',
               maxLength: 96,
             },
-            // @ts-expect-error -- pre-existing, fix later
             validation: (rule) => rule.required(),
           }),
           defineField({

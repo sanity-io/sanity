@@ -1,4 +1,3 @@
-// @ts-expect-error -- pre-existing, fix later
 import {defineConfig, defineType, defineField} from 'sanity'
 
 export default defineConfig({
@@ -48,7 +47,6 @@ export default defineConfig({
             authorName: 'author.name',
             media: 'coverImage',
           },
-          // @ts-expect-error -- pre-existing, fix later
           prepare({title, authorName, media}) {
             return {
               title,

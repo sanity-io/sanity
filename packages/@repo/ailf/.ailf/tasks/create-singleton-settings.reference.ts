@@ -1,6 +1,4 @@
-// @ts-expect-error -- pre-existing, fix later
 import {defineConfig, defineType, defineField} from 'sanity'
-// @ts-expect-error -- pre-existing, fix later
 import {structureTool} from 'sanity/structure'
 
 export default defineConfig({
@@ -10,7 +8,6 @@ export default defineConfig({
   dataset: 'production',
   plugins: [
     structureTool({
-      // @ts-expect-error -- pre-existing, fix later
       structure: (S) =>
         S.list()
           .title('Content')
@@ -20,7 +17,6 @@ export default defineConfig({
               .id('siteSettings')
               .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
             S.divider(),
-            // @ts-expect-error -- pre-existing, fix later
             ...S.documentTypeListItems().filter((item) => item.getId() !== 'siteSettings'),
           ]),
     }),
