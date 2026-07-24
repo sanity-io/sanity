@@ -583,14 +583,16 @@ function ReleaseTimelineRoadmap({
 
   return (
     <Stack space={2}>
-      {/* Axis navigation family (earlier · Today · later): moving along time. Centered over the
-          timeline so Today is immediately visible and the busy left edge stays clear; kept out of
-          the axis itself so the timeline is full-width. Counts show how many events are off each edge. */}
-      <Flex justify="center" align="center" gap={1}>
+      {/* Axis navigation (earlier · Today · later): moving along time, centered over the timeline.
+          Today is the prominent anchor — a ghost/primary button echoing the blue "now" line — while
+          the earlier/later jumps are muted, secondary, and spaced well apart so the three don't read
+          as one run-on sentence. */}
+      <Flex justify="center" align="center" gap={4}>
         <ScrollSignpost side="start" count={overflow.left} onClick={() => jumpToItem(-1)} />
         <Button
           data-testid="release-timeline-today"
-          mode="bleed"
+          mode="ghost"
+          tone="primary"
           text={t('timeline.today')}
           onClick={() => scrollToNow('smooth')}
           tooltipProps={{content: t('timeline.today-tooltip')}}
