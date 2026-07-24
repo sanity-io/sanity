@@ -399,7 +399,11 @@ export function ReleasesOverview() {
 
       if (release.isDeleted || release.isLoading) return null
 
-      if (cardinalityView === 'drafts') {
+      // Route by the ROW's cardinality, not the current view: a single-document
+      // release always gets the scheduled-draft menu (Publish now / Edit schedule /
+      // Delete schedule), a bundle always gets the release menu (Run release /
+      // Schedule / Unschedule / …) — consistent across All / Releases / Scheduled drafts.
+      if (isCardinalityOneRelease(release)) {
         return <ScheduledDraftMenuButtonWrapper release={release} />
       }
 
@@ -410,7 +414,7 @@ export function ReleasesOverview() {
 
       return <ReleaseMenuButtonWrapper release={release} documentsCount={documentsCount} />
     },
-    [releaseGroupMode, cardinalityView],
+    [releaseGroupMode],
   )
 
   const filteredReleases = useMemo(() => {
