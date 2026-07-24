@@ -695,7 +695,7 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Header for the overview Kind column (shown only in the combined All view) */
   'table-header.kind': 'Kind',
   /** Kind column value for a multi-document release, in the combined All view */
-  'overview.kind.release': 'Bundle',
+  'overview.kind.release': 'Release',
   /** Kind column value for a cardinality-one (single document) release, in the combined All view */
   'overview.kind.document': 'Document',
 
