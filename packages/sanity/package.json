@@ -183,7 +183,7 @@
     "@sanity/workbench": "0.1.0-alpha.29",
     "@sentry/react": "^10.67.0",
     "@tanstack/react-table": "^8.21.3",
-    "@tanstack/react-virtual": "^3.14.6",
+    "@tanstack/react-virtual": "^3.14.7",
     "@xstate/react": "^6.1.0",
     "clsx": "^2.1.1",
     "color2k": "^2.0.3",
