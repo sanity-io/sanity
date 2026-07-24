@@ -63,7 +63,7 @@ interface VariantDocumentCreateActionBase {
 }
 
 export interface VariantDocumentCreateFromDocumentAction extends VariantDocumentCreateActionBase {
-  document: SanityDocumentLike
+  document: Omit<SanityDocumentLike, '_id'> & Partial<Pick<SanityDocumentLike, '_id'>>
 }
 
 export interface VariantDocumentCreateFromBaseAction extends VariantDocumentCreateActionBase {
