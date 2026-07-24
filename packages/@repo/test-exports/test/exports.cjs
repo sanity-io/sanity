@@ -1,4 +1,3 @@
-// @ts-expect-error -- pre-existing, fix later
 const path = require('node:path')
 const _pkg = require('@repo/test-exports/package.json')
 

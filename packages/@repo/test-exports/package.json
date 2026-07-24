@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
     "node-test-github-reporter": "^1.3.2"
   }
 }
