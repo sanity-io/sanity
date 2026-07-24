@@ -736,10 +736,14 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'timeline.granularity.month': 'Month',
   /** Segmented control option: a ~6-month range centered on today */
   'timeline.granularity.quarter': 'Quarter',
-  /** Density toggle: single-line diamonds-only view */
-  'timeline.density-compact': 'Compact view',
-  /** Density toggle: full pill-card view */
-  'timeline.density-detailed': 'Detailed view',
+  /** Density toggle button: single-line diamonds-only view */
+  'timeline.density-compact': 'Compact',
+  /** Tooltip for the compact density toggle */
+  'timeline.density-compact-tooltip': 'Compact view — diamonds only',
+  /** Density toggle button: full pill-card view */
+  'timeline.density-detailed': 'Detailed',
+  /** Tooltip for the detailed density toggle */
+  'timeline.density-detailed-tooltip': 'Detailed view — full cards',
   /** Badge shown on a timeline pill for a scheduled draft (single document), distinguishing it from a release */
   'timeline.draft-badge': 'Draft',
   /** Badge shown on a timeline pill whose intended date has already passed without being scheduled */

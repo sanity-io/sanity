@@ -1,9 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {DiamondIcon} from '@sanity/icons/Diamond'
 import {LockIcon} from '@sanity/icons/Lock'
-import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
@@ -55,13 +53,14 @@ const LANE_HEIGHT = 40
 const PILL_WIDTH = 240
 /** Breathing room (px) between pills before one bumps to the next lane. */
 const PILL_GAP_PX = 12
-const MARKER_SIZE = 12
+const MARKER_SIZE = 14
+/** Compact (diamonds-only) diamonds are the primary element, so render them a touch larger. */
+const MARKER_SIZE_COMPACT = 18
 /** Vertical geometry of the strip. Pills hang below the axis baseline. The track is a scroll
  * container (`overflow: auto`), so its top edge clips its content — the tick/now labels need a
  * few px of breathing room from `top: 0` or the top of their glyphs gets shaved off. */
 const AXIS_LABEL_TOP = 6
 const BASELINE_TOP = 24
-const MARKER_TOP = 19
 const PILLS_TOP = 36
 /** Number of lanes visible before the track scrolls vertically — sets the fixed strip height. */
 const VISIBLE_LANES = 4
@@ -258,6 +257,15 @@ function pillTone(entry: DatedRelease, collides: boolean): 'default' | 'caution'
   return 'default'
 }
 
+/** Solid, saturated fill for a diamond marker so it reads clearly on a white background (a
+ * tone-tinted card washes out): blue = cleanly scheduled, amber = intended/collision, red =
+ * overdue. */
+function markerColor(entry: DatedRelease, collides: boolean): string {
+  if (entry.overdue) return 'var(--card-badge-critical-icon-color)'
+  if (entry.intendedNotArmed || collides) return 'var(--card-badge-caution-icon-color)'
+  return 'var(--card-badge-primary-icon-color)'
+}
+
 /** Shared hover-card content for a dated release — used by both the detailed-view pill and the
  * compact-view diamond (which has no visible label of its own). */
 function TimelineTooltipContent({
@@ -403,12 +411,11 @@ function ReleaseTimelineMarker({
   onNavigate?: (release: TableRelease) => void
 }) {
   const {t} = useTranslation(releasesLocaleNamespace)
+  const size = interactive ? MARKER_SIZE_COMPACT : MARKER_SIZE
   const diamond = (
     <Card
       data-testid={`release-timeline-marker-${entry.release._id}`}
       data-collides={collides || undefined}
-      tone={pillTone(entry, collides)}
-      shadow={1}
       as={interactive ? 'button' : undefined}
       onClick={interactive && onNavigate ? () => onNavigate(entry.release) : undefined}
       aria-label={
@@ -417,11 +424,16 @@ function ReleaseTimelineMarker({
       style={{
         position: 'absolute',
         left: `${x}%`,
-        top: MARKER_TOP,
-        width: MARKER_SIZE,
-        height: MARKER_SIZE,
+        // Center the diamond on the baseline regardless of its size.
+        top: BASELINE_TOP - size / 2,
+        width: size,
+        height: size,
         transform: 'translateX(-50%) rotate(45deg)',
+        backgroundColor: markerColor(entry, collides),
+        // A ring in the card background separates overlapping diamonds and lifts them off the axis.
         border: '2px solid var(--card-bg-color)',
+        boxShadow: '0 0 0 1px var(--card-border-color)',
+        borderRadius: 2,
         // Above the pills so the true-position diamond is never hidden behind a card label.
         zIndex: 2,
         cursor: interactive ? 'pointer' : undefined,
@@ -756,19 +768,17 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
                   data-testid="release-timeline-density-compact"
                   mode={density === 'compact' ? 'default' : 'bleed'}
                   tone={density === 'compact' ? 'primary' : 'default'}
-                  icon={DiamondIcon}
+                  text={t('timeline.density-compact')}
                   onClick={() => setDensity('compact')}
-                  tooltipProps={{content: t('timeline.density-compact')}}
-                  aria-label={t('timeline.density-compact')}
+                  tooltipProps={{content: t('timeline.density-compact-tooltip')}}
                 />
                 <Button
                   data-testid="release-timeline-density-detailed"
                   mode={density === 'detailed' ? 'default' : 'bleed'}
                   tone={density === 'detailed' ? 'primary' : 'default'}
-                  icon={ThLargeIcon}
+                  text={t('timeline.density-detailed')}
                   onClick={() => setDensity('detailed')}
-                  tooltipProps={{content: t('timeline.density-detailed')}}
-                  aria-label={t('timeline.density-detailed')}
+                  tooltipProps={{content: t('timeline.density-detailed-tooltip')}}
                 />
               </Flex>
               <Flex gap={1} align="center">
