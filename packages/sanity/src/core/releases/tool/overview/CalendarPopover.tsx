@@ -23,16 +23,12 @@ export function CalendarPopover({content, asDialog}: {content: ReactNode; asDial
 
   const triggerButton = (
     <Button
-      name="calendar"
-      data-as="a"
       icon={CalendarIcon}
       mode="bleed"
-      padding={2}
       radius="full"
       selected={isCalendarOpen}
       onClick={() => setIsCalendarOpen((prev) => !prev)}
       ref={buttonRef}
-      space={2}
       aria-label={t('overview.calendar.tooltip')}
       tooltipProps={{content: t('overview.calendar.tooltip')}}
     />
