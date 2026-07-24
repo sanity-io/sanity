@@ -50,11 +50,13 @@ const PILL_WIDTH = 240
 /** Breathing room (px) between pills before one bumps to the next lane. */
 const PILL_GAP_PX = 12
 const MARKER_SIZE = 12
-/** Vertical geometry of the strip. Pills hang below the axis baseline. */
-const AXIS_LABEL_TOP = 0
-const BASELINE_TOP = 20
-const MARKER_TOP = 15
-const PILLS_TOP = 32
+/** Vertical geometry of the strip. Pills hang below the axis baseline. The track is a scroll
+ * container (`overflow: auto`), so its top edge clips its content — the tick/now labels need a
+ * few px of breathing room from `top: 0` or the top of their glyphs gets shaved off. */
+const AXIS_LABEL_TOP = 6
+const BASELINE_TOP = 24
+const MARKER_TOP = 19
+const PILLS_TOP = 36
 /** Number of lanes visible before the track scrolls vertically — sets the fixed strip height. */
 const VISIBLE_LANES = 4
 const TRACK_HEIGHT = PILLS_TOP + VISIBLE_LANES * LANE_HEIGHT
@@ -218,6 +220,7 @@ function Axis({
           top: BASELINE_TOP,
           height: height - BASELINE_TOP,
           borderLeft: '2px solid var(--card-badge-primary-icon-color)',
+          zIndex: 3,
         }}
       />
       <Box
@@ -228,6 +231,7 @@ function Axis({
           backgroundColor: 'var(--card-bg-color)',
           borderRadius: 3,
           padding: '0 4px',
+          zIndex: 3,
         }}
       >
         <Text size={0} weight="semibold" style={{color: 'var(--card-badge-primary-icon-color)'}}>
@@ -324,6 +328,7 @@ function ReleaseTimelinePill({
           maxWidth: PILL_WIDTH,
           textAlign: 'left',
           cursor: 'pointer',
+          zIndex: 1,
         }}
       >
         <Flex align="center" gap={2}>
@@ -379,6 +384,8 @@ function ReleaseTimelineMarker({
         height: MARKER_SIZE,
         transform: 'translateX(-50%) rotate(45deg)',
         border: '2px solid var(--card-bg-color)',
+        // Above the pills so the true-position diamond is never hidden behind a card label.
+        zIndex: 2,
       }}
     />
   )
