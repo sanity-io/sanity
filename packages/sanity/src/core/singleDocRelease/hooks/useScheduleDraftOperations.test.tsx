@@ -3,6 +3,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {
+  activeCardinalityOneRelease,
   activeScheduledRelease,
   archivedScheduledRelease,
   publishedASAPRelease,
@@ -12,6 +13,11 @@ import {useAllReleasesMockReturn} from '../../releases/store/__tests__/__mocks/u
 import {useReleaseOperationsMockReturn} from '../../releases/store/__tests__/__mocks/useReleaseOperations.mock'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
+
+const mockLog = vi.fn()
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => ({log: mockLog})),
+}))
 
 vi.mock('../../releases/store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
@@ -43,7 +49,7 @@ describe('useScheduleDraftOperations', () => {
     const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
 
     const releaseDocumentId = await act(async () => {
-      return result.current.createScheduledDraft('documentId', mockPublishAt)
+      return result.current.createScheduledDraft('documentId', mockPublishAt, 'author')
     })
 
     expect(useReleaseOperationsMockReturn.createRelease).toHaveBeenCalledWith(
@@ -70,6 +76,10 @@ describe('useScheduleDraftOperations', () => {
       undefined,
     )
     expect(releaseDocumentId).toBe(mockReleaseId)
+    expect(mockLog).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Scheduled Draft Created'}),
+      {documentType: 'author'},
+    )
   })
 
   it('should create scheduled draft with default title when no title provided', async () => {
@@ -77,7 +87,7 @@ describe('useScheduleDraftOperations', () => {
     const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
 
     await act(async () => {
-      await result.current.createScheduledDraft('documentId', mockPublishAt)
+      await result.current.createScheduledDraft('documentId', mockPublishAt, 'author')
     })
 
     expect(useReleaseOperationsMockReturn.createRelease).toHaveBeenCalledWith(
@@ -142,6 +152,24 @@ describe('useScheduleDraftOperations', () => {
     expect(useReleaseOperationsMockReturn.deleteRelease).toHaveBeenCalledWith(
       scheduledRelease._id,
       undefined,
+    )
+    expect(mockLog).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Scheduled Draft Cancelled'}),
+      {keptAsDraft: false},
+    )
+  })
+
+  it('should log keptAsDraft when cancelling a scheduled draft that keeps its content', async () => {
+    const wrapper = await createTestProvider()
+    const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
+
+    await act(async () => {
+      await result.current.deleteScheduledDraft(scheduledRelease._id, true, '')
+    })
+
+    expect(mockLog).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Scheduled Draft Cancelled'}),
+      {keptAsDraft: true},
     )
   })
 
@@ -218,6 +246,26 @@ describe('useScheduleDraftOperations', () => {
       newPublishAt,
       undefined,
     )
+    expect(mockLog).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Scheduled Draft Rescheduled'}),
+      {fromPaused: false},
+    )
+  })
+
+  it('should log fromPaused when resuming a paused scheduled draft', async () => {
+    const wrapper = await createTestProvider()
+    const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
+
+    const newPublishAt = new Date('2025-01-15T12:00:00Z')
+
+    await act(async () => {
+      await result.current.rescheduleScheduledDraft(activeCardinalityOneRelease, newPublishAt)
+    })
+
+    expect(mockLog).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Scheduled Draft Rescheduled'}),
+      {fromPaused: true},
+    )
   })
 
   it('should reschedule paused draft successfully', async () => {
@@ -270,11 +318,12 @@ describe('useScheduleDraftOperations', () => {
 
     await expect(
       act(async () => {
-        await result.current.createScheduledDraft('documentId', mockPublishAt)
+        await result.current.createScheduledDraft('documentId', mockPublishAt, 'author')
       }),
     ).rejects.toThrow('Create release failed')
 
     expect(useReleaseOperationsMockReturn.createVersion).not.toHaveBeenCalled()
     expect(useReleaseOperationsMockReturn.schedule).not.toHaveBeenCalled()
+    expect(mockLog).not.toHaveBeenCalled()
   })
 })
