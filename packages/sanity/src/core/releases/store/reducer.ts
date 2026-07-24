@@ -55,6 +55,12 @@ export function releasesReducer(
       // Create an object with the BUNDLE id as key
       const releasesById = createReleasesSet(action.payload)
 
+      // Maintain a stable value when the release content is unchanged, allowing
+      // the value to be safely memoized by consumers.
+      if (releasesAreEqual(state.releases, releasesById)) {
+        return state
+      }
+
       return {
         ...state,
         releases: releasesById,
@@ -64,4 +70,28 @@ export function releasesReducer(
     default:
       return state
   }
+}
+
+/**
+ * Compares two release maps by content, using each release's `_rev` as the
+ * change signal.
+ *
+ * @internal
+ */
+export function releasesAreEqual(
+  previous: Map<string, ReleaseDocument>,
+  next: Map<string, ReleaseDocument>,
+): boolean {
+  if (previous.size !== next.size) {
+    return false
+  }
+
+  for (const [id, release] of next) {
+    const previousRelease = previous.get(id)
+    if (!previousRelease || previousRelease._rev !== release._rev) {
+      return false
+    }
+  }
+
+  return true
 }

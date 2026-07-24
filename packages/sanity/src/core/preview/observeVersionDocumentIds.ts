@@ -74,7 +74,10 @@ export function createObserveVersionDocumentIds(options: {
     const instance = invalidationChannel.pipe(
       filter(
         (event) =>
-          event.type === 'connected' || getPublishedId(event.documentId) === documentGroupId,
+          event.type === 'connected' ||
+          (getPublishedId(event.documentId) === documentGroupId &&
+            event.type === 'mutation' &&
+            ['appear', 'disappear'].includes(event.transition)),
       ),
       switchMap((event) => {
         if (event.type === 'connected' || event.visibility === 'query') {
