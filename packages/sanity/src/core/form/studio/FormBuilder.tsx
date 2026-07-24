@@ -4,9 +4,11 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {useCallback, useMemo, useRef} from 'react'
+import {startsWith} from '@sanity/util/paths'
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 
 import {type DocumentFieldAction} from '../../config'
+import {stringToPath} from '../../field/paths/helpers'
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
 import {PreviewLoader} from '../../preview'
@@ -22,7 +24,7 @@ import {
   useItemComponent,
   usePreviewComponent,
 } from '../form-components-hooks'
-import {FullscreenPTEProvider} from '../inputs/PortableText/contexts/fullscreen'
+import {FullscreenPTEProvider, useFullscreenPTE} from '../inputs/PortableText/contexts/fullscreen'
 import {type FormPatch, type PatchChannel, PatchEvent} from '../patch'
 import {type StateTree} from '../store'
 import {prepareDiffProps} from '../store/formState'
@@ -325,6 +327,7 @@ export function FormBuilder(props: FormBuilderProps) {
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
             <FullscreenPTEProvider>
+              <FullscreenPTEFocusSync focusPath={focusPath} />
               <DialogStackProvider>
                 <EnhancedObjectDialogProvider>
                   <RootInput
@@ -354,4 +357,41 @@ function RootInput(props: RootInputProps) {
   const {rootInputProps, onPathOpen, openPath, renderInput} = props
 
   return renderInput(rootInputProps)
+}
+
+/**
+ * Collapses fullscreen PTEs when the document-level focus path moves
+ * to a path that does not descend from any currently-expanded PTE.
+ *
+ * This handles the case where a user clicks a validation error (or any
+ * other programmatic focus change) targeting a field outside the expanded PTE.
+ */
+function FullscreenPTEFocusSync({focusPath}: {focusPath: Path}) {
+  const {allFullscreenPaths, setFullscreenPath} = useFullscreenPTE()
+  const prevFocusPathRef = useRef<Path>(focusPath)
+
+  useEffect(() => {
+    // Only act when focus moves to a non-empty path (ignore blur)
+    if (focusPath.length === 0 || allFullscreenPaths.length === 0) {
+      prevFocusPathRef.current = focusPath
+      return
+    }
+
+    // Skip if the focus path hasn't actually changed
+    if (focusPath === prevFocusPathRef.current) {
+      return
+    }
+
+    prevFocusPathRef.current = focusPath
+
+    for (const savedPath of allFullscreenPaths) {
+      const ptePath = stringToPath(savedPath)
+      // If the new focus path does NOT descend from this PTE, collapse it
+      if (!startsWith(ptePath, focusPath)) {
+        setFullscreenPath(ptePath, false)
+      }
+    }
+  }, [focusPath, allFullscreenPaths, setFullscreenPath])
+
+  return null
 }
