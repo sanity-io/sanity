@@ -29,7 +29,7 @@ catalog:
   '@sanity/client': ^7.24.0
   '@sanity/migrate': ^8.0.0
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.19.6
+  '@sanity/tsdown-config': ^0.21.0
   '@sanity/ui': ^3.4.3
   '@types/node': ^24.13.2
   '@types/react': ^19.2.17
