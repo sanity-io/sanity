@@ -50,6 +50,10 @@ vi.mock('../StudioErrorBoundary', () => ({
   StudioErrorBoundary: ({children}: {children: React.ReactNode}) => <>{children}</>,
 }))
 
+vi.mock('../unclaimedProject/UnclaimedProjectNudge', () => ({
+  UnclaimedProjectNudge: () => null,
+}))
+
 vi.mock('../screens/NoToolsScreen', () => ({
   NoToolsScreen: () => <div data-testid="no-tools" />,
 }))
