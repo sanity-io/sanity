@@ -1,6 +1,5 @@
 import {Button, Card, Flex, studioTheme, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {Studio, StudioLayout, StudioProvider, type StudioThemeColorSchemeKey} from 'sanity'
 
 import config from '../sanity.config'

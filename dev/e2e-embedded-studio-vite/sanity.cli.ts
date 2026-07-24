@@ -1,4 +1,3 @@
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {defineCliConfig} from 'sanity/cli'
 
 const projectId = import.meta.env.SANITY_E2E_PROJECT_ID
