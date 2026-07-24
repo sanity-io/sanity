@@ -1,5 +1,4 @@
 import {Button, Card, Code, Stack} from '@sanity/ui'
-// @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
 import {useCallback} from 'react'
 import {usePaneRouter} from 'sanity/structure'
 
