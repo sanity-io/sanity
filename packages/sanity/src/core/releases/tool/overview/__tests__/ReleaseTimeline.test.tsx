@@ -169,9 +169,11 @@ describe('ReleaseTimeline', () => {
     await renderTimeline({releases: [longTitleRelease]})
 
     const pill = screen.getByTestId(`release-timeline-pill-${longTitleRelease._id}`)
+    // Fixed pill width is the anti-bleed guarantee: the title can't stretch the pill.
     expect(pill).toHaveStyle({width: '240px', maxWidth: '240px'})
-
-    expect(pill.querySelector(`[title="${longTitleRelease.metadata.title}"]`)).toBeInTheDocument()
+    // The title still renders in full (the ellipsis is a CSS clip; the text node is intact, and
+    // the full text is surfaced by the pill's tooltip).
+    expect(pill).toHaveTextContent(longTitleRelease.metadata.title)
   })
 
   it('renders a far-past dated release on the same continuous axis (no window-rescale) and exposes a Today anchor', async () => {

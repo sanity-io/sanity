@@ -336,9 +336,9 @@ function ReleaseTimelinePill({
           </Text>
           {/* No `overflow: hidden` here — the `Text` handles its own ellipsis; an outer clip box
               was cropping the top of the glyphs. `minWidth: 0` lets the flex item shrink so the
-              title truncates instead of pushing past the pill's fixed width. `title` surfaces the
-              full text on hover as a fallback to the pill-level Tooltip. */}
-          <Box flex={1} title={title} style={{minWidth: 0}}>
+              title truncates instead of pushing past the pill's fixed width. The full title lives
+              in the pill-level Tooltip, so there's no native `title` (which would double up). */}
+          <Box flex={1} style={{minWidth: 0}}>
             <Text size={1} weight="medium" textOverflow="ellipsis">
               {title}
             </Text>
