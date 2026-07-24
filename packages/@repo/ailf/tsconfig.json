@@ -1,6 +1,6 @@
 {
   "extends": "@repo/tsconfig/base.json",
-  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", ".ailf/**/*.ts"],
   "exclude": ["dist", "lib", "node_modules", "./.ailf/results"],
   "compilerOptions": {
     "rootDir": ".",
