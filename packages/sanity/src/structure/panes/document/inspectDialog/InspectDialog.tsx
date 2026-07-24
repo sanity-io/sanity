@@ -51,17 +51,27 @@ export function InspectDialog(props: InspectDialogProps) {
       id={`${dialogIdPrefix}dialog`}
       header={
         isDocumentLike(value) ? (
-          <Translate
-            t={t}
-            i18nKey="document-inspector.dialog.title"
-            components={{
-              DocumentTitle: () => (
-                <em>
-                  <DocTitle document={value} />
-                </em>
-              ),
+          // Clamp the header so a very long document title cannot fill the dialog
+          <span
+            style={{
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 2,
+              overflow: 'hidden',
             }}
-          />
+          >
+            <Translate
+              t={t}
+              i18nKey="document-inspector.dialog.title"
+              components={{
+                DocumentTitle: () => (
+                  <em>
+                    <DocTitle document={value} />
+                  </em>
+                ),
+              }}
+            />
+          </span>
         ) : (
           <em>{t('document-inspector.dialog.title-no-value')}</em>
         )

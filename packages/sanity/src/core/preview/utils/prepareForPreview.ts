@@ -13,7 +13,7 @@ import pick from 'lodash-es/pick.js'
 import uniqBy from 'lodash-es/uniqBy.js'
 
 import {isRecord} from '../../util'
-import {INVALID_PREVIEW_FALLBACK} from '../constants'
+import {INVALID_PREVIEW_FALLBACK, PREVIEW_STRING_MAX_LENGTH} from '../constants'
 import {type PreviewableType} from '../types'
 import {keysOf} from './keysOf'
 import {extractTextFromBlocks, isPortableTextPreviewValue} from './portableText'
@@ -204,6 +204,44 @@ function defaultPrepare(value: SelectedValue) {
   }, {})
 }
 
+// Only the textual display keys are capped — notably not `imageUrl` (long signed
+// URLs / data URIs must pass through untouched), `media` or `date`.
+const TRUNCATED_PREVIEW_KEYS = ['title', 'subtitle', 'description'] as const
+
+function truncatePreviewString(value: string): string {
+  // Fast path: the UTF-16 length is always >= the code-point count, so if it's
+  // within the limit the string definitely doesn't need truncating.
+  if (value.length <= PREVIEW_STRING_MAX_LENGTH) return value
+  // Otherwise measure by code points so surrogate pairs aren't split, and so a
+  // string that's within the code-point limit but over it in UTF-16 code units
+  // (e.g. mostly emoji) isn't truncated spuriously. Pre-slice to bound the cost
+  // of spreading a potentially huge string: a string of N code points spans at
+  // most 2N code units, so MAX*2 code units always retains the first MAX points.
+  const codePoints = Array.from(value.slice(0, PREVIEW_STRING_MAX_LENGTH * 2))
+  if (codePoints.length <= PREVIEW_STRING_MAX_LENGTH) return value
+  return `${codePoints.slice(0, PREVIEW_STRING_MAX_LENGTH).join('')}…`
+}
+
+function truncatePreviewStrings(
+  prepared: Record<string, unknown> | null,
+): Record<string, unknown> | null {
+  if (!prepared) return prepared
+  const needsTruncation = TRUNCATED_PREVIEW_KEYS.some((key) => {
+    const value = prepared[key]
+    return typeof value === 'string' && value.length > PREVIEW_STRING_MAX_LENGTH
+  })
+  if (!needsTruncation) return prepared
+
+  const result = {...prepared}
+  for (const key of TRUNCATED_PREVIEW_KEYS) {
+    const value = result[key]
+    if (typeof value === 'string' && value.length > PREVIEW_STRING_MAX_LENGTH) {
+      result[key] = truncatePreviewString(value)
+    }
+  }
+  return result
+}
+
 export function invokePrepare(
   type: PreviewableType,
   value: SelectedValue,
@@ -212,9 +250,9 @@ export function invokePrepare(
   const prepare = type.preview?.prepare
   try {
     return {
-      returnValue: prepare
-        ? (prepare(value, viewOptions) as Record<string, unknown>)
-        : defaultPrepare(value),
+      returnValue: truncatePreviewStrings(
+        prepare ? (prepare(value, viewOptions) as Record<string, unknown>) : defaultPrepare(value),
+      ),
       errors: EMPTY,
     }
   } catch (error) {
