@@ -18,8 +18,11 @@ export function UserComponentPane(props: UserComponentPaneProps) {
   const {
     child,
     component: UserComponent,
+    currentMaxWidth,
+    maxWidth,
     menuItems,
     menuItemGroups,
+    minWidth = 320,
     type: _unused,
     ...restPane
   } = pane
@@ -31,7 +34,13 @@ export function UserComponentPane(props: UserComponentPaneProps) {
   const {key, ...componentProps} = {...restProps, ...restPane}
 
   return (
-    <Pane id={paneKey} minWidth={320} selected={restProps.isSelected}>
+    <Pane
+      currentMaxWidth={currentMaxWidth}
+      id={paneKey}
+      maxWidth={maxWidth}
+      minWidth={minWidth}
+      selected={restProps.isSelected}
+    >
       <UserComponentPaneHeader
         actionHandlers={ref?.actionHandlers}
         index={index}
