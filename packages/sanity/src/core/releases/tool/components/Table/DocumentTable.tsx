@@ -20,8 +20,10 @@ const TABLE_CARD_STYLE: CSSProperties = {
 // Right-aligned, fixed-width search input.
 const SEARCH_INPUT_STYLE: CSSProperties = {maxWidth: 280}
 
-// Constant command-lane height so the browse↔bulk swap never shifts the rows below.
-const COMMAND_LANE_STYLE: CSSProperties = {minHeight: 33}
+// Constant command-lane height so the browse↔bulk swap never shifts the rows below. Sized to the
+// tallest lane content — a bordered segmented control (e.g. the releases lifecycle tabs) — so the
+// shorter bulk toolbar centers within the same height rather than shrinking the lane.
+const COMMAND_LANE_STYLE: CSSProperties = {minHeight: 41}
 
 // Filter-tab strip: scrolls horizontally when the tabs outrun the width, with a subtle right-edge
 // fade cueing the overflow. When the tabs fit, the fade falls over empty space and is invisible.

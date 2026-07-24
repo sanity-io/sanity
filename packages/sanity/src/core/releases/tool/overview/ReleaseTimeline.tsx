@@ -442,8 +442,9 @@ function ScrollSignpost({
   const {t} = useTranslation(releasesLocaleNamespace)
   if (count === 0) return null
   const icon = side === 'start' ? ChevronLeftIcon : ChevronRightIcon
-  // Compact: just a chevron + the off-screen count (e.g. "‹ 4" / "3 ›"), so the nav doesn't eat
-  // into the axis width. The full phrasing lives in the tooltip.
+  // Verbose: "N earlier" / "N later" flanking Today (e.g. "‹ 4 earlier   Today   3 later ›"). The
+  // nav is centered, not inline with the axis, so there's room for the words — the bare number said
+  // little on its own. Tooltip explains the jump-to-next-item action.
   return (
     <Button
       data-testid={`release-timeline-overflow-${side}`}
@@ -451,13 +452,14 @@ function ScrollSignpost({
       tone="default"
       icon={side === 'start' ? icon : undefined}
       iconRight={side === 'end' ? icon : undefined}
-      text={String(count)}
+      text={
+        side === 'start'
+          ? t('timeline.overflow-earlier', {count})
+          : t('timeline.overflow-later', {count})
+      }
       onClick={onClick}
       tooltipProps={{
-        content:
-          side === 'start'
-            ? t('timeline.overflow-earlier', {count})
-            : t('timeline.overflow-later', {count}),
+        content: t(side === 'start' ? 'timeline.scroll-earlier' : 'timeline.scroll-later'),
       }}
     />
   )
