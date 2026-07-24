@@ -1,161 +1,76 @@
-import {isKeySegment, type Path} from '@sanity/types'
-import {Button, Stack} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import {
-  type FormPatch,
-  type ObjectInputProps,
-  PatchEvent,
-  PortableTextInput,
-  set,
-  useSchema,
-} from 'sanity'
+import {Button} from '@sanity/ui'
+import {type PortableTextInputProps, set} from 'sanity'
+
+const TABLE_SIZE = 3
 
 /**
- * POC (EDEX-scoped, test-studio only): renders a standalone `standaloneTable`
- * object field as a Portable Text editor in disguise. The editor sees a
- * one-element array wrapping the field's object under a synthetic block
- * key; patches emitted by the editor are re-rooted onto the object by
- * stripping that synthetic prefix. The PT configuration (table plugin
- * binding, one-block behaviors, cell-shaped toolbar options) lives on the
- * hidden `standaloneTableArray` type, whose compiled schema this input
- * borrows.
+ * The standalone table field is a Portable Text array constrained to a
+ * single table block (see `standaloneTable.tsx`). Storage is the real
+ * array, so patches, comments, presence, and focus paths all flow through
+ * Studio's own machinery untranslated; this input only adjusts the
+ * surface: an empty field renders a seed button instead of an empty
+ * editor, and a populated field renders the default Portable Text input
+ * with the writing-surface chrome stripped away.
  */
-const ROOT_KEY = 'standalone-table-root'
-
-export function StandaloneTableInput(props: ObjectInputProps) {
-  const schema = useSchema()
-  const arraySchemaType = schema.get('standaloneTableArray')
-
-  const editorValue = useMemo(
-    () => (props.value ? [{_type: 'standaloneTable', ...props.value, _key: ROOT_KEY}] : undefined),
-    [props.value],
-  )
-
-  const handleChange = useCallback(
-    (change: PatchEvent | FormPatch | FormPatch[]) => {
-      const patches = change instanceof PatchEvent ? change.patches : [change].flat()
-      const translated: FormPatch[] = []
-      for (const patch of patches) {
-        const [head, ...rest] = patch.path
-        if (patch.path.length === 0) {
-          // Whole-array bookkeeping (`setIfMissing([])`, `unset([])`) has
-          // no meaning on the object; the wrapper owns the array illusion.
-          continue
-        }
-        if (isKeySegment(head) && head._key === ROOT_KEY) {
-          if (rest.length === 0) {
-            if (patch.type === 'set' && patch.value && typeof patch.value === 'object') {
-              const {_key, ...objectValue} = patch.value as Record<string, unknown>
-              translated.push(set(objectValue))
-            }
-            // `unset` of the whole block would clear the field; the
-            // one-block behaviors are meant to prevent it, so dropping it
-            // here keeps the POC observable when they don't.
-            continue
-          }
-          translated.push({...patch, path: rest} as FormPatch)
-        }
-        // Root-level inserts (scaffolding a sibling) are denied by the
-        // one-block behaviors; anything that slips through is dropped
-        // rather than corrupting the object.
-      }
-      if (translated.length > 0) {
-        props.onChange(translated)
-      }
-    },
-    [props],
-  )
-
-  const handleInsertTable = useCallback(() => {
-    const keyGenerator = () => Math.random().toString(36).slice(2, 10)
-    const emptyBlock = () => ({
-      _type: 'block',
-      _key: keyGenerator(),
-      style: 'normal',
-      markDefs: [],
-      children: [{_type: 'span', _key: keyGenerator(), text: '', marks: []}],
-    })
-    const cell = () => ({_type: 'cell', _key: keyGenerator(), value: [emptyBlock()]})
-    const row = () => ({
-      _type: 'row',
-      _key: keyGenerator(),
-      cells: [cell(), cell(), cell()],
-    })
-    props.onChange(set({_type: 'standaloneTable', headerRows: 1, rows: [row(), row(), row()]}))
-  }, [props])
-
-  if (!props.value) {
+export function StandaloneTableInput(props: PortableTextInputProps) {
+  if (!props.value || props.value.length === 0) {
     return (
-      <Stack space={2}>
-        <Button mode="ghost" onClick={handleInsertTable} text="Insert table" />
-      </Stack>
+      <Button
+        mode="ghost"
+        text="Insert table"
+        onClick={() => props.onChange(set([scaffoldTable()]))}
+      />
     )
   }
 
-  if (!arraySchemaType) {
-    return null
-  }
-
-  const portableTextProps = {
-    ...props,
-    schemaType: arraySchemaType,
-    value: editorValue,
-    onChange: handleChange,
-    // The object form state has field members, not array item members;
-    // the PT input's member items degrade gracefully to none (dialogs
-    // and per-item chrome), which is acceptable for the POC.
-    members: [],
-    onItemOpen: () => {},
-    onItemClose: () => {},
-    onItemRemove: () => {},
-    onPathFocus: (path: Path) => props.onPathFocus(path),
-    // POC: the wrapper feigns array input props.
-  } as any
-
   return (
     <div data-standalone-table="">
-      {/* A standalone table shouldn't present as a general-purpose rich
-          text field: the insert menu (whose only offering would be the
-          table itself) and the fullscreen toggle are hidden, and the
-          editable loses its prose min-height. */}
+      {/* A standalone table is not a long writing surface; no fullscreen.
+          The insert menu stays: it offers the cell members (image), with
+          the table item itself permanently disabled by positional gating
+          since the caret always sits inside a cell. Further de-chroming is
+          deferred to a real presentation option; CSS overrides fought the
+          theme and lost. */}
       <style>{`
-        [data-standalone-table] [data-testid="insert-menu-button"],
-        [data-standalone-table] [data-testid="insert-menu-auto-collapse-menu"],
-        [data-standalone-table] [data-testid$="-insert-menu-button"],
         [data-standalone-table] [data-testid="fullscreen-button-expand"] {
           display: none;
         }
-        /* No editor frame: the field is a toolbar sitting above a bare
-           table, not a rich text surface. The pt-editor Root is a Card
-           with a min-height and vertical resize; its parent draws the
-           input border. */
-        [data-standalone-table] [data-testid="pt-editor"] {
-          min-height: 0 !important;
-          resize: none !important;
-          background: transparent !important;
-          box-shadow: none !important;
-          border: none !important;
-        }
-        [data-standalone-table] :has(> [data-testid="pt-editor"]) {
-          border: none !important;
-          box-shadow: none !important;
-          background: transparent !important;
-          --card-border-color: transparent;
-        }
-        [data-standalone-table] [data-testid="pt-editor__toolbar-card"] {
-          background: transparent !important;
-          box-shadow: none !important;
-          border: none !important;
-        }
-        [data-standalone-table] [data-testid="pt-editor"] [data-ui="Card"] {
-          background: transparent !important;
-        }
-        [data-standalone-table] [role="textbox"] {
-          padding: 0 !important;
-          min-height: 0 !important;
-        }
       `}</style>
-      <PortableTextInput {...portableTextProps} />
+      {props.renderDefault({
+        ...props,
+        // A standalone table is not a long writing surface; never gate it
+        // behind the activate-on-focus overlay.
+        initialActive: true,
+      })}
     </div>
   )
+}
+
+function scaffoldTable() {
+  return {
+    _type: 'standaloneTable',
+    _key: randomKey(),
+    headerRows: 1,
+    rows: Array.from({length: TABLE_SIZE}, () => ({
+      _type: 'row',
+      _key: randomKey(),
+      cells: Array.from({length: TABLE_SIZE}, () => ({
+        _type: 'cell',
+        _key: randomKey(),
+        value: [
+          {
+            _type: 'block',
+            _key: randomKey(),
+            style: 'normal',
+            markDefs: [],
+            children: [{_type: 'span', _key: randomKey(), text: '', marks: []}],
+          },
+        ],
+      })),
+    })),
+  }
+}
+
+function randomKey() {
+  return Math.random().toString(36).slice(2, 10)
 }
