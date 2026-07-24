@@ -4,15 +4,17 @@ import {
   getVariantTitle,
   Translate,
   useConditionalToast,
+  useDocumentVersions,
+  useGetDefaultPerspective,
   usePerspective,
   useTranslation,
   useVariantDocumentOperations,
-  useGetDefaultPerspective,
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
+import {findVariantCreateBaseDocument} from './findVariantCreateBaseDocument'
 
 // Once the create action resolves, there's a short delay before the new variant-scoped version
 // propagates and this banner unmounts. Surface a toast if that window exceeds this threshold.
@@ -22,8 +24,10 @@ type VariantDocumentCreateStatus = 'idle' | 'in-progress' | 'success' | 'failed'
 
 export function DocumentNotInVariantBanner() {
   const {t} = useTranslation(structureLocaleNamespace)
-  const {value} = useDocumentPane()
+  const {value, documentId} = useDocumentPane()
   const {selectedPerspective, selectedVariant, selectedReleaseId} = usePerspective()
+  const {versions} = useDocumentVersions({documentId})
+
   const {createVariantDocument} = useVariantDocumentOperations()
   const [status, setStatus] = useState<VariantDocumentCreateStatus>('idle')
   const toast = useToast()
@@ -38,8 +42,15 @@ export function DocumentNotInVariantBanner() {
 
     setStatus('in-progress')
     try {
+      const baseDocument = findVariantCreateBaseDocument({
+        variant: selectedVariant,
+        documentVersions: versions,
+        fallback: {_id: value._id, _rev: value._rev},
+      })
+
       await createVariantDocument({
-        document: value,
+        baseId: baseDocument._id,
+        baseRevisionId: baseDocument._rev,
         variant: selectedVariant,
         selectedPerspective,
       })
@@ -55,7 +66,7 @@ export function DocumentNotInVariantBanner() {
       })
       setStatus('failed')
     }
-  }, [createVariantDocument, value, selectedVariant, selectedPerspective, t, toast])
+  }, [createVariantDocument, value, selectedVariant, selectedPerspective, versions, t, toast])
 
   useConditionalToast({
     status: 'info',

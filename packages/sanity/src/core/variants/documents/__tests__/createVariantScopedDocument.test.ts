@@ -40,12 +40,8 @@ describe('createVariantScopedDocument', () => {
     await expect(
       createVariantScopedDocument({
         client: client as unknown as SanityClient,
-        document: {
-          _id: 'drafts.article-1',
-          _type: 'article',
-          _rev: 'rev-1',
-          title: 'Hello',
-        },
+        baseId: 'drafts.article-1',
+        baseRevisionId: 'rev-1',
         variant: VARIANT,
         selectedPerspective: 'published',
       }),
@@ -70,11 +66,7 @@ describe('createVariantScopedDocument', () => {
 
     await createVariantScopedDocument({
       client: client as unknown as SanityClient,
-      document: {
-        _id: 'drafts.article-1',
-        _type: 'article',
-        title: 'Hello',
-      },
+      baseId: 'drafts.article-1',
       variant: VARIANT,
       selectedPerspective: 'my-release',
     })
@@ -98,11 +90,7 @@ describe('createVariantScopedDocument', () => {
 
     await createVariantScopedDocument({
       client: client as unknown as SanityClient,
-      document: {
-        _id: 'versions.rSummer123.article-1',
-        _type: 'article',
-        title: 'Hello',
-      },
+      baseId: 'versions.rSummer123.article-1',
       variant: VARIANT,
       selectedPerspective: releaseDocument,
     })
@@ -126,11 +114,7 @@ describe('createVariantScopedDocument', () => {
 
     await createVariantScopedDocument({
       client: client as unknown as SanityClient,
-      document: {
-        _id: 'drafts.article-1',
-        _type: 'article',
-        title: 'Hello',
-      },
+      baseId: 'drafts.article-1',
       variant: VARIANT,
       selectedPerspective: 'drafts',
     })
