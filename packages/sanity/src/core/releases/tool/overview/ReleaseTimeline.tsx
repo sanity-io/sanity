@@ -60,11 +60,17 @@ const VISIBLE_LANES = 4
 const TRACK_HEIGHT = PILLS_TOP + VISIBLE_LANES * LANE_HEIGHT
 /** Pixels-per-day per granularity: the zoom. A wide span in `week` scrolls rather than cramming. */
 const PX_PER_DAY: Record<ReleaseTimelineGranularity, number> = {week: 34, month: 9, quarter: 3.5}
-/** Extra days of breathing room padded onto each end of the data span, per granularity. */
-const RANGE_PAD_DAYS: Record<ReleaseTimelineGranularity, number> = {week: 5, month: 14, quarter: 30}
+/** A little breathing room before the earliest item so its diamond isn't half-clipped at the edge. */
+const LEFT_PAD_DAYS: Record<ReleaseTimelineGranularity, number> = {week: 2, month: 5, quarter: 10}
 /** Track never renders narrower than this, so a small data span still fills the container. */
 const MIN_TRACK_WIDTH = 640
 const MS_PER_DAY = 86_400_000
+
+/** Reserve ~one pill-width of time after the latest item so its right-extending label isn't
+ * clipped by the track edge (pills anchor at their date and extend rightward). */
+function rightPadDays(granularity: ReleaseTimelineGranularity): number {
+  return Math.ceil(PILL_WIDTH / PX_PER_DAY[granularity]) + 2
+}
 
 interface DatedRelease {
   release: TableRelease
@@ -91,10 +97,12 @@ function getRange(
   earliest: Date,
   latest: Date,
 ): {start: Date; end: Date} {
-  const pad = RANGE_PAD_DAYS[granularity]
   const lo = new Date(Math.min(now.getTime(), earliest.getTime()))
   const hi = new Date(Math.max(now.getTime(), latest.getTime()))
-  return {start: addDays(lo, -pad), end: addDays(hi, pad)}
+  return {
+    start: addDays(lo, -LEFT_PAD_DAYS[granularity]),
+    end: addDays(hi, rightPadDays(granularity)),
+  }
 }
 
 function getTicks(
