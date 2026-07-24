@@ -1,9 +1,13 @@
-import {Menu} from '@sanity/ui'
+import {EditIcon} from '@sanity/icons/Edit'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {Menu, MenuDivider} from '@sanity/ui'
+import {useState} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../ui-components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {useTranslation} from '../../../i18n'
 import {DeleteVariantDialog} from '../../components/dialog/DeleteVariantDialog'
+import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
 import {useVariantDeleteAction} from '../../hooks/useVariantDeleteAction'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
@@ -18,6 +22,7 @@ export function VariantMenuButton({
 }) {
   const {t} = useTranslation(variantsLocaleNamespace)
   const variantTitle = getVariantTitle(variant)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const {
     deleteDisabled,
     deleteDisabledTooltip,
@@ -37,7 +42,14 @@ export function VariantMenuButton({
         menu={
           <Menu>
             <MenuItem
+              icon={EditIcon}
+              onClick={() => setIsEditDialogOpen(true)}
+              text={t('overview.action.edit-variant')}
+            />
+            <MenuDivider />
+            <MenuItem
               disabled={deleteDisabled}
+              icon={TrashIcon}
               onClick={handleDelete}
               text={t('overview.action.delete-variant')}
               tone="critical"
@@ -47,6 +59,13 @@ export function VariantMenuButton({
         }
         popover={{placement: 'bottom-end', portal: true}}
       />
+      {isEditDialogOpen && (
+        <EditVariantDialog
+          onCancel={() => setIsEditDialogOpen(false)}
+          onSubmit={() => setIsEditDialogOpen(false)}
+          variant={variant}
+        />
+      )}
       {isDeleteDialogOpen && (
         <DeleteVariantDialog
           isDeleting={isDeleting}
