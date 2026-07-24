@@ -76,7 +76,7 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/client": "catalog:",
-    "@sanity/color": "^3.0.6",
+    "@sanity/color": "^3.0.7",
     "@sanity/icons": "^5.2.1",
     "@sanity/lezer-groq": "^1.0.4",
     "@sanity/ui": "catalog:",
