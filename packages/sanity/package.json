@@ -173,7 +173,6 @@
     "@sanity/preview-url-secret": "^4.1.1",
     "@sanity/prism-groq": "^1.1.2",
     "@sanity/schema": "workspace:*",
-    "@sanity/sdk": "^2.18.0",
     "@sanity/telemetry": "catalog:",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
@@ -240,6 +239,7 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
     "@rolldown/plugin-babel": "catalog:",
+    "@sanity/sdk": "^2.18.0",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.12",
     "@testing-library/jest-dom": "^6.9.1",
@@ -289,7 +289,8 @@
     "node": ">=22.12"
   },
   "inlinedDependencies": {
-    "@sanity/visual-editing-csm": "3.0.12",
+    "@sanity/sdk": "2.18.0",
+    "@sanity/visual-editing-csm": "3.0.13",
     "rxjs-etc": "10.6.2",
     "valibot": "1.4.2"
   }
