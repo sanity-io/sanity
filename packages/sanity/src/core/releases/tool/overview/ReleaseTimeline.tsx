@@ -1,9 +1,9 @@
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {ClockIcon} from '@sanity/icons/Clock'
-import {CollapseIcon} from '@sanity/icons/Collapse'
-import {ExpandIcon} from '@sanity/icons/Expand'
 import {LockIcon} from '@sanity/icons/Lock'
+import {StackIcon} from '@sanity/icons/Stack'
+import {StackCompactIcon} from '@sanity/icons/StackCompact'
+import {TimelineIcon} from '@sanity/icons/Timeline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
@@ -756,53 +756,66 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
     >
       <Stack space={3}>
         <Flex align="center" gap={3}>
-          {/* Timeline on/off = a binary view switch → an icon toggle (ClockIcon = the time view).
-              When off, this is the only thing on the row, so the whole band is a single thin line. */}
-          <Button
-            data-testid="release-timeline-toggle"
-            mode={collapsed ? 'bleed' : 'default'}
-            tone={collapsed ? 'default' : 'primary'}
-            selected={!collapsed}
-            icon={ClockIcon}
-            onClick={handleToggleCollapsed}
-            aria-label={t(collapsed ? 'timeline.expand' : 'timeline.collapse')}
-            tooltipProps={{content: t(collapsed ? 'timeline.expand' : 'timeline.collapse')}}
-          />
-          {!collapsed && (
-            <Flex gap={2} align="center">
-              {/* density = a binary view switch, shown as ICONS; zoom = pick-one, shown as TEXT.
-                  Both are segmented controls (the same widget as the cardinality picker); the
-                  icon-vs-text content is what visually separates the two adjacent groups. */}
-              <SegmentedControl
-                data-testid="release-timeline-density"
-                value={density}
-                onChange={setDensity}
-                items={[
-                  {
-                    value: 'compact',
-                    icon: CollapseIcon,
-                    tooltip: t('timeline.density-compact-tooltip'),
-                    testId: 'release-timeline-density-compact',
-                  },
-                  {
-                    value: 'detailed',
-                    icon: ExpandIcon,
-                    tooltip: t('timeline.density-detailed-tooltip'),
-                    testId: 'release-timeline-density-detailed',
-                  },
-                ]}
+          {/* SET 2 — timeline view config (on/off + density) in ONE bordered rail: the timeline
+              toggle (TimelineIcon, deliberately not a clock so it doesn't read as time-of-day),
+              then a hairline, then the compact/detailed density toggles — "living together as
+              toggles". When off, the rail is just the toggle, so the whole band is a thin line. */}
+          <Card radius={3} border padding={1}>
+            <Flex align="center" gap={1}>
+              <Button
+                data-testid="release-timeline-toggle"
+                mode={collapsed ? 'bleed' : 'ghost'}
+                selected={!collapsed}
+                icon={TimelineIcon}
+                onClick={handleToggleCollapsed}
+                aria-label={t(collapsed ? 'timeline.expand' : 'timeline.collapse')}
+                tooltipProps={{content: t(collapsed ? 'timeline.expand' : 'timeline.collapse')}}
               />
-              <SegmentedControl
-                data-testid="release-timeline-zoom"
-                value={granularity}
-                onChange={setGranularity}
-                items={GRANULARITIES.map((g) => ({
-                  value: g,
-                  label: t(`timeline.granularity.${g}`),
-                  testId: `release-timeline-granularity-${g}`,
-                }))}
-              />
+              {!collapsed && (
+                <>
+                  <Box
+                    style={{
+                      alignSelf: 'stretch',
+                      width: 1,
+                      margin: '2px 2px',
+                      backgroundColor: 'var(--card-border-color)',
+                    }}
+                  />
+                  <Button
+                    data-testid="release-timeline-density-compact"
+                    mode={density === 'compact' ? 'ghost' : 'bleed'}
+                    selected={density === 'compact'}
+                    icon={StackCompactIcon}
+                    onClick={() => setDensity('compact')}
+                    aria-label={t('timeline.density-compact-tooltip')}
+                    tooltipProps={{content: t('timeline.density-compact-tooltip')}}
+                  />
+                  <Button
+                    data-testid="release-timeline-density-detailed"
+                    mode={density === 'detailed' ? 'ghost' : 'bleed'}
+                    selected={density === 'detailed'}
+                    icon={StackIcon}
+                    onClick={() => setDensity('detailed')}
+                    aria-label={t('timeline.density-detailed-tooltip')}
+                    tooltipProps={{content: t('timeline.density-detailed-tooltip')}}
+                  />
+                </>
+              )}
             </Flex>
+          </Card>
+          {/* SET 1 — navigate / access dates (the most-used controls): zoom scale here; the
+              calendar (go to a date) + Today live with the axis navigation. */}
+          {!collapsed && (
+            <SegmentedControl
+              data-testid="release-timeline-zoom"
+              value={granularity}
+              onChange={setGranularity}
+              items={GRANULARITIES.map((g) => ({
+                value: g,
+                label: t(`timeline.granularity.${g}`),
+                testId: `release-timeline-granularity-${g}`,
+              }))}
+            />
           )}
         </Flex>
         {!collapsed && (
