@@ -36,7 +36,8 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   const {handleOpenDialog: handleOpenUpsellDialog} = useSingleDocReleaseUpsell()
   // Check validation status.
   // No `getTargetScopeId(useTargetDocumentState())` here: scheduling a draft publish deliberately validates the
-  // explicit draft of the document, independent of the selected perspective.
+  // explicit draft of the document, independent of the selected perspective. This is safe because
+  // the action is disabled while a variant is selected (see `isVariantSelected` below).
   // TODO: this will be supported in the future, look for SAPP-3986 and SAPP-3987.
   const validationStatus = useValidationStatus(getDraftId(id), type, true)
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
@@ -51,6 +52,10 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   // Check if current release is a paused scheduled draft
   const {data: releases = []} = useActiveReleases()
   const perspective = usePerspective()
+
+  // Scheduling operates on the base draft, so it is not available while a variant is selected —
+  // it would silently schedule the base document instead of the variant (SAPP-3986).
+  const isVariantSelected = perspective.selectedVariantName !== undefined
 
   const currentRelease = useMemo(
     () =>
@@ -119,11 +124,17 @@ export const useSchedulePublishAction: DocumentActionComponent = (
     ],
   )
 
-  const disabled = isPaused
-    ? hasValidationErrors // Only check validation errors for paused drafts
-    : hasCardinalityOneReleaseVersions || hasValidationErrors // Full check for regular drafts
+  const disabled =
+    isVariantSelected ||
+    (isPaused
+      ? hasValidationErrors // Only check validation errors for paused drafts
+      : hasCardinalityOneReleaseVersions || hasValidationErrors) // Full check for regular drafts
 
   const title = useMemo(() => {
+    if (isVariantSelected) {
+      return t('action.schedule-publish.disabled.variant')
+    }
+
     if (isPaused && hasValidationErrors) {
       return t('action.schedule-publish.disabled.validation-issues')
     }
@@ -137,7 +148,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
     }
 
     return t('action.schedule-publish')
-  }, [isPaused, hasValidationErrors, hasCardinalityOneReleaseVersions, t])
+  }, [isVariantSelected, isPaused, hasValidationErrors, hasCardinalityOneReleaseVersions, t])
 
   if (!singleDocReleaseEnabled) {
     return null
