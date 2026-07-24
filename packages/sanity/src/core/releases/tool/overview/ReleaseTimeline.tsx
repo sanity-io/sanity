@@ -12,7 +12,7 @@ import {addWeeks} from 'date-fns/addWeeks'
 import {format} from 'date-fns/format'
 import {startOfMonth} from 'date-fns/startOfMonth'
 import {startOfWeek} from 'date-fns/startOfWeek'
-import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -674,7 +674,15 @@ function UnscheduledChip({count}: {count: number}) {
  *
  * @internal
  */
-export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
+export function ReleaseTimeline({
+  releases,
+  dateControl,
+}: {
+  releases: TableRelease[]
+  /** The calendar date-filter trigger, rendered in the timeline header (the date-access controls
+   * belong with the timeline). Optional so the component still works standalone / in tests. */
+  dateControl?: ReactNode
+}) {
   const {t} = useTranslation(releasesLocaleNamespace)
   const router = useRouter()
   const {utcToCurrentZoneDate} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
@@ -770,8 +778,9 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
               )}
             </Flex>
           </Card>
-          {/* SET 1 — navigate / access dates (the most-used controls): zoom scale here; the
-              calendar (go to a date) + Today live with the axis navigation. */}
+          {/* SET 1 — navigate / access dates (the most-used controls): zoom scale + the calendar
+              (go to a specific date). The calendar is a filter, so it stays visible even when the
+              axis is collapsed; zoom is meaningless without the axis, so it hides when collapsed. */}
           {!collapsed && (
             <SegmentedControl
               data-testid="release-timeline-zoom"
@@ -784,6 +793,7 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
               }))}
             />
           )}
+          {dateControl}
         </Flex>
         {!collapsed && (
           <>

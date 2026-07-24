@@ -423,31 +423,18 @@ export function ReleasesOverview() {
     [],
   )
 
-  // Command-lane filter slot: all the set-narrowing filters live together here (in the command
-  // lane, aligned with the columns, sharing space with search). The calendar trigger sits beside
-  // the lifecycle tabs so cause (the calendar) and effect (the date-filter chip) are co-located:
-  // picking a day swaps the Open/Paused/Archived tabs for the active date chip, with the calendar
-  // trigger still present to change the day.
+  // Command-lane filter slot: the lifecycle tabs, or — when a day is picked — the active date-filter
+  // chip in their place. (The calendar *trigger* now lives in the timeline header; this is a first
+  // visual pass, so the trigger and its result chip are momentarily split — the full decouple
+  // moves the chip up too and keeps the tabs independent.)
   const filterTabsNode = useMemo(() => {
     if (!loadingOrHasReleases) return undefined
-    return (
-      <Flex align="center" gap={2}>
-        {releaseFilterDate ? (
-          <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
-        ) : (
-          currentArchivedPicker
-        )}
-        <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
-      </Flex>
+    return releaseFilterDate ? (
+      <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
+    ) : (
+      currentArchivedPicker
     )
-  }, [
-    loadingOrHasReleases,
-    releaseFilterDate,
-    clearFilterDate,
-    currentArchivedPicker,
-    calendarFilterContent,
-    isNarrowViewport,
-  ])
+  }, [loadingOrHasReleases, releaseFilterDate, clearFilterDate, currentArchivedPicker])
 
   // Multi-select is available for All, Releases, and Scheduled drafts views, in Active/Paused/
   // Archived modes — each view+mode combination gets its own action set from ReleaseBulkActions
@@ -574,7 +561,12 @@ export function ReleasesOverview() {
       )}
 
       {!hasNoReleases && releaseGroupMode !== 'archived' && (
-        <ReleaseTimeline releases={filteredReleases} />
+        <ReleaseTimeline
+          releases={filteredReleases}
+          dateControl={
+            <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
+          }
+        />
       )}
 
       {hasNoReleases ? (
