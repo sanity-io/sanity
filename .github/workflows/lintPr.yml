@@ -11,6 +11,9 @@ concurrency:
 jobs:
   oxlint:
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
