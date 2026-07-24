@@ -4,7 +4,11 @@ import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
 import {renderObjectInput} from '../../../../../../test/form'
-import {type RenderFieldCallback, type RenderInputCallback} from '../../../types'
+import {
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
+} from '../../../types'
 import {ObjectInput} from '../ObjectInput'
 
 const defs = {
@@ -98,7 +102,6 @@ describe('ObjectInput', () => {
 
     const renderPreview = vi.fn(({value}: {value: {_ref?: string}}) => (
       <div data-testid="unknown-reference-preview">{value?._ref}</div>
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
     )) as RenderPreviewCallback
 
     await renderObjectInput({
