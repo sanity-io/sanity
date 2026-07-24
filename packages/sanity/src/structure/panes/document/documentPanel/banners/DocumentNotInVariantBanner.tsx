@@ -70,7 +70,8 @@ export function DocumentNotInVariantBanner() {
 
       await createVariantDocument({
         baseId: baseDocument._id,
-        baseRevisionId: baseDocument._rev,
+        ifBaseRevisionId: baseDocument._rev,
+        documentGroupId: documentId,
         variant: selectedVariant,
         selectedPerspective,
       })
@@ -86,7 +87,16 @@ export function DocumentNotInVariantBanner() {
       })
       setStatus('failed')
     }
-  }, [createVariantDocument, value, selectedVariant, selectedPerspective, versions, t, toast])
+  }, [
+    createVariantDocument,
+    documentId,
+    value,
+    selectedVariant,
+    selectedPerspective,
+    t,
+    toast,
+    versions,
+  ])
 
   useConditionalToast({
     status: 'info',
