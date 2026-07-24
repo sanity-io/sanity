@@ -1,6 +1,6 @@
 {
   "name": "embedded-studio",
-  "version": "6.6.0",
+  "version": "6.7.0",
   "private": true,
   "scripts": {
     "build": "tsgo && vite build && sanity manifest extract",

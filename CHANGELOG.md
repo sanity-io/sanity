@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.7.0](https://github.com/sanity-io/sanity/compare/v6.6.0...v6.7.0) (2026-07-24)
+
+### Features
+
+* **variants:** add priority field to variant definition dialogs ([#13584](https://github.com/sanity-io/sanity/issues/13584)) ([5f7206e](https://github.com/sanity-io/sanity/commit/5f7206e6f49530d0d15a7281ce4f3dd679cec5d8))
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/react to v7 ([#13701](https://github.com/sanity-io/sanity/issues/13701)) ([b1c5b3e](https://github.com/sanity-io/sanity/commit/b1c5b3e71221b8ca379680ee293098db3483f721))
+* **deps:** update dependency @sanity/icons to ^5.2.1 ([#13684](https://github.com/sanity-io/sanity/issues/13684)) ([ad2634f](https://github.com/sanity-io/sanity/commit/ad2634fd01e69a5090896f68524984c06e48c74a))
+* **deps:** update dependency @sanity/preview-url-secret to ^4.1.1 ([#13685](https://github.com/sanity-io/sanity/issues/13685)) ([30caae1](https://github.com/sanity-io/sanity/commit/30caae1d7dd46f3817dc736098d419573eac182e))
+* **deps:** update dependency groq-js to v2 ([#13677](https://github.com/sanity-io/sanity/issues/13677)) ([7ac6d86](https://github.com/sanity-io/sanity/commit/7ac6d86c9b844603a919c88e66e9f904ef95a991))
+* **deps:** update dev-non-major ([#13686](https://github.com/sanity-io/sanity/issues/13686)) ([cdc3753](https://github.com/sanity-io/sanity/commit/cdc3753bd7e998f0ddfb26c0256013d7a73d3d15))
+* **deps:** update linters ([#13660](https://github.com/sanity-io/sanity/issues/13660)) ([669fc7d](https://github.com/sanity-io/sanity/commit/669fc7d62f5b8e52f35f41ae72eebcffc3e6a605))
+* **deps:** update portabletext ([#13687](https://github.com/sanity-io/sanity/issues/13687)) ([efd9014](https://github.com/sanity-io/sanity/commit/efd90149b2db40a20fcfe1ad81c95e70a2dcebdb))
+* **release-notes:** stop extraction at horizontal rule to exclude tool-appended content ([#13672](https://github.com/sanity-io/sanity/issues/13672)) ([24ffb11](https://github.com/sanity-io/sanity/commit/24ffb118f2884a621549aa08443bff33c8d82d5c))
+* **releases:** keep copy-to sub-menu on the side at narrow widths ([#13673](https://github.com/sanity-io/sanity/issues/13673)) ([5487131](https://github.com/sanity-io/sanity/commit/5487131ffd97a9c1d9e6caa9de502931f6430be0))
+* **test-studio:** keep readable component names in profiling builds ([#13674](https://github.com/sanity-io/sanity/issues/13674)) ([dc25743](https://github.com/sanity-io/sanity/commit/dc25743bf2688854f1feea47f74b52bb8dae4795))
 ## [6.6.0](https://github.com/sanity-io/sanity/compare/v6.5.0...v6.6.0) (2026-07-22)
 
 ### Features
