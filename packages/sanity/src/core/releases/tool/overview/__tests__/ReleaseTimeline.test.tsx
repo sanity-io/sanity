@@ -215,7 +215,7 @@ describe('ReleaseTimeline', () => {
     expect(screen.getByTestId('release-timeline-track')).toHaveStyle({height: '196px'})
   })
 
-  it('flags two releases publishing on the same calendar day as a collision', async () => {
+  it('renders two same-day releases as ordinary neighbours (same-day is not a conflict)', async () => {
     const sameDayA: ReleaseDocument = {
       ...scheduledRelease,
       _id: '_.releases.rSameDayA',
@@ -230,14 +230,10 @@ describe('ReleaseTimeline', () => {
 
     await renderTimeline({releases: [sameDayA as TableRelease, sameDayB as TableRelease]})
 
-    // The collision is marked on the pill (the "Stagger" wording lives in the pill's tooltip).
-    expect(screen.getByTestId(`release-timeline-pill-${sameDayA._id}`)).toHaveAttribute(
-      'data-collides',
-      'true',
-    )
-    expect(screen.getByTestId(`release-timeline-pill-${sameDayB._id}`)).toHaveAttribute(
-      'data-collides',
-      'true',
-    )
+    // Both render; there's no collision/"Stagger" marking — publishing on the same day is normal.
+    const pillA = screen.getByTestId(`release-timeline-pill-${sameDayA._id}`)
+    const pillB = screen.getByTestId(`release-timeline-pill-${sameDayB._id}`)
+    expect(pillA).not.toHaveAttribute('data-collides')
+    expect(pillB).not.toHaveAttribute('data-collides')
   })
 })

@@ -172,12 +172,6 @@ function zonedFormat(date: Date, toZoned: ToZonedDate, fmtStr: string): string {
   return format(toZoned(date), fmtStr)
 }
 
-/** The calendar-day key (in the studio's content-releases time zone) used to group same-day
- * collisions. */
-function zonedDayKey(date: Date, toZoned: ToZonedDate): string {
-  return zonedFormat(date, toZoned, 'yyyy-MM-dd')
-}
-
 function Axis({
   start,
   end,
@@ -252,34 +246,25 @@ function Axis({
   )
 }
 
-/** Card tone: amber for anything needing attention (intended-not-armed, incl. overdue, or a
- * same-day collision), neutral for a cleanly-scheduled release. Overdue is distinguished more
- * quietly — by a red warning icon on the pill, not a wall of red cards. */
-function pillTone(entry: DatedRelease, collides: boolean): 'default' | 'caution' {
-  if (entry.intendedNotArmed || collides) return 'caution'
+/** Card tone by the colour map: amber = needs a human decision (intended-not-armed), neutral =
+ * committed & fine (armed/scheduled). Overdue is distinguished by a red icon, not a red card. */
+function pillTone(entry: DatedRelease): 'default' | 'caution' {
+  if (entry.intendedNotArmed) return 'caution'
   return 'default'
 }
 
-/** Solid, saturated fill for a diamond marker so it reads clearly on a white background (a
- * tone-tinted card washes out): blue = cleanly scheduled, amber = intended/collision, red =
- * overdue. */
-function markerColor(entry: DatedRelease, collides: boolean): string {
+/** Solid diamond fill per the colour map (one meaning per colour): red = overdue (will miss),
+ * amber = needs a decision (intended-not-armed), neutral = committed & fine (scheduled). Blue is
+ * reserved exclusively for the "now" anchor, so a scheduled release is neutral, not blue. */
+function markerColor(entry: DatedRelease): string {
   if (entry.overdue) return 'var(--card-badge-critical-icon-color)'
-  if (entry.intendedNotArmed || collides) return 'var(--card-badge-caution-icon-color)'
-  return 'var(--card-badge-primary-icon-color)'
+  if (entry.intendedNotArmed) return 'var(--card-badge-caution-icon-color)'
+  return 'var(--card-icon-color)'
 }
 
 /** Shared hover-card content for a dated release — used by both the detailed-view pill and the
  * compact-view diamond (which has no visible label of its own). */
-function TimelineTooltipContent({
-  entry,
-  collides,
-  toZoned,
-}: {
-  entry: DatedRelease
-  collides: boolean
-  toZoned: ToZonedDate
-}) {
+function TimelineTooltipContent({entry, toZoned}: {entry: DatedRelease; toZoned: ToZonedDate}) {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {release, date, overdue} = entry
   const isDraft = isCardinalityOneRelease(release)
@@ -309,11 +294,6 @@ function TimelineTooltipContent({
             {t('timeline.status-overdue')}
           </Text>
         )}
-        {collides && (
-          <Text size={1} style={{color: 'var(--card-badge-caution-icon-color)'}}>
-            {t('timeline.status-stagger')}
-          </Text>
-        )}
       </Stack>
     </Box>
   )
@@ -323,14 +303,12 @@ function ReleaseTimelinePill({
   entry,
   x,
   lane,
-  collides,
   toZoned,
   onNavigate,
 }: {
   entry: DatedRelease
   x: number
   lane: number
-  collides: boolean
   toZoned: ToZonedDate
   onNavigate: (release: TableRelease) => void
 }) {
@@ -338,16 +316,12 @@ function ReleaseTimelinePill({
   const {release, scheduled, intendedNotArmed, overdue} = entry
   const title = release.metadata?.title || t('release-placeholder.title')
   const dateLabel = zonedFormat(entry.date, toZoned, 'd MMM, HH:mm')
-  const tone = pillTone(entry, collides)
+  const tone = pillTone(entry)
 
   return (
-    <Tooltip
-      content={<TimelineTooltipContent entry={entry} collides={collides} toZoned={toZoned} />}
-      portal
-    >
+    <Tooltip content={<TimelineTooltipContent entry={entry} toZoned={toZoned} />} portal>
       <Card
         data-testid={`release-timeline-pill-${release._id}`}
-        data-collides={collides || undefined}
         tone={tone}
         radius={2}
         shadow={1}
@@ -401,14 +375,12 @@ function ReleaseTimelinePill({
 function ReleaseTimelineMarker({
   entry,
   x,
-  collides,
   interactive,
   toZoned,
   onNavigate,
 }: {
   entry: DatedRelease
   x: number
-  collides: boolean
   interactive?: boolean
   toZoned?: ToZonedDate
   onNavigate?: (release: TableRelease) => void
@@ -418,7 +390,6 @@ function ReleaseTimelineMarker({
   const diamond = (
     <Card
       data-testid={`release-timeline-marker-${entry.release._id}`}
-      data-collides={collides || undefined}
       as={interactive ? 'button' : undefined}
       onClick={interactive && onNavigate ? () => onNavigate(entry.release) : undefined}
       aria-label={
@@ -432,7 +403,7 @@ function ReleaseTimelineMarker({
         width: size,
         height: size,
         transform: 'translateX(-50%) rotate(45deg)',
-        backgroundColor: markerColor(entry, collides),
+        backgroundColor: markerColor(entry),
         // A ring in the card background separates overlapping diamonds and lifts them off the axis.
         border: '2px solid var(--card-bg-color)',
         boxShadow: '0 0 0 1px var(--card-border-color)',
@@ -446,10 +417,7 @@ function ReleaseTimelineMarker({
   )
   if (interactive && toZoned) {
     return (
-      <Tooltip
-        content={<TimelineTooltipContent entry={entry} collides={collides} toZoned={toZoned} />}
-        portal
-      >
+      <Tooltip content={<TimelineTooltipContent entry={entry} toZoned={toZoned} />} portal>
         {diamond}
       </Tooltip>
     )
@@ -544,19 +512,6 @@ function ReleaseTimelineRoadmap({
   // Compact = a single diamonds-only line; detailed = lane-packed pills below the axis.
   const innerHeight = compact ? COMPACT_HEIGHT : PILLS_TOP + laneCount * LANE_HEIGHT
   const trackHeight = compact ? COMPACT_HEIGHT : TRACK_HEIGHT
-
-  const collisionIds = useMemo(() => {
-    const byDay = new Map<string, string[]>()
-    sorted.forEach(({release, date}) => {
-      const key = zonedDayKey(date, toZoned)
-      byDay.set(key, [...(byDay.get(key) || []), release._id])
-    })
-    const ids = new Set<string>()
-    byDay.forEach((ids_) => {
-      if (ids_.length > 1) ids_.forEach((id) => ids.add(id))
-    })
-    return ids
-  }, [sorted, toZoned])
 
   // Count pills scrolled off each edge of the viewport, so the signposts reflect what's currently
   // out of view. Driven by the scroll event (and a deferred pass after each (re)layout).
@@ -653,7 +608,6 @@ function ReleaseTimelineRoadmap({
                 key={`marker-${entry.release._id}`}
                 entry={entry}
                 x={x}
-                collides={collisionIds.has(entry.release._id)}
                 interactive={compact}
                 toZoned={compact ? toZoned : undefined}
                 onNavigate={compact ? onNavigate : undefined}
@@ -666,7 +620,6 @@ function ReleaseTimelineRoadmap({
                   entry={entry}
                   x={x}
                   lane={lanes[i]}
-                  collides={collisionIds.has(entry.release._id)}
                   toZoned={toZoned}
                   onNavigate={onNavigate}
                 />
