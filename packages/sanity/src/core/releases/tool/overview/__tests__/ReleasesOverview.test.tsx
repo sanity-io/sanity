@@ -584,8 +584,6 @@ describe('ReleasesOverview', () => {
     })
 
     describe('calendar filter', () => {
-      const getCalendar = () => getByDataUi(document.body, 'Calendar')
-
       it('has today in bold to signify that there is a release', async () => {
         const calendar = await openCalendar()
         const todayTile = within(calendar).getByTestId('day-tile-today')
@@ -612,8 +610,11 @@ describe('ReleasesOverview', () => {
         })
 
         it('clears the filter by clicking the selected date', async () => {
+          // Selecting a date now lives in the command lane, so picking a day remounts the table
+          // (its key switches to `by_date`) and closes the popover — reopen it to clear.
+          const calendar = await openCalendar()
           // not ideal, but the easiest way of finding the now selected date
-          const todayTile = getCalendar().querySelector('[data-selected]')
+          const todayTile = calendar.querySelector('[data-selected]')
           await userEvent.click(todayTile!)
 
           await waitFor(() => {

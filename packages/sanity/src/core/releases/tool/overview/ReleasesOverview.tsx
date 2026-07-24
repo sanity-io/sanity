@@ -471,16 +471,31 @@ export function ReleasesOverview() {
     [],
   )
 
-  // Command-lane filter slot: the active date-filter chip when a day is selected, otherwise the
-  // Open/Paused/Archived tab strip. (Mutually exclusive, as before — but now inside the command lane
-  // rather than the page toolbar, so it aligns with the columns and shares space with search.)
+  // Command-lane filter slot: all the set-narrowing filters live together here (in the command
+  // lane, aligned with the columns, sharing space with search). The calendar trigger sits beside
+  // the lifecycle tabs so cause (the calendar) and effect (the date-filter chip) are co-located:
+  // picking a day swaps the Open/Paused/Archived tabs for the active date chip, with the calendar
+  // trigger still present to change the day.
   const filterTabsNode = useMemo(() => {
     if (!loadingOrHasReleases) return undefined
-    if (releaseFilterDate) {
-      return <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
-    }
-    return currentArchivedPicker
-  }, [loadingOrHasReleases, releaseFilterDate, clearFilterDate, currentArchivedPicker])
+    return (
+      <Flex align="center" gap={2}>
+        {releaseFilterDate ? (
+          <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
+        ) : (
+          currentArchivedPicker
+        )}
+        <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
+      </Flex>
+    )
+  }, [
+    loadingOrHasReleases,
+    releaseFilterDate,
+    clearFilterDate,
+    currentArchivedPicker,
+    calendarFilterContent,
+    isNarrowViewport,
+  ])
 
   // Multi-select is available for All, Releases, and Scheduled drafts views, in Active/Paused/
   // Archived modes — each view+mode combination gets its own action set from ReleaseBulkActions
@@ -558,13 +573,12 @@ export function ReleasesOverview() {
 
   return (
     <Flex direction="column" flex={1} style={{height: '100%'}}>
-      {/* Page toolbar (zone 0): the cardinality view picker is the prominent, horizontally-centered
-          primary navigation of the overview — the key switch the eye should land on first. The
-          utilities (demoted calendar filter, timezone, Create) stay pinned to the right in their
-          own flex-none group, with a matching flex-none spacer on the left so the picker stays
-          centered on the toolbar as a whole rather than the space between the two side groups.
-          The Open/Archived tabs + search live in the DocumentTable command lane below, aligned
-          with the columns. */}
+      {/* Page toolbar (zone 0 = scope + create): the cardinality view picker is the prominent,
+          horizontally-centered primary navigation — the key switch the eye should land on first.
+          The right group holds only page-level concerns: the timezone (a global time lens that
+          re-clocks every date on the page) and Create. Time-scoped FILTERS (calendar date + the
+          Open/Archived tabs + search) live in the DocumentTable command lane below, aligned with
+          the columns. */}
       <Card flex="none" padding={3}>
         <Flex align="center" gap={3} wrap="wrap">
           <Flex align="center" flex={1} />
@@ -578,7 +592,6 @@ export function ReleasesOverview() {
             isDraftModelEnabled={isDraftModelEnabled}
           />
           <Flex align="center" flex={1} justify="flex-end" gap={2}>
-            <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
             <Button
               icon={EarthGlobeIcon}
               mode="bleed"
