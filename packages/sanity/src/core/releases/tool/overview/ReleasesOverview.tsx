@@ -512,15 +512,23 @@ export function ReleasesOverview() {
 
   return (
     <Flex direction="column" flex={1} style={{height: '100%'}}>
-      {/* Page toolbar (zone 0 = scope + create): the cardinality view picker is the prominent,
-          horizontally-centered primary navigation — the key switch the eye should land on first.
-          The right group holds only page-level concerns: the timezone (a global time lens that
-          re-clocks every date on the page) and Create. Time-scoped FILTERS (calendar date + the
-          Open/Archived tabs + search) live in the DocumentTable command lane below, aligned with
-          the columns. */}
+      {/* Page toolbar (zone 0): reads left→right as SETTING · SCOPE · ACTION. The timezone is a
+          global time lens (re-clocks every date on the page), so it sits on the LEFT as a setting,
+          grouped with the date-related controls; the cardinality picker is the horizontally-centered
+          primary navigation; New release — the actual action — sits alone on the right. Time-scoped
+          FILTERS (calendar date, lifecycle tabs, search) live below in the timeline zone / command
+          lane. */}
       <Card flex="none" padding={3}>
         <Flex align="center" gap={3} wrap="wrap">
-          <Flex align="center" flex={1} />
+          <Flex align="center" flex={1} gap={2}>
+            <Button
+              icon={EarthGlobeIcon}
+              mode="bleed"
+              onClick={dialogTimeZoneShow}
+              {...timeZoneButtonProps}
+            />
+            {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
+          </Flex>
           <CardinalityViewPicker
             cardinalityView={cardinalityView}
             loading={loading}
@@ -531,13 +539,6 @@ export function ReleasesOverview() {
             isDraftModelEnabled={isDraftModelEnabled}
           />
           <Flex align="center" flex={1} justify="flex-end" gap={2}>
-            <Button
-              icon={EarthGlobeIcon}
-              mode="bleed"
-              onClick={dialogTimeZoneShow}
-              {...timeZoneButtonProps}
-            />
-            {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
             {loadingOrHasReleases && createReleaseButton}
           </Flex>
         </Flex>
