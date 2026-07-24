@@ -42,8 +42,9 @@ export type ReleaseTimelineGranularity = 'week' | 'month' | 'quarter'
 
 const GRANULARITIES: ReleaseTimelineGranularity[] = ['week', 'month', 'quarter']
 
-/** One-line pill height (title + date on a single row). Also the lane stride. */
-const LANE_HEIGHT = 34
+/** Lane stride: one-line pill (~37px) plus vertical breathing room, so adjacent lanes never
+ * overlap. */
+const LANE_HEIGHT = 40
 /** Fixed pill width — pills never grow beyond this; long titles ellipsis-truncate. */
 const PILL_WIDTH = 240
 /** Breathing room (px) between pills before one bumps to the next lane. */
@@ -51,9 +52,9 @@ const PILL_GAP_PX = 12
 const MARKER_SIZE = 12
 /** Vertical geometry of the strip. Pills hang below the axis baseline. */
 const AXIS_LABEL_TOP = 0
-const BASELINE_TOP = 18
-const MARKER_TOP = 13
-const PILLS_TOP = 30
+const BASELINE_TOP = 20
+const MARKER_TOP = 15
+const PILLS_TOP = 32
 /** Number of lanes visible before the track scrolls vertically — sets the fixed strip height. */
 const VISIBLE_LANES = 4
 const TRACK_HEIGHT = PILLS_TOP + VISIBLE_LANES * LANE_HEIGHT
@@ -199,35 +200,40 @@ function Axis({
           </Fragment>
         )
       })}
-      {/* now marker */}
+      {/* now marker + label. The label carries its own background so it stays legible where it
+          lands on top of a tick label/gridline; rendered after the ticks so it paints over them. */}
       <Box
         data-testid="release-timeline-now-marker"
         style={{
           position: 'absolute',
           left: `${nowX}%`,
-          top: AXIS_LABEL_TOP,
-          height,
+          top: BASELINE_TOP,
+          height: height - BASELINE_TOP,
           borderLeft: '2px solid var(--card-badge-primary-icon-color)',
         }}
       />
-      <Text
-        size={0}
-        weight="semibold"
+      <Box
         style={{
           position: 'absolute',
           left: `calc(${nowX}% + 4px)`,
           top: AXIS_LABEL_TOP,
-          color: 'var(--card-badge-primary-icon-color)',
+          backgroundColor: 'var(--card-bg-color)',
+          borderRadius: 3,
+          padding: '0 4px',
         }}
       >
-        {nowLabel}
-      </Text>
+        <Text size={0} weight="semibold" style={{color: 'var(--card-badge-primary-icon-color)'}}>
+          {nowLabel}
+        </Text>
+      </Box>
     </>
   )
 }
 
-function pillTone(entry: DatedRelease, collides: boolean): 'default' | 'caution' | 'critical' {
-  if (entry.overdue) return 'critical'
+/** Card tone: amber for anything needing attention (intended-not-armed, incl. overdue, or a
+ * same-day collision), neutral for a cleanly-scheduled release. Overdue is distinguished more
+ * quietly — by a red warning icon on the pill, not a wall of red cards. */
+function pillTone(entry: DatedRelease, collides: boolean): 'default' | 'caution' {
   if (entry.intendedNotArmed || collides) return 'caution'
   return 'default'
 }
@@ -501,14 +507,21 @@ function ReleaseTimelineRoadmap({
     el.scrollBy({left: direction * el.clientWidth * 0.8, behavior: 'smooth'})
   }, [])
 
-  // On (re)zoom or data change: recenter on now and recompute overflow. Both are DOM side effects;
-  // the overflow recompute is deferred to the next frame (post-layout) rather than run
+  // Recenter on now only on first mount and when the zoom changes — NOT on every data update, so
+  // a live edit arriving while the user has scrolled elsewhere doesn't yank them back. Overflow is
+  // recomputed on any relayout, deferred to the next frame (post-layout) rather than run
   // synchronously in the effect body.
+  const didInit = useRef(false)
+  const prevGranularity = useRef(granularity)
   useEffect(() => {
-    scrollToNow('auto')
+    if (!didInit.current || prevGranularity.current !== granularity) {
+      scrollToNow('auto')
+      didInit.current = true
+      prevGranularity.current = granularity
+    }
     const raf = requestAnimationFrame(updateOverflow)
     return () => cancelAnimationFrame(raf)
-  }, [scrollToNow, updateOverflow])
+  }, [granularity, scrollToNow, updateOverflow])
 
   return (
     <Stack space={2}>

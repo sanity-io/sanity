@@ -194,7 +194,7 @@ describe('ReleaseTimeline', () => {
 
   it('keeps the strip a fixed height regardless of how many pills stack', async () => {
     await renderTimeline({releases: [datedArmed, datedIntended]})
-    expect(screen.getByTestId('release-timeline-track')).toHaveStyle({height: '166px'})
+    expect(screen.getByTestId('release-timeline-track')).toHaveStyle({height: '192px'})
   })
 
   it('flags two releases publishing on the same calendar day as a collision', async () => {
