@@ -36,16 +36,23 @@ const renderTest = async (props: ComponentProps<typeof ReleaseTime>) => {
 }
 
 describe('ReleaseTime', () => {
-  it('renders "Unscheduled" when releaseType is "asap" (no date)', async () => {
+  it('renders "Unscheduled" when releaseType is "asap" (no date), with a leading marker so it lines up with dated rows', async () => {
     await renderTest({release: activeASAPRelease})
 
     expect(screen.getByText('Unscheduled')).toBeInTheDocument()
+    const unscheduled = screen.getByTestId('release-unscheduled')
+    expect(unscheduled).toContainElement(screen.getByText('Unscheduled'))
+    // A marker icon (not just bare text) precedes the label, matching the armed/intended rows.
+    expect(unscheduled.querySelector('[data-sanity-icon="circle"]')).toBeInTheDocument()
   })
 
   it('renders "Unscheduled" when releaseType is "undecided" (no date)', async () => {
     await renderTest({release: activeUndecidedRelease})
 
     expect(screen.getByText('Unscheduled')).toBeInTheDocument()
+    expect(
+      screen.getByTestId('release-unscheduled').querySelector('[data-sanity-icon="circle"]'),
+    ).toBeInTheDocument()
   })
 
   it('renders a lock icon and the formatted date for armed (scheduled) releases', async () => {

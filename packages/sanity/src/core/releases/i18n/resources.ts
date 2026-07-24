@@ -677,6 +677,9 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'table-header.schedule': 'Schedule',
   /** Header for the  document table in the release tool - release title */
   'table-header.title': 'Release',
+  /** Header for the overview Name column in the combined "All" view, where rows may be either
+   * a bundle release or a single document — "Name" is neutral across both kinds. */
+  'table-header.name': 'Name',
   /** Header for the document table in the release tool - type */
   'table-header.type': 'Type',
   /** Release-type labels for the overview Type column (the release's publish trigger, distinct from its
@@ -692,7 +695,7 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Header for the overview Kind column (shown only in the combined All view) */
   'table-header.kind': 'Kind',
   /** Kind column value for a multi-document release, in the combined All view */
-  'overview.kind.release': 'Release',
+  'overview.kind.release': 'Bundle',
   /** Kind column value for a cardinality-one (single document) release, in the combined All view */
   'overview.kind.document': 'Document',
 

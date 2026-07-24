@@ -6,6 +6,7 @@ import {type ReactElement} from 'react'
 import {describe, expect, it} from 'vitest'
 
 import {activeASAPRelease, activeScheduledRelease} from '../../../__fixtures__/release.fixture'
+import {TableProvider} from '../../components/Table/TableProvider'
 import {type TableRelease} from '../ReleasesOverview'
 import {releasesOverviewColumnDefs} from '../ReleasesOverviewColumnDefs'
 
@@ -26,6 +27,14 @@ function renderWithTheme(element: ReactElement) {
   return render(<ThemeProvider theme={studioTheme}>{element}</ThemeProvider>)
 }
 
+function renderHeaderWithTable(element: ReactElement) {
+  return render(
+    <ThemeProvider theme={studioTheme}>
+      <TableProvider>{element}</TableProvider>
+    </ThemeProvider>,
+  )
+}
+
 describe('releasesOverviewColumnDefs', () => {
   it('does not include a "kind" column in the "releases" view', () => {
     const columns = releasesOverviewColumnDefs(t, 'active', 'releases')
@@ -37,13 +46,13 @@ describe('releasesOverviewColumnDefs', () => {
     expect(columns.some((column) => column.id === 'kind')).toBe(false)
   })
 
-  it('includes a "kind" column in the "all" view, immediately after the title column', () => {
+  it('includes a "kind" column in the "all" view, immediately before the title (name) column', () => {
     const columns = releasesOverviewColumnDefs(t, 'active', 'all')
     const titleIndex = columns.findIndex((column) => column.id === 'metadata.title')
     const kindIndex = columns.findIndex((column) => column.id === 'kind')
 
     expect(kindIndex).toBeGreaterThan(-1)
-    expect(kindIndex).toBe(titleIndex + 1)
+    expect(kindIndex).toBe(titleIndex - 1)
   })
 
   it('configures the "kind" column as sortable, 120px wide, sorting cardinality-one releases after others', () => {
@@ -88,6 +97,55 @@ describe('releasesOverviewColumnDefs', () => {
     ;(['releases', 'drafts', 'all'] as const).forEach((cardinalityView) => {
       const columns = releasesOverviewColumnDefs(t, 'active', cardinalityView)
       expect(columns.some((column) => column.id === 'metadata.title')).toBe(true)
+    })
+  })
+
+  describe('name-column header (view-aware)', () => {
+    const headerProps = {id: 'metadata.title', style: {}}
+
+    it('uses the neutral "Name" header in the "all" view', () => {
+      const columns = releasesOverviewColumnDefs(t, 'active', 'all')
+      const titleColumn = columns.find((column) => column.id === 'metadata.title')
+      const Header = titleColumn?.header as React.ComponentType<{
+        headerProps: {id: string; style: object}
+        header: {id: string; sorting: boolean}
+      }>
+
+      renderHeaderWithTable(
+        <Header headerProps={headerProps} header={{id: 'metadata.title', sorting: true}} />,
+      )
+
+      expect(screen.getByText('table-header.name')).toBeInTheDocument()
+    })
+
+    it('uses the "Release" header in the "releases" view', () => {
+      const columns = releasesOverviewColumnDefs(t, 'active', 'releases')
+      const titleColumn = columns.find((column) => column.id === 'metadata.title')
+      const Header = titleColumn?.header as React.ComponentType<{
+        headerProps: {id: string; style: object}
+        header: {id: string; sorting: boolean}
+      }>
+
+      renderHeaderWithTable(
+        <Header headerProps={headerProps} header={{id: 'metadata.title', sorting: true}} />,
+      )
+
+      expect(screen.getByText('table-header.title')).toBeInTheDocument()
+    })
+
+    it('uses the "Document" header in the "drafts" view', () => {
+      const columns = releasesOverviewColumnDefs(t, 'active', 'drafts')
+      const titleColumn = columns.find((column) => column.id === 'metadata.title')
+      const Header = titleColumn?.header as React.ComponentType<{
+        headerProps: {id: string; style: object}
+        header: {id: string; sorting: boolean}
+      }>
+
+      renderHeaderWithTable(
+        <Header headerProps={headerProps} header={{id: 'metadata.title', sorting: true}} />,
+      )
+
+      expect(screen.getByText('table-header.document')).toBeInTheDocument()
     })
   })
 

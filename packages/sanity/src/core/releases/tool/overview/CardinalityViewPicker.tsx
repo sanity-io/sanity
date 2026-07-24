@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -99,35 +99,40 @@ export const CardinalityViewPicker = ({
     )
   }
 
-  //  If both are enabled, show them as side-by-side tabs (equal prominence) rather than a dropdown.
-  //  The selected tab uses mode="ghost" for a clearer emphasis than the tonal `selected` highlight
-  //  alone; unselected tabs stay mode="bleed".
+  //  If both are enabled, show them as a segmented-control-style tab group (equal prominence)
+  //  rather than a dropdown. This is the primary navigation of the overview, so it's rendered
+  //  bigger and bolder than a typical utility control, wrapped in a bordered Card so it reads as
+  //  one cohesive switch rather than three loose buttons. The selected tab uses mode="ghost" for
+  //  a clearer emphasis than the tonal `selected` highlight alone; unselected tabs stay
+  //  mode="bleed".
   return (
-    <Flex align="center" gap={1}>
-      <Button
-        mode={cardinalityView === 'all' ? 'ghost' : 'bleed'}
-        paddingY={2}
-        text={t('action.all')}
-        selected={cardinalityView === 'all'}
-        onClick={handleViewChange('all')}
-        disabled={loading}
-      />
-      <Button
-        mode={cardinalityView === 'releases' ? 'ghost' : 'bleed'}
-        paddingY={2}
-        text={t('action.releases')}
-        selected={cardinalityView === 'releases'}
-        onClick={handleViewChange('releases')}
-        disabled={loading}
-      />
-      <Button
-        mode={cardinalityView === 'drafts' ? 'ghost' : 'bleed'}
-        paddingY={2}
-        text={t('action.drafts')}
-        selected={cardinalityView === 'drafts'}
-        onClick={handleViewChange('drafts')}
-        disabled={loading}
-      />
-    </Flex>
+    <Card radius={3} border padding={1} data-testid="cardinality-view-picker">
+      <Flex align="center" gap={1}>
+        <Button
+          size="large"
+          mode={cardinalityView === 'all' ? 'ghost' : 'bleed'}
+          text={t('action.all')}
+          selected={cardinalityView === 'all'}
+          onClick={handleViewChange('all')}
+          disabled={loading}
+        />
+        <Button
+          size="large"
+          mode={cardinalityView === 'releases' ? 'ghost' : 'bleed'}
+          text={t('action.releases')}
+          selected={cardinalityView === 'releases'}
+          onClick={handleViewChange('releases')}
+          disabled={loading}
+        />
+        <Button
+          size="large"
+          mode={cardinalityView === 'drafts' ? 'ghost' : 'bleed'}
+          text={t('action.drafts')}
+          selected={cardinalityView === 'drafts'}
+          onClick={handleViewChange('drafts')}
+          disabled={loading}
+        />
+      </Flex>
+    </Card>
   )
 }

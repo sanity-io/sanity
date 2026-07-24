@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Box, type ButtonMode, Card, Flex, useMediaIndex} from '@sanity/ui'
+import {type ButtonMode, Card, Flex, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {AnimatePresence, motion} from 'motion/react'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -557,11 +557,16 @@ export function ReleasesOverview() {
 
   return (
     <Flex direction="column" flex={1} style={{height: '100%'}}>
-      {/* Page toolbar (zone 0): cardinality view on the left; the demoted calendar filter, timezone,
-          and Create on the right. The Open/Archived tabs + search now live in the DocumentTable
-          command lane below, aligned with the columns. */}
+      {/* Page toolbar (zone 0): the cardinality view picker is the prominent, horizontally-centered
+          primary navigation of the overview — the key switch the eye should land on first. The
+          utilities (demoted calendar filter, timezone, Create) stay pinned to the right in their
+          own flex-none group, with a matching flex-none spacer on the left so the picker stays
+          centered on the toolbar as a whole rather than the space between the two side groups.
+          The Open/Archived tabs + search live in the DocumentTable command lane below, aligned
+          with the columns. */}
       <Card flex="none" padding={3}>
         <Flex align="center" gap={3} wrap="wrap">
+          <Flex align="center" flex={1} />
           <CardinalityViewPicker
             cardinalityView={cardinalityView}
             loading={loading}
@@ -571,8 +576,7 @@ export function ReleasesOverview() {
             isReleasesEnabled={isReleasesEnabled}
             isDraftModelEnabled={isDraftModelEnabled}
           />
-          <Box flex={1} />
-          <Flex align="center" flex="none" gap={2}>
+          <Flex align="center" flex={1} justify="flex-end" gap={2}>
             <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
             <Button
               icon={EarthGlobeIcon}

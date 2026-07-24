@@ -43,33 +43,46 @@ export const releasesOverviewColumnDefs: (
   cardinalityView: CardinalityView,
 ) => Column<TableRelease>[] = (t, releaseGroupMode, cardinalityView) => {
   const checkColumnMode = enableColumnFormMode(releaseGroupMode)
-  return [
-    checkColumnMode(
-      {
-        id: 'metadata.title',
-        sorting: true,
-        width: null,
-        style: {minWidth: 200, maxWidth: 420},
-        header: (props) => (
-          <Flex
-            {...props.headerProps}
-            flex={1}
-            paddingLeft={6}
-            width={3}
-            paddingRight={2}
-            paddingY={3}
-            sizing="border"
-          >
-            <Headers.SortHeaderButton {...props} text={t('table-header.title')} />
-          </Flex>
-        ),
-        cell: ReleaseNameCell,
-      },
-      'all',
-    ),
-    // Kind — Release vs Document. Only shown in the combined "All" view, where cardinality
-    // actually varies; in the single-cardinality "Releases"/"Scheduled drafts" tabs this would
-    // always read the same value for every row, so it's omitted there.
+
+  // Name-column header is view-aware: in the combined "All" view rows may be either a bundle
+  // release or a single document, so "Name" is the neutral label; the single-cardinality
+  // "Releases"/"Scheduled drafts" tabs keep their existing, more specific labels.
+  const titleHeaderText =
+    cardinalityView === 'drafts'
+      ? t('table-header.document')
+      : cardinalityView === 'releases'
+        ? t('table-header.title')
+        : t('table-header.name')
+
+  const titleColumn = checkColumnMode(
+    {
+      id: 'metadata.title',
+      sorting: true,
+      width: null,
+      style: {minWidth: 200, maxWidth: 420},
+      header: (props) => (
+        <Flex
+          {...props.headerProps}
+          flex={1}
+          paddingLeft={6}
+          width={3}
+          paddingRight={2}
+          paddingY={3}
+          sizing="border"
+        >
+          <Headers.SortHeaderButton {...props} text={titleHeaderText} />
+        </Flex>
+      ),
+      cell: ReleaseNameCell,
+    },
+    'all',
+  )
+
+  // Kind — Bundle vs Document. Only shown in the combined "All" view, where cardinality
+  // actually varies; in the single-cardinality "Releases"/"Scheduled drafts" tabs this would
+  // always read the same value for every row, so it's omitted there. It leads the row (before
+  // Name) so the reader learns what kind of thing they're looking at before its name.
+  const kindColumn =
     cardinalityView === 'all'
       ? checkColumnMode(
           {
@@ -105,7 +118,12 @@ export const releasesOverviewColumnDefs: (
           },
           'all',
         )
-      : undefined,
+      : undefined
+
+  return [
+    // Kind precedes Name in the "All" view (see kindColumn comment above); other views never
+    // have a kind column, so this is simply the title column on its own.
+    ...(cardinalityView === 'all' ? [kindColumn, titleColumn] : [titleColumn]),
     // Schedule — the two-state timing in ONE adaptive column (see naming-model-decision.md):
     // 🔒 date (armed) / ⚠ date (intended, not scheduled) / "Unscheduled" (no date). This replaces
     // the old Type + When pair, which restated each other ("Undecided Undecided") and wrapped.

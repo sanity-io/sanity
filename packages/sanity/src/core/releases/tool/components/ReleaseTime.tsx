@@ -1,3 +1,4 @@
+import {CircleIcon} from '@sanity/icons/Circle'
 import {LockIcon} from '@sanity/icons/Lock'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Flex, Text} from '@sanity/ui'
@@ -38,12 +39,19 @@ export const ReleaseTime: React.FC<{release: TableRelease; compact?: boolean}> =
     )
   }
 
-  // Unscheduled with no date → the category word carries it.
+  // Unscheduled with no date → still reserve the leading-glyph slot (a subtle, neutral marker)
+  // so this row's text lines up with the armed/intended rows instead of drifting left and
+  // reading like a gap in the column.
   if (!timing.date) {
     return (
-      <Text size={1} muted weight="medium" style={{whiteSpace: 'nowrap'}}>
-        {t('schedule.unscheduled')}
-      </Text>
+      <Flex gap={2} align="center" data-testid="release-unscheduled">
+        <Text size={1} muted>
+          <CircleIcon />
+        </Text>
+        <Text size={1} muted weight="medium" style={{whiteSpace: 'nowrap'}}>
+          {t('schedule.unscheduled')}
+        </Text>
+      </Flex>
     )
   }
 
