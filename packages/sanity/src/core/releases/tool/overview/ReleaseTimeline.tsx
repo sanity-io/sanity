@@ -467,6 +467,7 @@ function ReleaseTimelineRoadmap({
   dated,
   granularity,
   density,
+  collapsed,
   now,
   toZoned,
   onNavigate,
@@ -474,6 +475,7 @@ function ReleaseTimelineRoadmap({
   dated: DatedRelease[]
   granularity: ReleaseTimelineGranularity
   density: ReleaseTimelineDensity
+  collapsed: boolean
   now: Date
   toZoned: ToZonedDate
   onNavigate: (release: TableRelease) => void
@@ -566,6 +568,8 @@ function ReleaseTimelineRoadmap({
   const didInit = useRef(false)
   const prevGranularity = useRef(granularity)
   useEffect(() => {
+    // While collapsed the track has zero width, so scroll math is meaningless — skip until shown.
+    if (collapsed) return undefined
     if (!didInit.current || prevGranularity.current !== granularity) {
       scrollToNow('auto')
       didInit.current = true
@@ -573,7 +577,7 @@ function ReleaseTimelineRoadmap({
     }
     const raf = requestAnimationFrame(updateOverflow)
     return () => cancelAnimationFrame(raf)
-  }, [granularity, scrollToNow, updateOverflow])
+  }, [collapsed, granularity, scrollToNow, updateOverflow])
 
   return (
     <Stack space={2}>
@@ -795,19 +799,33 @@ export function ReleaseTimeline({
           )}
           {dateControl}
         </Flex>
-        {!collapsed && (
-          <>
-            <ReleaseTimelineRoadmap
-              dated={dated}
-              granularity={granularity}
-              density={density}
-              now={now}
-              toZoned={utcToCurrentZoneDate}
-              onNavigate={handleNavigate}
-            />
-            <UnscheduledChip count={unscheduledCount} />
-          </>
-        )}
+        {/* Collapse/expand animates height (grid-rows 0fr↔1fr) instead of snapping in/out, so the
+            table below eases rather than lurching. The content stays mounted but clipped when
+            collapsed; its scroll effects no-op at zero width. */}
+        <Box
+          data-testid="release-timeline-body"
+          aria-hidden={collapsed}
+          style={{
+            display: 'grid',
+            gridTemplateRows: collapsed ? '0fr' : '1fr',
+            transition: 'grid-template-rows 200ms ease',
+          }}
+        >
+          <Box style={{overflow: 'hidden', minHeight: 0}}>
+            <Stack space={3}>
+              <ReleaseTimelineRoadmap
+                dated={dated}
+                granularity={granularity}
+                density={density}
+                collapsed={collapsed}
+                now={now}
+                toZoned={utcToCurrentZoneDate}
+                onNavigate={handleNavigate}
+              />
+              <UnscheduledChip count={unscheduledCount} />
+            </Stack>
+          </Box>
+        </Box>
       </Stack>
     </Card>
   )

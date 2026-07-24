@@ -117,14 +117,18 @@ describe('ReleaseTimeline', () => {
   it('collapses and expands the roadmap via the header toggle', async () => {
     await renderTimeline({releases: [datedArmed]})
 
-    expect(screen.getByTestId(`release-timeline-pill-${datedArmed._id}`)).toBeInTheDocument()
+    const body = screen.getByTestId('release-timeline-body')
+    expect(body).toHaveAttribute('aria-hidden', 'false')
 
+    // Collapse animates via CSS (content stays mounted but clipped + aria-hidden); the zoom control
+    // — meaningless without the axis — unmounts.
     await userEvent.click(screen.getByTestId('release-timeline-toggle'))
-    expect(screen.queryByTestId(`release-timeline-pill-${datedArmed._id}`)).not.toBeInTheDocument()
+    expect(body).toHaveAttribute('aria-hidden', 'true')
     expect(screen.queryByTestId('release-timeline-granularity-week')).not.toBeInTheDocument()
 
     await userEvent.click(screen.getByTestId('release-timeline-toggle'))
-    expect(screen.getByTestId(`release-timeline-pill-${datedArmed._id}`)).toBeInTheDocument()
+    expect(body).toHaveAttribute('aria-hidden', 'false')
+    expect(screen.getByTestId('release-timeline-granularity-week')).toBeInTheDocument()
   })
 
   it('navigates to the release detail when a pill is clicked', async () => {
