@@ -1,7 +1,10 @@
 import {Text, useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {
   getVariantTitle,
+  isDraftPerspective,
+  isPublishedPerspective,
+  isReleaseDocument,
   Translate,
   useConditionalToast,
   useDocumentVersions,
@@ -24,6 +27,7 @@ type VariantDocumentCreateStatus = 'idle' | 'in-progress' | 'success' | 'failed'
 
 export function DocumentNotInVariantBanner() {
   const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const {value, documentId} = useDocumentPane()
   const {selectedPerspective, selectedVariant, selectedReleaseId} = usePerspective()
   const {versions} = useDocumentVersions({documentId})
@@ -34,6 +38,21 @@ export function DocumentNotInVariantBanner() {
   const defaultPerspective = useGetDefaultPerspective()
 
   const variantTitle = selectedVariant ? getVariantTitle(selectedVariant) : ''
+  const perspectiveTitle = useMemo(() => {
+    if (isReleaseDocument(selectedPerspective)) {
+      return selectedPerspective.metadata?.title || tCore('release.placeholder-untitled-release')
+    }
+
+    if (isDraftPerspective(selectedPerspective)) {
+      return tCore('release.chip.global.drafts')
+    }
+
+    if (isPublishedPerspective(selectedPerspective)) {
+      return tCore('release.chip.published')
+    }
+
+    return ''
+  }, [selectedPerspective, tCore])
 
   const handleAddToVariant = useCallback(async () => {
     if (!selectedVariant) {
@@ -88,10 +107,12 @@ export function DocumentNotInVariantBanner() {
             i18nKey="banners.variant.not-in-variant"
             t={t}
             values={{
-              title: variantTitle,
+              variantTitle,
+              perspectiveTitle,
             }}
             components={{
               VariantBadge: ({children}) => <strong>{children}</strong>,
+              PerspectiveTitle: ({children}) => <strong>{children}</strong>,
             }}
           />
         </Text>
