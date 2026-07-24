@@ -12,6 +12,7 @@ import {useSchema} from '../../../../hooks'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
 import {Headers} from '../../../../releases/tool/components/Table/TableHeader'
 import {type Column} from '../../../../releases/tool/components/Table/types'
+import {getRowBundleSortKey} from '../releaseLane'
 import {type DocumentInVariantGroup} from '../types'
 import {getDocumentPreviewTitle} from './getDocumentPreviewTitle'
 import {VariantDocumentBundleChips} from './VariantDocumentBundleChips'
@@ -20,14 +21,19 @@ import {VariantDocumentPreview} from './VariantDocumentPreview'
 const MemoVariantDocumentPreview = memo(
   function MemoVariantDocumentPreview({
     row,
+    releasesById,
     variantId,
   }: {
     row: DocumentInVariantGroup
+    releasesById: Map<string, ReleaseDocument>
     variantId?: string
   }) {
-    return <VariantDocumentPreview row={row} variantId={variantId} />
+    return <VariantDocumentPreview releasesById={releasesById} row={row} variantId={variantId} />
   },
-  (prev, next) => prev.row.memoKey === next.row.memoKey && prev.variantId === next.variantId,
+  (prev, next) =>
+    prev.row.memoKey === next.row.memoKey &&
+    prev.variantId === next.variantId &&
+    prev.releasesById === next.releasesById,
 )
 
 const MemoDocumentType = memo(
@@ -40,6 +46,45 @@ const MemoDocumentType = memo(
   (prev, next) => prev.type === next.type,
 )
 
+// The critical-validation indicator. Rendered inline at the trailing edge of the document preview
+// (rather than in a separate far-right column) so the error is unmistakably tied to *its* document
+// instead of floating in the table's right-hand dead space.
+function ValidationErrorIndicator({
+  datum,
+  t,
+}: {
+  datum: DocumentInVariantGroup
+  t: TFunction<'variants'>
+}) {
+  const validationErrorCount = datum.validation.validation.filter(
+    (validation) => validation.level === 'error',
+  ).length
+
+  return (
+    <Tooltip
+      portal
+      placement="bottom-end"
+      content={
+        <Text muted size={1}>
+          <Flex align="center" gap={3} padding={1}>
+            <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+            {t(
+              validationErrorCount === 1
+                ? 'detail.documents.table.validation.error_one'
+                : 'detail.documents.table.validation.error_other',
+              {count: validationErrorCount},
+            )}
+          </Flex>
+        </Text>
+      }
+    >
+      <Text size={1} data-testid="variant-document-validation-error">
+        <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+      </Text>
+    </Tooltip>
+  )
+}
+
 export const getVariantDocumentTableColumnDefs = (
   t: TFunction<'variants'>,
   variantId: string | undefined,
@@ -50,16 +95,20 @@ export const getVariantDocumentTableColumnDefs = (
     hidden: true,
     width: null,
     sorting: true,
-    sortTransform: (row) => row.groupId,
+    sortTransform: (row) => row.rowKey ?? row.groupId,
   },
   {
     id: 'bundle',
-    width: 140,
-    style: {minWidth: 100, maxWidth: 140},
-    sorting: false,
+    // Wider than the old 140 so typical release names ("Compliance Dashboard") render in full;
+    // only genuine outliers truncate. The extra room is reclaimed from the Type column below,
+    // which only ever holds short schema titles.
+    width: 190,
+    style: {minWidth: 120, maxWidth: 190},
+    sorting: true,
+    sortTransform: (row) => getRowBundleSortKey(row, releasesById),
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.BasicHeader text={t('detail.documents.table.bundle')} />
+        <Headers.SortHeaderButton text={t('detail.documents.table.appears-in')} {...props} />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
@@ -68,7 +117,7 @@ export const getVariantDocumentTableColumnDefs = (
         {...cellProps}
         style={{...cellProps.style, flex: '0 1 auto', minWidth: 0, overflow: 'hidden'}}
       >
-        <Box flex={1} paddingX={2} style={{minWidth: 0, overflow: 'hidden'}}>
+        <Box style={{minWidth: 0, overflow: 'hidden'}} paddingX={2}>
           {!datum.isLoading && (
             <VariantDocumentBundleChips versions={datum.versions} releasesById={releasesById} />
           )}
@@ -78,8 +127,9 @@ export const getVariantDocumentTableColumnDefs = (
   },
   {
     id: 'document._type',
-    width: null,
-    style: {minWidth: 100},
+    // Trimmed from 160 → 130: schema titles are short, so the freed width goes to "Appears in".
+    width: 130,
+    style: {minWidth: 110, maxWidth: 130},
     sorting: true,
     header: (props) => (
       <Flex {...props.headerProps} paddingY={3} sizing="border">
@@ -106,13 +156,32 @@ export const getVariantDocumentTableColumnDefs = (
       />
     ),
     cell: ({cellProps, datum}) => (
-      <Box {...cellProps} flex={1} padding={1} paddingRight={2} sizing="border">
-        {datum.isLoading ? (
-          <SanityDefaultPreview isPlaceholder />
-        ) : (
-          <MemoVariantDocumentPreview row={datum} variantId={variantId} />
+      <Flex
+        {...cellProps}
+        align="center"
+        flex={1}
+        gap={2}
+        padding={1}
+        paddingRight={2}
+        sizing="border"
+      >
+        <Box flex={1} style={{minWidth: 0}}>
+          {datum.isLoading ? (
+            <SanityDefaultPreview isPlaceholder />
+          ) : (
+            <MemoVariantDocumentPreview
+              releasesById={releasesById}
+              row={datum}
+              variantId={variantId}
+            />
+          )}
+        </Box>
+        {!datum.isLoading && datum.validation.hasError && (
+          <Box flex="none">
+            <ValidationErrorIndicator datum={datum} t={t} />
+          </Box>
         )}
-      </Box>
+      </Flex>
     ),
   },
   {
@@ -133,50 +202,5 @@ export const getVariantDocumentTableColumnDefs = (
         )}
       </Flex>
     ),
-  },
-  {
-    id: 'validation',
-    sorting: false,
-    width: 50,
-    header: ({headerProps}) => (
-      <Flex {...headerProps} paddingY={3} sizing="border">
-        <Headers.BasicHeader text={''} />
-      </Flex>
-    ),
-    cell: ({cellProps, datum}) => {
-      if (datum.isLoading) return null
-
-      const validationErrorCount = datum.validation.validation.filter(
-        (validation) => validation.level === 'error',
-      ).length
-
-      return (
-        <Flex {...cellProps} flex={1} padding={1} justify="center" align="center" sizing="border">
-          {datum.validation.hasError && (
-            <Tooltip
-              portal
-              placement="bottom-end"
-              content={
-                <Text muted size={1}>
-                  <Flex align="center" gap={3} padding={1}>
-                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-                    {t(
-                      validationErrorCount === 1
-                        ? 'detail.documents.table.validation.error_one'
-                        : 'detail.documents.table.validation.error_other',
-                      {count: validationErrorCount},
-                    )}
-                  </Flex>
-                </Text>
-              }
-            >
-              <Text size={1}>
-                <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-              </Text>
-            </Tooltip>
-          )}
-        </Flex>
-      )
-    },
   },
 ]

@@ -1,25 +1,30 @@
-import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
+import {ClockIcon} from '@sanity/icons/Clock'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {LoadingBlock} from '../../../components'
+import {LoadingBlock, RelativeTime} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {EditVariantDialog} from '../../components/dialog/EditVariantDialog'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
-import {VariantPinButton} from '../components/VariantPinButton'
 import {
   decodeVariantIdFromRoute,
-  getVariantConditionsText,
   getVariantDescription,
   getVariantId,
   getVariantTitle,
 } from '../util'
 import {groupVariantDocumentsByGroup} from './groupVariantDocumentsByGroup'
-import {VariantDetailFooter} from './VariantDetailFooter'
+import {VariantDetailMenuButton} from './VariantDetailMenuButton'
 import {VariantDocumentsTable} from './VariantDocumentsTable'
+
+// Thin vertical rule separating the inline metadata segments in the header lane.
+function HeaderDivider() {
+  return <Card borderLeft flex="none" style={{height: 20}} />
+}
 
 export function VariantDetail() {
   const router = useRouter()
@@ -50,7 +55,12 @@ export function VariantDetail() {
     return (
       <Flex direction="column" flex={1} height="fill">
         <Card borderBottom flex="none" padding={3}>
-          <Button mode="bleed" onClick={() => router.navigate({})} text={t('detail.back')} />
+          <Button
+            icon={ArrowLeftIcon}
+            mode="ghost"
+            onClick={() => router.navigate({})}
+            text={t('detail.back')}
+          />
         </Card>
         <Box padding={4}>
           <Card border padding={4} radius={3}>
@@ -69,66 +79,108 @@ export function VariantDetail() {
   }
 
   const description = getVariantDescription(variant)
-  const conditionsText = getVariantConditionsText(variant.conditions)
 
   return (
     <Flex direction="column" flex={1} height="fill" overflow="hidden">
-      <Card borderBottom flex="none" padding={3}>
-        <Button mode="bleed" onClick={() => router.navigate({})} text={t('detail.back')} />
+      {/* Slim header lane: back control + identity + inline metadata on the left, actions on the
+          right. The back arrow is merged in here (a leading icon button) rather than sitting in its
+          own full-width lane, so all the vertical space goes to the documents table below. */}
+      <Card borderBottom flex="none" paddingX={4} paddingY={3}>
+        <Flex align="center" gap={3}>
+          <Flex align="center" gap={3} flex={1} style={{minWidth: 0}}>
+            <Button
+              aria-label={t('detail.back')}
+              icon={ArrowLeftIcon}
+              mode="bleed"
+              onClick={() => router.navigate({})}
+              tooltipProps={{content: t('detail.back')}}
+            />
+            {/* The variant "pin" (adopt-this-perspective) control was removed here deliberately:
+                selecting a variant is a *global authoring mode* (it re-targets every document edit
+                to the variant version — see useDocumentForm/useTargetDocumentState), which belongs in
+                global perspective-bar chrome, not on this definition-management surface. The correct
+                icon + behavior return once the perspective-bar initiative lands (FH tracked). */}
+            <Flex align="center" flex="none">
+              <Text as="h1" size={2} textOverflow="ellipsis" weight="bold">
+                {getVariantTitle(variant)}
+              </Text>
+            </Flex>
+            <HeaderDivider />
+            {Object.keys(variant.conditions).length > 0 ? (
+              // Conditions are read-only facts, not interactive chips — render them as quiet
+              // key/value metadata (muted key, solid value, dot-separated) so they're visually
+              // distinct from the lineage *status* badges further along the lane.
+              <Flex align="center" flex="none" gap={3} wrap="wrap">
+                {Object.entries(variant.conditions).map(([key, value], index) => (
+                  <Flex align="center" gap={2} key={key}>
+                    {index > 0 && (
+                      <Text aria-hidden muted size={1}>
+                        ·
+                      </Text>
+                    )}
+                    <Flex align="center" gap={1}>
+                      <Text muted size={1}>
+                        {key}
+                      </Text>
+                      <Text size={1} weight="medium">
+                        {typeof value === 'string' ? value : JSON.stringify(value)}
+                      </Text>
+                    </Flex>
+                  </Flex>
+                ))}
+              </Flex>
+            ) : (
+              <Text muted size={1}>
+                {t('overview.table.no-conditions')}
+              </Text>
+            )}
+            {description && (
+              <>
+                <HeaderDivider />
+                <Text muted size={1} style={{minWidth: 0}} textOverflow="ellipsis">
+                  {description}
+                </Text>
+              </>
+            )}
+          </Flex>
+          <Flex align="center" data-testid="variant-detail-actions" flex="none" gap={3}>
+            <Flex align="center" gap={2}>
+              <Text muted size={1}>
+                <ClockIcon />
+              </Text>
+              <Text muted size={1}>
+                {t('detail.footer.created')}{' '}
+                <RelativeTime minimal time={variant._createdAt} useTemporalPhrase />
+              </Text>
+            </Flex>
+            <HeaderDivider />
+            <Button
+              onClick={() => setEditDialogOpen(true)}
+              text={t('detail.action.edit-variant')}
+            />
+            <VariantDetailMenuButton
+              documentCount={tableRows.length}
+              documentsLoading={documentsLoading}
+              variant={variant}
+            />
+          </Flex>
+        </Flex>
       </Card>
       <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
-        <Container flex="none" width={3}>
-          <Flex direction="column" paddingX={3}>
-            <Card paddingY={5}>
-              <Flex align="flex-start" gap={4} justify="space-between">
-                <Stack space={3}>
-                  <Flex align="center" gap={1}>
-                    <VariantPinButton variant={variant} />
-                    <Text as="h1" size={4} weight="bold">
-                      {getVariantTitle(variant)}
-                    </Text>
-                  </Flex>
-                  <Text muted size={1}>
-                    {description || t('detail.no-description')}
-                  </Text>
-                </Stack>
-              </Flex>
-
-              <Box paddingTop={4}>
-                <Stack space={2}>
-                  <Text size={1} weight="medium">
-                    {t('dialog.create.conditions.title')}
-                  </Text>
-                  <Text muted size={1}>
-                    {conditionsText || t('overview.table.no-conditions')}
-                  </Text>
-                </Stack>
-              </Box>
-            </Card>
-          </Flex>
-        </Container>
-        <Flex direction="column" flex={1} overflow="hidden" style={{minHeight: 0}}>
-          {variantDocumentsError ? (
-            <Box padding={4}>
-              <Text muted size={1}>
-                {t('detail.documents.error')}
-              </Text>
-            </Box>
-          ) : (
-            <VariantDocumentsTable
-              loading={documentsLoading}
-              rows={tableRows}
-              variantId={getVariantId(variant._id)}
-            />
-          )}
-        </Flex>
+        {variantDocumentsError ? (
+          <Box padding={4}>
+            <Text muted size={1}>
+              {t('detail.documents.error')}
+            </Text>
+          </Box>
+        ) : (
+          <VariantDocumentsTable
+            loading={documentsLoading}
+            rows={tableRows}
+            variantId={getVariantId(variant._id)}
+          />
+        )}
       </Flex>
-      <VariantDetailFooter
-        openEditDialog={() => setEditDialogOpen(true)}
-        documentCount={tableRows.length}
-        documentsLoading={documentsLoading}
-        variant={variant}
-      />
       {editDialogOpen && (
         <EditVariantDialog
           onCancel={() => setEditDialogOpen(false)}

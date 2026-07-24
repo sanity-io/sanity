@@ -4,6 +4,7 @@ import {useTranslation} from '../../../i18n'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useVariantOperations} from '../../store/useVariantOperations'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
+import {forkVariantFromSetIfConditionsChanged} from '../../util/variantSet'
 import {VariantDialog} from './VariantDialog'
 
 interface EditVariantDialogProps {
@@ -30,10 +31,12 @@ export function EditVariantDialog(props: EditVariantDialogProps): React.JSX.Elem
 
   const handleSubmit = useCallback(
     async (variant: EditableSystemVariant) => {
-      await updateVariant(variant)
+      // Editing a set member's conditions detaches it from the set so the edit can't drift the
+      // canonical set; title/description-only edits keep membership.
+      await updateVariant(forkVariantFromSetIfConditionsChanged(initialVariant, variant))
       onSubmit()
     },
-    [onSubmit, updateVariant],
+    [initialVariant, onSubmit, updateVariant],
   )
 
   return (

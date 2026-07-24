@@ -67,7 +67,7 @@ const groupedRow: DocumentInVariantGroup = {
 }
 
 describe('VariantDocumentBundleChips', () => {
-  it('renders published, draft, and linked release chips', async () => {
+  it('shows the first bundle chip and collapses the rest into a "+N" overflow badge', async () => {
     const wrapper = await createTestProvider()
 
     render(
@@ -75,9 +75,27 @@ describe('VariantDocumentBundleChips', () => {
       {wrapper},
     )
 
+    // Only the first bundle (published) renders inline; the fixed-width cell never crops.
     expect(screen.getByText('Published')).toBeInTheDocument()
-    expect(screen.getByText('Draft')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-bundle-chips-overflow')).toHaveTextContent('+2')
+    // The overflowed bundles are hidden until the badge is hovered.
+    expect(screen.queryByText('Draft')).not.toBeInTheDocument()
+    expect(screen.queryByText('Summer launch')).not.toBeInTheDocument()
+  })
+
+  it('renders a single release chip with an intent link and no overflow badge', async () => {
+    const wrapper = await createTestProvider()
+
+    render(
+      <VariantDocumentBundleChips
+        versions={[groupedRow.versions[2]!]}
+        releasesById={releasesById}
+      />,
+      {wrapper},
+    )
+
     expect(screen.getByText('Summer launch')).toBeInTheDocument()
     expect(screen.getByTestId('release-intent-link')).toHaveAttribute('data-intent', 'release')
+    expect(screen.queryByTestId('variant-bundle-chips-overflow')).not.toBeInTheDocument()
   })
 })
