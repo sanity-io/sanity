@@ -500,8 +500,8 @@ importers:
   dev/preview-iframe:
     dependencies:
       '@portabletext/react':
-        specifier: ^6.2.0
-        version: 6.2.0(react@19.2.8)
+        specifier: ^7.0.1
+        version: 7.0.1(react@19.2.8)
       '@sanity/client':
         specifier: 'catalog:'
         version: 7.24.0
@@ -562,7 +562,7 @@ importers:
     dependencies:
       '@sanity/sdk':
         specifier: ^2.18.0
-        version: 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
+        version: 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(supports-color@8.1.1)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/sdk-react':
         specifier: ^2.18.0
         version: 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react-dom@19.2.8)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
@@ -672,17 +672,17 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/editor':
-        specifier: ^7.10.11
+        specifier: ^7.10.12
         version: 7.10.12(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       '@portabletext/html':
         specifier: ^1.1.1
         version: 1.1.1
       '@portabletext/plugin-character-pair-decorator':
-        specifier: ^8.0.39
+        specifier: ^8.0.40
         version: 8.0.40(@portabletext/editor@7.10.12)(@types/react@19.2.17)(react@19.2.8)
       '@portabletext/react':
-        specifier: ^6.2.0
-        version: 6.2.0(react@19.2.8)
+        specifier: ^7.0.1
+        version: 7.0.1(react@19.2.8)
       '@portabletext/toolkit':
         specifier: ^5.0.2
         version: 5.0.2
@@ -715,7 +715,7 @@ importers:
         version: 2.2.4(react@19.2.8)
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 8.0.0(xstate@5.32.5)
+        version: 8.0.0(supports-color@8.1.1)(xstate@5.32.5)
       '@sanity/preview-url-secret':
         specifier: ^4.1.1
         version: 4.1.1(@sanity/client@7.24.0)
@@ -1565,7 +1565,7 @@ importers:
         specifier: ^3.13.0
         version: 3.13.0(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.8)(react@19.2.8)
       '@portabletext/editor':
-        specifier: ^7.10.11
+        specifier: ^7.10.12
         version: 7.10.12(@types/react@19.2.17)(react@19.2.8)(supports-color@8.1.1)
       '@portabletext/html':
         specifier: ^1.1.1
@@ -1574,29 +1574,29 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5
       '@portabletext/plugin-dnd':
-        specifier: ^1.0.23
+        specifier: ^1.0.24
         version: 1.0.24(@portabletext/editor@7.10.12)(react@19.2.8)
       '@portabletext/plugin-list-index':
-        specifier: ^1.0.23
+        specifier: ^1.0.24
         version: 1.0.24(@portabletext/editor@7.10.12)(react@19.2.8)
       '@portabletext/plugin-markdown-shortcuts':
-        specifier: ^8.0.39
+        specifier: ^8.0.40
         version: 8.0.40(@portabletext/editor@7.10.12)(@types/react@19.2.17)(react@19.2.8)
       '@portabletext/plugin-one-line':
-        specifier: ^7.0.38
+        specifier: ^7.0.39
         version: 7.0.39(@portabletext/editor@7.10.12)(react@19.2.8)
       '@portabletext/plugin-paste-link':
-        specifier: ^4.0.38
+        specifier: ^4.0.39
         version: 4.0.39(@portabletext/editor@7.10.12)(react@19.2.8)
       '@portabletext/plugin-table':
-        specifier: ^1.3.8
+        specifier: ^1.3.9
         version: 1.3.9(@portabletext/editor@7.10.12)(react-dom@19.2.8)(react@19.2.8)
       '@portabletext/plugin-typography':
-        specifier: ^8.0.39
+        specifier: ^8.0.40
         version: 8.0.40(@portabletext/editor@7.10.12)(@types/react@19.2.17)(react@19.2.8)
       '@portabletext/react':
-        specifier: ^6.2.0
-        version: 6.2.0(react@19.2.8)
+        specifier: ^7.0.1
+        version: 7.0.1(react@19.2.8)
       '@portabletext/sanity-bridge':
         specifier: ^3.2.3
         version: 3.2.3
@@ -1658,11 +1658,11 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0
       '@sanity/message-protocol':
-        specifier: ^0.23.0
-        version: 0.23.0
+        specifier: ^0.24.0
+        version: 0.24.0
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 8.0.0(xstate@5.32.5)
+        version: 8.0.0(supports-color@8.1.1)(xstate@5.32.5)
       '@sanity/mutate':
         specifier: ^0.18.1
         version: 0.18.1(xstate@5.32.5)
@@ -1683,7 +1683,7 @@ importers:
         version: link:../@sanity/schema
       '@sanity/sdk':
         specifier: ^2.18.0
-        version: 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
+        version: 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(supports-color@8.1.1)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/telemetry':
         specifier: 'catalog:'
         version: 1.1.0(react@19.2.8)
@@ -1709,7 +1709,7 @@ importers:
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.8)(react@19.2.8)
       '@tanstack/react-virtual':
-        specifier: ^3.14.6
+        specifier: ^3.14.7
         version: 3.14.7(react-dom@19.2.8)(react@19.2.8)
       '@xstate/react':
         specifier: ^6.1.0
@@ -5821,11 +5821,11 @@ packages:
       '@portabletext/editor': ^7.10.12
       react: ^19.2
 
-  '@portabletext/react@6.2.0':
-    resolution: {integrity: sha512-Z0J/AWrvg7GyDfEBQRRhi6ZpxLOsN4/QbU8KhTwfa6r2ELiRaMa4gkHE9wfs3V1ozNDrTG4IRr+8yBnHNDnAqA==}
+  '@portabletext/react@7.0.1':
+    resolution: {integrity: sha512-NMedRgByZMSbV6dA7tdM6Jom4J/AfV7xIXcZk3kQMs8bCq6faeY9GbjtgYIYsomdjXvNsVIVx3PXvVPpiUa7mA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      react: ^18.2 || ^19
+      react: ^19
 
   '@portabletext/sanity-bridge@3.2.3':
     resolution: {integrity: sha512-YYtvM3tnObKavSAMCirmg+b9+/c5AJJvUzdb2Wc3Fu8T+NX7zb1nqvoOzroChfZ537mF5WTfN31ZSmfNZWWI3g==}
@@ -6460,6 +6460,10 @@ packages:
 
   '@sanity/message-protocol@0.23.0':
     resolution: {integrity: sha512-UfQDuWRzbK4dRTfLURGCZo7ZlR0sK+2lwT2QMAfqsM5kMq5GR31lbX4LMcSw27h7rwUv8ZSf1hBEbluVpgRmlg==}
+    engines: {node: '>=20.0.0'}
+
+  '@sanity/message-protocol@0.24.0':
+    resolution: {integrity: sha512-F/MwFVc3fN8uVvCIGuTxHN5EVo148wLhjL7h/u6wbShWJGMKgcGx0n6MwfCPyi6ftpdvRXsPZVDgZ1GMeeBf2Q==}
     engines: {node: '>=20.0.0'}
 
   '@sanity/migrate@8.0.0':
@@ -17676,7 +17680,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/react@6.2.0(react@19.2.8)':
+  '@portabletext/react@7.0.1(react@19.2.8)':
     dependencies:
       '@portabletext/toolkit': 5.0.2
       '@portabletext/types': 4.0.2
@@ -18172,7 +18176,7 @@ snapshots:
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.0.0
       '@sanity/import': 6.0.3(@sanity/client@7.24.0)(supports-color@8.1.1)
-      '@sanity/migrate': 8.0.0(xstate@5.32.5)
+      '@sanity/migrate': 8.0.0(supports-color@8.1.1)(xstate@5.32.5)
       '@sanity/runtime-cli': 17.2.0(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.1)(yaml@2.9.0)
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
@@ -18190,7 +18194,7 @@ snapshots:
       execa: 9.6.1
       form-data: 4.0.6
       get-latest-version: 6.0.1
-      groq-js: 1.30.3
+      groq-js: 1.30.3(supports-color@8.1.1)
       gunzip-maybe: 1.4.2
       import-meta-resolve: 4.2.0
       is-installed-globally: 1.0.0
@@ -18315,7 +18319,7 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
       globby: 11.1.0
       groq: link:packages/groq
-      groq-js: 1.30.3
+      groq-js: 1.30.3(supports-color@8.1.1)
       json5: 2.2.3
       lodash-es: 4.18.1
       prettier: 3.9.5
@@ -18491,7 +18495,11 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.1
 
-  '@sanity/migrate@8.0.0(xstate@5.32.5)':
+  '@sanity/message-protocol@0.24.0':
+    dependencies:
+      '@sanity/comlink': 4.0.1
+
+  '@sanity/migrate@8.0.0(supports-color@8.1.1)(xstate@5.32.5)':
     dependencies:
       '@sanity/client': 7.24.0
       '@sanity/mutate': 0.18.1(xstate@5.32.5)
@@ -18500,7 +18508,7 @@ snapshots:
       arrify: 3.0.0
       debug: 4.4.3(supports-color@8.1.1)
       fast-fifo: 1.3.2
-      groq-js: 1.30.3
+      groq-js: 1.30.3(supports-color@8.1.1)
       p-map: 7.0.5
     transitivePeerDependencies:
       - supports-color
@@ -18561,7 +18569,7 @@ snapshots:
       cardinal: 2.1.1
       empathic: 2.0.1
       eventsource: 4.1.0
-      groq-js: 1.30.3
+      groq-js: 1.30.3(supports-color@8.1.1)
       jiti: 2.7.0
       mime-types: 3.0.2
       ora: 9.4.1
@@ -18594,7 +18602,7 @@ snapshots:
     dependencies:
       '@sanity/client': 7.24.0
       '@sanity/message-protocol': 0.23.0
-      '@sanity/sdk': 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
+      '@sanity/sdk': 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(supports-color@8.1.1)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/types': link:packages/@sanity/types
       groq: 3.88.1-typegen-experimental.0
       react: 19.2.8
@@ -18609,7 +18617,7 @@ snapshots:
       - use-sync-external-store
       - xstate
 
-  '@sanity/sdk@2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)':
+  '@sanity/sdk@2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(supports-color@8.1.1)(use-sync-external-store@1.6.0)(xstate@5.32.5)':
     dependencies:
       '@sanity/bifur-client': 1.0.0
       '@sanity/client': 7.24.0
@@ -18624,7 +18632,7 @@ snapshots:
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/types': link:packages/@sanity/types
       groq: 3.88.1-typegen-experimental.0
-      groq-js: 1.30.3
+      groq-js: 1.30.3(supports-color@8.1.1)
       reselect: 5.2.0
       rxjs: 7.8.2
       zustand: 5.0.14(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)
@@ -18818,7 +18826,7 @@ snapshots:
   '@sanity/workbench@0.1.0-alpha.29(@sanity/sdk@2.18.0)(react@19.2.8)(xstate@5.32.5)':
     dependencies:
       '@module-federation/runtime': 2.8.0
-      '@sanity/sdk': 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
+      '@sanity/sdk': 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(supports-color@8.1.1)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       rxjs: 7.8.2
       verkit: 0.1.2
@@ -19378,8 +19386,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(supports-color@8.1.1)(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@6.0.3)
-      '@typescript-eslint/types': 8.56.1
+      '@typescript-eslint/tsconfig-utils': 8.64.0(typescript@6.0.3)
+      '@typescript-eslint/types': 8.64.0
       debug: 4.4.3(supports-color@8.1.1)
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -22426,7 +22434,7 @@ snapshots:
     dependencies:
       base64-js: 1.5.1
       ecdsa-sig-formatter: 1.0.11
-      gaxios: 7.1.3
+      gaxios: 7.2.0
       gcp-metadata: 8.1.3
       google-logging-utils: 1.1.3
       gtoken: 8.0.0
@@ -22478,7 +22486,7 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
-  groq-js@1.30.3:
+  groq-js@1.30.3(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
@@ -22500,7 +22508,7 @@ snapshots:
 
   gtoken@8.0.0:
     dependencies:
-      gaxios: 7.1.3
+      gaxios: 7.2.0
       jws: 4.0.1
     transitivePeerDependencies:
       - supports-color
