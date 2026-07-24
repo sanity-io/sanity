@@ -577,9 +577,10 @@ function ReleaseTimelineRoadmap({
 
   return (
     <Stack space={2}>
-      {/* Axis navigation family (earlier · Today · later): moving along time. Kept out of the axis
-          itself so the timeline is full-width; the counts show how many events are off each edge. */}
-      <Flex justify="flex-end" align="center" gap={1}>
+      {/* Axis navigation family (earlier · Today · later): moving along time. Left-aligned so it's
+          in reading order next to the other timeline controls; kept out of the axis itself so the
+          timeline is full-width. The counts show how many events are off each edge. */}
+      <Flex justify="flex-start" align="center" gap={1}>
         <ScrollSignpost side="start" count={overflow.left} onClick={() => jumpToItem(-1)} />
         <Button
           data-testid="release-timeline-today"

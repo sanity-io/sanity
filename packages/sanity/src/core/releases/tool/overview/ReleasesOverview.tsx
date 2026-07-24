@@ -2,13 +2,11 @@ import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {type ButtonMode, Card, Flex, useMediaIndex} from '@sanity/ui'
+import {Card, Flex, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
-import {AnimatePresence, motion} from 'motion/react'
-import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Tooltip} from '../../../../ui-components'
 import {Button} from '../../../../ui-components/button/Button'
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
@@ -61,9 +59,8 @@ import {ReleaseTimeline} from './ReleaseTimeline'
 import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
 import {ScheduledDraftsEmptyState} from './ScheduledDraftsEmptyState'
 import {SchedulesUpsell} from './SchedulesUpsell'
+import {SegmentedControl} from './SegmentedControl'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
-
-const MotionButton = motion.create(Button)
 
 export interface TableRelease extends ReleaseDocument {
   documentsMetadata?: ReleasesMetadata
@@ -212,13 +209,6 @@ export function ReleasesOverview() {
     setShowReleaseNotFound(false)
   }, [])
 
-  const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
-    ({currentTarget: {value: groupMode}}) => {
-      setReleaseGroupMode(groupMode as Mode)
-    },
-    [],
-  )
-
   const handleCardinalityViewChange = useCallback(
     (view: CardinalityView) => () => {
       router.navigate({
@@ -263,81 +253,43 @@ export function ReleasesOverview() {
     })
   }, [releaseFilterDate, releaseGroupMode, cardinalityView, isScheduledDraftsEnabled])
 
-  const [hasMounted, setHasMounted] = useState(false)
-
-  useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
-    setHasMounted(true)
-  }, [])
-
   const currentArchivedPicker = useMemo(() => {
-    const groupModeButtonBaseProps = {
-      disabled: loading || !hasReleases,
-      mode: 'bleed' as ButtonMode,
-      padding: 2,
-      ...(hasMounted
-        ? {
-            initial: {opacity: 0},
-            animate: {opacity: 1},
-            transition: {duration: 0.4, ease: 'easeInOut' as const},
-          }
-        : {}),
-    }
+    // Lifecycle is a "pick one of N" filter → the shared SegmentedControl (same widget as the
+    // cardinality picker and the timeline zoom). Paused only appears in the drafts view; a mode
+    // with nothing in it is disabled, with a tooltip explaining why. No lifecycle colour — these
+    // are neutral filter tabs (green stays reserved for the readiness "good to go").
+    const items = [
+      {value: 'active' as Mode, label: t('action.open'), testId: 'group-mode-active'},
+      ...(cardinalityView === 'drafts'
+        ? [
+            {
+              value: 'paused' as Mode,
+              label: t('action.paused'),
+              disabled: !pausedReleases.length,
+              tooltip: pausedReleases.length ? undefined : t('no-paused-release'),
+              testId: 'group-mode-paused',
+            },
+          ]
+        : []),
+      {
+        value: 'archived' as Mode,
+        label: t('action.archived'),
+        disabled: !archivedReleases.length,
+        tooltip: archivedReleases.length ? undefined : t('no-archived-release'),
+        testId: 'group-mode-archived',
+      },
+    ]
     return (
-      <Flex align="center" gap={1}>
-        <AnimatePresence>
-          <MotionButton
-            key="open-group"
-            {...groupModeButtonBaseProps}
-            onClick={handleReleaseGroupModeChange}
-            selected={releaseGroupMode === 'active'}
-            text={t('action.open')}
-            value="active"
-          />
-          {cardinalityView === 'drafts' && (
-            <Tooltip
-              disabled={pausedReleases.length !== 0}
-              content={t('no-paused-release')}
-              placement="bottom"
-            >
-              <div>
-                <MotionButton
-                  key="paused-group"
-                  {...groupModeButtonBaseProps}
-                  disabled={groupModeButtonBaseProps.disabled || !pausedReleases.length}
-                  onClick={handleReleaseGroupModeChange}
-                  selected={releaseGroupMode === 'paused'}
-                  text={t('action.paused')}
-                  value="paused"
-                />
-              </div>
-            </Tooltip>
-          )}
-          <Tooltip
-            disabled={archivedReleases.length !== 0}
-            content={t('no-archived-release')}
-            placement="bottom"
-          >
-            <div>
-              <MotionButton
-                key="archived-group"
-                {...groupModeButtonBaseProps}
-                disabled={groupModeButtonBaseProps.disabled || !archivedReleases.length}
-                onClick={handleReleaseGroupModeChange}
-                selected={releaseGroupMode === 'archived'}
-                text={t('action.archived')}
-                value="archived"
-              />
-            </div>
-          </Tooltip>
-        </AnimatePresence>
-      </Flex>
+      <SegmentedControl
+        value={releaseGroupMode}
+        onChange={setReleaseGroupMode}
+        disabled={loading || !hasReleases}
+        items={items}
+      />
     )
   }, [
     loading,
     hasReleases,
-    hasMounted,
-    handleReleaseGroupModeChange,
     releaseGroupMode,
     t,
     archivedReleases.length,
