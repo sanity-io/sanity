@@ -52,6 +52,7 @@ import {
 import {createBroadcastState} from './createBroadcastState'
 import {createBroadcastStorage} from './createBroadcastStorage'
 import {createLoginComponent} from './createLoginComponent'
+import {consumeHashClaim} from './hashClaim'
 import {consumeHashToken as defaultConsumeHashToken} from './hashToken'
 import {clearHashSessionId, getHashSessionId as defaultGetSessionId} from './sessionId'
 import {
@@ -60,6 +61,7 @@ import {
   type AuthStore,
   type HandleCallbackResult,
 } from './types'
+import {recordHashClaimUrl} from './unclaimedProjectStorage'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
 import {
   observeWorkbenchToken as defaultObserveWorkbenchToken,
@@ -320,6 +322,13 @@ export function _createAuthStore({
   // * if loginMethod == "cookie"
   //    1. HTTP cookie
 
+  // A `#claim=` fragment rides beside `#token=` (see hashClaim.ts) and is consumed at the same
+  // two lifecycle points, claim first, so both always land on the same project.
+  const consumeHashClaimUrl = () => {
+    const claimUrl = consumeHashClaim()
+    if (claimUrl) recordHashClaimUrl(projectId, claimUrl)
+  }
+
   const tokenStorage = createBroadcastStorage<{token?: string}>(
     getAuthTokenStorageKey(projectId),
     // sets the initial value
@@ -330,6 +339,7 @@ export function _createAuthStore({
         // store will log you out. Need to find a better way to deal with this
         // return undefined
       }
+      consumeHashClaimUrl()
       const hashToken = consumeHashToken()
       // use hash token if it exists, assume authenticated
       return hashToken ? {token: hashToken, authenticated: true} : currentTokenValue
@@ -464,6 +474,7 @@ export function _createAuthStore({
       ? EMPTY
       : fromEvent(window, 'hashchange').pipe(
           tap(() => {
+            consumeHashClaimUrl()
             const hashToken = consumeHashToken()
             if (hashToken) {
               tokenStorage.update({token: hashToken})

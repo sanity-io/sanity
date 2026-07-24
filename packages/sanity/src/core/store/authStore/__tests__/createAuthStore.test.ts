@@ -1766,3 +1766,61 @@ describe('createAuthStore: workbench OS token', () => {
     expect(state.authenticated).toBe(true)
   })
 })
+
+describe('createAuthStore: hash claim intake', () => {
+  const CLAIM_URL = 'https://www.sanity.io/manage/claim/some-claim-token'
+  const CLAIM_STORAGE_KEY = `__studio_unclaimed_${PROJECT_ID}`
+
+  beforeEach(() => {
+    localStorage.clear()
+    window.location.hash = ''
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+    window.location.hash = ''
+  })
+
+  it('consumes a #claim= fragment on boot and records it for the project', () => {
+    window.location.hash = `#claim=${encodeURIComponent(CLAIM_URL)}`
+    const mock = createMockClientFactory()
+
+    _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'token',
+      clientFactory: mock.factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+
+    expect(JSON.parse(localStorage.getItem(CLAIM_STORAGE_KEY)!)).toEqual({claimUrl: CLAIM_URL})
+    expect(window.location.hash).toBe('')
+  })
+
+  it('consumes a #claim= fragment pasted into an open tab', async () => {
+    const mock = createMockClientFactory()
+
+    const store = _createAuthStore({
+      projectId: PROJECT_ID,
+      dataset: DATASET,
+      loginMethod: 'token',
+      clientFactory: mock.factory,
+      getSessionId: () => undefined,
+      consumeHashToken: () => undefined,
+    })
+    const sub = store.state.subscribe(() => {})
+
+    try {
+      window.location.hash = `#claim=${encodeURIComponent(CLAIM_URL)}`
+      window.dispatchEvent(new HashChangeEvent('hashchange'))
+
+      await vi.waitFor(() => {
+        expect(JSON.parse(localStorage.getItem(CLAIM_STORAGE_KEY)!)).toEqual({claimUrl: CLAIM_URL})
+      })
+      expect(window.location.hash).toBe('')
+    } finally {
+      sub.unsubscribe()
+    }
+  })
+})
