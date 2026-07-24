@@ -35,11 +35,16 @@ export type ReleaseTimelineGranularity = 'week' | 'month' | 'quarter'
 
 const GRANULARITIES: ReleaseTimelineGranularity[] = ['week', 'month', 'quarter']
 
-/** Minimum horizontal gap (percent of the visible range) before a marker is bumped to the next lane. */
-const MARKER_GAP_PCT = 9
 const LANE_HEIGHT = 64
-const PILL_WIDTH = 208
+/** Fixed pill width (matches "Variant A · Roadmap" in the timeline sandbox) — pills never grow
+ * beyond this, no matter how long the release title is; long titles are ellipsis-truncated
+ * instead (see `ReleaseTimelinePill`). */
+const PILL_WIDTH = 216
+/** Minimum breathing room (px) required between two pills before they're considered to collide
+ * horizontally and one gets bumped to the next lane. */
+const PILL_GAP_PX = 16
 const AXIS_HEIGHT_PADDING = 44
+const MARKER_SIZE = 12
 
 interface DatedRelease {
   release: TableRelease
@@ -97,12 +102,16 @@ function xPct(date: Date, start: Date, end: Date): number {
 
 /**
  * Assign non-overlapping lanes to date-sorted markers, bumping to the next lane whenever two
- * markers would render closer than `MARKER_GAP_PCT` apart (ported from the sandbox's lane packer).
+ * markers would render closer than `gapPct` (percent of the visible range) apart — ported from
+ * the sandbox's lane packer, but made pixel-aware: `gapPct` is derived from the actual rendered
+ * pill width against the track's `minWidth`, so it scales with granularity instead of using one
+ * fixed percentage (a fixed percentage under-packs on the wider `week`/`month` ranges real,
+ * clustered data hits, letting same-week pills overlap).
  */
-function assignLanes(items: {x: number}[]): number[] {
+function assignLanes(items: {x: number}[], gapPct: number): number[] {
   const laneLastX: number[] = []
   return items.map(({x}) => {
-    let lane = laneLastX.findIndex((lastX) => x - lastX >= MARKER_GAP_PCT)
+    let lane = laneLastX.findIndex((lastX) => x - lastX >= gapPct)
     if (lane === -1) lane = laneLastX.length
     laneLastX[lane] = x
     return lane
@@ -251,6 +260,7 @@ function ReleaseTimelinePill({
           left: `${x}%`,
           top: lane * LANE_HEIGHT + 12,
           width: PILL_WIDTH,
+          maxWidth: PILL_WIDTH,
           textAlign: 'left',
           cursor: 'pointer',
           border: collides
@@ -269,9 +279,16 @@ function ReleaseTimelinePill({
                 </Text>
               )}
             </Text>
-            <Text size={1} weight="medium" textOverflow="ellipsis" style={{flex: 1}}>
-              {title}
-            </Text>
+            {/* `minWidth: 0` is load-bearing: without it this flex item won't shrink below its
+                content's intrinsic width, so a long title silently pushes past the pill's fixed
+                `width` and bleeds over neighboring pills instead of being clipped by
+                `textOverflow="ellipsis"`. `title` surfaces the full text on hover as a fallback
+                to the pill-level Tooltip above. */}
+            <Box title={title} style={{minWidth: 0, overflow: 'hidden', flex: 1}}>
+              <Text size={1} weight="medium" textOverflow="ellipsis">
+                {title}
+              </Text>
+            </Box>
           </Flex>
           <Flex align="center" gap={2} wrap="wrap">
             <Text size={0} muted style={{whiteSpace: 'nowrap'}}>
@@ -296,6 +313,40 @@ function ReleaseTimelinePill({
         </Stack>
       </Card>
     </Tooltip>
+  )
+}
+
+/**
+ * A state-colored ◇ diamond marking a release's exact position on the time axis, restored from
+ * the sandbox's milestone baseline — the pill below is a label hanging off this point, so nothing
+ * reads as a duration/bar. Rendered independent of lane-packing (always on the baseline, unlike
+ * the pill it belongs to) so the axis stays legible even when the pills above are dense.
+ */
+function ReleaseTimelineMarker({
+  entry,
+  x,
+  collides,
+}: {
+  entry: DatedRelease
+  x: number
+  collides: boolean
+}) {
+  const tone = collides || entry.intendedNotArmed ? 'caution' : 'default'
+  return (
+    <Card
+      data-testid={`release-timeline-marker-${entry.release._id}`}
+      tone={tone}
+      shadow={1}
+      style={{
+        position: 'absolute',
+        left: `${x}%`,
+        top: 4,
+        width: MARKER_SIZE,
+        height: MARKER_SIZE,
+        transform: 'translateX(-50%) rotate(45deg)',
+        border: '2px solid var(--card-bg-color)',
+      }}
+    />
   )
 }
 
@@ -327,7 +378,13 @@ function ReleaseTimelineRoadmap({
     () => sorted.map((entry) => ({entry, x: xPct(entry.date, start, end)})),
     [sorted, start, end],
   )
-  const lanes = useMemo(() => assignLanes(positioned), [positioned])
+  const minWidth = granularity === 'week' ? 900 : granularity === 'quarter' ? 1600 : 1200
+  // The gap that keeps pills from overlapping has to be expressed as a percent of the visible
+  // range, but pills are a fixed pixel width — so scale the two together against the track's
+  // pixel `minWidth`, instead of a single hardcoded percentage that under-packs on the wider
+  // week/month ranges real, clustered data hits.
+  const gapPct = ((PILL_WIDTH + PILL_GAP_PX) / minWidth) * 100
+  const lanes = useMemo(() => assignLanes(positioned, gapPct), [positioned, gapPct])
   const laneCount = Math.max(1, ...lanes.map((lane) => lane + 1))
   const height = laneCount * LANE_HEIGHT + AXIS_HEIGHT_PADDING
 
@@ -343,8 +400,6 @@ function ReleaseTimelineRoadmap({
     })
     return ids
   }, [sorted, toZoned])
-
-  const minWidth = granularity === 'week' ? 900 : granularity === 'quarter' ? 1600 : 1200
 
   return (
     <Box style={{overflowX: 'auto', overflowY: 'hidden'}}>
@@ -367,6 +422,14 @@ function ReleaseTimelineRoadmap({
             borderTop: '2px solid var(--card-border-color)',
           }}
         />
+        {positioned.map(({entry, x}) => (
+          <ReleaseTimelineMarker
+            key={`marker-${entry.release._id}`}
+            entry={entry}
+            x={x}
+            collides={collisionIds.has(entry.release._id)}
+          />
+        ))}
         {positioned.map(({entry, x}, i) => (
           <ReleaseTimelinePill
             key={entry.release._id}
@@ -384,11 +447,30 @@ function ReleaseTimelineRoadmap({
 }
 
 /**
+ * Bottom-left summary chip counting releases excluded from the strip because they have no date
+ * at all (`getReleaseTiming(release).date === null`) — restored from the sandbox's "Undated"
+ * tray, adapted from its three-way asap/scheduled/undecided split to the two-state timing model:
+ * a release is either dated (shown above, armed or merely intended) or unscheduled (no date,
+ * list-only). Hidden entirely when there's nothing to report.
+ */
+function UnscheduledChip({count}: {count: number}) {
+  const {t} = useTranslation(releasesLocaleNamespace)
+  if (count === 0) return null
+  return (
+    <Flex gap={2} align="center" data-testid="release-timeline-unscheduled-chip">
+      <Badge tone="default" fontSize={0}>
+        {t('timeline.unscheduled-count', {count})}
+      </Badge>
+    </Flex>
+  )
+}
+
+/**
  * A collapsible, read-only timeline strip rendered above the releases `DocumentTable`: dated
  * releases and scheduled drafts as lane-packed pills on a horizontal time axis, with a
  * Week/Month/Quarter granularity toggle and a "now" marker. Undated releases (no armed or
- * intended date) are excluded — they stay list-only. Renders nothing when there is nothing dated
- * to show.
+ * intended date) are excluded — they stay list-only, summarized in the "Unscheduled" chip below
+ * the strip. Renders nothing when there is nothing dated to show.
  *
  * @internal
  */
@@ -401,9 +483,9 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
 
   const now = useMemo(() => new Date(), [])
 
-  const dated = useMemo<DatedRelease[]>(() => {
-    return releases.reduce<DatedRelease[]>((acc, release) => {
-      if (release.isDeleted || release.isLoading) return acc
+  const {dated, unscheduledCount} = useMemo(() => {
+    const live = releases.filter((release) => !release.isDeleted && !release.isLoading)
+    const datedList = live.reduce<DatedRelease[]>((acc, release) => {
       const timing = getReleaseTiming(release)
       if (!timing.date) return acc
       acc.push({
@@ -415,6 +497,7 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
       })
       return acc
     }, [])
+    return {dated: datedList, unscheduledCount: live.length - datedList.length}
   }, [releases])
 
   const handleNavigate = useCallback(
@@ -463,13 +546,16 @@ export function ReleaseTimeline({releases}: {releases: TableRelease[]}) {
           )}
         </Flex>
         {!collapsed && (
-          <ReleaseTimelineRoadmap
-            dated={dated}
-            granularity={granularity}
-            now={now}
-            toZoned={utcToCurrentZoneDate}
-            onNavigate={handleNavigate}
-          />
+          <>
+            <ReleaseTimelineRoadmap
+              dated={dated}
+              granularity={granularity}
+              now={now}
+              toZoned={utcToCurrentZoneDate}
+              onNavigate={handleNavigate}
+            />
+            <UnscheduledChip count={unscheduledCount} />
+          </>
         )}
       </Stack>
     </Card>

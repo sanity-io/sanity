@@ -126,6 +126,43 @@ describe('ReleaseTimeline', () => {
     expect(mockNavigate).toHaveBeenCalledWith({releaseId: 'rScheduled'})
   })
 
+  it('renders a diamond axis marker for each dated release', async () => {
+    await renderTimeline({releases: [datedArmed, datedIntended]})
+
+    expect(screen.getByTestId(`release-timeline-marker-${datedArmed._id}`)).toBeInTheDocument()
+    expect(screen.getByTestId(`release-timeline-marker-${datedIntended._id}`)).toBeInTheDocument()
+  })
+
+  it('shows the Unscheduled chip counting releases excluded from the strip, hidden at zero', async () => {
+    const {rerender} = await renderTimeline({releases: [datedArmed, undated]})
+
+    expect(screen.getByTestId('release-timeline-unscheduled-chip')).toHaveTextContent(
+      'Unscheduled: 1',
+    )
+
+    rerender(<ReleaseTimeline releases={[datedArmed, datedIntended]} />)
+    expect(screen.queryByTestId('release-timeline-unscheduled-chip')).not.toBeInTheDocument()
+  })
+
+  it('truncates a very long release title to a single line instead of bleeding across the strip', async () => {
+    const longTitleRelease: TableRelease = {
+      ...scheduledRelease,
+      _id: '_.releases.rLongTitle',
+      metadata: {
+        ...scheduledRelease.metadata,
+        title:
+          'This release title is just so obscenely long that it would otherwise stretch across the entire timeline strip and overlap every other pill in its lane',
+      },
+    }
+
+    await renderTimeline({releases: [longTitleRelease]})
+
+    const pill = screen.getByTestId(`release-timeline-pill-${longTitleRelease._id}`)
+    expect(pill).toHaveStyle({width: '216px', maxWidth: '216px'})
+
+    expect(pill.querySelector(`[title="${longTitleRelease.metadata.title}"]`)).toBeInTheDocument()
+  })
+
   it('flags two releases publishing on the same calendar day as a collision', async () => {
     const sameDayA: ReleaseDocument = {
       ...scheduledRelease,

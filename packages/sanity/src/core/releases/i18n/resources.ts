@@ -744,6 +744,11 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'timeline.collision-badge': 'Stagger',
   /** Tooltip line shown when a timeline pill shares its publish day with another release/draft */
   'timeline.tooltip-collision': 'Publishes the same day as another release — consider staggering.',
+  /** Bottom-left chip on the timeline strip: count of releases with no date at all, excluded from
+   * the strip and left list-only. Singular form. */
+  'timeline.unscheduled-count_one': 'Unscheduled: {{count}}',
+  /** Plural form of `timeline.unscheduled-count_one`. */
+  'timeline.unscheduled-count_other': 'Unscheduled: {{count}}',
 
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
