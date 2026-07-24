@@ -4,7 +4,6 @@
   "exclude": ["dist", "lib", "node_modules"],
   "compilerOptions": {
     "rootDir": ".",
-    "customConditions": ["monorepo"],
-    "types": ["node"]
+    "customConditions": ["monorepo"]
   }
 }

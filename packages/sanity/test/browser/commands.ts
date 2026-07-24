@@ -8,10 +8,12 @@ import {type BrowserCommand} from 'vitest/node'
  * Used by browser tests that need to read test fixture files (e.g., images).
  */
 export const readFileAsBase64: BrowserCommand<[filePath: string]> = ({testPath}, filePath) => {
+  if (!testPath) {
+    throw new Error('readFileAsBase64 can only be used within a test file')
+  }
   const resolved = path.isAbsolute(filePath)
     ? filePath
-    : // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
-      path.resolve(path.dirname(testPath), filePath)
+    : path.resolve(path.dirname(testPath), filePath)
   const buffer = readFileSync(resolved)
   return buffer.toString('base64')
 }

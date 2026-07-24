@@ -62,9 +62,8 @@ export async function createTestProvider({
     paneDataItems: [],
     routerPanes: [],
     resolvedPanes: [],
-    // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
-    focusedPane: null,
-    setFocusedPane: noop,
+    maximizedPane: null,
+    setMaximizedPane: noop,
   }
 
   const locales = [usEnglishLocale]

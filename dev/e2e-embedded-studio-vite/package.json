@@ -3,7 +3,7 @@
   "version": "6.6.0",
   "private": true,
   "scripts": {
-    "build": "tsgo && vite build",
+    "build": "vite build",
     "dev": "vite",
     "preview": "vite preview --port 5173",
     "start": "pnpm --filter e2e-embedded-studio-vite preview",
