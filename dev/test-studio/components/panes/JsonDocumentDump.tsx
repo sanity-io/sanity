@@ -43,9 +43,10 @@ export function JsonDocumentDump(props: {
   useEffect(() => {
     const subscription = client.observable
       .listen(query, {itemId, draftId}, {includeAllVersions: true})
-      .subscribe((mut) => {
-        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
-        setDocument(mut.result || null)
+      .subscribe((event) => {
+        if (event.type === 'mutation') {
+          setDocument(event.result || null)
+        }
       })
     return () => subscription.unsubscribe()
   }, [client.observable, draftId, itemId])

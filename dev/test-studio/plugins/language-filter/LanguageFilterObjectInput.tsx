@@ -1,6 +1,5 @@
 import {pathFor} from '@sanity/util/paths'
 import {
-  type FieldError,
   type FieldMember,
   type FieldSetMember,
   ObjectInput,
@@ -28,27 +27,12 @@ export function LanguageFilterObjectInput(
   const defaultMembers = membersProp.filter(
     (member) => member.kind === 'field' && options.defaultLanguages?.includes(member.name),
   )
-  const translationsFieldSetMembers = membersProp
-    .filter(
-      (member) =>
-        member.kind === 'field' &&
-        selectedLanguages.includes(member.name) &&
-        !options.defaultLanguages?.includes(member.name),
-    )
-    .map((member): FieldMember | FieldError => {
-      if (member.kind === 'fieldSet') {
-        // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
-        return {
-          kind: 'error',
-          key: member.key,
-          fieldName: member.fieldSet.name,
-          error: new Error('test') as any, // @todo
-        }
-      }
-
-      // @ts-expect-error -- pre-existing; now gated by oxlint options.typeCheck
-      return member
-    })
+  const translationsFieldSetMembers = membersProp.filter(
+    (member): member is FieldMember =>
+      member.kind === 'field' &&
+      selectedLanguages.includes(member.name) &&
+      !options.defaultLanguages?.includes(member.name),
+  )
 
   const members: ObjectMember[] =
     translationsFieldSetMembers.length === 0
