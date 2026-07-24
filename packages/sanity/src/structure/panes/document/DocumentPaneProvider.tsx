@@ -173,7 +173,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
-  const [isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive] = useState(false)
+  const [isDocumentGroupInventoryActive, setIsDocumentGroupInventoryActive] = useState(false) // xxx
   const {lastRevisionDocument} = useDeletedDocumentLastRevision()
 
   /**
