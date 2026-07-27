@@ -11,7 +11,6 @@ import {
   type MouseEvent,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -105,7 +104,6 @@ const SelectAssetsComponent = function SelectAssetsComponent(
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const versionedClient = useMemo(() => client.withConfig({apiVersion: '2023-02-14'}), [client])
   const [_elementId] = useState(() => `default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
   const {t} = useTranslation()
@@ -129,7 +127,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
       setIsLoading(true)
 
       if (typeof accept !== 'undefined') {
-        fetch$.current = versionedClient.observable
+        fetch$.current = client.observable
           .fetch(buildQuery(start, end, assetTypeParam, accept), {}, {tag})
           .subscribe({
             next: (result) => {
@@ -153,7 +151,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
           })
       }
     },
-    [assetType, accept, versionedClient, toast, t],
+    [assetType, accept, client, toast, t],
   )
 
   const handleDeleteFinished = useCallback(
