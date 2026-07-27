@@ -20,7 +20,7 @@ import {type StringOptions} from './definition/type/string'
 import {type TextOptions} from './definition/type/text'
 import {type PreviewConfig} from './preview'
 
-export {defineArrayMember, defineField, defineType, typed} from './define'
+export {defineArrayMember, defineField, defineType} from './define'
 
 /**
  * Enhances VSCode autocomplete by using a distinct type for strings.
