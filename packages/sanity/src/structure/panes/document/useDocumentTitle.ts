@@ -30,21 +30,20 @@ export interface UseDocumentTitle {
  * @returns The document title or error. See {@link UseDocumentTitle}
  */
 export function useDocumentTitle(): UseDocumentTitle {
-  const {connectionState, schemaType, editState, isDeleted, lastRevisionDocument} =
-    useDocumentPane()
-  const {selectedPerspectiveName} = usePerspective()
+  const {
+    connectionState,
+    schemaType,
+    isDeleted,
+    lastRevisionDocument,
+    value: documentPaneValue,
+  } = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
+
   // follows the same logic as the StructureTitle component
   const documentValue = useMemo(() => {
-    if (isDeleted) {
-      return lastRevisionDocument
-    }
-    // When viewing published perspective, prioritize published document
-    if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
-      return editState?.published
-    }
-    return editState?.version || editState?.draft || editState?.published
-  }, [isDeleted, lastRevisionDocument, editState, selectedPerspectiveName])
+    if (isDeleted) return lastRevisionDocument
+    return documentPaneValue
+  }, [isDeleted, lastRevisionDocument, documentPaneValue])
   const subscribed = Boolean(documentValue)
 
   // For deleted documents, we need to handle the preview differently since useValuePreview
