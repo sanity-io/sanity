@@ -14,6 +14,16 @@
     "interface": true,
     "type": true,
   },
+  "ignoreIssues": {
+    "packages/@repo/debug-proxy/src/createDebugProxy.ts": ["types"],
+    "packages/sanity/src/core/canvas/i18n/index.ts": ["types"],
+    "packages/sanity/src/core/comments/i18n/index.ts": ["types"],
+    "packages/sanity/src/core/form/inputs/PortableText/contexts/fullscreen/index.ts": ["types"],
+    "packages/sanity/src/core/releases/i18n/index.ts": ["types"],
+    "packages/sanity/src/core/singleDocRelease/i18n/index.ts": ["types"],
+    "packages/sanity/src/core/tasks/i18n/index.ts": ["types"],
+    "packages/sanity/src/core/validation/index.ts": ["types"],
+  },
   "workspaces": {
     ".": {
       "project": ["*.{ts,mts,mjs}"],
