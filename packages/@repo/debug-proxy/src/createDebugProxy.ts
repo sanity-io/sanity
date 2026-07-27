@@ -9,11 +9,9 @@ import {type Subscription} from 'rxjs'
 import {
   createRequestProxy,
   createSSEProxy,
-  type ProxyHeaders,
   type ProxyRequest,
   type ProxyResponse,
   type ProxyTarget,
-  type SSEEvent,
   writeResponseHead,
 } from './proxy'
 
@@ -360,5 +358,3 @@ export function createDebugProxy(config: DebugProxyConfig = {}): DebugProxyServe
 
   return api
 }
-
-export type {ProxyHeaders, ProxyRequest, ProxyResponse, ProxyTarget, SSEEvent}
