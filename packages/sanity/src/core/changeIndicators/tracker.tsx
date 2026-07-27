@@ -13,7 +13,11 @@ import {
 } from '../components/react-track-elements'
 import {type ChangeIndicatorTrackerContextValue} from './types'
 
-export * from './types'
+export {
+  type ChangeIndicatorTrackerContextValue,
+  type TrackedArea,
+  type TrackedChange,
+} from './types'
 
 function ChangeIndicatorsTrackerComponent(props: {children: React.ReactNode}) {
   const {children} = props
