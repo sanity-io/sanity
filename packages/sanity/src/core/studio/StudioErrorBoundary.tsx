@@ -3,12 +3,12 @@ import {lazy, type ReactNode, useCallback, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
-import {SchemaError} from '../config'
+import {SchemaError} from '../config/SchemaError'
 import {errorReporter} from '../error/errorReporter'
 import {isImportError} from '../error/isImportError'
-import {SchemaErrorsScreen} from './screens'
 import {FallbackErrorScreen} from './screens/FallbackErrorScreen'
 import {ImportErrorScreen} from './screens/ImportErrorScreen'
+import {SchemaErrorsScreen} from './screens/schemaErrors/SchemaErrorsScreen'
 
 /**
  * The DevServerStoppedErrorScreen will always have been lazy loaded to client

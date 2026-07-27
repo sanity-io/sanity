@@ -3,7 +3,7 @@ import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type Source, type WorkspaceSummary} from '../../../config/types'
-import {type AuthStore} from '../../../store'
+import {type AuthStore} from '../../../store/authStore/types'
 import {type UserApplication} from '../../../store/userApplications'
 import {fetchCanDeployStudio} from '../canDeployStudio'
 import {registerStudioManifest} from '../registerLiveStudioManifest'

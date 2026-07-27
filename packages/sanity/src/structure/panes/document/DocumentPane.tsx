@@ -17,14 +17,14 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
 import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
-import {CommentsWrapper} from './comments'
-import {useDocumentLayoutComponent} from './document-layout'
+import {CommentsWrapper} from './comments/CommentsWrapper'
+import {useDocumentLayoutComponent} from './document-layout/useDocumentLayoutComponent'
 import {DocumentPaneProviderWrapper} from './DocumentPaneProviderWrapper'
 import {type DocumentPaneProviderProps} from './types'
 import {useResetHistoryParams} from './useResetHistoryParams'

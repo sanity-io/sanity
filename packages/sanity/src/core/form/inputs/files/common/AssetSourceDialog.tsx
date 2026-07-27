@@ -13,7 +13,7 @@ import {type ReactNode, useCallback, useMemo} from 'react'
 import {type Observable} from 'rxjs'
 
 import {type VideoSchemaType} from '../../../../../media-library/plugin/schemas/types'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 
 export type AssetSourceDialogAssetType = 'file' | 'image' | 'sanity.video'

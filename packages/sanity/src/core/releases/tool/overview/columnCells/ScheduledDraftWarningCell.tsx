@@ -3,7 +3,7 @@ import {Flex, Text} from '@sanity/ui'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getIsScheduledDateInPast} from '../../../util/getIsScheduledDateInPast'
 import {type VisibleColumn} from '../../components/Table/types'

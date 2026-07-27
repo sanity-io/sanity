@@ -27,13 +27,13 @@ import {
 import {readMostRecentSharedTransaction} from '../../divergence/readMostRecentSharedTransaction'
 import {type ResolutionMarker} from '../../divergence/types/ResolutionMarker'
 import {useClient} from '../../hooks/useClient'
-import {type EditStateFor} from '../../store'
+import {type EditStateFor} from '../../store/document/document-pair/editState'
 import {selectUpstreamVersion} from '../../store/document/selectUpstreamVersion'
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isPublishedId} from '../../util/draftUtils'
 import {FormGutterCustomProperties} from '../components/FormGutterCustomProperties'
-import {type FormState} from '../store'
+import {type FormState} from '../store/useFormState'
 
 interface PropsEnabled extends PropsWithChildren {
   enabled: true

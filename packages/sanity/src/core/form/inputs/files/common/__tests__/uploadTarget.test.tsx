@@ -15,8 +15,8 @@ import {
 } from '../../../../../../../test/fixtures/assetSourceMocks'
 import {renderFileInput, renderImageInput, renderVideoInput} from '../../../../../../../test/form'
 import {BaseVideoInput} from '../../../../../../media-library/plugin/VideoInput/VideoInput'
-import {BaseFileInput} from '../../FileInput'
-import {BaseImageInput} from '../../ImageInput'
+import {BaseFileInput} from '../../FileInput/FileInput'
+import {BaseImageInput} from '../../ImageInput/ImageInput'
 
 // Mock useVideoPlaybackInfo and VideoPlayer for video tests (VideoInput uses these)
 vi.mock('../../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo', () => ({

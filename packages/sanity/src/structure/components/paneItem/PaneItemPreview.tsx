@@ -21,7 +21,7 @@ import {
   usePerspective,
 } from 'sanity'
 
-import {TooltipDelayGroupProvider} from '../../../ui-components'
+import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore

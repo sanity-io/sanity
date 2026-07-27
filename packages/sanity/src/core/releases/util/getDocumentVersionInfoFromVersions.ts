@@ -1,4 +1,4 @@
-import {isDraftVersion, isPublishedVersion, isVariantVersion} from '../../util'
+import {isDraftVersion, isPublishedVersion, isVariantVersion} from '../../util/versionsUtils'
 import {type VersionInfoDocumentStub} from '../store/types'
 import {getReleaseIdFromReleaseDocumentId} from './getReleaseIdFromReleaseDocumentId'
 

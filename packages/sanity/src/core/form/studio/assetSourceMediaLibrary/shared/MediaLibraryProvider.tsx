@@ -3,7 +3,7 @@ import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {MediaLibraryIdsContext} from 'sanity/_singletons'
 
-import {ErrorBoundary} from '../../../../../ui-components/errorBoundary'
+import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {EnsureMediaLibrary} from './EnsureMediaLibrary'
 

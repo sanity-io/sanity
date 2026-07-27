@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {IntentLink} from 'sanity/router'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {ReleaseTitle} from '../../../../releases/components/ReleaseTitle'
 import {RELEASES_INTENT} from '../../../../releases/plugin'
 import {getReleaseDocumentIdFromReleaseId} from '../../../../releases/util/getReleaseDocumentIdFromReleaseId'

@@ -5,8 +5,8 @@ import {renderHook, waitFor} from '@testing-library/react'
 import {BehaviorSubject, concat, NEVER, of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
-import {type DocumentPreviewStore} from '../../../preview'
-import {useDocumentPreviewStore} from '../../../store'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
+import {useDocumentPreviewStore} from '../../../store/datastores'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
 import {type ReleasesReducerState} from '../../store/reducer'
 import {
@@ -25,9 +25,7 @@ vi.mock('../../../hooks/useProjectId', () => ({
   useProjectId: vi.fn().mockReturnValue('test-project'),
 }))
 
-vi.mock('../../../store', () => ({
-  useDocumentPreviewStore: vi.fn(),
-}))
+vi.mock('../../../store/datastores', () => ({useDocumentPreviewStore: vi.fn()}))
 
 const initialReleasesState: ReleasesReducerState = {
   releases: new Map(),

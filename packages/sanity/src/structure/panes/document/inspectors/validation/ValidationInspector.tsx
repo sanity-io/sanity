@@ -19,8 +19,8 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {ErrorBoundary} from '../../../../../ui-components'
-import {DocumentInspectorHeader} from '../../documentInspector'
+import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
+import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
 import {getPathTitles} from './getPathTitles'
 

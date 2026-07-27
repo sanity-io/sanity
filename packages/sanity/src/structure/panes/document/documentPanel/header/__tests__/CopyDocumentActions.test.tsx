@@ -4,7 +4,7 @@ import {useDocumentVersions, usePerspective, useTargetDocumentState} from 'sanit
 import {type Mock, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {usePaneRouter} from '../../../../../components'
+import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'
@@ -61,7 +61,7 @@ vi.mock('sanity/router', async (importOriginal) => ({
   })),
 }))
 
-vi.mock('../../../../../components', () => ({
+vi.mock('../../../../../components/paneRouter/usePaneRouter', () => ({
   usePaneRouter: vi.fn(() => ({
     params: {},
     setParams: vi.fn(),

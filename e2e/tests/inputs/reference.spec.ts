@@ -1,7 +1,7 @@
 import {type Locator, type Page, expect} from '@playwright/test'
 
-import {withDefaultClient} from '../../helpers'
 import {expectPublishedStatus, expectSavedStatus} from '../../helpers/documentStatusAssertions'
+import {withDefaultClient} from '../../helpers/sanityClient'
 import {test} from '../../studio-test'
 
 /**

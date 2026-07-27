@@ -8,7 +8,7 @@ import {
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {ObjectInput} from '../ObjectInput'
 
 const defs = {

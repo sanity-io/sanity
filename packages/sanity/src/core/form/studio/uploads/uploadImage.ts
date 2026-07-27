@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {concat, merge, type Observable, of} from 'rxjs'
 import {catchError, filter, map, mergeMap} from 'rxjs/operators'
 
-import {set} from '../../patch'
+import {set} from '../../patch/patch'
 import {uploadImageAsset} from '../inputs/client-adapters/assets'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {DEFAULT_ORIENTATION, type Orientation} from './image/orient'

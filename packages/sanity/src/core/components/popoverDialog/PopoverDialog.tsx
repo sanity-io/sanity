@@ -13,7 +13,8 @@ import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'r
 import TrapFocus, {type ReactFocusLockProps} from 'react-focus-lock'
 import {css, styled} from 'styled-components'
 
-import {Button, Popover, type PopoverProps} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {Popover, type PopoverProps} from '../../../ui-components/popover/Popover'
 import {PopoverContainer} from './PopoverContainer'
 
 const StyledPopover = styled(Popover)(() => {

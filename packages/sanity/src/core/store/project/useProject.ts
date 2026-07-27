@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import {from} from 'rxjs'
 
-import {useStudioErrorHandler} from '../../studio'
+import {useStudioErrorHandler} from '../../studio/requestErrors/useStudioErrorHandler'
 import {useProjectStore} from '../datastores'
 import {type ProjectData} from './types'
 

@@ -5,7 +5,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Table, type TableProps} from '../../../releases/tool/components/Table/Table'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
 import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'

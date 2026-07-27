@@ -2,11 +2,11 @@ import {Box, Card, Code, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
-import {ErrorBoundary} from '../../../ui-components/errorBoundary'
-import {SchemaError} from '../../config'
+import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
+import {SchemaError} from '../../config/SchemaError'
 import {isDev} from '../../environment'
-import {useTranslation} from '../../i18n'
-import {isRecord} from '../../util'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {isRecord} from '../../util/isRecord'
 import {Alert} from '../components/Alert'
 
 /**

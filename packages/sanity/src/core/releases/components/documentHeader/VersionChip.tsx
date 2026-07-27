@@ -6,7 +6,7 @@ import {type BadgeTone} from '@sanity/ui'
 import {memo, type ReactNode, useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
 
-import {Tooltip} from '../../../../ui-components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'

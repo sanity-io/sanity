@@ -1,8 +1,8 @@
 import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {MenuDivider} from '@sanity/ui'
 
-import {MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {feedbackLocaleNamespace} from '../../../../i18n/localeNamespaces'
 
 interface FeedbackMenuItemProps {

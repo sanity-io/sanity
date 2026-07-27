@@ -11,8 +11,9 @@ import {type ComponentProps, type ReactNode, useCallback, useEffect, useRef, use
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
 
-import {Button, type PopoverProps} from '../../../../../../ui-components'
-import {PresenceOverlay} from '../../../../../presence'
+import {Button} from '../../../../../../ui-components/button/Button'
+import {type PopoverProps} from '../../../../../../ui-components/popover/Popover'
+import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'
 import {EditDialogOuterBoundaryProvider} from '../../../../components/EditDialogOuterBoundaryProvider'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'

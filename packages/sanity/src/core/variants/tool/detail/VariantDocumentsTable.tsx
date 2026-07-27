@@ -1,7 +1,7 @@
 import {Card} from '@sanity/ui'
 import {type CSSProperties, useMemo, useState} from 'react'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {Table} from '../../../releases/tool/components/Table/Table'
 import {type Column} from '../../../releases/tool/components/Table/types'

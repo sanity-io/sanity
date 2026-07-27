@@ -20,8 +20,8 @@ import {
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 
-import {Tooltip, type TooltipProps} from '..'
 import {Hotkeys} from '../../core/components/Hotkeys'
+import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0

@@ -18,8 +18,8 @@ import {renderFileInput, renderImageInput, renderVideoInput} from '../../../../.
 import {BaseVideoInput} from '../../../../../media-library/plugin/VideoInput/VideoInput'
 import {MediaLibraryUploader} from '../../../studio/assetSourceMediaLibrary/uploader'
 import {getDataTestIdPrefix} from '../common/AssetSourceBrowser'
-import {BaseFileInput} from '../FileInput'
-import {BaseImageInput} from '../ImageInput'
+import {BaseFileInput} from '../FileInput/FileInput'
+import {BaseImageInput} from '../ImageInput/ImageInput'
 
 function getBrowseTestId(schemaTypeName: string, sourceName: string): string {
   const prefix = getDataTestIdPrefix({name: schemaTypeName, jsonType: 'object'})

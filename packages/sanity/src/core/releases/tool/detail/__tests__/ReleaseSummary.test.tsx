@@ -28,20 +28,6 @@ import {
   useBundleDocumentsMockReturnWithResults,
 } from './__mocks__/useBundleDocuments.mock'
 
-vi.mock('../../../index', () => ({
-  useDocumentPresence: vi.fn().mockReturnValue({
-    user: '',
-    path: '',
-    sessionId: '',
-    lastActiveAt: '',
-  }),
-  useDocumentPreviewStore: vi.fn().mockReturnValue({
-    unstable_observeDocumentIdSet: vi.fn(() => ({
-      pipe: vi.fn(),
-    })),
-  }),
-}))
-
 vi.mock('../useBundleDocuments', () => ({
   useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
 }))

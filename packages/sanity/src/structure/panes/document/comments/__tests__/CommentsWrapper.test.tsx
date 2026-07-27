@@ -2,7 +2,7 @@ import {render} from '@testing-library/react'
 import {getTargetScopeId, usePerspective} from 'sanity'
 import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {usePaneRouter} from '../../../../components'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../useDocumentPane'
 import {CommentsWrapper} from '../CommentsWrapper'
 
@@ -36,7 +36,7 @@ vi.mock('sanity/router', () => ({
   })),
 }))
 
-vi.mock('../../../../components', () => ({
+vi.mock('../../../../components/paneRouter/usePaneRouter', () => ({
   usePaneRouter: vi.fn(() => ({
     params: {},
     setParams: vi.fn(),

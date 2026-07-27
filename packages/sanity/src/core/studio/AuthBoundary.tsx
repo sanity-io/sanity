@@ -1,15 +1,17 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 
-import {LoadingBlock} from '../components/loadingBlock'
-import {type AuthStore} from '../store'
+import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
+import {type AuthStore} from '../store/authStore/types'
 import {
   AuthBoundaryResolved,
   SessionTokenExchangeCompleted,
 } from './__telemetry__/authBoundary.telemetry'
 import {StudioAuthReadyMeasured} from './__telemetry__/bootstrap.telemetry'
-import {useActiveWorkspace} from './activeWorkspaceMatcher'
-import {AuthenticateScreen, NotAuthenticatedScreen, RequestAccessScreen} from './screens'
+import {useActiveWorkspace} from './activeWorkspaceMatcher/useActiveWorkspace'
+import {AuthenticateScreen} from './screens/AuthenticateScreen'
+import {NotAuthenticatedScreen} from './screens/NotAuthenticatedScreen'
+import {RequestAccessScreen} from './screens/RequestAccessScreen'
 import {getPageVisibilitySnapshot} from './telemetry/pageVisibility'
 
 // Module-level one-shot guard. Survives StrictMode double-mount in dev so the
