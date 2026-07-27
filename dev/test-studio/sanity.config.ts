@@ -698,7 +698,7 @@ export default defineConfig([
     title: 'Coffee Shop',
     basePath: '/coffee-shop',
     projectId: 'ppsg7ml5',
-    dataset: 'test',
+    dataset: 'coffee-shop',
     ...envConfig.production,
     schema: {types: coffeeShopSchemaTypes},
     plugins: [

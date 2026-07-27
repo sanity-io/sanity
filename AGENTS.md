@@ -153,7 +153,7 @@ pnpm dev  # Starts test-studio at http://localhost:3333 and preview-iframe (coff
 - Uses staging API by default (`api.sanity.work`)
 - Session persists in browser, so subsequent visits won't require re-authentication
 - `pnpm dev` / `pnpm dev:test-studio` also starts `dev/preview-iframe` (Brew & Bean coffee shop Vite app on port 3334) so Presentation can load its cross-origin iframe. Studio-only: `pnpm dev:test-studio:studio`. Preview-only: `pnpm dev:preview-iframe`.
-- Coffee shop Presentation workspace: `http://localhost:3333/coffee-shop` (limited schema: landing page, products, origins, promos). Use the **Seed coffee shop** tool in that workspace to create demo content, then open Presentation.
+- Coffee shop Presentation workspace: `http://localhost:3333/coffee-shop` (project `ppsg7ml5`, dataset `coffee-shop`; limited schema: landing page, products, origins, promos). Use the **Seed coffee shop** tool in that workspace to create demo content, then open Presentation.
 - Deployed preview iframe: Sanity Sandbox Vercel project `test-studio-preview-iframe` (`https://test-studio-preview-iframe.sanity.dev`)
 
 Use the dev studio when you need to:

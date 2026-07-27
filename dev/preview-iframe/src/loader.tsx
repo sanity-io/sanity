@@ -10,7 +10,7 @@ const studioUrl =
 
 const client = createClient({
   projectId: 'ppsg7ml5',
-  dataset: 'test',
+  dataset: 'coffee-shop',
   useCdn: true,
   apiVersion: '2025-03-19',
   stega: {enabled: true, studioUrl},
