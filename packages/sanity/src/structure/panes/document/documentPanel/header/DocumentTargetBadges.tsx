@@ -1,4 +1,5 @@
 import {Card, Flex, Text, type BadgeTone} from '@sanity/ui'
+import {motion} from 'motion/react'
 import {
   forwardRef,
   type ForwardRefExoticComponent,
@@ -21,6 +22,8 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
+import {Tooltip} from '../../../../../ui-components'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 
 /**
@@ -128,33 +131,37 @@ const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: S
 
 export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
   const {targetDocumentState} = useDocumentPane()
-  const {selectedPerspective} = usePerspective()
+  const {selectedPerspective, selectedVariant} = usePerspective()
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const isInCurrentTarget =
     targetDocumentState.status === 'ready' && Boolean(targetDocumentState.targetDocument)
-
-  if (!isInCurrentTarget) {
-    return null
-  }
-
-  const selectedVariant =
-    targetDocumentState.status === 'ready' ? targetDocumentState.variant : undefined
+  const badgeOpacity = isInCurrentTarget ? 1 : 0.5
 
   return (
-    <Flex align="center" flex="none" gap={2} paddingRight={1}>
-      <TargetBadge
-        tone={getPerspectiveBadgeTone(selectedPerspective)}
-        border
-        radius={4}
-        data-ui="DocumentTargetPerspectiveBadge"
-      >
-        <PerspectiveBadgeLabel selectedPerspective={selectedPerspective} />
-      </TargetBadge>
-      {selectedVariant ? (
-        <TargetBadge tone="suggest" border radius={4} data-ui="DocumentTargetVariantBadge">
-          <VariantBadgeLabel variant={selectedVariant} />
-        </TargetBadge>
-      ) : null}
-    </Flex>
+    <Tooltip
+      content={t('document-target-badges.not-in-target.tooltip')}
+      disabled={isInCurrentTarget}
+    >
+      <Flex align="center" flex="none" gap={2} paddingRight={1}>
+        <motion.div animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
+          <TargetBadge
+            tone={getPerspectiveBadgeTone(selectedPerspective)}
+            border
+            radius={4}
+            data-ui="DocumentTargetPerspectiveBadge"
+          >
+            <PerspectiveBadgeLabel selectedPerspective={selectedPerspective} />
+          </TargetBadge>
+        </motion.div>
+        {selectedVariant ? (
+          <motion.div animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
+            <TargetBadge tone="suggest" border radius={4} data-ui="DocumentTargetVariantBadge">
+              <VariantBadgeLabel variant={selectedVariant} />
+            </TargetBadge>
+          </motion.div>
+        ) : null}
+      </Flex>
+    </Tooltip>
   )
 })
