@@ -214,6 +214,9 @@
     "eslint/no-underscore-dangle": "off",
     // We no longer allow commonjs as we ship ESM only
     "import/no-commonjs": "error",
+    // Ban `export *` barrel files that pull in large module graphs; import
+    // directly from the module that defines a symbol instead
+    "oxc/no-barrel-file": "error",
     "no-restricted-globals": [
       "error",
       {

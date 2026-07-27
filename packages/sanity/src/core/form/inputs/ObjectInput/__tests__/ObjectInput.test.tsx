@@ -3,7 +3,7 @@ import {screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
-import {renderObjectInput} from '../../../../../../test/form'
+import {renderObjectInput} from '../../../../../../test/form/renderObjectInput'
 import {
   type RenderFieldCallback,
   type RenderInputCallback,

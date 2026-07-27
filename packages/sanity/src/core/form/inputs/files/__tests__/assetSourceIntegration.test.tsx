@@ -14,7 +14,9 @@ import {
   observeImageAssetStub,
   observeVideoAssetStub,
 } from '../../../../../../test/fixtures/assetSourceMocks'
-import {renderFileInput, renderImageInput, renderVideoInput} from '../../../../../../test/form'
+import {renderFileInput} from '../../../../../../test/form/renderFileInput'
+import {renderImageInput} from '../../../../../../test/form/renderImageInput'
+import {renderVideoInput} from '../../../../../../test/form/renderVideoInput'
 import {BaseVideoInput} from '../../../../../media-library/plugin/VideoInput/VideoInput'
 import {MediaLibraryUploader} from '../../../studio/assetSourceMediaLibrary/uploader'
 import {getDataTestIdPrefix} from '../common/AssetSourceBrowser'

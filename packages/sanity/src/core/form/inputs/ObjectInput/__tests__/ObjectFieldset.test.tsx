@@ -3,7 +3,7 @@ import {screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
 
-import {renderObjectInput} from '../../../../../../test/form'
+import {renderObjectInput} from '../../../../../../test/form/renderObjectInput'
 import {type FieldProps} from '../../../types/fieldProps'
 import {ObjectInput} from '../ObjectInput'
 
