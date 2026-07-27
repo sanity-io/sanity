@@ -1,4 +1,5 @@
 import {type BaseActionOptions, type ReleaseDocument} from '@sanity/client'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback} from 'react'
 
 import {useClient} from '../../hooks/useClient'
@@ -11,7 +12,11 @@ import {isReleaseScheduledOrScheduling} from '../../releases/util/util'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDraftId, getVersionId} from '../../util'
 import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
-import {useScheduledDraftsTelemetry} from './useScheduledDraftsTelemetry'
+import {
+  ScheduledDraftCancelled,
+  ScheduledDraftCreated,
+  ScheduledDraftRescheduled,
+} from '../__telemetry__/scheduledDrafts.telemetry'
 
 export interface ScheduleDraftOperationsValue {
   /**
@@ -20,7 +25,6 @@ export interface ScheduleDraftOperationsValue {
   createScheduledDraft: (
     documentId: string,
     publishAt: Date,
-    documentType: string,
     opts?: BaseActionOptions,
   ) => Promise<string>
   /**
@@ -58,7 +62,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const releaseOperations = useReleaseOperations()
   const {data: allReleases} = useAllReleases()
-  const telemetry = useScheduledDraftsTelemetry()
+  const telemetry = useTelemetry()
 
   const createScheduledDraftRelease = useCallback(
     async (title: string, scheduleAt: Date, opts?: BaseActionOptions): Promise<string> => {
@@ -84,12 +88,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   )
 
   const handleCreateScheduledDraft = useCallback(
-    async (
-      documentId: string,
-      publishAt: Date,
-      documentType: string,
-      opts?: BaseActionOptions,
-    ): Promise<string> => {
+    async (documentId: string, publishAt: Date, opts?: BaseActionOptions): Promise<string> => {
       // Create the release (but don't schedule it yet)
       const releaseTitle = t('scheduled-drafts.release.title')
       const releaseDocumentId = await createScheduledDraftRelease(releaseTitle, publishAt, opts)
@@ -102,7 +101,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
       // Now schedule the release after adding the document
       await releaseOperations.schedule(releaseDocumentId, publishAt, opts)
 
-      telemetry.scheduledDraftCreated(documentType)
+      telemetry.log(ScheduledDraftCreated)
 
       return releaseDocumentId
     },
@@ -166,7 +165,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
 
       await releaseOperations.deleteRelease(releaseDocumentId, opts)
 
-      telemetry.scheduledDraftCancelled(shouldCopyToDraft)
+      telemetry.log(ScheduledDraftCancelled, {keptAsDraft: shouldCopyToDraft})
     },
     [releaseOperations, allReleases, client, telemetry],
   )
@@ -192,7 +191,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
 
       await releaseOperations.schedule(release._id, newPublishAt, opts)
 
-      telemetry.scheduledDraftRescheduled(fromPaused)
+      telemetry.log(ScheduledDraftRescheduled, {fromPaused})
     },
     [releaseOperations, telemetry],
   )

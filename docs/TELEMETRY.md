@@ -244,11 +244,11 @@ Tracked automatically via `web-vitals/attribution` library:
 
 Scheduled drafts (cardinality-one releases) emit their own events so their usage can be distinguished from content releases. Each is logged from `useScheduleDraftOperations` after its operation succeeds.
 
-| Event                         | When                                        | Payload            |
-| ----------------------------- | ------------------------------------------- | ------------------ |
-| `Scheduled Draft Created`     | A draft is scheduled for publishing         | `{ documentType }` |
-| `Scheduled Draft Rescheduled` | A scheduled draft's publish time is changed | `{ fromPaused }`   |
-| `Scheduled Draft Cancelled`   | A scheduled draft is cancelled              | `{ keptAsDraft }`  |
+| Event                         | When                                        | Payload           |
+| ----------------------------- | ------------------------------------------- | ----------------- |
+| `Scheduled Draft Created`     | A draft is scheduled for publishing         | none              |
+| `Scheduled Draft Rescheduled` | A scheduled draft's publish time is changed | `{ fromPaused }`  |
+| `Scheduled Draft Cancelled`   | A scheduled draft is cancelled              | `{ keptAsDraft }` |
 
 ### Comments
 

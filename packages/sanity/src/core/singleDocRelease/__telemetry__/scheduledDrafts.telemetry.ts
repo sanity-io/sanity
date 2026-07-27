@@ -1,9 +1,5 @@
 import {defineEvent} from '@sanity/telemetry'
 
-interface ScheduledDraftCreatedInfo {
-  documentType: string
-}
-
 interface ScheduledDraftRescheduledInfo {
   /** True when resuming a paused draft, false when editing an already-scheduled date */
   fromPaused: boolean
@@ -15,7 +11,7 @@ interface ScheduledDraftCancelledInfo {
 }
 
 /** When a scheduled draft is successfully created */
-export const ScheduledDraftCreated = defineEvent<ScheduledDraftCreatedInfo>({
+export const ScheduledDraftCreated = defineEvent({
   name: 'Scheduled Draft Created',
   version: 1,
   description: 'User scheduled a draft for publishing',
