@@ -170,7 +170,7 @@
     "@sanity/mutate": "^0.18.1",
     "@sanity/mutator": "workspace:*",
     "@sanity/presentation-comlink": "^2.2.0",
-    "@sanity/preview-url-secret": "^4.1.1",
+    "@sanity/preview-url-secret": "^4.1.2",
     "@sanity/prism-groq": "^1.1.2",
     "@sanity/schema": "workspace:*",
     "@sanity/telemetry": "catalog:",
