@@ -1,9 +1,10 @@
 import {defineType} from '@sanity/types'
-import {render, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {defineConfig} from '../../../../config'
+import {useDocumentOperation} from '../../../../hooks/useDocumentOperation'
 import {DiscardVersionDialog} from '../DiscardVersionDialog'
 
 const {previewSpy} = vi.hoisted(() => ({previewSpy: vi.fn()}))
@@ -17,8 +18,10 @@ vi.mock('../../../../preview', () => ({
   },
 }))
 
+const mockDiscardChangesExecute = vi.fn()
+
 vi.mock('../../../../hooks/useDocumentOperation', () => ({
-  useDocumentOperation: vi.fn(() => ({discardChanges: {execute: vi.fn()}})),
+  useDocumentOperation: vi.fn(() => ({discardChanges: {execute: mockDiscardChangesExecute}})),
 }))
 
 // The target document lookup needs the document preview store (mocked away above); these tests
@@ -33,14 +36,6 @@ vi.mock('../../../../hooks/useTargetDocumentState', async (importOriginal) => ({
     variant: undefined,
     publishedSibling: undefined,
   })),
-}))
-
-vi.mock('../../../hooks/useVersionOperations', () => ({
-  useVersionOperations: vi.fn(() => ({discardVersion: vi.fn()})),
-}))
-
-vi.mock('../../../../perspective/usePerspective', () => ({
-  usePerspective: vi.fn(() => ({selectedPerspective: 'drafts'})),
 }))
 
 const config = defineConfig({
@@ -75,6 +70,8 @@ async function renderDialog(props: {documentId: string; isGoingToUnpublish?: boo
 describe('DiscardVersionDialog preview perspective', () => {
   beforeEach(() => {
     previewSpy.mockClear()
+    mockDiscardChangesExecute.mockClear()
+    vi.mocked(useDocumentOperation).mockClear()
   })
 
   it('previews a discarded draft under the drafts perspective', async () => {
@@ -82,6 +79,7 @@ describe('DiscardVersionDialog preview perspective', () => {
     expect(previewSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({perspectiveStack: ['drafts']}),
     )
+    expect(useDocumentOperation).toHaveBeenCalledWith('my-doc', 'testDoc', undefined)
   })
 
   it('previews a discarded release version under its release perspective', async () => {
@@ -94,5 +92,29 @@ describe('DiscardVersionDialog preview perspective', () => {
   it('previews the published document (empty perspective) when unpublishing', async () => {
     await renderDialog({documentId: 'drafts.my-doc', isGoingToUnpublish: true})
     expect(previewSpy).toHaveBeenLastCalledWith(expect.objectContaining({perspectiveStack: []}))
+  })
+
+  it('disables confirm when discard operation is disabled', async () => {
+    vi.mocked(useDocumentOperation).mockReturnValue({
+      discardChanges: {disabled: 'NO_CHANGES', execute: mockDiscardChangesExecute},
+    } as ReturnType<typeof useDocumentOperation>)
+
+    const wrapper = await createTestProvider({config})
+    render(
+      <DiscardVersionDialog
+        onClose={vi.fn()}
+        documentId="versions.rSummer.my-doc"
+        documentType="testDoc"
+        fromPerspective="drafts"
+        isGoingToUnpublish={false}
+      />,
+      {wrapper},
+    )
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', {name: 'discard-version-dialog.title-release'}),
+      ).toBeDisabled(),
+    )
   })
 })

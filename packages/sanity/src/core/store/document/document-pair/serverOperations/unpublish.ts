@@ -1,3 +1,5 @@
+import {type SanityDocumentLike} from '@sanity/types'
+
 import {getVariantVersionInfo} from '../../../../variants/documents/getVariantVersionInfo'
 import {type OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
@@ -5,10 +7,10 @@ import {assertNotVariantVersion} from '../utils/assertNotVariantVersion'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {variantActionsApiClient} from '../utils/variantActionsApiClient'
 
-type DisabledReason = 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'
+type DisabledReason = 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED' | 'ALREADY_UNPUBLISHED'
 
 export const unpublish: OperationImpl<[], DisabledReason> = {
-  disabled: ({schema, snapshots, typeName}) => {
+  disabled: ({schema, snapshots, typeName, idPair}) => {
     if (isLiveEditEnabled(schema, typeName)) {
       return 'LIVE_EDIT_ENABLED'
     }
@@ -22,10 +24,20 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
       return variantVersion.bundleId !== 'drafts' ? false : 'NOT_PUBLISHED'
     }
 
+    if (idPair?.versionId) {
+      if (!snapshots.published) {
+        return 'NOT_PUBLISHED'
+      }
+      if ((snapshots.version as SanityDocumentLike | null | undefined)?._system?.delete === true) {
+        return 'ALREADY_UNPUBLISHED'
+      }
+      return false
+    }
+
     return snapshots.published ? false : 'NOT_PUBLISHED'
   },
   execute: ({client, idPair, snapshots}) => {
-    const variantVersion = getVariantVersionInfo(snapshots.version)
+    const variantVersion = getVariantVersionInfo(snapshots?.version)
     if (variantVersion) {
       if (variantVersion.bundleId === 'drafts') {
         throw new Error('Cannot unpublish a draft variant')
@@ -41,7 +53,7 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
           actionType: 'sanity.action.document.variant.unpublish',
           publishedId: idPair.publishedId,
           variantId: variantVersion.variantId,
-          bundleId: snapshots.version?._system?.bundleId,
+          bundleId: snapshots?.version?._system?.bundleId,
         },
         {
           tag: 'document.unpublish',
@@ -50,7 +62,21 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
       )
     }
 
-    assertNotVariantVersion(snapshots.version, 'unpublish')
+    if (idPair?.versionId) {
+      return actionsApiClient(client, idPair).observable.action(
+        {
+          actionType: 'sanity.action.document.version.unpublish',
+          versionId: idPair.versionId,
+          publishedId: idPair.publishedId,
+        },
+        {
+          tag: 'document.unpublish',
+          skipCrossDatasetReferenceValidation: true,
+        },
+      )
+    }
+
+    assertNotVariantVersion(snapshots?.version, 'unpublish')
 
     return actionsApiClient(client, idPair).observable.action(
       {

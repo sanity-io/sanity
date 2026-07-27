@@ -36,6 +36,17 @@ function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocum
 
 describe('unpublish', () => {
   describe('disabled', () => {
+    it('returns LIVE_EDIT_ENABLED if isLiveEditEnabled', () => {
+      ;(isLiveEditEnabled as Mock).mockImplementation(() => true)
+
+      expect(
+        unpublish.disabled(
+          // oxlint-disable-next-line no-explicit-any
+          {} as any,
+        ),
+      ).toBe('LIVE_EDIT_ENABLED')
+    })
+
     it('returns NOT_PUBLISHED when there is no published document', () => {
       expect(
         unpublish.disabled({
@@ -72,6 +83,58 @@ describe('unpublish', () => {
         } as unknown as OperationArgs),
       ).toBe('NOT_PUBLISHED')
     })
+
+    it('returns NOT_PUBLISHED when version context has no published document', () => {
+      expect(
+        unpublish.disabled({
+          typeName: 'book',
+          idPair: {
+            publishedId: 'my-id',
+            draftId: 'drafts.my-id',
+            versionId: 'versions.r1.my-id',
+          },
+          snapshots: {
+            draft: undefined,
+            published: undefined,
+            version: {} as SanityDocument,
+          },
+        } as unknown as OperationArgs),
+      ).toBe('NOT_PUBLISHED')
+    })
+
+    it('returns ALREADY_UNPUBLISHED when version is marked for unpublish', () => {
+      expect(
+        unpublish.disabled({
+          typeName: 'book',
+          idPair: {
+            publishedId: 'my-id',
+            draftId: 'drafts.my-id',
+            versionId: 'versions.r1.my-id',
+          },
+          snapshots: {
+            draft: undefined,
+            published: {} as SanityDocument,
+            version: {_system: {delete: true}} as SanityDocument,
+          },
+        } as unknown as OperationArgs),
+      ).toBe('ALREADY_UNPUBLISHED')
+    })
+
+    it("otherwise the operation isn't disabled for published documents", () => {
+      expect(
+        unpublish.disabled({
+          typeName: 'book',
+          idPair: {
+            publishedId: 'my-id',
+            draftId: 'drafts.my-id',
+          },
+          snapshots: {
+            draft: undefined,
+            published: {} as SanityDocument,
+          },
+        } as unknown as OperationArgs),
+      ).toBe(false)
+    })
   })
 
   describe('execute', () => {
@@ -98,9 +161,6 @@ describe('unpublish', () => {
           options: {tag: 'document.unpublish', skipCrossDatasetReferenceValidation: true},
         },
       ])
-      // `toEqual` treats a missing key and an explicit `undefined` as equal, so assert the
-      // bundleId is genuinely not 'drafts' (an undefined bundleId addresses the published
-      // variant; the serialized payload omits the field).
       // @ts-expect-error - $log is not typed
       expect(client.$log.observable.action[0].actions.bundleId).toBeUndefined()
     })
@@ -168,6 +228,21 @@ describe('unpublish', () => {
           options: {tag: 'document.unpublish', skipCrossDatasetReferenceValidation: true},
         },
       ])
+    })
+
+    it('uses sanity.action.document.version.unpublish for version context', () => {
+      const client = createMockSanityClient()
+
+      unpublish.execute({
+        client,
+        idPair: {
+          draftId: 'drafts.my-id',
+          publishedId: 'my-id',
+          versionId: 'versions.r1.my-id',
+        },
+      } as unknown as OperationArgs)
+
+      expect(client.$log).toMatchSnapshot()
     })
   })
 })
