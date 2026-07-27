@@ -51,7 +51,8 @@ export function DocumentNotInVariantBanner() {
       return tCore('release.chip.published')
     }
 
-    return ''
+    // Covers release ids (string) and other non-system bundle perspectives.
+    return String(selectedPerspective)
   }, [selectedPerspective, tCore])
 
   const handleAddToVariant = useCallback(async () => {
