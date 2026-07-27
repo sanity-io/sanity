@@ -1,11 +1,5 @@
 import {useMemo} from 'react'
-import {
-  isPublishedPerspective,
-  prepareForPreview,
-  usePerspective,
-  useTranslation,
-  useValuePreview,
-} from 'sanity'
+import {prepareForPreview, useTranslation, useValuePreview} from 'sanity'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'

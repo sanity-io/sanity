@@ -57,9 +57,23 @@ function createWrapperComponent(client: SanityClient) {
 }
 
 describe('useDocumentTitle', () => {
+  const baseValue = {
+    _id: 'test-id',
+    _type: 'testSchema',
+  }
+
+  const defaultDocumentValue = {
+    ...baseValue,
+    _createdAt: '2023-01-01T00:00:00Z',
+    _updatedAt: '2023-01-01T00:00:00Z',
+    _rev: 'rev1',
+    title: 'Test Document',
+  }
+
   const defaultDocumentPaneValue = {
     connectionState: 'connected' as const,
     schemaType: {title: 'Test Schema', name: 'testSchema', jsonType: 'object', fields: []},
+    value: defaultDocumentValue,
     editState: {
       id: 'test-id',
       type: 'testSchema',
@@ -108,9 +122,10 @@ describe('useDocumentTitle', () => {
     })
   })
 
-  it('should return "New {schemaType.title}" when no document value exists', async () => {
+  it('should return "New {schemaType.title}" when preview has no title for base value', async () => {
     mockUseDocumentPane.mockReturnValue({
       ...defaultDocumentPaneValue,
+      value: baseValue,
       editState: null,
     } as DocumentPaneContextValue)
 
@@ -137,6 +152,7 @@ describe('useDocumentTitle', () => {
     mockUseDocumentPane.mockReturnValue({
       ...defaultDocumentPaneValue,
       schemaType: {name: 'testSchema'}, // No title
+      value: baseValue,
       editState: null,
     } as DocumentPaneContextValue)
 
@@ -182,10 +198,12 @@ describe('useDocumentTitle', () => {
     })
   })
 
-  it('should return undefined title and error when connecting and not subscribed', async () => {
+  it('should return undefined title when connecting and not subscribed', async () => {
     mockUseDocumentPane.mockReturnValue({
       ...defaultDocumentPaneValue,
       connectionState: 'connecting',
+      isDeleted: true,
+      value: baseValue,
       editState: null,
     } as DocumentPaneContextValue)
 
@@ -199,41 +217,19 @@ describe('useDocumentTitle', () => {
     })
   })
 
-  it('should use version over draft over published for document value', async () => {
+  it('should use document pane value for preview', async () => {
+    const versionDocument = {
+      _id: 'versions.release1.test-id',
+      _type: 'testSchema',
+      _createdAt: '2023-01-01T00:00:00Z',
+      _updatedAt: '2023-01-01T00:00:00Z',
+      _rev: 'rev1',
+      title: 'Version Title',
+    }
+
     mockUseDocumentPane.mockReturnValue({
       ...defaultDocumentPaneValue,
-      editState: {
-        id: 'test-id',
-        type: 'testSchema',
-        transactionSyncLock: {enabled: false},
-        liveEdit: {enabled: false},
-        version: {
-          _id: 'versions.release1.test-id',
-          _type: 'testSchema',
-          _createdAt: '2023-01-01T00:00:00Z',
-          _updatedAt: '2023-01-01T00:00:00Z',
-          _rev: 'rev1',
-          title: 'Version Title',
-        },
-        draft: {
-          _id: 'drafts.test-id',
-          _type: 'testSchema',
-          _createdAt: '2023-01-01T00:00:00Z',
-          _updatedAt: '2023-01-01T00:00:00Z',
-          _rev: 'rev1',
-          title: 'Draft Title',
-        },
-        published: {
-          _id: 'test-id',
-          _type: 'testSchema',
-          _createdAt: '2023-01-01T00:00:00Z',
-          _updatedAt: '2023-01-01T00:00:00Z',
-          _rev: 'rev1',
-          title: 'Published Title',
-        },
-        patches: [],
-        historyController: {} as any,
-      },
+      value: versionDocument,
     } as unknown as DocumentPaneContextValue)
 
     mockUseValuePreview.mockReturnValue({
@@ -241,8 +237,6 @@ describe('useDocumentTitle', () => {
       value: {title: 'Version Title'},
       isLoading: false,
     })
-
-    const client = createMockSanityClient()
 
     const {result} = renderHook(() => useDocumentTitle())
 
@@ -253,49 +247,27 @@ describe('useDocumentTitle', () => {
       })
     })
 
-    // Verify that useValuePreview was called with the version value
+    // Verify that useValuePreview was called with the document pane value
     expect(mockUseValuePreview).toHaveBeenCalledWith({
       enabled: true,
       schemaType: {title: 'Test Schema', fields: [], jsonType: 'object', name: 'testSchema'},
-      value: {
-        _id: 'versions.release1.test-id',
-        _type: 'testSchema',
-        title: 'Version Title',
-        _createdAt: '2023-01-01T00:00:00Z',
-        _updatedAt: '2023-01-01T00:00:00Z',
-        _rev: 'rev1',
-      },
+      value: versionDocument,
     })
   })
 
-  it('should use draft when version is not available', async () => {
+  it('should use draft document pane value for preview', async () => {
+    const draftDocument = {
+      _id: 'drafts.test-id',
+      _type: 'testSchema',
+      _createdAt: '2023-01-01T00:00:00Z',
+      _updatedAt: '2023-01-01T00:00:00Z',
+      _rev: 'rev1',
+      title: 'Draft Title',
+    }
+
     mockUseDocumentPane.mockReturnValue({
       ...defaultDocumentPaneValue,
-      editState: {
-        id: 'test-id',
-        type: 'testSchema',
-        transactionSyncLock: {enabled: false},
-        liveEdit: {enabled: false},
-        version: undefined,
-        draft: {
-          _id: 'drafts.test-id',
-          _type: 'testSchema',
-          _createdAt: '2023-01-01T00:00:00Z',
-          _updatedAt: '2023-01-01T00:00:00Z',
-          _rev: 'rev1',
-          title: 'Draft Title',
-        },
-        published: {
-          _id: 'test-id',
-          _type: 'testSchema',
-          _createdAt: '2023-01-01T00:00:00Z',
-          _updatedAt: '2023-01-01T00:00:00Z',
-          _rev: 'rev1',
-          title: 'Published Title',
-        },
-        patches: [],
-        historyController: {} as any,
-      },
+      value: draftDocument,
     } as unknown as DocumentPaneContextValue)
 
     mockUseValuePreview.mockReturnValue({
@@ -317,38 +289,23 @@ describe('useDocumentTitle', () => {
     expect(mockUseValuePreview).toHaveBeenCalledWith({
       enabled: true,
       schemaType: {title: 'Test Schema', name: 'testSchema', fields: [], jsonType: 'object'},
-      value: {
-        _id: 'drafts.test-id',
-        _type: 'testSchema',
-        title: 'Draft Title',
-        _createdAt: '2023-01-01T00:00:00Z',
-        _updatedAt: '2023-01-01T00:00:00Z',
-        _rev: 'rev1',
-      },
+      value: draftDocument,
     })
   })
 
-  it('should use published when version and draft are not available', async () => {
+  it('should use published document pane value for preview', async () => {
+    const publishedDocument = {
+      _id: 'test-id',
+      _type: 'testSchema',
+      _createdAt: '2023-01-01T00:00:00Z',
+      _updatedAt: '2023-01-01T00:00:00Z',
+      _rev: 'rev1',
+      title: 'Published Title',
+    }
+
     mockUseDocumentPane.mockReturnValue({
       ...defaultDocumentPaneValue,
-      editState: {
-        id: 'test-id',
-        type: 'testSchema',
-        transactionSyncLock: {enabled: false},
-        liveEdit: {enabled: false},
-        version: undefined,
-        draft: undefined,
-        published: {
-          _id: 'test-id',
-          _type: 'testSchema',
-          _createdAt: '2023-01-01T00:00:00Z',
-          _updatedAt: '2023-01-01T00:00:00Z',
-          _rev: 'rev1',
-          title: 'Published Title',
-        },
-        patches: [],
-        historyController: {} as any,
-      },
+      value: publishedDocument,
     } as unknown as DocumentPaneContextValue)
 
     mockUseValuePreview.mockReturnValue({
@@ -370,20 +327,14 @@ describe('useDocumentTitle', () => {
     expect(mockUseValuePreview).toHaveBeenCalledWith({
       enabled: true,
       schemaType: {title: 'Test Schema', name: 'testSchema', fields: [], jsonType: 'object'},
-      value: {
-        _id: 'test-id',
-        _type: 'testSchema',
-        title: 'Published Title',
-        _createdAt: '2023-01-01T00:00:00Z',
-        _updatedAt: '2023-01-01T00:00:00Z',
-        _rev: 'rev1',
-      },
+      value: publishedDocument,
     })
   })
 
-  it('should disable preview when no document value is available', async () => {
+  it('should enable preview with base value for new documents', async () => {
     mockUseDocumentPane.mockReturnValue({
       ...defaultDocumentPaneValue,
+      value: baseValue,
       editState: null,
     } as DocumentPaneContextValue)
 
@@ -391,9 +342,9 @@ describe('useDocumentTitle', () => {
 
     await waitFor(() => {
       expect(mockUseValuePreview).toHaveBeenCalledWith({
-        enabled: false,
+        enabled: true,
         schemaType: {title: 'Test Schema', name: 'testSchema', fields: [], jsonType: 'object'},
-        value: undefined,
+        value: baseValue,
       })
     })
   })
@@ -405,14 +356,7 @@ describe('useDocumentTitle', () => {
       expect(mockUseValuePreview).toHaveBeenCalledWith({
         enabled: true,
         schemaType: {title: 'Test Schema', name: 'testSchema', fields: [], jsonType: 'object'},
-        value: {
-          _id: 'test-id',
-          _type: 'testSchema',
-          title: 'Test Document',
-          _createdAt: '2023-01-01T00:00:00Z',
-          _updatedAt: '2023-01-01T00:00:00Z',
-          _rev: 'rev1',
-        },
+        value: defaultDocumentValue,
       })
     })
   })
@@ -433,49 +377,6 @@ describe('useDocumentTitle', () => {
     })
   })
 
-  it('should handle empty editState with connecting state', async () => {
-    mockUseDocumentPane.mockReturnValue({
-      ...defaultDocumentPaneValue,
-      connectionState: 'connecting',
-      editState: null,
-    } as DocumentPaneContextValue)
-
-    const client = createMockSanityClient()
-    const wrapper = await createWrapperComponent(client as any)
-
-    const {result} = renderHook(() => useDocumentTitle(), {wrapper})
-
-    await waitFor(() => {
-      expect(result.current).toEqual({
-        error: undefined,
-        title: undefined,
-      })
-    })
-  })
-
-  it('should handle empty editState with non-connecting state', async () => {
-    mockUseDocumentPane.mockReturnValue({
-      ...defaultDocumentPaneValue,
-      connectionState: 'connected',
-      editState: null,
-    } as DocumentPaneContextValue)
-
-    mockUseValuePreview.mockReturnValue({
-      error: undefined,
-      value: undefined,
-      isLoading: false,
-    })
-
-    const {result} = renderHook(() => useDocumentTitle())
-
-    await waitFor(() => {
-      expect(result.current).toEqual({
-        error: undefined,
-        title: 'New Test Schema',
-      })
-    })
-  })
-
   it('should handle deleted documents by using prepareForPreview directly', async () => {
     const lastRevisionDocument = {
       _id: 'test-id',
@@ -490,6 +391,7 @@ describe('useDocumentTitle', () => {
       ...defaultDocumentPaneValue,
       isDeleted: true,
       lastRevisionDocument,
+      value: baseValue,
       editState: null, // No edit state for deleted documents
     } as DocumentPaneContextValue)
 
