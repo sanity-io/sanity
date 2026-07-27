@@ -17,11 +17,3 @@ export const canvasUsEnglishLocaleBundle: LocaleResourceBundle = {
   namespace: canvasLocaleNamespace,
   resources: () => import('./resources'),
 }
-
-/**
- * The locale resource keys for the canvas integration plugin.
- *
- * @alpha
- * @hidden
- */
-export type {CanvasLocaleResourceKeys} from './resources'

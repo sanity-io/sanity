@@ -17,11 +17,3 @@ export const tasksUsEnglishLocaleBundle: LocaleResourceBundle = {
   namespace: tasksLocaleNamespace,
   resources: () => import('./resources'),
 }
-
-/**
- * The locale resource keys for the task tool.
- *
- * @alpha
- * @hidden
- */
-export type {TasksLocaleResourceKeys} from './resources'
