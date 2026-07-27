@@ -30,6 +30,15 @@ export function defineConfig(config) {
       disableConsoleIntercept: config?.test?.disableConsoleIntercept ?? true,
       alias: {...config?.test?.alias, ...getViteAliases()},
       execArgv: [...workerExecArgv, ...(config?.test?.execArgv ?? [])],
+      experimental: {
+        // Print the slowest imports after test runs, to keep the cost of heavy
+        // import graphs (e.g. barrel files) visible in CI and local runs.
+        importDurations: {
+          limit: 10,
+          print: true,
+        },
+        ...config?.test?.experimental,
+      },
       typecheck: {
         ...config?.test?.typecheck,
         exclude: [
