@@ -37,19 +37,19 @@ export function ProductPage() {
           <EmptyBlock message="This product was not found for the current perspective." />
         )}
 
-        {!loading && !error && data && attr && (
-          <article data-sanity={attr.toString()}>
+        {!loading && !error && data && attr ? (
+          <article>
             <div className="product-hero">
               <div data-sanity={attr.scope('image').toString()}>
                 <CoverImage imageUrl={data.imageUrl} title={data.title} variant="detail" />
               </div>
               <div className="product-hero-copy">
                 <div className="product-card-meta">
-                  {typeof data.discount === 'number' && data.discount > 0 && (
+                  {typeof data.discount === 'number' && data.discount > 0 ? (
                     <span className="badge" data-sanity={attr.scope('discount').toString()}>
                       {data.discount}% off
                     </span>
-                  )}
+                  ) : null}
                   <span data-sanity={attr.scope('price').toString()}>
                     <ProductPrice price={data.price} discount={data.discount} />
                   </span>
@@ -60,11 +60,11 @@ export function ProductPage() {
                     ? `Roasted from ${data.origin.name}${data.origin.region ? `, ${data.origin.region}` : ''}`
                     : 'Origin unknown'}
                 </p>
-                {data.excerpt && (
+                {data.excerpt ? (
                   <p className="lead" data-sanity={attr.scope('excerpt').toString()}>
                     {data.excerpt}
                   </p>
-                )}
+                ) : null}
               </div>
             </div>
 
@@ -72,19 +72,19 @@ export function ProductPage() {
               <RichText value={data.description} />
             </div>
 
-            {data.promo && (
+            {data.promo ? (
               <aside className="promo-banner" data-sanity={attr.scope('promo').toString()}>
                 <div>
                   <h2>{data.promo.title || 'Special offer'}</h2>
-                  {data.promo.tagline && <p>{data.promo.tagline}</p>}
+                  {data.promo.tagline ? <p>{data.promo.tagline}</p> : null}
                 </div>
-                {data.promo.ctaLabel && (
+                {data.promo.ctaLabel ? (
                   <span className="button button-accent">{data.promo.ctaLabel}</span>
-                )}
+                ) : null}
               </aside>
-            )}
+            ) : null}
 
-            {(data.relatedProducts?.length ?? 0) > 0 && (
+            {(data.relatedProducts?.length ?? 0) > 0 ? (
               <section className="section">
                 <h2>You might also like</h2>
                 <div className="product-grid">
@@ -93,9 +93,9 @@ export function ProductPage() {
                   ))}
                 </div>
               </section>
-            )}
+            ) : null}
           </article>
-        )}
+        ) : null}
       </main>
     </div>
   )

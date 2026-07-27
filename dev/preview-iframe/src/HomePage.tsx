@@ -1,5 +1,3 @@
-import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
-
 import {EmptyBlock, ErrorBlock, LoadingBlock, queryErrorMessage, SiteHeader} from './components'
 import {useQuery} from './loader'
 import {LANDING_PAGE_ID, LANDING_PAGE_QUERY, type LandingPageQueryResult} from './queries'
@@ -22,11 +20,9 @@ export function HomePage() {
         {!loading && !error && !page && (
           <EmptyBlock message="No landing page yet — open the Seed coffee shop tool in the studio workspace." />
         )}
-        {!loading && !error && page && (
-          <div data-sanity={createDataAttribute({id: page._id, type: page._type}).toString()}>
-            <Sections page={page} latestProducts={latestProducts} />
-          </div>
-        )}
+        {!loading && !error && page ? (
+          <Sections page={page} latestProducts={latestProducts} />
+        ) : null}
       </main>
     </div>
   )

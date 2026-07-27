@@ -36,6 +36,6 @@ export const coffeeShopPreviewUrl = {
     process.env.SANITY_STUDIO_PREVIEW_IFRAME_ORIGIN ??
     (process.env.NODE_ENV === 'development'
       ? 'http://localhost:3334'
-      : 'https://test-studio-preview-iframe.sanity.dev'),
+      : 'https://test-studio-preview-iframe-git-cursor-coffee-shop-presen-764c1b.sanity.dev'),
   preview: '/',
 } as const

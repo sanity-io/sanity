@@ -65,7 +65,11 @@ export function CoverImage({
 }
 
 export function ProductCard({product}: {product: CoffeeProductCard}) {
-  const attr = createDataAttribute({id: product._id, type: 'demoCoffeeProduct'}).toString()
+  const attr = createDataAttribute({
+    id: product._id,
+    type: 'demoCoffeeProduct',
+    path: 'title',
+  }).toString()
 
   const content = (
     <>

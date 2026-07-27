@@ -714,5 +714,10 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+    beta: {
+      variants: {
+        enabled: true,
+      },
+    },
   },
 ]) as WorkspaceOptions[]
