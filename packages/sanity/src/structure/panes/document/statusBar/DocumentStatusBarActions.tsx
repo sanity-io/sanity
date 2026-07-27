@@ -1,5 +1,5 @@
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentGroupInventory,
@@ -69,6 +69,11 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const referringDocuments$ = useMemo(
     () => referringDocuments({documentId, versionedClient: client, documentStore}),
     [documentId, client, documentStore],
+  )
+
+  const requestDocumentGroupInventoryClose = useCallback(
+    () => setIsDocumentGroupInventoryActive(false),
+    [setIsDocumentGroupInventoryActive],
   )
 
   const {selectedReleaseId} = usePerspective()
@@ -145,6 +150,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
             portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
             perspectiveList={perspectiveList}
             referringDocuments$={referringDocuments$}
+            requestClose={requestDocumentGroupInventoryClose}
             components={documentGroupInventoryComponents}
           />
         </DocumentGroupInventoryAction>

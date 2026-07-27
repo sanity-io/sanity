@@ -19,11 +19,3 @@ export const singleDocReleaseUsEnglishLocaleBundle: LocaleResourceBundle = {
   namespace: singleDocReleaseNamespace,
   resources: () => import('./resources'),
 }
-
-/**
- * The locale resource keys for the single doc release tool.
- *
- * @alpha
- * @hidden
- */
-export type {SingleDocReleaseLocaleResourceKeys} from './resources'
