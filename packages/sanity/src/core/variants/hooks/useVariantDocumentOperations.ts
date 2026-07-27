@@ -1,4 +1,3 @@
-import {type SanityDocumentLike} from '@sanity/types'
 import {useCallback} from 'react'
 
 import {useClient} from '../../hooks'
@@ -15,7 +14,8 @@ export function useVariantDocumentOperations() {
 
   const createVariantDocument = useCallback(
     async (options: {
-      document: SanityDocumentLike
+      baseId: string
+      baseRevisionId?: string
       variant: SystemVariant
       selectedPerspective: TargetPerspective
     }) => {
