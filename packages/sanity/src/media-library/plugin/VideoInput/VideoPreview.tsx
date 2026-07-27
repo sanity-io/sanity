@@ -23,6 +23,7 @@ import {useClient} from '../../../core/hooks'
 import {useTranslation} from '../../../core/i18n'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {CUSTOM_DOMAIN_PRODUCTION, CUSTOM_DOMAIN_STAGING} from './constants'
+import {parseMediaLibraryReference} from './parseMediaLibraryReference'
 import {getPlaybackTokens, type VideoAssetInputProps} from './types'
 import {useVideoPlaybackInfo} from './useVideoPlaybackInfo'
 import {VideoActionsMenu} from './VideoActionsMenu'
@@ -30,19 +31,14 @@ import {VideoSkeleton} from './VideoSkeleton'
 
 /** @internal Exported for testing */
 export function getMediaLibraryId(assetRef: string) {
-  const parts = assetRef.split(':')
-  if (parts.length !== 3 || parts[0] !== 'media-library' || !parts[1]) {
-    throw new Error('Invalid asset reference')
-  }
-  return parts[1]
+  const parsed = parseMediaLibraryReference(assetRef)
+  if (!parsed) throw new Error('Invalid asset reference')
+  return parsed.mediaLibraryId
 }
 
 /** Extract asset container ID from a media-library ref (value.media._ref, not value.asset._ref) */
 function getAssetContainerIdFromRef(ref: string): string | null {
-  if (!ref?.startsWith('media-library:')) return null
-  const parts = ref.split(':')
-  if (parts.length !== 3 || !parts[2]) return null
-  return parts[2]
+  return parseMediaLibraryReference(ref)?.documentId ?? null
 }
 
 /** Minimal asset for openInSource when observeAsset hasn't resolved yet (media-library refs).

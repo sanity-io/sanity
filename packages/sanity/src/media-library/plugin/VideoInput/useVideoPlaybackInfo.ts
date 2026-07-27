@@ -15,6 +15,7 @@ import {
 
 import {DEFAULT_API_VERSION} from '../../../core/form/studio/assetSourceMediaLibrary/constants'
 import {useClient} from '../../../core/hooks/useClient'
+import {parseMediaLibraryReference} from './parseMediaLibraryReference'
 import {type VideoPlaybackInfo} from './types'
 
 const POLLING_DELAY = 2_000
@@ -31,7 +32,9 @@ interface DocResponse {
 }
 
 function isPlaybackNotFoundError(error: unknown): boolean {
-  return (error as any)?.statusCode === 404
+  return (
+    typeof error === 'object' && error !== null && 'statusCode' in error && error.statusCode === 404
+  )
 }
 
 /**
@@ -94,28 +97,40 @@ function parseAssetInstanceId(assetRef: string): string {
     return assetRef
   }
 
-  const parts = assetRef.split(':')
+  const parsed = parseMediaLibraryReference(assetRef)
+  if (!parsed) throw new Error(`Invalid Media Library asset reference: ${assetRef}`)
 
-  if (parts.length !== 3) {
-    throw new Error(`Invalid asset reference format: expected 3 parts, got ${parts.length}`)
-  }
-
-  const [resourceType, mediaLibraryId, instanceId] = parts
-
-  if (resourceType !== 'media-library') {
-    throw new Error(`Invalid resource type: expected "media-library", got "${resourceType}"`)
-  }
-
-  if (!instanceId) {
-    throw new Error('Missing asset instance ID in reference')
-  }
-
-  return instanceId
+  return parsed.documentId
 }
 
 export interface UseVideoPlaybackInfoParams {
   mediaLibraryId: string
   assetRef: Reference
+  thumbnail?: {
+    width: number
+    height: number
+    fit: 'smartcrop'
+  }
+}
+
+export function getVideoPlaybackInfoRequest(params: UseVideoPlaybackInfoParams) {
+  const {mediaLibraryId, assetRef, thumbnail} = params
+  const assetInstanceId = parseAssetInstanceId(assetRef._ref)
+  const baseRequest = {
+    uri: `/media-libraries/${mediaLibraryId}/video/${assetInstanceId}/playback-info`,
+    tag: 'media-library.video-playback-info',
+  }
+
+  if (!thumbnail) return baseRequest
+
+  return {
+    ...baseRequest,
+    query: {
+      thumbnailWidth: String(thumbnail.width),
+      thumbnailHeight: String(thumbnail.height),
+      thumbnailFit: thumbnail.fit,
+    },
+  }
 }
 
 export type VideoPlaybackInfoLoadable =
@@ -160,13 +175,7 @@ export function useVideoPlaybackInfo(
     const obs$ = trigger$.pipe(
       switchMap(() =>
         defer(() => {
-          const assetInstanceId = parseAssetInstanceId(assetRef._ref)
-          return from(
-            client.request<VideoPlaybackInfo>({
-              uri: `/media-libraries/${mediaLibraryId}/video/${assetInstanceId}/playback-info`,
-              tag: 'media-library.video-playback-info',
-            }),
-          )
+          return from(client.request<VideoPlaybackInfo>(getVideoPlaybackInfoRequest(params)))
         }).pipe(
           map(
             (result) =>
