@@ -9,6 +9,8 @@ import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {createPatchChannel} from '../../../../form/patch/PatchChannel'
 import {FormBuilder} from '../../../../form/studio/FormBuilder'
 import {useDocumentForm} from '../../../../form/useDocumentForm'
+import {PerspectiveProvider} from '../../../../perspective/PerspectiveProvider'
+import {usePerspective} from '../../../../perspective/usePerspective'
 import {useCurrentUser} from '../../../../store/user/hooks'
 import {useWorkspace} from '../../../../studio/workspace'
 import {MentionUserProvider} from '../../../context/mentionUser/MentionUserProvider'
@@ -137,6 +139,7 @@ export function TasksFormBuilder() {
   const currentUser = useCurrentUser()
   const {activeDocument} = useTasks()
   const {dataset, projectId} = useWorkspace()
+  const {selectedPerspectiveName, excludedPerspectives} = usePerspective()
   const {
     state: {selectedTask, viewMode, duplicateTaskValues},
   } = useTasksNavigation()
@@ -181,9 +184,19 @@ export function TasksFormBuilder() {
   return (
     // This provider needs to be mounted before the TasksAddonWorkspaceProvider.
     <MentionUserProvider>
-      <TasksAddonWorkspaceProvider mode={viewMode === 'edit' ? 'edit' : 'create'}>
-        <TasksFormBuilderInner documentId={selectedTask} initialValue={initialValue} />
-      </TasksAddonWorkspaceProvider>
+      {/* Task documents live in the addon dataset and never have variant-scoped versions, so the
+          form must not inherit the globally selected variant: it would make `useDocumentForm`
+          treat the task's variant target as missing and block all edits. The selected release
+          perspective is intentionally kept, matching how the form behaves when a release is
+          selected (the task form itself never opts into it). */}
+      <PerspectiveProvider
+        selectedPerspectiveName={selectedPerspectiveName}
+        excludedPerspectives={excludedPerspectives}
+      >
+        <TasksAddonWorkspaceProvider mode={viewMode === 'edit' ? 'edit' : 'create'}>
+          <TasksFormBuilderInner documentId={selectedTask} initialValue={initialValue} />
+        </TasksAddonWorkspaceProvider>
+      </PerspectiveProvider>
     </MentionUserProvider>
   )
 }
