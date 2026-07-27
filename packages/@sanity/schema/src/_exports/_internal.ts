@@ -1,5 +1,9 @@
 export {DescriptorConverter} from '../descriptors/convert'
-export * from '../descriptors/sync'
+export {
+  processSchemaSynchronization,
+  type SchemaSynchronizationRequest,
+  type SchemaSynchronizationResult,
+} from '../descriptors/sync'
 export {
   type PreparedSchemaUpload,
   prepareSchemaUpload,
