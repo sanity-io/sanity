@@ -1,4 +1,4 @@
-import {type StackablePerspective} from '@sanity/client'
+import {type MutationEvent, type StackablePerspective} from '@sanity/client'
 import {
   type CrossDatasetType,
   type GlobalDocumentReferenceType,
@@ -143,9 +143,7 @@ export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocume
  * @hidden
  * @beta
  */
-export type InvalidationChannelEvent =
-  | {type: 'connected'}
-  | {type: 'mutation'; documentId: string; visibility: string}
+export type InvalidationChannelEvent = {type: 'connected'} | MutationEvent
 
 /**
  * @hidden

@@ -9,6 +9,7 @@ import {
   activeScheduledRelease,
   archivedScheduledRelease,
 } from '../../__fixtures__/release.fixture'
+import {releaseStoreSortedReleases} from '../createReleaseStore'
 import {useActiveReleases} from '../useActiveReleases'
 
 interface ReleasesState {
@@ -23,10 +24,12 @@ const initialState: ReleasesState = {
 }
 
 const mockState$ = new BehaviorSubject<ReleasesState>(initialState)
+const mockSortedReleases$ = mockState$.pipe(releaseStoreSortedReleases())
 const mockDispatch = vi.fn()
 
 const mockUseReleasesStore = vi.fn(() => ({
   state$: mockState$,
+  sortedReleases$: mockSortedReleases$,
   dispatch: mockDispatch,
 }))
 
