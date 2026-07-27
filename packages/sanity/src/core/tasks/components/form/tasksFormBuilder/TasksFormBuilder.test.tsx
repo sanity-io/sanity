@@ -102,7 +102,7 @@ describe('TasksFormBuilder', () => {
     expect(probe).toHaveAttribute('data-has-selected-variant', 'false')
   })
 
-  it('keeps the selected release perspective for the task form', () => {
+  it('does not let the task form inherit the selected release perspective', () => {
     renderWithPerspective(
       createOuterPerspective({
         selectedPerspectiveName: 'rSomeRelease',
@@ -114,8 +114,10 @@ describe('TasksFormBuilder', () => {
       }),
     )
 
+    // A selected release would make `useDocumentForm` check permissions against a nonexistent
+    // release version of the task document, which also blocks all edits.
     const probe = screen.getByTestId('addon-workspace')
-    expect(probe).toHaveAttribute('data-selected-perspective-name', 'rSomeRelease')
+    expect(probe).toHaveAttribute('data-selected-perspective-name', 'none')
     expect(probe).toHaveAttribute('data-selected-variant-name', 'none')
   })
 })
