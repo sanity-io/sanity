@@ -539,10 +539,7 @@
                 "from": {"type": "sanity/cli__contents"},
                 "allow": {"to": {"type": "sanity/cli__contents"}}
               },
-              {
-                "from": {"type": "sanity"},
-                "allow": {"to": {"type": ["sanity__contents", "sanity/_singletons"]}}
-              },
+              {"from": {"type": "sanity"}, "allow": {"to": {"type": "sanity__contents"}}},
               {
                 "from": {"type": "sanity__contents"},
                 "allow": {
@@ -579,7 +576,7 @@
               },
               {
                 "from": {"type": "sanity/router"},
-                "allow": {"to": {"type": ["sanity/router__contents", "sanity/_singletons"]}}
+                "allow": {"to": {"type": "sanity/router__contents"}}
               },
               {
                 "from": {"type": "sanity/router__contents"},
@@ -587,7 +584,7 @@
               },
               {
                 "from": {"type": "sanity/structure"},
-                "allow": {"to": {"type": ["sanity/structure__contents", "sanity/_singletons"]}}
+                "allow": {"to": {"type": "sanity/structure__contents"}}
               },
               {
                 "from": {"type": "sanity/structure__contents"},

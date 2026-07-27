@@ -17,7 +17,7 @@ export {
   type ParameterizedLinkProps,
   type ReferenceChildLinkProps,
 } from '../structure/components/paneRouter/types'
-export {usePaneRouter} from '../structure/components/paneRouter/usePaneRouter'
+export {PaneRouterContext, usePaneRouter} from '../structure/components/paneRouter/usePaneRouter'
 export {structureLocaleNamespace} from '../structure/i18n'
 export {type StructureLocaleResourceKeys} from '../structure/i18n/resources'
 export {DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'
@@ -198,4 +198,3 @@ export {
   type UnresolvedPaneNode,
 } from '../structure/types'
 export {useStructureTool} from '../structure/useStructureTool'
-export {PaneRouterContext} from 'sanity/_singletons'

@@ -369,7 +369,11 @@ export {
   StudioFeedbackDialog,
   type StudioFeedbackDialogProps,
 } from '../core/feedback/components/StudioFeedbackDialog'
-export {useFeedback, type UseFeedbackReturn} from '../core/feedback/hooks/useFeedback'
+export {
+  FeedbackContext,
+  useFeedback,
+  type UseFeedbackReturn,
+} from '../core/feedback/hooks/useFeedback'
 export {
   type SendFeedbackOptions,
   useInStudioFeedback,
@@ -379,6 +383,7 @@ export {useStudioFeedbackTags} from '../core/feedback/hooks/useStudioFeedbackTag
 export {
   type BaseFeedbackTags,
   type DynamicFeedbackTags,
+  type FeedbackContextValue,
   type FeedbackPayload,
   type Sentiment,
   type TagValue,
@@ -1088,6 +1093,8 @@ export {EditScheduleForm} from '../core/scheduled-publishing/components/editSche
 export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/plugin/documentActions/schedule/ScheduleAction'
 // oxlint-disable-next-line eslint/no-restricted-imports -- deprecated scheduled-publishing API stays public until it is removed
 export {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
+// oxlint-disable-next-line eslint/no-restricted-imports -- deprecated scheduled-publishing API stays public until it is removed
+export {SchedulesContext} from '../core/scheduled-publishing/tool/contexts/schedules'
 export {createSchema} from '../core/schema/createSchema'
 export {getSchemaTypeTitle} from '../core/schema/helpers'
 export {compileFieldPath} from '../core/search/common/compileFieldPath'
@@ -1711,4 +1718,3 @@ export {type ImageUrlBuilder} from '@sanity/image-url'
 export {DEFAULT_ANNOTATIONS, DEFAULT_DECORATORS} from '@sanity/schema'
 export * from '@sanity/types'
 export {type TFunction} from 'i18next'
-export {FeedbackContext, type FeedbackContextValue, SchedulesContext} from 'sanity/_singletons'
