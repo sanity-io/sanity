@@ -4,7 +4,9 @@ import {createQueryStore} from '@sanity/react-loader'
 
 const studioUrl =
   import.meta.env.SANITY_STUDIO_URL ??
-  (import.meta.env.DEV ? 'http://localhost:3333/test' : 'https://test-studio.sanity.dev/test')
+  (import.meta.env.DEV
+    ? 'http://localhost:3333/coffee-shop'
+    : 'https://test-studio.sanity.dev/coffee-shop')
 
 const client = createClient({
   projectId: 'ppsg7ml5',

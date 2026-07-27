@@ -12,7 +12,7 @@ import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {media} from 'sanity-plugin-media'
-import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
+import {defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
 import {imageAssetSource} from './assetSources'
@@ -40,15 +40,18 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
+import {coffeeShopSeedTool} from './plugins/coffee-shop-seed'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test'
 import {formBuilderReproTool} from './plugins/form-builder-repro'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
-import {variantsCoffeeDemoTool} from './plugins/variants-coffee-demo'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
+import {coffeeShopSchemaTypes} from './schema/coffeeShop'
+import {coffeeShopPresentationResolve, coffeeShopPreviewUrl} from './schema/coffeeShop/presentation'
+import {coffeeShopStructure} from './schema/coffeeShop/structure'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
@@ -150,36 +153,11 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       debugSecrets(),
       presentationTool({
         allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
-        previewUrl: {
-          origin:
-            process.env.SANITY_STUDIO_PREVIEW_IFRAME_ORIGIN ??
-            (process.env.NODE_ENV === 'development'
-              ? 'http://localhost:3334'
-              : 'https://test-studio-preview-iframe.sanity.dev'),
-          preview: '/',
-        },
+        previewUrl: coffeeShopPreviewUrl,
         resolve: {
-          mainDocuments: defineDocuments([
-            {
-              route: '/',
-              filter: `_type == "simpleBlock" && isMain`,
-            },
-          ]),
+          ...coffeeShopPresentationResolve,
           locations: {
-            simpleBlock: defineLocations({
-              select: {title: 'title'},
-              resolve: (doc) => {
-                if (!doc?.title) return {}
-                return {
-                  locations: [
-                    {
-                      title: doc.title,
-                      href: `/?${new URLSearchParams({title: doc.title})}`,
-                    },
-                  ],
-                }
-              },
-            }),
+            ...coffeeShopPresentationResolve.locations,
             // Test document type for verifying DocumentLocation icon and showHref properties
             locationResolverTest: defineLocations({
               select: {title: 'title', slug: 'slug.current'},
@@ -275,7 +253,7 @@ const defaultWorkspace = defineConfig({
   projectId: 'ppsg7ml5',
   dataset: 'test',
   ...envConfig.production,
-  plugins: [sharedSettings({projectId: 'ppsg7ml5'}), variantsCoffeeDemoTool()],
+  plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
 
   onUncaughtError: (error, errorInfo) => {
     console.log(error)
@@ -709,6 +687,28 @@ export default defineConfig([
           previewMode: {enable: '/api/draft-mode/enable'},
         },
       }),
+      visionTool(),
+    ],
+    mediaLibrary: {
+      enabled: true,
+    },
+  },
+  {
+    name: 'coffee-shop',
+    title: 'Coffee Shop',
+    basePath: '/coffee-shop',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    ...envConfig.production,
+    schema: {types: coffeeShopSchemaTypes},
+    plugins: [
+      structureTool({structure: coffeeShopStructure}),
+      presentationTool({
+        allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
+        previewUrl: coffeeShopPreviewUrl,
+        resolve: coffeeShopPresentationResolve,
+      }),
+      coffeeShopSeedTool(),
       visionTool(),
     ],
     mediaLibrary: {

@@ -1,22 +1,21 @@
 import {type IdentifiedSanityDocumentStub, type SanityClient} from '@sanity/client'
 
-/**
- * Seeds the base (published) demo content: origins, promos, and six coffee products with full
- * descriptions. Idempotent — deterministic ids with `createIfNotExists`, so it never overwrites
- * demo prep.
- *
- * Variant content is deliberately NOT seeded: creating the variant and overriding product
- * discounts (or promo copy) through the studio is the demo.
- */
-export async function seedDemoContent(client: SanityClient): Promise<void> {
-  const block = (key: string, text: string) => ({
+function block(key: string, text: string) {
+  return {
     _type: 'block' as const,
     _key: key,
     style: 'normal' as const,
     markDefs: [],
     children: [{_type: 'span' as const, _key: `${key}-span`, text, marks: [] as string[]}],
-  })
+  }
+}
 
+/**
+ * Seeds the base (published) demo content: origins, promos, six coffee products with slugs,
+ * and a landing page with sections. Idempotent for new docs via `createIfNotExists`.
+ * Also patches missing `slug` on existing products so reused docs get PDP URLs.
+ */
+export async function seedDemoContent(client: SanityClient): Promise<void> {
   const origins = [
     {
       _id: 'demo-coffee-origin-ethiopia',
@@ -67,11 +66,21 @@ export async function seedDemoContent(client: SanityClient): Promise<void> {
     },
   ]
 
+  const productSlugs: Record<string, string> = {
+    'demo-coffee-product-espresso': 'espresso',
+    'demo-coffee-product-filter': 'filter',
+    'demo-coffee-product-cold-brew': 'cold-brew',
+    'demo-coffee-product-decaf': 'decaf',
+    'demo-coffee-product-kenya': 'kenya',
+    'demo-coffee-product-bundle': 'bundle',
+  }
+
   const products = [
     {
       _id: 'demo-coffee-product-espresso',
       _type: 'demoCoffeeProduct',
       title: 'House Espresso Blend',
+      slug: {_type: 'slug', current: 'espresso'},
       excerpt:
         'Chocolate, caramel and a clean finish — the blend we pull hundreds of times a day behind the bar.',
       price: 18,
@@ -97,6 +106,7 @@ export async function seedDemoContent(client: SanityClient): Promise<void> {
       _id: 'demo-coffee-product-filter',
       _type: 'demoCoffeeProduct',
       title: 'Morning Filter Roast',
+      slug: {_type: 'slug', current: 'filter'},
       excerpt:
         'Juicy, tea-like and luminous — a single-origin pour-over that wakes up your palate.',
       price: 16,
@@ -122,6 +132,7 @@ export async function seedDemoContent(client: SanityClient): Promise<void> {
       _id: 'demo-coffee-product-cold-brew',
       _type: 'demoCoffeeProduct',
       title: 'Cold Brew Concentrate Kit',
+      slug: {_type: 'slug', current: 'cold-brew'},
       excerpt:
         'Coarse-ground beans, a simple brew guide, and a week of smooth iced coffee in the fridge.',
       price: 22,
@@ -129,7 +140,7 @@ export async function seedDemoContent(client: SanityClient): Promise<void> {
       description: [
         block(
           'cold-1',
-          'Cold brew should be easy and it should taste good on day seven, not just day one. This kit ships 340 g of coarse-ground coffee — a chocolate-forward Colombian lot we select specifically for long, cool extractions. Steep 12 hours and you get a concentrate that is smooth, low-acid and naturally sweet without adding sugar.',
+          'Cold brew should be easy and it should taste good on day seven, not just day one. This kit ships 340 g of coarse-ground coffee — a chocolate-forward Colombian lot we select specifically for long, cool extraction. Steep 12 hours and you get a concentrate that is smooth, low-acid and naturally sweet without adding sugar.',
         ),
         block(
           'cold-2',
@@ -147,6 +158,7 @@ export async function seedDemoContent(client: SanityClient): Promise<void> {
       _id: 'demo-coffee-product-decaf',
       _type: 'demoCoffeeProduct',
       title: 'Swiss Water Decaf — Evening Blend',
+      slug: {_type: 'slug', current: 'decaf'},
       excerpt: 'All the flavour, none of the caffeine — so you can have a second cup after dinner.',
       price: 17,
       discount: 0,
@@ -171,6 +183,7 @@ export async function seedDemoContent(client: SanityClient): Promise<void> {
       _id: 'demo-coffee-product-kenya',
       _type: 'demoCoffeeProduct',
       title: 'Kenya Nyeri — Limited Microlot',
+      slug: {_type: 'slug', current: 'kenya'},
       excerpt: 'Blackcurrant, tomato leaf and brown sugar — a bold, memorable filter coffee.',
       price: 24,
       discount: 0,
@@ -195,6 +208,7 @@ export async function seedDemoContent(client: SanityClient): Promise<void> {
       _id: 'demo-coffee-product-bundle',
       _type: 'demoCoffeeProduct',
       title: 'Starter Bundle — Grinder + Two Bags',
+      slug: {_type: 'slug', current: 'bundle'},
       excerpt:
         'Everything you need to level up home brewing: a hand grinder and two of our best-selling roasts.',
       price: 89,
@@ -218,10 +232,100 @@ export async function seedDemoContent(client: SanityClient): Promise<void> {
     },
   ]
 
-  const documents: IdentifiedSanityDocumentStub[] = [...origins, ...promos, ...products]
+  const landingPage = {
+    _id: 'demo-coffee-landing',
+    _type: 'demoCoffeeLandingPage',
+    title: 'Brew & Bean',
+    sections: [
+      {
+        _type: 'hero',
+        _key: 'hero',
+        headline: 'Brew & Bean',
+        subheadline:
+          'Small-batch roasts, roasted in town and shipped fresh. Coffee for people who care how it tastes.',
+        ctaLabel: 'Shop our coffees',
+      },
+      {
+        _type: 'featuredProducts',
+        _key: 'featured',
+        heading: 'Our coffees',
+        products: [
+          {_type: 'reference', _key: 'p1', _ref: 'demo-coffee-product-espresso'},
+          {_type: 'reference', _key: 'p2', _ref: 'demo-coffee-product-filter'},
+          {_type: 'reference', _key: 'p3', _ref: 'demo-coffee-product-kenya'},
+        ],
+      },
+      {
+        _type: 'promoBanner',
+        _key: 'promo',
+        title: 'Welcome to Brew & Bean',
+        tagline: 'New here? Enjoy free shipping on your first bag — no code needed at checkout.',
+        ctaLabel: 'Start shopping',
+        promo: {_type: 'reference', _ref: 'demo-coffee-promo-main'},
+      },
+      {
+        _type: 'story',
+        _key: 'story',
+        heading: 'Roasted for the cup, not the shelf',
+        body: [
+          block(
+            'story-1',
+            'We started Brew & Bean because we were tired of coffee that looked beautiful on the bag and tasted flat in the mug. Every lot we buy is cupped blind. Every roast profile is dialed for how you actually brew at home — pour-over, espresso, or cold brew.',
+          ),
+          block(
+            'story-2',
+            'Our café on the corner is where we test everything before it ships. If it does not make it past the baristas, it does not make it into a bag.',
+          ),
+        ],
+      },
+      {
+        _type: 'origins',
+        _key: 'origins',
+        heading: 'Where the beans come from',
+        origins: [
+          {_type: 'reference', _key: 'o1', _ref: 'demo-coffee-origin-ethiopia'},
+          {_type: 'reference', _key: 'o2', _ref: 'demo-coffee-origin-colombia'},
+          {_type: 'reference', _key: 'o3', _ref: 'demo-coffee-origin-kenya'},
+          {_type: 'reference', _key: 'o4', _ref: 'demo-coffee-origin-guatemala'},
+          {_type: 'reference', _key: 'o5', _ref: 'demo-coffee-origin-brazil'},
+        ],
+      },
+      {
+        _type: 'cta',
+        _key: 'cta',
+        heading: 'Ready for a better morning?',
+        body: 'Pick a bag, brew it your way, and taste the difference fresh roasting makes.',
+        buttonLabel: 'Browse all coffees',
+      },
+    ],
+  }
+
+  const documents: IdentifiedSanityDocumentStub[] = [
+    ...origins,
+    ...promos,
+    ...products,
+    landingPage,
+  ]
   let transaction = client.transaction()
   for (const doc of documents) {
     transaction = transaction.createIfNotExists(doc)
   }
   await transaction.commit({visibility: 'sync'})
+
+  // Patch missing slugs on existing products (createIfNotExists does not overwrite).
+  const existing = await client.fetch<{_id: string; slug?: {current?: string}}[]>(
+    `*[_type == "demoCoffeeProduct" && _id in $ids]{_id, slug}`,
+    {ids: Object.keys(productSlugs)},
+  )
+  const missingSlug = existing.filter((doc) => !doc.slug?.current)
+  if (missingSlug.length > 0) {
+    let patchTx = client.transaction()
+    for (const doc of missingSlug) {
+      const current = productSlugs[doc._id]
+      if (current) {
+        patchTx = patchTx.patch(doc._id, {set: {slug: {_type: 'slug', current}}})
+      }
+    }
+    await patchTx.commit({visibility: 'sync'})
+  }
 }

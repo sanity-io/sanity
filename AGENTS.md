@@ -79,7 +79,7 @@ sanity/
 │   └── @repo/            # Internal tooling (test-config, tsconfig, etc.)
 ├── dev/                  # Development studios for testing
 │   ├── test-studio/      # Primary dev studio (pnpm dev runs this)
-│   └── preview-iframe/   # Presentation preview iframe (vanilla Vite, port 3334)
+│   └── preview-iframe/   # Brew & Bean coffee shop Presentation frontend (Vite, port 3334)
 ├── e2e/                  # End-to-end Playwright tests
 ├── perf/                 # Performance testing
 └── examples/             # Example studios
@@ -145,14 +145,15 @@ Components that need auth context use `createMockAuthStore` in tests, so no real
 ### Running the Dev Studio (Auth Required)
 
 ```bash
-pnpm dev  # Starts test-studio at http://localhost:3333 and preview-iframe at http://localhost:3334
+pnpm dev  # Starts test-studio at http://localhost:3333 and preview-iframe (coffee shop) at http://localhost:3334
 ```
 
 - **Requires browser authentication** on first visit—you'll be prompted to log in with a Sanity account
 - Connects to a real Sanity project (configured in `dev/test-studio/sanity.config.ts`)
 - Uses staging API by default (`api.sanity.work`)
 - Session persists in browser, so subsequent visits won't require re-authentication
-- `pnpm dev` / `pnpm dev:test-studio` also starts `dev/preview-iframe` (vanilla Vite on port 3334) so Presentation can load its cross-origin iframe. Studio-only: `pnpm dev:test-studio:studio`. Preview-only: `pnpm dev:preview-iframe`.
+- `pnpm dev` / `pnpm dev:test-studio` also starts `dev/preview-iframe` (Brew & Bean coffee shop Vite app on port 3334) so Presentation can load its cross-origin iframe. Studio-only: `pnpm dev:test-studio:studio`. Preview-only: `pnpm dev:preview-iframe`.
+- Coffee shop Presentation workspace: `http://localhost:3333/coffee-shop` (limited schema: landing page, products, origins, promos). Use the **Seed coffee shop** tool in that workspace to create demo content, then open Presentation.
 - Deployed preview iframe: Sanity Sandbox Vercel project `test-studio-preview-iframe` (`https://test-studio-preview-iframe.sanity.dev`)
 
 Use the dev studio when you need to:

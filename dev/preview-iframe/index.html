@@ -6,7 +6,13 @@
       name="viewport"
       content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover"
     />
-    <title>Presentation preview iframe</title>
+    <title>Brew & Bean — Coffee Shop Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Source+Sans+3:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       html {
         -webkit-text-size-adjust: 100%;
@@ -19,6 +25,22 @@
       #root {
         height: 100%;
         margin: 0;
+      }
+      .ve-debug {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        z-index: 1000;
+        display: grid;
+        gap: 0.25rem;
+        max-width: 280px;
+        padding: 0.65rem 0.8rem;
+        border-radius: 10px;
+        background: rgba(255, 253, 248, 0.92);
+        border: 1px solid rgba(47, 27, 18, 0.12);
+        box-shadow: 0 10px 30px rgba(28, 20, 16, 0.08);
+        color: #6b5e54;
+        font: 12px/1.4 'Source Sans 3', sans-serif;
       }
     </style>
   </head>

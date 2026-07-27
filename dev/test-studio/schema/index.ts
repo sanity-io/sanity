@@ -191,7 +191,7 @@ const codeInputType = {
 
 export function createSchemaTypes(projectId: string) {
   return [
-    // Variants coffee shop demo (see plugins/variants-coffee-demo)
+    // Brew & Bean coffee shop Presentation demo (see schema/coffeeShop)
     ...variantsDemoTypes,
     // Test documents with standard inputs
     arrays,
