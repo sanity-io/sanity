@@ -103,6 +103,14 @@ const variantsLocaleStrings = {
   'overview.filter.remove-value': 'Remove filter',
   /** Leading label for the filter group. */
   'overview.filter.label': 'Filters',
+  /** The button that opens the add-filter menu. */
+  'overview.filter.add': 'Add filter',
+  /** Placeholder for the searchable dimension list in the add-filter menu. */
+  'overview.filter.find-dimension': 'Find a dimension…',
+  /** Back action returning from a dimension's values to the dimension list. */
+  'overview.filter.back': 'All dimensions',
+  /** Shown in the add-filter menu when a search matches no dimension. */
+  'overview.filter.no-dimensions': 'No dimensions',
   /** Column header for the variant title column in the overview table. */
   'overview.table.variant': 'Variant definition',
   /** Column header for the documents count column in the overview table. */
