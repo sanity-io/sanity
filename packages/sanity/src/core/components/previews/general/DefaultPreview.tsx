@@ -3,7 +3,7 @@ import {clsx} from 'clsx'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {LinearProgress} from '../../progress/LinearProgress'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'

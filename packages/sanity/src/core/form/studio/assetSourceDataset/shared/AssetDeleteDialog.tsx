@@ -3,10 +3,10 @@ import {type Asset as AssetType} from '@sanity/types'
 import {Box, Stack} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {Dialog} from '../../../../../ui-components'
-import {LoadingBlock} from '../../../../components/loadingBlock'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useLegacyReferringDocuments} from '../../../../hooks/useReferringDocuments'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {AssetUsageList} from './AssetUsageList'
 import {ConfirmMessage} from './ConfirmMessage'
 

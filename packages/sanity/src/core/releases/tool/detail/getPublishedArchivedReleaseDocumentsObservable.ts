@@ -3,7 +3,7 @@ import {uuid} from '@sanity/uuid'
 import {of} from 'rxjs'
 import {catchError, expand, finalize, map, reduce, shareReplay} from 'rxjs/operators'
 
-import {type useSource} from '../../../studio'
+import {type useSource} from '../../../studio/source'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
 import {type DocumentInRelease} from './types'

@@ -4,7 +4,7 @@
 import {defineEvent} from '@sanity/telemetry'
 import {type SearchStrategy} from '@sanity/types'
 
-import {type Workspace} from '../../config'
+import {type Workspace} from '../../config/types'
 
 interface WorkspaceFeaturesObservedInfo {
   advancedVersionControlEnabled: boolean

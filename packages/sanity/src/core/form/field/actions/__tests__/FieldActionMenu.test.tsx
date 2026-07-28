@@ -4,7 +4,7 @@ import {type ComponentType, type PropsWithChildren} from 'react'
 import {beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {type DocumentFieldActionNode} from '../../../../config'
+import {type DocumentFieldActionNode} from '../../../../config/document/fieldActions/types'
 import {FieldActionMenu} from '../FieldActionMenu'
 
 const mockNodes: DocumentFieldActionNode[] = [

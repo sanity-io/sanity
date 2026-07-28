@@ -2,15 +2,15 @@ import {useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
-import {SchemaError} from '../config'
+import {SchemaError} from '../config/SchemaError'
 import {errorReporter} from '../error/errorReporter'
 import {isImportError} from '../error/isImportError'
 import {isKnownError} from '../error/isKnownError'
 import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
-import {globalScope} from '../util'
-import {SchemaErrorsScreen} from './screens'
+import {globalScope} from '../util/globalScope'
 import {FallbackErrorScreen} from './screens/FallbackErrorScreen'
 import {ImportErrorScreen} from './screens/ImportErrorScreen'
+import {SchemaErrorsScreen} from './screens/schemaErrors/SchemaErrorsScreen'
 
 type ErrorState = {
   error?: Error | null

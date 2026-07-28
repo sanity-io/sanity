@@ -9,7 +9,7 @@ import {
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 
-import {getValueAtPath} from '../../../field'
+import {getValueAtPath} from '../../../field/paths/helpers'
 import {type CommentTextSelection} from '../../types'
 import {COMMENT_INDICATORS} from './buildRangeDecorationSelectionsFromComments'
 

@@ -7,7 +7,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {DragHandle} from './DragHandle'
 
-vi.mock('../../../../i18n', () => ({
+vi.mock('../../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 

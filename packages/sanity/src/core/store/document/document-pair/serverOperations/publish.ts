@@ -1,5 +1,5 @@
 import {getVariantVersionInfo} from '../../../../variants/documents/getVariantVersionInfo'
-import {type OperationImpl} from '../operations'
+import {type OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
 import {assertNotVariantVersion} from '../utils/assertNotVariantVersion'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'

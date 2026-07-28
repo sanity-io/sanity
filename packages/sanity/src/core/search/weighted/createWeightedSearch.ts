@@ -8,7 +8,11 @@ import {
 } from '../../releases/util/releasesClient'
 import {versionedClient} from '../../studioClient'
 import {removeDupes} from '../../util/draftUtils'
-import {type SearchStrategyFactory, type SearchTerms, type WeightedSearchResults} from '../common'
+import {
+  type SearchStrategyFactory,
+  type SearchTerms,
+  type WeightedSearchResults,
+} from '../common/types'
 import {applyWeights} from './applyWeights'
 import {createSearchQuery} from './createSearchQuery'
 

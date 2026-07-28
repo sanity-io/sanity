@@ -4,11 +4,11 @@ import {BoundaryElementProvider, Box, type ResponsiveWidthProps, useGlobalKeyDow
 import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Dialog} from '../../../ui-components'
-import {PopoverDialog} from '../../components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {PopoverDialog} from '../../components/popoverDialog/PopoverDialog'
 import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
-import {PresenceOverlay} from '../../presence'
+import {PresenceOverlay} from '../../presence/overlay/PresenceOverlay'
 import {isNativeEditableElement} from '../../studio/copyPaste/utils'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {

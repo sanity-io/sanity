@@ -1,7 +1,7 @@
 import {type ReactNode, useContext} from 'react'
 import {ConfigErrorContext} from 'sanity/_singletons'
 
-import {useActiveWorkspace} from '../activeWorkspaceMatcher'
+import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 import {ConfigErrorScreen} from './ConfigErrorScreen'
 
 /**

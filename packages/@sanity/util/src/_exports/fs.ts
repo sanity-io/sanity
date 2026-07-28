@@ -1,1 +1,1 @@
-export * from '../fsTools'
+export {absolutify, expandHome, pathIsEmpty} from '../fsTools'

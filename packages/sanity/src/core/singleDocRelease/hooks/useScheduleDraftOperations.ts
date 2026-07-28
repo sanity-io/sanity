@@ -2,14 +2,14 @@ import {type BaseActionOptions, type ReleaseDocument} from '@sanity/client'
 import {useCallback} from 'react'
 
 import {useClient} from '../../hooks/useClient'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useAllReleases} from '../../releases/store/useAllReleases'
 import {useReleaseOperations} from '../../releases/store/useReleaseOperations'
 import {createReleaseId} from '../../releases/util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isReleaseScheduledOrScheduling} from '../../releases/util/util'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {getDraftId, getVersionId} from '../../util'
+import {getDraftId, getVersionId} from '../../util/draftUtils'
 
 export interface ScheduleDraftOperationsValue {
   /**

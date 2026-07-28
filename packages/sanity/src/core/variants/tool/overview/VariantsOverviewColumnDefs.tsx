@@ -2,7 +2,7 @@ import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps, useMemo} from 'react'
 import {StateLink} from 'sanity/router'
 
-import {type UseTranslationResponse, useTranslation} from '../../../i18n'
+import {useTranslation, type UseTranslationResponse} from '../../../i18n/hooks/useTranslation'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
 import {variantsLocaleNamespace} from '../../i18n'

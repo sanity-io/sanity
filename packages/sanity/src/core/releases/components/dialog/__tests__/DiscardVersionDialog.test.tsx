@@ -3,14 +3,14 @@ import {render, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {defineConfig} from '../../../../config'
+import {defineConfig} from '../../../../config/defineConfig'
 import {DiscardVersionDialog} from '../DiscardVersionDialog'
 
 const {previewSpy} = vi.hoisted(() => ({previewSpy: vi.fn()}))
 
 // Capture the props the document preview is rendered with so we can assert the
 // perspective the dialog resolves it under.
-vi.mock('../../../../preview', () => ({
+vi.mock('../../../../preview/components/Preview', () => ({
   Preview: (props: Record<string, unknown>) => {
     previewSpy(props)
     return null

@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 
 import {type TFunction} from '../../i18n/types'
-import {type VersionInfoDocumentStub} from '../../releases'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {getVersionFromId, type SystemBundle} from '../../util/draftUtils'
 import {readVersionType} from '../../util/versionsUtils'

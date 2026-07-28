@@ -3,7 +3,7 @@ import {
   type FieldReference,
   type LocalizedValidationMessages,
   type ValidationContext,
-} from '../validation'
+} from '../validation/types'
 
 /** @public */
 export interface RuleDef<T, FieldValue = unknown> {

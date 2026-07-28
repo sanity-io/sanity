@@ -4,7 +4,7 @@ import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 
-import {useSource} from '../studio'
+import {useSource} from '../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {useClient} from './useClient'
 

@@ -14,11 +14,11 @@ import {forwardRef, useLayoutEffect} from 'react'
 import {EditDialogOuterBoundaryContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
-import type * as UIComponentsModule from '../../../../../ui-components'
+import {type PopoverProps as UIPopoverProps} from '../../../../../ui-components/popover/Popover'
 import {EditDialogOuterBoundaryProvider} from '../../../components/EditDialogOuterBoundaryProvider'
 import {useInsertMenuPopover} from './InsertMenuPopover'
 
-type PopoverBoundaryCapture = Pick<UIComponentsModule.PopoverProps, 'floatingBoundary'>
+type PopoverBoundaryCapture = Pick<UIPopoverProps, 'floatingBoundary'>
 
 /** Last props passed from the insert menu popover to Popover. */
 let lastPopoverProps: PopoverBoundaryCapture | null = null
@@ -27,19 +27,15 @@ vi.mock('../../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 
-vi.mock('../../../../../ui-components', async (importOriginal) => {
-  // @ts-expect-error -- pre-existing, fix later
-  const mod = (await importOriginal()) as UIComponentsModule
-  const Forward = forwardRef<HTMLDivElement, UIComponentsModule.PopoverProps>(
-    function PopoverCapture(props, ref) {
-      useLayoutEffect(() => {
-        lastPopoverProps = {floatingBoundary: props.floatingBoundary}
-      }, [props.floatingBoundary])
-      return <div ref={ref} data-testid="popover-capture" />
-    },
-  )
-  // @ts-expect-error -- pre-existing, fix later
-  return {...mod, Popover: Forward as UIComponentsModule.Popover}
+vi.mock('../../../../../ui-components/popover/Popover', async (importOriginal) => {
+  const mod = (await importOriginal()) as Record<string, unknown>
+  const Forward = forwardRef<HTMLDivElement, UIPopoverProps>(function PopoverCapture(props, ref) {
+    useLayoutEffect(() => {
+      lastPopoverProps = {floatingBoundary: props.floatingBoundary}
+    }, [props.floatingBoundary])
+    return <div ref={ref} data-testid="popover-capture" />
+  })
+  return {...mod, Popover: Forward}
 })
 
 function Harness() {

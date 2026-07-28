@@ -14,7 +14,7 @@ import {useSchema} from '../../../../hooks/useSchema'
 import {FormValueProvider} from '../../../contexts/FormValue'
 import {createPatchChannel} from '../../../patch/PatchChannel'
 import {FormProvider} from '../../../studio/FormProvider'
-import {type FormDocumentValue} from '../../../types'
+import {type FormDocumentValue} from '../../../types/formDocumentValue'
 import {ReferenceInput} from '../ReferenceInput'
 import {type ReferenceInputProps} from '../types'
 

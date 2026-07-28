@@ -3,10 +3,10 @@ import {useCallback, useMemo, useState} from 'react'
 
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 import {type TimeZoneScope} from '../../../hooks/useTimeZone'
-import {useTranslation} from '../../../i18n'
-import {set, unset} from '../../patch'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {set, unset} from '../../patch/patch'
 import {useReportParseError} from '../../studio/contexts/ParseErrors'
-import {type StringInputProps} from '../../types'
+import {type StringInputProps} from '../../types/inputProps'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {getCalendarLabels} from './utils'
 

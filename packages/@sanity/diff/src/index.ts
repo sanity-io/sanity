@@ -1,3 +1,31 @@
 export {diffInput} from './calculate/diffInput'
 export {wrap} from './inputWrappers'
-export * from './types'
+export {
+  type AddedDiff,
+  type ArrayDiff,
+  type ArrayInput,
+  type BaseInput,
+  type BooleanDiff,
+  type BooleanInput,
+  type ChangedDiff,
+  type Diff,
+  type DiffOptions,
+  type FullDiff,
+  type Input,
+  type ItemDiff,
+  type NullDiff,
+  type NullInput,
+  type NumberDiff,
+  type NumberInput,
+  type ObjectDiff,
+  type ObjectInput,
+  type RemovedDiff,
+  type StringDiff,
+  type StringDiffSegment,
+  type StringInput,
+  type StringSegmentChanged,
+  type StringSegmentUnchanged,
+  type TypeChangeDiff,
+  type UnchangedDiff,
+  type ValueType,
+} from './types'

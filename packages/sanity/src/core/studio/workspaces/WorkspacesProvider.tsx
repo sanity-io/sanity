@@ -21,7 +21,8 @@ import {
   WorkspacesContext,
 } from 'sanity/_singletons'
 
-import {type Config, prepareConfig} from '../../config'
+import {prepareConfig} from '../../config/prepareConfig'
+import {type Config} from '../../config/types'
 import {getApiErrorCode, isInvalidSessionError} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {

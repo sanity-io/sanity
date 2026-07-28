@@ -8,7 +8,7 @@ import union from 'lodash-es/union.js'
 import uniq from 'lodash-es/uniq.js'
 import words from 'lodash-es/words.js'
 
-import {type SearchSpec, type WeightedHit} from '../common'
+import {type SearchSpec, type WeightedHit} from '../common/types'
 
 type SearchScore = [number, string]
 

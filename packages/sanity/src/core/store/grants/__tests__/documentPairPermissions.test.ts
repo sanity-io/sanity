@@ -4,12 +4,12 @@ import {of, Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
-import {createSchema} from '../../../schema'
-import {snapshotPair} from '../../document'
+import {createSchema} from '../../../schema/createSchema'
+import {snapshotPair} from '../../document/document-pair/snapshotPair'
 import {getDocumentPairPermissions} from '../documentPairPermissions'
 import {type GrantsStore} from '../types'
 
-vi.mock('../../document', () => ({snapshotPair: vi.fn()}))
+vi.mock('../../document/document-pair/snapshotPair', () => ({snapshotPair: vi.fn()}))
 
 const mockedSnapshotPair = vi.mocked(snapshotPair)
 

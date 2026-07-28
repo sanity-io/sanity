@@ -1,8 +1,8 @@
 import {ResetIcon} from '@sanity/icons/Reset'
 import {Flex, Skeleton, Text} from '@sanity/ui'
 
-import {useTranslation} from '../../../core/i18n'
-import {Button} from '../../../ui-components/button'
+import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
+import {Button} from '../../../ui-components/button/Button'
 import {mediaLibraryLocaleNamespace} from '../i18n'
 import {RatioBox} from './styles'
 

@@ -2,7 +2,8 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {debounce, distinctUntilChanged, merge, share, shareReplay, skip, take, timer} from 'rxjs'
 
-import {type EditStateFor, useDocumentStore} from '../store'
+import {useDocumentStore} from '../store/datastores'
+import {type EditStateFor} from '../store/document/document-pair/editState'
 
 // Snapshot refs (draft/published/version) are preserved upstream when content
 // hasn't changed, so ref equality on those + ready + transactionSyncLock catches

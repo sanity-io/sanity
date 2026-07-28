@@ -1,5 +1,5 @@
 /* eslint sort-keys: "error" */
-import {defineLocalesResources} from '../../../core/i18n'
+import {defineLocalesResources} from '../../../core/i18n/helpers'
 
 /**
  * Defined locale strings for the media library plugin, in US English.

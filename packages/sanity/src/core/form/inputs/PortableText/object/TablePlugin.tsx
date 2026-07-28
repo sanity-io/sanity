@@ -18,9 +18,10 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {useId, useMemo} from 'react'
 import {createGlobalStyle, useTheme} from 'styled-components'
 
-import {MenuButton, MenuItem} from '../../../../../ui-components'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {useTranslation} from '../../../../i18n'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useColorSchemeValue} from '../../../../studio/colorScheme'
 
 const studioTableRender = (props: ContainerRenderProps) => <StudioTable {...props} />

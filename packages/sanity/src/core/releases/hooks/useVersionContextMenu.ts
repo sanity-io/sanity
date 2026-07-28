@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
 import {type MouseEvent, type RefObject, useCallback, useRef, useState} from 'react'
 
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TargetPerspective} from '../../perspective/types'
 import {useSingleDocRelease} from '../../singleDocRelease/context/SingleDocReleaseProvider'
 import {useClearScheduledDraftPerspectiveOnDelete} from '../../singleDocRelease/hooks/useClearScheduledDraftPerspectiveOnDelete'

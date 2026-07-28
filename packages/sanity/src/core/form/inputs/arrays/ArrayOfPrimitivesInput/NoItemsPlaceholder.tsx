@@ -1,7 +1,7 @@
 import {type ArraySchemaType, type FormNodeValidation} from '@sanity/types'
 import {Card, type CardTone, Text} from '@sanity/ui'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 /**
  * Shows a placeholder for an empty array of primitives.

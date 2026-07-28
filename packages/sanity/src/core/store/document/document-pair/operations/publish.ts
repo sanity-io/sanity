@@ -8,7 +8,7 @@ import {
 } from '../utils/assertNotVariantVersion'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {operationsApiClient} from '../utils/operationsApiClient'
-import {type OperationImpl} from './index'
+import {type OperationImpl} from './types'
 
 function strengthenOnPublish<T>(obj: T): T {
   if (isReference(obj)) {

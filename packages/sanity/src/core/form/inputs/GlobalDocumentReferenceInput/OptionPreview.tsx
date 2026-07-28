@@ -3,7 +3,7 @@ import {Stack, Text, TextSkeleton} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Alert} from '../../components/Alert'
 import {GlobalDocumentReferencePreview} from './GlobalDocumentReferencePreview'
 import {type GlobalDocumentReferenceInfo} from './types'

@@ -9,9 +9,10 @@ import union from 'lodash-es/union.js'
 import uniq from 'lodash-es/uniq.js'
 import words from 'lodash-es/words.js'
 
+import {compileSortExpression} from '../common/compileSortExpression'
+import {deriveSearchWeightsFromType} from '../common/deriveSearchWeightsFromType'
+import {toOrderClause} from '../common/toOrderClause'
 import {
-  compileSortExpression,
-  deriveSearchWeightsFromType,
   ORDERINGS_PROJECTION_KEY,
   type SearchFactoryOptions,
   type SearchOptions,
@@ -19,8 +20,7 @@ import {
   type SearchSort,
   type SearchSpec,
   type SearchTerms,
-} from '../common'
-import {toOrderClause} from '../common/toOrderClause'
+} from '../common/types'
 import {FINDABILITY_MVI} from '../constants'
 
 export interface SearchParams {

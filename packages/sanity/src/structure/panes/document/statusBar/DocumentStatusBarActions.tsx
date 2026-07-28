@@ -15,14 +15,19 @@ import {
   useSource,
 } from 'sanity'
 
-import {Button, Tooltip} from '../../../../ui-components'
-import {RenderActionCollectionState, type ResolvedAction, usePaneRouter} from '../../../components'
+import {Button} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {ReferencePreviewLink} from '../../../components/confirmDeleteDialog/ReferencePreviewLink'
 import {referringDocuments} from '../../../components/confirmDeleteDialog/useReferringDocuments'
 import {VersionsPreviewList} from '../../../components/confirmDeleteDialog/VersionsPreviewList'
 import {DocTitle} from '../../../components/DocTitle'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
+import {
+  RenderActionCollectionState,
+  type ResolvedAction,
+} from '../../../components/RenderActionCollectionState'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
-import {useHistoryRestoreAction} from '../../../documentActions'
+import {useHistoryRestoreAction} from '../../../documentActions/HistoryRestoreAction'
 import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'

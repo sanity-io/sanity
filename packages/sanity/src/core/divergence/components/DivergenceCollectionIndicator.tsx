@@ -6,7 +6,7 @@ import {type ComponentType, type HTMLProps} from 'react'
 
 import {isPublishedId} from '../../../core/util/draftUtils'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TargetPerspective} from '../../perspective/types'
 
 /**

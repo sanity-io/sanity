@@ -15,7 +15,7 @@ import {media} from 'sanity-plugin-media'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
-import {imageAssetSource} from './assetSources'
+import {imageAssetSource} from './assetSources/imageAssetSource'
 import {
   Annotation,
   Block,
@@ -40,19 +40,21 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
-import {errorReportingTestPlugin} from './plugins/error-reporting-test'
-import {formBuilderReproTool} from './plugins/form-builder-repro'
+import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
+import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
-import {languageFilter} from './plugins/language-filter'
-import {routerDebugTool} from './plugins/router-debug'
+import {languageFilter} from './plugins/language-filter/plugin'
+import {routerDebugTool} from './plugins/router-debug/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
-import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
+import {newDocumentOptions} from './structure/resolveNewDocumentOptions'
+import {structure} from './structure/resolveStructure'
+import {defaultDocumentNode} from './structure/resolveStructureDocumentNode'
 
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true

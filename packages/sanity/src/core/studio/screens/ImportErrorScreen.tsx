@@ -7,7 +7,7 @@ import {of, take, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
 
 const View = styled(Box)`

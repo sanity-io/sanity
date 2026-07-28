@@ -1,7 +1,7 @@
 import {Flex, rem, Text} from '@sanity/ui'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../../i18n'
 import {VariantIllustration} from '../resources/VariantIllustration'
 

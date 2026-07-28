@@ -1,8 +1,8 @@
 import {lazy} from 'react'
 import {route} from 'sanity/router'
 
-import {type DefaultPluginsWorkspaceOptions} from '../../config'
 import {definePlugin} from '../../config/definePlugin'
+import {type DefaultPluginsWorkspaceOptions} from '../../config/types'
 import {releasesUsEnglishLocaleBundle} from '../../releases/i18n'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
