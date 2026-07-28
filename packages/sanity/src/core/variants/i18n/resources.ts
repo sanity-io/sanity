@@ -58,6 +58,43 @@ const variantsLocaleStrings = {
   'overview.error': 'Unable to load variant definitions',
   /** Placeholder for the Variants overview search field. */
   'overview.search.placeholder': 'Search variant definitions…',
+  /** Accessible label for the overview select-all checkbox. */
+  'overview.bulk.select-all': 'Select all variant definitions',
+  /** Accessible label for a per-row selection checkbox in the overview. */
+  'overview.bulk.select-row': 'Select variant definition',
+  /** Count of selected variant definitions in the bulk-action bar (singular). */
+  'overview.bulk.selected_one': '{{count}} selected',
+  /** Count of selected variant definitions in the bulk-action bar (plural). */
+  'overview.bulk.selected_other': '{{count}} selected',
+  /** Clears the current overview selection. */
+  'overview.bulk.clear': 'Clear selection',
+  /** Bulk toolbar action that deletes the selected variant definitions. */
+  'overview.bulk.delete': 'Delete',
+  /** Header for the bulk delete confirmation dialog. */
+  'overview.bulk.delete-dialog.header': 'Delete variant definitions',
+  /** Confirm button for the bulk delete dialog. */
+  'overview.bulk.delete-dialog.confirm': 'Delete',
+  /** Bulk delete dialog body when definitions will be deleted (singular). */
+  'overview.bulk.delete-dialog.description_one':
+    'You are about to delete {{count}} variant definition. This cannot be undone.',
+  /** Bulk delete dialog body when definitions will be deleted (plural). */
+  'overview.bulk.delete-dialog.description_other':
+    'You are about to delete {{count}} variant definitions. This cannot be undone.',
+  /** Note about selected definitions kept because they contain documents (singular). */
+  'overview.bulk.delete-dialog.kept_one':
+    '{{count}} selected definition contains documents and will be kept.',
+  /** Note about selected definitions kept because they contain documents (plural). */
+  'overview.bulk.delete-dialog.kept_other':
+    '{{count}} selected definitions contain documents and will be kept.',
+  /** Bulk delete dialog body when nothing can be deleted (all selected hold documents). */
+  'overview.bulk.delete-dialog.none':
+    'All selected definitions contain documents, so none can be deleted. Remove their documents first.',
+  /** Toast shown after a successful bulk delete (singular). */
+  'overview.bulk.delete-toast.success_one': 'Deleted {{count}} variant definition',
+  /** Toast shown after a successful bulk delete (plural). */
+  'overview.bulk.delete-toast.success_other': 'Deleted {{count}} variant definitions',
+  /** Toast shown when some variant definitions could not be bulk deleted. */
+  'overview.bulk.delete-toast.error': 'Some variant definitions could not be deleted',
   /** Column header for the variant title column in the overview table. */
   'overview.table.variant': 'Variant definition',
   /** Column header for the documents count column in the overview table. */

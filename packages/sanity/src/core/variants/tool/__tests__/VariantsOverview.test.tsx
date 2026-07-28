@@ -121,7 +121,10 @@ describe('VariantsOverview', () => {
       resources: [variantsUsEnglishLocaleBundle],
     })
     const view = render(<VariantsOverview />, {wrapper})
-    await screen.findByPlaceholderText('Search variant definitions…', {}, {timeout: 5000})
+    // Wait on the always-present page description rather than the search box (search now lives in the
+    // shared DocumentTable command lane, which only renders once there are rows) — and not on the
+    // title, which the empty state duplicates as its own h1.
+    await screen.findByText(/Manage variant definitions/, {}, {timeout: 5000})
     return view
   }
 
@@ -285,6 +288,35 @@ describe('VariantsOverview', () => {
     await user.click(await screen.findByText('Delete variant definition'))
 
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
+  })
+
+  it('bulk-deletes only the selected definitions that have no documents', async () => {
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
+    documentCountsMock.data = {
+      [variantAlphaAudience._id]: 0,
+      [variantNorwegianMarket._id]: 2,
+    }
+    documentCountsMock.loading = false
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
+
+    // Select every row, then trigger the bulk delete.
+    await user.click(screen.getByTestId('variant-bulk-select-all'))
+    await user.click(await screen.findByTestId('variant-bulk-delete'))
+
+    // The confirmation dialog opens; confirm it.
+    await screen.findByTestId('variant-bulk-delete-dialog')
+    await user.click(await screen.findByTestId('confirm-button'))
+
+    // The empty definition is deleted; the one with documents is kept.
+    await waitFor(() => {
+      expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
+    })
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalledWith(variantNorwegianMarket._id)
+    expect(variantOperationsMock.deleteVariant).toHaveBeenCalledTimes(1)
   })
 
   it('shows empty state when there are no variants', async () => {
