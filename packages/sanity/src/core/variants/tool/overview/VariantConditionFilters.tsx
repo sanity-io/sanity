@@ -1,6 +1,5 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {CloseIcon} from '@sanity/icons/Close'
 import {FilterIcon} from '@sanity/icons/Filter'
 import {SearchIcon} from '@sanity/icons/Search'
@@ -60,21 +59,24 @@ function AddFilterMenu({
   // Master-detail: dimensions on the left, the selected dimension's values on the right — both panes
   // visible at once, so choosing a dimension and toggling its values needs no back-and-forth.
   const content = (
-    <Stack space={0} style={{minWidth: 460}}>
-      <Box padding={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
+    <Stack space={0} style={{width: 520}}>
+      <Box padding={2} style={{borderBottom: '1px solid var(--card-border-color)'}}>
         <TextInput
           fontSize={1}
           icon={SearchIcon}
           onChange={(event) => setQuery(event.currentTarget.value)}
           placeholder={t('overview.filter.find-dimension')}
+          radius={2}
           value={query}
         />
       </Box>
       <Flex>
-        <Box style={{width: 220, borderRight: '1px solid var(--card-border-color)'}}>
-          <Stack padding={1} space={1}>
+        {/* Left: dimensions — icon + label grouped left (flex-start); the highlighted row and the
+            live value pane convey the drill, so no trailing chevron is needed. */}
+        <Box style={{width: 240, borderRight: '1px solid var(--card-border-color)'}}>
+          <Stack padding={2} space={1}>
             {matchingFacets.length === 0 ? (
-              <Box padding={2}>
+              <Box padding={3}>
                 <Text muted size={1}>
                   {t('overview.filter.no-dimensions')}
                 </Text>
@@ -86,8 +88,7 @@ function AddFilterMenu({
                   <Button
                     key={facet.key}
                     icon={getVariantConditionIcon(facet.key)}
-                    iconRight={ChevronRightIcon}
-                    justify="space-between"
+                    justify="flex-start"
                     mode="bleed"
                     onClick={() => setDimensionKey(facet.key)}
                     selected={facet.key === dimensionKey}
@@ -98,16 +99,23 @@ function AddFilterMenu({
             )}
           </Stack>
         </Box>
-        <Box style={{flex: 1, minWidth: 240}}>
+        {/* Right: values of the selected dimension — a muted header names the dimension, then the
+            values (text left, selected checkmark pinned right via space-between). */}
+        <Box style={{flex: 1}}>
           {activeFacet ? (
-            <Stack padding={1} space={1}>
+            <Stack padding={2} space={1}>
+              <Box paddingBottom={1} paddingTop={1} paddingX={2}>
+                <Text muted size={0} weight="medium">
+                  {facetLabel(activeFacet.key)}
+                </Text>
+              </Box>
               {activeFacet.values.map((val) => {
                 const isSelected = (value[activeFacet.key] ?? []).includes(val)
                 return (
                   <Button
                     key={val}
                     iconRight={isSelected ? CheckmarkIcon : undefined}
-                    justify="flex-start"
+                    justify="space-between"
                     mode="bleed"
                     onClick={() => onToggleValue(activeFacet.key, val)}
                     selected={isSelected}
