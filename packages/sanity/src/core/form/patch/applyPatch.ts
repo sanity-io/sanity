@@ -30,7 +30,7 @@ function _applyPatch(value: FIXME, patch: FIXME) {
   return _primitiveApply(value, patch)
 }
 
-export function applyPatch(value: FIXME, patch: FIXME) {
+function applyPatch(value: FIXME, patch: FIXME) {
   const res = _applyPatch(value, patch)
   // console.log('applyPatch(%o, %o) : %o (noop? %o)', value, patch, res, value === res)
   return res
