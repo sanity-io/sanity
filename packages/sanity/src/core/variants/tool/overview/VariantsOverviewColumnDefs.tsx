@@ -7,7 +7,6 @@ import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
-import {VariantPinButton} from '../components/VariantPinButton'
 import {getVariantId, getVariantConditionsText, getVariantTitle} from '../util'
 
 /**
@@ -78,7 +77,6 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
   return (
     <Box {...cellProps} flex={1} paddingLeft={3} paddingRight={2} paddingY={1} sizing="border">
       <Flex align="center" gap={3}>
-        <VariantPinButton variant={variant} />
         <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
           <Flex align="center" gap={3}>
             <Stack flex={1} space={2}>

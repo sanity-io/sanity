@@ -11,18 +11,6 @@ import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {VariantsOverview} from '../overview/VariantsOverview'
 import {getVariantId} from '../util'
 
-const mockedSetVariant = vi.fn()
-
-vi.mock('../../../perspective/useSetVariant', () => ({
-  useSetVariant: vi.fn(() => mockedSetVariant),
-}))
-
-vi.mock('../../../perspective/usePerspective', () => ({
-  usePerspective: vi.fn(() => ({
-    selectedVariant: undefined,
-  })),
-}))
-
 const mockNavigate = vi.fn()
 
 const routerState = vi.hoisted(() => ({
@@ -111,7 +99,6 @@ describe('VariantsOverview', () => {
     documentCountsMock.loading = true
     documentCountsMock.error = null
     mockNavigate.mockClear()
-    mockedSetVariant.mockClear()
     variantOperationsMock.createVariant.mockReset()
     variantOperationsMock.deleteVariant.mockReset()
     variantOperationsMock.createVariant.mockImplementation(
@@ -251,19 +238,6 @@ describe('VariantsOverview', () => {
     expect(mockNavigate).toHaveBeenCalledWith({
       variantId: getVariantId(variantAlphaAudience._id),
     })
-  })
-
-  it('pins a variant from the overview table', async () => {
-    setVariants([variantAlphaAudience])
-    const user = userEvent.setup()
-
-    await renderOverview()
-
-    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
-
-    await user.click(screen.getByTestId('pin-variant-button'))
-
-    expect(mockedSetVariant).toHaveBeenCalledWith({variantId: variantAlphaAudience._id})
   })
 
   it('deletes a variant from the row actions menu', async () => {
