@@ -118,21 +118,12 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const telemetryInsertSiblingsTelemetry = useCallback(
     (event: Omit<ArrayInputInsertEvent<ObjectItem>, 'referenceItem'>) => {
-      if (event.position === 'before') {
-        telemetry.log(ObjectCreated, {
-          location: 'array_list',
-          position: 'prepended',
-          path: pathToString(member.item.path),
-          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-        })
-      } else {
-        telemetry.log(ObjectCreated, {
-          location: 'array_list',
-          position: 'appended',
-          path: pathToString(member.item.path),
-          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-        })
-      }
+      telemetry.log(ObjectCreated, {
+        location: 'array_list',
+        position: event.position === 'before' ? 'prepended' : 'appended',
+        path: pathToString(member.item.path),
+        origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+      })
     },
     [enhancedObjectDialogEnabled, member.item.path, telemetry],
   )
