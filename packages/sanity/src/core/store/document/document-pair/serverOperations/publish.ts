@@ -52,10 +52,11 @@ export const publish: OperationImpl<[options?: PublishOptions], DisabledReason> 
       // Publishes the variant document into the variant-of-published document. The base
       // published document is never touched.
       //
-      // `ifPublishedVariantRevisionId` locks on the variant-of-published sibling revision
-      // (passed from PublishAction via `publishedSibling._rev` — that sibling is not in any
-      // pair snapshot slot). `ifSourceRevisionId` is still omitted: the deployed action
-      // rejects it (`json: unknown field`).
+      // `publishedRevisionId` → `ifPublishedVariantRevisionId` locks on the
+      // variant-of-published sibling revision (passed from PublishAction via
+      // `publishedSibling._rev` — that sibling is not in any pair snapshot slot).
+      // `ifSourceRevisionId` is still omitted: the deployed action rejects it
+      // (`json: unknown field`).
       // TODO(SAPP): send `ifSourceRevisionId: snapshots.version?._rev` once the action supports it.
       return variantActionsApiClient(client).observable.action(
         {
@@ -63,7 +64,7 @@ export const publish: OperationImpl<[options?: PublishOptions], DisabledReason> 
           publishedId: idPair.publishedId,
           variantId: variantVersion.variantId,
           bundleId: variantVersion.bundleId,
-          ifPublishedVariantRevisionId: options?.ifPublishedVariantRevisionId,
+          ifPublishedVariantRevisionId: options?.publishedRevisionId,
         },
         {tag: 'document.publish'},
       )
@@ -77,11 +78,12 @@ export const publish: OperationImpl<[options?: PublishOptions], DisabledReason> 
         draftId: (snapshots.version?._id || snapshots.draft?._id)!,
         publishedId: idPair.publishedId,
         // Optimistic locking using `ifPublishedRevisionId` ensures that concurrent publish action
-        // invocations do not override each other.
+        // invocations do not override each other. Prefer an explicit `publishedRevisionId` when
+        // provided; otherwise fall back to the published snapshot (the normal draft path).
         //
         // Note: for custom publish actions, `snapshots.draft._rev` may be stale, which means the
         // `ifDraftRevisionId` optimistic lock cannot currently be used.
-        ifPublishedRevisionId: snapshots.published?._rev,
+        ifPublishedRevisionId: options?.publishedRevisionId ?? snapshots.published?._rev,
       },
       {
         tag: 'document.publish',

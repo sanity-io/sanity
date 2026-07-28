@@ -312,7 +312,7 @@ describe('publish', () => {
       ])
     })
 
-    it('sends ifPublishedVariantRevisionId when provided for a variant publish', () => {
+    it('maps publishedRevisionId to ifPublishedVariantRevisionId for a variant publish', () => {
       const client = createMockSanityClient()
 
       publish.execute(
@@ -325,7 +325,7 @@ describe('publish', () => {
           },
           snapshots: {version: variantVersion('drafts')},
         } as unknown as OperationArgs,
-        {ifPublishedVariantRevisionId: 'publishedSiblingRev'},
+        {publishedRevisionId: 'publishedSiblingRev'},
       )
 
       expect(client.$log.observable.action).toEqual([
@@ -336,6 +336,89 @@ describe('publish', () => {
             variantId: 'french',
             bundleId: 'drafts',
             ifPublishedVariantRevisionId: 'publishedSiblingRev',
+          },
+          options: {tag: 'document.publish'},
+        },
+      ])
+    })
+
+    it('uses publishedRevisionId for ifPublishedRevisionId when provided on base publish', () => {
+      const client = createMockSanityClient()
+
+      publish.execute(
+        {
+          client,
+          idPair: {
+            draftId: 'drafts.my-id',
+            publishedId: 'my-id',
+          },
+          snapshots: {
+            draft: {
+              _createdAt: '2021-09-14T22:48:02.303Z',
+              _rev: 'draftRev',
+              _id: 'drafts.my-id',
+              _type: 'example',
+              _updatedAt: '2021-09-14T22:48:02.303Z',
+            },
+            published: {
+              _createdAt: '2021-09-14T22:48:02.303Z',
+              _rev: 'snapshotPublishedRev',
+              _id: 'my-id',
+              _type: 'example',
+              _updatedAt: '2021-09-14T22:48:02.303Z',
+            },
+          },
+        } as unknown as OperationArgs,
+        {publishedRevisionId: 'explicitPublishedRev'},
+      )
+
+      expect(client.$log.observable.action).toEqual([
+        {
+          actions: {
+            actionType: 'sanity.action.document.publish',
+            draftId: 'drafts.my-id',
+            publishedId: 'my-id',
+            ifPublishedRevisionId: 'explicitPublishedRev',
+          },
+          options: {tag: 'document.publish'},
+        },
+      ])
+    })
+
+    it('falls back to the published snapshot revision when publishedRevisionId is omitted', () => {
+      const client = createMockSanityClient()
+
+      publish.execute({
+        client,
+        idPair: {
+          draftId: 'drafts.my-id',
+          publishedId: 'my-id',
+        },
+        snapshots: {
+          draft: {
+            _createdAt: '2021-09-14T22:48:02.303Z',
+            _rev: 'draftRev',
+            _id: 'drafts.my-id',
+            _type: 'example',
+            _updatedAt: '2021-09-14T22:48:02.303Z',
+          },
+          published: {
+            _createdAt: '2021-09-14T22:48:02.303Z',
+            _rev: 'snapshotPublishedRev',
+            _id: 'my-id',
+            _type: 'example',
+            _updatedAt: '2021-09-14T22:48:02.303Z',
+          },
+        },
+      } as unknown as OperationArgs)
+
+      expect(client.$log.observable.action).toEqual([
+        {
+          actions: {
+            actionType: 'sanity.action.document.publish',
+            draftId: 'drafts.my-id',
+            publishedId: 'my-id',
+            ifPublishedRevisionId: 'snapshotPublishedRev',
           },
           options: {tag: 'document.publish'},
         },

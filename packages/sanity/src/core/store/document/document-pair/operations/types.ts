@@ -66,19 +66,21 @@ export interface OperationsAPI {
 /**
  * Extra options for `publish.execute`.
  *
+ * Maps to the action-specific optimistic lock field:
+ * - variant publish → `ifPublishedVariantRevisionId`
+ * - base publish → `ifPublishedRevisionId` (falls back to `snapshots.published._rev`
+ *   when omitted)
+ *
  * Variant publish locks cannot read the variant-of-published revision from pair
  * snapshots (that sibling is not in any slot). Callers that have
- * `publishedSibling` (e.g. PublishAction) pass its `_rev` here.
+ * `publishedSibling` (e.g. PublishAction) pass its `_rev` here. Base draft
+ * publish should omit this and keep using the published snapshot.
  *
  * @internal
  */
 export interface PublishOptions {
-  /**
-   * Optimistic lock on the variant-of-published document's revision
-   * (`ifPublishedVariantRevisionId` on `sanity.action.document.variant.publish`).
-   * Ignored for base/release publish.
-   */
-  ifPublishedVariantRevisionId?: string
+  /** Revision of the published target to optimistic-lock against. */
+  publishedRevisionId?: string
 }
 
 /** @internal */
