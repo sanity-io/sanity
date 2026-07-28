@@ -93,6 +93,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'activity.panel.error': 'An error occurred getting the release activity',
   /** The title for the activity panel shown in the releases detail screen */
   'activity.panel.title': 'Activity',
+  /** Tooltip/label for the button that closes the activity overlay panel */
+  'activity.panel.close': 'Close activity',
 
   /** Header for the dialog confirming the archive of a release */
   'archive-dialog.confirm-archive-header': 'Are you sure you want to archive this release?',
@@ -129,9 +131,74 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'dashboard.details.pin-release': 'Pin release to studio',
   /** Text for the releases detail screen in the unpin release button. */
   'dashboard.details.unpin-release': 'Unpin release from studio',
+  /** Label for the schedule/type metadata in the release detail header zone. */
+  'dashboard.details.metadata.schedule': 'Schedule',
+  /** Label for the validation status metadata in the release detail header zone. */
+  'dashboard.details.metadata.status': 'Status',
+  /** Label for the "created" metadata in the release detail header zone. */
+  'dashboard.details.metadata.created': 'Created',
+  /** Label for the document-count metadata in the release detail header zone. */
+  'dashboard.details.metadata.documents': 'Documents',
+  /** Status badge value when every document in the release is valid. */
+  'dashboard.details.metadata.status-valid': 'Valid',
+  /** Status badge value when one or more documents have validation errors. */
+  'dashboard.details.metadata.status-errors': 'Errors',
+  /** Status badge value while document validation is still running. */
+  'dashboard.details.metadata.status-validating': 'Validating',
+  /** Status badge value when the release has no documents to validate. */
+  'dashboard.details.metadata.status-empty': 'No documents',
 
   /** Activity inspector button text */
   'dashboard.details.activity': 'Activity',
+
+  /** Accessible label for the bulk select-all checkbox on the release documents table */
+  'dashboard.details.bulk.select-all': 'Select all documents',
+  /** Accessible label for a per-row bulk select checkbox */
+  'dashboard.details.bulk.select-row': 'Select document',
+  /** Count shown in the bulk selection toolbar (singular) */
+  'dashboard.details.bulk.selected_one': '{{count}} selected',
+  /** Count shown in the bulk selection toolbar (plural) */
+  'dashboard.details.bulk.selected_other': '{{count}} selected',
+  /** Label for clearing the current bulk selection */
+  'dashboard.details.bulk.clear': 'Clear selection',
+  /** Bulk action: discard the selected document versions */
+  'dashboard.details.bulk.discard': 'Discard versions',
+  /** Bulk action: unpublish the selected documents */
+  'dashboard.details.bulk.unpublish': 'Unpublish',
+  /** Tooltip for the overflow button that holds bulk actions on narrow widths */
+  'dashboard.details.bulk.more': 'More actions',
+  /** Header for the bulk discard confirmation dialog */
+  'dashboard.details.bulk.discard-dialog.header': 'Discard versions',
+  /** Confirm button for the bulk discard dialog */
+  'dashboard.details.bulk.discard-dialog.confirm': 'Discard versions',
+  /** Body of the bulk discard dialog (singular) */
+  'dashboard.details.bulk.discard-dialog.description_one':
+    'Discard 1 document version from this release? This can’t be undone.',
+  /** Body of the bulk discard dialog (plural) */
+  'dashboard.details.bulk.discard-dialog.description_other':
+    'Discard {{count}} document versions from this release? This can’t be undone.',
+  /** Header for the bulk unpublish confirmation dialog */
+  'dashboard.details.bulk.unpublish-dialog.header': 'Unpublish documents',
+  /** Confirm button for the bulk unpublish dialog */
+  'dashboard.details.bulk.unpublish-dialog.confirm': 'Unpublish',
+  /** Body of the bulk unpublish dialog (singular) */
+  'dashboard.details.bulk.unpublish-dialog.description_one':
+    'Mark 1 document to be unpublished when this release is run?',
+  /** Body of the bulk unpublish dialog (plural) */
+  'dashboard.details.bulk.unpublish-dialog.description_other':
+    'Mark {{count}} documents to be unpublished when this release is run?',
+  /** Success toast after a bulk discard (singular) */
+  'dashboard.details.bulk.discard-toast.success_one': 'Discarded 1 version',
+  /** Success toast after a bulk discard (plural) */
+  'dashboard.details.bulk.discard-toast.success_other': 'Discarded {{count}} versions',
+  /** Error toast when some bulk discards fail */
+  'dashboard.details.bulk.discard-toast.error': 'Some versions could not be discarded',
+  /** Success toast after a bulk unpublish (singular) */
+  'dashboard.details.bulk.unpublish-toast.success_one': 'Marked 1 document to unpublish',
+  /** Success toast after a bulk unpublish (plural) */
+  'dashboard.details.bulk.unpublish-toast.success_other': 'Marked {{count}} documents to unpublish',
+  /** Error toast when some bulk unpublishes fail */
+  'dashboard.details.bulk.unpublish-toast.error': 'Some documents could not be unpublished',
 
   /** Header for deleting a release dialog */
   'delete-dialog.confirm-delete.header': 'Are you sure you want to delete this release?',
@@ -175,6 +242,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'document-validation.error_other': '{{count}} validation errors',
   /** Label for when a document in a release has a single validation warning */
   'document-validation.error_one': '{{count}} validation error',
+  /** Tooltip for the validation status when a document has no errors (the "ready" state) */
+  'document-validation.valid': 'No validation errors',
 
   /** Label when a release has been deleted by a different user */
   'deleted-release': "The '<strong>{{title}}</strong>' release has been deleted",
@@ -244,6 +313,9 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
 
   /** Text for the button name for the release tool */
   'overview.action.documentation': 'Documentation',
+  /** Label for the back button on a release detail page (returns to the releases list). The
+   * leading arrow already conveys "back", so the label names the destination only. */
+  'overview.back-to-all-releases': 'All releases',
   /** Tooltip for the calendar button in the release overview */
   'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */
@@ -432,6 +504,10 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'table-header.documents': 'Documents',
   /** Header for the document table in the release tool - edited */
   'table-header.edited': 'Edited',
+  /** Header for the document table - last editor (person) column */
+  'table-header.edited-by': 'Edited by',
+  /** Header for the document table - last edited (relative time) column */
+  'table-header.last-edited': 'Last edited',
   /** Header for the document table in the release tool - Published */
   'table-header.published-at': 'Published',
   /** Header for the document table in the release tool - Published */
@@ -450,6 +526,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'table-header.title': 'Release',
   /** Header for the document table in the release tool - type */
   'table-header.type': 'Type',
+  /** Header for the document table in the release tool - variant (which variant a document targets) */
+  'table-header.variant': 'Variant',
   /** Header for the document table in the release tool - action */
   'table-header.action': 'Action',
 

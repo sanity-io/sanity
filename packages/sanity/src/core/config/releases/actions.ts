@@ -31,6 +31,11 @@ export interface ReleaseActionDescription {
   label: string
   onHandle?: () => void
   title?: ReactNode
+  /**
+   * Semantic tone for the action's menu item, so destructive or cautionary custom actions can read
+   * as such (e.g. a delete-like action in `critical`). Defaults to `default` when omitted.
+   */
+  tone?: 'default' | 'primary' | 'positive' | 'caution' | 'critical'
 }
 
 /**
