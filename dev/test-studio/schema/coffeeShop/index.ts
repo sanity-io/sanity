@@ -114,6 +114,58 @@ export const demoCoffeeProduct = defineType({
       description:
         'The promo shown with this product. The referenced document resolves to its variant content when the query carries a variant.',
     }),
+    defineField({
+      name: 'sizeOptions',
+      title: 'Size options',
+      type: 'array',
+      description:
+        'Plain structured content, not a Content Variant — a customer picks a size, it does not depend on who they are.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'sizeOption',
+          fields: [
+            defineField({
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'weightGrams',
+              title: 'Weight (g)',
+              type: 'number',
+              validation: (rule) => rule.required().min(0),
+            }),
+            defineField({
+              name: 'price',
+              title: 'Price',
+              type: 'number',
+              validation: (rule) => rule.required().min(0),
+            }),
+          ],
+          preview: {
+            select: {title: 'label', subtitle: 'price'},
+            prepare({title, subtitle}) {
+              return {
+                title,
+                subtitle: typeof subtitle === 'number' ? `$${subtitle.toFixed(2)}` : undefined,
+              }
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'grindOptions',
+      title: 'Grind options',
+      type: 'array',
+      description: 'Also plain structured content, not a Content Variant.',
+      of: [defineArrayMember({type: 'string'})],
+      options: {
+        list: ['Whole bean', 'Ground — filter', 'Ground — espresso', 'Ground — French press'],
+      },
+    }),
   ],
   preview: {
     select: {title: 'title', subtitle: 'excerpt', discount: 'discount', media: 'image'},

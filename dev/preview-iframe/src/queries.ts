@@ -51,6 +51,8 @@ export const PRODUCT_DETAIL_QUERY = `*[_type == "demoCoffeeProduct" && slug.curr
   "imageUrl": image.asset->url,
   origin->{_id, name, region, "imageUrl": image.asset->url},
   promo->{_id, title, tagline, ctaLabel},
+  sizeOptions[]{label, weightGrams, price},
+  grindOptions,
   "relatedProducts": *[_type == "demoCoffeeProduct" && slug.current != $slug] | order(_createdAt desc)[0...3]${PRODUCT_CARD_PROJECTION}
 }`
 
@@ -109,8 +111,16 @@ export interface LandingPageQueryResult {
   latestProducts: CoffeeProductCard[]
 }
 
+export interface ProductSizeOption {
+  label?: string
+  weightGrams?: number
+  price?: number
+}
+
 export interface CoffeeProductDetail extends CoffeeProductCard {
   description?: PortableTextBlock[]
   promo?: CoffeePromo
+  sizeOptions?: ProductSizeOption[]
+  grindOptions?: string[]
   relatedProducts?: CoffeeProductCard[]
 }

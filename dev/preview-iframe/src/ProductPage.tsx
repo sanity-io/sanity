@@ -1,4 +1,5 @@
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
+import {useState} from 'react'
 import {Link, useParams} from 'react-router-dom'
 
 import {
@@ -7,6 +8,7 @@ import {
   ErrorBlock,
   LoadingBlock,
   ProductCard,
+  ProductOptions,
   ProductPrice,
   queryErrorMessage,
   RichText,
@@ -20,8 +22,12 @@ export function ProductPage() {
   const {data, loading, error} = useQuery<CoffeeProductDetail | null>(PRODUCT_DETAIL_QUERY, {
     slug,
   })
+  const [sizeIndex, setSizeIndex] = useState(0)
+  const [grind, setGrind] = useState<string | undefined>(undefined)
 
   const attr = data ? createDataAttribute({id: data._id, type: 'demoCoffeeProduct'}) : null
+  const selectedSize = data?.sizeOptions?.[sizeIndex]
+  const displayPrice = selectedSize?.price ?? data?.price
 
   return (
     <div className="app-shell">
@@ -51,7 +57,7 @@ export function ProductPage() {
                     </span>
                   ) : null}
                   <span data-sanity={attr.scope('price').toString()}>
-                    <ProductPrice price={data.price} discount={data.discount} />
+                    <ProductPrice price={displayPrice} discount={data.discount} />
                   </span>
                 </div>
                 <h1 data-sanity={attr.scope('title').toString()}>{data.title || 'Untitled'}</h1>
@@ -65,6 +71,14 @@ export function ProductPage() {
                     {data.excerpt}
                   </p>
                 ) : null}
+                <ProductOptions
+                  sizeOptions={data.sizeOptions}
+                  grindOptions={data.grindOptions}
+                  sizeIndex={sizeIndex}
+                  onSizeChange={setSizeIndex}
+                  grind={grind}
+                  onGrindChange={setGrind}
+                />
               </div>
             </div>
 

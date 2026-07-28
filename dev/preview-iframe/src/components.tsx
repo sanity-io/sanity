@@ -4,7 +4,7 @@ import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
 import {useState} from 'react'
 import {Link} from 'react-router-dom'
 
-import {type CoffeeProductCard} from './queries'
+import {type CoffeeProductCard, type ProductSizeOption} from './queries'
 
 export function formatPrice(
   price?: number,
@@ -61,6 +61,64 @@ export function CoverImage({
   return (
     <div className={`cover cover-${variant} cover-placeholder`} aria-hidden>
       <span>☕</span>
+    </div>
+  )
+}
+
+export function ProductOptions({
+  sizeOptions,
+  grindOptions,
+  sizeIndex,
+  onSizeChange,
+  grind,
+  onGrindChange,
+}: {
+  sizeOptions?: ProductSizeOption[]
+  grindOptions?: string[]
+  sizeIndex: number
+  onSizeChange: (index: number) => void
+  grind?: string
+  onGrindChange: (grind: string) => void
+}) {
+  if (!sizeOptions?.length && !grindOptions?.length) return null
+
+  return (
+    <div className="product-options">
+      {sizeOptions?.length ? (
+        <div className="product-options-group">
+          <span className="product-options-label">Size</span>
+          <div className="product-options-pills">
+            {sizeOptions.map((option, index) => (
+              <button
+                key={option.label ?? index}
+                type="button"
+                className={index === sizeIndex ? 'pill pill-selected' : 'pill'}
+                onClick={() => onSizeChange(index)}
+              >
+                {option.label}
+                {option.weightGrams ? ` (${option.weightGrams}g)` : ''}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+      {grindOptions?.length ? (
+        <div className="product-options-group">
+          <span className="product-options-label">Grind</span>
+          <div className="product-options-pills">
+            {grindOptions.map((option) => (
+              <button
+                key={option}
+                type="button"
+                className={option === grind ? 'pill pill-selected' : 'pill'}
+                onClick={() => onGrindChange(option)}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }
