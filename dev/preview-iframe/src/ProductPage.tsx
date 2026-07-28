@@ -16,6 +16,7 @@ import {
 import {useDemoState} from './demoState'
 import {client} from './loader'
 import {type CoffeeProductDetail, PRODUCT_DETAIL_QUERY} from './queries'
+import {useUiStrings} from './uiStrings'
 
 interface Loaded {
   key: string
@@ -30,6 +31,7 @@ interface Failed {
 export function ProductPage() {
   const {slug = ''} = useParams<{slug: string}>()
   const {variant, lang, setDebugInfo} = useDemoState()
+  const t = useUiStrings()
   const [loaded, setLoaded] = useState<Loaded | undefined>(undefined)
   const [failed, setFailed] = useState<Failed | undefined>(undefined)
   const [sizeIndex, setSizeIndex] = useState(0)
@@ -61,9 +63,10 @@ export function ProductPage() {
   }, [slug, variant, lang, setDebugInfo])
 
   const requestKey = `${slug}::${variant}::${lang}`
+  const settled = loaded?.key === requestKey || failed?.key === requestKey
   const data = loaded?.key === requestKey ? loaded.result : undefined
   const error = failed?.key === requestKey ? failed.error : undefined
-  const loading = !data && !error && !failed
+  const loading = !settled
 
   const attr = data ? createDataAttribute({id: data._id, type: 'demoCoffeeProduct'}) : null
   const selectedSize = data?.sizeOptions?.[sizeIndex]
@@ -72,14 +75,12 @@ export function ProductPage() {
   return (
     <main className="product-page">
       <p className="back-link">
-        <Link to="/">← All coffees</Link>
+        <Link to="/">{t.backToAllCoffees}</Link>
       </p>
 
       {loading && <LoadingBlock />}
       {error ? <ErrorBlock message={queryErrorMessage(error)} /> : null}
-      {!loading && !error && !data && (
-        <EmptyBlock message="This product was not found for the current perspective." />
-      )}
+      {!loading && !error && !data && <EmptyBlock message={t.productNotFound} />}
 
       {!loading && !error && data && attr ? (
         <article>
@@ -101,8 +102,8 @@ export function ProductPage() {
               <h1 data-sanity={attr.scope('title').toString()}>{data.title || 'Untitled'}</h1>
               <p className="muted" data-sanity={attr.scope('origin').toString()}>
                 {data.origin?.name
-                  ? `Roasted from ${data.origin.name}${data.origin.region ? `, ${data.origin.region}` : ''}`
-                  : 'Origin unknown'}
+                  ? t.originRoastedFrom(data.origin.name, data.origin.region)
+                  : t.originUnknown}
               </p>
               {data.excerpt ? (
                 <p className="lead" data-sanity={attr.scope('excerpt').toString()}>
@@ -138,7 +139,7 @@ export function ProductPage() {
 
           {(data.relatedProducts?.length ?? 0) > 0 ? (
             <section className="section">
-              <h2>You might also like</h2>
+              <h2>{t.relatedProducts}</h2>
               <div className="product-grid">
                 {data.relatedProducts!.map((product) => (
                   <ProductCard key={product._id} product={product} />

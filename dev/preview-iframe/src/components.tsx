@@ -5,6 +5,7 @@ import {useState} from 'react'
 import {Link} from 'react-router-dom'
 
 import {type CoffeeProductCard, type ProductSizeOption} from './queries'
+import {useUiStrings} from './uiStrings'
 
 export function formatPrice(
   price?: number,
@@ -80,13 +81,14 @@ export function ProductOptions({
   grind?: string
   onGrindChange: (grind: string) => void
 }) {
+  const t = useUiStrings()
   if (!sizeOptions?.length && !grindOptions?.length) return null
 
   return (
     <div className="product-options">
       {sizeOptions?.length ? (
         <div className="product-options-group">
-          <span className="product-options-label">Size</span>
+          <span className="product-options-label">{t.sizeLabel}</span>
           <div className="product-options-pills">
             {sizeOptions.map((option, index) => (
               <button
@@ -104,7 +106,7 @@ export function ProductOptions({
       ) : null}
       {grindOptions?.length ? (
         <div className="product-options-group">
-          <span className="product-options-label">Grind</span>
+          <span className="product-options-label">{t.grindLabel}</span>
           <div className="product-options-pills">
             {grindOptions.map((option) => (
               <button
@@ -124,6 +126,7 @@ export function ProductOptions({
 }
 
 export function ProductCard({product}: {product: CoffeeProductCard}) {
+  const t = useUiStrings()
   const attr = createDataAttribute({
     id: product._id,
     type: 'demoCoffeeProduct',
@@ -144,8 +147,8 @@ export function ProductCard({product}: {product: CoffeeProductCard}) {
         {product.excerpt && <p className="muted">{product.excerpt}</p>}
         <p className="muted small">
           {product.origin?.name
-            ? `From ${product.origin.name}${product.origin.region ? `, ${product.origin.region}` : ''}`
-            : 'Origin unknown'}
+            ? t.originFrom(product.origin.name, product.origin.region)
+            : t.originUnknown}
         </p>
       </div>
     </>
@@ -184,14 +187,15 @@ export function RichText({value}: {value?: PortableTextBlock[]}) {
 }
 
 export function SiteHeader() {
+  const t = useUiStrings()
   return (
     <header className="site-header">
       <Link to="/" className="brand">
         <span className="brand-mark">Brew & Bean</span>
-        <span className="brand-badge">demo shop</span>
+        <span className="brand-badge">{t.brandBadge}</span>
       </Link>
       <nav>
-        <Link to="/">Home</Link>
+        <Link to="/">{t.navHome}</Link>
       </nav>
     </header>
   )
@@ -378,10 +382,11 @@ export function LoadingBlock() {
 }
 
 export function ErrorBlock({message}: {message: string}) {
+  const t = useUiStrings()
   return (
     <div className="state-block error">
       <p>
-        <strong>Query failed</strong>
+        <strong>{t.queryFailed}</strong>
       </p>
       <p>{message}</p>
     </div>

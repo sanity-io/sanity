@@ -5,6 +5,7 @@ import {useDemoState} from './demoState'
 import {client} from './loader'
 import {LANDING_PAGE_ID, LANDING_PAGE_QUERY, type LandingPageQueryResult} from './queries'
 import {Sections} from './Sections'
+import {useUiStrings} from './uiStrings'
 
 interface Loaded {
   key: string
@@ -18,6 +19,7 @@ interface Failed {
 
 export function HomePage() {
   const {variant, lang, setDebugInfo} = useDemoState()
+  const t = useUiStrings()
   const [loaded, setLoaded] = useState<Loaded | undefined>(undefined)
   const [failed, setFailed] = useState<Failed | undefined>(undefined)
 
@@ -58,9 +60,7 @@ export function HomePage() {
     <main>
       {loading && <LoadingBlock />}
       {error ? <ErrorBlock message={queryErrorMessage(error)} /> : null}
-      {!loading && !error && !page && (
-        <EmptyBlock message="No landing page yet — open the Seed coffee shop tool in the studio workspace." />
-      )}
+      {!loading && !error && !page && <EmptyBlock message={t.noLandingPage} />}
       {!loading && !error && page ? (
         <Sections page={page} latestProducts={latestProducts} activeVariant={variant} />
       ) : null}
