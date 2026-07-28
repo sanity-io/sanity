@@ -1,5 +1,3 @@
-import {PortableText, type PortableTextComponents} from '@portabletext/react'
-import {type PortableTextBlock} from '@sanity/types'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
 import {useState} from 'react'
 import {Link} from 'react-router-dom'
@@ -166,23 +164,6 @@ export function ProductCard({product}: {product: CoffeeProductCard}) {
     <Link className="product-card" to={`/products/${product.slug}`} data-sanity={attr}>
       {content}
     </Link>
-  )
-}
-
-const richTextComponents: PortableTextComponents = {
-  block: {
-    normal: ({children}) => <p>{children}</p>,
-    h2: ({children}) => <h2>{children}</h2>,
-    h3: ({children}) => <h3>{children}</h3>,
-  },
-}
-
-export function RichText({value}: {value?: PortableTextBlock[]}) {
-  if (!value?.length) return null
-  return (
-    <div className="prose">
-      <PortableText value={value} components={richTextComponents} />
-    </div>
   )
 }
 

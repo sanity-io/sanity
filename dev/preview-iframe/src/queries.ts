@@ -1,5 +1,3 @@
-import {type PortableTextBlock} from '@sanity/types'
-
 export const LANDING_PAGE_ID = 'demo-coffee-landing'
 
 // Localized via the regular internationalizedArray plugin (not Content Variants) —
@@ -37,7 +35,7 @@ export const LANDING_PAGE_QUERY = `{
       "ctaLabel": select(_type == "hero" => ${localized('ctaLabel')}, ctaLabel),
       "heading": ${localized('heading')},
       tagline,
-      "body": select(_type == "cta" => ${localized('body')}, body),
+      "body": select(_type == "cta" || _type == "story" => ${localized('body')}, body),
       "buttonLabel": ${localized('buttonLabel')},
       "imageUrl": image.asset->url,
       promo->{
@@ -110,7 +108,7 @@ export interface LandingSection {
   ctaLabel?: string
   heading?: string
   tagline?: string
-  body?: PortableTextBlock[] | string
+  body?: string
   buttonLabel?: string
   imageUrl?: string
   promo?: CoffeePromo

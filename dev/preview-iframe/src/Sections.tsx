@@ -1,7 +1,7 @@
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
 import {Link} from 'react-router-dom'
 
-import {CoverImage, ProductCard, RichText} from './components'
+import {CoverImage, ProductCard} from './components'
 import {type CoffeeProductCard, type LandingPage, type LandingSection} from './queries'
 
 function sectionAttr(pageId: string, sectionKey: string, field?: string) {
@@ -119,12 +119,13 @@ function StorySection({pageId, section}: {pageId: string; section: LandingSectio
         <h2 data-sanity={sectionAttr(pageId, section._key, 'heading')}>
           {section.heading || 'Our story'}
         </h2>
-        <div data-sanity={sectionAttr(pageId, section._key, 'body')}>
-          {Array.isArray(section.body) ? (
-            <RichText value={section.body} />
-          ) : (
-            section.body && <p>{section.body}</p>
-          )}
+        <div className="prose" data-sanity={sectionAttr(pageId, section._key, 'body')}>
+          {(section.body ?? '')
+            .split('\n\n')
+            .filter(Boolean)
+            .map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
         </div>
       </div>
       <div className="story-media" data-sanity={sectionAttr(pageId, section._key, 'image')}>
@@ -162,9 +163,7 @@ function CtaSection({pageId, section}: {pageId: string; section: LandingSection}
         {section.heading || 'Ready?'}
       </h2>
       {section.body && (
-        <p data-sanity={sectionAttr(pageId, section._key, 'body')}>
-          {typeof section.body === 'string' ? section.body : null}
-        </p>
+        <p data-sanity={sectionAttr(pageId, section._key, 'body')}>{section.body}</p>
       )}
       {section.buttonLabel && (
         <a

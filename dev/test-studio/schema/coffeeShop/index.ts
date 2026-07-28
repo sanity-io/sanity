@@ -292,10 +292,9 @@ const storySection = defineArrayMember({
     defineField({
       name: 'body',
       title: 'Body',
-      type: 'array',
+      type: 'internationalizedArrayText',
       description:
-        'Rich text — not localized in this demo (the internationalizedArray plugin covers plain strings; portable text i18n is a separate, larger integration left out of scope here).',
-      of: [defineArrayMember({type: 'block'})],
+        'Localized (en/de/fr) via the regular internationalizedArray plugin. Plain text rather than rich text — see gotcha #8 in the closed-beta doc for the tradeoff this sidesteps.',
     }),
     defineField({name: 'image', title: 'Image', type: 'image'}),
   ],
