@@ -144,7 +144,7 @@ describe('VariantsOverview', () => {
         'Manage variant definitions that control how content is personalized for different audiences, locales, and segments.',
       ),
     ).toBeInTheDocument()
-    expect(screen.getByRole('button', {name: 'Create variant definition'})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'New variant definition'})).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search variant definitions…')).toBeInTheDocument()
   })
 
@@ -332,7 +332,7 @@ describe('VariantsOverview', () => {
     expect(screen.getByTestId('no-variants-info-text')).toHaveTextContent('Variant definitions')
     const emptyState = screen.getByTestId('variants-empty-state')
     expect(
-      within(emptyState).getByRole('button', {name: 'Create variant definition'}),
+      within(emptyState).getByRole('button', {name: 'New variant definition'}),
     ).toBeInTheDocument()
     expect(within(emptyState).getByRole('link', {name: 'Documentation'})).toHaveAttribute(
       'href',
@@ -356,7 +356,7 @@ describe('VariantsOverview', () => {
 
     await renderOverview()
 
-    await user.click(screen.getAllByRole('button', {name: 'Create variant definition'})[0]!)
+    await user.click(screen.getAllByRole('button', {name: 'New variant definition'})[0]!)
 
     expect(screen.getByRole('dialog', {name: 'Create variant definition'})).toBeInTheDocument()
 

@@ -4,10 +4,11 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {FilterIcon} from '@sanity/icons/Filter'
 import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Card, Flex, Stack, Text, TextInput, useClickOutsideEvent} from '@sanity/ui'
-import {type ComponentType, useCallback, useMemo, useState} from 'react'
+import {type ComponentType, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantConditionIcon} from '../detail/variantConditionIcons'
@@ -158,28 +159,46 @@ function AddFilterMenu({
   )
 }
 
-/** A single active filter value, shown as a removable chip carrying its dimension icon. */
+const NOOP = (): void => {}
+
+interface ActiveChip {
+  key: string
+  val: string
+  icon: ComponentType
+  /** The value, shown as the chip text. */
+  label: string
+  /** "Dimension: value", used as the tooltip (and the only cue when collapsed to an icon). */
+  title: string
+}
+
+/**
+ * A single active filter value, shown as a removable chip carrying its dimension icon. When
+ * `iconOnly` (the overflow-collapsed state) it drops the value text and surfaces it via a tooltip.
+ */
 function FilterChip({
-  icon: Icon,
-  label,
+  chip,
+  iconOnly,
   onRemove,
 }: {
-  icon: ComponentType
-  label: string
+  chip: ActiveChip
+  iconOnly: boolean
   onRemove: () => void
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  return (
+  const Icon = chip.icon
+  const body = (
     <Card border padding={1} radius={2} style={{flex: 'none'}} tone="primary">
-      <Flex align="center" gap={1}>
+      <Flex align="center" gap={2}>
         <Box paddingLeft={1}>
           <Text size={1}>
             <Icon />
           </Text>
         </Box>
-        <Text muted size={1}>
-          {label}
-        </Text>
+        {!iconOnly && (
+          <Text muted size={1} style={{whiteSpace: 'nowrap'}}>
+            {chip.label}
+          </Text>
+        )}
         <Button
           icon={CloseIcon}
           mode="bleed"
@@ -188,6 +207,87 @@ function FilterChip({
         />
       </Flex>
     </Card>
+  )
+
+  // Collapsed chips are just an icon; the tooltip carries the dimension + value.
+  return iconOnly ? (
+    <Tooltip content={<Text size={1}>{chip.title}</Text>} portal>
+      <Box style={{flex: 'none'}}>{body}</Box>
+    </Tooltip>
+  ) : (
+    body
+  )
+}
+
+/**
+ * The active filter chips, in a flexible zone that never scrolls: a hidden, always-expanded copy is
+ * measured against the visible zone's width, and when the full chips would overflow they all collapse
+ * to icon-only (tooltip-labelled). The zone flexes, so "Add filter" and "Clear filters" beside it stay
+ * pinned and always visible.
+ */
+function ActiveChips({
+  chips,
+  onRemove,
+}: {
+  chips: ActiveChip[]
+  onRemove: (key: string, val: string) => void
+}): React.JSX.Element {
+  const [collapsed, setCollapsed] = useState(false)
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const measureRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    const container = containerRef.current
+    const measure = measureRef.current
+    if (!container || !measure || typeof ResizeObserver === 'undefined') return undefined
+    const observer = new ResizeObserver(() => {
+      setCollapsed(measure.scrollWidth > container.clientWidth)
+    })
+    observer.observe(container)
+    observer.observe(measure)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <Box
+      flex={1}
+      ref={containerRef}
+      style={{minWidth: 0, overflow: 'hidden', position: 'relative'}}
+    >
+      <Flex align="center" gap={2} wrap="nowrap">
+        {chips.map((chip) => (
+          <FilterChip
+            chip={chip}
+            iconOnly={collapsed}
+            key={`${chip.key}:${chip.val}`}
+            onRemove={() => onRemove(chip.key, chip.val)}
+          />
+        ))}
+      </Flex>
+      {/* Hidden, always-expanded copy — measured to decide whether the visible chips must collapse. */}
+      <Flex
+        aria-hidden
+        gap={2}
+        ref={measureRef}
+        style={{
+          left: 0,
+          pointerEvents: 'none',
+          position: 'absolute',
+          top: 0,
+          visibility: 'hidden',
+        }}
+        wrap="nowrap"
+      >
+        {chips.map((chip) => (
+          <FilterChip
+            chip={chip}
+            iconOnly={false}
+            key={`measure-${chip.key}:${chip.val}`}
+            onRemove={NOOP}
+          />
+        ))}
+      </Flex>
+    </Box>
   )
 }
 
@@ -211,8 +311,14 @@ export function VariantConditionFilters({
 }): React.JSX.Element | null {
   const {t} = useTranslation(variantsLocaleNamespace)
 
-  const activeChips = Object.entries(value).flatMap(([key, values]) =>
-    values.map((val) => ({key, val})),
+  const activeChips: ActiveChip[] = Object.entries(value).flatMap(([key, values]) =>
+    values.map((val) => ({
+      key,
+      val,
+      icon: getVariantConditionIcon(key),
+      label: val,
+      title: `${facetLabel(key)}: ${val}`,
+    })),
   )
   const hasActive = activeChips.length > 0
 
@@ -231,7 +337,9 @@ export function VariantConditionFilters({
   if (facets.length === 0) return null
 
   return (
-    <Card border padding={1} radius={2} style={{flex: 'none'}}>
+    // Fill the lane when there are chips (so Clear pins right and the chips zone can measure its
+    // available width); shrink to content when there are none, so the empty bar stays compact.
+    <Card border padding={1} radius={2} style={hasActive ? undefined : {display: 'inline-flex'}}>
       <Flex align="center" gap={2} wrap="nowrap">
         <Box paddingX={1} style={{flex: 'none'}}>
           <Text muted size={1}>
@@ -249,14 +357,7 @@ export function VariantConditionFilters({
             <Box
               style={{flex: 'none', width: 1, height: 20, background: 'var(--card-border-color)'}}
             />
-            {activeChips.map(({key, val}) => (
-              <FilterChip
-                icon={getVariantConditionIcon(key)}
-                key={`${key}:${val}`}
-                label={val}
-                onRemove={() => toggleValue(key, val)}
-              />
-            ))}
+            <ActiveChips chips={activeChips} onRemove={toggleValue} />
             <Box style={{flex: 'none'}}>
               <Button
                 icon={CloseIcon}

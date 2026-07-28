@@ -94,7 +94,7 @@ export function VariantsOverview(): React.JSX.Element {
         disabled={isCreateVariantDialogOpen}
         icon={AddIcon}
         onClick={handleCreateVariant}
-        text={t('overview.action.create-variant')}
+        text={t('overview.action.new-variant')}
       />
     ),
     [handleCreateVariant, isCreateVariantDialogOpen, t],
@@ -186,6 +186,7 @@ export function VariantsOverview(): React.JSX.Element {
             value={conditionFilters}
           />
         }
+        filterTabsScroll={false}
         getRowKey={getRowKey}
         id="variant-definitions-table"
         loading={loading}

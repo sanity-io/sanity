@@ -77,6 +77,7 @@ export function DocumentTable<Row extends object>({
   searchTestId,
   searchWidth,
   filterTabs,
+  filterTabsScroll = true,
   alwaysShowCommandLane = false,
   commandLaneActions,
   selection,
@@ -97,6 +98,12 @@ export function DocumentTable<Row extends object>({
   /** Fixed width of the search input; defaults to 280. Set it to match a right-hand rail. */
   searchWidth?: number
   filterTabs?: ReactNode
+  /**
+   * When true (default), the filter-tabs slot scrolls horizontally with a right-edge fade — right for
+   * tab strips that outrun the width. Set false when the consumer manages its own overflow (e.g. the
+   * variants overview collapses its filter chips), so the slot just fills without a scroll or fade.
+   */
+  filterTabsScroll?: boolean
   /**
    * Keep the command lane (filters + search) mounted even when there are zero rows, so a filter or
    * search that empties the result set doesn't also hide the controls needed to change it. Detail
@@ -240,7 +247,7 @@ export function DocumentTable<Row extends object>({
                 ) : (
                   <>
                     {filterTabs && (
-                      <Box flex={1} style={FILTER_TABS_STYLE}>
+                      <Box flex={1} style={filterTabsScroll ? FILTER_TABS_STYLE : {minWidth: 0}}>
                         {filterTabs}
                       </Box>
                     )}
