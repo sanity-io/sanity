@@ -26,7 +26,7 @@ export interface PanelsState {
 
 export interface InitialDragState {
   containerRect: DOMRect | null
-  containerWidth: number
+  windowWidth: number
   panelAfter: PanelElement | null
   panelBefore: PanelElement | null
   resizerIndex: number

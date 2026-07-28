@@ -88,7 +88,7 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
 
   const dragRef = useRef<InitialDragState>({
     containerRect: null,
-    containerWidth: window.innerWidth,
+    windowWidth: window.innerWidth,
     dragOffset: 0,
     panelAfter: null,
     panelBefore: null,
@@ -119,7 +119,7 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
           null as PanelElement | null,
         ),
         containerRect: getContainerRect(panelsEl.current),
-        containerWidth: window.innerWidth,
+        windowWidth: window.innerWidth,
         startX: event.pageX,
         dragOffset: getOffset(event, resizeElement),
         resizerRect: resizeElement.getBoundingClientRect(),
@@ -140,7 +140,7 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
       event.preventDefault()
       event.stopPropagation()
 
-      const {containerRect, containerWidth, dragOffset, panelBefore, panelAfter, resizerRect} =
+      const {containerRect, windowWidth, dragOffset, panelBefore, panelAfter, resizerRect} =
         dragRef.current
 
       if (panelBefore == null || panelAfter == null) {
@@ -160,13 +160,13 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
 
       const {widths: prevWidths} = panelsRef.current
       // Use the drag-start cached width to avoid a forced synchronous reflow per mousemove.
-      const containerWidthPx = containerRect?.width ?? getContainerRect(panelsEl.current)?.width
+      const containerWidthPx = containerRect?.width
       if (!containerWidthPx) return
       const delta = (offset / containerWidthPx) * 100
 
       const nextWidths = getNextWidths(
         delta,
-        containerWidth,
+        windowWidth,
         panelBefore,
         panelAfter,
         panelsRef.current,
@@ -220,7 +220,7 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
 
   useLayoutEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
-      // Refresh the drag's cached rect on a mid-drag window resize (cheap: post-layout, no reflow).
+      // Keep the drag's cached rect in sync when the container resizes (cheap: post-layout, no reflow).
       dragRef.current.containerRect = getContainerRect(panelsEl.current)
 
       const {panels, widths: prevWidths} = panelsRef.current
