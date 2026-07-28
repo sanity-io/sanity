@@ -1,5 +1,5 @@
 import {type Asset} from '@sanity/types'
-import {render} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import noop from 'lodash-es/noop.js'
 import {describe, expect, test} from 'vitest'
 
@@ -37,18 +37,16 @@ const mockAsset = {
 } as unknown as Asset
 
 describe('AssetThumb', () => {
-  // Regression test for https://github.com/sanity-io/sanity/issues/13664 —
-  // the grid thumbnail's <img> must set referrerPolicy="strict-origin-when-cross-origin"
-  // so it isn't broken on the hosted studio at www.sanity.io, whose document-level
-  // Referrer-Policy would otherwise cause the cdn.sanity.io request to be rejected.
-  test('renders the thumbnail img with referrerPolicy="strict-origin-when-cross-origin"', async () => {
+  // The hosted studio serves a strict document Referrer-Policy; without an explicit referrerPolicy
+  // the cdn.sanity.io thumbnail request loses its referrer and the CDN refuses it (broken thumbnails).
+  test('sets referrerPolicy on the thumbnail img so the CDN request keeps its referrer', async () => {
     const client = createMockSanityClient()
     const TestProvider = await createTestProvider({
       client: client as any,
       config: defineConfig({projectId: 'mock-project-id', dataset: 'test'}),
     })
 
-    const {container} = render(
+    render(
       <TestProvider>
         <AssetThumb
           asset={mockAsset}
@@ -60,8 +58,7 @@ describe('AssetThumb', () => {
       </TestProvider>,
     )
 
-    const img = container.querySelector('img')
-    expect(img).not.toBeNull()
-    expect(img?.getAttribute('referrerpolicy')).toBe('strict-origin-when-cross-origin')
+    const img = screen.getByAltText('test.png')
+    expect(img.getAttribute('referrerpolicy')).toBe('strict-origin-when-cross-origin')
   })
 })
