@@ -54,6 +54,8 @@ export interface ListItemSerializeOptions extends SerializeOptions {
 export interface ListItemDisplayOptions {
   /** Check if list item display should show icon */
   showIcon?: boolean
+  /** Check if list item display should show a live document count */
+  showCount?: boolean
 }
 
 /**
@@ -73,6 +75,16 @@ export interface ListItemInput {
   displayOptions?: ListItemDisplayOptions
   /** List item schema type. See {@link SchemaType} */
   schemaType?: SchemaType | string
+}
+
+/**
+ * Query descriptor used to fetch a live document count. Always a query, never a resolved number.
+ *
+ * @public */
+export interface ListItemCount {
+  filter: string
+  params: Record<string, unknown>
+  apiVersion?: string
 }
 
 /**
@@ -99,6 +111,8 @@ export interface ListItem {
   displayOptions?: ListItemDisplayOptions
   /** List item schema type. See {@link SchemaType} */
   schemaType?: SchemaType
+  /** Query descriptor used to fetch a live document count. See {@link ListItemCount} */
+  count?: ListItemCount
 }
 
 /**
@@ -227,6 +241,24 @@ export class ListItemBuilder implements Serializable<ListItem> {
   }
 
   /**
+   * Set if list item should show a live document count
+   * @returns list item builder based on showCount provided. See {@link ListItemBuilder}
+   */
+  showCount(enabled = true): ListItemBuilder {
+    return this.clone({
+      displayOptions: {...this.spec.displayOptions, showCount: enabled},
+    })
+  }
+
+  /**
+   * Check if list item should show a live document count
+   * @returns true if it should show the count, false if not, undefined if not set
+   */
+  getShowCount(): boolean | undefined {
+    return this.spec.displayOptions ? this.spec.displayOptions.showCount : undefined
+  }
+
+  /**
    *Get list item icon
    * @returns list item icon. See {@link PartialListItem}
    */
@@ -326,6 +358,10 @@ export class ListItemBuilder implements Serializable<ListItem> {
       }
     }
 
+    const count = this.spec.displayOptions?.showCount
+      ? resolveListItemCount(child, schemaType, id)
+      : undefined
+
     return {
       ...this.spec,
       id: validateId(id, options.path, options.index),
@@ -333,6 +369,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
       child: listChild,
       title,
       type: 'listItem',
+      ...(count ? {count} : {}),
     }
   }
 
@@ -345,4 +382,34 @@ export class ListItemBuilder implements Serializable<ListItem> {
     builder.spec = {...this.spec, ...withSpec}
     return builder
   }
+}
+
+function resolveListItemCount(
+  child: PartialListItem['child'],
+  schemaType: SchemaType | undefined,
+  id: string,
+): ListItemCount | undefined {
+  if (child instanceof DocumentListBuilder) {
+    const filter = child.getFilter()
+    if (filter) {
+      const apiVersion = child.getApiVersion()
+      return {
+        filter,
+        params: child.getParams() ?? {},
+        ...(apiVersion ? {apiVersion} : {}),
+      }
+    }
+  }
+
+  if (schemaType) {
+    return {filter: '_type == $type', params: {type: schemaType.name}}
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(
+      `[structure] showCount() ignored for list item "${id}": no document type or serializable document-list child to count`,
+    )
+  }
+
+  return undefined
 }
