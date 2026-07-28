@@ -8,7 +8,7 @@ import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useEffect, useRef, useState} from 'react'
 
-import {DetailPropertiesPanel} from '../../../components/detailLayout'
+import {DetailPropertiesPanel, type DetailPropertiesSection} from '../../../components/detailLayout'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {Details} from '../../../form/components/Details'
@@ -123,58 +123,60 @@ export function ReleaseDashboardDetails({
               behind beta.variants the footer is dropped, so a Created row is added here instead. */}
           <DetailPropertiesPanel
             testId="release-detail-metadata"
-            sections={[
-              {
-                rows: [
-                  isNotArchivedRelease(release) && {
-                    // Leading glyph reflects the live release type (bolt / clock / dot), tone-coloured.
-                    icon: variantsEnabled ? (
-                      <ReleaseAvatar release={release} padding={0} />
-                    ) : undefined,
-                    label: tRelease('dashboard.details.metadata.schedule'),
-                    value: <ReleaseTypePicker release={release} />,
-                  },
-                  {
-                    icon: variantsEnabled ? statusGlyph : undefined,
-                    label: tRelease('dashboard.details.metadata.status'),
-                    // Beta: semantic-coloured text ("Valid" / "Errors" / …) so the panel clearly
-                    // signals "good to go". Production keeps the minimal icon indicator unchanged.
-                    value: variantsEnabled ? (
-                      <ReleaseValidationBadge documents={documents} />
-                    ) : (
-                      <ValidationProgressIndicator documents={documents} layout="minimal" />
-                    ),
-                  },
-                  {
-                    icon: variantsEnabled ? (
-                      <Text size={1} muted>
-                        <DocumentsIcon />
-                      </Text>
-                    ) : undefined,
-                    label: tRelease('dashboard.details.metadata.documents'),
-                    value: String(documents.length),
-                  },
-                  variantsEnabled && {
-                    // The author avatar is the Created row's leading glyph. When the create-event
-                    // author doesn't resolve, fall back to a muted person glyph ("created by —
-                    // unknown") rather than a skeleton, which would read as perpetually loading.
-                    icon: createAuthor ? (
-                      <UserAvatar size={0} user={createAuthor} />
-                    ) : (
-                      <Text size={1} muted>
-                        <UserIcon />
-                      </Text>
-                    ),
-                    label: tRelease('footer.status.created'),
-                    value: (
-                      <Text size={1}>
-                        <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
-                      </Text>
-                    ),
-                  },
-                ],
-              },
-            ]}
+            sections={
+              [
+                {
+                  rows: [
+                    isNotArchivedRelease(release) && {
+                      // Leading glyph reflects the live release type (bolt / clock / dot), tone-coloured.
+                      icon: variantsEnabled ? (
+                        <ReleaseAvatar release={release} padding={0} />
+                      ) : undefined,
+                      label: tRelease('dashboard.details.metadata.schedule'),
+                      value: <ReleaseTypePicker release={release} />,
+                    },
+                    {
+                      icon: variantsEnabled ? statusGlyph : undefined,
+                      label: tRelease('dashboard.details.metadata.status'),
+                      // Beta: semantic-coloured text ("Valid" / "Errors" / …) so the panel clearly
+                      // signals "good to go". Production keeps the minimal icon indicator unchanged.
+                      value: variantsEnabled ? (
+                        <ReleaseValidationBadge documents={documents} />
+                      ) : (
+                        <ValidationProgressIndicator documents={documents} layout="minimal" />
+                      ),
+                    },
+                    {
+                      icon: variantsEnabled ? (
+                        <Text size={1} muted>
+                          <DocumentsIcon />
+                        </Text>
+                      ) : undefined,
+                      label: tRelease('dashboard.details.metadata.documents'),
+                      value: String(documents.length),
+                    },
+                    variantsEnabled && {
+                      // The author avatar is the Created row's leading glyph. When the create-event
+                      // author doesn't resolve, fall back to a muted person glyph ("created by —
+                      // unknown") rather than a skeleton, which would read as perpetually loading.
+                      icon: createAuthor ? (
+                        <UserAvatar size={0} user={createAuthor} />
+                      ) : (
+                        <Text size={1} muted>
+                          <UserIcon />
+                        </Text>
+                      ),
+                      label: tRelease('footer.status.created'),
+                      value: (
+                        <Text size={1}>
+                          <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
+                        </Text>
+                      ),
+                    },
+                  ],
+                },
+              ] satisfies DetailPropertiesSection[]
+            }
           />
         </Flex>
         {shouldDisplayError && (
