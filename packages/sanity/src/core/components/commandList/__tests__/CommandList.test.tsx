@@ -267,4 +267,24 @@ describe('core/components: CommandList', () => {
     await act(() => new Promise<void>((resolve) => setTimeout(resolve, 200)))
     expect(screen.getByText('Button 0')).toBeInTheDocument()
   })
+
+  it('should sync rendered items with the scroll position after becoming visible', async () => {
+    const items = [...Array(100).keys()]
+    const {rerender} = render(<TestComponent items={items} overscan={0} />)
+    const commandList = screen.getByTestId(COMMAND_LIST_TEST_ID)
+
+    commandList.scrollTop = 1200
+    fireEvent.scroll(commandList)
+    await waitFor(() => expect(screen.queryByText('Button 0')).not.toBeInTheDocument())
+
+    rerender(<TestComponent collapsed items={items} overscan={0} />)
+    act(triggerResizeObservers)
+    commandList.scrollTop = 0
+    rerender(<TestComponent items={items} overscan={0} />)
+    act(triggerResizeObservers)
+
+    expect(await screen.findByText('Button 0')).toBeInTheDocument()
+    await act(() => new Promise<void>((resolve) => setTimeout(resolve, 200)))
+    expect(screen.getByText('Button 0')).toBeInTheDocument()
+  })
 })

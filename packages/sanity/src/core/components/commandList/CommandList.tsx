@@ -195,7 +195,9 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
     onChange: handleChange,
     measureElement: (element, entry, instance) => {
       const measuredSize = measureElement(element, entry, instance)
-      if (measuredSize > 0) return measuredSize
+      const scrollElement = instance.scrollElement
+      const isHidden = scrollElement?.offsetWidth === 0 || scrollElement?.offsetHeight === 0
+      if (measuredSize > 0 || !isHidden) return measuredSize
 
       // Hidden panes report zero-sized rows. Keep the last valid size so the list does not collapse.
       const index = instance.indexFromElement(element)
