@@ -95,6 +95,10 @@ const variantsLocaleStrings = {
   'overview.bulk.delete-toast.success_other': 'Deleted {{count}} variant definitions',
   /** Toast shown when some variant definitions could not be bulk deleted. */
   'overview.bulk.delete-toast.error': 'Some variant definitions could not be deleted',
+  /** Clears the selected values for a single condition filter dropdown. */
+  'overview.filter.clear': 'Clear',
+  /** Clears every active condition filter across all dimensions. */
+  'overview.filter.clear-all': 'Clear filters',
   /** Column header for the variant title column in the overview table. */
   'overview.table.variant': 'Variant definition',
   /** Column header for the documents count column in the overview table. */

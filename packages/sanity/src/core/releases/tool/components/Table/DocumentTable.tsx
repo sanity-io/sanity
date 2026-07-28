@@ -77,6 +77,7 @@ export function DocumentTable<Row extends object>({
   searchTestId,
   searchWidth,
   filterTabs,
+  alwaysShowCommandLane = false,
   commandLaneActions,
   selection,
   rowActions,
@@ -96,6 +97,12 @@ export function DocumentTable<Row extends object>({
   /** Fixed width of the search input; defaults to 280. Set it to match a right-hand rail. */
   searchWidth?: number
   filterTabs?: ReactNode
+  /**
+   * Keep the command lane (filters + search) mounted even when there are zero rows, so a filter or
+   * search that empties the result set doesn't also hide the controls needed to change it. Detail
+   * tables leave this off; list surfaces that own filters (the variants overview) turn it on.
+   */
+  alwaysShowCommandLane?: boolean
   /** Extra command-lane controls rendered right of the search (e.g. an "Add document" button). */
   commandLaneActions?: ReactNode
   selection?: DocumentTableSelection
@@ -196,6 +203,9 @@ export function DocumentTable<Row extends object>({
   )
 
   const hasDocuments = !loading && rows.length > 0
+  // Keep the lane mounted for filter-owning surfaces even when a filter/search empties the rows, so
+  // the controls to undo that never disappear with the results.
+  const showCommandLane = hasDocuments || (alwaysShowCommandLane && !loading)
   const showBulkToolbar = Boolean(selection) && selectedVisibleCount > 0
 
   return (
@@ -204,7 +214,7 @@ export function DocumentTable<Row extends object>({
           filter tabs lead from the left (aligned with the columns), search is right-aligned. On
           selection: selected count + Clear on the left, caller's bulk actions on the right.
           container[3] + paddingX={2} aligns the lane with the table's row content below. */}
-      {hasDocuments && (
+      {showCommandLane && (
         <Card flex="none" borderBottom paddingY={2}>
           <Container flex="none" width={3}>
             <Box paddingX={2}>

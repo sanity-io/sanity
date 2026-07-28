@@ -15,8 +15,14 @@ import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type SystemVariant} from '../../types'
-import {filterVariantsForSearch, getVariantId} from '../util'
+import {
+  buildConditionFacets,
+  filterVariantsForSearch,
+  getVariantId,
+  variantMatchesConditionFilters,
+} from '../util'
 import {VariantBulkDeleteDialog} from './VariantBulkDeleteDialog'
+import {VariantConditionFilters} from './VariantConditionFilters'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
 import {type TableVariant, variantsOverviewColumnDefs} from './VariantsOverviewColumnDefs'
@@ -34,6 +40,7 @@ export function VariantsOverview(): React.JSX.Element {
   const {data: variants, error, loading} = useAllVariants()
   const [isCreateVariantDialogOpen, setIsCreateVariantDialogOpen] = useState(false)
   const [bulkDelete, setBulkDelete] = useState<{keys: string[]; clear: () => void} | null>(null)
+  const [conditionFilters, setConditionFilters] = useState<Record<string, string[]>>({})
 
   const handleCreateVariant = useCallback(() => setIsCreateVariantDialogOpen(true), [])
 
@@ -60,16 +67,23 @@ export function VariantsOverview(): React.JSX.Element {
   const variantsList = useMemo(() => variants ?? [], [variants])
   const {data: documentCounts, error: documentCountsError} = useVariantsDocumentCounts()
 
-  // All variants (unfiltered) — DocumentTable owns the search filtering via searchPredicate.
+  // Facets come from the full list so the dropdown options never shrink as filters are applied.
+  const facets = useMemo(() => buildConditionFacets(variantsList), [variantsList])
+
+  // Rows are pre-filtered by the active condition filters; DocumentTable owns the free-text search
+  // on top of that via searchPredicate.
   const rows = useMemo(
     () =>
-      variantsList.map(
-        (variant): TableVariant => ({
-          ...variant,
-          documentCount: documentCounts?.[variant._id] ?? (documentCountsError ? null : undefined),
-        }),
-      ),
-    [variantsList, documentCounts, documentCountsError],
+      variantsList
+        .filter((variant) => variantMatchesConditionFilters(variant, conditionFilters))
+        .map(
+          (variant): TableVariant => ({
+            ...variant,
+            documentCount:
+              documentCounts?.[variant._id] ?? (documentCountsError ? null : undefined),
+          }),
+        ),
+    [variantsList, conditionFilters, documentCounts, documentCountsError],
   )
 
   const hasVariants = variantsList.length > 0
@@ -162,8 +176,16 @@ export function VariantsOverview(): React.JSX.Element {
       {/* Shared DocumentTable — the same table the release and variant detail surfaces use: search in
           the command lane, checkbox selection, and a bulk toolbar on selection. */}
       <DocumentTable<TableVariant>
+        alwaysShowCommandLane
         columnDefs={columnDefs}
         emptyState={tableEmptyState}
+        filterTabs={
+          <VariantConditionFilters
+            facets={facets}
+            onChange={setConditionFilters}
+            value={conditionFilters}
+          />
+        }
         getRowKey={getRowKey}
         id="variant-definitions-table"
         loading={loading}
