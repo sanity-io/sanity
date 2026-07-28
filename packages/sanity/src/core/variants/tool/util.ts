@@ -129,3 +129,48 @@ export function filterVariantsForSearch(
     return searchableValues.some((value) => value.toLowerCase().includes(normalizedSearchTerm))
   })
 }
+
+/** A filterable condition dimension and the distinct values seen for it across all variants. */
+export interface ConditionFacet {
+  key: string
+  values: string[]
+}
+
+/**
+ * Derive the filterable facets from every variant's `conditions` key-value pairs: one facet per
+ * condition key, with its distinct values. Keys and values are sorted for a stable UI. Because the
+ * facets come from the full variant list (not the filtered view), the available options never shrink
+ * as filters are applied.
+ */
+export function buildConditionFacets(variants: SystemVariant[]): ConditionFacet[] {
+  const valuesByKey = new Map<string, Set<string>>()
+
+  for (const variant of variants) {
+    for (const [key, value] of Object.entries(variant.conditions)) {
+      if (typeof value !== 'string' || value.length === 0) continue
+      const values = valuesByKey.get(key) ?? new Set<string>()
+      values.add(value)
+      valuesByKey.set(key, values)
+    }
+  }
+
+  return Array.from(valuesByKey.entries())
+    .map(([key, values]) => ({key, values: Array.from(values).sort((a, b) => a.localeCompare(b))}))
+    .sort((a, b) => a.key.localeCompare(b.key))
+}
+
+/**
+ * A variant matches when, for every active facet, its value for that condition key is one of the
+ * selected values. Selecting several values within one facet is an OR; different facets AND together.
+ * An empty selection for a facet imposes no constraint.
+ */
+export function variantMatchesConditionFilters(
+  variant: SystemVariant,
+  filters: Record<string, string[]>,
+): boolean {
+  return Object.entries(filters).every(([key, selectedValues]) => {
+    if (selectedValues.length === 0) return true
+    const value = variant.conditions[key]
+    return typeof value === 'string' && selectedValues.includes(value)
+  })
+}
