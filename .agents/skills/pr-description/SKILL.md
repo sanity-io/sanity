@@ -7,7 +7,7 @@ description: Write PR descriptions and release notes for the Sanity monorepo. Fo
 
 ## When creating a PR
 
-Follow the repo's PR template. Always create PRs as **drafts**.
+Follow the repo's PR template. Always create PRs as **drafts**. **All AI-agent PRs must include the `🤖 bot` label.**
 
 ### 1. Analyze the changes
 
@@ -88,10 +88,10 @@ This section is used by the docs team to write release notes.
 
 ### 4. Create the PR
 
-**Always create as draft.** Do not mark as ready for review until CI passes.
+**Always create as draft** and apply the `🤖 bot` label. Do not mark as ready for review until CI passes and the prompter approves.
 
 ```bash
-gh pr create --draft --title "type(scope): description" --body "$(cat <<'EOF'
+gh pr create --draft --label "🤖 bot" --title "type(scope): description" --body "$(cat <<'EOF'
 ### Description
 
 [what and why]
@@ -113,7 +113,13 @@ EOF
 )"
 ```
 
-After CI is green, mark ready for review:
+If the label was omitted at create time:
+
+```bash
+gh pr edit --add-label "🤖 bot"
+```
+
+After CI is green and the prompter approves, mark ready for review:
 
 ```bash
 gh pr ready

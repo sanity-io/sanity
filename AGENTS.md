@@ -2,6 +2,8 @@
 
 This document helps AI agents work successfully with the Sanity monorepo.
 
+> **Self-Improvement:** If you discover undocumented requirements, commands, or workflows during your work (e.g., a reviewer asks you to run something not covered here), update this file on the same PR. Keep this guide accurate and helpful for future agents.
+
 ## Prerequisites
 
 - **Node.js**: v24 or latest LTS
@@ -263,6 +265,20 @@ pnpm lint:fix          # Auto-fix issues (oxfmt + oxlint --fix)
 
 All packages use **ESM** (`"type": "module"`). TypeScript strict mode is enabled.
 
+### Dependencies
+
+**Always use `lodash-es` instead of `lodash`**
+
+Prefer per-function ESM imports so unused helpers can tree-shake:
+
+```ts
+import get from 'lodash-es/get.js'
+```
+
+**Prefer `date-fns` subpath imports**
+
+Import from subpaths (e.g. `date-fns/format`), not the package barrel.
+
 ## Testing
 
 ### Unit Tests (Vitest)
@@ -278,6 +294,22 @@ Tests require a build first because some tests use compiled output:
 
 ```bash
 pnpm build && pnpm test
+```
+
+#### Test Timeouts
+
+When a test needs a custom timeout, use the Vitest options object as the second argument (not the deprecated third-argument form). Prefer numeric separators for readability:
+
+```ts
+// Correct
+test('my test', {timeout: 30_000}, async () => {
+  // ...
+})
+
+// Wrong — timeout as third argument (deprecated)
+test('my test', async () => {
+  // ...
+}, 30000)
 ```
 
 #### Vanilla-extract in jsdom tests
@@ -395,19 +427,71 @@ added new feature                       # missing type and scope
 
 ## Pull Request Workflow
 
-**Always create PRs as drafts first.**
+### 1. Create as Draft PR First
+
+**Always create PRs as drafts first.** The prompter (person who requested the work) reviews before the broader team.
 
 ```bash
 # Create a draft PR — title MUST follow conventional commit format
-gh pr create --draft --title "fix(scope): description" --body "..."
+gh pr create --draft --title "fix(scope): description" --body "..." --label "🤖 bot"
 ```
 
-Workflow:
+### 2. Apply the "🤖 bot" Label
 
-1. **Agent creates draft PR** - Push changes and open as draft
-2. **Prompter reviews** - The person who requested the changes reviews the draft
-3. **Mark ready for review** - Once the prompter approves, mark PR as ready: `gh pr ready`
-4. **Team reviews** - Team members review and approve
+**All PRs created by AI agents must be labeled with `🤖 bot`.** This label already exists on the repo and helps the team identify agent-created PRs for tracking and review workflows.
+
+When creating or updating a PR, always ensure the label is applied. If the create command did not accept `--label`, add it afterward:
+
+```bash
+gh pr edit --add-label "🤖 bot"
+```
+
+### 3. Move Out of Draft
+
+Once the prompter approves and CI is green, convert from draft to ready-for-review:
+
+```bash
+gh pr ready
+```
+
+### 4. What Not To Touch Unless Asked
+
+- **`.github/CODEOWNERS`** — do not add or change ownership rules unless explicitly requested
+- **Release automation / version bumps** — versioning is driven by conventional commits on merge; do not open manual version PRs unless asked
+
+### Useful PR Labels
+
+| Label                | When to use                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| `🤖 bot`             | **Required** on every AI-agent PR                                                    |
+| `trigger: preview`   | Publishes preview packages via [`pkg.pr.new`](https://pkg.pr.new) (maintainer-gated) |
+| `trigger:perf-bench` | Runs the `perf/bench` suite on the PR (maintainer-gated)                             |
+| `full-test-suite`    | Forces the full unit test suite to run                                               |
+
+Do **not** apply `trigger:*` labels unless the prompter or a maintainer asks — they kick off expensive or publish workflows.
+
+### Crediting Original Authors (Ported / Cherry-picked Work)
+
+When porting or rebasing someone else's PR (community contribution, backport, etc.), credit the **original author**, not only the agent or whoever opens the port PR:
+
+1. Prefer commits authored as the original contributor when history allows:
+
+   ```bash
+   git commit --author="their-name <their-github-email>" -m "..."
+   ```
+
+2. Otherwise add a `Co-authored-by:` trailer (and mention them in the PR description / Notes for release):
+
+   ```
+   Co-authored-by: Their Name <their-github-noreply@users.noreply.github.com>
+   ```
+
+Workflow summary:
+
+1. **Agent creates draft PR** with the `🤖 bot` label
+2. **Prompter reviews** the draft
+3. **Mark ready for review** once the prompter approves
+4. **Team reviews** and merges
 
 This ensures the person who prompted the changes can verify correctness before involving the broader team.
 
@@ -470,6 +554,17 @@ See `turbo.json` for full list of environment variables that affect builds.
 ## Cursor Cloud specific instructions
 
 These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The startup update script already runs `pnpm install`.
+
+### Services
+
+| Service                                           | Port | Purpose                                          |
+| ------------------------------------------------- | ---- | ------------------------------------------------ |
+| Test studio (`pnpm dev` / `pnpm dev:test-studio`) | 3333 | Local Sanity Studio for manual verification      |
+| Preview iframe (`pnpm dev:preview-iframe`)        | 3334 | Cross-origin Presentation preview (vanilla Vite) |
+
+No Docker, databases, or other local services are required for unit tests, lint, or build. CI-style verification (`pnpm lint`, `pnpm build`, `pnpm test`) runs entirely in-process.
+
+### Gotchas
 
 - **Root `typescript` is TypeScript 7.** Catalog `typescript` (^7) is a normal root dependency and provides the native `tsc` binary for vitest typecheck (`*.test-d.*`) and for tsdown `dts: {tsgo: true}` (packages also declare catalog `typescript`). CI type checking of application code is owned by oxlint (`options.typeCheck`). Tools that still need the TypeScript 6 compiler API keep that isolated: `@repo/typedoc` (typedoc) and `@repo/test-dts-exports` (ts-morph) depend on `typescript` aliased to `@typescript/typescript6`. The old symlink workaround for a missing root `tsc` is no longer needed.
 - **Dev studio auth for cloud agents — use the `STUDIO_AUTH_TOKEN` secret, not interactive login.** `pnpm dev` runs `sanity dev --no-auto-updates` (non-interactive, no upgrade prompt) and serves the app at `http://localhost:3333`. The test studio connects to Sanity Cloud (project `ppsg7ml5`); its default workspace is `/test`. Without auth the workspaces show "Signed out" / "Choose login provider". To authenticate, put the injected `STUDIO_AUTH_TOKEN` in the URL hash — Sanity consumes it on load and strips it from the address bar:
