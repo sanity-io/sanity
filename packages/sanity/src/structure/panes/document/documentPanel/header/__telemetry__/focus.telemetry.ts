@@ -1,27 +1,33 @@
 import {defineEvent} from '@sanity/telemetry'
 
 /**
- * When a focus document pane button is clicked
+ * When a document pane is maximized via the focus pane button
  */
-export const FocusDocumentPaneClicked = defineEvent({
-  name: 'Maximized Document Pane Clicked',
+export const DocumentPaneMaximized = defineEvent({
+  name: 'Document Pane Maximized',
   version: 1,
-  description: 'User pressed to maximize a document by click the focus pane button',
+  description: 'User maximized a document pane via the focus pane button',
 })
 
 /**
- * When a focus document pane button is collapsed
+ * When a maximized document pane is collapsed via the focus pane button
  */
-export const FocusDocumentPaneCollapsed = defineEvent({
-  name: 'Maximized Document Pane Collapsed',
+export const DocumentPaneCollapsed = defineEvent({
+  name: 'Document Pane Collapsed',
   version: 1,
-  description:
-    'User disabled the maximization on a document pane by clicking the focus pane button',
+  description: 'User collapsed a maximized document pane via the focus pane button',
 })
 
-export const FocusDocumentPaneNavigated = defineEvent({
-  name: 'Maximized Document Pane Navigated Via Breadcrumbs',
+interface DocumentPaneNavigatedInfo {
+  /** How the user navigated to the document pane */
+  path: 'breadcrumb'
+}
+
+/**
+ * When the user navigates to a different document pane
+ */
+export const DocumentPaneNavigated = defineEvent<DocumentPaneNavigatedInfo>({
+  name: 'Document Pane Navigated',
   version: 1,
-  description:
-    'User navigated to a different document pane via the breadcrumbs in the document header',
+  description: 'User navigated to a different document pane via the breadcrumbs in the header',
 })
