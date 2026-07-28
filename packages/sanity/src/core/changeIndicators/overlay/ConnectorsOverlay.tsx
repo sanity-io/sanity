@@ -47,7 +47,9 @@ function rectsAreEqual(current: Rect, next: Rect): boolean {
   )
 }
 
-// id is derived from the field path, so comparing id is sufficient identity for the pair.
+// Compare only the fields the render reads (id, zIndex, rect, bounds). hasHover/hasFocus/
+// hasRevertHover are computed upstream but never drawn, so a change to them alone must not
+// redraw. id derives from the field path, so id equality identifies the pair.
 function connectorsAreEqual(current: ConnectorPair[], next: ConnectorPair[]): boolean {
   if (current.length !== next.length) {
     return false
@@ -165,7 +167,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
 
   useEffect(() => {
     scheduleUpdate()
-  }, [allReportedValues, byId, hovered, isReviewChangesOpen, rootElement])
+  }, [allReportedValues, hovered, isReviewChangesOpen, rootElement])
 
   useEffect(() => {
     return () => {
@@ -178,11 +180,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
 
   // The scheduler is called inline rather than passed, as an effect event cannot be handed to a hook.
   useEffect(() => {
-    const observer = new ResizeObserver((entries) => {
-      if (entries.some((entry) => entry.target === rootElement)) {
-        scheduleUpdate()
-      }
-    })
+    const observer = new ResizeObserver(() => scheduleUpdate())
     observer.observe(rootElement)
     return () => observer.disconnect()
   }, [rootElement])

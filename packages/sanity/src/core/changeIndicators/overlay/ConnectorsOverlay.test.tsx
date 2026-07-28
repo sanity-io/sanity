@@ -1,5 +1,6 @@
 import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {StrictMode} from 'react'
 import {afterAll, afterEach, beforeAll, describe, expect, it} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
@@ -180,5 +181,44 @@ describe('ConnectorsOverlay', () => {
 
     await waitForOverlayToSettle()
     expect(overlay.querySelector('path')?.getAttribute('d')).not.toBe(initialPath)
+  })
+
+  it('does not redraw the connector when a scroll leaves the layout unchanged', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(<Harness isReviewChangesOpen />, {wrapper: TestProvider})
+
+    const overlay = screen.getByTestId('change-connectors-overlay')
+
+    await waitForOverlayToSettle()
+    const initialPath = overlay.querySelector('path')?.getAttribute('d')
+    expect(initialPath).toBeTruthy()
+
+    // Scroll without shifting the tracked layout. The measured geometry is identical, so the
+    // equality bail-out should keep the existing connector rather than redraw it.
+    act(() => {
+      screen.getByTestId('scroll-container').dispatchEvent(new Event('scroll'))
+    })
+
+    await waitForOverlayToSettle()
+    expect(overlay.querySelector('path')?.getAttribute('d')).toBe(initialPath)
+  })
+
+  it('still draws the connector after a StrictMode mount/unmount/mount', async () => {
+    const TestProvider = await createTestProvider()
+
+    // StrictMode double-invokes effects (mount/unmount/mount). The scheduler must re-arm after
+    // the cleanup cancels its pending frame, otherwise the connector never draws on a dev load.
+    render(
+      <StrictMode>
+        <Harness isReviewChangesOpen />
+      </StrictMode>,
+      {wrapper: TestProvider},
+    )
+
+    const overlay = screen.getByTestId('change-connectors-overlay')
+
+    await waitForOverlayToSettle()
+    expect(overlay.querySelector('path')).not.toBeNull()
   })
 })
