@@ -1,8 +1,8 @@
 import {type Path} from '@sanity/types'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useContext, useEffect, useEffectEvent, useMemo, useRef, useState} from 'react'
+import {ScrollContext} from 'sanity/_singletons'
 
 import {type Reported} from '../../components/react-track-elements/types'
-import {useOnScroll} from '../../components/scroll/hooks'
 import {useReviewChanges} from '../../hooks/useReviewChanges'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
@@ -13,7 +13,6 @@ import {type TrackedArea, type TrackedChange, useChangeIndicatorsReportedValues}
 import {Connector} from './Connector'
 import {SvgWrapper} from './ConnectorsOverlay.styled'
 import {DebugLayers} from './DebugLayers'
-import {useResizeObserver} from './useResizeObserver'
 
 export interface Rect {
   height: number
@@ -38,6 +37,36 @@ interface ConnectorsOverlayProps {
 }
 
 const EMPTY_CONNECTORS: ConnectorPair[] = []
+
+function rectsAreEqual(current: Rect, next: Rect): boolean {
+  return (
+    current.top === next.top &&
+    current.left === next.left &&
+    current.width === next.width &&
+    current.height === next.height
+  )
+}
+
+// Compares only what the rendered connector reads (rect, bounds, id, zIndex) so the overlay can
+// bail out of re-rendering when a frame produces the same connector.
+function connectorsAreEqual(current: ConnectorPair[], next: ConnectorPair[]): boolean {
+  if (current.length !== next.length) {
+    return false
+  }
+
+  return current.every((currentPair, index) => {
+    const nextPair = next[index]
+    return (
+      currentPair.field.id === nextPair.field.id &&
+      currentPair.field.zIndex === nextPair.field.zIndex &&
+      currentPair.change.zIndex === nextPair.change.zIndex &&
+      rectsAreEqual(currentPair.field.rect, nextPair.field.rect) &&
+      rectsAreEqual(currentPair.field.bounds, nextPair.field.bounds) &&
+      rectsAreEqual(currentPair.change.rect, nextPair.change.rect) &&
+      rectsAreEqual(currentPair.change.bounds, nextPair.change.bounds)
+    )
+  })
+}
 
 function getConnectors(
   allReportedValues: Reported<TrackedChange | TrackedArea>[],
@@ -107,7 +136,9 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
 
   const [connectors, setConnectors] = useState<ConnectorPair[]>(EMPTY_CONNECTORS)
 
-  const updateConnectors = useCallback(() => {
+  // An effect event so it always reads the latest tracked values; bails when geometry is
+  // unchanged so the overlay doesn't re-render every scroll frame.
+  const updateConnectors = useEffectEvent(() => {
     // Connectors are only shown while the review changes panel is open. Clearing them when
     // it closes ensures no stale connector lines linger on screen.
     const next = isReviewChangesOpen
@@ -115,20 +146,57 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
       : EMPTY_CONNECTORS
     // Reuse EMPTY_CONNECTORS so React can bail out of re-rendering while there are no
     // connectors to draw.
-    setConnectors(next.length === 0 ? EMPTY_CONNECTORS : next)
+    const nextConnectors = next.length === 0 ? EMPTY_CONNECTORS : next
+    setConnectors((current) =>
+      connectorsAreEqual(current, nextConnectors) ? current : nextConnectors,
+    )
+  })
+
+  const frameRef = useRef<number | null>(null)
+
+  // Coalesces the value-change, scroll and resize paths onto one frame. Measuring synchronously
+  // per scroll event reads layout right after the previous frame's DOM write, forcing a reflow;
+  // deferring to rAF avoids that. The 1-frame lag matches the value-change path.
+  const scheduleUpdate = useEffectEvent(() => {
+    if (frameRef.current !== null) {
+      return
+    }
+    frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = null
+      updateConnectors()
+    })
+  })
+
+  // Re-measure when the tracked elements, the hovered connector or the panel's open state change.
+  useEffect(() => {
+    scheduleUpdate()
   }, [allReportedValues, byId, hovered, isReviewChangesOpen, rootElement])
 
-  // Re-measure the connectors on the next frame whenever the tracked elements, the hovered
-  // connector or the review changes panel's open state change…
   useEffect(() => {
-    const frame = requestAnimationFrame(updateConnectors)
-    return () => cancelAnimationFrame(frame)
-  }, [updateConnectors])
+    return () => {
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current)
+      }
+    }
+  }, [])
 
-  // …and when the layout shifts, since scrolling and resizing don't change the tracked
-  // values themselves.
-  useResizeObserver(rootElement, updateConnectors)
-  useOnScroll(updateConnectors)
+  // Scrolling and resizing shift layout without changing the tracked values. Both subscriptions
+  // call the scheduler in place rather than passing it, as an effect event can only be invoked
+  // from within an effect.
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      if (entries.some((entry) => entry.target === rootElement)) {
+        scheduleUpdate()
+      }
+    })
+    observer.observe(rootElement)
+    return () => observer.disconnect()
+  }, [rootElement])
+
+  const scrollContext = useContext(ScrollContext)
+  useEffect(() => {
+    return scrollContext?.subscribe(() => scheduleUpdate())
+  }, [scrollContext])
 
   const visibleConnector = useMemo(() => {
     // Get the connector with the longest id, it will be the one that is most specific
