@@ -1,27 +1,31 @@
-import {type SanityClient} from '@sanity/client'
 import {useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {BehaviorSubject, type Observable, of} from 'rxjs'
+import {BehaviorSubject, combineLatest, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
 import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  listenQuery,
+  type DocumentPreviewStore,
   type PerspectiveStack,
-  useClient,
+  useDocumentPreviewStore,
   usePerspective,
 } from 'sanity'
 
 import {type ListItemCount} from '../../structureBuilder/ListItem'
 import {type PaneListItem, type PaneListItemDivider} from '../../types'
-import {buildListPaneCountsQuery, type ListPaneCountsQuery} from './listPaneCountsQuery'
+
+const COUNTS_TAG = 'structure.list-pane-counts'
 
 type ListPaneCounts = Record<string, number>
 
 const EMPTY_COUNTS: ListPaneCounts = {}
 
+interface CountDescriptor {
+  id: string
+  count: ListItemCount
+}
+
 interface CountsInput {
   active: boolean
-  query: ListPaneCountsQuery | null
+  descriptors: CountDescriptor[]
   perspectiveStack: PerspectiveStack
   identityKey: string
 }
@@ -32,43 +36,57 @@ function isCountableItem(
   return item.type === 'listItem' && item.count !== undefined
 }
 
-function listenListPaneCounts(
-  client: SanityClient,
-  query: ListPaneCountsQuery,
-  perspectiveStack: PerspectiveStack,
-): Observable<ListPaneCounts> {
-  return listenQuery(client, {fetch: query.fetch, listen: query.listen}, query.params, {
-    tag: 'structure.list-pane-counts',
-    perspective: perspectiveStack,
-    throttleTime: 1000,
-  }).pipe(
-    map((response: ListPaneCounts) => response ?? EMPTY_COUNTS),
-    // catchError stays on this inner stream so the outer pipe keeps reacting to
-    // item-set and perspective changes after a failed fetch.
-    catchError(() => of<ListPaneCounts>(EMPTY_COUNTS)),
-  )
-}
-
 function getTabVisible(): boolean {
   return typeof document === 'undefined' || document.visibilityState === 'visible'
 }
 
 /**
- * A single long-lived pipe fed by an input subject: when the identity key changes (item set,
- * perspective, or active state), the current listener is closed and a new fetch + listener
- * starts inside the same stream (`switchMap`), so there is never more than one active listener.
- * While inactive (tab hidden or pane off-screen) it emits an empty result, which the `scan`
- * merges over the previous counts - so the listener tears down while existing badges stay put.
+ * Subscribes to the shared core count observer once per descriptor and merges the emissions into
+ * a single `Record<itemId, number>`. `combineLatest` holds until every descriptor has emitted, so
+ * nothing renders before the first resolve; a resolved `0` is kept as `0`. Identical descriptors
+ * across panes are deduplicated inside the core observer, so each distinct filter rides one query
+ * slice regardless of how many panes request it.
+ */
+function observePaneCounts(
+  documentPreviewStore: DocumentPreviewStore,
+  descriptors: CountDescriptor[],
+  perspectiveStack: PerspectiveStack,
+): Observable<ListPaneCounts> {
+  return combineLatest(
+    descriptors.map((descriptor) =>
+      documentPreviewStore
+        .unstable_observeDocumentCount(
+          descriptor.count.filter,
+          descriptor.count.params,
+          perspectiveStack,
+          {tag: COUNTS_TAG},
+        )
+        .pipe(map((count) => [descriptor.id, count] as const)),
+    ),
+  ).pipe(map((entries) => Object.fromEntries(entries)))
+}
+
+/**
+ * A single long-lived pipe fed by an input subject: when the identity key changes (descriptor set,
+ * perspective, or active state), the current subscriptions are closed and new ones start inside the
+ * same stream (`switchMap`), so there is never more than one active set of subscriptions. While
+ * inactive (tab hidden or pane off-screen) it emits an empty result, which the `scan` merges over
+ * the previous counts - so the count subscriptions drop (their slice leaves the shared batch) while
+ * existing badges stay put.
  */
 function getListPaneCounts(
-  client: SanityClient,
+  documentPreviewStore: DocumentPreviewStore,
   input$: Observable<CountsInput>,
 ): Observable<ListPaneCounts> {
   return input$.pipe(
     distinctUntilChanged((previous, next) => previous.identityKey === next.identityKey),
     switchMap((input) =>
-      input.active && input.query
-        ? listenListPaneCounts(client, input.query, input.perspectiveStack)
+      input.active
+        ? observePaneCounts(documentPreviewStore, input.descriptors, input.perspectiveStack).pipe(
+            // catchError stays on this inner stream so the outer pipe keeps reacting to
+            // descriptor-set and perspective changes after a failed fetch.
+            catchError(() => of<ListPaneCounts>(EMPTY_COUNTS)),
+          )
         : of<ListPaneCounts>(EMPTY_COUNTS),
     ),
     scan((previous, next) => ({...previous, ...next}), EMPTY_COUNTS),
@@ -76,11 +94,12 @@ function getListPaneCounts(
 }
 
 /**
- * Keeps a live document count for every list item carrying a `count` descriptor, using a
- * single throttled listener over one batched aggregate count query.
+ * Keeps a live document count for every list item carrying a `count` descriptor by subscribing to
+ * the shared core count observer, which batches every count requested studio-wide into one combined
+ * query driven by the shared global listener.
  *
- * The listener is paused while the pane is off-screen (`enabled` is `false`) or the browser
- * tab is hidden, so a backgrounded studio holds no live query. Counts already resolved stay
+ * The subscriptions are dropped while the pane is off-screen (`enabled` is `false`) or the browser
+ * tab is hidden, so a backgrounded studio holds no count in the batch. Counts already resolved stay
  * visible while paused, and a fresh fetch runs when the pane becomes active again.
  *
  * @internal
@@ -89,7 +108,7 @@ export function useListPaneCounts(
   items: (PaneListItem | PaneListItemDivider)[],
   enabled = true,
 ): ListPaneCounts {
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const documentPreviewStore = useDocumentPreviewStore()
   const {perspectiveStack} = usePerspective()
 
   // Defer the initial fetch off first paint (product decision): the list must paint
@@ -110,33 +129,36 @@ export function useListPaneCounts(
   const descriptors = items
     .filter(isCountableItem)
     .map((item) => ({id: item.id, count: item.count}))
-  const query = descriptors.length > 0 ? buildListPaneCountsQuery(descriptors) : null
 
-  const active = ready && enabled && tabVisible && query !== null
+  const active = ready && enabled && tabVisible && descriptors.length > 0
 
   const perspectiveKey = perspectiveStack.join(',')
   const identityKey = [
     active,
     perspectiveKey,
-    ...descriptors.map((descriptor) => descriptor.id).toSorted(),
-    query ? JSON.stringify(query) : '',
+    ...descriptors
+      .map((descriptor) => `${descriptor.id}:${JSON.stringify(descriptor.count)}`)
+      .toSorted(),
   ].join('|')
 
   const input$ = useMemo(
     () =>
       new BehaviorSubject<CountsInput>({
         active: false,
-        query: null,
+        descriptors: [],
         perspectiveStack: [],
         identityKey: '',
       }),
     [],
   )
   useEffect(() => {
-    input$.next({active, query, perspectiveStack, identityKey})
-  }, [input$, active, query, perspectiveStack, identityKey])
+    input$.next({active, descriptors, perspectiveStack, identityKey})
+  }, [input$, active, descriptors, perspectiveStack, identityKey])
 
-  const counts$ = useMemo(() => getListPaneCounts(client, input$), [client, input$])
+  const counts$ = useMemo(
+    () => getListPaneCounts(documentPreviewStore, input$),
+    [documentPreviewStore, input$],
+  )
 
   return useObservable(counts$, EMPTY_COUNTS)
 }
