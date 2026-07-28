@@ -531,7 +531,11 @@ export const structure: StructureResolver = (
           const listItemId = listItem.getId()
           if (!listItemId) return listItem
 
-          return listItem.child(
+          // A representative subset kept for exercising count badges: small, medium, and the ~32k species type.
+          const showCountForDemo = ['author', 'book', 'species'].includes(listItemId)
+          const withCount = showCountForDemo ? listItem.showCount() : listItem
+
+          return withCount.child(
             S.documentTypeList(listItemId).menuItems([
               ...(S.documentTypeList(listItemId).getMenuItems() || []),
             ]),
