@@ -99,6 +99,10 @@ const variantsLocaleStrings = {
   'overview.filter.clear': 'Clear',
   /** Clears every active condition filter across all dimensions. */
   'overview.filter.clear-all': 'Clear filters',
+  /** Accessible label / tooltip for removing a single active filter value chip. */
+  'overview.filter.remove-value': 'Remove filter',
+  /** Leading label for the filter group. */
+  'overview.filter.label': 'Filters',
   /** Column header for the variant title column in the overview table. */
   'overview.table.variant': 'Variant definition',
   /** Column header for the documents count column in the overview table. */
