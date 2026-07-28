@@ -1,0 +1,421 @@
+import {BasketIcon} from '@sanity/icons/Basket'
+import {BillIcon} from '@sanity/icons/Bill'
+import {DocumentTextIcon} from '@sanity/icons/DocumentText'
+import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
+import {HomeIcon} from '@sanity/icons/Home'
+import {TagIcon} from '@sanity/icons/Tag'
+import {defineArrayMember, defineField, defineType} from 'sanity'
+
+/**
+ * Schema types for the Brew & Bean coffee shop Presentation demo.
+ * Products carry a discount field you can override per variant; referenced promo/origin
+ * documents resolve to their variant content in the same query.
+ */
+
+// sanity-plugin-internationalized-array's `fieldTypes` config only reliably
+// registers `internationalizedArrayText` for the first workspace that requests
+// it across this monorepo's single `defineConfig([...])` — a plugin-resolution
+// quirk, not a bug in this workspace's config (which correctly lists `'text'`).
+// Hand-defining the type ourselves sidesteps it: the plugin's own field-action
+// UI (add-all-languages button, etc.) still recognizes it purely by the
+// `internationalizedArray`-prefixed type name, matching the exact object shape
+// (`value` + hidden `language`) the plugin would have generated.
+const internationalizedArrayTextValue = defineType({
+  name: 'internationalizedArrayTextValue',
+  title: 'Internationalized array text value',
+  type: 'object',
+  fields: [
+    defineField({name: 'value', title: 'Value', type: 'text'}),
+    defineField({
+      name: 'language',
+      type: 'string',
+      hidden: true,
+      validation: (rule) => rule.required(),
+    }),
+  ],
+  preview: {select: {title: 'value', subtitle: 'language'}},
+})
+
+const internationalizedArrayText = defineType({
+  name: 'internationalizedArrayText',
+  title: 'Internationalized array text',
+  type: 'array',
+  of: [defineArrayMember({type: 'internationalizedArrayTextValue'})],
+})
+
+export const demoCoffeeOrigin = defineType({
+  name: 'demoCoffeeOrigin',
+  title: 'Coffee Demo: Origin',
+  type: 'document',
+  icon: TagIcon,
+  fields: [
+    defineField({
+      name: 'name',
+      title: 'Name',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'region',
+      title: 'Region',
+      type: 'internationalizedArrayString',
+      description:
+        'Localized (en/de/fr) — the country/region name translates. "Name" stays untranslated (a specific place name, like a proper noun).',
+    }),
+    defineField({name: 'image', title: 'Image', type: 'image'}),
+  ],
+  preview: {
+    select: {title: 'name', subtitle: 'region.0.value', media: 'image'},
+  },
+})
+
+export const demoCoffeePromo = defineType({
+  name: 'demoCoffeePromo',
+  title: 'Coffee Demo: Promo',
+  type: 'document',
+  icon: BillIcon,
+  description:
+    'A store-wide promo referenced by products. Give this document variant content (e.g. a VIP message for returning visitors) to demo reference resolution across variants. title/tagline/ctaLabel are localized (en/de/fr) via the regular internationalizedArray plugin — localization and Content Variants are independent systems that compose at query time.',
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'internationalizedArrayString',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({name: 'tagline', title: 'Tagline', type: 'internationalizedArrayString'}),
+    defineField({
+      name: 'ctaLabel',
+      title: 'Call to action label',
+      type: 'internationalizedArrayString',
+    }),
+  ],
+  preview: {
+    select: {title: 'title.0.value', subtitle: 'tagline.0.value'},
+  },
+})
+
+export const demoCoffeeProduct = defineType({
+  name: 'demoCoffeeProduct',
+  title: 'Coffee Demo: Product',
+  type: 'document',
+  icon: BasketIcon,
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'internationalizedArrayString',
+      description: 'Localized (en/de/fr) via the regular internationalizedArray plugin.',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: (doc) => {
+          const title = doc.title as {_key: string; value?: string}[] | undefined
+          return title?.find((entry) => entry._key === 'en')?.value ?? ''
+        },
+      },
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'excerpt',
+      title: 'Excerpt',
+      type: 'internationalizedArrayString',
+      description:
+        'Short summary shown on product cards. Localized (en/de/fr) via the regular internationalizedArray plugin.',
+    }),
+    defineField({name: 'image', title: 'Product image', type: 'image'}),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'internationalizedArrayText',
+      description:
+        'Longer plain-text description, localized (en/de/fr) via the regular internationalizedArray plugin. Plain text rather than rich text specifically so it localizes the same way the rest of this demo does — see gotcha #8 in the closed-beta doc for the rich-text tradeoff this sidesteps.',
+    }),
+    defineField({
+      name: 'price',
+      title: 'Price',
+      type: 'number',
+      validation: (rule) => rule.min(0),
+    }),
+    defineField({
+      name: 'discount',
+      title: 'Discount (%)',
+      type: 'number',
+      description:
+        'Percentage off the listed price. Override this field in a variant (e.g. returning visitors) to demo personalization.',
+      validation: (rule) => rule.min(0).max(100),
+    }),
+    defineField({
+      name: 'origin',
+      title: 'Origin',
+      type: 'reference',
+      to: [{type: 'demoCoffeeOrigin'}],
+    }),
+    defineField({
+      name: 'promo',
+      title: 'Promo',
+      type: 'reference',
+      to: [{type: 'demoCoffeePromo'}],
+      description:
+        'The promo shown with this product. The referenced document resolves to its variant content when the query carries a variant.',
+    }),
+    defineField({
+      name: 'sizeOptions',
+      title: 'Size options',
+      type: 'array',
+      description:
+        'Plain structured content, not a Content Variant — a customer picks a size, it does not depend on who they are.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'sizeOption',
+          fields: [
+            defineField({
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'weightGrams',
+              title: 'Weight (g)',
+              type: 'number',
+              validation: (rule) => rule.required().min(0),
+            }),
+            defineField({
+              name: 'price',
+              title: 'Price',
+              type: 'number',
+              validation: (rule) => rule.required().min(0),
+            }),
+          ],
+          preview: {
+            select: {title: 'label', subtitle: 'price'},
+            prepare({title, subtitle}) {
+              return {
+                title,
+                subtitle: typeof subtitle === 'number' ? `$${subtitle.toFixed(2)}` : undefined,
+              }
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'grindOptions',
+      title: 'Grind options',
+      type: 'array',
+      description: 'Also plain structured content, not a Content Variant.',
+      of: [defineArrayMember({type: 'string'})],
+      options: {
+        list: ['Whole bean', 'Ground — filter', 'Ground — espresso', 'Ground — French press'],
+      },
+    }),
+  ],
+  preview: {
+    select: {
+      title: 'title.0.value',
+      subtitle: 'excerpt.0.value',
+      discount: 'discount',
+      media: 'image',
+    },
+    prepare({title, subtitle, discount, media}) {
+      const discountLabel =
+        typeof discount === 'number' && discount > 0 ? `${discount}% off` : undefined
+      return {title, subtitle: discountLabel || subtitle, media}
+    },
+  },
+})
+
+const heroSection = defineArrayMember({
+  name: 'hero',
+  title: 'Hero',
+  type: 'object',
+  icon: HomeIcon,
+  fields: [
+    defineField({
+      name: 'headline',
+      title: 'Headline',
+      type: 'internationalizedArrayString',
+      description: 'Localized (en/de/fr) via the regular internationalizedArray plugin.',
+    }),
+    defineField({
+      name: 'subheadline',
+      title: 'Subheadline',
+      type: 'internationalizedArrayString',
+      description: 'Localized (en/de/fr) via the regular internationalizedArray plugin.',
+    }),
+    defineField({name: 'image', title: 'Image', type: 'image'}),
+    defineField({
+      name: 'ctaLabel',
+      title: 'CTA label',
+      type: 'internationalizedArrayString',
+      description: 'Localized (en/de/fr) via the regular internationalizedArray plugin.',
+    }),
+  ],
+  preview: {
+    select: {title: 'headline.0.value', subtitle: 'subheadline.0.value', media: 'image'},
+    prepare({title, subtitle, media}) {
+      return {title: title || 'Hero', subtitle, media}
+    },
+  },
+})
+
+const featuredProductsSection = defineArrayMember({
+  name: 'featuredProducts',
+  title: 'Featured products',
+  type: 'object',
+  icon: BasketIcon,
+  fields: [
+    defineField({name: 'heading', title: 'Heading', type: 'internationalizedArrayString'}),
+    defineField({
+      name: 'products',
+      title: 'Products',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'demoCoffeeProduct'}]})],
+      description: 'Leave empty to show the latest products automatically.',
+    }),
+  ],
+  preview: {
+    select: {title: 'heading.0.value'},
+    prepare({title}) {
+      return {title: title || 'Featured products'}
+    },
+  },
+})
+
+const promoBannerSection = defineArrayMember({
+  name: 'promoBanner',
+  title: 'Promo banner',
+  type: 'object',
+  icon: BillIcon,
+  fields: [
+    defineField({name: 'title', title: 'Title', type: 'string'}),
+    defineField({name: 'tagline', title: 'Tagline', type: 'string'}),
+    defineField({name: 'ctaLabel', title: 'CTA label', type: 'string'}),
+    defineField({
+      name: 'promo',
+      title: 'Promo document',
+      type: 'reference',
+      to: [{type: 'demoCoffeePromo'}],
+      description: 'Optional — when set, title/tagline/cta fall back to the referenced promo.',
+    }),
+  ],
+  preview: {
+    select: {title: 'title', subtitle: 'tagline'},
+    prepare({title, subtitle}) {
+      return {title: title || 'Promo banner', subtitle}
+    },
+  },
+})
+
+const storySection = defineArrayMember({
+  name: 'story',
+  title: 'Story',
+  type: 'object',
+  icon: DocumentTextIcon,
+  fields: [
+    defineField({name: 'heading', title: 'Heading', type: 'internationalizedArrayString'}),
+    defineField({
+      name: 'body',
+      title: 'Body',
+      type: 'internationalizedArrayText',
+      description:
+        'Localized (en/de/fr) via the regular internationalizedArray plugin. Plain text rather than rich text — see gotcha #8 in the closed-beta doc for the tradeoff this sidesteps.',
+    }),
+    defineField({name: 'image', title: 'Image', type: 'image'}),
+  ],
+  preview: {
+    select: {title: 'heading.0.value', media: 'image'},
+    prepare({title, media}) {
+      return {title: title || 'Story', media}
+    },
+  },
+})
+
+const originsSection = defineArrayMember({
+  name: 'origins',
+  title: 'Origins',
+  type: 'object',
+  icon: EarthGlobeIcon,
+  fields: [
+    defineField({name: 'heading', title: 'Heading', type: 'internationalizedArrayString'}),
+    defineField({
+      name: 'origins',
+      title: 'Origins',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'demoCoffeeOrigin'}]})],
+    }),
+  ],
+  preview: {
+    select: {title: 'heading.0.value'},
+    prepare({title}) {
+      return {title: title || 'Origins'}
+    },
+  },
+})
+
+const ctaSection = defineArrayMember({
+  name: 'cta',
+  title: 'Call to action',
+  type: 'object',
+  icon: BillIcon,
+  fields: [
+    defineField({name: 'heading', title: 'Heading', type: 'internationalizedArrayString'}),
+    defineField({name: 'body', title: 'Body', type: 'internationalizedArrayString'}),
+    defineField({name: 'buttonLabel', title: 'Button label', type: 'internationalizedArrayString'}),
+  ],
+  preview: {
+    select: {title: 'heading.0.value', subtitle: 'buttonLabel.0.value'},
+    prepare({title, subtitle}) {
+      return {title: title || 'CTA', subtitle}
+    },
+  },
+})
+
+export const demoCoffeeLandingPage = defineType({
+  name: 'demoCoffeeLandingPage',
+  title: 'Coffee Demo: Landing page',
+  type: 'document',
+  icon: HomeIcon,
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'sections',
+      title: 'Sections',
+      type: 'array',
+      of: [
+        heroSection,
+        featuredProductsSection,
+        promoBannerSection,
+        storySection,
+        originsSection,
+        ctaSection,
+      ],
+    }),
+  ],
+  preview: {
+    select: {title: 'title'},
+  },
+})
+
+export const coffeeShopSchemaTypes = [
+  internationalizedArrayTextValue,
+  internationalizedArrayText,
+  demoCoffeeOrigin,
+  demoCoffeePromo,
+  demoCoffeeProduct,
+  demoCoffeeLandingPage,
+]
+
+/** @deprecated Use `coffeeShopSchemaTypes` — kept for the full test-studio schema import. */
+export const variantsDemoTypes = coffeeShopSchemaTypes

@@ -1,160 +1,108 @@
-import {type ClientPerspective} from '@sanity/client'
-import {
-  Box,
-  Card,
-  Flex,
-  Stack,
-  studioTheme,
-  Tab,
-  TabList,
-  TabPanel,
-  Text,
-  ThemeProvider,
-} from '@sanity/ui'
+// oxlint-disable-next-line no-unassigned-import -- style import is effectful
+import './styles.css'
+
 import {enableVisualEditing} from '@sanity/visual-editing'
-import {Suspense, useEffect, useState} from 'react'
+import {Suspense, useEffect} from 'react'
 import {createRoot} from 'react-dom/client'
+import {BrowserRouter, Route, Routes} from 'react-router-dom'
 
-import {FieldGroups} from './FieldGroups'
-import {InitialValues} from './InitialValues'
-import {InternationalizedArrayTest} from './InternationalizedArrayTest'
-import {useLiveMode} from './loader'
-import {LongList} from './LongList'
-import {Markdown} from './Markdown'
-import {SimpleBlockPortableText} from './SimpleBlockPortableText'
+import {
+  DemoControlsMenu,
+  DemoDebugPanel,
+  DemoLanguageSwitcher,
+  DemoVariantSwitcher,
+  SiteHeader,
+} from './components'
+import {DemoStateProvider, useDemoState} from './demoState'
+import {HomePage} from './HomePage'
+import {studioUrl, useLiveMode} from './loader'
+import {ProductPage} from './ProductPage'
 
-function Main() {
-  const [id, setId] = useState<
-    'simple' | 'nested' | 'markdown' | 'longlist' | 'initialvalues' | 'intl-array'
-  >('simple')
+// @sanity/visual-editing's "Open in Studio" affordance navigates to an
+// /intent/edit/... URL on THIS app, expecting the hosting framework to
+// intercept it and redirect to the actual Studio (Next.js does this via a
+// built-in route handler; a bare Vite + React Router app doesn't get one for
+// free). Studio's own router understands this exact path+query shape, so all
+// that's needed is forwarding it there unchanged.
+function IntentRedirect() {
+  useEffect(() => {
+    window.location.replace(`${studioUrl}${window.location.pathname}${window.location.search}`)
+  }, [])
+  return null
+}
+
+// Kept running for click-to-edit overlays when opened inside Presentation, but
+// its perspective/variant state isn't shown — the demo uses its own manual
+// variant switcher, which is the source of truth for what's currently being viewed.
+function VisualEditing() {
+  useEffect(() => enableVisualEditing({}), [])
+  useLiveMode({})
+  return null
+}
+
+// Rendered once, shared across every route, so "Viewing as" / Language stay
+// selected when navigating from the landing page into a product detail page.
+function DemoHeader() {
+  const {
+    variant,
+    setVariant,
+    lang,
+    setLang,
+    showSwitcher,
+    setShowSwitcher,
+    showDebug,
+    setShowDebug,
+    debugInfo,
+  } = useDemoState()
+
   return (
-    <ThemeProvider theme={studioTheme}>
-      <Flex direction={'column'}>
-        <Box padding={4}>
-          <TabList space={2}>
-            <Tab
-              aria-controls="simple-panel"
-              id="simple-tab"
-              label="SimpleBlockPortableText"
-              onClick={() => setId('simple')}
-              selected={id === 'simple'}
-            />
-            <Tab
-              aria-controls="nested-panel"
-              id="nested-tab"
-              label="FieldGroups"
-              onClick={() => setId('nested')}
-              selected={id === 'nested'}
-            />
-            <Tab
-              aria-controls="markdown-panel"
-              id="markdown-tab"
-              label="Markdown"
-              onClick={() => setId('markdown')}
-              selected={id === 'markdown'}
-            />
-            <Tab
-              aria-controls="longlist-panel"
-              id="longlist-tab"
-              label="Long List"
-              onClick={() => setId('longlist')}
-              selected={id === 'longlist'}
-            />
-            <Tab
-              aria-controls="initialvalues-panel"
-              id="initialvalues-tab"
-              label="Initial Values"
-              onClick={() => setId('initialvalues')}
-              selected={id === 'initialvalues'}
-            />
-            <Tab
-              aria-controls="intl-array-panel"
-              id="intl-array-tab"
-              label="InternationalizedArrayTest"
-              onClick={() => setId('intl-array')}
-              selected={id === 'intl-array'}
-            />
-          </TabList>
-        </Box>
-
-        {id === 'simple' && (
-          <TabPanel aria-labelledby="simple-tab" id="simple-panel">
-            <SimpleBlockPortableText />
-          </TabPanel>
-        )}
-
-        {id === 'nested' && (
-          <TabPanel aria-labelledby="nested-tab" id="nested-panel">
-            <FieldGroups />
-          </TabPanel>
-        )}
-
-        {id === 'markdown' && (
-          <TabPanel aria-labelledby="markdown-tab" id="markdown-panel">
-            <Markdown />
-          </TabPanel>
-        )}
-        {id === 'longlist' && (
-          <TabPanel aria-labelledby="longlist-tab" id="longlist-panel">
-            <LongList />
-          </TabPanel>
-        )}
-        {id === 'initialvalues' && (
-          <TabPanel aria-labelledby="initialvalues-tab" id="initialvalues-panel">
-            <InitialValues />
-          </TabPanel>
-        )}
-        {id === 'intl-array' && (
-          <TabPanel aria-labelledby="intl-array-tab" id="intl-array-panel">
-            <InternationalizedArrayTest />
-          </TabPanel>
-        )}
-      </Flex>
-      <Suspense fallback={null}>
-        <VisualEditing />
-      </Suspense>
-    </ThemeProvider>
+    <div className="site-header-group">
+      <SiteHeader />
+      <div className="demo-controls-bar">
+        <DemoControlsMenu
+          showSwitcher={showSwitcher}
+          onToggleSwitcher={setShowSwitcher}
+          showDebug={showDebug}
+          onToggleDebug={setShowDebug}
+        />
+        {showSwitcher && <DemoVariantSwitcher value={variant} onChange={setVariant} />}
+        {showSwitcher && <DemoLanguageSwitcher value={lang} onChange={setLang} />}
+      </div>
+      {showDebug && debugInfo && (
+        <DemoDebugPanel
+          query={debugInfo.query}
+          params={debugInfo.params}
+          requestOptions={debugInfo.requestOptions}
+          response={debugInfo.response}
+        />
+      )}
+    </div>
   )
 }
 
-function VisualEditing() {
-  const [perspective, setPerspective] = useState<ClientPerspective>('published')
-  const [variant, setVariant] = useState<string | undefined>(undefined)
-
-  useEffect(
-    () =>
-      enableVisualEditing({
-        onPerspectiveChange: setPerspective,
-        onVariantChange: setVariant,
-      }),
-    [],
-  )
-  useLiveMode({})
-
+function App() {
   return (
-    <Card
-      padding={3}
-      radius={2}
-      shadow={2}
-      style={{bottom: 16, maxWidth: 420, position: 'fixed', right: 16, zIndex: 1000}}
-      tone="transparent"
-    >
-      <Stack space={2}>
-        <Text muted size={1}>
-          perspective: {JSON.stringify(perspective)}
-        </Text>
-        <Text muted size={1} data-testid="preview-variant">
-          variant: {variant ? JSON.stringify(variant) : 'none'}
-        </Text>
-      </Stack>
-    </Card>
+    <BrowserRouter>
+      <DemoStateProvider>
+        <div className="app-shell">
+          <DemoHeader />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/products/:slug" element={<ProductPage />} />
+            <Route path="/intent/*" element={<IntentRedirect />} />
+          </Routes>
+        </div>
+      </DemoStateProvider>
+      <Suspense fallback={null}>
+        <VisualEditing />
+      </Suspense>
+    </BrowserRouter>
   )
 }
 
 const rootEl = document.getElementById('root')
 if (!rootEl) {
-  throw new Error('Root element not found')
+  throw new Error('Root element #root not found')
 }
 
-const root = createRoot(rootEl)
-root.render(<Main />)
+createRoot(rootEl).render(<App />)

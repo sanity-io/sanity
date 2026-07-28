@@ -1,6 +1,6 @@
 {
   "name": "preview-iframe",
-  "version": "6.6.0",
+  "version": "6.6.1",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -18,13 +18,10 @@
     "@sanity/image-url": "^2.1.1",
     "@sanity/react-loader": "^2.1.2",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "catalog:",
     "@sanity/visual-editing": "^5.7.3",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-refractor": "^4.0.0",
-    "refractor": "^5.0.0",
-    "styled-components": "catalog:"
+    "react-router-dom": "^7.18.1"
   },
   "devDependencies": {
     "@rolldown/plugin-babel": "catalog:",
