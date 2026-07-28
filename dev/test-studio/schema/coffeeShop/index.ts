@@ -24,11 +24,17 @@ export const demoCoffeeOrigin = defineType({
       type: 'string',
       validation: (rule) => rule.required(),
     }),
-    defineField({name: 'region', title: 'Region', type: 'string'}),
+    defineField({
+      name: 'region',
+      title: 'Region',
+      type: 'internationalizedArrayString',
+      description:
+        'Localized (en/de/fr) — the country/region name translates. "Name" stays untranslated (a specific place name, like a proper noun).',
+    }),
     defineField({name: 'image', title: 'Image', type: 'image'}),
   ],
   preview: {
-    select: {title: 'name', subtitle: 'region', media: 'image'},
+    select: {title: 'name', subtitle: 'region.0.value', media: 'image'},
   },
 })
 
@@ -233,7 +239,7 @@ const featuredProductsSection = defineArrayMember({
   type: 'object',
   icon: BasketIcon,
   fields: [
-    defineField({name: 'heading', title: 'Heading', type: 'string'}),
+    defineField({name: 'heading', title: 'Heading', type: 'internationalizedArrayString'}),
     defineField({
       name: 'products',
       title: 'Products',
@@ -243,7 +249,7 @@ const featuredProductsSection = defineArrayMember({
     }),
   ],
   preview: {
-    select: {title: 'heading'},
+    select: {title: 'heading.0.value'},
     prepare({title}) {
       return {title: title || 'Featured products'}
     },
@@ -281,17 +287,19 @@ const storySection = defineArrayMember({
   type: 'object',
   icon: DocumentTextIcon,
   fields: [
-    defineField({name: 'heading', title: 'Heading', type: 'string'}),
+    defineField({name: 'heading', title: 'Heading', type: 'internationalizedArrayString'}),
     defineField({
       name: 'body',
       title: 'Body',
       type: 'array',
+      description:
+        'Rich text — not localized in this demo (the internationalizedArray plugin covers plain strings; portable text i18n is a separate, larger integration left out of scope here).',
       of: [defineArrayMember({type: 'block'})],
     }),
     defineField({name: 'image', title: 'Image', type: 'image'}),
   ],
   preview: {
-    select: {title: 'heading', media: 'image'},
+    select: {title: 'heading.0.value', media: 'image'},
     prepare({title, media}) {
       return {title: title || 'Story', media}
     },
@@ -304,7 +312,7 @@ const originsSection = defineArrayMember({
   type: 'object',
   icon: EarthGlobeIcon,
   fields: [
-    defineField({name: 'heading', title: 'Heading', type: 'string'}),
+    defineField({name: 'heading', title: 'Heading', type: 'internationalizedArrayString'}),
     defineField({
       name: 'origins',
       title: 'Origins',
@@ -313,7 +321,7 @@ const originsSection = defineArrayMember({
     }),
   ],
   preview: {
-    select: {title: 'heading'},
+    select: {title: 'heading.0.value'},
     prepare({title}) {
       return {title: title || 'Origins'}
     },
@@ -326,12 +334,12 @@ const ctaSection = defineArrayMember({
   type: 'object',
   icon: BillIcon,
   fields: [
-    defineField({name: 'heading', title: 'Heading', type: 'string'}),
-    defineField({name: 'body', title: 'Body', type: 'text', rows: 3}),
-    defineField({name: 'buttonLabel', title: 'Button label', type: 'string'}),
+    defineField({name: 'heading', title: 'Heading', type: 'internationalizedArrayString'}),
+    defineField({name: 'body', title: 'Body', type: 'internationalizedArrayString'}),
+    defineField({name: 'buttonLabel', title: 'Button label', type: 'internationalizedArrayString'}),
   ],
   preview: {
-    select: {title: 'heading', subtitle: 'buttonLabel'},
+    select: {title: 'heading.0.value', subtitle: 'buttonLabel.0.value'},
     prepare({title, subtitle}) {
       return {title: title || 'CTA', subtitle}
     },

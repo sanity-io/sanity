@@ -9,6 +9,8 @@ function localized(field: string): string {
   return `coalesce(${field}[language == $lang][0].value, ${field}[language == "en"][0].value)`
 }
 
+const ORIGIN_PROJECTION = `{_id, name, "region": ${localized('region')}, "imageUrl": image.asset->url}`
+
 const PRODUCT_CARD_PROJECTION = `{
   _id,
   _type,
@@ -18,7 +20,7 @@ const PRODUCT_CARD_PROJECTION = `{
   price,
   discount,
   "imageUrl": image.asset->url,
-  origin->{_id, name, region, "imageUrl": image.asset->url}
+  origin->${ORIGIN_PROJECTION}
 }`
 
 export const LANDING_PAGE_QUERY = `{
@@ -33,10 +35,10 @@ export const LANDING_PAGE_QUERY = `{
       "subheadline": ${localized('subheadline')},
       title,
       "ctaLabel": select(_type == "hero" => ${localized('ctaLabel')}, ctaLabel),
-      heading,
+      "heading": ${localized('heading')},
       tagline,
-      body,
-      buttonLabel,
+      "body": select(_type == "cta" => ${localized('body')}, body),
+      "buttonLabel": ${localized('buttonLabel')},
       "imageUrl": image.asset->url,
       promo->{
         _id,
@@ -45,7 +47,7 @@ export const LANDING_PAGE_QUERY = `{
         "ctaLabel": ${localized('ctaLabel')}
       },
       products[]->${PRODUCT_CARD_PROJECTION},
-      origins[]->{_id, name, region, "imageUrl": image.asset->url}
+      origins[]->${ORIGIN_PROJECTION}
     }
   },
   "latestProducts": *[_type == "demoCoffeeProduct"] | order(_createdAt desc)[0...6]${PRODUCT_CARD_PROJECTION}
@@ -61,7 +63,7 @@ export const PRODUCT_DETAIL_QUERY = `*[_type == "demoCoffeeProduct" && slug.curr
   discount,
   description,
   "imageUrl": image.asset->url,
-  origin->{_id, name, region, "imageUrl": image.asset->url},
+  origin->${ORIGIN_PROJECTION},
   promo->{
     _id,
     "title": ${localized('title')},
