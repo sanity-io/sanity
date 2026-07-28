@@ -15,8 +15,21 @@ import {
 } from './components'
 import {DemoStateProvider, useDemoState} from './demoState'
 import {HomePage} from './HomePage'
-import {useLiveMode} from './loader'
+import {studioUrl, useLiveMode} from './loader'
 import {ProductPage} from './ProductPage'
+
+// @sanity/visual-editing's "Open in Studio" affordance navigates to an
+// /intent/edit/... URL on THIS app, expecting the hosting framework to
+// intercept it and redirect to the actual Studio (Next.js does this via a
+// built-in route handler; a bare Vite + React Router app doesn't get one for
+// free). Studio's own router understands this exact path+query shape, so all
+// that's needed is forwarding it there unchanged.
+function IntentRedirect() {
+  useEffect(() => {
+    window.location.replace(`${studioUrl}${window.location.pathname}${window.location.search}`)
+  }, [])
+  return null
+}
 
 // Kept running for click-to-edit overlays when opened inside Presentation, but
 // its perspective/variant state isn't shown — the demo uses its own manual
@@ -76,6 +89,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/products/:slug" element={<ProductPage />} />
+            <Route path="/intent/*" element={<IntentRedirect />} />
           </Routes>
         </div>
       </DemoStateProvider>

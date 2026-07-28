@@ -23,5 +23,5 @@ const client = createClient({
 })
 
 export const {useQuery, useLiveMode} = createQueryStore({client})
-export {client}
+export {client, studioUrl}
 export const imageBuilder: ImageUrlBuilder = createImageUrlBuilder(client)
