@@ -2,23 +2,23 @@ import {Card, Flex, Text, type BadgeTone} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {
   forwardRef,
-  type ForwardRefExoticComponent,
   memo,
+  type ForwardRefExoticComponent,
   type RefAttributes,
   type SVGProps,
 } from 'react'
 import {
+  ReleaseAvatarIcon,
+  ReleaseTitle,
   getReleaseTone,
   getVariantTitle,
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseDocument,
-  ReleaseTitle,
   usePerspective,
   useTranslation,
   type SystemVariant,
   type TargetPerspective,
-  ReleaseAvatarIcon,
 } from 'sanity'
 import {styled} from 'styled-components'
 
