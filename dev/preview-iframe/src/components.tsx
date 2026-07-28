@@ -197,7 +197,12 @@ export function SiteHeader() {
   )
 }
 
-export type DemoVariantGroup = 'Baseline' | 'Personalization' | 'A/B testing' | 'Feature flag'
+export type DemoVariantGroup =
+  | 'Baseline'
+  | 'Personalization'
+  | 'A/B testing'
+  | 'Feature flag'
+  | 'Product variant (alt.)'
 
 export interface DemoVariantOption {
   value: string
@@ -207,11 +212,21 @@ export interface DemoVariantOption {
 
 export const DEMO_VARIANT_OPTIONS: DemoVariantOption[] = [
   {value: '', label: 'New visitor (baseline)', group: 'Baseline'},
-  {value: 'audience-returning', label: 'Returning visitor', group: 'Personalization'},
-  {value: 'audience-vip', label: 'VIP / loyalty member', group: 'Personalization'},
-  {value: 'audience-local', label: 'Local regular (pickup)', group: 'Personalization'},
-  {value: 'hero-treatment-b', label: 'Treatment B', group: 'A/B testing'},
-  {value: 'early-access', label: 'Early access (on)', group: 'Feature flag'},
+  {value: 'pernl-returning', label: 'Returning visitor', group: 'Personalization'},
+  {value: 'pernl-vip', label: 'VIP / loyalty member', group: 'Personalization'},
+  {value: 'pernl-local', label: 'Local regular (pickup)', group: 'Personalization'},
+  {value: 'exprm-hero-treatment-b', label: 'Treatment B', group: 'A/B testing'},
+  {value: 'fflag-early-access', label: 'Early access (on)', group: 'Feature flag'},
+  {
+    value: 'prdvr-size-small',
+    label: 'Espresso — 250g (as a variant)',
+    group: 'Product variant (alt.)',
+  },
+  {
+    value: 'prdvr-size-large',
+    label: 'Espresso — 1kg (as a variant)',
+    group: 'Product variant (alt.)',
+  },
 ]
 
 const GROUP_STYLE: Record<DemoVariantGroup, {bg: string; fg: string; icon: string}> = {
@@ -219,6 +234,7 @@ const GROUP_STYLE: Record<DemoVariantGroup, {bg: string; fg: string; icon: strin
   'Personalization': {bg: '#1f5c3f', fg: '#c9f2dd', icon: '👤'},
   'A/B testing': {bg: '#1c4a8a', fg: '#cfe3ff', icon: '🧪'},
   'Feature flag': {bg: '#b64a1c', fg: '#ffe6d4', icon: '🚩'},
+  'Product variant (alt.)': {bg: '#6b2f8a', fg: '#eeddfa', icon: '🔀'},
 }
 
 export function DemoVariantBadge({group}: {group: DemoVariantGroup}) {

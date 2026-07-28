@@ -9,13 +9,26 @@ const GRIND_OPTIONS = [
   'Ground — French press',
 ]
 
-interface SizeOption {
+interface SizeOptionInput {
   label: string
   weightGrams: number
   price: number
 }
 
-const SIZES: Record<string, SizeOption[]> = {
+interface SizeOption extends SizeOptionInput {
+  _key: string
+  _type: 'sizeOption'
+}
+
+function withKeys(productId: string, options: SizeOptionInput[]): SizeOption[] {
+  return options.map((option, index) => ({
+    ...option,
+    _key: `${productId}-size-${index}`,
+    _type: 'sizeOption',
+  }))
+}
+
+const SIZES: Record<string, SizeOptionInput[]> = {
   'demo-coffee-product-espresso': [
     {label: '250g', weightGrams: 250, price: 14},
     {label: '340g', weightGrams: 340, price: 18},
@@ -42,7 +55,7 @@ async function run() {
   for (const [id, sizeOptions] of Object.entries(SIZES)) {
     await client
       .patch(id)
-      .set({sizeOptions, grindOptions: GRIND_OPTIONS})
+      .set({sizeOptions: withKeys(id, sizeOptions), grindOptions: GRIND_OPTIONS})
       .commit({visibility: 'sync'})
     console.log(`done: ${id}`)
   }

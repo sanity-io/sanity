@@ -33,22 +33,22 @@ interface VariantDocPatchSpec {
 
 const DEFINITIONS: VariantDefinitionSpec[] = [
   {
-    variantId: 'audience-returning',
+    variantId: 'pernl-returning',
     conditions: {audience: 'returning'},
     title: 'Audience: Returning visitor',
   },
   {
-    variantId: 'audience-vip',
+    variantId: 'pernl-vip',
     conditions: {audience: 'vip'},
     title: 'Audience: VIP / loyalty member',
   },
   {
-    variantId: 'audience-local',
+    variantId: 'pernl-local',
     conditions: {audience: 'local'},
     title: 'Audience: Local regular (pickup)',
   },
-  {variantId: 'hero-treatment-b', title: 'A/B test: Hero treatment B'},
-  {variantId: 'early-access', title: 'Feature flag: Early access beta banner'},
+  {variantId: 'exprm-hero-treatment-b', title: 'A/B test: Hero treatment B'},
+  {variantId: 'fflag-early-access', title: 'Feature flag: Early access beta banner'},
 ]
 
 const PROMO_ID = 'demo-coffee-promo-main'
@@ -58,7 +58,7 @@ const LANDING_ID = 'demo-coffee-landing'
 const DOC_PATCHES: VariantDocPatchSpec[] = [
   {
     publishedId: PROMO_ID,
-    variantId: 'audience-returning',
+    variantId: 'pernl-returning',
     patch: {
       title: 'Welcome back!',
       tagline: 'Ready for your next bag? Subscribe and never run low.',
@@ -67,12 +67,12 @@ const DOC_PATCHES: VariantDocPatchSpec[] = [
   },
   {
     publishedId: HERO_PRODUCT_ID,
-    variantId: 'audience-returning',
+    variantId: 'pernl-returning',
     patch: {discount: 10},
   },
   {
     publishedId: PROMO_ID,
-    variantId: 'audience-vip',
+    variantId: 'pernl-vip',
     patch: {
       title: "You're one of our best customers",
       tagline: 'Enjoy 20% off, always — our thanks for your loyalty.',
@@ -81,12 +81,12 @@ const DOC_PATCHES: VariantDocPatchSpec[] = [
   },
   {
     publishedId: HERO_PRODUCT_ID,
-    variantId: 'audience-vip',
+    variantId: 'pernl-vip',
     patch: {discount: 20},
   },
   {
     publishedId: PROMO_ID,
-    variantId: 'audience-local',
+    variantId: 'pernl-local',
     patch: {
       title: 'Fresh today, just for neighbors',
       tagline: 'Skip shipping — pick up your bag fresh from the roastery on the corner.',
@@ -95,7 +95,7 @@ const DOC_PATCHES: VariantDocPatchSpec[] = [
   },
   {
     publishedId: LANDING_ID,
-    variantId: 'hero-treatment-b',
+    variantId: 'exprm-hero-treatment-b',
     patch: {
       'sections[_key=="hero"].headline': 'Your Best Cup Starts Here',
       'sections[_key=="hero"].subheadline':

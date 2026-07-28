@@ -23,7 +23,7 @@ function HeroSection({
   return (
     <section className="hero" data-sanity={sectionAttr(pageId, section._key)}>
       <div className="hero-copy">
-        {activeVariant === 'hero-treatment-b' && (
+        {activeVariant === 'exprm-hero-treatment-b' && (
           <span className="demo-ribbon demo-ribbon-ab">🧪 A/B test — Treatment B</span>
         )}
         <h1 data-sanity={sectionAttr(pageId, section._key, 'headline')}>

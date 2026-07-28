@@ -4,7 +4,7 @@ import {getCliClient} from 'sanity/cli'
 const client = getCliClient({apiVersion: 'X'}).withConfig({dataset: 'coffee-shop'})
 
 const LANDING_ID = 'demo-coffee-landing'
-const VARIANT_ID = 'early-access'
+const VARIANT_ID = 'fflag-early-access'
 
 // Not in @sanity/client's public `Action` union yet — see
 // packages/sanity/src/core/variants/ACTIONS.md for the authoritative shape.
