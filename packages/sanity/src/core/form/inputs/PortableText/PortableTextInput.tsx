@@ -33,7 +33,6 @@ import {
 
 import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util'
-import {pathToString} from '../../../validation/util/pathToString'
 import {
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
@@ -180,7 +179,12 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   )
 
   const hasSyncedInitialFullscreenRef = useRef(false)
-  const previousPathRef = useRef(path)
+
+  // Whether the shared fullscreen context currently marks *this* editor's path
+  // as fullscreen. Derived each render so the sync effect below reacts when it
+  // is toggled from elsewhere.
+  const isFullscreenInContext = Boolean(getFullscreenPath(path))
+  const previousFullscreenInContextRef = useRef(isFullscreenInContext)
 
   useEffect(() => {
     // If the initial fullscreen state is set and the path is not in the fullscreen context, set it
@@ -192,17 +196,19 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     }
   }, [initialFullscreen, path, getFullscreenPath, setFullscreenPath])
 
-  // Sync local isFullscreen state with the fullscreen context
-  // This ensures the state updates when the fullscreen path changes from elsewhere
+  // Sync local isFullscreen state with the fullscreen context. This must react
+  // both to the path changing (navigation) and to this path's fullscreen status
+  // being toggled from elsewhere — e.g. FullscreenPTEFocusSync collapsing this
+  // editor when document focus moves to a non-descendant field. Tracking the
+  // previous context value (rather than the previous path) means an external
+  // collapse for a stable path actually flips the local state, while a no-op
+  // change is ignored so the initial (and `initialFullscreen`) state is kept.
   useEffect(() => {
-    // Check if the fullscreen path value has actually changed
-    if (pathToString(previousPathRef.current) !== pathToString(path)) {
-      previousPathRef.current = path
-      const currentFullscreenPath = getFullscreenPath(path)
-
-      setIsFullscreen(Boolean(currentFullscreenPath))
+    if (previousFullscreenInContextRef.current !== isFullscreenInContext) {
+      previousFullscreenInContextRef.current = isFullscreenInContext
+      setIsFullscreen(isFullscreenInContext)
     }
-  }, [getFullscreenPath, path])
+  }, [isFullscreenInContext])
 
   const divergenceNavigator = useDocumentDivergences()
 
