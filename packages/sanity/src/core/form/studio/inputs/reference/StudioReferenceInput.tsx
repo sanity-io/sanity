@@ -158,6 +158,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
                     id: doc._id,
                     type: doc._type,
                     published: Boolean(published),
+                    originalId: doc._originalId,
                   })),
                 ),
               ),
