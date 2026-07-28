@@ -203,6 +203,7 @@ function FilterChip({
           icon={CloseIcon}
           mode="bleed"
           onClick={onRemove}
+          paddingY={1}
           tooltipProps={{content: t('overview.filter.remove-value')}}
         />
       </Flex>

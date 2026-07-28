@@ -178,6 +178,9 @@ export function VariantsOverview(): React.JSX.Element {
       <DocumentTable<TableVariant>
         alwaysShowCommandLane
         columnDefs={columnDefs}
+        // Reserve the bordered filter group's height so selecting rows (which swaps in the shorter
+        // bulk toolbar) never shifts the table.
+        commandLaneMinHeight={47}
         emptyState={tableEmptyState}
         filterTabs={
           <VariantConditionFilters

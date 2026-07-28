@@ -20,8 +20,10 @@ const TABLE_CARD_STYLE: CSSProperties = {
 // Right-aligned, fixed-width search input.
 const SEARCH_INPUT_STYLE: CSSProperties = {maxWidth: 280}
 
-// Constant command-lane height so the browse↔bulk swap never shifts the rows below.
-const COMMAND_LANE_STYLE: CSSProperties = {minHeight: 33}
+// Default command-lane height so the browse↔bulk swap never shifts the rows below. Consumers with a
+// taller browse control (e.g. the variants overview's bordered filter group) raise it via the
+// `commandLaneMinHeight` prop so the shorter bulk toolbar reserves the same height.
+const DEFAULT_COMMAND_LANE_MIN_HEIGHT = 33
 
 // Filter-tab strip: scrolls horizontally when the tabs outrun the width, with a subtle right-edge
 // fade cueing the overflow. When the tabs fit, the fade falls over empty space and is invisible.
@@ -78,6 +80,7 @@ export function DocumentTable<Row extends object>({
   searchWidth,
   filterTabs,
   filterTabsScroll = true,
+  commandLaneMinHeight = DEFAULT_COMMAND_LANE_MIN_HEIGHT,
   alwaysShowCommandLane = false,
   commandLaneActions,
   selection,
@@ -104,6 +107,12 @@ export function DocumentTable<Row extends object>({
    * variants overview collapses its filter chips), so the slot just fills without a scroll or fade.
    */
   filterTabsScroll?: boolean
+  /**
+   * Minimum height of the command lane, reserved in both the browse and bulk states so swapping
+   * between them never shifts the rows. Raise it above the default when the browse controls are
+   * taller than the bulk toolbar (e.g. a bordered filter group).
+   */
+  commandLaneMinHeight?: number
   /**
    * Keep the command lane (filters + search) mounted even when there are zero rows, so a filter or
    * search that empties the result set doesn't also hide the controls needed to change it. Detail
@@ -225,7 +234,7 @@ export function DocumentTable<Row extends object>({
         <Card flex="none" borderBottom paddingY={2}>
           <Container flex="none" width={3}>
             <Box paddingX={2}>
-              <Flex align="center" gap={3} style={COMMAND_LANE_STYLE}>
+              <Flex align="center" gap={3} style={{minHeight: commandLaneMinHeight}}>
                 {showBulkToolbar && selection ? (
                   <>
                     <Badge data-testid="document-table-selected-count" fontSize={1} tone="primary">
