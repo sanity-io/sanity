@@ -39,7 +39,7 @@ catalog:
   '@sanity/vanilla-extract-vite-plugin': ^0.2.7
   '@vanilla-extract/css': ^1.21.1
   '@vanilla-extract/dynamic': ^2.1.5
-  '@vitejs/plugin-react': ^6.0.3
+  '@vitejs/plugin-react': ^6.0.4
   '@vitest/browser-playwright': ^4.1.10
   babel-plugin-react-compiler: ^1.0.0
   jsdom: ^29.1.1
