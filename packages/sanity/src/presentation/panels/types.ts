@@ -25,6 +25,7 @@ export interface PanelsState {
 }
 
 export interface InitialDragState {
+  containerRect: DOMRect | null
   containerWidth: number
   panelAfter: PanelElement | null
   panelBefore: PanelElement | null
