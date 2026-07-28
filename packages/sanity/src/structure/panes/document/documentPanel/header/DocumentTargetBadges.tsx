@@ -15,9 +15,11 @@ import {
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseDocument,
+  isSystemBundle,
   usePerspective,
   useTranslation,
   type SystemVariant,
+  type TargetDocumentState,
   type TargetPerspective,
 } from 'sanity'
 import {styled} from 'styled-components'
@@ -62,6 +64,39 @@ const BadgeContainer = styled(Flex)`
   user-select: none;
   flex: none;
 `
+
+const BadgeMotionWrapper = styled(motion.div)`
+  flex: none;
+`
+
+function isTargetDocumentDefinitivelyMissing(
+  state: TargetDocumentState,
+  bundle: ReturnType<typeof usePerspective>['bundle'],
+): boolean {
+  switch (state.status) {
+    case 'resolving':
+      return false
+    case 'variant-definition-document-not-found':
+      return true
+    case 'variant-missing':
+      return true
+    case 'ready':
+      return !state.targetDocument && !state.variant && !isSystemBundle(bundle)
+    default:
+      return false
+  }
+}
+
+function getSelectedVariantFromState(
+  state: TargetDocumentState,
+  selectedVariant: SystemVariant | undefined,
+): SystemVariant | undefined {
+  if (state.status === 'ready' || state.status === 'variant-missing') {
+    return state.variant
+  }
+
+  return selectedVariant
+}
 
 function getPerspectiveBadgeTone(selectedPerspective: TargetPerspective): BadgeTone {
   if (isDraftPerspective(selectedPerspective)) {
@@ -131,20 +166,20 @@ const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: S
 
 export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
   const {targetDocumentState} = useDocumentPane()
-  const {selectedPerspective, selectedVariant} = usePerspective()
+  const {bundle, selectedPerspective, selectedVariant} = usePerspective()
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const isInCurrentTarget =
-    targetDocumentState.status === 'ready' && Boolean(targetDocumentState.targetDocument)
-  const badgeOpacity = isInCurrentTarget ? 1 : 0.5
+  const isTargetMissing = isTargetDocumentDefinitivelyMissing(targetDocumentState, bundle)
+  const badgeOpacity = isTargetMissing ? 0.5 : 1
+  const selectedVariantBadge = getSelectedVariantFromState(targetDocumentState, selectedVariant)
 
   return (
     <Tooltip
       content={t('document-target-badges.not-in-target.tooltip')}
-      disabled={isInCurrentTarget}
+      disabled={!isTargetMissing}
     >
       <Flex align="center" flex="none" gap={2} paddingRight={1}>
-        <motion.div animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
+        <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
           <TargetBadge
             tone={getPerspectiveBadgeTone(selectedPerspective)}
             border
@@ -153,13 +188,13 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
           >
             <PerspectiveBadgeLabel selectedPerspective={selectedPerspective} />
           </TargetBadge>
-        </motion.div>
-        {selectedVariant ? (
-          <motion.div animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
+        </BadgeMotionWrapper>
+        {selectedVariantBadge ? (
+          <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
             <TargetBadge tone="suggest" border radius={4} data-ui="DocumentTargetVariantBadge">
-              <VariantBadgeLabel variant={selectedVariant} />
+              <VariantBadgeLabel variant={selectedVariantBadge} />
             </TargetBadge>
-          </motion.div>
+          </BadgeMotionWrapper>
         ) : null}
       </Flex>
     </Tooltip>
