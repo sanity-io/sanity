@@ -172,14 +172,24 @@ a {
   padding: 0.75rem;
 }
 
-.demo-variant-switcher label {
+.demo-variant-switcher label,
+.demo-language-switcher label {
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #cbb994;
 }
 
-.demo-variant-switcher select {
+.demo-language-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-left: 1rem;
+  border-left: 1px solid #4a4235;
+}
+
+.demo-variant-switcher select,
+.demo-language-switcher select {
   font: inherit;
   font-size: 0.95rem;
   padding: 0.3rem 0.6rem;

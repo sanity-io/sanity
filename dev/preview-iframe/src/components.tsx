@@ -275,6 +275,33 @@ export function DemoVariantSwitcher({
   )
 }
 
+const LANGUAGE_OPTIONS = [
+  {value: 'en', label: '🇬🇧 English'},
+  {value: 'de', label: '🇩🇪 German'},
+  {value: 'fr', label: '🇫🇷 French'},
+]
+
+export function DemoLanguageSwitcher({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (value: string) => void
+}) {
+  return (
+    <div className="demo-language-switcher">
+      <label htmlFor="demo-language-select">Language</label>
+      <select id="demo-language-select" value={value} onChange={(e) => onChange(e.target.value)}>
+        {LANGUAGE_OPTIONS.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+}
+
 export function DemoControlsMenu({
   showSwitcher,
   onToggleSwitcher,

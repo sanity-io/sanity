@@ -38,19 +38,23 @@ export const demoCoffeePromo = defineType({
   type: 'document',
   icon: BillIcon,
   description:
-    'A store-wide promo referenced by products. Give this document variant content (e.g. a VIP message for returning visitors) to demo reference resolution across variants.',
+    'A store-wide promo referenced by products. Give this document variant content (e.g. a VIP message for returning visitors) to demo reference resolution across variants. title/tagline/ctaLabel are localized (en/de/fr) via the regular internationalizedArray plugin — localization and Content Variants are independent systems that compose at query time.',
   fields: [
     defineField({
       name: 'title',
       title: 'Title',
-      type: 'string',
+      type: 'internationalizedArrayString',
       validation: (rule) => rule.required(),
     }),
-    defineField({name: 'tagline', title: 'Tagline', type: 'string'}),
-    defineField({name: 'ctaLabel', title: 'Call to action label', type: 'string'}),
+    defineField({name: 'tagline', title: 'Tagline', type: 'internationalizedArrayString'}),
+    defineField({
+      name: 'ctaLabel',
+      title: 'Call to action label',
+      type: 'internationalizedArrayString',
+    }),
   ],
   preview: {
-    select: {title: 'title', subtitle: 'tagline'},
+    select: {title: 'title.0.value', subtitle: 'tagline.0.value'},
   },
 })
 
@@ -63,21 +67,28 @@ export const demoCoffeeProduct = defineType({
     defineField({
       name: 'title',
       title: 'Title',
-      type: 'string',
+      type: 'internationalizedArrayString',
+      description: 'Localized (en/de/fr) via the regular internationalizedArray plugin.',
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: {source: 'title'},
+      options: {
+        source: (doc) => {
+          const title = doc.title as {_key: string; value?: string}[] | undefined
+          return title?.find((entry) => entry._key === 'en')?.value ?? ''
+        },
+      },
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'excerpt',
       title: 'Excerpt',
-      type: 'string',
-      description: 'Short summary shown on product cards.',
+      type: 'internationalizedArrayString',
+      description:
+        'Short summary shown on product cards. Localized (en/de/fr) via the regular internationalizedArray plugin.',
     }),
     defineField({name: 'image', title: 'Product image', type: 'image'}),
     defineField({
@@ -168,7 +179,12 @@ export const demoCoffeeProduct = defineType({
     }),
   ],
   preview: {
-    select: {title: 'title', subtitle: 'excerpt', discount: 'discount', media: 'image'},
+    select: {
+      title: 'title.0.value',
+      subtitle: 'excerpt.0.value',
+      discount: 'discount',
+      media: 'image',
+    },
     prepare({title, subtitle, discount, media}) {
       const discountLabel =
         typeof discount === 'number' && discount > 0 ? `${discount}% off` : undefined
@@ -183,13 +199,28 @@ const heroSection = defineArrayMember({
   type: 'object',
   icon: HomeIcon,
   fields: [
-    defineField({name: 'headline', title: 'Headline', type: 'string'}),
-    defineField({name: 'subheadline', title: 'Subheadline', type: 'text', rows: 2}),
+    defineField({
+      name: 'headline',
+      title: 'Headline',
+      type: 'internationalizedArrayString',
+      description: 'Localized (en/de/fr) via the regular internationalizedArray plugin.',
+    }),
+    defineField({
+      name: 'subheadline',
+      title: 'Subheadline',
+      type: 'internationalizedArrayString',
+      description: 'Localized (en/de/fr) via the regular internationalizedArray plugin.',
+    }),
     defineField({name: 'image', title: 'Image', type: 'image'}),
-    defineField({name: 'ctaLabel', title: 'CTA label', type: 'string'}),
+    defineField({
+      name: 'ctaLabel',
+      title: 'CTA label',
+      type: 'internationalizedArrayString',
+      description: 'Localized (en/de/fr) via the regular internationalizedArray plugin.',
+    }),
   ],
   preview: {
-    select: {title: 'headline', subtitle: 'subheadline', media: 'image'},
+    select: {title: 'headline.0.value', subtitle: 'subheadline.0.value', media: 'image'},
     prepare({title, subtitle, media}) {
       return {title: title || 'Hero', subtitle, media}
     },

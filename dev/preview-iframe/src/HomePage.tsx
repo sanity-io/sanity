@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react'
 import {
   DemoControlsMenu,
   DemoDebugPanel,
+  DemoLanguageSwitcher,
   DemoVariantSwitcher,
   EmptyBlock,
   ErrorBlock,
@@ -15,17 +16,18 @@ import {LANDING_PAGE_ID, LANDING_PAGE_QUERY, type LandingPageQueryResult} from '
 import {Sections} from './Sections'
 
 interface Loaded {
-  variant: string
+  key: string
   result: LandingPageQueryResult
 }
 
 interface Failed {
-  variant: string
+  key: string
   error: unknown
 }
 
 export function HomePage() {
   const [variant, setVariant] = useState('')
+  const [lang, setLang] = useState('en')
   const [loaded, setLoaded] = useState<Loaded | undefined>(undefined)
   const [failed, setFailed] = useState<Failed | undefined>(undefined)
   const [showSwitcher, setShowSwitcher] = useState(true)
@@ -33,10 +35,11 @@ export function HomePage() {
 
   useEffect(() => {
     let cancelled = false
+    const key = `${variant}::${lang}`
     client
       .fetch<LandingPageQueryResult>(
         LANDING_PAGE_QUERY,
-        {id: LANDING_PAGE_ID},
+        {id: LANDING_PAGE_ID, lang},
         {
           ...(variant ? {variant} : {}),
           stega: false,
@@ -44,20 +47,21 @@ export function HomePage() {
       )
       .then((result) => {
         if (cancelled) return
-        setLoaded({variant, result})
+        setLoaded({key, result})
       })
       .catch((error) => {
         if (cancelled) return
-        setFailed({variant, error})
+        setFailed({key, error})
       })
     return () => {
       cancelled = true
     }
-  }, [variant])
+  }, [variant, lang])
 
-  const requestOptions = variant ? {variant} : {}
-  const data = loaded?.variant === variant ? loaded.result : undefined
-  const error = failed?.variant === variant ? failed.error : undefined
+  const requestKey = `${variant}::${lang}`
+  const requestOptions = {...(variant ? {variant} : {}), lang}
+  const data = loaded?.key === requestKey ? loaded.result : undefined
+  const error = failed?.key === requestKey ? failed.error : undefined
   const loading = !data && !error
 
   const page = data?.page
@@ -75,6 +79,7 @@ export function HomePage() {
             onToggleDebug={setShowDebug}
           />
           {showSwitcher && <DemoVariantSwitcher value={variant} onChange={setVariant} />}
+          {showSwitcher && <DemoLanguageSwitcher value={lang} onChange={setLang} />}
         </div>
         {showDebug && <DemoDebugPanel requestOptions={requestOptions} response={data} />}
       </div>

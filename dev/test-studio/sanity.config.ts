@@ -710,6 +710,15 @@ export default defineConfig([
       }),
       coffeeShopSeedTool(),
       visionTool(),
+      internationalizedArray({
+        languages: [
+          {id: 'en', title: 'English'},
+          {id: 'de', title: 'German'},
+          {id: 'fr', title: 'French'},
+        ],
+        defaultLanguages: ['en'],
+        fieldTypes: ['string'],
+      }),
     ],
     mediaLibrary: {
       enabled: true,

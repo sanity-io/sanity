@@ -2,12 +2,18 @@ import {type PortableTextBlock} from '@sanity/types'
 
 export const LANDING_PAGE_ID = 'demo-coffee-landing'
 
+// Localized via the regular internationalizedArray plugin (not Content Variants) —
+// $lang picks the requested locale, falling back to English when untranslated.
+function localized(field: string): string {
+  return `coalesce(${field}[_key == $lang][0].value, ${field}[_key == "en"][0].value)`
+}
+
 const PRODUCT_CARD_PROJECTION = `{
   _id,
   _type,
-  title,
+  "title": ${localized('title')},
   "slug": slug.current,
-  excerpt,
+  "excerpt": ${localized('excerpt')},
   price,
   discount,
   "imageUrl": image.asset->url,
@@ -22,16 +28,21 @@ export const LANDING_PAGE_QUERY = `{
     sections[]{
       _key,
       _type,
-      headline,
-      subheadline,
+      "headline": ${localized('headline')},
+      "subheadline": ${localized('subheadline')},
       title,
-      ctaLabel,
+      "ctaLabel": select(_type == "hero" => ${localized('ctaLabel')}, ctaLabel),
       heading,
       tagline,
       body,
       buttonLabel,
       "imageUrl": image.asset->url,
-      promo->{_id, title, tagline, ctaLabel},
+      promo->{
+        _id,
+        "title": ${localized('title')},
+        "tagline": ${localized('tagline')},
+        "ctaLabel": ${localized('ctaLabel')}
+      },
       products[]->${PRODUCT_CARD_PROJECTION},
       origins[]->{_id, name, region, "imageUrl": image.asset->url}
     }
@@ -42,15 +53,20 @@ export const LANDING_PAGE_QUERY = `{
 export const PRODUCT_DETAIL_QUERY = `*[_type == "demoCoffeeProduct" && slug.current == $slug][0]{
   _id,
   _type,
-  title,
+  "title": ${localized('title')},
   "slug": slug.current,
-  excerpt,
+  "excerpt": ${localized('excerpt')},
   price,
   discount,
   description,
   "imageUrl": image.asset->url,
   origin->{_id, name, region, "imageUrl": image.asset->url},
-  promo->{_id, title, tagline, ctaLabel},
+  promo->{
+    _id,
+    "title": ${localized('title')},
+    "tagline": ${localized('tagline')},
+    "ctaLabel": ${localized('ctaLabel')}
+  },
   sizeOptions[]{label, weightGrams, price},
   grindOptions,
   "relatedProducts": *[_type == "demoCoffeeProduct" && slug.current != $slug] | order(_createdAt desc)[0...3]${PRODUCT_CARD_PROJECTION}
