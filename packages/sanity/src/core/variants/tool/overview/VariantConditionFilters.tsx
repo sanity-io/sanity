@@ -1,6 +1,8 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Flex, Stack, useClickOutsideEvent} from '@sanity/ui'
+import {CloseIcon} from '@sanity/icons/Close'
+import {FilterIcon} from '@sanity/icons/Filter'
+import {Box, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -127,23 +129,35 @@ export function VariantConditionFilters({
 
   if (facets.length === 0) return null
 
+  // nowrap keeps the whole lane on one row — the command lane's own overflow-x scrolls it (with a
+  // fade cue) when there are many dimensions, so a widening trigger or the Clear button never wraps
+  // to a second line and lurches the rows below. A leading filter glyph marks the zone.
   return (
-    <Flex align="center" gap={2} wrap="wrap">
+    <Flex align="center" gap={2} wrap="nowrap">
+      <Box paddingX={1} style={{flex: 'none'}}>
+        <Text muted size={1}>
+          <FilterIcon />
+        </Text>
+      </Box>
       {facets.map((facet) => (
-        <ConditionFacetFilter
-          facet={facet}
-          key={facet.key}
-          onChange={(next) => setFacet(facet.key, next)}
-          selected={value[facet.key] ?? []}
-        />
+        <Box key={facet.key} style={{flex: 'none'}}>
+          <ConditionFacetFilter
+            facet={facet}
+            onChange={(next) => setFacet(facet.key, next)}
+            selected={value[facet.key] ?? []}
+          />
+        </Box>
       ))}
       {hasActive && (
-        <Button
-          mode="bleed"
-          onClick={() => onChange({})}
-          text={t('overview.filter.clear-all')}
-          tone="default"
-        />
+        <Box style={{flex: 'none'}}>
+          <Button
+            icon={CloseIcon}
+            mode="ghost"
+            onClick={() => onChange({})}
+            text={t('overview.filter.clear-all')}
+            tone="primary"
+          />
+        </Box>
       )}
     </Flex>
   )
