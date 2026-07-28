@@ -174,8 +174,13 @@ a {
   word-break: break-word;
 }
 
-.demo-debug-panel > .demo-debug-section:first-child {
+.demo-debug-panel > .demo-debug-section:first-child,
+.demo-debug-panel > .demo-debug-section:last-child {
   grid-column: 1 / -1;
+}
+
+.demo-debug-panel > .demo-debug-section:last-child pre {
+  max-height: 420px;
 }
 
 .demo-variant-switcher label,
