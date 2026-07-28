@@ -171,6 +171,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
     return () => {
       if (frameRef.current !== null) {
         cancelAnimationFrame(frameRef.current)
+        frameRef.current = null
       }
     }
   }, [])
