@@ -35,24 +35,32 @@ class TestResizeObserver implements ResizeObserver {
     this.targets.delete(target)
   }
 
-  trigger() {
-    const entries = [...this.targets].map(
-      (target) =>
-        ({
-          contentRect: target.getBoundingClientRect(),
-          target,
-        }) as ResizeObserverEntry,
-    )
+  trigger(predicate: (target: Element) => boolean = () => true) {
+    const entries = [...this.targets].filter(predicate).map((target) => {
+      const element = target as HTMLElement
+      return {
+        borderBoxSize: [
+          {
+            blockSize: element.offsetHeight,
+            inlineSize: element.offsetWidth,
+          },
+        ],
+        contentRect: target.getBoundingClientRect(),
+        target,
+      } as unknown as ResizeObserverEntry
+    })
+    if (entries.length === 0) return
     this.callback(entries, this)
   }
 }
 
-const triggerResizeObservers = () => {
-  resizeObservers.forEach((observer) => observer.trigger())
+const triggerResizeObservers = (predicate?: (target: Element) => boolean) => {
+  resizeObservers.forEach((observer) => observer.trigger(predicate))
 }
 
 interface TestComponentProps {
   collapsed?: boolean
+  fixedHeight?: boolean
   initialIndex?: number
   items: Item[]
   overscan?: number
@@ -60,7 +68,14 @@ interface TestComponentProps {
 }
 
 function TestComponent(props: TestComponentProps) {
-  const {collapsed, initialIndex, items, overscan = items.length, withDisabledItems} = props
+  const {
+    collapsed,
+    fixedHeight = true,
+    initialIndex,
+    items,
+    overscan = items.length,
+    withDisabledItems,
+  } = props
 
   const getItemDisabled = useCallback(
     (item: Item) => {
@@ -86,7 +101,7 @@ function TestComponent(props: TestComponentProps) {
           activeItemDataAttr={CUSTOM_ACTIVE_ATTR}
           ariaLabel=""
           autoFocus="list"
-          fixedHeight
+          fixedHeight={fixedHeight}
           initialIndex={initialIndex}
           itemHeight={20}
           items={items}
@@ -115,7 +130,8 @@ describe('core/components: CommandList', () => {
     Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
       configurable: true,
       get() {
-        return this.closest('[hidden]') ? 0 : 800
+        if (this.closest('[hidden]')) return 0
+        return this.hasAttribute('data-index') ? 30 : 800
       },
     })
     Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
@@ -217,21 +233,35 @@ describe('core/components: CommandList', () => {
     expect(buttons[3]).toHaveAttribute(CUSTOM_ACTIVE_ATTR)
   })
 
-  it('should sync rendered items with the scroll position after becoming visible', async () => {
+  it('should preserve row measurements when becoming visible', async () => {
     const items = [...Array(100).keys()]
-    const {rerender} = render(<TestComponent items={items} overscan={0} />)
+    const {rerender} = render(<TestComponent fixedHeight={false} items={items} />)
     const commandList = screen.getByTestId(COMMAND_LIST_TEST_ID)
+    const scrollTargets: number[] = []
+    Object.defineProperty(commandList, 'scrollTo', {
+      configurable: true,
+      value: (options: ScrollToOptions) => {
+        commandList.scrollTop = options.top ?? commandList.scrollTop
+        scrollTargets.push(commandList.scrollTop)
+      },
+    })
 
-    commandList.scrollTop = 1200
+    commandList.scrollTop = 600
     fireEvent.scroll(commandList)
+    await act(() => new Promise<void>((resolve) => setTimeout(resolve, 200)))
 
-    await waitFor(() => expect(screen.queryByText('Button 0')).not.toBeInTheDocument())
-
-    rerender(<TestComponent collapsed items={items} overscan={0} />)
+    const measuredTotalSize = commandList.querySelector('ul')?.style.height
+    expect(measuredTotalSize).toBe('3000px')
+    rerender(<TestComponent collapsed fixedHeight={false} items={items} />)
     act(triggerResizeObservers)
+    expect(scrollTargets).toEqual([])
+    expect(commandList.querySelector('ul')).toHaveStyle({height: measuredTotalSize})
+
     commandList.scrollTop = 0
-    rerender(<TestComponent items={items} overscan={0} />)
-    act(triggerResizeObservers)
+    rerender(<TestComponent fixedHeight={false} items={items} />)
+    act(() =>
+      triggerResizeObservers((target) => !(target as HTMLElement).hasAttribute('data-index')),
+    )
 
     expect(await screen.findByText('Button 0')).toBeInTheDocument()
     await act(() => new Promise<void>((resolve) => setTimeout(resolve, 200)))

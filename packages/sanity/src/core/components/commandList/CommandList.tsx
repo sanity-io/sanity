@@ -1,5 +1,6 @@
 import {Box, rem, Stack} from '@sanity/ui'
 import {
+  measureElement,
   observeElementOffset,
   type ScrollToOptions,
   useVirtualizer,
@@ -192,6 +193,23 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
     getScrollElement: () => virtualListElement,
     estimateSize: () => itemHeight,
     onChange: handleChange,
+    measureElement: (element, entry, instance) => {
+      const measuredSize = measureElement(element, entry, instance)
+      if (measuredSize > 0) return measuredSize
+
+      // Hidden panes report zero-sized rows. Keep the last valid size so the list does not collapse.
+      const index = instance.indexFromElement(element)
+      const domSize =
+        element instanceof HTMLElement
+          ? element[instance.options.horizontal ? 'offsetWidth' : 'offsetHeight']
+          : 0
+      if (domSize > 0) return domSize
+
+      const cachedSize = instance.itemSizeCache.get(instance.options.getItemKey(index))
+      return cachedSize !== undefined && cachedSize > 0
+        ? cachedSize
+        : instance.options.estimateSize(index)
+    },
     observeElementOffset: observeCommandListOffset,
     overscan,
   })
