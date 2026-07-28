@@ -8,7 +8,7 @@ import {TasksFormBuilder} from './TasksFormBuilder'
 
 // Replaces the addon workspace provider with a probe that exposes the perspective context the
 // task form would be mounted with, without rendering the (heavy) form itself.
-vi.mock('../addonWorkspace', async () => {
+vi.mock('../addonWorkspace/TasksAddOnWorkspaceProvider', async () => {
   const {usePerspective} = await import('../../../../perspective/usePerspective')
 
   function TasksAddonWorkspaceProvider() {
@@ -26,16 +26,25 @@ vi.mock('../addonWorkspace', async () => {
   return {TasksAddonWorkspaceProvider}
 })
 
-vi.mock('../../../context', () => ({
+vi.mock('../../../context/mentionUser/MentionUserProvider', () => ({
   MentionUserProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+}))
+
+vi.mock('../../../context/mentionUser/useMentionUser', () => ({
   useMentionUser: () => ({setSelectedDocument: vi.fn()}),
+}))
+
+vi.mock('../../../context/tasks/useTasks', () => ({
   useTasks: () => ({activeDocument: null, data: [], isLoading: false}),
+}))
+
+vi.mock('../../../context/navigation/useTasksNavigation', () => ({
   useTasksNavigation: () => ({
     state: {selectedTask: 'task-1', viewMode: 'create', duplicateTaskValues: undefined},
   }),
 }))
 
-vi.mock('../../../../store', async (importOriginal) => ({
+vi.mock('../../../../store/user/hooks', async (importOriginal) => ({
   ...(await importOriginal<object>()),
   useCurrentUser: () => ({id: 'user-1'}),
 }))

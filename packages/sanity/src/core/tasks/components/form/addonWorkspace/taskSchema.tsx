@@ -41,6 +41,13 @@ const targetContentField = (mode: FormMode) =>
         type: 'string',
         title: 'Document type',
       },
+      {
+        // The version segment of the targeted document id (release id or variant scope id) when
+        // the task was created for a version document. See `TaskTarget.documentVersionId`.
+        name: 'documentVersionId',
+        type: 'string',
+        hidden: true,
+      },
     ],
   })
 
