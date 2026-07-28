@@ -3,7 +3,7 @@ import {type CurrentUser} from '@sanity/types'
 import {type ComponentType} from 'react'
 import {type Observable} from 'rxjs'
 
-import {type LoginMethod} from '../../config'
+import {type LoginMethod} from '../../config/auth/types'
 
 export type AuthProbeResult = {authenticated: false} | {authenticated: true; id: string}
 

@@ -17,7 +17,8 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {ConfirmDeleteDialog, type DeleteReferenceCounts} from '../components'
+import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
+import {type DeleteReferenceCounts} from '../components/confirmDeleteDialog/ConfirmDeleteDialog'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {DocumentDeleted} from './__telemetry__/documentActions.telemetry'

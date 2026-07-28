@@ -24,7 +24,7 @@ vi.mock('../networkCheck/useNetworkProtocolCheck', () => ({
   useNetworkProtocolCheck: vi.fn(),
 }))
 
-vi.mock('../studio-components-hooks', () => ({
+vi.mock('../studio-components-hooks/componentHooks', () => ({
   useLayoutComponent: vi.fn(),
   useNavbarComponent: () => () => <div data-testid="navbar" />,
   useActiveToolLayoutComponent:
@@ -62,7 +62,7 @@ vi.mock('../screens/ToolNotFoundScreen', () => ({
   ToolNotFoundScreen: () => <div data-testid="tool-not-found" />,
 }))
 
-vi.mock('../../components/loadingBlock', () => ({
+vi.mock('../../components/loadingBlock/LoadingBlock', () => ({
   LoadingBlock: () => <div data-testid="loading-block" />,
 }))
 

@@ -23,6 +23,7 @@ vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
 }))
 
 vi.mock('../../../../tasks/hooks/useDocumentPreviewValues', () => ({
+  // @ts-expect-error -- pre-existing, fix later
   useDocumentPreviewValues: (...args: unknown[]) => useDocumentPreviewValuesMock(...args),
 }))
 
@@ -32,6 +33,7 @@ vi.mock('../../../../store/presence/useDocumentPresence', () => ({
 
 const createRow = (
   bundleId: DocumentInVariantGroup['version']['bundleId'],
+  // @ts-expect-error -- pre-existing, fix later
 ): DocumentInVariantGroup => ({
   memoKey: 'group-1',
   groupId: 'article-1',

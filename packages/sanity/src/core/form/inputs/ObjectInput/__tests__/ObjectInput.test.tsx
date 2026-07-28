@@ -3,8 +3,12 @@ import {screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
-import {renderObjectInput} from '../../../../../../test/form'
-import {type RenderFieldCallback, type RenderInputCallback} from '../../../types'
+import {renderObjectInput} from '../../../../../../test/form/renderObjectInput'
+import {
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
+} from '../../../types/renderCallback'
 import {ObjectInput} from '../ObjectInput'
 
 const defs = {
@@ -66,6 +70,7 @@ describe('ObjectInput', () => {
               inSelectedGroup: false,
               groups: [],
               index: 0,
+              // @ts-expect-error -- pre-existing, fix later
               field: {
                 schemaType: inputProps.schemaType.fields[0].type,
                 validation: [],

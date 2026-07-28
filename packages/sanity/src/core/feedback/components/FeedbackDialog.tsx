@@ -12,7 +12,8 @@ import {
 } from 'react'
 import {FeedbackContext} from 'sanity/_singletons'
 
-import {Button, Dialog} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {sendFeedbackToSentry} from '../feedbackClient'
 import {useFeedbackTelemetry} from '../hooks/useFeedbackTelemetry'
 import {useFeedbackTranslation} from '../i18n/useFeedbackTranslation'

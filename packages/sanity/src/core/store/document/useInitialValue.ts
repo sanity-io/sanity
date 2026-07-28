@@ -2,12 +2,17 @@ import {type InitialValueResolverContext, type SanityDocumentLike} from '@sanity
 import {useToast} from '@sanity/ui'
 import {useEffect, useMemo, useState} from 'react'
 
-import {useDataset, useProjectId, useSchema} from '../../hooks'
-import {useTranslation} from '../../i18n'
-import {classifyRequestError, useSource, useStudioErrorHandler} from '../../studio'
-import {getVersionId, useUnique} from '../../util'
+import {useDataset} from '../../hooks/useDataset'
+import {useProjectId} from '../../hooks/useProjectId'
+import {useSchema} from '../../hooks/useSchema'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {classifyRequestError} from '../../studio/requestErrors/classify'
+import {useStudioErrorHandler} from '../../studio/requestErrors/useStudioErrorHandler'
+import {useSource} from '../../studio/source'
+import {getVersionId} from '../../util/draftUtils'
+import {useUnique} from '../../util/useUnique'
 import {useDocumentStore} from '../datastores'
-import {useCurrentUser} from '../user'
+import {useCurrentUser} from '../user/hooks'
 import {type InitialValueState} from './initialValue/types'
 
 /**

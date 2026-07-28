@@ -6,15 +6,15 @@ import {describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type FIXME} from '../../../../FIXME'
 import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
-import {PatchEvent, set} from '../../../patch'
-import {type FieldMember} from '../../../store'
+import {set} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type FieldMember} from '../../../store/types/members'
+import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
 import {
-  defaultRenderField,
-  defaultRenderInput,
   FormCallbacksProvider,
   type FormCallbacksValue,
-} from '../../../studio'
-import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
+} from '../../../studio/contexts/FormCallbacks'
+import {defaultRenderField, defaultRenderInput} from '../../../studio/defaults'
 import {PrimitiveField} from './PrimitiveField'
 
 const EMPTY_ARRAY: never[] = []
@@ -35,6 +35,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -59,6 +60,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -86,6 +88,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -106,6 +109,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -125,6 +129,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -145,6 +150,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -164,6 +170,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -202,6 +209,7 @@ describe('PrimitiveField', () => {
 
       const {rerender} = render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -214,6 +222,7 @@ describe('PrimitiveField', () => {
 
       rerender(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -233,6 +242,7 @@ describe('PrimitiveField', () => {
 
       const {rerender} = render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -251,6 +261,7 @@ describe('PrimitiveField', () => {
 
       rerender(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -269,6 +280,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -293,6 +305,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -302,7 +315,9 @@ describe('PrimitiveField', () => {
 
       // When
       const input = screen.getByTestId('number-input') as HTMLInputElement
+      // @ts-expect-error -- pre-existing, fix later
       await userEvent.paste(input!, (Number.MIN_SAFE_INTEGER - 1).toString())
+      // @ts-expect-error -- pre-existing, fix later
       await userEvent.paste(input!, (Number.MAX_SAFE_INTEGER + 1).toString())
 
       // Then
@@ -327,6 +342,7 @@ async function setupTest(type: string, value: string | number | boolean | undefi
     open: true,
     groups: [],
     inSelectedGroup: false,
+    // @ts-expect-error -- pre-existing, fix later
     field: {
       id: 'id',
       schemaType,

@@ -4,7 +4,7 @@ import {of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
-import {createSchema} from '../../../schema'
+import {createSchema} from '../../../schema/createSchema'
 import {type PendingMutationsEvent} from '../types'
 import {editState, type EditStateFor} from './editState'
 import {snapshotPair} from './snapshotPair'
@@ -324,6 +324,7 @@ describe('editState — release/scope classification', () => {
       _updatedAt: '2024-01-01T00:00:00Z',
       _system: {
         bundleId: 'drafts',
+        // @ts-expect-error -- pre-existing, fix later
         variant: {_ref: '_.variants.alpha'},
         group: {_ref: 'any', _weak: true},
         scopeId: 'varscope',
@@ -372,6 +373,7 @@ describe('editState — release/scope classification', () => {
       _system: {
         bundleId: 'rSummer',
         release: {_ref: '_.releases.rSummer', _weak: true},
+        // @ts-expect-error -- pre-existing, fix later
         variant: {_ref: '_.variants.alpha'},
         group: {_ref: 'any', _weak: true},
         scopeId: 'varscope',

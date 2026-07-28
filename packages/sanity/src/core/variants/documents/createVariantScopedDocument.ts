@@ -31,29 +31,31 @@ function getSupportedBundleId(
  */
 export async function createVariantScopedDocument({
   client,
-  document,
+  baseId,
+  baseRevisionId,
   variant,
   selectedPerspective,
 }: {
   client: SanityClient
   /** Source document whose fields are copied into the new variant-scoped version. */
-  document: SanityDocumentLike
+  baseId: string
+  baseRevisionId?: string
   variant: SystemVariant
   selectedPerspective: TargetPerspective
 }): Promise<SingleActionResult> {
-  if (!document._id) {
+  if (!baseId) {
     throw new Error('Source document must have an _id')
   }
 
-  const publishedId = getPublishedId(document._id)
+  const publishedId = getPublishedId(baseId)
   const bundleId = getSupportedBundleId(selectedPerspective)
 
   const action: VariantDocumentCreateFromBaseAction = {
     actionType: 'sanity.action.document.variant.create',
     publishedId,
     variantId: getVariantId(variant._id),
-    baseId: document._id,
-    ...(document._rev ? {ifBaseRevisionId: document._rev} : {}),
+    baseId,
+    ...(baseRevisionId ? {ifBaseRevisionId: baseRevisionId} : {}),
     ...(bundleId ? {bundleId} : {}),
   }
 

@@ -1,10 +1,10 @@
 import {Stack} from '@sanity/ui'
 
-import {Dialog} from '../../../../../ui-components'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {type FIXME} from '../../../../FIXME'
-import {useTranslation} from '../../../../i18n'
-import {PresenceOverlay} from '../../../../presence'
-import {type InputProps} from '../../../types'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {PresenceOverlay} from '../../../../presence/overlay/PresenceOverlay'
+import {type InputProps} from '../../../types/inputProps'
 import {ImageToolInput} from '../ImageToolInput'
 import {type BaseImageInputProps} from './types'
 

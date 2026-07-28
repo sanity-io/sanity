@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {type ConsentStatus, getTelemetryConsent$} from './telemetryConsent'
 
 /**

@@ -2,8 +2,11 @@ import {type CurrentUser, type User} from '@sanity/types'
 import {useMemo} from 'react'
 import {from} from 'rxjs'
 
-import {useSource} from '../../studio'
-import {createHookFromObservableFactory, type LoadingTuple} from '../../util'
+import {useSource} from '../../studio/source'
+import {
+  createHookFromObservableFactory,
+  type LoadingTuple,
+} from '../../util/createHookFromObservableFactory'
 import {useUserStore} from '../datastores'
 import {type UserStore} from './userStore'
 

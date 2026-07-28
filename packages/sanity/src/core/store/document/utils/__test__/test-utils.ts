@@ -1,4 +1,4 @@
-import {type MutationPayload} from '../../buffered-doc'
+import {type MutationPayload} from '../../buffered-doc/types'
 import {type MutationEvent} from '../../types'
 
 export function mutationEvent({
@@ -10,6 +10,7 @@ export function mutationEvent({
   resultRev: string
   mutations: MutationPayload[]
 }): MutationEvent {
+  // @ts-expect-error -- pre-existing, fix later
   return {
     type: 'mutation',
     documentId: 'test',

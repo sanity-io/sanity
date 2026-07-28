@@ -2,6 +2,7 @@ import {
   type EncodableObject,
   type EncodableValue,
   type SetSynchronization,
+  // @ts-expect-error -- pre-existing, fix later
 } from '@sanity/descriptors'
 import {createSchemaFromManifestTypes, extractManifestSchemaTypes} from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
@@ -10,7 +11,7 @@ import cloneDeep from 'lodash-es/cloneDeep.js'
 import startCase from 'lodash-es/startCase.js'
 import {expect} from 'vitest'
 
-import {DESCRIPTOR_CONVERTER} from '../../src/core/schema'
+import {DESCRIPTOR_CONVERTER} from '../../src/core/schema/descriptors'
 
 export async function expectManifestSchemaConversion(
   schema: Schema,
@@ -34,12 +35,14 @@ export async function expectManifestSchemaConversion(
   expect(convertedObjectValues.length).toEqual(schemaObjectValues.length)
   for (const convertedObjectValue of convertedObjectValues) {
     const schemaObjectValue = schemaObjectValues.find(
+      // @ts-expect-error -- pre-existing, fix later
       (t) => t.name === convertedObjectValue.name && t.type === convertedObjectValue.type,
     )
 
     expect(schemaObjectValue).toBeDefined()
 
     const titles = extractTitleMap(convertedObjectValue.typeDef)
+    // @ts-expect-error -- pre-existing, fix later
     const stype = cloneDeep(schemaObjectValue?.typeDef)
 
     normalizeSchemaDescriptorTypeDef(stype, titles)

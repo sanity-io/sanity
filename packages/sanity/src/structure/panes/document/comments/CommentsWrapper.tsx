@@ -9,7 +9,7 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {usePaneRouter} from '../../../components'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../useDocumentPane'
 
 interface CommentsWrapperProps {

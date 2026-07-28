@@ -1,3 +1,4 @@
+import CloseIcon from '@sanity/icons/Close'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {SearchIcon} from '@sanity/icons/Search'
@@ -18,11 +19,10 @@ import {StudioFeedbackDialog} from '../../feedback/components/StudioFeedbackDial
 import {useFeedbackTelemetry} from '../../feedback/hooks/useFeedbackTelemetry'
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {feedbackLocaleNamespace, studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {type TargetPerspective} from '../../perspective/types'
 import {type SetVariant, useSetVariant} from '../../perspective/useSetVariant'
-import {getReleaseIdFromReleaseDocumentId} from '../../releases'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
@@ -31,10 +31,11 @@ import {useVersionContextMenu} from '../../releases/hooks/useVersionContextMenu'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
-import {isAgentBundleName} from '../../store'
+import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
-import {useWorkspace} from '../../studio'
+import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {
   getPublishedId,
@@ -89,6 +90,10 @@ export interface DocumentGroupInventoryProps {
    */
   referringDocuments$: Observable<ReferringDocuments>
   /**
+   * Request the parent to close the document group inventory.
+   */
+  requestClose?: () => void
+  /**
    * Pane-coupled presentational components injected by the consumer.
    */
   components: {
@@ -107,6 +112,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   portalElementName,
   perspectiveList,
   referringDocuments$,
+  requestClose,
   components,
 }) => {
   const {beta} = useWorkspace()
@@ -216,13 +222,26 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
       <Container ref={setContainerElement} data-testid="document-group-inventory">
         <Header>
           <Stack gap={4}>
-            <TextButton onClick={() => inventoryRef.send({type: 'feedback.begin'})}>
-              <Text size={1}>
-                <Flex gap={2} align="center" justify="flex-end">
-                  <FeedbackIcon /> {feedbackT('feedback.menu-item')}
-                </Flex>
-              </Text>
-            </TextButton>
+            <Flex gap={4} align="center" justify="flex-end">
+              <TextButton
+                onClick={() => inventoryRef.send({type: 'feedback.begin'})}
+                title={feedbackT('feedback.menu-item')}
+                aria-label={feedbackT('feedback.menu-item')}
+              >
+                <Text size={1}>
+                  <FeedbackIcon />
+                </Text>
+              </TextButton>
+              <TextButton
+                onClick={requestClose}
+                title={t('document-group-inventory.action.cancel')}
+                aria-label={t('document-group-inventory.action.cancel')}
+              >
+                <Text size={1}>
+                  <CloseIcon />
+                </Text>
+              </TextButton>
+            </Flex>
             <search>
               <TextInput
                 name={t('document-group-inventory.filter-string.label', {
@@ -253,13 +272,20 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
         </Body>
         <Footer>
           <Button
-            text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
-            onClick={() => deletionRef.send({type: 'delete.request'})}
-            disabled={!canRequestDeletion}
-            tone="critical"
+            text={t('document-group-inventory.action.cancel')}
             size="large"
-            icon={TrashIcon}
+            mode="bleed"
+            onClick={requestClose}
           />
+          {canRequestDeletion && (
+            <Button
+              text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
+              onClick={() => deletionRef.send({type: 'delete.request'})}
+              tone="critical"
+              size="large"
+              icon={TrashIcon}
+            />
+          )}
         </Footer>
       </Container>
       <div ref={setMenuPortalElement} />
@@ -604,7 +630,7 @@ const TextButton = styled.button(({theme}) => {
     padding: 0;
     outline: none;
     all: unset;
-    color: ${color.link.fg};
+    color: ${color.button.ghost.neutral.enabled.fg};
 
     * {
       color: inherit;

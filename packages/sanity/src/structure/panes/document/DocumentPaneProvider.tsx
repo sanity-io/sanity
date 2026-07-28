@@ -50,12 +50,15 @@ import {
 import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
-import {usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentTitle} from '../../components/structureTool/StructureTitle'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDeletedDocumentLastRevision} from '../../hooks/useDeletedDocumentLastRevision'
 import {type PaneMenuItem} from '../../types'
-import {InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
+import {
+  InlineChangesSwitchedOff,
+  InlineChangesSwitchedOn,
+} from './__telemetry__/documentPanes.telemetry'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {
   type DocumentPaneContextValue,

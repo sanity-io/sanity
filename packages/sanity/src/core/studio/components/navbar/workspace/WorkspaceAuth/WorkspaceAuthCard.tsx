@@ -3,7 +3,7 @@ import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
-import {type WorkspaceSummary} from '../../../../../config'
+import {type WorkspaceSummary} from '../../../../../config/types'
 import {probeWorkspaceAuth} from '../../../../../store/authStore/probeWorkspaceAuth'
 import {WorkspacePreview} from '../WorkspacePreview'
 

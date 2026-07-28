@@ -25,11 +25,11 @@ import {getCommitAuthor, getMergedPRForCommit} from '../utils/github'
 import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
 import {isBreakingChange} from '../utils/isBreakingChange'
 import {parseRenovateReleaseNotes} from '../utils/parseRenovateReleaseNotes'
+import {type NormalizedMarkdownBlock} from '../utils/portabletext-markdown/markdownToPortableText'
 import {
-  markdownToPortableText,
-  type NormalizedMarkdownBlock,
-} from '../utils/portabletext-markdown/markdownToPortableText'
-import {extractReleaseNotes, shouldExcludeReleaseNotes} from '../utils/pullRequestReleaseNotes'
+  extractReleaseNotesFromPrBody,
+  shouldExcludeReleaseNotes,
+} from '../utils/pullRequestReleaseNotes'
 import {stripPr} from '../utils/stripPrNumber'
 import {uploadImages} from '../utils/uploadImages'
 
@@ -168,7 +168,7 @@ async function getReleaseNotesMutations(
     pr?.body
       ? isBot
         ? parseRenovateReleaseNotes(pr.body)
-        : extractReleaseNotes(markdownToPortableText(pr.body))
+        : await extractReleaseNotesFromPrBody(pr.body)
       : [],
   )
 

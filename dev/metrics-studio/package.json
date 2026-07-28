@@ -12,7 +12,7 @@
     "start": "sanity preview --port 3399"
   },
   "dependencies": {
-    "@sanity/icons": "^5.2.0",
+    "@sanity/icons": "^5.2.1",
     "@sanity/ui": "catalog:",
     "@visx/axis": "^4.0.0",
     "@visx/group": "^4.0.0",
@@ -31,6 +31,7 @@
   "devDependencies": {
     "@repo/test-config": "workspace:*",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
+    "@types/react": "catalog:",
     "rimraf": "catalog:",
     "vitest": "catalog:"
   }

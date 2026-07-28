@@ -1,9 +1,10 @@
 {
   "extends": "@repo/tsconfig/base.json",
-  "include": ["./.ailf/**/*.ts"],
-  "exclude": ["./.ailf/tasks/*.reference.ts", "./.ailf/results"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", ".ailf/**/*.ts"],
+  "exclude": ["dist", "lib", "node_modules", "./.ailf/results"],
   "compilerOptions": {
     "rootDir": ".",
-    "module": "esnext"
+    "module": "esnext",
+    "customConditions": ["monorepo"]
   }
 }

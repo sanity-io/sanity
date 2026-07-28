@@ -21,9 +21,9 @@ vi.mock('@sanity/telemetry/react', () => ({
   TelemetryProvider: ({children}: {children: ReactNode}) => children,
   DeferredTelemetryProvider: ({children}: {children: ReactNode}) => children,
 }))
-vi.mock('../../../hooks')
+vi.mock('../../../hooks/useClient')
 vi.mock('../../workspace')
-vi.mock('../../workspaces')
+vi.mock('../../workspaces/useWorkspaces')
 vi.mock('../../../store/project/useProjectOrganizationId')
 vi.mock('sanity/router')
 vi.mock('../../../environment', () => ({
@@ -43,12 +43,12 @@ import {createBatchedStore, createSessionId, SessionId} from '@sanity/telemetry'
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {useRouterState} from 'sanity/router'
 
-import {useClient} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
 import {useProjectOrganizationId} from '../../../store/project/useProjectOrganizationId'
 import {WorkspaceFeaturesObserved} from '../../__telemetry__/featureAvailability.telemetry'
 import {StudioLoaded} from '../../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../../workspace'
-import {useWorkspaces} from '../../workspaces'
+import {useWorkspaces} from '../../workspaces/useWorkspaces'
 import {StudioTelemetryProvider} from '../StudioTelemetryProvider'
 /* oxlint-enable import/first */
 

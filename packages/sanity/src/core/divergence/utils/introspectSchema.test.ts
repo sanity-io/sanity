@@ -194,6 +194,7 @@ it('can introspect polymorphic object arrays with type hint', () => {
   const segmentsWebsite = [
     ...introspectSchema(bookSchemaType, [
       'retailers',
+      // @ts-expect-error -- pre-existing, fix later
       {
         segment: {_key: 'x'},
         type: 'website',
@@ -204,6 +205,7 @@ it('can introspect polymorphic object arrays with type hint', () => {
   const segmentsStore = [
     ...introspectSchema(bookSchemaType, [
       'retailers',
+      // @ts-expect-error -- pre-existing, fix later
       {
         segment: {_key: 'x'},
         type: 'store',

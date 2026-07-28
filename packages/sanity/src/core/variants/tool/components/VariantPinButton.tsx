@@ -3,7 +3,7 @@ import {PinFilledIcon} from '@sanity/icons/PinFilled'
 import {useCallback} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetVariant} from '../../../perspective/useSetVariant'
 import {variantsLocaleNamespace} from '../../i18n'

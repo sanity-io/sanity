@@ -1,17 +1,17 @@
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
-import {type FieldMember, type PrimitiveFormNode} from '../../../store'
+import {set, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type FormPatch} from '../../../patch/types'
+import {type FieldMember} from '../../../store/types/members'
+import {type PrimitiveFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useParseErrorForPath} from '../../../studio/contexts/ParseErrors'
-import {
-  type PrimitiveFieldProps,
-  type PrimitiveInputProps,
-  type RenderFieldCallback,
-  type RenderInputCallback,
-} from '../../../types'
+import {type PrimitiveFieldProps} from '../../../types/fieldProps'
+import {type PrimitiveInputProps} from '../../../types/inputProps'
+import {type RenderFieldCallback, type RenderInputCallback} from '../../../types/renderCallback'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {stripStegaFromPasteEvent} from '../../../utils/stegaPaste'
 import {createDescriptionId} from '../../common/createDescriptionId'

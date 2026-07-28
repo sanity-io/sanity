@@ -1,7 +1,8 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
-import {type OperationsAPI, useDocumentStore} from '../store'
+import {useDocumentStore} from '../store/datastores'
+import {type OperationsAPI} from '../store/document/document-pair/operations/types'
 import {type DocumentPairTarget} from '../store/document/types'
 import {useDocumentOperationWithComlinkHistory} from './useDocumentOperationWithComlinkHistory'
 import {useMemoizedDocumentPairTarget} from './useMemoizedDocumentPairTarget'

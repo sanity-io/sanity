@@ -16,7 +16,7 @@ import {type MutableRefObject, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {set, unset} from '../../../patch/patch'
-import {type StringInputProps} from '../../../types'
+import {type StringInputProps} from '../../../types/inputProps'
 import {DeletedSegment} from '../../common/diff/string/segments'
 import {stringDiffContainerStyles} from '../../common/diff/string/styles'
 import {UpdateReadOnlyPlugin} from '../../PortableText/PortableTextInput'

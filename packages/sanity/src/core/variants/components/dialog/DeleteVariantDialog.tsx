@@ -1,7 +1,7 @@
 import {Text} from '@sanity/ui'
 
-import {Dialog} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../../i18n'
 
 interface DeleteVariantDialogProps {

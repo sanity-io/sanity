@@ -11,7 +11,7 @@ import {
   useState,
 } from 'react'
 
-import {MenuButton} from '../../../../ui-components'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {pathToString} from '../../../field/paths/helpers'
 import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
 import {useFormValue} from '../../contexts/FormValue'

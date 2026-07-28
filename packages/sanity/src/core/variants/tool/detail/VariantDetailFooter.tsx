@@ -1,9 +1,9 @@
 import {DiamondIcon} from '@sanity/icons/Diamond'
 import {Card, Flex, Text} from '@sanity/ui'
 
-import {Button} from '../../../../ui-components/button'
-import {RelativeTime} from '../../../components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {RelativeTime} from '../../../components/RelativeTime'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
 import {VariantDetailMenuButton} from './VariantDetailMenuButton'

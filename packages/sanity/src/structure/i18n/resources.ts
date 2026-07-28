@@ -261,7 +261,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.variant.error.title': 'Error adding document to variant',
   /** The text for the banner that appears when a document is not in the selected variant */
   'banners.variant.not-in-variant':
-    'No variant document exists for <VariantBadge>{{title}}</VariantBadge>.',
+    'No <PerspectiveTitle>{{perspectiveTitle}}</PerspectiveTitle> variant document exists for <VariantBadge>{{variantTitle}}</VariantBadge>.',
   /** Description of toast that will appear while the document is added to the variant */
   'banners.variant.waiting.description':
     'Please hold tight while the document is added to the variant. It should not take longer than a few seconds.',

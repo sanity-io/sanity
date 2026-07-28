@@ -1,8 +1,11 @@
 import {type Path, type SchemaType} from '@sanity/types'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type DocumentFieldAction, type DocumentFieldActionNode} from '../../../config'
-import {useUnique} from '../../../util'
+import {
+  type DocumentFieldAction,
+  type DocumentFieldActionNode,
+} from '../../../config/document/fieldActions/types'
+import {useUnique} from '../../../util/useUnique'
 import {filterActions} from './helpers'
 
 /** @internal */

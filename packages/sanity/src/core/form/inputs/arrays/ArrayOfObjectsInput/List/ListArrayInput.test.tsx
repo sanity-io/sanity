@@ -4,11 +4,12 @@ import {render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
+import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import {type ObjectItem} from '../../../../types/itemProps'
 import {useArrayValidation} from '../../common/ArrayValidationContext'
 import {ListArrayInput} from './ListArrayInput'
 
-vi.mock('../../../../../i18n', () => ({
+vi.mock('../../../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 

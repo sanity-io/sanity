@@ -11,19 +11,19 @@ import {
 } from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
-import {useDocumentOperation} from '../../../hooks'
+import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {
   getPairTarget,
   getTargetScopeId,
   useTargetDocumentState,
 } from '../../../hooks/useTargetDocumentState'
-import {useDocumentPairPermissions} from '../../../store'
-import {pathsAreEqual} from '../../paths'
+import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
+import {pathsAreEqual} from '../../paths/helpers'
 import {type GroupChangeNode} from '../../types'
-import {isPTSchemaType} from '../../types/portableText/diff'
+import {isPTSchemaType} from '../../types/portableText/diff/helpers'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
-import {useDocumentChange} from '../hooks'
+import {useDocumentChange} from '../hooks/useDocumentChange'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 import {ChangeListWrapper, GroupChangeContainer} from './GroupChange.styled'

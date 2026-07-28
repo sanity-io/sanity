@@ -1,4 +1,4 @@
-import {type LocaleResourceBundle} from '../../i18n'
+import {type LocaleResourceBundle} from '../../i18n/types'
 
 /**
  * The locale namespace for the releases tool
@@ -19,11 +19,3 @@ export const releasesUsEnglishLocaleBundle: LocaleResourceBundle = {
   namespace: releasesLocaleNamespace,
   resources: () => import('./resources'),
 }
-
-/**
- * The locale resource keys for the releases tool.
- *
- * @alpha
- * @hidden
- */
-export type {ReleasesLocaleResourceKeys} from './resources'

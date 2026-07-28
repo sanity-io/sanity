@@ -2,14 +2,12 @@ import {renderHook} from '@testing-library/react'
 import {useRouterState} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {useCurrentUser} from '../../store/user/hooks'
 import {useWorkspace} from '../../studio/workspace'
 import {useStudioFeedbackTags} from '../hooks/useStudioFeedbackTags'
 
-vi.mock('../../hooks', () => ({
-  useClient: vi.fn(),
-}))
+vi.mock('../../hooks/useClient', () => ({useClient: vi.fn()}))
 vi.mock('../../hooks/useProjectSubscriptions', () => ({
   useProjectSubscriptions: vi.fn().mockReturnValue({
     projectSubscriptions: {plan: {name: 'Growth'}},

@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
-import {createSchema} from '../../../../schema'
+import {createSchema} from '../../../../schema/createSchema'
 import {type IdPair} from '../../types'
 import {createOperationsAPI, TARGET_NOT_FOUND_OPERATIONS} from './helpers'
 import {type OperationArgs, type OperationsAPI} from './types'

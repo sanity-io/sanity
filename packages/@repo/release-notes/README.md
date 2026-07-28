@@ -47,7 +47,7 @@ changelog in the admin studio.
 ```bash
 pnpm --filter @repo/release-notes lint
 pnpm --filter @repo/release-notes test
-pnpm --filter @repo/release-notes check:types
+pnpm check:oxlint
 ```
 
 ## See also

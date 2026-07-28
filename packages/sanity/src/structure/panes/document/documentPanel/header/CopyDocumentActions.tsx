@@ -17,10 +17,12 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
-import {usePaneRouter} from '../../../../components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {DocumentIDCopied, DocumentURLCopied} from '../../__telemetry__'
+import {DocumentIDCopied, DocumentURLCopied} from '../../__telemetry__/documentPanes.telemetry'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 

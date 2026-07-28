@@ -4,7 +4,7 @@ import assert from 'node:assert'
 import {describe, expect, it} from 'vitest'
 
 import {type AuthState} from '../../../store/authStore/types'
-import {type WorkspaceLike} from '../../workspaces'
+import {type WorkspaceLike} from '../../workspaces/types'
 import {createCommonBasePathRegex} from '../createCommonBasePathRegex'
 import {matchWorkspace as actualMatchWorkspace} from '../matchWorkspace'
 import {normalizedWorkspaces} from '../useNormalizedWorkspaces'

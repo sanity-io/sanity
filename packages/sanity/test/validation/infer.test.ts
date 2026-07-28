@@ -4,7 +4,7 @@ import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/typ
 import has from 'lodash-es/has.js'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
-import {type Workspace} from '../../src/core/config'
+import {type Workspace} from '../../src/core/config/types'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {createSchema} from '../../src/core/schema/createSchema'
 import {inferFromSchema} from '../../src/core/validation/inferFromSchema'
@@ -525,6 +525,7 @@ describe('hasValidationContext', () => {
       // Destructuring in parameter list should still report length === 2
       const validation = (_rule: Rule, {hidden}: {hidden?: boolean}) => _rule
       expect(validation.length).toBe(2)
+      // @ts-expect-error -- pre-existing, fix later
       expect(hasValidationContext(validation)).toBe(true)
     })
 
@@ -534,6 +535,7 @@ describe('hasValidationContext', () => {
         return _rule
       }
       expect(validation.length).toBe(2)
+      // @ts-expect-error -- pre-existing, fix later
       expect(hasValidationContext(validation)).toBe(true)
     })
 

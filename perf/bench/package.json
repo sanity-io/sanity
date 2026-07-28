@@ -9,7 +9,6 @@
   "scripts": {
     "build": "sanity build",
     "build:reference-config": "SANITY_STUDIO_BENCH_API_HOST=https://localhost:4312 SANITY_STUDIO_BENCH_PROJECT_ID=benchref sanity build .reference/dist",
-    "check:types": "(cd ../.. && tsgo --project perf/bench/tsconfig.json --noEmit)",
     "cli": "./cli/index.ts",
     "dev": "./cli/index.ts dev",
     "report": "./cli/index.ts report",
@@ -35,7 +34,7 @@
     "react-dom": "catalog:",
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
-    "sanity-plugin-internationalized-array": "^5.1.22",
+    "sanity-plugin-internationalized-array": "^5.1.24",
     "styled-components": "catalog:",
     "tsx": "^4.23.1"
   },

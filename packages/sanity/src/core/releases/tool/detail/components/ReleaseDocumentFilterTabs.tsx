@@ -2,8 +2,8 @@ import {type ReleaseState} from '@sanity/client'
 import {Box, Container, Flex, Skeleton, TabList} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {Tab} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Tab} from '../../../../../ui-components/tab/Tab'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {
   countDocumentsByAction,

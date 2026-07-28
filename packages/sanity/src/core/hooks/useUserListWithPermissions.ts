@@ -4,14 +4,10 @@ import sortBy from 'lodash-es/sortBy.js'
 import {useEffect, useMemo, useState} from 'react'
 import {concat, forkJoin, map, mergeMap, type Observable, of, shareReplay, switchMap} from 'rxjs'
 
-import {
-  type DocumentValuePermission,
-  type Grant,
-  grantsPermissionOn,
-  type ProjectData,
-  useProjectStore,
-  useUserStore,
-} from '../store'
+import {useProjectStore, useUserStore} from '../store/datastores'
+import {grantsPermissionOn} from '../store/grants/grantsStore'
+import {type DocumentValuePermission, type Grant} from '../store/grants/types'
+import {type ProjectData} from '../store/project/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {getSystemGroups$} from '../util/getSystemGroups$'
 import {useClient} from './useClient'

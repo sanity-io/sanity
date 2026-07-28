@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {memo, type RefObject} from 'react'
 
-import {Popover} from '../../../../../ui-components'
+import {Popover} from '../../../../../ui-components/popover/Popover'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {type VersionContextMenuState} from '../../../hooks/useVersionContextMenu'
 import {VersionContextMenu} from './VersionContextMenu'
