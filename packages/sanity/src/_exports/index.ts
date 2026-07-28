@@ -401,6 +401,7 @@ export {ChangeList, type ChangeListProps} from '../core/field/diff/components/Ch
 export {
   ChangeResolver,
   type ChangeResolverProps,
+  GroupChange,
 } from '../core/field/diff/components/ChangeResolver'
 export {ChangesError} from '../core/field/diff/components/ChangesError'
 export {ChangeTitleSegment} from '../core/field/diff/components/ChangeTitleSegment'
@@ -427,7 +428,6 @@ export {FallbackDiff} from '../core/field/diff/components/FallbackDiff'
 export {FieldChange} from '../core/field/diff/components/FieldChange'
 export {FromTo, type FromToProps} from '../core/field/diff/components/FromTo'
 export {FromToArrow, type FromToArrowDirection} from '../core/field/diff/components/FromToArrow'
-export {GroupChange} from '../core/field/diff/components/GroupChange'
 export {MetaInfo, type MetaInfoProps} from '../core/field/diff/components/MetaInfo'
 export {NoChanges} from '../core/field/diff/components/NoChanges'
 export {RevertChangesButton} from '../core/field/diff/components/RevertChangesButton'
@@ -1515,11 +1515,8 @@ export {
   isValidAnnouncementAudience,
   isValidAnnouncementRole,
 } from '../core/studio/studioAnnouncements/utils'
-export {
-  type NavbarContextValue,
-  StudioLayout,
-  StudioLayoutComponent,
-} from '../core/studio/StudioLayout'
+export {type NavbarContextValue, StudioLayout} from '../core/studio/StudioLayout'
+export {StudioLayoutComponent} from '../core/studio/StudioLayoutComponent'
 export {StudioProvider, type StudioProviderProps} from '../core/studio/StudioProvider'
 export {useTelemetryConsent} from '../core/studio/telemetry/useTelemetryConsent'
 export {

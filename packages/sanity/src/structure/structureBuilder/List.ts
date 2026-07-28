@@ -3,7 +3,6 @@ import {isRecord} from 'sanity'
 
 import {type ChildResolver, type ChildResolverOptions} from './ChildResolver'
 import {DividerBuilder} from './Divider'
-import {isDocumentListItem} from './DocumentListItem'
 import {
   type BuildableGenericList,
   type GenericList,
@@ -16,6 +15,7 @@ import {type ListItem, ListItemBuilder} from './ListItem'
 import {HELP_URL, SerializeError} from './SerializeError'
 import {type Divider, type SerializeOptions, type SerializePath} from './StructureNodes'
 import {type StructureContext} from './types'
+import {isDocumentListItem} from './util/isDocumentListItem'
 
 const getArgType = (thing: ListItem) => {
   if (thing instanceof ListBuilder) {

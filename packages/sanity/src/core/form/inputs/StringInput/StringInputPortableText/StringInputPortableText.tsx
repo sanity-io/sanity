@@ -10,7 +10,6 @@ import {defineBehavior, forward, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, EventListenerPlugin} from '@portabletext/editor/plugins'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {stegaClean} from '@sanity/client/stega'
-import {type Path} from '@sanity/types'
 import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
 import {type MutableRefObject, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
@@ -34,7 +33,6 @@ import {
 } from './styles'
 import {unpackageValue} from './unpackageValue'
 
-export const ROOT_PATH: Path = [{_key: 'root'}, 'children', {_key: 'root'}]
 const INVALID_CLASS_NAME = 'invalid'
 
 const StyledRoot = styled.div`

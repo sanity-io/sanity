@@ -8,6 +8,7 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {TIMELINE_LIST_WRAPPER_ID} from '../constants'
 import {ExpandableTimelineItemButton} from './expandableTimelineItemButton'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {TimelineItem} from './timelineItem'
@@ -29,8 +30,6 @@ interface TimelineProps {
    */
   listMaxHeight?: string
 }
-
-export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
 
 export const Timeline = ({
   chunks,
