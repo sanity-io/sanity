@@ -93,15 +93,19 @@ export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
       padding-left: ${space[1]}px;
       padding-right: ${space[2]}px;
       user-select: none;
-      ${DEBUG &&
-      css`
-        border: 1px solid red;
-      `}
+      ${
+        DEBUG &&
+        css`
+          border: 1px solid red;
+        `
+      }
 
-      ${!$hasChanges &&
-      css`
-        display: none;
-      `}
+      ${
+        !$hasChanges &&
+        css`
+          display: none;
+        `
+      }
 
       [data-dragged] & {
         visibility: hidden;
