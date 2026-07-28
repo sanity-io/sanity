@@ -8,6 +8,10 @@ interface NestedObjectInfoOrigin extends NestedDialogOpenedInfo {
   origin: 'default' | 'nested-object'
 }
 
+interface ArrayListObjectInfo extends NestedObjectInfoOrigin {
+  location: 'array_list'
+}
+
 /**
  * When a nested dialog is opened
  */
@@ -24,15 +28,12 @@ export const NestedDialogClosed = defineEvent({
   description: 'User closed a nested dialog',
 })
 
-/** When a nested object is edited */
-export const NavigatedToViaArrayList = defineEvent<NestedDialogOpenedInfo & NestedObjectInfoOrigin>(
-  {
-    name: 'Edited Nested Object in Array List',
-    version: 1,
-    description:
-      'User edited a object - meaning a navigation to a nested object was made through the array list',
-  },
-)
+/** When an existing object in an array list is opened for editing */
+export const ObjectEdited = defineEvent<ArrayListObjectInfo & {position: 'nested'}>({
+  name: 'Object Edited',
+  version: 1,
+  description: 'User opened an existing nested object in an array list for editing',
+})
 
 export const NavigatedToNestedObjectViaBreadcrumb = defineEvent<NestedDialogOpenedInfo>({
   name: 'Navigated to Nested Object via Breadcrumb',
@@ -53,28 +54,18 @@ export const navigatedToNestedObjectViaKeyboardShortcut = defineEvent({
   description: 'User navigated to a nested object via a keyboard shortcut',
 })
 
-export const CreatedNewObject = defineEvent<NestedDialogOpenedInfo & NestedObjectInfoOrigin>({
-  name: 'Created New Object in Array List',
+export const ObjectCreated = defineEvent<
+  ArrayListObjectInfo & {position: 'new' | 'appended' | 'prepended'}
+>({
+  name: 'Object Created',
   version: 1,
-  description: 'User created a new object in an array list',
+  description: 'User created an object in an array list',
 })
 
-export const CreatePrependedObject = defineEvent<NestedDialogOpenedInfo & NestedObjectInfoOrigin>({
-  name: 'Created Prepended Object in Array List',
+export const ObjectRemoved = defineEvent<ArrayListObjectInfo>({
+  name: 'Object Removed',
   version: 1,
-  description: 'User created a prepended object in an array list',
-})
-
-export const CreateAppendedObject = defineEvent<NestedDialogOpenedInfo & NestedObjectInfoOrigin>({
-  name: 'Created Appended Object in Array List',
-  version: 1,
-  description: 'User created an appended object in an array list',
-})
-
-export const RemovedObject = defineEvent<NestedDialogOpenedInfo & NestedObjectInfoOrigin>({
-  name: 'Removed Object in Array List',
-  version: 1,
-  description: 'User removed a object from an array list via actions',
+  description: 'User removed an object from an array list via actions',
 })
 
 interface EditorFullscreenInfo extends NestedObjectInfoOrigin {
