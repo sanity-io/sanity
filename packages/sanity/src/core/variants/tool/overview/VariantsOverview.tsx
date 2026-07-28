@@ -1,35 +1,48 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {SearchIcon} from '@sanity/icons/Search'
-import {Box, Card, Container, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {Table, type TableProps} from '../../../releases/tool/components/Table/Table'
+import {
+  DocumentTable,
+  type DocumentTableSelection,
+} from '../../../releases/tool/components/Table/DocumentTable'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
 import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type SystemVariant} from '../../types'
-import {filterVariantsForSearch, getVariantId} from '../util'
+import {
+  buildConditionFacets,
+  filterVariantsForSearch,
+  getVariantId,
+  variantMatchesConditionFilters,
+} from '../util'
+import {VariantBulkDeleteDialog} from './VariantBulkDeleteDialog'
+import {VariantConditionFilters} from './VariantConditionFilters'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
 import {type TableVariant, variantsOverviewColumnDefs} from './VariantsOverviewColumnDefs'
 
 const VARIANT_TABLE_ROW_ID = '_id'
+const getRowKey = (variant: TableVariant): string => variant._id
+// DocumentTable filters internally per-row; reuse the list matcher on a single-element list so the
+// search behaviour stays identical to the previous standalone search box.
+const searchPredicate = (variant: TableVariant, term: string): boolean =>
+  filterVariantsForSearch([variant], term).length > 0
 
-export function VariantsOverview() {
+export function VariantsOverview(): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const router = useRouter()
   const {data: variants, error, loading} = useAllVariants()
-  const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
   const [isCreateVariantDialogOpen, setIsCreateVariantDialogOpen] = useState(false)
+  const [bulkDelete, setBulkDelete] = useState<{keys: string[]; clear: () => void} | null>(null)
+  const [conditionFilters, setConditionFilters] = useState<Record<string, string[]>>({})
 
-  const handleCreateVariant = useCallback(() => {
-    setIsCreateVariantDialogOpen(true)
-  }, [])
+  const handleCreateVariant = useCallback(() => setIsCreateVariantDialogOpen(true), [])
 
   const handleOnCreateVariant = useCallback(
     (createdVariantId: string) => {
@@ -40,10 +53,9 @@ export function VariantsOverview() {
   )
 
   const columnDefs = useMemo(() => variantsOverviewColumnDefs(t), [t])
-  const renderRowActions = useCallback<
-    NonNullable<TableProps<TableVariant, undefined>['rowActions']>
-  >(
-    ({datum}) => (
+
+  const renderRowActions = useCallback(
+    ({datum}: {datum: unknown}) => (
       <VariantMenuButton
         documentCount={(datum as TableVariant).documentCount}
         variant={datum as SystemVariant}
@@ -53,18 +65,25 @@ export function VariantsOverview() {
   )
 
   const variantsList = useMemo(() => variants ?? [], [variants])
-
   const {data: documentCounts, error: documentCountsError} = useVariantsDocumentCounts()
 
-  const filteredVariants = useMemo(
+  // Facets come from the full list so the dropdown options never shrink as filters are applied.
+  const facets = useMemo(() => buildConditionFacets(variantsList), [variantsList])
+
+  // Rows are pre-filtered by the active condition filters; DocumentTable owns the free-text search
+  // on top of that via searchPredicate.
+  const rows = useMemo(
     () =>
-      filterVariantsForSearch(variantsList, searchQuery).map(
-        (variant): TableVariant => ({
-          ...variant,
-          documentCount: documentCounts?.[variant._id] ?? (documentCountsError ? null : undefined),
-        }),
-      ),
-    [variantsList, searchQuery, documentCounts, documentCountsError],
+      variantsList
+        .filter((variant) => variantMatchesConditionFilters(variant, conditionFilters))
+        .map(
+          (variant): TableVariant => ({
+            ...variant,
+            documentCount:
+              documentCounts?.[variant._id] ?? (documentCountsError ? null : undefined),
+          }),
+        ),
+    [variantsList, conditionFilters, documentCounts, documentCountsError],
   )
 
   const hasVariants = variantsList.length > 0
@@ -75,10 +94,35 @@ export function VariantsOverview() {
         disabled={isCreateVariantDialogOpen}
         icon={AddIcon}
         onClick={handleCreateVariant}
-        text={t('overview.action.create-variant')}
+        text={t('overview.action.new-variant')}
       />
     ),
     [handleCreateVariant, isCreateVariantDialogOpen, t],
+  )
+
+  // Bulk selection + a single destructive action. The delete itself is guarded per-definition in the
+  // dialog (only empty definitions are removed), so the toolbar keeps one clear "Delete" affordance.
+  const selection = useMemo<DocumentTableSelection>(
+    () => ({
+      labels: {
+        selectAll: t('overview.bulk.select-all'),
+        selectRow: t('overview.bulk.select-row'),
+        selectedCount: (count) => t('overview.bulk.selected', {count}),
+        clear: t('overview.bulk.clear'),
+      },
+      selectAllTestId: 'variant-bulk-select-all',
+      renderActions: ({selectedKeys, clear}) => (
+        <Button
+          data-testid="variant-bulk-delete"
+          icon={TrashIcon}
+          mode="bleed"
+          onClick={() => setBulkDelete({keys: selectedKeys, clear})}
+          text={t('overview.bulk.delete')}
+          tone="critical"
+        />
+      ),
+    }),
+    [t],
   )
 
   const tableEmptyState = useCallback(() => {
@@ -95,14 +139,21 @@ export function VariantsOverview() {
     return <VariantsEmptyState createVariantButton={createVariantButton} />
   }, [createVariantButton, error, hasVariants, t])
 
+  const selectedVariants = useMemo(() => {
+    if (!bulkDelete) return []
+    const keys = new Set(bulkDelete.keys)
+    return rows.filter((variant) => keys.has(variant._id))
+  }, [bulkDelete, rows])
+
   return (
     <Flex direction="column" flex={1} height="fill">
-      {/* Same container width as releases document table (`container[3]` in Table), so chrome aligns with row content */}
+      {/* Same container width as the releases document table (`container[3]`), so the page header
+          aligns with the table's row content below. */}
       <Container flex="none" width={3}>
         <Flex direction="column" paddingX={3}>
-          <Card flex="none" paddingY={5}>
+          <Card flex="none" paddingBottom={4} paddingTop={5}>
             <Flex align="flex-start" gap={4} justify="space-between">
-              <Stack space={3}>
+              <Stack space={2}>
                 <Text as="h1" size={4} weight="bold">
                   {t('overview.title')}
                 </Text>
@@ -114,44 +165,54 @@ export function VariantsOverview() {
             </Flex>
           </Card>
 
-          <Box flex="none" paddingBottom={4} paddingTop={2}>
-            <TextInput
-              clearButton={!!searchQuery}
-              fontSize={1}
-              icon={SearchIcon}
-              onChange={(event) => setSearchQuery(event.currentTarget.value)}
-              onClear={() => setSearchQuery('')}
-              placeholder={t('overview.search.placeholder')}
-              radius={3}
-              value={searchQuery}
-            />
-          </Box>
-
           {error && (
-            <Card flex="none" padding={3} tone="critical">
+            <Card flex="none" marginBottom={4} padding={3} tone="critical">
               <Text size={1}>{t('overview.error')}</Text>
             </Card>
           )}
         </Flex>
       </Container>
 
-      {/* Full-width scroll region so table borders span the tool pane (same pattern as release detail summary). */}
-      <Box flex={1} overflow="auto" ref={setScrollContainerRef}>
-        <Table<TableVariant>
-          columnDefs={columnDefs}
-          data={filteredVariants}
-          emptyState={tableEmptyState}
-          loading={loading}
-          rowId={VARIANT_TABLE_ROW_ID}
-          rowActions={renderRowActions}
-          scrollContainerRef={scrollContainerRef}
-        />
-      </Box>
+      {/* Shared DocumentTable — the same table the release and variant detail surfaces use: search in
+          the command lane, checkbox selection, and a bulk toolbar on selection. */}
+      <DocumentTable<TableVariant>
+        alwaysShowCommandLane
+        columnDefs={columnDefs}
+        // Reserve the bordered filter group's height so selecting rows (which swaps in the shorter
+        // bulk toolbar) never shifts the table.
+        commandLaneMinHeight={47}
+        emptyState={tableEmptyState}
+        filterTabs={
+          <VariantConditionFilters
+            facets={facets}
+            onChange={setConditionFilters}
+            value={conditionFilters}
+          />
+        }
+        filterTabsScroll={false}
+        getRowKey={getRowKey}
+        id="variant-definitions-table"
+        loading={loading}
+        rowActions={renderRowActions}
+        rowId={VARIANT_TABLE_ROW_ID}
+        rows={rows}
+        searchPlaceholder={t('overview.search.placeholder')}
+        searchPredicate={searchPredicate}
+        selection={selection}
+      />
 
       {isCreateVariantDialogOpen && (
         <CreateVariantDialog
           onCancel={() => setIsCreateVariantDialogOpen(false)}
           onSubmit={handleOnCreateVariant}
+        />
+      )}
+
+      {bulkDelete && (
+        <VariantBulkDeleteDialog
+          onClose={() => setBulkDelete(null)}
+          onDeleted={() => bulkDelete.clear()}
+          variants={selectedVariants}
         />
       )}
     </Flex>

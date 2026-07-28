@@ -11,18 +11,6 @@ import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {VariantsOverview} from '../overview/VariantsOverview'
 import {getVariantId} from '../util'
 
-const mockedSetVariant = vi.fn()
-
-vi.mock('../../../perspective/useSetVariant', () => ({
-  useSetVariant: vi.fn(() => mockedSetVariant),
-}))
-
-vi.mock('../../../perspective/usePerspective', () => ({
-  usePerspective: vi.fn(() => ({
-    selectedVariant: undefined,
-  })),
-}))
-
 const mockNavigate = vi.fn()
 
 const routerState = vi.hoisted(() => ({
@@ -111,7 +99,6 @@ describe('VariantsOverview', () => {
     documentCountsMock.loading = true
     documentCountsMock.error = null
     mockNavigate.mockClear()
-    mockedSetVariant.mockClear()
     variantOperationsMock.createVariant.mockReset()
     variantOperationsMock.deleteVariant.mockReset()
     variantOperationsMock.createVariant.mockImplementation(
@@ -134,7 +121,10 @@ describe('VariantsOverview', () => {
       resources: [variantsUsEnglishLocaleBundle],
     })
     const view = render(<VariantsOverview />, {wrapper})
-    await screen.findByPlaceholderText('Search variant definitions…', {}, {timeout: 5000})
+    // Wait on the always-present page description rather than the search box (search now lives in the
+    // shared DocumentTable command lane, which only renders once there are rows) — and not on the
+    // title, which the empty state duplicates as its own h1.
+    await screen.findByText(/Manage variant definitions/, {}, {timeout: 5000})
     return view
   }
 
@@ -154,7 +144,7 @@ describe('VariantsOverview', () => {
         'Manage variant definitions that control how content is personalized for different audiences, locales, and segments.',
       ),
     ).toBeInTheDocument()
-    expect(screen.getByRole('button', {name: 'Create variant definition'})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'New variant definition'})).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search variant definitions…')).toBeInTheDocument()
   })
 
@@ -253,19 +243,6 @@ describe('VariantsOverview', () => {
     })
   })
 
-  it('pins a variant from the overview table', async () => {
-    setVariants([variantAlphaAudience])
-    const user = userEvent.setup()
-
-    await renderOverview()
-
-    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
-
-    await user.click(screen.getByTestId('pin-variant-button'))
-
-    expect(mockedSetVariant).toHaveBeenCalledWith({variantId: variantAlphaAudience._id})
-  })
-
   it('deletes a variant from the row actions menu', async () => {
     setVariants([variantAlphaAudience])
     documentCountsMock.data = {[variantAlphaAudience._id]: 0}
@@ -313,6 +290,35 @@ describe('VariantsOverview', () => {
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
   })
 
+  it('bulk-deletes only the selected definitions that have no documents', async () => {
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
+    documentCountsMock.data = {
+      [variantAlphaAudience._id]: 0,
+      [variantNorwegianMarket._id]: 2,
+    }
+    documentCountsMock.loading = false
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
+
+    // Select every row, then trigger the bulk delete.
+    await user.click(screen.getByTestId('variant-bulk-select-all'))
+    await user.click(await screen.findByTestId('variant-bulk-delete'))
+
+    // The confirmation dialog opens; confirm it.
+    await screen.findByTestId('variant-bulk-delete-dialog')
+    await user.click(await screen.findByTestId('confirm-button'))
+
+    // The empty definition is deleted; the one with documents is kept.
+    await waitFor(() => {
+      expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
+    })
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalledWith(variantNorwegianMarket._id)
+    expect(variantOperationsMock.deleteVariant).toHaveBeenCalledTimes(1)
+  })
+
   it('shows empty state when there are no variants', async () => {
     variantsMock.data = []
 
@@ -326,7 +332,7 @@ describe('VariantsOverview', () => {
     expect(screen.getByTestId('no-variants-info-text')).toHaveTextContent('Variant definitions')
     const emptyState = screen.getByTestId('variants-empty-state')
     expect(
-      within(emptyState).getByRole('button', {name: 'Create variant definition'}),
+      within(emptyState).getByRole('button', {name: 'New variant definition'}),
     ).toBeInTheDocument()
     expect(within(emptyState).getByRole('link', {name: 'Documentation'})).toHaveAttribute(
       'href',
@@ -350,7 +356,7 @@ describe('VariantsOverview', () => {
 
     await renderOverview()
 
-    await user.click(screen.getAllByRole('button', {name: 'Create variant definition'})[0]!)
+    await user.click(screen.getAllByRole('button', {name: 'New variant definition'})[0]!)
 
     expect(screen.getByRole('dialog', {name: 'Create variant definition'})).toBeInTheDocument()
 
