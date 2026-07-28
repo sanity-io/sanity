@@ -170,6 +170,12 @@ a {
   background: #1f1b16;
   border-radius: 0.4rem;
   padding: 0.75rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.demo-debug-panel > .demo-debug-section:first-child {
+  grid-column: 1 / -1;
 }
 
 .demo-variant-switcher label,

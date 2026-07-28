@@ -39,22 +39,24 @@ export function ProductPage() {
   useEffect(() => {
     let cancelled = false
     const key = `${slug}::${variant}::${lang}`
-    const requestOptions = {...(variant ? {variant} : {}), lang}
+    const params = {slug, lang}
+    const requestOptions = {...(variant ? {variant} : {}), stega: false}
     client
-      .fetch<CoffeeProductDetail | null>(
-        PRODUCT_DETAIL_QUERY,
-        {slug, lang},
-        {...(variant ? {variant} : {}), stega: false},
-      )
+      .fetch<CoffeeProductDetail | null>(PRODUCT_DETAIL_QUERY, params, requestOptions)
       .then((result) => {
         if (cancelled) return
         setLoaded({key, result})
-        setDebugInfo({requestOptions, response: result})
+        setDebugInfo({query: PRODUCT_DETAIL_QUERY, params, requestOptions, response: result})
       })
       .catch((error) => {
         if (cancelled) return
         setFailed({key, error})
-        setDebugInfo({requestOptions, response: {error: queryErrorMessage(error)}})
+        setDebugInfo({
+          query: PRODUCT_DETAIL_QUERY,
+          params,
+          requestOptions,
+          response: {error: queryErrorMessage(error)},
+        })
       })
     return () => {
       cancelled = true

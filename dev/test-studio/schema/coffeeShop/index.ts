@@ -12,6 +12,37 @@ import {defineArrayMember, defineField, defineType} from 'sanity'
  * documents resolve to their variant content in the same query.
  */
 
+// sanity-plugin-internationalized-array's `fieldTypes` config only reliably
+// registers `internationalizedArrayText` for the first workspace that requests
+// it across this monorepo's single `defineConfig([...])` — a plugin-resolution
+// quirk, not a bug in this workspace's config (which correctly lists `'text'`).
+// Hand-defining the type ourselves sidesteps it: the plugin's own field-action
+// UI (add-all-languages button, etc.) still recognizes it purely by the
+// `internationalizedArray`-prefixed type name, matching the exact object shape
+// (`value` + hidden `language`) the plugin would have generated.
+const internationalizedArrayTextValue = defineType({
+  name: 'internationalizedArrayTextValue',
+  title: 'Internationalized array text value',
+  type: 'object',
+  fields: [
+    defineField({name: 'value', title: 'Value', type: 'text'}),
+    defineField({
+      name: 'language',
+      type: 'string',
+      hidden: true,
+      validation: (rule) => rule.required(),
+    }),
+  ],
+  preview: {select: {title: 'value', subtitle: 'language'}},
+})
+
+const internationalizedArrayText = defineType({
+  name: 'internationalizedArrayText',
+  title: 'Internationalized array text',
+  type: 'array',
+  of: [defineArrayMember({type: 'internationalizedArrayTextValue'})],
+})
+
 export const demoCoffeeOrigin = defineType({
   name: 'demoCoffeeOrigin',
   title: 'Coffee Demo: Origin',
@@ -378,6 +409,8 @@ export const demoCoffeeLandingPage = defineType({
 })
 
 export const coffeeShopSchemaTypes = [
+  internationalizedArrayTextValue,
+  internationalizedArrayText,
   demoCoffeeOrigin,
   demoCoffeePromo,
   demoCoffeeProduct,

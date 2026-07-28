@@ -26,22 +26,24 @@ export function HomePage() {
   useEffect(() => {
     let cancelled = false
     const key = `${variant}::${lang}`
-    const requestOptions = {...(variant ? {variant} : {}), lang}
+    const params = {id: LANDING_PAGE_ID, lang}
+    const requestOptions = {...(variant ? {variant} : {}), stega: false}
     client
-      .fetch<LandingPageQueryResult>(
-        LANDING_PAGE_QUERY,
-        {id: LANDING_PAGE_ID, lang},
-        {...(variant ? {variant} : {}), stega: false},
-      )
+      .fetch<LandingPageQueryResult>(LANDING_PAGE_QUERY, params, requestOptions)
       .then((result) => {
         if (cancelled) return
         setLoaded({key, result})
-        setDebugInfo({requestOptions, response: result})
+        setDebugInfo({query: LANDING_PAGE_QUERY, params, requestOptions, response: result})
       })
       .catch((error) => {
         if (cancelled) return
         setFailed({key, error})
-        setDebugInfo({requestOptions, response: {error: queryErrorMessage(error)}})
+        setDebugInfo({
+          query: LANDING_PAGE_QUERY,
+          params,
+          requestOptions,
+          response: {error: queryErrorMessage(error)},
+        })
       })
     return () => {
       cancelled = true

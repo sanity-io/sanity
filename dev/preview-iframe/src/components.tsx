@@ -334,16 +334,28 @@ export function DemoControlsMenu({
 }
 
 export function DemoDebugPanel({
+  query,
+  params,
   requestOptions,
   response,
 }: {
+  query: string
+  params: Record<string, unknown>
   requestOptions: Record<string, unknown>
   response: unknown
 }) {
   return (
     <div className="demo-debug-panel">
       <div className="demo-debug-section">
-        <h3>Request options sent to client.fetch()</h3>
+        <h3>GROQ query</h3>
+        <pre>{query}</pre>
+      </div>
+      <div className="demo-debug-section">
+        <h3>Params</h3>
+        <pre>{JSON.stringify(params, null, 2)}</pre>
+      </div>
+      <div className="demo-debug-section">
+        <h3>Options sent to client.fetch()</h3>
         <pre>{JSON.stringify(requestOptions, null, 2)}</pre>
       </div>
       <div className="demo-debug-section">

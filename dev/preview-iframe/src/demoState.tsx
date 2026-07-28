@@ -1,6 +1,8 @@
 import {createContext, type ReactNode, useContext, useMemo, useState} from 'react'
 
 export interface DemoDebugInfo {
+  query: string
+  params: Record<string, unknown>
   requestOptions: Record<string, unknown>
   response: unknown
 }

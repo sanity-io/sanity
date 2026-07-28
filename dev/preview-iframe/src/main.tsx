@@ -56,7 +56,12 @@ function DemoHeader() {
         {showSwitcher && <DemoLanguageSwitcher value={lang} onChange={setLang} />}
       </div>
       {showDebug && debugInfo && (
-        <DemoDebugPanel requestOptions={debugInfo.requestOptions} response={debugInfo.response} />
+        <DemoDebugPanel
+          query={debugInfo.query}
+          params={debugInfo.params}
+          requestOptions={debugInfo.requestOptions}
+          response={debugInfo.response}
+        />
       )}
     </div>
   )
