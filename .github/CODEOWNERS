@@ -16,7 +16,7 @@
 *.telemetry.ts @sanity-io/data-eng
 
 # Presentation Tool, which interfaces with Visual Editing libraries
-/packages/sanity/src/presentation/ @sanity-io/ecosystem
+/packages/sanity/src/presentation/ @sanity-io/studio
 
 # Examples
 /examples/functions @kmelve @kenjonespizza @iamkevingreen
