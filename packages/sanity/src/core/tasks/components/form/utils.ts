@@ -1,6 +1,6 @@
 import {isPortableTextTextBlock} from '@sanity/types'
 
-import {getPublishedId} from '../../../util/draftUtils'
+import {getPublishedId, getVersionFromId, getVersionId} from '../../../util/draftUtils'
 import {type TaskDocument, type TaskTarget} from '../../types'
 
 interface GetTargetValueOptions {
@@ -24,7 +24,21 @@ export function getTargetValue({
       _projectId: projectId,
       _weak: true,
     },
+    documentVersionId: getVersionFromId(documentId),
   }
+}
+
+/**
+ * The id of the document a task target points at: the version id when the task was created for
+ * a version document (release or variant), otherwise the published id stored in the reference.
+ * Matches the id shape of the tasks' active document, which keeps version ids as-is.
+ */
+export function getTargetDocumentId(target: TaskTarget | undefined): string | undefined {
+  const publishedId = target?.document?._ref
+  if (!publishedId) return undefined
+  return target.documentVersionId
+    ? getVersionId(publishedId, target.documentVersionId)
+    : publishedId
 }
 
 /**

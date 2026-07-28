@@ -5,6 +5,7 @@ import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components/button/Button'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {getTargetDocumentId} from '../components/form/utils'
 import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
 import {useTasks} from '../context/tasks/useTasks'
 import {tasksLocaleNamespace} from '../i18n'
@@ -32,7 +33,7 @@ export function TasksFooterOpenTasks() {
       activeDocument?.documentId
         ? data.filter((item) => {
             return (
-              item.target?.document._ref === activeDocument.documentId &&
+              getTargetDocumentId(item.target) === activeDocument.documentId &&
               item.status === 'open' &&
               item.createdByUser
             )
