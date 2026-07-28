@@ -225,14 +225,11 @@ export function VariantConditionFilters({
   return (
     <Card border padding={1} radius={2} style={{flex: 'none'}}>
       <Flex align="center" gap={2} wrap="nowrap">
-        <Flex align="center" gap={1} paddingX={1} style={{flex: 'none'}}>
+        <Box paddingX={1} style={{flex: 'none'}}>
           <Text muted size={1}>
             <FilterIcon />
           </Text>
-          <Text muted size={1} weight="medium">
-            {t('overview.filter.label')}
-          </Text>
-        </Flex>
+        </Box>
 
         <Box style={{flex: 'none'}}>
           <AddFilterMenu facets={facets} onToggleValue={toggleValue} value={value} />

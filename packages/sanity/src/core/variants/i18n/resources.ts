@@ -101,8 +101,6 @@ const variantsLocaleStrings = {
   'overview.filter.clear-all': 'Clear filters',
   /** Accessible label / tooltip for removing a single active filter value chip. */
   'overview.filter.remove-value': 'Remove filter',
-  /** Leading label for the filter group. */
-  'overview.filter.label': 'Filters',
   /** The button that opens the add-filter menu. */
   'overview.filter.add': 'Add filter',
   /** Placeholder for the searchable dimension list in the add-filter menu. */
