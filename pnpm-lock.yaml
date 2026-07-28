@@ -1710,8 +1710,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       '@sanity/workbench':
-        specifier: 0.1.0-alpha.29
-        version: 0.1.0-alpha.29(@sanity/sdk@2.18.0)(react@19.2.8)(xstate@5.32.5)
+        specifier: 0.1.0-alpha.30
+        version: 0.1.0-alpha.30(@sanity/sdk@2.18.0)(react@19.2.8)(xstate@5.32.5)
       '@sentry/react':
         specifier: ^10.67.0
         version: 10.67.0(react@19.2.8)
@@ -6652,8 +6652,8 @@ packages:
     resolution: {integrity: sha512-g1NzCwQbz+Of1dtDLKOjXL3Md7ALK0TsADVOJd28Gp+Cv64YZKQxBhevOFew6HeeIZi2vdErgmQyh8QZtur9mg==}
     engines: {node: '>=22.12'}
 
-  '@sanity/workbench@0.1.0-alpha.29':
-    resolution: {integrity: sha512-INlBm+rhlQQu0Gd2DZXnPJgPzdE84YUx6z/gSjVdugTvLi5Ay/Edf3CBX4yuH284/7aR05h/OMbWyA0XU2AMKQ==}
+  '@sanity/workbench@0.1.0-alpha.30':
+    resolution: {integrity: sha512-LiJriPsr8wDorKQXG1pc7vqTY0A3Kwj+yNygKMJHIRDn5OY189S1q/Ajw/HhepJGkgSbOKTxYe1Q2BrJ3M5axA==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     peerDependencies:
       '@sanity/sdk': ^2.9.0
@@ -18909,7 +18909,7 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/workbench@0.1.0-alpha.29(@sanity/sdk@2.18.0)(react@19.2.8)(xstate@5.32.5)':
+  '@sanity/workbench@0.1.0-alpha.30(@sanity/sdk@2.18.0)(react@19.2.8)(xstate@5.32.5)':
     dependencies:
       '@module-federation/runtime': 2.8.0
       '@sanity/sdk': 2.18.0(@types/react@19.2.17)(immer@11.1.15)(react@19.2.8)(supports-color@8.1.1)(use-sync-external-store@1.6.0)(xstate@5.32.5)
