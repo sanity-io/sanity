@@ -501,7 +501,7 @@ test.describe('Variants create flow', () => {
     await page.goto(`/variants/${shortVariantId}`)
     await expect(page.getByRole('heading', {name: title})).toBeVisible()
 
-    await page.locator(`#variant-detail-actions-${shortVariantId}`).click()
+    await page.getByTestId('variant-detail-menu-button').click()
     await page.getByRole('menuitem', {name: 'Delete variant definition'}).click()
     await page.getByTestId('confirm-button').click()
 
