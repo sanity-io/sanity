@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@sanity/ailf": "^7.31.1",
+    "@sanity/ailf": "^7.32.0",
     "sanity": "workspace:*"
   },
   "engines": {
