@@ -229,16 +229,23 @@ export function DocumentTable<Row extends object>({
                   </>
                 ) : (
                   <>
-                    {filterTabs ? (
+                    {filterTabs && (
                       <Box flex={1} style={FILTER_TABS_STYLE}>
                         {filterTabs}
                       </Box>
-                    ) : (
-                      <Box flex={1} />
                     )}
+                    {/* With filter tabs, search is a fixed-width control pinned to the right (tabs
+                        lead from the left). Without them, it fills the lane so it doesn't strand a
+                        wide empty gutter — e.g. the variants overview, which has no filter tabs. */}
                     <Box
-                      flex="none"
-                      style={searchWidth ? {maxWidth: searchWidth} : SEARCH_INPUT_STYLE}
+                      flex={filterTabs ? 'none' : 1}
+                      style={
+                        filterTabs
+                          ? searchWidth
+                            ? {maxWidth: searchWidth}
+                            : SEARCH_INPUT_STYLE
+                          : undefined
+                      }
                     >
                       <TextInput
                         aria-label={searchPlaceholder}

@@ -137,9 +137,9 @@ export function VariantsOverview(): React.JSX.Element {
           aligns with the table's row content below. */}
       <Container flex="none" width={3}>
         <Flex direction="column" paddingX={3}>
-          <Card flex="none" paddingY={5}>
+          <Card flex="none" paddingBottom={4} paddingTop={5}>
             <Flex align="flex-start" gap={4} justify="space-between">
-              <Stack space={3}>
+              <Stack space={2}>
                 <Text as="h1" size={4} weight="bold">
                   {t('overview.title')}
                 </Text>
