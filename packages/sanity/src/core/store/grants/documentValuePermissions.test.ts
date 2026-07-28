@@ -1,4 +1,5 @@
 import {act, renderHook} from '@testing-library/react'
+import {StrictMode} from 'react'
 import {Subject} from 'rxjs'
 import {describe, expect, test, vi} from 'vitest'
 
@@ -8,6 +9,7 @@ import {type GrantsStore, type PermissionCheckResult} from './types'
 vi.mock('../datastores', () => ({useGrantsStore: () => undefined}))
 
 const GRANTED: PermissionCheckResult = {granted: true, reason: 'ok'}
+// Deep-equal to GRANTED but a distinct reference, to exercise the isEqual bailout.
 const GRANTED_COPY: PermissionCheckResult = {granted: true, reason: 'ok'}
 const DENIED: PermissionCheckResult = {granted: false, reason: 'nope'}
 
@@ -46,6 +48,22 @@ describe('useDocumentValuePermissions', () => {
     const {result, rerender} = renderHook(
       ({document}) => useDocumentValuePermissions({grantsStore, document, permission: 'update'}),
       {initialProps: {document: {_id: 'doc', _type: 'author', name: 'a'}}},
+    )
+
+    emitLatest(GRANTED)
+    expect(result.current).toEqual([GRANTED, false])
+
+    rerender({document: {_id: 'doc', _type: 'author', name: 'ab'}})
+
+    expect(result.current).toEqual([GRANTED, false])
+  })
+
+  // The fix relies on a ref surviving StrictMode's mount→unmount→remount double-invoke.
+  test('does not flip loading back on under StrictMode', () => {
+    const {grantsStore, emitLatest} = createControllableGrantsStore()
+    const {result, rerender} = renderHook(
+      ({document}) => useDocumentValuePermissions({grantsStore, document, permission: 'update'}),
+      {wrapper: StrictMode, initialProps: {document: {_id: 'doc', _type: 'author', name: 'a'}}},
     )
 
     emitLatest(GRANTED)
