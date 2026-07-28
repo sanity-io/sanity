@@ -1,5 +1,10 @@
 import {Box, rem, Stack} from '@sanity/ui'
-import {type ScrollToOptions, useVirtualizer, type Virtualizer} from '@tanstack/react-virtual'
+import {
+  observeElementOffset,
+  type ScrollToOptions,
+  useVirtualizer,
+  type Virtualizer,
+} from '@tanstack/react-virtual'
 import throttle from 'lodash-es/throttle.js'
 import {
   cloneElement,
@@ -95,6 +100,35 @@ const VirtualListChildBox = styled(Box) //
   width: 100%;
 `
 
+const observeCommandListOffset = (
+  virtualizer: Virtualizer<HTMLElement, Element>,
+  callback: (offset: number, isScrolling: boolean) => void,
+) => {
+  const cleanupScrollObserver = observeElementOffset(virtualizer, callback)
+  const scrollElement = virtualizer.scrollElement
+  const targetWindow = scrollElement?.ownerDocument.defaultView
+  const ResizeObserver = targetWindow?.ResizeObserver
+
+  if (!scrollElement || !targetWindow || !ResizeObserver) return cleanupScrollObserver
+
+  let wasVisible = scrollElement.offsetWidth > 0 && scrollElement.offsetHeight > 0
+  const resizeObserver = new ResizeObserver(() => {
+    const isVisible = scrollElement.offsetWidth > 0 && scrollElement.offsetHeight > 0
+
+    if (!wasVisible && isVisible) {
+      scrollElement.dispatchEvent(new targetWindow.Event('scroll'))
+    }
+
+    wasVisible = isVisible
+  })
+  resizeObserver.observe(scrollElement)
+
+  return () => {
+    cleanupScrollObserver?.()
+    resizeObserver.disconnect()
+  }
+}
+
 // oxlint-disable-next-line react/react-compiler
 const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(function CommandList(
   {
@@ -158,6 +192,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
     getScrollElement: () => virtualListElement,
     estimateSize: () => itemHeight,
     onChange: handleChange,
+    observeElementOffset: observeCommandListOffset,
     overscan,
   })
 

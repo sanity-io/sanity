@@ -1,5 +1,5 @@
 import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {render, screen, waitFor} from '@testing-library/react'
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {useCallback} from 'react'
 import {beforeEach, describe, expect, it} from 'vitest'
@@ -11,14 +11,56 @@ const CUSTOM_ACTIVE_ATTR = 'my-active-data-attribute'
 
 type Item = number
 
+const resizeObservers = new Set<TestResizeObserver>()
+
+class TestResizeObserver implements ResizeObserver {
+  private readonly callback: ResizeObserverCallback
+  private readonly targets = new Set<Element>()
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback
+    resizeObservers.add(this)
+  }
+
+  disconnect() {
+    this.targets.clear()
+    resizeObservers.delete(this)
+  }
+
+  observe(target: Element) {
+    this.targets.add(target)
+  }
+
+  unobserve(target: Element) {
+    this.targets.delete(target)
+  }
+
+  trigger() {
+    const entries = [...this.targets].map(
+      (target) =>
+        ({
+          contentRect: target.getBoundingClientRect(),
+          target,
+        }) as ResizeObserverEntry,
+    )
+    this.callback(entries, this)
+  }
+}
+
+const triggerResizeObservers = () => {
+  resizeObservers.forEach((observer) => observer.trigger())
+}
+
 interface TestComponentProps {
+  collapsed?: boolean
   initialIndex?: number
   items: Item[]
+  overscan?: number
   withDisabledItems?: boolean
 }
 
 function TestComponent(props: TestComponentProps) {
-  const {initialIndex, items, withDisabledItems} = props
+  const {collapsed, initialIndex, items, overscan = items.length, withDisabledItems} = props
 
   const getItemDisabled = useCallback(
     (item: Item) => {
@@ -32,14 +74,14 @@ function TestComponent(props: TestComponentProps) {
   const renderItem = useCallback((item: Item) => {
     return (
       <button key={item.toString()} type="button" data-testid="button">
-        Button
+        Button {item}
       </button>
     )
   }, [])
 
   return (
     <ThemeProvider theme={studioTheme}>
-      <div style={{height: '400px', position: 'relative'}}>
+      <div hidden={collapsed} style={{height: '400px', position: 'relative'}}>
         <CommandList
           activeItemDataAttr={CUSTOM_ACTIVE_ATTR}
           ariaLabel=""
@@ -49,9 +91,7 @@ function TestComponent(props: TestComponentProps) {
           itemHeight={20}
           items={items}
           getItemDisabled={getItemDisabled}
-          // TODO: Figure out why we need the overscan to be the
-          // same as the number of items for the tests to pass
-          overscan={items.length}
+          overscan={overscan}
           renderItem={renderItem}
           testId={COMMAND_LIST_TEST_ID}
         />
@@ -62,6 +102,7 @@ function TestComponent(props: TestComponentProps) {
 
 describe('core/components: CommandList', () => {
   beforeEach(() => {
+    const originalResizeObserver = globalThis.ResizeObserver
     const originalOffsetHeight = Object.getOwnPropertyDescriptor(
       HTMLElement.prototype,
       'offsetHeight',
@@ -70,24 +111,23 @@ describe('core/components: CommandList', () => {
       HTMLElement.prototype,
       'offsetWidth',
     )
-    // Virtual list will return an empty list of items unless we have some size,
-    // so we need to mock offsetHeight and offsetWidth to return a size for the list.
-    // Not pretty, but it's what they recommend for testing outside of browsers:
-    // https://github.com/TanStack/virtual/issues/641
+    globalThis.ResizeObserver = TestResizeObserver
     Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
       configurable: true,
       get() {
-        return 800
+        return this.closest('[hidden]') ? 0 : 800
       },
     })
     Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
       configurable: true,
       get() {
-        return 800
+        return this.closest('[hidden]') ? 0 : 800
       },
     })
 
     return () => {
+      resizeObservers.clear()
+      globalThis.ResizeObserver = originalResizeObserver
       if (originalOffsetHeight) {
         Object.defineProperty(HTMLElement.prototype, 'offsetHeight', originalOffsetHeight)
       }
@@ -175,5 +215,26 @@ describe('core/components: CommandList', () => {
     expect(buttons[1]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[2]).not.toHaveAttribute(CUSTOM_ACTIVE_ATTR)
     expect(buttons[3]).toHaveAttribute(CUSTOM_ACTIVE_ATTR)
+  })
+
+  it('should sync rendered items with the scroll position after becoming visible', async () => {
+    const items = [...Array(100).keys()]
+    const {rerender} = render(<TestComponent items={items} overscan={0} />)
+    const commandList = screen.getByTestId(COMMAND_LIST_TEST_ID)
+
+    commandList.scrollTop = 1200
+    fireEvent.scroll(commandList)
+
+    await waitFor(() => expect(screen.queryByText('Button 0')).not.toBeInTheDocument())
+
+    rerender(<TestComponent collapsed items={items} overscan={0} />)
+    act(triggerResizeObservers)
+    commandList.scrollTop = 0
+    rerender(<TestComponent items={items} overscan={0} />)
+    act(triggerResizeObservers)
+
+    expect(await screen.findByText('Button 0')).toBeInTheDocument()
+    await act(() => new Promise<void>((resolve) => setTimeout(resolve, 200)))
+    expect(screen.getByText('Button 0')).toBeInTheDocument()
   })
 })
