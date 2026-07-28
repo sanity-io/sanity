@@ -83,9 +83,15 @@ export function useDocumentValuePermissions({
 
   const [state, dispatch] = useReducer(stateReducer, INITIAL_STATE)
   const subscriptionRef = useRef<Subscription | null>(null)
+  const hasEvaluatedRef = useRef(false)
 
   useEffect(() => {
-    dispatch({type: 'loading'})
+    // Dispatch loading only on the first eval; re-dispatching it on per-keystroke re-runs keeps
+    // prevIsLoading true, which defeats the reducer's isEqual bailout and forces a re-render.
+    if (!hasEvaluatedRef.current) {
+      hasEvaluatedRef.current = true
+      dispatch({type: 'loading'})
+    }
 
     // Unsubscribe from any previous subscription
     if (subscriptionRef.current) {
