@@ -11,6 +11,7 @@
     "@repo/tsconfig": "workspace:*",
     "@sanity/tsdown-config": "catalog:",
     "@types/node": "catalog:",
-    "tsdown": "catalog:"
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
   }
 }

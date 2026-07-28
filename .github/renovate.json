@@ -124,7 +124,18 @@
     {
       "description": "Group TypeScript related deps in a single PR, as they often have to update together",
       "groupName": "typescript-tooling",
-      "matchPackageNames": ["@sanity/tsdown-config", "tsdown", "typescript"]
+      "matchPackageNames": [
+        "@sanity/tsdown-config",
+        "tsdown",
+        "typescript",
+        "@typescript/typescript6"
+      ]
+    },
+    {
+      "description": "test-dts-exports needs the TypeScript 6 compiler API (ts-morph); never bump to 7",
+      "matchPackageNames": ["typescript"],
+      "matchFileNames": ["packages/@repo/test-dts-exports/package.json"],
+      "enabled": false
     },
     {
       "description": "Always upgrade oxlint together",

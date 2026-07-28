@@ -51,7 +51,8 @@
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
-    "tsdown": "catalog:"
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
   },
   "browserslist": [
     "node >=22.12",

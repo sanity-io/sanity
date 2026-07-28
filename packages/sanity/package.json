@@ -271,6 +271,7 @@
     "styled-components": "catalog:",
     "tsdown": "catalog:",
     "tsx": "^4.23.1",
+    "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
     "vitest-browser-react": "catalog:",

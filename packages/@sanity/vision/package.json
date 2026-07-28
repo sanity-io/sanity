@@ -109,6 +109,7 @@
     "sanity": "workspace:*",
     "styled-components": "catalog:",
     "tsdown": "catalog:",
+    "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },

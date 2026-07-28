@@ -62,6 +62,7 @@
     "@types/lodash-es": "^4.17.12",
     "@types/node": "catalog:",
     "tsdown": "catalog:",
+    "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
