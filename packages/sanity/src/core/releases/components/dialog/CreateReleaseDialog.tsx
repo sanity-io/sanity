@@ -7,13 +7,18 @@ import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
-import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
+import {
+  CreatedRelease,
+  type OriginInfo,
+  ReleaseDescriptionSet,
+} from '../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getIsReleaseInvalid} from '../../util/getIsReleaseInvalid'
+import {getReleaseDescriptionTelemetry} from '../../util/getReleaseDescriptionTelemetry'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults} from '../../util/util'
 import {ReleaseForm} from './ReleaseForm'
@@ -59,6 +64,12 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         // Close the dialog after creating the release.
         onCancel()
         telemetry.log(CreatedRelease, {origin})
+        if (release.metadata?.description) {
+          telemetry.log(
+            ReleaseDescriptionSet,
+            getReleaseDescriptionTelemetry('create', release.metadata.description),
+          )
+        }
 
         // TODO: Remove this! temporary fix to give some time for the release to be created and the releases store state updated before closing the dialog.
         await new Promise((resolve) => setTimeout(resolve, 1000))

@@ -229,16 +229,17 @@ Tracked automatically via `web-vitals/attribution` library:
 
 ### Releases
 
-| Event                               | When                        |
-| ----------------------------------- | --------------------------- |
-| `Version Document Added to Release` | Document added to a release |
-| `Release Created/Deleted/Published` | Release lifecycle           |
-| `Release Scheduled/Unscheduled`     | Release scheduling          |
-| `Release Archived/Unarchived`       | Release archival            |
-| `Release Reverted/Duplicated`       | Release management          |
-| `Release Link/ID/Title Copied`      | Clipboard actions           |
-| `Navigated to Releases Overview`    | Navigation                  |
-| `Navigated to Scheduled Drafts`     | Navigation                  |
+| Event                               | When                                                                                                                       |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `Version Document Added to Release` | Document added to a release                                                                                                |
+| `Release Created/Deleted/Published` | Release lifecycle                                                                                                          |
+| `Release Scheduled/Unscheduled`     | Release scheduling                                                                                                         |
+| `Release Archived/Unarchived`       | Release archival                                                                                                           |
+| `Release Reverted/Duplicated`       | Release management                                                                                                         |
+| `Release Description Set`           | Release description usage - set at creation or edited in Studio (action, character count, contains-URL; never the content) |
+| `Release Link/ID/Title Copied`      | Clipboard actions                                                                                                          |
+| `Navigated to Releases Overview`    | Navigation                                                                                                                 |
+| `Navigated to Scheduled Drafts`     | Navigation                                                                                                                 |
 
 ### Scheduled Drafts
 
