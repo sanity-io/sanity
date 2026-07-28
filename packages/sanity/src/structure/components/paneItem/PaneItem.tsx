@@ -8,7 +8,7 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {type CardProps, Text} from '@sanity/ui'
+import {Badge, type CardProps, Text} from '@sanity/ui'
 import {
   type ComponentType,
   type MouseEvent,
@@ -30,7 +30,7 @@ import {
   useEditState,
   useSchema,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
@@ -38,6 +38,7 @@ import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {
   id: string
+  count?: number
   layout?: GeneralPreviewLayoutKey
   icon?: ComponentType<any> | false
   pressed?: boolean
@@ -67,8 +68,13 @@ function getIconWithFallback(
   return icon || (schemaType && schemaType.icon) || defaultIcon || false
 }
 
+function formatCount(value: number): string {
+  return new Intl.NumberFormat().format(value)
+}
+
 export function PaneItem(props: PaneItemProps) {
   const {
+    count,
     icon,
     id,
     layout = 'default',
@@ -112,11 +118,18 @@ export function PaneItem(props: PaneItemProps) {
     return (
       <SanityDefaultPreview
         status={
-          <Box style={{opacity: 0.5}}>
-            <Text muted size={1}>
-              <ChevronRightIcon />
-            </Text>
-          </Box>
+          <Flex alignItems="center" gap={2}>
+            {typeof count === 'number' && (
+              <Badge tone="default" mode="outline" data-testid="pane-item-count">
+                {formatCount(count)}
+              </Badge>
+            )}
+            <Box style={{opacity: 0.5}}>
+              <Text muted size={1}>
+                <ChevronRightIcon />
+              </Text>
+            </Box>
+          </Flex>
         }
         icon={getIconWithFallback(icon, schemaType, FolderIcon)}
         layout="compact"
@@ -124,6 +137,7 @@ export function PaneItem(props: PaneItemProps) {
       />
     )
   }, [
+    count,
     documentPreviewStore,
     hasSchemaType,
     icon,
