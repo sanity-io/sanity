@@ -6,7 +6,7 @@ import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {type NavbarProps} from '../../../config/studio/types'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'

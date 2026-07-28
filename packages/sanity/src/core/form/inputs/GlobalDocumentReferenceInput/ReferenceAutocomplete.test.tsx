@@ -26,15 +26,12 @@ import {
 } from 'react'
 import {describe, expect, test, vi, beforeEach} from 'vitest'
 
-import type * as UIComponentsModule from '../../../../ui-components'
+import {type PopoverProps as UIPopoverProps} from '../../../../ui-components/popover/Popover'
 import {ReferenceAutocomplete as CrossDatasetReferenceAutocomplete} from '../CrossDatasetReferenceInput/ReferenceAutocomplete'
 import {ReferenceAutocomplete as SameDatasetReferenceAutocomplete} from '../ReferenceInput/ReferenceAutocomplete'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 
-type PopoverBoundaryCapture = Pick<
-  UIComponentsModule.PopoverProps,
-  'floatingBoundary' | 'referenceBoundary'
->
+type PopoverBoundaryCapture = Pick<UIPopoverProps, 'floatingBoundary' | 'referenceBoundary'>
 
 /** Last props passed from ReferenceAutocomplete to Popover (via styled wrapper). */
 let lastPopoverProps: PopoverBoundaryCapture | null = null
@@ -76,6 +73,8 @@ vi.mock('@sanity/ui', async (importOriginal) => {
 
     useLayoutEffect(() => {
       if (typeof renderPopover !== 'function') {
+        // TODO(oxlint): remove this suppression in a follow-up when this test setup is refactored
+        // oxlint-disable-next-line react/react-compiler
         setPopover(null)
         return
       }
@@ -112,28 +111,29 @@ vi.mock('@sanity/ui', async (importOriginal) => {
   // hoisting inside `importOriginal`).
   const useBoundaryElement = () => ({version: 0.0, element: mockBoundaryElement})
 
+  // @ts-expect-error -- pre-existing, fix later
   return {...mod, Autocomplete: AutocompleteStub as Autocomplete, useBoundaryElement}
 })
 
-vi.mock('../../../i18n', () => ({
+vi.mock('../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
+}))
+vi.mock('../../../i18n/Translate', () => ({
   Translate: ({children}: {children?: ReactNode}) => <>{children}</>,
 }))
 
-vi.mock('../../../../ui-components', async (importOriginal) => {
-  const mod = (await importOriginal()) as UIComponentsModule
-  const Forward = forwardRef<HTMLDivElement, UIComponentsModule.PopoverProps>(
-    function PopoverCapture(props, ref) {
-      useLayoutEffect(() => {
-        lastPopoverProps = {
-          floatingBoundary: props.floatingBoundary,
-          referenceBoundary: props.referenceBoundary,
-        }
-      }, [props.floatingBoundary, props.referenceBoundary])
-      return <div ref={ref} data-testid="popover-capture" data-floating-ui-role="popover" />
-    },
-  )
-  return {...mod, Popover: Forward as UIComponentsModule.Popover}
+vi.mock('../../../../ui-components/popover/Popover', async (importOriginal) => {
+  const mod = (await importOriginal()) as Record<string, unknown>
+  const Forward = forwardRef<HTMLDivElement, UIPopoverProps>(function PopoverCapture(props, ref) {
+    useLayoutEffect(() => {
+      lastPopoverProps = {
+        floatingBoundary: props.floatingBoundary,
+        referenceBoundary: props.referenceBoundary,
+      }
+    }, [props.floatingBoundary, props.referenceBoundary])
+    return <div ref={ref} data-testid="popover-capture" data-floating-ui-role="popover" />
+  })
+  return {...mod, Popover: Forward}
 })
 
 /**

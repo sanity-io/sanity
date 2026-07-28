@@ -1,4 +1,4 @@
-import {ChevronRightIcon} from '@sanity/icons'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {Fragment} from 'react'
 

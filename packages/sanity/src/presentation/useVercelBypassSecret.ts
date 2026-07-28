@@ -12,7 +12,6 @@ export function useVercelBypassSecret(): [
 ] {
   const client = useClient({apiVersion: API_VERSION})
   const [vercelProtectionBypassReadyState, ready] = useReducer(
-    // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
     () => 'ready' as 'ready' | 'loading',
     'loading',
   )

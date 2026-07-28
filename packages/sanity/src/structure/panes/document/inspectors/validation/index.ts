@@ -1,4 +1,6 @@
-import {CheckmarkCircleIcon, ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {useMemo} from 'react'
 import {
   type DocumentInspector,

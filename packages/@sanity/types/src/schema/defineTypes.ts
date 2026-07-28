@@ -1,10 +1,10 @@
 import {
-  type ArrayOfEntry,
   type FieldDefinitionBase,
   type IntrinsicDefinitions,
   type IntrinsicTypeName,
   type TypeAliasDefinition,
-} from './definition'
+} from './definition/schemaDefinition'
+import {type ArrayOfEntry} from './definition/type/array'
 import {type PreviewConfig} from './preview'
 import {type InitialValueProperty, type SchemaValidationValue} from './types'
 

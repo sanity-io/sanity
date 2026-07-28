@@ -9,7 +9,7 @@ import {type DocumentSystem, type PrepareViewOptions, type SanityDocument} from 
 import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
-import {isRecord} from '../util'
+import {isRecord} from '../util/isRecord'
 import {
   createDocumentStackAvailabilityObserver,
   createPreviewAvailabilityObserver,

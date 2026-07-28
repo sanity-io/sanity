@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {type ComponentType, type ReactNode} from 'react'
 
-import {type DocumentInRelease} from '../../releases/tool/detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../releases/tool/detail/types'
 import {type ConfigContext} from '../types'
 
 /**

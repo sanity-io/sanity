@@ -55,9 +55,11 @@ const expiresAt = new Date(Date.now() + 1000 * 60 * 60)
 const mockActors = ({
   allowOption = undefined,
   previewUrlOption = undefined,
+  variant = undefined,
 }: {
   allowOption?: PreviewUrlAllowOption
   previewUrlOption?: PreviewUrlOption
+  variant?: string
 } = {}) => ({
   'create preview secret': fromPromise(() => Promise.resolve({secret: 'abc123', expiresAt})),
   'read shared preview secret': fromPromise<string | null>(() => Promise.resolve('dfg456')),
@@ -70,6 +72,7 @@ const mockActors = ({
     studioBasePath,
     previewUrlOption,
     perspective: 'drafts',
+    variant,
   }),
   'resolve preview mode': defineResolvePreviewModeActor({
     client,
@@ -80,6 +83,7 @@ const mockActors = ({
     studioBasePath,
     previewUrlOption,
     perspective: 'drafts',
+    variant,
   }),
   'check permission': fromObservable<PermissionCheckResult, CheckPermissionInput>(() =>
     of({granted: true, reason: 'Matching grant'}),
@@ -235,6 +239,7 @@ describe('Preview URL machine', () => {
               studioBasePath,
               previewUrlOption: previewUrlOption,
               perspective: 'drafts',
+              variant: undefined,
             }),
           },
         }),
@@ -244,6 +249,35 @@ describe('Preview URL machine', () => {
       const snapshot = await waitFor(actor, (state) => state.context.initialUrl !== null)
       expect(snapshot.context.initialUrl).toBeInstanceOf(URL)
       expect(snapshot.context.initialUrl!.toString()).toBe(expected)
+    })
+
+    test('passes the selected variant to legacy preview url resolvers', async () => {
+      const actor = createActor(
+        previewUrlMachine.provide({
+          actors: {
+            ...mockActors(),
+            'resolve initial url': defineResolveInitialUrlActor({
+              client,
+              studioBasePath,
+              previewUrlOption: (async ({studioPreviewVariant}) => {
+                const url = new URL('https://example.com')
+                if (studioPreviewVariant) {
+                  url.searchParams.set('sanity-preview-variant', studioPreviewVariant)
+                }
+                return url.toString()
+              }) as DeprecatedPreviewUrlResolver,
+              perspective: 'drafts',
+              variant: 'Ab12cd34',
+            }),
+          },
+        }),
+        {input: {previewSearchParam: null}},
+      ).start()
+
+      const snapshot = await waitFor(actor, (state) => state.context.initialUrl !== null)
+      expect(snapshot.context.initialUrl!.toString()).toBe(
+        'https://example.com/?sanity-preview-variant=Ab12cd34',
+      )
     })
   })
 
@@ -810,6 +844,38 @@ describe('Preview URL machine', () => {
           secret: expect.any(String),
           expiresAt: expect.any(Date),
         })
+      })
+
+      test('sets the selected variant on the preview mode enable url', async () => {
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actors: mockActors({
+              previewUrlOption: {previewMode: {enable: '/api/preview'}},
+              variant: 'Ab12cd34',
+            }),
+          }),
+          {
+            input: {previewSearchParam: null},
+          },
+        ).start()
+        const {context} = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(context.previewUrl?.searchParams.get('sanity-preview-variant')).toBe('Ab12cd34')
+        expect(context.previewUrl?.searchParams.get('sanity-preview-perspective')).toBe('drafts')
+      })
+
+      test('omits the variant param on the preview mode enable url when no variant is selected', async () => {
+        const actor = createActor(
+          previewUrlMachine.provide({
+            actors: mockActors({
+              previewUrlOption: {previewMode: {enable: '/api/preview'}},
+            }),
+          }),
+          {
+            input: {previewSearchParam: null},
+          },
+        ).start()
+        const {context} = await waitFor(actor, (state) => !state.hasTag('busy'))
+        expect(context.previewUrl?.searchParams.has('sanity-preview-variant')).toBe(false)
       })
 
       test('handles secret expiry', async () => {

@@ -1,4 +1,4 @@
-import {type DocumentInRelease} from '../tool/detail/useBundleDocuments'
+import {type DocumentInRelease} from '../tool/detail/types'
 import {isGoingToUnpublish} from './isGoingToUnpublish'
 
 /**

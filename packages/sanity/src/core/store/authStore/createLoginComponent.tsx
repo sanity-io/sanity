@@ -1,15 +1,16 @@
 /* oxlint-disable i18next/no-literal-string */
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
-import {ArrowLeftIcon, WarningOutlineIcon} from '@sanity/icons'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Badge, Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
-import {Button, type ButtonProps} from '../../../ui-components'
-import {LoadingBlock} from '../../components/loadingBlock'
-import {type AuthConfig} from '../../config'
-import {useTranslation} from '../../i18n'
+import {Button, type ButtonProps} from '../../../ui-components/button/Button'
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {type AuthConfig} from '../../config/auth/types'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {CustomLogo, providerLogos} from './providerLogos'
 import {type LoginComponentProps} from './types'
 

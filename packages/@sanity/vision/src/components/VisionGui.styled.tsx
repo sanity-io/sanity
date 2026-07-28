@@ -10,6 +10,8 @@ import {
   inputBackgroundContainerLeft,
   inputContainer,
   queryCopyLink,
+  queryRecallPaneContainer,
+  queryRecallPaneWrapper,
   result,
   resultContainer,
   resultContainerInvalid,
@@ -42,6 +44,22 @@ export function StyledLabel(props: ComponentProps<typeof Label>) {
 
 export function SplitpaneContainer(props: ComponentProps<typeof Box>) {
   return <Box {...props} className={splitpaneContainer} />
+}
+
+export function QueryRecallPaneContainer(props: ComponentProps<typeof Flex>) {
+  return <Flex {...props} direction="column" className={queryRecallPaneContainer} />
+}
+
+export function QueryRecallPaneWrapper(props: ComponentProps<typeof Flex>) {
+  return (
+    <Flex
+      {...props}
+      direction="column"
+      flex={1}
+      overflow="hidden"
+      className={queryRecallPaneWrapper}
+    />
+  )
 }
 
 export function QueryCopyLink(props: ComponentProps<'a'>) {

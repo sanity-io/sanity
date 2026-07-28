@@ -1,4 +1,6 @@
-import {CloseIcon, LockIcon, TransferIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {LockIcon} from '@sanity/icons/Lock'
+import {TransferIcon} from '@sanity/icons/Transfer'
 import {
   Badge,
   Box,
@@ -182,6 +184,8 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
   documentId,
   document,
 }) => {
+  // No `getTargetScopeId(useTargetDocumentState())` here: this menu inspects the draft/published pair of the
+  // specific document selected for the diff pane, independent of the selected perspective.
   const {published, draft} = useEditState(getPublishedId(document.id), document.type)
   const selected = useMemo(() => findRelease(document.id, releases), [document.id, releases])
   const {t: tStructure} = useTranslation(structureLocaleNamespace)

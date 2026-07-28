@@ -308,6 +308,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Short weekday name for Wednesday */
   'calendar.weekday-names.short.wednesday': 'Wed',
 
+  /** The name of Content Agent, the product. */
+  'content-agent': 'Content Agent',
+
   /** Label for the close button label in Review Changes pane */
   'changes.action.close-label': 'Close history',
   /** Cancel label for revert button prompt action */
@@ -511,6 +514,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** --- Document inventory --- */
 
+  /** The label shown when dismissing the document group inventory */
+  'document-group-inventory.action.cancel': 'Cancel',
   /** The label used in the feedback dialog asking how easy the document group inventory is to use */
   'document-group-inventory.feedback.sentiment-label':
     'How easy or difficult is the new version inventory to use?',
@@ -527,6 +532,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** --- Document group --- */
 
+  /** The label given to a document group's base variant */
+  'document-group.base-variant': 'All users (Default)',
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
   'document-group.delete.cancel-button.text': 'Cancel',
   /** Used in `document-group.delete.cdr-summary.title` */
@@ -1204,6 +1211,28 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.style.normal': 'Normal',
   /** Title of the "quote" block style */
   'inputs.portable-text.style.quote': 'Quote',
+  /** Label for the table lane that appends a column */
+  'inputs.portable-text.table.add-column': 'Add column at end',
+  /** Label for the table lane that appends a row */
+  'inputs.portable-text.table.add-row': 'Add row at end',
+  /** Aria label for a table column's drag/select handle */
+  'inputs.portable-text.table.column-handle': 'Column handle',
+  /** Label for the trash chip that deletes the selected column */
+  'inputs.portable-text.table.delete-column': 'Delete column',
+  /** Label for the trash chip that deletes the selected row */
+  'inputs.portable-text.table.delete-row': 'Delete row',
+  /** Label for the table menu item that deletes the table */
+  'inputs.portable-text.table.delete-table': 'Delete table',
+  /** Label for the table menu's header row toggle */
+  'inputs.portable-text.table.header-row': 'Header row',
+  /** Aria label for the dots that insert a row or column at a boundary */
+  'inputs.portable-text.table.insert-here': 'Insert here',
+  /** Aria label for the table menu button */
+  'inputs.portable-text.table.menu-aria-label': 'Table options',
+  /** Aria label for a table row's drag/select handle */
+  'inputs.portable-text.table.row-handle': 'Row handle',
+  /** Label for the table menu item that selects the whole table */
+  'inputs.portable-text.table.select-table': 'Select table',
   /** Label for action to clear the current value of the reference field */
   'inputs.reference.action.clear': 'Clear',
   /** Label for action to copy the current item (used within arrays) */

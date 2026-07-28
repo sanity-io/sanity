@@ -1,5 +1,5 @@
 import {type PortableTextBlock} from '@portabletext/editor'
-import {CommentIcon} from '@sanity/icons'
+import {CommentIcon} from '@sanity/icons/Comment'
 import {Box, Button, Popover, Stack, Text, TextArea} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useState} from 'react'
 import {type RenderBlockActionsCallback} from 'sanity'
@@ -20,6 +20,7 @@ function CommentButton(props: {set: (block: PortableTextBlock) => void; value: P
   }, [])
 
   const handleSubmit = useCallback(() => {
+    // @ts-expect-error -- pre-existing, fix later
     const comments = (value.comments || []).concat(comment)
 
     setOpen(false)

@@ -44,8 +44,22 @@ describe('LoggedOutToast', () => {
     )
   })
 
-  test('uses the generic copy for a non-expiry reason', async () => {
-    await renderWithReason('unauthorized')
+  test('uses the session-no-longer-valid copy for a session-not-found reason', async () => {
+    // SIO-401-ANF: the session was revoked, purged, or the stored token is
+    // stale — saying it "expired" would be inaccurate.
+    await renderWithReason('session-not-found')
+    expect(useConditionalToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        enabled: true,
+        description: 'Your session is no longer valid. Please sign in again.',
+      }),
+    )
+  })
+
+  test('uses the generic copy for an unknown future reason', async () => {
+    // The toast keeps a generic fallback so a future reason added without
+    // copy still renders something sensible.
+    await renderWithReason('some-future-reason' as LoggedOutReason)
     expect(useConditionalToast).toHaveBeenCalledWith(
       expect.objectContaining({
         enabled: true,

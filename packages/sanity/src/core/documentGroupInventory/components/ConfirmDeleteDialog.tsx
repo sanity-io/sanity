@@ -1,20 +1,18 @@
-import {
-  ChevronDownIcon,
-  CopyIcon,
-  DocumentsIcon,
-  UnknownIcon,
-  WarningOutlineIcon,
-} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {DocumentsIcon} from '@sanity/icons/Documents'
+import {UnknownIcon} from '@sanity/icons/Unknown'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {getPublishedId} from '@sanity/id-utils'
 import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type ComponentType, type ReactNode, useCallback, useMemo} from 'react'
 import {type ActorRefFromLogic} from 'xstate'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {useSchema} from '../../hooks/useSchema'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {Translate} from '../../i18n/Translate'
 import {SanityDefaultPreview} from '../../preview/components/SanityDefaultPreview'

@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ChevronRightIcon, RestoreIcon} from '@sanity/icons'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {RestoreIcon} from '@sanity/icons/Restore'
 import {
   Box,
   // oxlint-disable-next-line no-restricted-imports
@@ -10,7 +11,7 @@ import {
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {CopyReleaseActions} from './CopyReleaseActions'

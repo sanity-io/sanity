@@ -1,14 +1,14 @@
 import {type SanityClient} from '@sanity/client'
 import {firstValueFrom, from, of, Subject} from 'rxjs'
 import {take, toArray} from 'rxjs/operators'
-import {describe, expect, it} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {bufferByByteSize, createObserveVersionDocumentIds} from '../observeVersionDocumentIds'
 import {type InvalidationChannelEvent} from '../types'
 
-function wait(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
+// The debounce windows used by `debounceCollect` inside `createObserveVersionDocumentIds`.
+const FAST_DEBOUNCE_MS = 100
+const SLOW_DEBOUNCE_MS = 1000
 
 function parsePublishedIds(query: string): string[] {
   const matches = query.match(/sanity::versionOf\("([^"]+)"\)/g) ?? []
@@ -56,6 +56,14 @@ describe('bufferByByteSize', () => {
 })
 
 describe('observeVersionDocumentIds', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('batches discovery for multiple published ids into a single query', async () => {
     const {client, fetchCalls} = createMockClient((query) =>
       parsePublishedIds(query).map((id) => [`drafts.${id}`, `versions.r1.${id}`]),
@@ -74,7 +82,7 @@ describe('observeVersionDocumentIds', () => {
     )
 
     invalidationChannel.next({type: 'connected'})
-    await wait(150)
+    await vi.advanceTimersByTimeAsync(FAST_DEBOUNCE_MS)
     subscriptions.forEach((sub) => sub.unsubscribe())
 
     // All three published ids resolved in a single combined query
@@ -110,7 +118,7 @@ describe('observeVersionDocumentIds', () => {
     )
 
     invalidationChannel.next({type: 'connected'})
-    await wait(200)
+    await vi.advanceTimersByTimeAsync(FAST_DEBOUNCE_MS)
     subscriptions.forEach((sub) => sub.unsubscribe())
 
     expect(fetchCalls.length).toBeGreaterThan(1)
@@ -133,7 +141,7 @@ describe('observeVersionDocumentIds', () => {
     const subscription = observe('article-1').subscribe((ids) => emissions.push(ids))
 
     invalidationChannel.next({type: 'connected'})
-    await wait(150)
+    await vi.advanceTimersByTimeAsync(FAST_DEBOUNCE_MS)
 
     // A new version appears for the same published id
     versionsByPublishedId['article-1'] = ['drafts.article-1', 'versions.rNew.article-1']
@@ -142,7 +150,7 @@ describe('observeVersionDocumentIds', () => {
       documentId: 'versions.rNew.article-1',
       visibility: 'query',
     })
-    await wait(150)
+    await vi.advanceTimersByTimeAsync(FAST_DEBOUNCE_MS)
 
     subscription.unsubscribe()
 
@@ -164,7 +172,7 @@ describe('observeVersionDocumentIds', () => {
     const subscription = observe('article-1').subscribe((ids) => emissions.push(ids))
 
     invalidationChannel.next({type: 'connected'})
-    await wait(150)
+    await vi.advanceTimersByTimeAsync(FAST_DEBOUNCE_MS)
 
     // Mutation for a version of a different published id
     invalidationChannel.next({
@@ -172,7 +180,9 @@ describe('observeVersionDocumentIds', () => {
       documentId: 'versions.rNew.article-2',
       visibility: 'query',
     })
-    await wait(150)
+
+    // Advance past both the fast and slow debounce windows to prove no refetch was scheduled
+    await vi.advanceTimersByTimeAsync(SLOW_DEBOUNCE_MS)
 
     subscription.unsubscribe()
 

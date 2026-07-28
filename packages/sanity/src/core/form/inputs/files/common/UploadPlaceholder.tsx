@@ -1,13 +1,13 @@
-import {UploadIcon} from '@sanity/icons'
+import {UploadIcon} from '@sanity/icons/Upload'
 import {type AssetSource, type SchemaType} from '@sanity/types'
 import {Flex, useElementSize} from '@sanity/ui'
 import get from 'lodash-es/get.js'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 
-import {useSource} from '../../../../../core/studio'
-import {Button} from '../../../../../ui-components'
-import {useClient} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useClient} from '../../../../hooks/useClient'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useSource} from '../../../../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {
   createDatasetFileAssetSource,

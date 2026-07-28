@@ -7,6 +7,7 @@ import type {
   AddonDatasetContext,
   AnnotationEntry,
   AppIdCacheContext,
+  ArrayItemRootElementContext,
   ArrayValidationContext,
   AssetLimitUpsellContext,
   AssetLimitUpsellContextValue,
@@ -43,6 +44,7 @@ import type {
   DocumentLimitUpsellContextValue,
   DocumentPaneContext,
   DocumentPaneInfoContext,
+  EditDialogOuterBoundaryContext,
   EnhancedObjectDialogContext,
   EventsContext,
   FeedbackContext,
@@ -154,6 +156,9 @@ describe('sanity/_singletons', () => {
   test('AppIdCacheContext', () => {
     expectTypeOf<typeof AppIdCacheContext>().not.toBeNever()
   })
+  test('ArrayItemRootElementContext', () => {
+    expectTypeOf<typeof ArrayItemRootElementContext>().not.toBeNever()
+  })
   test('ArrayValidationContext', () => {
     expectTypeOf<typeof ArrayValidationContext>().not.toBeNever()
   })
@@ -261,6 +266,9 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentPaneInfoContext', () => {
     expectTypeOf<typeof DocumentPaneInfoContext>().not.toBeNever()
+  })
+  test('EditDialogOuterBoundaryContext', () => {
+    expectTypeOf<typeof EditDialogOuterBoundaryContext>().not.toBeNever()
   })
   test('EnhancedObjectDialogContext', () => {
     expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()

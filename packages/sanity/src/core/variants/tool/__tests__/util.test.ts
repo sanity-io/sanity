@@ -8,13 +8,27 @@ import {
   getVariantConditionsText,
   getVariantDescription,
   getVariantId,
+  getVariantIdFromDocument,
   getVariantTitle,
+  isPublishedBundleId,
+  isReleaseBundle,
 } from '../util'
 
 describe('variants tool utilities', () => {
   it('derives a display id from a variant document id', () => {
     expect(getVariantId(`${VARIANT_DOCUMENTS_PATH}.audience-a`)).toBe('audience-a')
     expect(getVariantId('audience-a')).toBe('audience-a')
+  })
+
+  it('derives the sticky variant id from a document _system variant ref', () => {
+    expect(
+      getVariantIdFromDocument({
+        _system: {
+          variant: {_ref: `${VARIANT_DOCUMENTS_PATH}.alpha-audience`, _weak: true},
+        },
+      }),
+    ).toBe('alpha-audience')
+    expect(getVariantIdFromDocument({})).toBeUndefined()
   })
 
   it('uses metadata title before falling back to the id suffix', () => {
@@ -87,5 +101,19 @@ describe('variants tool utilities', () => {
     expect(filterVariantsForSearch([developerVariant, localeVariant], 'nb-no')).toEqual([
       localeVariant,
     ])
+  })
+
+  it('treats undefined and published bundle ids as published', () => {
+    expect(isPublishedBundleId(undefined)).toBe(true)
+    expect(isPublishedBundleId('published')).toBe(true)
+    expect(isPublishedBundleId('drafts')).toBe(false)
+    expect(isPublishedBundleId('rASAP')).toBe(false)
+  })
+
+  it('identifies release bundle ids', () => {
+    expect(isReleaseBundle(undefined)).toBe(false)
+    expect(isReleaseBundle('published')).toBe(false)
+    expect(isReleaseBundle('drafts')).toBe(false)
+    expect(isReleaseBundle('rASAP')).toBe(true)
   })
 })

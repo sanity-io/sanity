@@ -5,8 +5,8 @@ import {
 } from '@sanity/types'
 import {of} from 'rxjs'
 
-import {type ObjectInputProps} from '../../src/core'
-import {type CrossDatasetReferenceInputProps} from '../../src/core/form/inputs/CrossDatasetReferenceInput'
+import {type CrossDatasetReferenceInputProps} from '../../src/core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferenceInput'
+import {type ObjectInputProps} from '../../src/core/form/types/inputProps'
 import {type TestRenderInputContext} from './renderInput'
 import {renderObjectInput} from './renderObjectInput'
 import {type TestRenderProps} from './types'
@@ -49,6 +49,7 @@ export async function renderCrossDatasetReferenceInput(options: {
   const result = await renderObjectInput({
     fieldDefinition: fieldDefinition as FieldDefinition<'object'>,
     props,
+    // @ts-expect-error -- pre-existing, fix later
     render: (baseProps, context) => initialRender(transformProps(baseProps, context), context),
   })
 

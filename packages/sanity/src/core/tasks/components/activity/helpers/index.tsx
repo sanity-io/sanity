@@ -1,19 +1,19 @@
-import {CalendarIcon, CircleIcon, EditIcon, LinkIcon, UserIcon} from '@sanity/icons'
+import {CalendarIcon} from '@sanity/icons/Calendar'
+import {CircleIcon} from '@sanity/icons/Circle'
+import {EditIcon} from '@sanity/icons/Edit'
+import {LinkIcon} from '@sanity/icons/Link'
+import {UserIcon} from '@sanity/icons/User'
 import {TextSkeleton} from '@sanity/ui'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {
-  type RelativeTimeOptions,
-  useDateTimeFormat,
-  type UseDateTimeFormatOptions,
-  useRelativeTime,
-  useSchema,
-} from '../../../../hooks'
+import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../../hooks/useDateTimeFormat'
+import {type RelativeTimeOptions, useRelativeTime} from '../../../../hooks/useRelativeTime'
+import {useSchema} from '../../../../hooks/useSchema'
 import {usePerspective} from '../../../../perspective/usePerspective'
-import {useUser} from '../../../../store'
-import {TASK_STATUS} from '../../../constants'
-import {useDocumentPreviewValues} from '../../../hooks'
+import {useUser} from '../../../../store/user/hooks'
+import {TASK_STATUS} from '../../../constants/TaskStatus'
+import {useDocumentPreviewValues} from '../../../hooks/useDocumentPreviewValues'
 import {type TaskTarget} from '../../../types'
 import {type FieldChange} from './parseTransactions'
 

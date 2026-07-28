@@ -3,15 +3,18 @@ import {getVersionNameFromId, type VersionId} from '@sanity/id-utils'
 import {Box, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {Dialog} from '../../../../ui-components'
-import {LoadingBlock} from '../../../components'
-import {useDocumentOperation, useSchema} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
+import {useSchema} from '../../../hooks/useSchema'
+import {getPairTarget, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {type TargetPerspective} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {Preview} from '../../../preview'
+import {Preview} from '../../../preview/components/Preview'
 import {getPublishedId, getVersionFromId, isDraftId, isVersionId} from '../../../util/draftUtils'
-import {useVersionOperations} from '../../hooks'
+import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
@@ -28,7 +31,17 @@ export function DiscardVersionDialog(props: {
   const {onClose, documentId, documentType, fromPerspective, isGoingToUnpublish} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: coreT} = useTranslation()
-  const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
+  const targetDocumentState = useTargetDocumentState(getPublishedId(documentId))
+  // The scope of the document targeted by the selected perspective, so that discarding a draft
+  // targets the variant-scoped version when a variant is selected (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, confirming is
+  // disabled below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const {discardChanges} = useDocumentOperation(
+    getPublishedId(documentId),
+    documentType,
+    getPairTarget(targetDocumentState),
+  )
   const {selectedPerspective} = usePerspective()
   const {discardVersion} = useVersionOperations()
   const schema = useSchema()
@@ -95,7 +108,7 @@ export function DiscardVersionDialog(props: {
         confirmButton: {
           text: t(`discard-version-dialog.title-${discardType}`),
           onClick: handleDiscardVersion,
-          disabled: isDiscarding,
+          disabled: isDiscarding || !isTargetReady,
         },
       }}
     >

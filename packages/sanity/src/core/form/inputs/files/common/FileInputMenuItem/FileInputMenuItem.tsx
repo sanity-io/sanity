@@ -1,6 +1,6 @@
 import {type ForwardedRef, forwardRef, type HTMLProps, useCallback} from 'react'
 
-import {MenuItem, type MenuItemProps} from '../../../../../../ui-components'
+import {MenuItem, type MenuItemProps} from '../../../../../../ui-components/menuItem/MenuItem'
 import {openFilePicker} from '../openFilePicker'
 
 export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> {

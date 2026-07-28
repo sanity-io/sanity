@@ -1,5 +1,6 @@
 import {type ClientPerspective, type SyncTag} from '@sanity/client'
-import {CopyIcon, ShareIcon} from '@sanity/icons'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {ShareIcon} from '@sanity/icons/Share'
 import {SanityMonogram} from '@sanity/logos'
 import {fetchSharedAccessQuery} from '@sanity/preview-url-secret/constants'
 import {
@@ -24,7 +25,10 @@ import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button, MenuButton, MenuItem, Tooltip} from '../../ui-components'
+import {Button} from '../../ui-components/button/Button'
+import {MenuButton} from '../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../ui-components/menuItem/MenuItem'
+import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {API_VERSION} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
@@ -38,6 +42,7 @@ export interface SharePreviewMenuProps {
   previewLocationRoute: string
   initialUrl: PreviewProps['initialUrl']
   perspective: ClientPerspective
+  variant: string | undefined
 }
 
 const QrCodeLogoSize = 24
@@ -64,6 +69,7 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
     initialUrl,
     previewLocationRoute,
     perspective,
+    variant,
   } = props
   const {t} = useTranslation(presentationLocaleNamespace)
   const {push: pushToast} = useToast()
@@ -82,9 +88,10 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
             secret,
             previewLocationRoute,
             encodeStudioPerspective(perspective),
+            variant,
           )
         : null,
-    [initialUrl, perspective, previewLocationRoute, secret],
+    [initialUrl, perspective, previewLocationRoute, secret, variant],
   )
 
   const [error, setError] = useState<unknown>(null)

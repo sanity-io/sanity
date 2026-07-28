@@ -16,6 +16,7 @@ import {presentationLocaleNamespace} from './i18n'
 import {previewUrlMachine, type PreviewUrlRef} from './machines/preview-url'
 import {type PreviewUrlAllowOption, type PreviewUrlOption} from './types'
 import {usePresentationPerspective} from './usePresentationPerspective'
+import {usePresentationVariant} from './usePresentationVariant'
 
 export function usePreviewUrlActorRef(
   previewUrlOption: PreviewUrlOption | undefined,
@@ -36,6 +37,7 @@ export function usePreviewUrlActorRef(
   // TODO: Do we need to pass the scheduled draft perspective here?
   // Scheduled draft are a "local" perspective which applies only when the user is in the document pane and has selected the scheduled draft.
   const perspective = usePresentationPerspective({scheduledDraft: undefined})
+  const variant = usePresentationVariant()
 
   const actorRef = useActorRef(
     previewUrlMachine.provide({
@@ -61,6 +63,7 @@ export function usePreviewUrlActorRef(
           studioBasePath,
           previewUrlOption,
           perspective,
+          variant,
         }),
         'resolve preview mode': defineResolvePreviewModeActor({
           client,
@@ -71,6 +74,7 @@ export function usePreviewUrlActorRef(
           studioBasePath,
           previewUrlOption,
           perspective,
+          variant,
         }),
         'check permission': fromObservable(({input}) =>
           grantsStore.checkDocumentPermission(input.checkPermissionName, input.document),

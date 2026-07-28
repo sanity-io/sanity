@@ -1,4 +1,4 @@
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {
   Box,
   // oxlint-disable-next-line no-restricted-imports
@@ -12,11 +12,12 @@ import {
 import {useCallback, useState} from 'react'
 import {take} from 'rxjs/operators'
 
-import {MenuButton, type MenuButtonProps, Tooltip} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {probeWorkspaceAuth} from '../../../../store/authStore/probeWorkspaceAuth'
-import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
-import {useVisibleWorkspaces} from '../../../workspaces'
+import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
+import {useVisibleWorkspaces} from '../../../workspaces/useVisibleWorkspaces'
 import {ManageMenu} from './ManageMenu'
 import {WorkspaceMenuItem} from './WorkspaceMenuItem'
 

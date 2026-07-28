@@ -150,6 +150,26 @@ describe('Portable Text Input', () => {
       },
     )
 
+    it('Can edit a root-level annotation in fullscreen', {timeout: 30_000}, async () => {
+      const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+      void render(<AnnotationsStory />)
+      const $pte = await getFocusedPortableTextEditor('field-body')
+
+      await insertPortableText('Fullscreen link', $pte)
+      await userEvent.keyboard('{Shift>}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{/Shift}')
+      await page.getByRole('button', {name: 'Link'}).click()
+
+      const $linkInput = page.getByTestId('popover-edit-dialog').getByLabelText('Link')
+      await expect.element($linkInput).toBeVisible()
+      await $linkInput.fill('https://www.sanity.io')
+      await page.getByLabelText('Expand editor').click()
+
+      await expect.element(page.getByTestId('pt-editor')).toHaveAttribute('data-fullscreen', 'true')
+      await expect.element($linkInput).toBeVisible()
+      await $linkInput.element().focus()
+      await expect.element($linkInput).toHaveFocus()
+    })
+
     // Firefox has timing issues with PTE selection events (matches the original
     // Playwright `test.skip(browserName === 'firefox')`).
     it.skipIf(server.browser === 'firefox')(

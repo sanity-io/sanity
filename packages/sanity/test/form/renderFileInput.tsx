@@ -6,8 +6,8 @@ import {
 } from '@sanity/types'
 import {EMPTY} from 'rxjs'
 
-import {type ObjectInputProps} from '../../src/core'
-import {type BaseFileInputProps} from '../../src/core/form/inputs/files/FileInput'
+import {type BaseFileInputProps} from '../../src/core/form/inputs/files/FileInput/FileInput'
+import {type ObjectInputProps} from '../../src/core/form/types/inputProps'
 import {type TestRenderInputContext} from './renderInput'
 import {renderObjectInput} from './renderObjectInput'
 import {type TestRenderProps} from './types'
@@ -58,11 +58,11 @@ export async function renderFileInput(options: {
       ...restProps,
       assetSources,
       client,
+      // @ts-expect-error -- pre-existing, fix later
       t: (key: string, values?: Record<string, string>) => key,
       directUploads: true,
       observeAsset,
       resolveUploader,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       schemaType: schemaType as FileSchemaType,
       value: value as Record<string, any>,
     }

@@ -1,157 +1,77 @@
-import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-interface RootProps {
-  $changed?: boolean
-  $disabled?: boolean
-  $hasFocus?: boolean
-  $isReviewChangeOpen: boolean
-  $withHoverEffect?: boolean
+import {
+  changeBar,
+  changeBarButton,
+  changeBarButtonInteractive,
+  changeBarButtonWithHoverEffect,
+  changeBarMarker,
+  changeBarWrapper,
+  changeBarWrapperDisabled,
+  changeBarWrapperFocused,
+  changeBarWrapperNotChanged,
+  changeBarWrapperReviewOpen,
+  fieldWrapper,
+} from './ElementWithChangeBar.css'
+
+export function ChangeBarWrapper(
+  props: ComponentProps<'div'> & {
+    changed?: boolean
+    disabled?: boolean
+    hasFocus?: boolean
+    isReviewChangeOpen: boolean
+  },
+) {
+  const {changed, className, disabled, hasFocus, isReviewChangeOpen, ...restProps} = props
+
+  return (
+    <div
+      {...restProps}
+      className={clsx(
+        changeBarWrapper,
+        disabled && changeBarWrapperDisabled,
+        hasFocus && changeBarWrapperFocused,
+        !changed && changeBarWrapperNotChanged,
+        isReviewChangeOpen && changeBarWrapperReviewOpen,
+        className,
+      )}
+    />
+  )
 }
 
-const animationSpeed = 250
+export function FieldWrapper(props: ComponentProps<'div'>) {
+  const {className, ...restProps} = props
 
-export const ChangeBarWrapper = styled.div<RootProps>(
-  ({$changed, $disabled, $hasFocus, $isReviewChangeOpen}) => {
-    if ($disabled)
-      return css`
-        ${ChangeBarMarker}:after {
-          display: none;
-        }
-      `
+  return <div {...restProps} className={clsx(fieldWrapper, className)} />
+}
 
-    return css`
-      --change-bar-offset: 4px;
+export function ChangeBar(props: ComponentProps<'div'> & {zIndex: number}) {
+  const {className, style, zIndex, ...restProps} = props
 
-      display: flex;
-      position: relative;
+  return <div {...restProps} className={clsx(changeBar, className)} style={{...style, zIndex}} />
+}
 
-      ${ChangeBarMarker}:after {
-        opacity: 0.5;
-      }
+export function ChangeBarMarker(props: ComponentProps<'div'>) {
+  const {className, ...restProps} = props
 
-      @media (hover: hover) {
-        &:hover {
-          z-index: 10;
-          ${ChangeBarMarker}:after {
-            opacity: 1;
-          }
-        }
-      }
+  return <div {...restProps} className={clsx(changeBarMarker, className)} />
+}
 
-      /* hide when field is not changed */
-      ${$hasFocus &&
-      css`
-        ${ChangeBarMarker}:after {
-          opacity: 1;
-        }
-      `}
+export function ChangeBarButton(
+  props: ComponentProps<'button'> & {isInteractive?: boolean; withHoverEffect?: boolean},
+) {
+  const {className, isInteractive, withHoverEffect, ...restProps} = props
 
-      /* hide when field is not changed */
-      ${!$changed &&
-      css`
-        ${ChangeBarMarker}:after {
-          opacity: 0;
-          pointer-events: none;
-        }
-      `}
-
-      /* hide hover effect when review changes is open */
-      ${$isReviewChangeOpen &&
-      css`
-        ${ChangeBarButton} {
-          opacity: 0;
-        }
-      `}
-    `
-  },
-)
-
-export const FieldWrapper = styled.div`
-  flex-grow: 1;
-  min-width: 0;
-`
-
-export const ChangeBar = styled.div<{$zIndex: number}>`
-  position: relative;
-  opacity: 1;
-  transition: opacity 100ms;
-  z-index: ${({$zIndex}) => $zIndex};
-`
-
-export const ChangeBarMarker = styled.div((props) => {
-  const {media} = getTheme_v2(props.theme)
-
-  return css`
-    position: absolute;
-    top: -1px;
-    left: var(--change-bar-offset);
-    width: 1px;
-    bottom: -1px;
-    background-color: var(--card-bg-color);
-
-    @media (min-width: ${media[0]}px) {
-      display: unset;
-    }
-
-    &:after {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 1px;
-      left: 0;
-      width: 1px;
-      bottom: 1px;
-      background-color: var(--card-badge-caution-dot-color);
-      border-radius: 0.5px;
-    }
-  `
-})
-
-export const ChangeBarButton = styled.button<{
-  $withHoverEffect?: boolean
-  $isInteractive?: boolean
-}>((props) => {
-  const {$withHoverEffect, $isInteractive} = props
-
-  return css`
-    appearance: none;
-    border: 0;
-    outline: 0;
-    display: block;
-    padding: 0;
-    background: transparent;
-    opacity: 0;
-    position: absolute;
-    height: 100%;
-
-    ${$isInteractive &&
-    css`
-      cursor: pointer;
-      pointer-events: all;
-    `}
-
-    left: calc(-0.25rem + var(--change-bar-offset));
-    width: calc(1rem - 1px);
-    transition: opacity ${animationSpeed}ms;
-
-    &:focus {
-      border: 0;
-      outline: 0;
-    }
-
-    &:focus {
-      border: 0;
-      outline: 0;
-    }
-
-    ${$withHoverEffect &&
-    css`
-      @media (hover: hover) {
-        &:hover {
-          opacity: 0.2;
-        }
-      }
-    `}
-  `
-})
+  return (
+    <button
+      {...restProps}
+      className={clsx(
+        changeBarButton,
+        withHoverEffect && changeBarButtonWithHoverEffect,
+        isInteractive && changeBarButtonInteractive,
+        className,
+      )}
+    />
+  )
+}

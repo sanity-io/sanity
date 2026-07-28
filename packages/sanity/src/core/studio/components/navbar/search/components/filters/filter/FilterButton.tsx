@@ -1,4 +1,4 @@
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
@@ -9,8 +9,8 @@ import {
 import {type KeyboardEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Popover} from '../../../../../../../../ui-components'
-import {useTranslation} from '../../../../../../../i18n'
+import {Popover} from '../../../../../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'

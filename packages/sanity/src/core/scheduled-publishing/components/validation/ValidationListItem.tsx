@@ -1,4 +1,6 @@
-import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type Path, type ValidationMarker} from '@sanity/types'
 // oxlint-disable-next-line no-restricted-imports
 import {Box, type ButtonTone, Flex, MenuItem, Stack, Text} from '@sanity/ui'

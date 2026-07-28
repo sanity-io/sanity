@@ -1,10 +1,12 @@
-import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
+import {ResetIcon} from '@sanity/icons/Reset'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type CrossDatasetReferenceValue} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {Button} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 
 type Props = {
   value?: CrossDatasetReferenceValue

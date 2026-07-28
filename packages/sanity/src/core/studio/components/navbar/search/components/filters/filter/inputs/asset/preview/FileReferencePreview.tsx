@@ -1,4 +1,4 @@
-import {BinaryDocumentIcon} from '@sanity/icons'
+import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {type FileAsset, type ReferenceValue} from '@sanity/types'
 import {Card, Flex, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {useCallback} from 'react'
@@ -6,7 +6,7 @@ import {useCallback} from 'react'
 import {formatBytes} from '../../../../../../../../../../form/inputs/common/helper'
 import {observeFileAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'
 import {WithReferencedAsset} from '../../../../../../../../../../form/utils/WithReferencedAsset'
-import {useDocumentPreviewStore} from '../../../../../../../../../../store'
+import {useDocumentPreviewStore} from '../../../../../../../../../../store/datastores'
 
 interface FileReferencePreviewProps {
   reference: ReferenceValue

@@ -1,4 +1,6 @@
-import {AddIcon, ChevronRightIcon, CloseIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {CloseIcon} from '@sanity/icons/Close'
 import {
   Box,
   // oxlint-disable-next-line no-restricted-imports
@@ -8,9 +10,10 @@ import {
 } from '@sanity/ui'
 import {useCallback} from 'react'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {useTasksEnabled, useTasksNavigation} from '../../context'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
 import {TasksActiveTabNavigation} from './TasksActiveTabNavigation'

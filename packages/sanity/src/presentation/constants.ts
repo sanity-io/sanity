@@ -1,4 +1,4 @@
-import {ComposeIcon} from '@sanity/icons'
+import {ComposeIcon} from '@sanity/icons/Compose'
 import {apiVersion} from '@sanity/preview-url-secret/constants'
 
 export const DEFAULT_TOOL_ICON = ComposeIcon

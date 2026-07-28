@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {LockIcon} from '@sanity/icons'
+import {LockIcon} from '@sanity/icons/Lock'
 import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useFormatRelativeLocalePublishDate} from '../../../hooks/useFormatRelativeLocalePublishDate'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {ReleaseAvatar} from '../../ReleaseAvatar'

@@ -15,6 +15,14 @@ const workerExecArgv = ['--no-experimental-webstorage']
 export default defineConfig({
   test: {
     execArgv: workerExecArgv,
+    experimental: {
+      // Print the slowest imports after test runs, to keep the cost of heavy
+      // import graphs (e.g. barrel files) visible in CI and local runs.
+      importDurations: {
+        limit: 10,
+        print: true,
+      },
+    },
     forceRerunTriggers: [
       '**/package.json/**',
       '**/vitest.config.*/**',
@@ -38,6 +46,11 @@ export default defineConfig({
       // pool) test run try to execute *.browser.test.* files, which fails with
       // "vitest/browser can be imported only inside the Browser Mode".
       'perf/tests',
+      // The mock-contract tests are the drift detector for the bench mock —
+      // they must run on every PR, not only label-gated bench runs
+      'perf/bench',
+      // The dashboard's drift/ack math — pure modules, plain node environment
+      'dev/metrics-studio',
       'packages/@repo/debug-proxy',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',

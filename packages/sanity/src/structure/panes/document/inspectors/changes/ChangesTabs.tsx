@@ -1,4 +1,5 @@
-import {CloseIcon, InfoOutlineIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Box, Card, Flex, TabList, TabPanel, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {
@@ -13,7 +14,9 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button, Tab, Tooltip} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Tab} from '../../../../../ui-components/tab/Tab'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'

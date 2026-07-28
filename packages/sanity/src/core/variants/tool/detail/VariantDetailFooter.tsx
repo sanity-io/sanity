@@ -1,13 +1,24 @@
-import {DiamondIcon} from '@sanity/icons'
+import {DiamondIcon} from '@sanity/icons/Diamond'
 import {Card, Flex, Text} from '@sanity/ui'
 
-import {RelativeTime} from '../../../components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {RelativeTime} from '../../../components/RelativeTime'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
 import {VariantDetailMenuButton} from './VariantDetailMenuButton'
 
-export function VariantDetailFooter({variant}: {variant: SystemVariant}): React.JSX.Element {
+export function VariantDetailFooter({
+  openEditDialog,
+  documentCount,
+  documentsLoading = false,
+  variant,
+}: {
+  openEditDialog: () => void
+  documentCount: number
+  documentsLoading?: boolean
+  variant: SystemVariant
+}): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
 
   return (
@@ -30,7 +41,12 @@ export function VariantDetailFooter({variant}: {variant: SystemVariant}): React.
         </Flex>
 
         <Flex flex="none" gap={1} data-testid="variant-detail-footer-actions">
-          <VariantDetailMenuButton variant={variant} />
+          <Button onClick={openEditDialog} text={t('detail.action.edit-variant')} />
+          <VariantDetailMenuButton
+            documentCount={documentCount}
+            documentsLoading={documentsLoading}
+            variant={variant}
+          />
         </Flex>
       </Flex>
     </Card>

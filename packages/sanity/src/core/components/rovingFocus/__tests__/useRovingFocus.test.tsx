@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import {useState} from 'react'
 import {describe, expect, it} from 'vitest'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {type RovingFocusProps} from '../types'
 import {useRovingFocus} from '../useRovingFocus'
 

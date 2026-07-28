@@ -8,10 +8,11 @@ import {getSelectionEndBlock, getSelectionStartBlock} from '@portabletext/editor
 import {isEqual} from '@sanity/util/paths'
 import {memo, useCallback, useMemo} from 'react'
 
-import {type PopoverProps} from '../../../../../ui-components'
-import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {useTranslation} from '../../../../i18n'
+import {type PopoverProps} from '../../../../../ui-components/popover/Popover'
+import {CollapseMenu} from '../../../../components/collapseMenu/CollapseMenu'
+import {CollapseMenuButton} from '../../../../components/collapseMenu/CollapseMenuButton'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {getActionIcon} from './helpers'
 import {useActiveActionKeys, useFocusBlock} from './hooks'
@@ -95,7 +96,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
               action: action.title || action.key,
             })}
             data-testid={`action-button-${action.key}`}
-            disabled={disabled || annotationDisabled}
+            disabled={disabled || action.disabled || annotationDisabled}
             mode="bleed"
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}

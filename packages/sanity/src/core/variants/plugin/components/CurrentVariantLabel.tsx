@@ -4,7 +4,7 @@ import {type ForwardedRef, forwardRef, type HTMLProps, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {AnimatedTextWidth} from '../../../perspective/navbar/AnimatedTextWidth'
 import {oversizedButtonStyle} from '../../../perspective/styles'
 import {variantsLocaleNamespace} from '../../i18n'

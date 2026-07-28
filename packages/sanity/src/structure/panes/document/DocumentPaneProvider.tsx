@@ -26,7 +26,6 @@ import {
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
-  isDocumentInSelectedVariant,
   isGoingToUnpublish,
   isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
@@ -41,22 +40,25 @@ import {
   useDocumentDivergences,
   useDocumentForm,
   useDocumentIdStack,
-  useDocumentVersions,
   usePerspective,
   useSchema,
   useSource,
+  useTargetDocumentState,
   useUnique,
   useWorkspace,
 } from 'sanity'
 import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
-import {usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentTitle} from '../../components/structureTool/StructureTitle'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDeletedDocumentLastRevision} from '../../hooks/useDeletedDocumentLastRevision'
 import {type PaneMenuItem} from '../../types'
-import {InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
+import {
+  InlineChangesSwitchedOff,
+  InlineChangesSwitchedOn,
+} from './__telemetry__/documentPanes.telemetry'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {
   type DocumentPaneContextValue,
@@ -212,17 +214,16 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
-  const documentVersions = useDocumentVersions({documentId})
+  // Resolution state of the document targeted by the selected perspective and variant — the
+  // single source for in-pane consumers (read-only derivation, banners, footer, actions).
+  const targetDocumentState = useTargetDocumentState(documentId)
 
-  // When a variant is selected but no variant-scoped version exists for the current bundle, the
-  // form must be read-only (the not-in-variant banner offers to create it).
-  const isInSelectedVariant = perspective.selectedVariant
-    ? isDocumentInSelectedVariant({
-        selectedVariant: perspective.selectedVariant,
-        bundle: perspective.bundle,
-        documentVersions: documentVersions.versions,
-      })
-    : true
+  // When a variant is requested, the form is editable only once the variant target has resolved:
+  // `variant-missing` shows the not-in-variant banner offering to create it,
+  // `variant-definition-document-not-found` is an invalid selection, and `resolving` covers
+  // target transitions while the pane is mounted (initial mounts are gated in DocumentPane).
+  const isVariantTargetReadOnly =
+    Boolean(perspective.selectedVariantName) && targetDocumentState.status !== 'ready'
 
   const getIsReadOnly = useCallback(
     (editState: EditStateFor): boolean => {
@@ -235,16 +236,11 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       )
       const isPaused = isPausedCardinalityOneRelease(currentRelease)
 
-      // Temporary disable read-only for variant documents
-      // Variant documents cannot be edited yet in the studio. Coming soon.
-      if (perspective.selectedVariant) {
-        return true
-      }
       return (
         seeingHistoryDocument ||
         isDeleting ||
         isDeleted ||
-        !isInSelectedVariant ||
+        isVariantTargetReadOnly ||
         (!isPaused &&
           !isPerspectiveWriteable({
             selectedPerspective: perspective.selectedPerspective,
@@ -259,11 +255,10 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       isDraftModelEnabled,
       params.rev,
       perspective.selectedPerspective,
-      isInSelectedVariant,
+      isVariantTargetReadOnly,
       schemaType,
       releases,
       selectedReleaseId,
-      perspective.selectedVariant,
     ],
   )
 
@@ -583,6 +578,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         permissions,
         setTimelineRange,
         setIsDeleting,
+        targetDocumentState,
         isDeleting,
         isDocumentGroupInventoryActive,
         setIsDocumentGroupInventoryActive,
@@ -650,6 +646,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       isInitialValueLoading,
       permissions,
       setTimelineRange,
+      targetDocumentState,
       isDeleting,
       isDocumentGroupInventoryActive,
       isDeleted,

@@ -1,10 +1,14 @@
-import {CheckmarkIcon, ChevronDownIcon, CloseIcon} from '@sanity/icons'
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {CloseIcon} from '@sanity/icons/Close'
 import {Card, Flex, Menu, Text} from '@sanity/ui'
 import {forwardRef, useCallback} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, MenuButton, MenuItem} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentStatus, type CommentsUIMode} from '../../types'
 

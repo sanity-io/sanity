@@ -1,4 +1,6 @@
-import {CloseIcon, SyncIcon, WarningOutlineIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {SyncIcon} from '@sanity/icons/Sync'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type KeyedSegment, type Reference} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
@@ -15,7 +17,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {usePaneRouter} from '../../../../components'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {type RouterPaneGroup} from '../../../../types'
 import {Banner} from './Banner'

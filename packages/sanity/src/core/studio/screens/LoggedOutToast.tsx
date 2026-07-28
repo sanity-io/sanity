@@ -2,7 +2,7 @@ import {useContext} from 'react'
 import {LoggedOutReasonContext} from 'sanity/_singletons'
 
 import {useConditionalToast} from '../../hooks/useConditionalToast'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 
 /**
  * Shows a toast explaining why the studio logged the user out, when present.

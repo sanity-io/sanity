@@ -64,4 +64,24 @@ describe('getReleaseDocumentIntent', () => {
     expect(params).toMatchObject({scheduledDraft: RELEASE_NAME})
     expect(searchParams).toBeUndefined()
   })
+
+  it('includes the variant sticky param when the document belongs to a variant', () => {
+    const {searchParams} = getReleaseDocumentIntent({...base, variantId: 'alpha-audience'})
+    expect(searchParams).toEqual([
+      ['variant', 'alpha-audience'],
+      ['perspective', RELEASE_NAME],
+    ])
+  })
+
+  it('includes the variant sticky param for a published release document in a variant', () => {
+    const {searchParams} = getReleaseDocumentIntent({
+      ...base,
+      releaseState: 'published',
+      variantId: 'alpha-audience',
+    })
+    expect(searchParams).toEqual([
+      ['variant', 'alpha-audience'],
+      ['perspective', 'published'],
+    ])
+  })
 })

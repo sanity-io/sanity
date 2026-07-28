@@ -2,7 +2,7 @@ import {Card, Flex, TabList} from '@sanity/ui'
 import {type FunctionComponent, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 
-import {Tab} from '../../ui-components'
+import {Tab} from '../../ui-components/tab/Tab'
 import {presentationLocaleNamespace} from '../i18n'
 import {getPresentationPanelHtmlId, type PresentationLayoutTab} from './presentationLayoutTab'
 

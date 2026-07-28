@@ -1,11 +1,11 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useEffect, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {LoadingBlock} from '../../../components'
-import {useTranslation} from '../../../i18n'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
@@ -47,9 +47,12 @@ export function ReleaseDetail() {
 
   useEffect(() => {
     if (isNotFound) {
-      router.navigate({
-        _searchParams: [[RELEASE_NOT_FOUND_SEARCH_PARAM_KEY, 'true']],
-      })
+      router.navigate(
+        {
+          _searchParams: [[RELEASE_NOT_FOUND_SEARCH_PARAM_KEY, 'true']],
+        },
+        {replace: true},
+      )
     }
   }, [isNotFound, router])
 

@@ -1,4 +1,4 @@
-import {AccessDeniedIcon} from '@sanity/icons'
+import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {type CurrentUser} from '@sanity/types'
 import {Box, Inline, Text} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'

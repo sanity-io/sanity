@@ -8,7 +8,7 @@ import {
   type MaybeWidenValidation,
   type StrictDefinition,
 } from './defineTypes'
-import {type IntrinsicTypeName} from './definition'
+import {type IntrinsicTypeName} from './definition/schemaDefinition'
 import {type AutocompleteString} from './types'
 
 /**

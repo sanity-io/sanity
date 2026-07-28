@@ -18,7 +18,7 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
-    "@vanilla-extract/vite-plugin": "catalog:",
+    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "rimraf": "catalog:",
     "vite": "catalog:"
   }

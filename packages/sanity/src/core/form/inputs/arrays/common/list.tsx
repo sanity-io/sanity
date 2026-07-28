@@ -28,8 +28,9 @@ import {
   type ReactNode,
   useCallback,
   useMemo,
+  useRef,
 } from 'react'
-import {SortableItemIdContext} from 'sanity/_singletons'
+import {ArrayItemRootElementContext, SortableItemIdContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
@@ -206,13 +207,33 @@ export const Item = forwardRef(function Item(
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {sortable, disableTransition, ...rest} = props
+
+  // Tracks the item's root element so descendant inputs (e.g. reference inputs)
+  // can treat clicks anywhere within the item as "inside" when handling outside
+  // clicks — including UI rendered by custom item/input components around the
+  // default input.
+  const rootElementRef = useRef<HTMLDivElement | null>(null)
+  const setRootRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      rootElementRef.current = node
+      if (typeof ref === 'function') {
+        ref(node)
+      } else if (ref) {
+        ref.current = node
+      }
+    },
+    [ref],
+  )
+
   return (
     <SortableItemIdContext.Provider value={props.id}>
-      {sortable ? (
-        <SortableListItem ref={ref} disableTransition={disableTransition} {...rest} />
-      ) : (
-        <ListItem ref={ref} {...rest} />
-      )}
+      <ArrayItemRootElementContext.Provider value={rootElementRef}>
+        {sortable ? (
+          <SortableListItem ref={setRootRef} disableTransition={disableTransition} {...rest} />
+        ) : (
+          <ListItem ref={setRootRef} {...rest} />
+        )}
+      </ArrayItemRootElementContext.Provider>
     </SortableItemIdContext.Provider>
   )
 })

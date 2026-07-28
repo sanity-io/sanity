@@ -1,5 +1,5 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
-import {LinkIcon} from '@sanity/icons'
+import {LinkIcon} from '@sanity/icons/Link'
 import {Code, rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import LRU from 'quick-lru'

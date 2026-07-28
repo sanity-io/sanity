@@ -6,7 +6,7 @@ import {
 } from '@sanity/types'
 import {EMPTY} from 'rxjs'
 
-import {type ObjectInputProps} from '../../src/core'
+import {type ObjectInputProps} from '../../src/core/form/types/inputProps'
 import {type VideoSchemaType} from '../../src/media-library/plugin/schemas/types'
 import {type BaseVideoInputProps} from '../../src/media-library/plugin/VideoInput/VideoInput'
 import {type TestRenderInputContext} from './renderInput'
@@ -73,11 +73,11 @@ export async function renderVideoInput(options: {
       ...restProps,
       assetSources,
       client,
+      // @ts-expect-error -- pre-existing, fix later
       t: (key: string, values?: Record<string, string>) => key,
       directUploads: true,
       observeAsset,
       resolveUploader,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       schemaType: schemaType as VideoSchemaType,
       value: value as Record<string, unknown>,
     }

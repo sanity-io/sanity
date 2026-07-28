@@ -1,4 +1,4 @@
-import {DocumentIcon} from '@sanity/icons'
+import {DocumentIcon} from '@sanity/icons/Document'
 import {type SchemaType} from '@sanity/types'
 import {render} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'

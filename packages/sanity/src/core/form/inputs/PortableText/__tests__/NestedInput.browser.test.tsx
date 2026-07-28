@@ -1,3 +1,4 @@
+import {type SanityDocument} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 import {page, userEvent} from 'vitest/browser'
 
@@ -64,6 +65,86 @@ describe('Portable Text Input', () => {
         failed = true
       }
       expect(failed).toBeTruthy()
+    })
+
+    it('opens one editable annotation dialog in an independently nested input', async () => {
+      const document: SanityDocument = {
+        _id: 'nested-input',
+        _type: 'test',
+        _createdAt: '2026-01-01T00:00:00Z',
+        _updatedAt: '2026-01-01T00:00:00Z',
+        _rev: 'nested-input',
+        body: [
+          {
+            _key: 'objectBlock',
+            _type: 'nestedObjectBlock',
+            siteOverrides: [
+              {
+                _key: 'siteOverride',
+                _type: 'siteOverride',
+                content: [
+                  {
+                    _key: 'nestedBlock',
+                    _type: 'block',
+                    children: [
+                      {
+                        _key: 'nestedSpan',
+                        _type: 'span',
+                        marks: ['nestedAnnotation'],
+                        text: 'nested link',
+                      },
+                    ],
+                    markDefs: [
+                      {
+                        _key: 'nestedAnnotation',
+                        _type: 'nestedAnnotation',
+                        value: '',
+                      },
+                    ],
+                    style: 'normal',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      }
+      void render(
+        <NestedInputStory
+          document={document}
+          focusPath={[
+            'body',
+            {_key: 'objectBlock'},
+            'siteOverrides',
+            {_key: 'siteOverride'},
+            'content',
+            {_key: 'nestedBlock'},
+            'markDefs',
+            {_key: 'nestedAnnotation'},
+            'value',
+          ]}
+        />,
+      )
+
+      const annotationDialogs = () =>
+        page
+          .getByTestId('popover-edit-dialog')
+          .elements()
+          .filter((element) => element.textContent?.includes('Edit Nested annotation'))
+      await expect.poll(() => annotationDialogs().length).toBe(1)
+
+      const $annotationInput = page.getByLabelText('Annotation value')
+      await expect.element($annotationInput).toBeVisible()
+      await $annotationInput.click()
+      await expect.element($annotationInput).toHaveFocus()
+
+      await userEvent.keyboard('abc')
+      await expect.element($annotationInput).toHaveValue('abc')
+      await userEvent.keyboard('{ArrowLeft}{Shift>}{ArrowLeft}{/Shift}')
+
+      const annotationInput = $annotationInput.element() as HTMLInputElement
+      expect(annotationInput.selectionStart).toBe(1)
+      expect(annotationInput.selectionEnd).toBe(2)
     })
   })
 })

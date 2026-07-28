@@ -37,8 +37,8 @@ describe('VariantDialog', () => {
       <VariantDialog
         confirmDataTestId="save-variant-button"
         confirmText="Save"
-        errorTitle="Unable to update variant"
-        header="Edit variant"
+        errorTitle="Unable to update variant definition"
+        header="Edit variant definition"
         id="edit-variant-dialog"
         initialValue={props?.initialValue ?? getVariantDefaults()}
         onCancel={onCancel}
@@ -47,7 +47,7 @@ describe('VariantDialog', () => {
       />,
       {wrapper},
     )
-    await screen.findByRole('dialog', {name: 'Edit variant'})
+    await screen.findByRole('dialog', {name: 'Edit variant definition'})
     return result
   }
 
@@ -98,6 +98,28 @@ describe('VariantDialog', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
+  it('shows priority validation when the field is cleared', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog({
+      initialValue: {
+        ...getVariantDefaults(),
+        metadata: {title: 'Alpha audience', description: []},
+        conditions: {audience: 'alpha'},
+        priority: 10,
+      },
+      renderCancelButton: true,
+    })
+
+    await user.clear(screen.getByTestId('variant-form-priority'))
+    await user.click(screen.getByTestId('save-variant-button'))
+
+    expect(screen.getByTestId('variant-form-priority-error')).toHaveTextContent(
+      'Priority must be a number',
+    )
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
   it('shows an error toast and keeps the dialog open when submit fails', async () => {
     const error = new Error('update failed')
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
@@ -119,12 +141,12 @@ describe('VariantDialog', () => {
       expect(toastMock.push).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'error',
-          title: 'Unable to update variant',
+          title: 'Unable to update variant definition',
         }),
       )
     })
     expect(consoleError).toHaveBeenCalledWith(error)
-    expect(screen.getByRole('dialog', {name: 'Edit variant'})).toBeInTheDocument()
+    expect(screen.getByRole('dialog', {name: 'Edit variant definition'})).toBeInTheDocument()
     expect(onCancel).not.toHaveBeenCalled()
 
     consoleError.mockRestore()

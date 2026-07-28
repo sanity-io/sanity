@@ -18,6 +18,7 @@ import {
   type FormDocumentValue,
   FormRow,
   fromMutationPatches,
+  getTargetScopeId,
   type PatchMsg,
   PresenceOverlay,
   useConditionalToast,
@@ -27,7 +28,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {Delay} from '../../../../components'
+import {Delay} from '../../../../components/Delay'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
@@ -68,9 +69,13 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
     hasUpstreamVersion,
     focusPath,
     syncState,
+    targetDocumentState,
   } = useDocumentPane()
-  const {selectedReleaseId, selectedPerspective} = usePerspective()
+  const {selectedPerspective} = usePerspective()
   const documentStore = useDocumentStore()
+  // The scope of the document targeted by the selected perspective (undefined while the target is
+  // resolving or when the draft/published pair applies).
+  const scopeId = getTargetScopeId(targetDocumentState)
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
@@ -99,7 +104,8 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
   // Staged "changes aren't syncing" toast. Three non-synced states:
   //  - pending:    unsynced + disconnected, warning (editing still open)
   //  - stalled:    unsynced + disconnected for longer, editing locked
-  //  - recovering: connection back, flushing the backlog (still locked,
+  //  - recovering: connected but a commit failed and is being retried, e.g.
+  //                flushing the backlog after a reconnect (still locked,
   //                but reassure rather than alarm)
   // One toast id so the states replace each other rather than stack, and
   // it auto-dismisses when the document syncs again.
@@ -136,7 +142,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
 
   useEffect(() => {
     const sub = documentStore.pair
-      .documentEvents(documentId, documentType, selectedReleaseId)
+      .documentEvents(documentId, documentType, scopeId)
       .pipe(
         tap((event) => {
           if (event.type === 'mutation') {
@@ -153,7 +159,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
     return () => {
       sub.unsubscribe()
     }
-  }, [documentId, documentStore, documentType, patchChannel, selectedReleaseId])
+  }, [documentId, documentStore, documentType, patchChannel, scopeId])
 
   const hasRev = Boolean(value?._rev)
   const handleInitialValue = useEffectEvent(() => {

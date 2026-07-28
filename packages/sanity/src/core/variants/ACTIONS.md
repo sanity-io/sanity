@@ -150,3 +150,71 @@ Behavior:
 - Submits a delete for `_.variants.{variantId}`.
 - Does not cascade delete variant documents.
 - Strong references to the variant definition block deletion through the mutation engine, and the action surfaces that integrity error.
+
+# Variant Document Actions
+
+Variant document lifecycle writes (beyond `sanity.action.document.variant.create`, documented with the creation flow) use these actions. They address variant-scoped version documents by `(publishedId, variantId, bundleId)` instead of raw ids, because variant version ids (`versions.<scopeId>.<publishedId>`) carry opaque server-generated scope hashes.
+
+## `sanity.action.document.variant.publish`
+
+Publishes a variant-scoped version into the variant-of-published document.
+
+Required fields:
+
+- `actionType: 'sanity.action.document.variant.publish'`
+- `publishedId`: the group (base published) document id
+- `variantId`: the short variant name for `_.variants.{variantId}`
+- `bundleId`: the SOURCE bundle being published — `'drafts'` or a release name. `'published'` is rejected (target equals source).
+
+Optional fields:
+
+- `ifSourceRevisionId`: optimistic lock on the source variant document's revision.
+- `ifPublishedRevisionId`: optimistic lock on the variant-of-published target's revision.
+
+Behavior:
+
+- Copies the source variant document's content into the variant-of-published document (creating it when absent, overwriting when present — same semantics as base/release publish) and deletes the source.
+- The base published document is never touched.
+
+## `sanity.action.document.variant.unpublish`
+
+Unpublishes a variant document. The behavior depends on which variant version `bundleId`
+addresses (see CLDX-5781 / SAPP-4012).
+
+Required fields:
+
+- `actionType: 'sanity.action.document.variant.unpublish'`
+- `publishedId`: the group (base published) document id
+- `variantId`: the short variant name
+- `bundleId`: the bundle of the variant version being unpublished — omitted/`undefined` for the
+  variant-of-published document, or a release name for a release-scoped variant. `'drafts'` is
+  not a valid target (a drafts-scoped variant has nothing published to unpublish).
+
+Behavior:
+
+- `bundleId` omitted (variant-of-published): hard unpublish — deletes the published variant and
+  recreates its content as the variant draft, mirroring base unpublish.
+- `bundleId` = release name: soft unpublish — marks the release-scoped variant with
+  `_system.delete: true` (the same "going to unpublish" marker release versions use); publishing
+  the release completes the unpublish.
+- The base published and draft documents are never touched either way.
+
+## `sanity.action.document.variant.delete`
+
+Deletes a variant-scoped version document.
+
+Required fields:
+
+- `actionType: 'sanity.action.document.variant.delete'`
+- `publishedId`: the group (base published) document id
+- `variantId`: the short variant name
+
+Optional fields:
+
+- `bundleId`: the bundle whose variant document is deleted — `'drafts'` or a release name. Omitted targets the variant-of-published document.
+- `purge`: also removes history from the translog. Defaults to `false`.
+
+Behavior:
+
+- Deletes only the addressed variant version document; other bundles' variant documents and the base pair are unaffected.
+- The Studio uses this action to implement "discard changes" for drafts- and release-scoped variant versions (discarding a variant version is deleting the variant document in that bundle; the generic `sanity.action.document.discard` addresses drafts by raw id and is kept for base/release paths). Discarding the variant-of-published document is not allowed — removing it is unpublish's job.

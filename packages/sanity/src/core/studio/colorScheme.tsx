@@ -1,4 +1,6 @@
-import {DesktopIcon, MoonIcon, SunIcon} from '@sanity/icons'
+import {DesktopIcon} from '@sanity/icons/Desktop'
+import {MoonIcon} from '@sanity/icons/Moon'
+import {SunIcon} from '@sanity/icons/Sun'
 import {studioTheme, type ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {
   type ComponentType,
@@ -10,7 +12,7 @@ import {
 } from 'react'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 
-import {type TFunction} from '../i18n'
+import {type TFunction} from '../i18n/types'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
 import {getSnapshot, setSnapshot, subscribe} from './colorSchemeStore'
 

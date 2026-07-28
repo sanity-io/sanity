@@ -1,7 +1,7 @@
 import {type ConditionalProperty, type ConditionalPropertyCallbackContext} from '@sanity/types'
 import {useMemo} from 'react'
 
-import {isRecord} from '../../util'
+import {isRecord} from '../../util/isRecord'
 
 function isThenable(value: unknown): value is Promise<unknown> {
   return isRecord(value) && typeof value?.then === 'function'

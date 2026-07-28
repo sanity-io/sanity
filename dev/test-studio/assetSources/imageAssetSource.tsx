@@ -1,4 +1,4 @@
-import {ImagesIcon} from '@sanity/icons'
+import {ImagesIcon} from '@sanity/icons/Images'
 import {type AssetSource, type AssetSourceComponentProps} from '@sanity/types'
 import {Box, Button, Dialog, Text} from '@sanity/ui'
 import {useCallback} from 'react'

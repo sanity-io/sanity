@@ -27,3 +27,23 @@ export function getTargetDocument({
     return inBundle && inVariant
   })
 }
+
+/**
+ * Finds the variant-of-published sibling for a variant: the version stub carrying the same
+ * `_system.variant` reference but no `_system.bundleId` (i.e. the published variant document).
+ *
+ * This is the document that publish-state gating must read for variant targets — the base
+ * `published` document says nothing about whether the *variant* is published. `undefined` means
+ * the variant has never been published.
+ *
+ * @internal
+ */
+export function getVariantPublishedSibling({
+  documentVersions,
+  variant,
+}: {
+  variant: string
+  documentVersions: DocumentPerspectiveState['versions']
+}): VersionInfoDocumentStub | undefined {
+  return getTargetDocument({bundle: 'published', variant, documentVersions})
+}

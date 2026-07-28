@@ -1,4 +1,4 @@
-import {AddIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
 import {Menu} from '@sanity/ui'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {
@@ -14,7 +14,10 @@ import {
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
 
-import {Button, MenuButton, MenuItem, type PopoverProps} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
+import {type PopoverProps} from '../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../i18n'
 import {IntentButton} from '../IntentButton'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'

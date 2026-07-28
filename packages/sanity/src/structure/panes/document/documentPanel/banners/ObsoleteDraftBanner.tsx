@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
 import {type ComponentType, useCallback, useEffect, useState} from 'react'
@@ -12,7 +12,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {ResolvedLiveEdit} from './__telemetry__/DraftLiveEditBanner.telemetry'
@@ -41,6 +41,8 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   const [isDiscarding, setDiscarding] = useState(false)
   const telemetry = useTelemetry()
 
+  // No `getTargetScopeId(useTargetDocumentState())` here: resolving an obsolete draft deliberately operates on
+  // the draft/published pair, so no version scope applies.
   const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '')
 
   const handlePublish = useCallback(() => {

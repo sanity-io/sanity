@@ -4,7 +4,7 @@ import uniq from 'lodash-es/uniq.js'
 import {type Observable, of as observableOf} from 'rxjs'
 import {distinctUntilChanged, switchMap} from 'rxjs/operators'
 
-import {isRecord} from '../util'
+import {isRecord} from '../util/isRecord'
 import {type ApiConfig, type FieldName, type Previewable, type PreviewPath} from './types'
 import {props} from './utils/props'
 
@@ -82,7 +82,6 @@ function observePaths(
             ...createEmpty(nextHeads),
             ...(isReference(value) ? {...value, ...refApiConfig} : value),
             ...snapshot,
-            // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
           } as Previewable,
           paths,
           observeFields,

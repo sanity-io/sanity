@@ -1,9 +1,9 @@
-import {SearchIcon} from '@sanity/icons'
+import {SearchIcon} from '@sanity/icons/Search'
 import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Dialog} from '../../../ui-components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type NormalizedTimeZone} from '../../studio/timezones/types'

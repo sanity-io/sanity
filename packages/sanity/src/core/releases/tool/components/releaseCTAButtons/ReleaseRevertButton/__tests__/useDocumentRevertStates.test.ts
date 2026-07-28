@@ -6,7 +6,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {useClient} from '../../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../../store/translog/getTransactionsLogs'
-import {type DocumentInRelease} from '../../../../detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../../../detail/types'
 import {useDocumentRevertStates} from '../useDocumentRevertStates'
 
 vi.mock('../../../../../../hooks/useClient', () => ({
@@ -36,6 +36,7 @@ describe('useDocumentRevertStates', () => {
     }
   }
 
+  // @ts-expect-error -- pre-existing, fix later
   const mockUseClient = useClient as Mock<typeof useClient>
   const mockGetTransactionsLogs = getTransactionsLogs as Mock<typeof getTransactionsLogs>
 
@@ -47,6 +48,7 @@ describe('useDocumentRevertStates', () => {
 
     mockUseClient.mockReturnValue(mockClient)
 
+    // @ts-expect-error -- pre-existing, fix later
     mockGetTransactionsLogs.mockResolvedValue([
       {id: 'trans0_doc1', documentIDs: ['doc1'], timestamp: new Date().toISOString()},
       {id: 'trans1_doc1', documentIDs: ['doc1'], timestamp: new Date().toISOString()},
@@ -185,6 +187,7 @@ describe('useDocumentRevertStates', () => {
   it('should handle a mix of existing and missing revisions', async () => {
     mockGetTransactionsLogs.mockResolvedValue([
       // Only doc1 has a transaction
+      // @ts-expect-error -- pre-existing, fix later
       {
         id: 'trans0_doc1',
         effects: {},

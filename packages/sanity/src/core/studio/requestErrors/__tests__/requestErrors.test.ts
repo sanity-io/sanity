@@ -7,6 +7,7 @@ import {
   classifyConfigError,
   classifyRequestError,
   getApiErrorCode,
+  isInvalidSessionError,
   parseRetryAfter,
 } from '../classify'
 import {createRequestErrorChannel, passthroughErrorHandler} from '../createRequestErrorChannel'
@@ -99,7 +100,8 @@ describe('classifyRequestError', () => {
   it('leaves caller-domain 4xx unclassified', () => {
     expect(classifyRequestError(clientErrorWith({statusCode: 403}))).toBeNull()
     expect(classifyRequestError(clientErrorWith({statusCode: 404}))).toBeNull()
-    // 401 is handled directly by the channel (→ forced logout), not classified here
+    // 401 is handled directly by the channel (forced logout when tagged
+    // with an invalid-session code, re-thrown otherwise), not classified here
     expect(classifyRequestError(clientErrorWith({statusCode: 401}))).toBeNull()
   })
 
@@ -167,6 +169,41 @@ describe('classifyConfigError', () => {
       ),
     ).toBeNull()
     expect(classifyConfigError(new Error('nope'))).toBeNull()
+  })
+})
+
+describe('isInvalidSessionError', () => {
+  it('matches a 401 carrying the SIO-401-AEX code', () => {
+    const err = clientErrorWith({
+      statusCode: 401,
+      body: {error: 'Unauthorized', errorCode: 'SIO-401-AEX'},
+    })
+    expect(isInvalidSessionError(err)).toBe(true)
+  })
+
+  it('matches a 401 carrying the SIO-401-ANF code (session not found)', () => {
+    // The API tags a token that resolves to no session at all (revoked,
+    // purged, or stale) with SIO-401-ANF and the message "Session not
+    // found" — just as invalid as an expired one.
+    const err = clientErrorWith({
+      statusCode: 401,
+      body: {error: 'Unauthorized', errorCode: 'SIO-401-ANF', message: 'Session not found'},
+    })
+    expect(isInvalidSessionError(err)).toBe(true)
+  })
+
+  it('rejects a 401 without the code (resource-level denial)', () => {
+    expect(isInvalidSessionError(clientErrorWith({statusCode: 401}))).toBe(false)
+    expect(
+      isInvalidSessionError(clientErrorWith({statusCode: 401, body: {error: 'Unauthorized'}})),
+    ).toBe(false)
+  })
+
+  it('rejects non-401s and non-client errors', () => {
+    expect(
+      isInvalidSessionError(clientErrorWith({statusCode: 403, body: {errorCode: 'SIO-401-AEX'}})),
+    ).toBe(false)
+    expect(isInvalidSessionError(new Error('nope'))).toBe(false)
   })
 })
 
@@ -313,12 +350,14 @@ describe('createRequestErrorChannel', () => {
   })
 
   describe('401 handling', () => {
-    it('claims a 401 as unauthorized (forced logout follows), tagged with the projectId', async () => {
-      // A 401 means the session is gone — resource denials are 403s, which
-      // are caller-domain and never reach here.
+    const expiredSessionError = () =>
+      clientErrorWith({statusCode: 401, body: {error: 'Unauthorized', errorCode: 'SIO-401-AEX'}})
+
+    it('claims an expired-session 401 as unauthorized (forced logout follows), tagged with the projectId', async () => {
+      // Every endpoint tags session-expiry 401s with `SIO-401-AEX` — that
+      // positive signal is what drives the forced logout.
       const channel = createRequestErrorChannel()
-      const err = clientErrorWith({statusCode: 401})
-      void channel.attempt(() => Promise.reject(err))
+      void channel.attempt(() => Promise.reject(expiredSessionError()))
       await new Promise((resolve) => setTimeout(resolve, 0))
       expect(await latestClaim(channel)).toMatchObject({
         type: 'unauthorized',
@@ -326,12 +365,39 @@ describe('createRequestErrorChannel', () => {
       })
     })
 
-    it('parks concurrent 401s behind a single unauthorized claim', async () => {
+    it('claims a session-not-found 401 (SIO-401-ANF) as unauthorized', async () => {
+      const channel = createRequestErrorChannel()
+      void channel.attempt(() =>
+        Promise.reject(
+          clientErrorWith({
+            statusCode: 401,
+            body: {error: 'Unauthorized', errorCode: 'SIO-401-ANF', message: 'Session not found'},
+          }),
+        ),
+      )
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(await latestClaim(channel)).toMatchObject({
+        type: 'unauthorized',
+        projectId: 'abc123',
+      })
+    })
+
+    it('re-throws 401s without an invalid-session code (resource-level denials)', async () => {
+      // Some endpoints answer 401 (not 403) for authenticated users lacking
+      // a grant — those must stay caller-domain, not force a logout.
+      const channel = createRequestErrorChannel()
+      const err = clientErrorWith({statusCode: 401})
+      await expect(channel.attempt(() => Promise.reject(err))).rejects.toBe(err)
+      await expect(Promise.reject(err).catch(channel.handle)).rejects.toBe(err)
+      expect(await latestClaim(channel)).toBeUndefined()
+    })
+
+    it('parks concurrent expired-session 401s behind a single unauthorized claim', async () => {
       // The first 401 owns the dialog + logout; later 401s for the same
       // teardown (including the logout request re-401ing) park silently.
       const channel = createRequestErrorChannel()
-      void channel.attempt(() => Promise.reject(clientErrorWith({statusCode: 401})))
-      void channel.attempt(() => Promise.reject(clientErrorWith({statusCode: 401})))
+      void channel.attempt(() => Promise.reject(expiredSessionError()))
+      void channel.attempt(() => Promise.reject(expiredSessionError()))
       await new Promise((resolve) => setTimeout(resolve, 0))
       expect(await latestClaim(channel)).toMatchObject({type: 'unauthorized', projectId: 'abc123'})
     })

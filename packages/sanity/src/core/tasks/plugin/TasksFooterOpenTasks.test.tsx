@@ -4,8 +4,10 @@ import {render, screen} from '@testing-library/react'
 import {act} from 'react'
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {TasksEnabledProvider, TasksNavigationProvider, TasksProvider} from '../context'
-import {useTasksStore} from '../store'
+import {TasksEnabledProvider} from '../context/enabled/TasksEnabledProvider'
+import {TasksNavigationProvider} from '../context/navigation/TasksNavigationProvider'
+import {TasksProvider} from '../context/tasks/TasksProvider'
+import {useTasksStore} from '../store/useTasksStore'
 import {type TaskDocument} from '../types'
 import {SetActiveDocument} from './structure/SetActiveDocument'
 import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
@@ -15,13 +17,14 @@ vi.mock('react-i18next', async (importOriginal) => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 
-vi.mock('../../hooks', () => ({
+vi.mock('../../hooks/useFeatureEnabled', async (importOriginal) => ({
+  ...(await importOriginal()),
   useFeatureEnabled: vi.fn().mockReturnValue({enabled: true, isLoading: false}),
 }))
 vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({tasks: {enabled: true}}),
 }))
-vi.mock('../store', () => ({useTasksStore: vi.fn()}))
+vi.mock('../store/useTasksStore', () => ({useTasksStore: vi.fn()}))
 vi.mock('../context/isLastPane/useIsLastPane', () => ({
   useIsLastPane: vi.fn().mockReturnValue(true),
 }))
@@ -53,10 +56,12 @@ const mockUseTasksStore = useTasksStore as ReturnType<typeof vi.fn>
 
 const createTaskMock = ({
   targetDocumentId,
+  targetDocumentVersionId,
   status = 'open',
   title = 'Test task',
 }: {
   targetDocumentId?: string
+  targetDocumentVersionId?: string
   status?: TaskDocument['status']
   title?: string
 }): TaskDocument => ({
@@ -77,6 +82,7 @@ const createTaskMock = ({
           _weak: true,
           _ref: targetDocumentId,
         },
+        documentVersionId: targetDocumentVersionId,
       }
     : undefined,
   title,
@@ -166,5 +172,75 @@ describe('TasksFooterOpenTasks', () => {
 
     expect(screen.getByRole('button')).toBeInTheDocument()
     expect(screen.getByTestId('tasks-badge')).toBeInTheDocument()
+  })
+
+  it('renders the button when a version document is active and the task targets that version', async () => {
+    setUpMocks({
+      tasks: [createTaskMock({targetDocumentId: 'doc1', targetDocumentVersionId: 'rRelease1'})],
+    })
+    render(
+      <>
+        <TasksFooterOpenTasks />
+        <SetActiveDocument documentId="versions.rRelease1.doc1" documentType="author" />
+      </>,
+      {wrapper},
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+    expect(screen.getByRole('button')).toBeInTheDocument()
+  })
+
+  it('does not render the button when the task targets a version but the base document is active', async () => {
+    setUpMocks({
+      tasks: [createTaskMock({targetDocumentId: 'doc1', targetDocumentVersionId: 'rRelease1'})],
+    })
+    const {container} = render(
+      <>
+        <TasksFooterOpenTasks />
+        <SetActiveDocument documentId="doc1" documentType="author" />
+      </>,
+      {wrapper},
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('does not render the button when a version document is active but the task targets the base document', async () => {
+    setUpMocks({tasks: [createTaskMock({targetDocumentId: 'doc1'})]})
+    const {container} = render(
+      <>
+        <TasksFooterOpenTasks />
+        <SetActiveDocument documentId="versions.rRelease1.doc1" documentType="author" />
+      </>,
+      {wrapper},
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('does not render the button when the task targets a different version of the active document', async () => {
+    setUpMocks({
+      tasks: [createTaskMock({targetDocumentId: 'doc1', targetDocumentVersionId: 'rRelease1'})],
+    })
+    const {container} = render(
+      <>
+        <TasksFooterOpenTasks />
+        <SetActiveDocument documentId="versions.rRelease2.doc1" documentType="author" />
+      </>,
+      {wrapper},
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+    expect(container).toBeEmptyDOMElement()
   })
 })

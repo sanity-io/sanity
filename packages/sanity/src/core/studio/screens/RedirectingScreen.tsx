@@ -1,4 +1,4 @@
-import {DoubleChevronRightIcon} from '@sanity/icons'
+import {DoubleChevronRightIcon} from '@sanity/icons/DoubleChevronRight'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 
 export function RedirectingScreen(props: {reason?: string}) {

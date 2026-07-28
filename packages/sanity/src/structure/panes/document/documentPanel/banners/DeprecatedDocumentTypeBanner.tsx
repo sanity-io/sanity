@@ -1,4 +1,4 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Text} from '@sanity/ui'
 import {isDeprecatedSchemaType, Translate, useTranslation} from 'sanity'
 

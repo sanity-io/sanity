@@ -1,4 +1,5 @@
-import {AddCommentIcon, CommentIcon} from '@sanity/icons'
+import {AddCommentIcon} from '@sanity/icons/AddComment'
+import {CommentIcon} from '@sanity/icons/Comment'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {
   // oxlint-disable-next-line no-restricted-imports
@@ -11,11 +12,17 @@ import {
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, Popover, Tooltip} from '../../../../ui-components'
-import {type UserListWithPermissionsHookValue} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {Popover} from '../../../../ui-components/popover/Popover'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
-import {CommentInput, type CommentInputHandle} from '../../components'
+import {
+  CommentInput,
+  type CommentInputHandle,
+} from '../../components/pte/comment-input/CommentInput'
 import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentMessage} from '../../types'

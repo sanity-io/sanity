@@ -1,6 +1,6 @@
-import {type WorkspaceAuthStates} from '../components/navbar/workspace/hooks'
-import {type WorkspacesContextValue} from '../workspaces'
+import {type WorkspaceAuthStates} from '../components/navbar/workspace/hooks/useWorkspaceAuthStates'
 import {evaluateWorkspaceHidden} from '../workspaces/useVisibleWorkspaces'
+import {type WorkspacesContextValue} from '../workspaces/WorkspacesContext'
 import {type NormalizedWorkspace} from './types'
 
 /** @internal */

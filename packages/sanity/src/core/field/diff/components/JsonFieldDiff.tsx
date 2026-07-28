@@ -2,7 +2,7 @@ import {Card, Code, Stack, Text} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type DiffComponent} from '../../types'
 import {useChangeVerb} from '../hooks/useChangeVerb'
 import {DiffCard} from './DiffCard'

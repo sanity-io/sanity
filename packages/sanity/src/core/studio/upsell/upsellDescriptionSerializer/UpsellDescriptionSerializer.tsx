@@ -3,7 +3,8 @@ import {
   type PortableTextComponents,
   type PortableTextTypeComponentProps,
 } from '@portabletext/react'
-import {Icon, LinkIcon} from '@sanity/icons'
+import {Icon} from '@sanity/icons'
+import {LinkIcon} from '@sanity/icons/Link'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'

@@ -4,8 +4,6 @@ on:
   issues:
     types:
       - closed
-      - opened
-      - labeled
   workflow_dispatch:
     inputs:
       issue_url:

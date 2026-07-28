@@ -34,6 +34,8 @@ type DemoKind =
   | 'network-error'
   | 'network-error-recoverable'
   | 'cors-misconfig'
+  | 'session-not-found'
+  | 'unauthorized-untagged'
 
 type CorsDemoMode = false | 'denied' | 'no-credentials'
 let corsDemoMode: CorsDemoMode = false
@@ -61,7 +63,9 @@ function parseDemoKind(url: string): DemoKind | null {
     kind === 'rate-limited' ||
     kind === 'network-error' ||
     kind === 'network-error-recoverable' ||
-    kind === 'cors-misconfig'
+    kind === 'cors-misconfig' ||
+    kind === 'session-not-found' ||
+    kind === 'unauthorized-untagged'
   ) {
     return kind
   }
@@ -142,6 +146,40 @@ function synthesize(options: RequestOptions & {url: string}): Observable<HttpReq
       return responseObservable(options, 200, {result: {ok: true, demo: 'network-recovered'}})
     }
     return throwError(() => makeNetworkError(url, options.method ?? 'GET'))
+  }
+  if (kind === 'session-not-found') {
+    // Byte-for-byte the body the API returns for a token that resolves to
+    // no session (revoked on another device, purged after expiry, or a
+    // stale stored token) — verified against /users/me and /projects/<id>.
+    // The workspace request handler claims invalid-session 401s globally,
+    // so this triggers a real forced logout.
+    return throwError(
+      () =>
+        new ClientError(
+          makeResponseShape(options, 401, {
+            statusCode: 401,
+            error: 'Unauthorized',
+            message: 'Session not found',
+            errorCode: 'SIO-401-ANF',
+          }),
+        ),
+    )
+  }
+  if (kind === 'unauthorized-untagged') {
+    // A 401 with no invalid-session errorCode — the shape some endpoints
+    // return for an authenticated user lacking a grant. Stays
+    // caller-domain: no forced logout. (A real bogus-token request can't
+    // demo this anymore — the API tags those SIO-401-ANF.)
+    return throwError(
+      () =>
+        new ClientError(
+          makeResponseShape(options, 401, {
+            statusCode: 401,
+            error: 'Unauthorized',
+            message: 'User is missing required grant "sanity.project.datasets/read" (synthetic)',
+          }),
+        ),
+    )
   }
   if (kind === 'server-error' || kind === 'server-error-recoverable') {
     if (kind === 'server-error-recoverable' && shouldRecover(kind)) {

@@ -1,4 +1,8 @@
-import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
+import {CloseIcon} from '@sanity/icons/Close'
+import {CollapseIcon} from '@sanity/icons/Collapse'
+import {ExpandIcon} from '@sanity/icons/Expand'
+import {SplitVerticalIcon} from '@sanity/icons/SplitVertical'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
@@ -23,17 +27,18 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {PaneContextMenuButton} from '../../../../components/pane/PaneContextMenuButton'
+import {PaneHeader} from '../../../../components/pane/PaneHeader'
+import {PaneHeaderActionButton} from '../../../../components/pane/PaneHeaderActionButton'
+import {type _PaneMenuNode} from '../../../../components/pane/types'
+import {usePane} from '../../../../components/pane/usePane'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {
-  PaneContextMenuButton,
-  PaneHeader,
-  PaneHeaderActionButton,
   RenderActionCollectionState,
   type ResolvedAction,
-  usePane,
-  usePaneRouter,
-} from '../../../../components'
-import {type _PaneMenuNode} from '../../../../components/pane/types'
+} from '../../../../components/RenderActionCollectionState'
 import {useHistoryRestoreAction} from '../../../../documentActions/HistoryRestoreAction'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
@@ -46,6 +51,7 @@ import {FocusDocumentPaneClicked, FocusDocumentPaneCollapsed} from './__telemetr
 import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
+import {DocumentTargetBadges} from './DocumentTargetBadges'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
@@ -68,21 +74,23 @@ const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
       }
     }
 
-    ${props.$showGradient &&
-    css`
-      &::after {
-        content: '';
-        display: block;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        width: 150px;
-        background: linear-gradient(to right, ${rgba(theme.color.bg, 0)}, var(--card-bg-color));
-        transition: 'opacity 300ms ease-out';
-        pointer-events: none;
-      }
-    `}
+    ${
+      props.$showGradient &&
+      css`
+        &::after {
+          content: '';
+          display: block;
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 150px;
+          background: linear-gradient(to right, ${rgba(theme.color.bg, 0)}, var(--card-bg-color));
+          transition: 'opacity 300ms ease-out';
+          pointer-events: none;
+        }
+      `
+    }
   `
 })
 
@@ -232,9 +240,24 @@ export const DocumentPanelHeader = memo(
                 </HorizontalScroller>
               )}
               {hasDocumentGroupInventory && (
-                <Box paddingX={3}>
-                  <DocumentGroupInventoryHint />
-                </Box>
+                <HorizontalScroller $showGradient={false}>
+                  <Flex
+                    flex={1}
+                    gap={2}
+                    align="center"
+                    overflow="auto"
+                    paddingX={3}
+                    data-testid="document-target-badges"
+                    style={{minWidth: 0}}
+                  >
+                    <Box flex="none">
+                      <DocumentTargetBadges />
+                    </Box>
+                    <Box flex="none">
+                      <DocumentGroupInventoryHint />
+                    </Box>
+                  </Flex>
+                </HorizontalScroller>
               )}
 
               <Box flex="none" paddingRight={3}>

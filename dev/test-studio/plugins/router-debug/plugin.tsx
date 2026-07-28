@@ -1,4 +1,4 @@
-import {PinIcon} from '@sanity/icons'
+import {PinIcon} from '@sanity/icons/Pin'
 import {definePlugin} from 'sanity'
 import {route} from 'sanity/router'
 

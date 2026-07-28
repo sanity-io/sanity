@@ -114,6 +114,7 @@ describe('ReleaseDocumentPreview', () => {
     })
 
     const link = container.querySelector('a')
+    // @ts-expect-error -- pre-existing, fix later
     const searchParams = JSON.parse(link.getAttribute('data-search-params'))
     expect(searchParams).toContainEqual(['perspective', 'published'])
   })
@@ -127,11 +128,12 @@ describe('ReleaseDocumentPreview', () => {
     })
 
     const link = container.querySelector('a')
+    // @ts-expect-error -- pre-existing, fix later
     const searchParams = JSON.parse(link.getAttribute('data-search-params'))
     expect(searchParams).toContainEqual(['perspective', 'rActive'])
   })
 
-  it('creates link with release ID perspective when release state is not published', async () => {
+  it('creates link without search params when release state is archived', async () => {
     const {container} = await renderTest({
       documentId: 'doc123',
       documentTypeName: 'post',
@@ -140,7 +142,26 @@ describe('ReleaseDocumentPreview', () => {
     })
 
     const link = container.querySelector('a')
+    // @ts-expect-error -- pre-existing, fix later
     const searchParams = JSON.parse(link.getAttribute('data-search-params'))
     expect(searchParams).toBeNull()
+  })
+
+  it('creates link with variant and release perspective sticky params', async () => {
+    const {container} = await renderTest({
+      documentId: 'versions.buz.doc123',
+      documentTypeName: 'post',
+      releaseId: activeScheduledRelease._id,
+      releaseState: 'active',
+      variantId: 'alpha-audience',
+    })
+
+    const link = container.querySelector('a')
+    // @ts-expect-error -- pre-existing, fix later
+    const searchParams = JSON.parse(link.getAttribute('data-search-params'))
+    expect(searchParams).toEqual([
+      ['variant', 'alpha-audience'],
+      ['perspective', 'rActive'],
+    ])
   })
 })

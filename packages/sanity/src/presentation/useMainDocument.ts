@@ -1,7 +1,7 @@
 import {type ResponseQueryOptions} from '@sanity/client'
-import {match, type Path} from 'path-to-regexp'
+import {match} from 'path-to-regexp'
 import {useEffect, useEffectEvent, useRef, useState} from 'react'
-import {useClient} from 'sanity'
+import {useClient, VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity'
 import {type RouterState, useRouter} from 'sanity/router'
 
 import {API_VERSION} from './constants'
@@ -56,26 +56,27 @@ function getParamsFromResult(
   return fnOrObj(resolver.params, context) ?? context.params
 }
 
-export function getRouteContext(route: Path, url: URL): DocumentResolverContext | undefined {
+export function getRouteContext(
+  route: DocumentResolver['route'],
+  url: URL,
+): DocumentResolverContext | undefined {
   const routes = Array.isArray(route) ? route : [route]
 
-  for (route of routes) {
+  // `let` as the path is replaced with the pathname for absolute URLs
+  for (let path of routes) {
     let {origin} = url
-    let path = route
 
     // Handle absolute URLs
-    if (typeof route === 'string') {
-      try {
-        const absolute = new URL(route)
+    try {
+      const absolute = new URL(path)
 
-        // If we are dealing with an absolute URL, ensure the origins match
-        if (absolute.origin !== origin) continue
+      // If we are dealing with an absolute URL, ensure the origins match
+      if (absolute.origin !== origin) continue
 
-        origin = absolute.origin
-        path = absolute.pathname
-      } catch {
-        // Ignore, as we assume a relative path
-      }
+      origin = absolute.origin
+      path = absolute.pathname
+    } catch {
+      // Ignore, as we assume a relative path
     }
 
     try {
@@ -86,7 +87,7 @@ export function getRouteContext(route: Path, url: URL): DocumentResolverContext 
         return {origin, params, path}
       }
     } catch (e) {
-      throw new Error(`"${route}" is not a valid route pattern`, {cause: e})
+      throw new Error(`"${path}" is not a valid route pattern`, {cause: e})
     }
   }
   return undefined
@@ -99,10 +100,20 @@ export function useMainDocument(props: {
   targetOrigin: string
   resolvers?: DocumentResolver[]
   perspective: PresentationPerspective
+  variant: string | undefined
 }): MainDocumentState | undefined {
-  const {navigate, navigationHistory, path, targetOrigin, resolvers = [], perspective} = props
+  const {
+    navigate,
+    navigationHistory,
+    path,
+    targetOrigin,
+    resolvers = [],
+    perspective,
+    variant,
+  } = props
   const {state: routerState} = useRouter()
-  const client = useClient({apiVersion: API_VERSION})
+  // Fetching with a variant requires the `vX` API version for now
+  const client = useClient(variant ? VARIANTS_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION})
   const relativeUrl =
     path || routerState._searchParams?.find(([key]) => key === 'preview')?.[1] || ''
 
@@ -161,6 +172,7 @@ export function useMainDocument(props: {
           const controller = new AbortController()
           const options: ResponseQueryOptions = {
             perspective: perspective,
+            variant,
             signal: controller.signal,
             tag: 'use-main-document',
           }
@@ -183,7 +195,7 @@ export function useMainDocument(props: {
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined
-  }, [client, perspective, relativeUrl, resolvers, targetOrigin])
+  }, [client, perspective, relativeUrl, resolvers, targetOrigin, variant])
 
   return mainDocumentState
 }

@@ -1,10 +1,10 @@
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
 import {Box, Card, type CardProps, Flex, Text} from '@sanity/ui'
 import {type ElementType, type HTMLProps, type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../i18n'
 
 export interface DocumentInspectorHeaderProps {

@@ -1,12 +1,17 @@
 import {white} from '@sanity/color'
-import {CloseIcon, LaunchIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {Box, Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
 
-import {Button, Dialog} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type UpsellData} from './types'
-import {type InterpolationProp, UpsellDescriptionSerializer} from './upsellDescriptionSerializer'
+import {
+  type InterpolationProp,
+  UpsellDescriptionSerializer,
+} from './upsellDescriptionSerializer/UpsellDescriptionSerializer'
 
 /**
  * Absolute positioned button to close the dialog.

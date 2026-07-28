@@ -21,11 +21,17 @@ const variantsLocaleStrings = {
   /** Tooltip for clearing the selected variant. */
   'navbar.variant.clear': 'Clear variant selection',
   /** Label for the Variants overview create action. */
-  'overview.action.create-variant': 'Create variant',
+  'overview.action.create-variant': 'Create variant definition',
   /** Label for the Variants overview delete action. */
-  'overview.action.delete-variant': 'Delete variant',
+  'overview.action.delete-variant': 'Delete variant definition',
+  /** Tooltip when delete is disabled because the variant contains one document. */
+  'overview.action.delete-variant.disabled-hint_one':
+    "This variant definition contains {{count}} document in it, it can't be removed until the documents have been removed.",
+  /** Tooltip when delete is disabled because the variant contains multiple documents. */
+  'overview.action.delete-variant.disabled-hint_other':
+    "This variant definition contains {{count}} documents in it, it can't be removed until the documents have been removed.",
   /** Error toast title when variant deletion fails. */
-  'overview.action.delete-variant.error.title': 'Unable to delete variant',
+  'overview.action.delete-variant.error.title': 'Unable to delete variant definition',
   /** Link label for Variants overview documentation (empty state). */
   'overview.action.documentation': 'Documentation',
   /** Description for the Variants overview empty state. */
@@ -35,49 +41,55 @@ const variantsLocaleStrings = {
   'overview.description':
     'Manage variant definitions that control how content is personalized for different audiences, locales, and segments.',
   /** Error message for the Variants overview. */
-  'overview.error': 'Unable to load variants',
+  'overview.error': 'Unable to load variant definitions',
   /** Placeholder for the Variants overview search field. */
   'overview.search.placeholder': 'Search variant definitions…',
   /** Column header for the variant title column in the overview table. */
-  'overview.table.variant': 'Variant',
-  /** Column header for document count in the overview table. */
+  'overview.table.variant': 'Variant definition',
+  /** Column header for the documents count column in the overview table. */
   'overview.table.documents': 'Documents',
   /** Fallback text when a variant has no conditions. */
   'overview.table.no-conditions': 'No conditions',
   /** Title for the Variants overview. */
-  'overview.title': 'Variants',
+  'overview.title': 'Variant definitions',
   /** Edit action on the Variant detail page. */
-  'detail.action.edit-variant': 'Edit variant',
+  'detail.action.edit-variant': 'Edit variant definition',
+  /** Tooltip for pinning a variant to the studio. */
+  'detail.pin-variant': 'Pin variant definition to studio',
+  /** Tooltip for unpinning a variant from the studio. */
+  'detail.unpin-variant': 'Unpin variant definition from studio',
   /** Back action on the Variant detail page. */
-  'detail.back': 'Back to variants',
+  'detail.back': 'Back to variant definitions',
   /** Created status label in the Variant detail footer. */
   'detail.footer.created': 'Created',
   /** Loading message on the Variant detail page. */
-  'detail.loading': 'Loading variant',
+  'detail.loading': 'Loading variant definition',
   /** Fallback text when a variant has no description. */
   'detail.no-description': 'No description yet.',
   /** Empty state for variant document table. */
-  'detail.documents.no-documents': 'No documents in this variant',
+  'detail.documents.no-documents': 'No documents in this variant definition',
   /** Edited column header for variant document table. */
   'detail.documents.table.edited': 'Edited',
   /** Search placeholder for variant document table. */
   'detail.documents.table.search-placeholder': 'Search documents',
   /** Type column header for variant document table. */
   'detail.documents.table.type': 'Type',
-  /** Version column header for variant document table. */
-  'detail.documents.table.version': 'Version',
-  /** Version chip label for a document that belongs to the published bundle. */
-  'detail.documents.table.version.published': 'Published',
-  /** Version chip label for a document that belongs to the drafts bundle. */
-  'detail.documents.table.version.drafts': 'Drafts',
+  /** Bundle column header for variant document table. */
+  'detail.documents.table.bundle': 'Bundle',
+  /** Validation error tooltip for a single error in the variant document table. */
+  'detail.documents.table.validation.error_one': '{{count}} validation error',
+  /** Validation error tooltip for multiple errors in the variant document table. */
+  'detail.documents.table.validation.error_other': '{{count}} validation errors',
+  /** Error message when variant documents fail to load. */
+  'detail.documents.error': 'Unable to load documents for this variant definition',
   /** Description for the missing Variant detail page. */
-  'detail.not-found.description': 'The requested variant could not be found.',
+  'detail.not-found.description': 'The requested variant definition could not be found.',
   /** Title for the missing Variant detail page. */
-  'detail.not-found.title': 'Variant not found',
+  'detail.not-found.title': 'Variant definition not found',
   /** Title for the create variant dialog. */
-  'dialog.create.title': 'Create variant',
+  'dialog.create.title': 'Create variant definition',
   /** Confirm action for the create variant dialog. */
-  'dialog.create.action.confirm': 'Create variant',
+  'dialog.create.action.confirm': 'Create variant definition',
   /** Add condition action for the create variant dialog. */
   'dialog.create.action.add-condition': 'Add condition',
   /** Tooltip when add condition is disabled because the current row is incomplete. */
@@ -94,12 +106,19 @@ const variantsLocaleStrings = {
   /** Label for the description field in the create variant dialog. */
   'dialog.create.description.label': 'Description',
   /** Placeholder for the description field in the create variant dialog. */
-  'dialog.create.description.placeholder': 'Describe who this variant targets',
+  'dialog.create.description.placeholder': 'Describe who this variant definition targets',
+  /** Label for the priority field in the variant dialog. */
+  'dialog.create.priority.label': 'Priority',
+  /** Tooltip explaining how priority affects variant matching. */
+  'dialog.create.priority.tooltip':
+    'When multiple variant definitions match with the same specificity, the one with the higher priority wins.',
+  /** Validation message when priority is not a valid number. */
+  'dialog.create.priority.invalid': 'Priority must be a number',
   /** Title for the conditions section in the create variant dialog. */
   'dialog.create.conditions.title': 'Conditions',
   /** Description for the conditions section in the create variant dialog. */
   'dialog.create.conditions.description':
-    'Add key/value pairs that define when this variant applies.',
+    'Add key/value pairs that define when this variant definition applies.',
   /** Label for the condition key field in the create variant dialog. */
   'dialog.create.condition-key.label': 'Key',
   /** Validation message when a condition key is repeated. */
@@ -122,15 +141,22 @@ const variantsLocaleStrings = {
   /** Placeholder for the condition value field in the create variant dialog. */
   'dialog.create.condition-value.placeholder': 'e.g. loyal-customers',
   /** Error toast title when variant creation fails. */
-  'dialog.create.error.title': 'Unable to create variant',
+  'dialog.create.error.title': 'Unable to create variant definition',
   /** Title for the edit variant dialog. */
-  'dialog.edit.title': 'Edit variant',
+  'dialog.edit.title': 'Edit variant definition',
   /** Confirm action for the edit variant dialog. */
   'dialog.edit.action.confirm': 'Save',
   /** Cancel action for the edit variant dialog. */
   'dialog.edit.action.cancel': 'Cancel',
   /** Error toast title when variant editing fails. */
-  'dialog.edit.error.title': 'Unable to update variant',
+  'dialog.edit.error.title': 'Unable to update variant definition',
+  /** Title for the delete variant confirmation dialog. */
+  'dialog.delete.title': 'Are you sure you want to delete this variant definition?',
+  /** Description for the delete variant confirmation dialog. */
+  'dialog.delete.description':
+    'This will permanently delete "{{title}}". This action cannot be undone.',
+  /** Confirm action for the delete variant confirmation dialog. */
+  'dialog.delete.action.confirm': 'Yes, delete variant definition',
 }
 
 /**

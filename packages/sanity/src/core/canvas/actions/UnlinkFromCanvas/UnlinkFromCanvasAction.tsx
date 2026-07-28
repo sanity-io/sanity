@@ -1,4 +1,4 @@
-import {UnlinkIcon} from '@sanity/icons'
+import {UnlinkIcon} from '@sanity/icons/Unlink'
 import {useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 

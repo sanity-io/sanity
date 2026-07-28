@@ -3,13 +3,17 @@ import {Stack} from '@sanity/ui'
 import {Fragment, type HTMLAttributes, startTransition, useCallback, useMemo, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
-import {useDocumentOperation} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
-import {usePerspective} from '../../../perspective/usePerspective'
-import {useDocumentPairPermissions} from '../../../store'
+import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
+import {
+  getPairTarget,
+  getTargetScopeId,
+  useTargetDocumentState,
+} from '../../../hooks/useTargetDocumentState'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
 import {type FieldChangeNode} from '../../types'
 import {undoChange} from '../changes/undoChange'
-import {useDocumentChange} from '../hooks'
+import {useDocumentChange} from '../hooks/useDocumentChange'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
 import {DiffInspectWrapper} from './DiffInspectWrapper'
@@ -67,8 +71,13 @@ export function FieldChange(
     isComparingCurrent,
     FieldWrapper = Fragment,
   } = useDocumentChange()
-  const {selectedReleaseId} = usePerspective()
-  const ops = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
+  const targetDocumentState = useTargetDocumentState(documentId)
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, reverting is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
+  const ops = useDocumentOperation(documentId, schemaType.name, getPairTarget(targetDocumentState))
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
   const [buttonElement, _setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -85,6 +94,7 @@ export function FieldChange(
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
     type: schemaType.name,
+    version: scopeId,
     permission: 'update',
   })
 
@@ -152,7 +162,6 @@ export function FieldChange(
                   <DiffContext.Provider value={value}>
                     <DiffComponent
                       diff={change.diff}
-                      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
                       schemaType={change.schemaType as ObjectSchemaType}
                     />
                   </DiffContext.Provider>
@@ -166,7 +175,7 @@ export function FieldChange(
                   onMouseEnter={handleRevertButtonMouseEnter}
                   onMouseLeave={handleRevertButtonMouseLeave}
                   selected={confirmRevertOpen}
-                  disabled={readOnly}
+                  disabled={readOnly || !isTargetReady}
                   ref={setButtonElement}
                   data-testid={`single-change-revert-button-${change?.key}`}
                 />

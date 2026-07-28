@@ -37,9 +37,33 @@ export function useTrackFocusPath(props: Props): void {
     selectionRef.current = selection
   }, [selection])
 
+  // The focusPath value that has already been effectuated: either applied to the editor
+  // (selected/focused below), or confirmed to match a selection the editor already owns.
+  // The effect re-runs on member/element-ref churn so that a focusPath whose target hasn't
+  // rendered yet can be retried, but a handled one must never be re-applied: unrelated re-runs
+  // (e.g. validation markers arriving while the user types) would otherwise re-select at
+  // offset 0 and hijack the caret to the start of the block (SAPP-4053). This matters whenever
+  // the editor transiently loses DOM focus while the form focusPath stays put — such as a brief
+  // readOnly flip toggling `contenteditable` off. Tracking by reference is safe because form
+  // paths are interned (`pathFor`), so the value only changes when focus actually moves; the
+  // ref is cleared whenever it does, keeping re-entry from outside (Visual Editing, #12894)
+  // working when the same path is focused again later.
+  const handledFocusPathRef = useRef<Path | null>(null)
+
   useLayoutEffect(() => {
+    // Focus moved elsewhere (or was cleared on blur): forget the handled path so that focusing
+    // the previous path again later is applied anew.
+    if (handledFocusPathRef.current !== focusPath) {
+      handledFocusPathRef.current = null
+    }
+
     // Don't do anything if no focusPath to track
     if (focusPath.length === 0) {
+      return
+    }
+
+    // This exact focusPath has already been effectuated; don't re-apply it on unrelated re-runs.
+    if (handledFocusPathRef.current === focusPath) {
       return
     }
 
@@ -71,6 +95,7 @@ export function useTrackFocusPath(props: Props): void {
       ) &&
       (editorHasDomFocus || Boolean(openEditingItem))
     ) {
+      handledFocusPathRef.current = focusPath
       return
     }
 
@@ -155,6 +180,7 @@ export function useTrackFocusPath(props: Props): void {
           if (isTextBlock) {
             PortableTextEditor.focus(legacyEditor)
           }
+          handledFocusPathRef.current = focusPath
         }
       }
     }

@@ -1,4 +1,10 @@
-import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  type Path,
+  type SanityDocument,
+} from '@sanity/types'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
@@ -42,16 +48,62 @@ const SCHEMA_TYPES = [
               }),
             ],
           }),
+          defineArrayMember({
+            type: 'object',
+            name: 'nestedObjectBlock',
+            title: 'Nested Object Block',
+            fields: [
+              defineField({
+                type: 'array',
+                name: 'siteOverrides',
+                title: 'Site overrides',
+                of: [
+                  defineArrayMember({
+                    type: 'object',
+                    name: 'siteOverride',
+                    fields: [
+                      defineField({
+                        type: 'array',
+                        name: 'content',
+                        title: 'Content',
+                        of: [
+                          {
+                            type: 'block',
+                            marks: {
+                              annotations: [
+                                {
+                                  type: 'object',
+                                  name: 'nestedAnnotation',
+                                  title: 'Nested annotation',
+                                  fields: [
+                                    defineField({
+                                      type: 'string',
+                                      name: 'value',
+                                      title: 'Annotation value',
+                                    }),
+                                  ],
+                                },
+                              ],
+                            },
+                          },
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
         ],
       }),
     ],
   }),
 ]
 
-function NestedInputStory() {
+function NestedInputStory({document, focusPath}: {document?: SanityDocument; focusPath?: Path}) {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
-      <TestForm />
+      <TestForm document={document} focusPath={focusPath} />
     </TestWrapper>
   )
 }

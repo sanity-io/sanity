@@ -1,8 +1,8 @@
-import {CheckmarkIcon} from '@sanity/icons'
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {Card, Stack} from '@sanity/ui'
 import {useCallback} from 'react'
 
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {useLocale} from '../../../../i18n/hooks/useLocale'
 
 // TODO: re-enable locale selection once schema localization is available

@@ -1,11 +1,11 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
-import {AddIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Container, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getVersionId} from '../../../util/draftUtils'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
@@ -20,7 +20,7 @@ import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
 import {type DocumentFilterType, documentMatchesFilter} from './releaseDocumentActions'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {type DocumentInRelease} from './types'
 
 export type DocumentInReleaseDetail = DocumentInRelease & {
   // TODO: Get this value from the document, it can be calculated by checking if there is a corresponding document with no version attached

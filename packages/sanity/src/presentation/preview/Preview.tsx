@@ -6,6 +6,7 @@ import {
 } from '@sanity/presentation-comlink'
 import {
   urlSearchParamPreviewPerspective,
+  urlSearchParamPreviewVariant,
   urlSearchParamVercelProtectionBypass,
   urlSearchParamVercelSetBypassCookie,
   type VercelSetBypassCookieValue,
@@ -38,7 +39,8 @@ import {
 import {flushSync} from 'react-dom'
 import {Translate, useTranslation} from 'sanity'
 
-import {Button, TooltipDelayGroupProvider} from '../../ui-components'
+import {Button} from '../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {ErrorCard} from '../components/ErrorCard'
 import {MAX_TIME_TO_OVERLAYS_CONNECTION} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
@@ -74,6 +76,10 @@ export interface PreviewProps {
   overlaysConnection: ConnectionStatus
   presentationRef: PresentationMachineRef
   perspective: PresentationPerspective
+  /**
+   * The selected editing variant as a bare variant id, or `undefined` when no variant is selected
+   */
+  variant: string | undefined
   previewUrl?: string
   setViewport: (mode: 'desktop' | 'mobile') => void
   targetOrigin: string
@@ -83,6 +89,7 @@ export interface PreviewProps {
   vercelProtectionBypass: string | null
   previewUrlRef: PreviewUrlRef
   handlesPerspectiveChange: boolean
+  handlesVariantChange: boolean
 }
 
 export const Preview = memo(
@@ -93,17 +100,25 @@ export const Preview = memo(
       loadersConnection,
       overlaysConnection,
       perspective,
+      variant,
       viewport,
       vercelProtectionBypass,
       presentationRef,
       previewUrlRef,
       handlesPerspectiveChange,
+      handlesVariantChange,
     } = props
 
     const [stablePerspective, setStablePerspective] = useState<typeof perspective | null>(null)
     const urlPerspective = encodeStudioPerspective(
       stablePerspective === null ? perspective : stablePerspective,
     )
+    /**
+     * `null` means "not frozen yet" — distinct from `undefined`, which is a valid frozen value
+     * meaning "no variant selected"
+     */
+    const [stableVariant, setStableVariant] = useState<string | undefined | null>(null)
+    const urlVariant = stableVariant === null ? variant : stableVariant
     const previewUrl = useMemo(() => {
       const url = new URL(initialUrl)
 
@@ -112,6 +127,13 @@ export const Preview = memo(
       // and a comlink node connecting to the iframe and reporting whether perspective switching is handled by the preview,
       // or if perspective switching should reload the iframe.
       url.searchParams.set(urlSearchParamPreviewPerspective, urlPerspective)
+
+      // Same for the editing variant, except the param is only present while a variant is selected
+      if (urlVariant) {
+        url.searchParams.set(urlSearchParamPreviewVariant, urlVariant)
+      } else {
+        url.searchParams.delete(urlSearchParamPreviewVariant)
+      }
 
       if (vercelProtectionBypass || url.searchParams.get(urlSearchParamVercelProtectionBypass)) {
         // samesitenone is required since the request is from an iframe
@@ -126,7 +148,7 @@ export const Preview = memo(
       }
 
       return url
-    }, [initialUrl, urlPerspective, vercelProtectionBypass])
+    }, [initialUrl, urlPerspective, urlVariant, vercelProtectionBypass])
 
     useEffect(() => {
       /**
@@ -143,6 +165,18 @@ export const Preview = memo(
         setStablePerspective((prev) => (prev === null ? perspective : prev))
       }
     }, [handlesPerspectiveChange, perspective])
+
+    useEffect(() => {
+      /**
+       * Same freeze mechanism for the editing variant: once the preview can handle variant changes
+       * in-place — reported over comlink, or implied by a connected loader — we stop reflecting
+       * variant changes in `src` so they no longer cause a full page reload.
+       */
+      if (handlesVariantChange) {
+        // oxlint-disable-next-line react/react-compiler
+        setStableVariant((prev) => (prev === null ? variant : prev))
+      }
+    }, [handlesVariantChange, variant])
 
     const {t} = useTranslation(presentationLocaleNamespace)
     const {devMode} = usePresentationTool()

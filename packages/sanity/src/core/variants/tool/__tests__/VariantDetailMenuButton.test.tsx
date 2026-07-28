@@ -52,11 +52,24 @@ describe('VariantDetailMenuButton', () => {
     variantOperationsMock.deleteVariant.mockResolvedValue(undefined)
   })
 
-  const renderMenuButton = async () => {
+  const renderMenuButton = async ({
+    documentCount = 0,
+    documentsLoading = false,
+  }: {
+    documentCount?: number
+    documentsLoading?: boolean
+  } = {}) => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<VariantDetailMenuButton variant={variantAlphaAudience} />, {wrapper})
+    const result = render(
+      <VariantDetailMenuButton
+        documentCount={documentCount}
+        documentsLoading={documentsLoading}
+        variant={variantAlphaAudience}
+      />,
+      {wrapper},
+    )
     await screen.findByRole('button')
     return result
   }
@@ -67,7 +80,8 @@ describe('VariantDetailMenuButton', () => {
     await renderMenuButton()
 
     await user.click(screen.getByRole('button'))
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
+    await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
       expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
@@ -85,7 +99,8 @@ describe('VariantDetailMenuButton', () => {
     const menuButton = screen.getByRole('button')
 
     await user.click(menuButton)
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
+    await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
       expect(menuButton).toBeDisabled()
@@ -107,13 +122,14 @@ describe('VariantDetailMenuButton', () => {
     await renderMenuButton()
 
     await user.click(screen.getByRole('button'))
-    await user.click(await screen.findByText('Delete variant'))
+    await user.click(await screen.findByText('Delete variant definition'))
+    await user.click(await screen.findByTestId('confirm-button'))
 
     await waitFor(() => {
       expect(toastMock.push).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'error',
-          title: 'Unable to delete variant',
+          title: 'Unable to delete variant definition',
         }),
       )
     })
@@ -121,5 +137,29 @@ describe('VariantDetailMenuButton', () => {
     expect(mockNavigate).not.toHaveBeenCalled()
 
     consoleError.mockRestore()
+  })
+
+  it('disables delete when the variant has documents', async () => {
+    const user = userEvent.setup()
+
+    await renderMenuButton({documentCount: 1})
+
+    await user.click(screen.getByRole('button'))
+    await user.click(await screen.findByText('Delete variant definition'))
+
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
+    expect(mockNavigate).not.toHaveBeenCalled()
+  })
+
+  it('disables delete while documents are loading', async () => {
+    const user = userEvent.setup()
+
+    await renderMenuButton({documentCount: 0, documentsLoading: true})
+
+    await user.click(screen.getByRole('button'))
+    await user.click(await screen.findByText('Delete variant definition'))
+
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 })

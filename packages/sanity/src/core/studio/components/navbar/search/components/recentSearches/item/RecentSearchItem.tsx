@@ -1,4 +1,5 @@
-import {ClockIcon, CloseIcon} from '@sanity/icons'
+import {ClockIcon} from '@sanity/icons/Clock'
+import {CloseIcon} from '@sanity/icons/Close'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
   Box,

@@ -1,8 +1,8 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useEffect} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {
   useEnsureMediaLibrary,
   type useEnsureMediaLibraryProps,

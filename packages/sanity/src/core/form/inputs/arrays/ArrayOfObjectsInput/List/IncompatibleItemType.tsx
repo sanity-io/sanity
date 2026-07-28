@@ -1,11 +1,13 @@
-import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
+import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
+import {UnknownIcon} from '@sanity/icons/Unknown'
 import {Box, Card, Code, Flex, Stack, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Popover} from '../../../../../../ui-components'
-import {Translate, useTranslation} from '../../../../../i18n'
+import {Popover} from '../../../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../../i18n/Translate'
 
 const PopoverCard = styled(Card)`
   max-width: ${({theme}: {theme: Theme}) => theme.sanity.container[1]}px;

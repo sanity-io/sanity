@@ -1,15 +1,13 @@
-import {
-  ChevronDownIcon,
-  CopyIcon,
-  DocumentsIcon,
-  UnknownIcon,
-  WarningOutlineIcon,
-} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {DocumentsIcon} from '@sanity/icons/Documents'
+import {UnknownIcon} from '@sanity/icons/Unknown'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback} from 'react'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
 import {
   ChevronWrapper,

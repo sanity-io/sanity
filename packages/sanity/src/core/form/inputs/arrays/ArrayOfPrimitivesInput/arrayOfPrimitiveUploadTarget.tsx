@@ -1,6 +1,7 @@
 // This upload target is similar to the one in files/input, but uses resolveUploader instead of resolveUploadAssetSources
 // in order to keep backwards compatibility with existing uploaders and custom upload implementations.
-import {AccessDeniedIcon, UploadIcon} from '@sanity/icons'
+import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
+import {UploadIcon} from '@sanity/icons/Upload'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, Flex, Inline, Layer, Text, useToast} from '@sanity/ui'
 import sortBy from 'lodash-es/sortBy.js'
@@ -18,15 +19,15 @@ import {
 import {styled} from 'styled-components'
 
 import {type FIXME} from '../../../../FIXME'
-import {useTranslation} from '../../../../i18n'
-import {withFocusRing} from '../../../components/withFocusRing'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {withFocusRing} from '../../../components/withFocusRing/withFocusRing'
 import {
   type FileLike,
   type ResolvedUploader,
   type UploaderResolver,
 } from '../../../studio/uploads/types'
-import {type UploadEvent} from '../../../types'
-import {type FileInfo, fileTarget} from '../../files/common/fileTarget'
+import {type UploadEvent} from '../../../types/event'
+import {type FileInfo, fileTarget} from '../../files/common/fileTarget/fileTarget'
 
 export interface UploadTargetProps {
   types: SchemaType[]

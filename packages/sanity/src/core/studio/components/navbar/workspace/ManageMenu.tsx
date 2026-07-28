@@ -1,8 +1,9 @@
-import {AddUserIcon, CogIcon} from '@sanity/icons'
+import {AddUserIcon} from '@sanity/icons/AddUser'
+import {CogIcon} from '@sanity/icons/Cog'
 import {Flex, Stack, Text} from '@sanity/ui'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useProject} from '../../../../store/project/useProject'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'

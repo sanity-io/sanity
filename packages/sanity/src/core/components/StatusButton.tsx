@@ -1,7 +1,7 @@
 import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, type ButtonProps} from '../../ui-components'
+import {Button, type ButtonProps} from '../../ui-components/button/Button'
 
 /** @hidden @beta */
 export type StatusButtonProps = ButtonProps & {
@@ -38,11 +38,11 @@ export const StatusButton = forwardRef(function StatusButton(
 ) {
   const {
     disabled: disabledProp,
-    icon,
     'aria-label': label,
     mode = 'bleed',
-    text,
     tone,
+    // `text` and `icon` stay in `restProps` so the ButtonWithText | IconButton
+    // union stays correlated when spread onto the styled component.
     ...restProps
   } = props
 
@@ -57,8 +57,6 @@ export const StatusButton = forwardRef(function StatusButton(
       disabled={disabled}
       mode={mode}
       ref={ref}
-      text={text}
-      icon={icon}
     >
       {tone && <Dot style={dotStyle} />}
     </StyledButton>

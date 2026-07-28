@@ -1,13 +1,18 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {LinkIcon, ShareIcon, TargetIcon, TextIcon} from '@sanity/icons'
+import {LinkIcon} from '@sanity/icons/Link'
+import {ShareIcon} from '@sanity/icons/Share'
+import {TargetIcon} from '@sanity/icons/Target'
+import {TextIcon} from '@sanity/icons/Text'
 import {type DefinedTelemetryLog, useTelemetry} from '@sanity/telemetry/react'
 import {Menu, useToast} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Button, MenuButton, MenuItem} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useStudioUrl} from '../../../hooks/useStudioUrl'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {
   ReleaseIdCopied,
   ReleaseLinkCopied,

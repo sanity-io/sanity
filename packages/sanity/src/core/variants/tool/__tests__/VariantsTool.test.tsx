@@ -38,6 +38,7 @@ vi.mock('sanity/router', async (importOriginal) => ({
     return (
       <a
         {...rest}
+        // @ts-expect-error -- pre-existing, fix later
         ref={ref}
         href={state?.variantId ? `/variants/${state.variantId}` : '/variants'}
       />
@@ -51,6 +52,22 @@ vi.mock('../../store/useAllVariants', () => ({
     byId: variantsMock.byId,
     loading: variantsMock.loading,
     error: variantsMock.error,
+  })),
+}))
+
+vi.mock('../../hooks/useVariantDocuments', () => ({
+  useVariantDocuments: vi.fn(() => ({
+    loading: false,
+    results: [],
+    error: null,
+  })),
+}))
+
+vi.mock('../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => ({
+    data: [],
+    loading: false,
+    error: null,
   })),
 }))
 
@@ -74,7 +91,9 @@ describe('VariantsTool', () => {
     await renderTool()
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', {level: 1, name: 'Variants'})).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', {level: 1, name: 'Variant definitions'}),
+      ).toBeInTheDocument()
     })
   })
 

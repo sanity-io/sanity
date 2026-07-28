@@ -1,11 +1,11 @@
 import {purple, yellow} from '@sanity/color'
-import {BoltIcon} from '@sanity/icons'
+import {BoltIcon} from '@sanity/icons/Bolt'
 import {Card, Text} from '@sanity/ui'
 import {forwardRef, type Ref} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 const CenteredStroke = styled.div`
   position: absolute;

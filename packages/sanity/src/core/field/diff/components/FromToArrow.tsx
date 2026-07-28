@@ -1,4 +1,5 @@
-import {ArrowDownIcon, ArrowRightIcon} from '@sanity/icons'
+import {ArrowDownIcon} from '@sanity/icons/ArrowDown'
+import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 import {Text, type TextProps} from '@sanity/ui'
 import {type HTMLProps} from 'react'
 

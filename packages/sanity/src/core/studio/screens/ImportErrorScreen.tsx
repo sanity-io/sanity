@@ -1,5 +1,5 @@
 /* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {SyncIcon} from '@sanity/icons'
+import {SyncIcon} from '@sanity/icons/Sync'
 import {Box, Card, Code, Container, Heading, Inline, Stack, Text} from '@sanity/ui'
 import {useEffect, useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -7,7 +7,7 @@ import {of, take, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
 
 const View = styled(Box)`

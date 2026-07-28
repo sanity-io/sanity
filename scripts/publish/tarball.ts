@@ -1,15 +1,20 @@
-import {spawn} from 'node:child_process'
+import {execSync, spawn} from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import {fileURLToPath} from 'node:url'
 
 import chalk from 'chalk'
-import {glob} from 'tinyglobby'
 
 main().catch((err) => {
   console.error(chalk.red(err))
   process.exit(1)
 })
+
+interface WorkspaceProject {
+  name: string
+  version: string
+  path: string
+  private?: boolean
+}
 
 /**
  * This script will "publish" all the npm modules in the monorepo to tarballs (.tgz) in
@@ -18,29 +23,20 @@ main().catch((err) => {
  * This is useful to inspect the contents of the published modules.
  */
 async function main() {
-  const root = require('../../package.json')
-  const workspaces = root.workspaces as string[]
-  const pkgJsonPaths = await glob(workspaces.map((p) => `${p}/package.json`))
+  const rootDir = path.resolve(import.meta.dirname, '../..')
+  const projects: WorkspaceProject[] = JSON.parse(
+    execSync('pnpm ls -r --json --depth -1', {cwd: rootDir, encoding: 'utf-8'}),
+  )
 
   const versions: Record<string, string> = {}
 
-  for (const pkgJsonPath of pkgJsonPaths) {
-    const pkg = require(
-      path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..', pkgJsonPath),
-    )
-
+  for (const pkg of projects) {
     if (!pkg.private) {
-      const cwd = path.dirname(pkgJsonPath)
-      const filename = path.resolve(
-        path.dirname(fileURLToPath(import.meta.url)),
-        '../../etc/npm/',
-        pkg.name,
-        `v${pkg.version}.tgz`,
-      )
+      const filename = path.resolve(rootDir, 'etc/npm', pkg.name, `v${pkg.version}.tgz`)
       const dirname = path.dirname(filename)
 
       await fs.mkdir(dirname, {recursive: true})
-      await _pack({cwd, filename})
+      await _pack({cwd: pkg.path, filename})
 
       versions[pkg.name] = pkg.version
 
@@ -53,10 +49,7 @@ async function main() {
     }
   }
 
-  const versionsJsonPath = path.resolve(
-    path.dirname(fileURLToPath(import.meta.url)),
-    '../../etc/npm/versions.json',
-  )
+  const versionsJsonPath = path.resolve(rootDir, 'etc/npm/versions.json')
 
   await fs.mkdir(path.dirname(versionsJsonPath), {recursive: true})
 

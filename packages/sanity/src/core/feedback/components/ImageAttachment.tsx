@@ -1,9 +1,10 @@
-import {BinaryDocumentIcon, UploadIcon} from '@sanity/icons'
+import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
+import {UploadIcon} from '@sanity/icons/Upload'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {FileInputButton} from '../../form/inputs/files/common/FileInputButton/FileInputButton'
-import {fileTarget} from '../../form/inputs/files/common/fileTarget'
+import {fileTarget} from '../../form/inputs/files/common/fileTarget/fileTarget'
 import {useFeedbackTranslation} from '../i18n/useFeedbackTranslation'
 
 const FileTargetCard = fileTarget(Card)

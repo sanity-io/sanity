@@ -1,5 +1,6 @@
 import {type EditableReleaseDocument, type ReleaseType} from '@sanity/client'
-import {ChevronDownIcon, InfoOutlineIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {
   // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   Button,
@@ -22,8 +23,9 @@ import {
   useState,
 } from 'react'
 
-import {MenuButton, Tooltip} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {isReleaseType} from '../../store/types'

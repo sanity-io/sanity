@@ -12,6 +12,7 @@ import {useMiddlewareComponents} from '../../../../config/components/useMiddlewa
 import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
 import {type MarkdownConfig, type PortableTextPluginsProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {PortableTextTablePlugin} from './TablePlugin'
 
 const markdownConfig: MarkdownConfig = {
   boldDecorator: ({schema}) =>
@@ -97,6 +98,7 @@ export const PortableTextEditorPlugins = (props: {
               ),
           }),
         },
+        table: {},
       },
       renderDefault: RenderDefault,
     }),
@@ -138,6 +140,7 @@ function DefaultPortableTextEditorPlugins(props: Omit<PortableTextPluginsProps, 
       <DefaultMarkdownShortcutsPlugin {...props.plugins.markdown} />
       <DefaultPasteLinkPlugin {...props.plugins.pasteLink} />
       <DefaultTypographyPlugin {...props.plugins.typography} />
+      <DefaultTablePlugin {...props.plugins.table} />
     </>
   )
 }
@@ -167,6 +170,15 @@ function DefaultMarkdownShortcutsPlugin(
       {...restMarkdownConfig}
     />
   )
+}
+
+function DefaultTablePlugin(props: PortableTextPluginsProps['plugins']['table']) {
+  // Tables are opt-in, unlike the other built-in plugins.
+  if (props?.enabled !== true) {
+    return null
+  }
+
+  return <PortableTextTablePlugin containers={props.containers} />
 }
 
 function DefaultPasteLinkPlugin(props: PortableTextPluginsProps['plugins']['pasteLink']) {

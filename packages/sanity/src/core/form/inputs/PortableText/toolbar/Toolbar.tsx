@@ -4,16 +4,17 @@ import {
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@portabletext/editor'
-import {CollapseIcon, ExpandIcon} from '@sanity/icons'
+import {CollapseIcon} from '@sanity/icons/Collapse'
+import {ExpandIcon} from '@sanity/icons/Expand'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components'
-import {useRovingFocus} from '../../../../components'
-import {useTranslation} from '../../../../i18n'
-import {useResolveInitialValueForType} from '../../../../store'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useResolveInitialValueForType} from '../../../../store/document/useResolveInitialValueForType'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
@@ -238,7 +239,7 @@ export function Toolbar(props: ToolbarProps) {
     hotkeys,
     onMemberOpen,
     resolveInitialValue,
-    disabled: true,
+    disabled,
   })
 
   const blockStyles = useMemo(() => getBlockStyles(schemaTypes), [schemaTypes])

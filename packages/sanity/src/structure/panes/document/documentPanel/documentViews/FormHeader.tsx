@@ -1,10 +1,10 @@
-import {InfoOutlineIcon} from '@sanity/icons'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Heading, Inline, Stack, Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../../../ui-components'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../../../i18n'
 
 interface DocumentHeaderProps {

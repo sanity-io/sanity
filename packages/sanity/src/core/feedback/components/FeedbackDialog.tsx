@@ -1,4 +1,6 @@
-import {FaceHappyIcon, FaceIndifferentIcon, FaceSadIcon} from '@sanity/icons'
+import {FaceHappyIcon} from '@sanity/icons/FaceHappy'
+import {FaceIndifferentIcon} from '@sanity/icons/FaceIndifferent'
+import {FaceSadIcon} from '@sanity/icons/FaceSad'
 import {Card, Flex, Stack, Switch, Text, TextArea} from '@sanity/ui'
 import {
   type ChangeEvent,
@@ -10,7 +12,8 @@ import {
 } from 'react'
 import {FeedbackContext} from 'sanity/_singletons'
 
-import {Button, Dialog} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {sendFeedbackToSentry} from '../feedbackClient'
 import {useFeedbackTelemetry} from '../hooks/useFeedbackTelemetry'
 import {useFeedbackTranslation} from '../i18n/useFeedbackTranslation'

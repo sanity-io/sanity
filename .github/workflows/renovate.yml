@@ -58,7 +58,7 @@ jobs:
           cat "$CONFIG_FILE"
 
       - name: Self-hosted Renovate
-        uses: renovatebot/github-action@dd5302ec17783b2fc721b19ae7209b57b1587765 # v46.1.17
+        uses: renovatebot/github-action@3064367f740a1a91cca218698a63902689cce200 # v46.1.20
         with:
           token: ${{ steps.app-token.outputs.token }}
           configurationFile: .renovate-runner-config.json5

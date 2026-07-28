@@ -7,9 +7,9 @@ import {
 import {Box, Card, Stack} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
-import {Button} from '../../../../../../../../../../ui-components'
-import {useSchema} from '../../../../../../../../../hooks'
-import {useTranslation} from '../../../../../../../../../i18n'
+import {Button} from '../../../../../../../../../../ui-components/button/Button'
+import {useSchema} from '../../../../../../../../../hooks/useSchema'
+import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../../utils/getSchemaField'
@@ -56,7 +56,6 @@ export function SearchFilterReferenceInput({
       })
       .reduce<SchemaType[]>((acc, val) => {
         if (acc.findIndex((v) => v.name === val?.name) < 0) {
-          // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
           acc.push(val as SchemaType)
         }
         return acc

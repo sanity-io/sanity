@@ -7,12 +7,13 @@ import {
   type SanityDocumentLike,
   type ValidationMarker,
 } from '@sanity/types'
-import {pathFor} from '@sanity/util/paths'
+import {pathFor, resolveKeyedPath} from '@sanity/util/paths'
 import throttle from 'lodash-es/throttle.js'
 import {
   type RefObject,
   useCallback,
   useEffect,
+  useEffectEvent,
   useInsertionEffect,
   useMemo,
   useRef,
@@ -20,28 +21,23 @@ import {
 } from 'react'
 import deepEquals from 'react-fast-compare'
 
-import {
-  type FormState,
-  getExpandOperations,
-  type NodeChronologyProps,
-  type OnPathFocusPayload,
-  type PatchEvent,
-  setAtPath,
-  type StateTree,
-  toMutationPatches,
-  useFormState,
-} from '.'
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
-import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {type DocumentSyncState, useDocumentSyncState} from '../hooks/useDocumentSyncState'
 import {useEditState} from '../hooks/useEditState'
+import {useReconnectingToast} from '../hooks/useReconnectingToast'
 import {useSchema} from '../hooks/useSchema'
+import {
+  getPairTarget,
+  getTargetScopeId,
+  useTargetDocumentState,
+} from '../hooks/useTargetDocumentState'
 import {useValidationStatus} from '../hooks/useValidationStatus'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
+import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
 import {useDocumentVersionTypeSortedList} from '../releases/hooks/useDocumentVersionTypeSortedList'
 import {useOnlyHasVersions} from '../releases/hooks/useOnlyHasVersions'
@@ -50,28 +46,33 @@ import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {isPublishedPerspective, isReleaseScheduledOrScheduling} from '../releases/util/util'
-import {
-  type DocumentPresence,
-  type EditStateFor,
-  type InitialValueState,
-  type PermissionCheckResult,
-  selectUpstreamVersion,
-  useDocumentValuePermissions,
-  usePresenceStore,
-} from '../store'
+import {usePresenceStore} from '../store/datastores'
+import {type EditStateFor} from '../store/document/document-pair/editState'
+import {type InitialValueState} from '../store/document/initialValue/types'
 import {isNewDocument} from '../store/document/isNewDocument'
-import {useWorkspace} from '../studio/workspace'
+import {selectUpstreamVersion} from '../store/document/selectUpstreamVersion'
+import {useDocumentValuePermissions} from '../store/grants/documentValuePermissions'
+import {type PermissionCheckResult} from '../store/grants/types'
+import {type DocumentPresence} from '../store/presence/types'
 import {
-  EMPTY_ARRAY,
   getDraftId,
   getPublishedId,
   getVersionFromId,
   getVersionId,
   isSystemBundle,
-  useUnique,
-} from '../util'
+} from '../util/draftUtils'
+import {EMPTY_ARRAY} from '../util/empty'
+import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
+import {type PatchEvent} from './patch/PatchEvent'
+import {setAtPath} from './store/stateTreeHelper'
+import {type NodeChronologyProps} from './store/types/nodes'
+import {type StateTree} from './store/types/state'
+import {type FormState, useFormState} from './store/useFormState'
+import {getExpandOperations} from './store/utils/getExpandOperations'
+import {type OnPathFocusPayload} from './types/inputProps'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
+import {toMutationPatches} from './utils/mutationPatch'
 
 interface DocumentFormOptions {
   documentType: string
@@ -172,7 +173,10 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
-  const workspace = useWorkspace()
+  const {selectedVariantName, bundle} = usePerspective()
+  const targetDocumentState = useTargetDocumentState(documentId)
+  const isVariantTarget =
+    targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
 
   const enhancedObjectDialogEnabled = true
 
@@ -181,7 +185,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     throw new Error(`Schema type for '${documentType}' not found`)
   }
   const liveEdit = Boolean(schemaType.liveEdit)
-  const publishedId = getPublishedId(documentId)
 
   const telemetry = useTelemetry()
 
@@ -198,7 +201,20 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         )
       : undefined
 
-  const activeDocumentReleaseId = useMemo(() => {
+  // The bundle segment for the pair checkout (`useEditState` & co.). Variant targets use the
+  // stub-resolved opaque scope id exclusively: a missing/unresolved variant target must never
+  // fall back to another document (ops stay guarded, the form stays read-only). Non-variant
+  // targets keep the deterministic release derivation with its fallbacks — a release version id
+  // is derivable, so new documents under a release must check out the version pair for typing to
+  // create the release version (not the base draft), and documents that only have versions must
+  // check out their first version to display it.
+  const targetScopeId = useMemo(() => {
+    if (selectedVariantName) {
+      // The scope of the resolved target document (release id for release targets, opaque scope hash
+      // for variant targets), threaded through the version-editing pipeline. Undefined while the
+      // target is resolving or when the base draft/published pair applies.
+      return getTargetScopeId(targetDocumentState)
+    }
     if (isSystemBundle(selectedPerspectiveName)) {
       return undefined
     }
@@ -214,22 +230,34 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
 
     return getVersionFromId(firstVersion ?? '')
-  }, [documentVersions, onlyHasVersions, selectedPerspectiveName, firstVersion])
+  }, [
+    selectedVariantName,
+    targetDocumentState,
+    documentVersions,
+    onlyHasVersions,
+    selectedPerspectiveName,
+    firstVersion,
+  ])
 
-  const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
+  const editState = useEditState(documentId, documentType, 'default', targetScopeId)
 
-  const connectionState = useConnectionState(documentId, documentType, activeDocumentReleaseId)
+  const connectionState = useConnectionState(documentId, documentType, targetScopeId)
   useReconnectingToast(connectionState === 'reconnecting')
 
   // Staged signal for "the document's edits aren't reaching the server".
   // `stalled` means it's been unsynced long enough that we lock editing to
   // stop the user piling more changes onto a document that isn't syncing.
-  const syncState = useDocumentSyncState(documentId, documentType, activeDocumentReleaseId)
+  const syncState = useDocumentSyncState(documentId, documentType, targetScopeId)
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
+    // When a variant-scoped version was resolved, the editable document is always the version
+    // document, regardless of which bundle (published/drafts/release) the variant belongs to.
+    if (isVariantTarget) {
+      return editState.version || baseValue
+    }
     // Only treat releaseId as an actual release/anonymous bundle if it's not a system bundle ('published' or 'drafts')
     // System bundles are handled by subsequent conditions below
     if (releaseId && !isSystemBundle(releaseId)) {
@@ -258,6 +286,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
     return editState?.draft || editState?.published || baseValue
   }, [
+    isVariantTarget,
     documentId,
     documentType,
     editState.draft,
@@ -291,6 +320,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     editState,
   })
 
+  // No `getTargetScopeId(useTargetDocumentState())` here: this targets the upstream document in the document id
+  // stack (derived from `upstreamId`), not the document targeted by the selected perspective.
   const upstreamEditState = useEditState(
     documentId,
     documentType,
@@ -347,13 +378,26 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName))
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const targetDocumentId = activeDocumentReleaseId
-    ? getVersionId(publishedId, activeDocumentReleaseId)
-    : // in cases where there is a draft in a live edit, we need to use it so that it can be published
+  const targetDocumentId = useMemo(() => {
+    // If the document exists, use that target document id.
+    // This takes into account the variant ids where the id is opaque.
+    if (targetDocumentState.status === 'ready' && targetDocumentState.targetDocument) {
+      return targetDocumentState.targetDocument._id
+    }
+    if (bundle === 'published') {
+      return getPublishedId(documentId)
+    }
+    if (bundle === 'drafts') {
+      // in cases where there is a draft in a live edit, we need to use it so that it can be published
       // in case if the user has permissions to do so otherwise just use the published id
-      liveEdit
-      ? editState?.draft?._id || publishedId
-      : getDraftId(documentId)
+      if (liveEdit) {
+        return editState.draft?._id || getPublishedId(documentId)
+      }
+      return getDraftId(documentId)
+    }
+    return getVersionId(getPublishedId(documentId), bundle)
+  }, [targetDocumentState, bundle, documentId, liveEdit, editState.draft?._id])
+
   const docPermissionsInput = useMemo(() => {
     return {
       ...value,
@@ -393,44 +437,58 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     const createActionDisabled = isNonExistent && !isActionEnabled(schemaType, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
-    // Lock once edits have stalled, and keep it locked while the backlog
-    // is flushing after reconnect (`recovering`) — we're not in sync yet.
+    // Lock once edits have stalled, and keep it locked while a failed
+    // commit is being retried (`recovering`) — we're not in sync yet.
     const syncBlocked = syncState === 'stalled' || syncState === 'recovering'
     const willBeUnpublished = value ? isGoingToUnpublish(value) : false
 
-    // in cases where the document has no draft or published, but has a version,
-    // and that version doesn't match current pinned version
-    // we disable editing
-    if (
-      editState.version &&
-      !editState.draft &&
-      !editState.published &&
-      onlyHasVersions &&
-      selectedPerspectiveName !== getVersionFromId(editState.version._id) &&
-      isNewDocument(editState) === false
-    ) {
+    // When a variant is requested but its target has not resolved (still resolving, missing, or
+    // an invalid selection), editing must be blocked so patches can never fall back to the base
+    // draft/published pair. The document pane additionally gates mounting on resolution, but this
+    // hook is also used outside the gated pane (e.g. DiffViewPane).
+    if (selectedVariantName && targetDocumentState.status !== 'ready') {
       return true
+    }
+
+    // When editing a resolved variant-scoped version, the document id intentionally doesn't match
+    // the selected bundle/perspective (variant docs live under `versions.<scopeId>.<publishedId>`),
+    // so the perspective/bundle-mismatch guards below must be skipped.
+    if (!isVariantTarget) {
+      // in cases where the document has no draft or published, but has a version,
+      // and that version doesn't match current pinned version
+      // we disable editing
+      if (
+        editState.version &&
+        !editState.draft &&
+        !editState.published &&
+        onlyHasVersions &&
+        selectedPerspectiveName !== getVersionFromId(editState.version._id) &&
+        isNewDocument(editState) === false
+      ) {
+        return true
+      }
+
+      if (!liveEdit && selectedPerspectiveName === 'published') {
+        return true
+      }
+
+      // If a release is selected, validate that the document id matches the selected release id.
+      //
+      // If the user is viewing a new document (a document that exists locally, but has not yet been
+      // created in the dataset), they are permitted to edit it, regardless of which perspective was
+      // selected when they created it. This will cause it to be created in the dataset, attached to
+      // the currently selected perspective.
+      if (
+        releaseId &&
+        getVersionFromId(value._id) !== releaseId &&
+        isNewDocument(editState) === false
+      ) {
+        return true
+      }
     }
 
     // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
     if (liveEdit && editState.draft?._id) {
-      return true
-    }
-    if (!liveEdit && selectedPerspectiveName === 'published') {
-      return true
-    }
-
-    // If a release is selected, validate that the document id matches the selected release id.
-    //
-    // If the user is viewing a new document (a document that exists locally, but has not yet been
-    // created in the dataset), they are permitted to edit it, regardless of which perspective was
-    // selected when they created it. This will cause it to be created in the dataset, attached to
-    // the currently selected perspective.
-    if (
-      releaseId &&
-      getVersionFromId(value._id) !== releaseId &&
-      isNewDocument(editState) === false
-    ) {
       return true
     }
 
@@ -462,13 +520,25 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     selectedPerspectiveName,
     liveEdit,
     releaseId,
+    selectedVariantName,
+    targetDocumentState.status,
+    isVariantTarget,
     ready,
     isReleaseLocked,
     readOnlyProp,
     syncState,
   ])
 
-  const {patch} = useDocumentOperation(documentId, documentType, activeDocumentReleaseId)
+  // For variant flows, pass the full target (not just the scope id) so the store keeps the
+  // operations guarded while the target is unresolved or missing, instead of falling back to the
+  // base pair. Non-variant flows keep the deterministic version name: their ids are derivable, so
+  // resolution never blocks them (and the store's self-derived guard still covers a requested
+  // version that doesn't exist).
+  const {patch} = useDocumentOperation(
+    documentId,
+    documentType,
+    selectedVariantName ? getPairTarget(targetDocumentState) : targetScopeId,
+  )
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error(
@@ -482,6 +552,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     if (readOnly) {
       patchRef.current = () => {
         throw new Error('Attempted to patch a read-only document')
+      }
+    } else if (patch.disabled) {
+      // The store disabled the patch operation (target unresolved or missing, transient pair
+      // setup). Surfacing it here mirrors the read-only guard: never let a patch silently reach
+      // the wrong document.
+      patchRef.current = () => {
+        throw new Error(
+          `Attempted to patch a document with a disabled patch operation (${patch.disabled})`,
+        )
       }
     } else {
       // note: this needs to happen in an insertion effect to make sure we're ready to receive patches from child components when they run their effects initially
@@ -619,6 +698,34 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       focusPathRef.current = nextPath
     }
   }
+
+  const applyInitialFocusPath = useEffectEvent(() => {
+    if (!initialFocusPath || initialFocusPath.length === 0) return
+    const resolvedPath = resolveKeyedPath(formStateRef.current?.value, initialFocusPath)
+
+    // Apply unconditionally rather than through `handleProgrammaticFocus`: its change
+    // detection compares against `focusPathRef`, which may already match the target path
+    // (the state was seeded from `initialFocusPath`, and e.g. dialog autofocus can align
+    // the ref before the form is ready) — and the expand operations must still run.
+    setFocusPath(resolvedPath)
+    handleSetOpenPath(resolvedPath)
+    onFocusPath?.(resolvedPath)
+    focusPathRef.current = resolvedPath
+  })
+
+  // Seeding `focusPath`/`openPath` state from `initialFocusPath` (on mount, above) is not
+  // enough to reveal the target field: expanding collapsed ancestors (fieldsets, field
+  // groups, collapsible objects) requires running the expand operations against a form
+  // state computed from the loaded document. Apply the initial focus once, as soon as the
+  // form becomes ready. The URL→form sync in DocumentPaneProvider intentionally skips this
+  // initial case (its openPath guard sees the seeded path as already in sync).
+  const initialFocusPathAppliedRef = useRef(false)
+  useEffect(() => {
+    if (!ready || initialFocusPathAppliedRef.current) return
+    initialFocusPathAppliedRef.current = true
+    applyInitialFocusPath()
+  }, [ready])
+
   return {
     editState,
     upstreamEditState,

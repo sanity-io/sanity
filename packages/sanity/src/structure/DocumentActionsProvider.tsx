@@ -70,10 +70,11 @@ export function DocumentActionsProvider(props: {children: React.ReactNode}) {
 }
 
 /**
- * This is a list of the actions that are supported when a document is linked to Canvas.
- * Custom actions and actions that are not supported by Canvas will be disabled and will include a tooltip explaining that the action is not supported.
+ * The actions that remain available while a document is locked by Canvas (i.e. not editable in
+ * Studio). Custom actions and other unsupported actions are disabled with a tooltip explaining why.
+ * When the document is linked but editable, no actions are disabled.
  */
-const SUPPORTED_LINKED_TO_CANVAS_ACTIONS: DocumentActionComponent['action'][] = [
+const SUPPORTED_CANVAS_LOCKED_ACTIONS: DocumentActionComponent['action'][] = [
   'delete',
   'duplicate',
   'publish',
@@ -97,14 +98,14 @@ function ActionsGuardWrapper(props: ActionsGuardWrapperProps) {
   const {states, children, actionProps} = props
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const {isLinked} = useCanvasCompanionDoc(getDocumentIdForCanvasLink(actionProps))
+  const {isLockedByCanvas} = useCanvasCompanionDoc(getDocumentIdForCanvasLink(actionProps))
 
   return (
     <DocumentActionsStateContext.Provider
       value={
-        isLinked
+        isLockedByCanvas
           ? states.map((s) => {
-              if (!s.action || !SUPPORTED_LINKED_TO_CANVAS_ACTIONS.includes(s.action)) {
+              if (!s.action || !SUPPORTED_CANVAS_LOCKED_ACTIONS.includes(s.action)) {
                 return {
                   ...s,
                   disabled: true,

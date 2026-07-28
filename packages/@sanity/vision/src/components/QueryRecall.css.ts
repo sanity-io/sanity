@@ -1,15 +1,17 @@
 import {style} from '@vanilla-extract/css'
 
 export const fixedHeader = style({
-  position: 'sticky',
-  top: 0,
+  flexShrink: 0,
   background: 'var(--card-bg-color)',
   zIndex: 1,
 })
 
 export const scrollContainer = style({
-  height: 'auto',
+  minHeight: 0,
   width: '100%',
   minWidth: 0,
-  overflow: 'visible',
+})
+
+export const queryList = style({
+  minHeight: 0,
 })

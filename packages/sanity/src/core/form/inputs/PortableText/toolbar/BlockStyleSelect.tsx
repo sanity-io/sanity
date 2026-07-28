@@ -1,5 +1,5 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
@@ -9,8 +9,9 @@ import {
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, MenuButton, type MenuButtonProps} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {
   BlockQuote,
@@ -24,6 +25,7 @@ import {
 } from '../text/textStyles'
 import {useActiveStyleKeys, useFocusBlock} from './hooks'
 import {type BlockStyleItem} from './types'
+import {useApplicableSchema} from './useApplicableSchema'
 
 const MenuButtonMemo = memo(MenuButton)
 
@@ -73,6 +75,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
   props: BlockStyleSelectProps,
 ): React.JSX.Element {
   const {disabled, items: itemsProp, boundaryElement} = props
+  const applicable = useApplicableSchema()
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const focusBlock = useFocusBlock()
@@ -168,11 +171,13 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
     () => (
       <Menu disabled={_disabled}>
         {items.map((item) => {
+          const itemDisabled = _disabled || !applicable.styles.has(item.style)
           return (
             <StyledMenuItem
+              disabled={itemDisabled}
               key={item.key}
               pressed={activeItems.includes(item)}
-              onClick={_disabled ? undefined : () => handleChange(item)}
+              onClick={itemDisabled ? undefined : () => handleChange(item)}
             >
               {renderOption(item)}
             </StyledMenuItem>
@@ -180,7 +185,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
         })}
       </Menu>
     ),
-    [_disabled, activeItems, handleChange, items, renderOption],
+    [_disabled, activeItems, applicable, handleChange, items, renderOption],
   )
 
   return (

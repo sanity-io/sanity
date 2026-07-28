@@ -1,6 +1,6 @@
 import {Card, Flex} from '@sanity/ui'
 
-import {WorkspaceAuth} from '../components/navbar/workspace'
+import {WorkspaceAuth} from '../components/navbar/workspace/WorkspaceAuth/WorkspaceAuth'
 import {LoggedOutToast} from './LoggedOutToast'
 
 export function AuthenticateScreen() {

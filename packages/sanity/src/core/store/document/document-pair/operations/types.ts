@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type SanityDocumentLike, type Schema} from '@sanity/types'
 
-import {type DocumentRevision, type HistoryStore} from '../../../history'
+import {type DocumentRevision, type HistoryStore} from '../../../history/createHistoryStore'
 import {type IdPair} from '../../types'
 import {type DocumentVersionSnapshots} from '../snapshotPair'
 
@@ -30,14 +30,25 @@ type Patch = any
 // Note: Changing this interface in a backwards incompatible manner will be a breaking change
 export interface OperationsAPI {
   commit: Operation | GuardedOperation
-  delete: Operation<[versions?: string[]], 'NOTHING_TO_DELETE' | 'NOT_READY'>
-  del: Operation<[versions?: string[]], 'NOTHING_TO_DELETE'> | GuardedOperation
+  delete: Operation<[versions?: string[]], 'NOTHING_TO_DELETE' | 'NOT_READY' | 'TARGET_NOT_FOUND'>
+  del: Operation<[versions?: string[]], 'NOTHING_TO_DELETE' | 'TARGET_NOT_FOUND'> | GuardedOperation
   publish:
-    | Operation<[], 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES'>
+    | Operation<
+        [],
+        | 'LIVE_EDIT_ENABLED'
+        | 'ALREADY_PUBLISHED'
+        | 'NO_CHANGES'
+        | 'NOT_PUBLISHABLE'
+        | 'TARGET_NOT_FOUND'
+      >
     | GuardedOperation
   patch: Operation<[patches: Patch[], initialDocument?: Record<string, any>]> | GuardedOperation
-  discardChanges: Operation<[], 'NO_CHANGES' | 'NOT_PUBLISHED'> | GuardedOperation
-  unpublish: Operation<[], 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'> | GuardedOperation
+  discardChanges:
+    | Operation<[], 'NO_CHANGES' | 'NOT_PUBLISHED' | 'TARGET_NOT_FOUND'>
+    | GuardedOperation
+  unpublish:
+    | Operation<[], 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED' | 'TARGET_NOT_FOUND'>
+    | GuardedOperation
   duplicate:
     | Operation<
         [
@@ -46,7 +57,7 @@ export interface OperationsAPI {
             mapDocument?: MapDocument
           },
         ],
-        'NOTHING_TO_DUPLICATE'
+        'NOTHING_TO_DUPLICATE' | 'TARGET_NOT_FOUND'
       >
     | GuardedOperation
   restore: Operation<[revision: DocumentRevision]> | GuardedOperation

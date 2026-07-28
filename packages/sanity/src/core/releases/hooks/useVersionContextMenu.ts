@@ -2,9 +2,10 @@ import {type ReleaseDocument} from '@sanity/client'
 import {useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
 import {type MouseEvent, type RefObject, useCallback, useRef, useState} from 'react'
 
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TargetPerspective} from '../../perspective/types'
 import {useSingleDocRelease} from '../../singleDocRelease/context/SingleDocReleaseProvider'
+import {useClearScheduledDraftPerspectiveOnDelete} from '../../singleDocRelease/hooks/useClearScheduledDraftPerspectiveOnDelete'
 import {
   useScheduledDraftMenuActions,
   type UseScheduledDraftMenuActionsReturn,
@@ -173,12 +174,15 @@ export function useVersionContextMenu(
     onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(release._id))
   }, [release, onSetScheduledDraftPerspective])
 
+  const onDeleteComplete = useClearScheduledDraftPerspectiveOnDelete(release)
+
   const scheduledDraftMenuActions = useScheduledDraftMenuActions({
     release,
     documentType,
     documentId,
     disabled,
     onActionComplete: handleEditScheduleComplete,
+    onDeleteComplete,
   })
 
   const sourceReleasePerspective =

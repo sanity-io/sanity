@@ -1,5 +1,5 @@
 import {red} from '@sanity/color'
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {type CardTone, Container, Flex, Menu, Text} from '@sanity/ui'
 
 import {Button} from '../../../../ui-components/button/Button'

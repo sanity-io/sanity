@@ -1,4 +1,4 @@
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {
   Flex,
   type Placement,
@@ -11,7 +11,8 @@ import {useCallback, useMemo, useState} from 'react'
 import {type Chunk, useTimelineSelector, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button, Popover} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
+import {Popover} from '../../../../ui-components/popover/Popover'
 import {useDocumentPane} from '../useDocumentPane'
 import {Timeline} from './timeline'
 import {TimelineError} from './TimelineError'

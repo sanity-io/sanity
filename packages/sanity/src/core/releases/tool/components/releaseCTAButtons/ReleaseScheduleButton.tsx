@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ClockIcon, ErrorOutlineIcon} from '@sanity/icons'
+import {ClockIcon} from '@sanity/icons/Clock'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {format} from 'date-fns/format'
@@ -10,8 +11,11 @@ import {startOfMinute} from 'date-fns/startOfMinute'
 import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
+import {type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
 import {MONTH_PICKER_VARIANT} from '../../../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../components/inputs/DateInputs/DateTimeInput'
@@ -19,14 +23,15 @@ import {TimeZoneButton} from '../../../../components/timeZone/timeZoneButton/Tim
 import TimeZoneButtonElementQuery from '../../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
 import {useTimeZone} from '../../../../hooks/useTimeZone'
-import {Translate, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../../studio/constants'
 import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
-import {isReleaseScheduledOrScheduling} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {isReleaseScheduledOrScheduling} from '../../../util/util'
+import {type DocumentInRelease} from '../../detail/types'
 
 interface ReleaseScheduleButtonProps {
   release: ReleaseDocument
@@ -371,7 +376,6 @@ export const ReleaseScheduleButton = ({
       disabled: isScheduleButtonDisabled || status === 'scheduling' || documents.length === 0,
       text: t('action.schedule'),
       handleOnClick: handleOnInitialSchedule,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       tooltipProps: {
         disabled: !tooltipText,
         content: scheduleTooltipContent,

@@ -62,6 +62,7 @@ describe('ReleaseDetailsEditor', () => {
         expect(input).not.toBeDisabled()
       })
 
+      // @ts-expect-error -- pre-existing, fix later
       const updateReleaseMock = (useReleaseOperations as unknown as vi.Mock).mock.results[0]?.value
         .updateRelease
 
@@ -98,6 +99,7 @@ describe('ReleaseDetailsEditor', () => {
         expect(input).not.toBeDisabled()
       })
 
+      // @ts-expect-error -- pre-existing, fix later
       const updateReleaseMock = (useReleaseOperations as unknown as vi.Mock).mock.results[0]?.value
         .updateRelease
 

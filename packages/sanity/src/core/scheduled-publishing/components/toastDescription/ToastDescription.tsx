@@ -1,4 +1,4 @@
-import {CalendarIcon} from '@sanity/icons'
+import {CalendarIcon} from '@sanity/icons/Calendar'
 import {Inline, Stack, Text} from '@sanity/ui'
 
 interface Props {

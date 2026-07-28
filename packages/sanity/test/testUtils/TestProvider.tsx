@@ -7,25 +7,23 @@ import {AddonDatasetContext, PerspectiveContext} from 'sanity/_singletons'
 import {vi} from 'vitest'
 
 import {ResolvedPanesProvider} from '../../src/_singletons/context/ResolvedPanesContext'
-import {
-  type LocaleResourceBundle,
-  ResourceCacheProvider,
-  type SingleWorkspace,
-  type WorkspaceSummary,
-} from '../../src/core'
+import {type SingleWorkspace, type WorkspaceSummary} from '../../src/core/config/types'
 import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
 import {LocaleProviderBase} from '../../src/core/i18n/components/LocaleProvider'
 import {prepareI18n} from '../../src/core/i18n/i18nConfig'
 import {usEnglishLocale} from '../../src/core/i18n/locales'
+import {type LocaleResourceBundle} from '../../src/core/i18n/types'
 import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/AssetLimitUpsellProvider'
 import {DocumentLimitUpsellProvider} from '../../src/core/limits/context/documents/DocumentLimitUpsellProvider'
 import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/usePerspective.mock'
+import {ResourceCacheProvider} from '../../src/core/store/ResourceCacheProvider'
 import {ActiveWorkspaceMatcherProvider} from '../../src/core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherProvider'
 import {CopyPasteProvider} from '../../src/core/studio/copyPaste/CopyPasteProvider'
 import {SourceProvider} from '../../src/core/studio/source'
 import {WorkspaceProvider} from '../../src/core/studio/workspace'
-import {route, RouterProvider} from '../../src/router'
-import {type Panes} from '../../src/structure/structureResolvers'
+import {route} from '../../src/router/route'
+import {RouterProvider} from '../../src/router/RouterProvider'
+import {type Panes} from '../../src/structure/structureResolvers/useResolvedPanes'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 // Mock the useUpsellData hook to prevent API calls in tests
@@ -62,8 +60,8 @@ export async function createTestProvider({
     paneDataItems: [],
     routerPanes: [],
     resolvedPanes: [],
-    focusedPane: null,
-    setFocusedPane: noop,
+    maximizedPane: null,
+    setMaximizedPane: noop,
   }
 
   const locales = [usEnglishLocale]
@@ -86,6 +84,7 @@ export async function createTestProvider({
     isCreatingDataset: false,
     client: null,
     ready: true,
+    error: null,
   }
 
   const TestProvider: ComponentType<PropsWithChildren> = ({children}) => (

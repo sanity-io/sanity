@@ -1,5 +1,7 @@
 import {TZDate} from '@date-fns/tz'
-import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
+import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays} from 'date-fns/addDays'

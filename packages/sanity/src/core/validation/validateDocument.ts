@@ -16,9 +16,10 @@ import uniqBy from 'lodash-es/uniqBy.js'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
-import {type SourceClientOptions, type Workspace} from '../config'
+import {type SourceClientOptions, type Workspace} from '../config/types'
 import {resolveConditionalProperty} from '../form/store/conditional-property/resolveConditionalProperty'
 import {getFallbackLocaleSource} from '../i18n/fallback'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
 import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
@@ -200,7 +201,7 @@ export function validateDocument({
       schema: workspace.schema,
       getDocumentExists:
         options.getDocumentExists ||
-        createBatchedGetDocumentExists(getClient({apiVersion: 'v2021-03-25'})),
+        createBatchedGetDocumentExists(getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)),
       environment,
       currentUser,
     }),

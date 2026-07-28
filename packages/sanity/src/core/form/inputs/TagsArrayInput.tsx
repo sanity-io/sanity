@@ -1,9 +1,10 @@
 import {useCallback, useMemo} from 'react'
 
-import {ChangeIndicator} from '../../changeIndicators'
-import {TagInput} from '../components/tagInput'
-import {set, unset} from '../patch'
-import {type ArrayOfPrimitivesInputProps} from '../types'
+import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
+import {TagInput} from '../components/tagInput/tagInput'
+import {set, unset} from '../patch/patch'
+import {type ArrayOfPrimitivesInputProps} from '../types/inputProps'
+import {stripStegaFromPasteEvent} from '../utils/stegaPaste'
 
 /**
  *
@@ -32,6 +33,7 @@ export function TagsArrayInput(props: TagsArrayInputProps) {
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
       <TagInput
         onChange={handleChange}
+        onPaste={stripStegaFromPasteEvent}
         readOnly={readOnly}
         value={tagInputValue}
         {...elementProps}

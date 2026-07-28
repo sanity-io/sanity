@@ -1,12 +1,12 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import {LaunchIcon} from '@sanity/icons'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {of} from 'rxjs'
 
-import {Button} from '../../../ui-components'
-import {useConditionalToast} from '../../hooks'
+import {Button} from '../../../ui-components/button/Button'
 import {useClient} from '../../hooks/useClient'
+import {useConditionalToast} from '../../hooks/useConditionalToast'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {isUsingLegacyHttp} from '../../network/isUsingLegacyHttp'
 

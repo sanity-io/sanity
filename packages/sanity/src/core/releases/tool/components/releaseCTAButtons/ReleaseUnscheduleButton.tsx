@@ -1,15 +1,17 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CloseCircleIcon} from '@sanity/icons'
+import {CloseCircleIcon} from '@sanity/icons/CloseCircle'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 
-import {Button, Dialog} from '../../../../../ui-components'
-import {Translate, useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {UnscheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../detail/types'
 
 interface ReleaseScheduleButtonProps {
   release: ReleaseDocument

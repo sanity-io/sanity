@@ -1,10 +1,8 @@
-import {
-  ChevronRightIcon,
-  DesktopIcon,
-  ErrorOutlineIcon,
-  InfoOutlineIcon,
-  WarningOutlineIcon,
-} from '@sanity/icons'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {DesktopIcon} from '@sanity/icons/Desktop'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useCallback, useContext, useState} from 'react'
 import {type ObjectSchemaType, useTranslation} from 'sanity'

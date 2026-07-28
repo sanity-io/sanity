@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {Card, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {isReleaseScheduledOrScheduling} from '../../index'
+import {isReleaseScheduledOrScheduling} from '../../util/util'
 import {ReleasePublishAllButton} from '../components/releaseCTAButtons/ReleasePublishAllButton'
 import {ReleaseRevertButton} from '../components/releaseCTAButtons/ReleaseRevertButton/ReleaseRevertButton'
 import {ReleaseScheduleButton} from '../components/releaseCTAButtons/ReleaseScheduleButton'
@@ -10,7 +10,7 @@ import {ReleaseUnscheduleButton} from '../components/releaseCTAButtons/ReleaseUn
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {type ReleaseEvent} from './events/types'
 import {ReleaseStatusItems} from './ReleaseStatusItems'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {type DocumentInRelease} from './types'
 
 export function ReleaseDashboardFooter(props: {
   documents: DocumentInRelease[]

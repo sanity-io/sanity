@@ -1,4 +1,4 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
 import debounce from 'lodash-es/debounce.js'
 import {type RefObject, useCallback, useMemo} from 'react'

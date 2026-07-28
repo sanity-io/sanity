@@ -19,10 +19,11 @@ import {
   type PermissionCheckResult,
   type ReleaseId,
   type StateTree,
+  type TargetDocumentState,
   type TimelineStore,
 } from 'sanity'
 
-import {type View} from '../../structureBuilder'
+import {type View} from '../../structureBuilder/types'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
 
 /** @internal */
@@ -85,6 +86,11 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   timelineMode?: undefined
   setTimelineRange(since: string | null, rev: string | null): void
   setIsDeleting: (state: boolean) => void
+  /**
+   * Resolution state of the document targeted by the selected perspective and variant.
+   * The single source in-pane consumers should read instead of resolving the target themselves.
+   */
+  targetDocumentState: TargetDocumentState
   isDocumentGroupInventoryActive: boolean
   setIsDocumentGroupInventoryActive: (active: boolean) => void
   timelineError: Error | null

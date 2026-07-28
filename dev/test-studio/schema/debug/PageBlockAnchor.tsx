@@ -1,4 +1,4 @@
-import {LinkIcon} from '@sanity/icons'
+import {LinkIcon} from '@sanity/icons/Link'
 import {Box, Button, Flex, useToast} from '@sanity/ui'
 import {useCallback} from 'react'
 import {type ObjectItemProps, type Slug, useFormValue} from 'sanity'

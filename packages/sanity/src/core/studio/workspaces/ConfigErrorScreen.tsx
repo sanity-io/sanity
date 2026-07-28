@@ -1,12 +1,13 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {ArrowLeftIcon, LaunchIcon} from '@sanity/icons'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
-import {useActiveWorkspace} from '../activeWorkspaceMatcher'
+import {Button} from '../../../ui-components/button/Button'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 import {Layout} from '../components/navbar/workspace/WorkspaceAuth/Layout'
 import {WorkspaceAuthCard} from '../components/navbar/workspace/WorkspaceAuth/WorkspaceAuthCard'
 import {type ConfigErrorClassification} from '../requestErrors/classify'

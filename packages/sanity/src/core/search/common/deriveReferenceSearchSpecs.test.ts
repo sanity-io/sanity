@@ -1,7 +1,7 @@
 import {defineField, defineType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
-import {createSchema} from '../../schema'
+import {createSchema} from '../../schema/createSchema'
 import {deriveReferenceSearchSpecs} from './deriveReferenceSearchSpecs'
 
 const MAX_DEPTH = 10

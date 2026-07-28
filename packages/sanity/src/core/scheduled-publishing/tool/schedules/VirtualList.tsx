@@ -1,4 +1,4 @@
-import {CheckmarkCircleIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {Box, Flex} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import {useEffect, useMemo, useRef} from 'react'

@@ -1,4 +1,4 @@
-import {ResetIcon} from '@sanity/icons'
+import {ResetIcon} from '@sanity/icons/Reset'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
 import {Box, Card, type CardTone, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import capitalize from 'lodash-es/capitalize.js'
@@ -12,11 +12,12 @@ import {
   useMemo,
 } from 'react'
 
-import {Button} from '../../../ui-components'
-import {ChangeIndicator} from '../../changeIndicators'
-import {useTranslation} from '../../i18n'
-import {PatchEvent, set, unset} from '../patch'
-import {type StringInputProps} from '../types'
+import {Button} from '../../../ui-components/button/Button'
+import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {set, unset} from '../patch/patch'
+import {PatchEvent} from '../patch/PatchEvent'
+import {type StringInputProps} from '../types/inputProps'
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number,

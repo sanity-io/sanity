@@ -1,4 +1,4 @@
-import {HelpCircleIcon} from '@sanity/icons'
+import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {
   Badge,
   Box,

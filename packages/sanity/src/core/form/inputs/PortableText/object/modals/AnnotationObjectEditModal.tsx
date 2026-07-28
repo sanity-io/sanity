@@ -40,7 +40,7 @@ export function AnnotationObjectEditModal(props: {
 
   const elementRef = elementRefs[openAnnotation.key]
 
-  if (!elementRef) {
+  if (!elementRef || !props.referenceBoundary?.contains(elementRef)) {
     return null
   }
 

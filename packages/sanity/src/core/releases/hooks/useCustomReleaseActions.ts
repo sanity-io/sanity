@@ -2,8 +2,8 @@ import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 
 import {type ReleaseActionComponent} from '../../config/releases/actions'
-import {useSource} from '../../studio'
-import {type DocumentInRelease} from '../tool/detail/useBundleDocuments'
+import {useSource} from '../../studio/source'
+import {type DocumentInRelease} from '../tool/detail/types'
 
 /**
  * Hook to get custom/configured release actions for a release

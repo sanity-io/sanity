@@ -1,11 +1,14 @@
 import {HighlightStyle, syntaxHighlighting} from '@codemirror/language'
+import {type Extension} from '@codemirror/state'
 import {EditorView} from '@codemirror/view'
 import {tags as t} from '@lezer/highlight'
 import {hues} from '@sanity/color'
 import {rem, type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
 
-export function useCodemirrorTheme(theme: Theme) {
+// The explicit return type keeps declaration emit portable (TS2883): without it the inferred
+// type references `Extension` from @codemirror/state through a non-portable .pnpm path
+export function useCodemirrorTheme(theme: Theme): Extension[] {
   const cmTheme = useMemo(() => createTheme(theme), [theme])
   const cmHighlight = useMemo(() => syntaxHighlighting(createHighlight(theme)), [theme])
 

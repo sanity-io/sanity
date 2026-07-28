@@ -1,12 +1,15 @@
-import {ChevronDownIcon, ChevronRightIcon, ControlsIcon, LinkIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {ControlsIcon} from '@sanity/icons/Controls'
+import {LinkIcon} from '@sanity/icons/Link'
 import {Box, Card, Code, Flex, Stack, Text} from '@sanity/ui'
-import {useMemo, useState} from 'react'
+import {useMemo, useState, type ComponentType} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'
 
 function usePaneChildLinkComponent(props: {
   id: string
   params?: Record<string, string>
-}): React.ComponentType {
+}): ComponentType {
   const {id, params} = props
   const {ChildLink} = usePaneRouter()
 
@@ -20,7 +23,7 @@ function usePaneChildLinkComponent(props: {
 function usePaneParameterizedLinkComponent(props: {
   params?: Record<string, string>
   payload?: unknown
-}): React.ComponentType {
+}): ComponentType {
   const {params, payload} = props
   const {ParameterizedLink} = usePaneRouter()
 
@@ -65,7 +68,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
       <Card borderBottom padding={2}>
         <Stack space={1}>
           <Card
-            as={ChildLink}
+            as={ChildLink as ComponentType<Record<string, unknown>>}
             data-as="a"
             padding={3}
             pressed={!isActive && childItemId === 'test'}
@@ -92,7 +95,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
           </Card>
 
           <Card
-            as={ParameterizedLink}
+            as={ParameterizedLink as ComponentType<Record<string, unknown>>}
             data-as="a"
             padding={3}
             pressed={params?.param1 === 'test'}

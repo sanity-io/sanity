@@ -1,11 +1,15 @@
-import {EyeOpenIcon, FeedbackIcon, SearchIcon, TrashIcon} from '@sanity/icons'
+import CloseIcon from '@sanity/icons/Close'
+import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
+import {FeedbackIcon} from '@sanity/icons/Feedback'
+import {SearchIcon} from '@sanity/icons/Search'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {type SanityDocumentLike} from '@sanity/types'
 import {Card, Flex, PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
 import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {useActorRef, useSelector} from '@xstate/react'
 import {type ComponentType, useMemo, type ChangeEvent, useState, useEffect} from 'react'
 import {useObservable} from 'react-rx'
-import {combineLatest, debounceTime, map, type Observable, startWith, Subject} from 'rxjs'
+import {combineLatest, debounceTime, map, type Observable, of, startWith, Subject} from 'rxjs'
 import {styled, css} from 'styled-components'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
@@ -15,9 +19,10 @@ import {StudioFeedbackDialog} from '../../feedback/components/StudioFeedbackDial
 import {useFeedbackTelemetry} from '../../feedback/hooks/useFeedbackTelemetry'
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {feedbackLocaleNamespace, studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {type TargetPerspective} from '../../perspective/types'
+import {type SetVariant, useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
@@ -26,7 +31,11 @@ import {useVersionContextMenu} from '../../releases/hooks/useVersionContextMenu'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
+import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
+import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
+import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {
   getPublishedId,
@@ -34,10 +43,18 @@ import {
   isDraftId,
   isPublishedId,
   isVersionId,
+  type SystemBundle,
 } from '../../util/draftUtils'
+import {readVersionType} from '../../util/versionsUtils'
+import {type VariantStoreState} from '../../variants/store/reducer'
+import {useVariantsStore} from '../../variants/store/useVariantsStore'
+import {isVariantId} from '../../variants/types'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
-import {documentGroupInventoryMachine} from '../machines/documentGroupInventoryMachine'
-import {selectionMachine} from '../machines/selectionMachine'
+import {
+  documentGroupInventoryMachine,
+  type VariantSet as VariantSetType,
+} from '../machines/documentGroupInventoryMachine'
+import {selectionMachine, type Variant} from '../machines/selectionMachine'
 import {
   type DocumentGroupInventoryPerspectiveList,
   type DocumentGroupInventoryReferencePreviewLinkProps,
@@ -65,10 +82,6 @@ export interface DocumentGroupInventoryProps {
    */
   portalElementName: string
   /**
-   * Navigate to the provided perspective.
-   */
-  navigatePerspective: (perspective: TargetPerspective) => void
-  /**
    * Derived perspective list state for the inventory document.
    */
   perspectiveList: DocumentGroupInventoryPerspectiveList
@@ -76,6 +89,10 @@ export interface DocumentGroupInventoryProps {
    * Observable describing the documents that refer to the inventory document.
    */
   referringDocuments$: Observable<ReferringDocuments>
+  /**
+   * Request the parent to close the document group inventory.
+   */
+  requestClose?: () => void
   /**
    * Pane-coupled presentational components injected by the consumer.
    */
@@ -93,21 +110,26 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   documentType,
   documentId,
   portalElementName,
-  navigatePerspective,
   perspectiveList,
   referringDocuments$,
+  requestClose,
   components,
 }) => {
+  const {beta} = useWorkspace()
+  const variantsEnabled = beta?.variants?.enabled
   const {t} = useTranslation(studioLocaleNamespace)
   const {t: feedbackT} = useTranslation(feedbackLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema().get(documentType)
   const versionState = useDocumentVersionsObservable({documentId})
   const {state$: releases} = useReleasesStore()
+  const {state$: agentBundles} = useAgentBundlesStore()
+  const {state$: variants} = useVariantsStore()
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null)
   const filterStringEvent = useMemo(() => new Subject<ChangeEvent<HTMLInputElement>>(), [])
   const [menuPortalElement, setMenuPortalElement] = useState<HTMLDivElement | null>(null)
   const {feedbackDialogOpened} = useFeedbackTelemetry()
+  const setVariant = useSetVariant()
 
   const filterString = useMemo(
     () =>
@@ -125,17 +147,21 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
     () =>
       documentGroupInventoryMachine.provide({
         actors: {
-          meta: fromObservable(() => combineLatest({versionState, releases})),
+          meta: fromObservable(() =>
+            combineLatest({versionState, releases, variants, agentBundles}),
+          ),
         },
         actions: {
           onFeedbackBegin: feedbackDialogOpened,
         },
       }),
-    [versionState, releases, feedbackDialogOpened],
+    [versionState, releases, variants, agentBundles, feedbackDialogOpened],
   )
 
   const inventoryRef = useActorRef(inventoryMachine, {
     input: {
+      t,
+      variantsEnabled,
       selectionMachine: useMemo(
         () =>
           selectionMachine.provide({
@@ -196,13 +222,26 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
       <Container ref={setContainerElement} data-testid="document-group-inventory">
         <Header>
           <Stack gap={4}>
-            <TextButton onClick={() => inventoryRef.send({type: 'feedback.begin'})}>
-              <Text size={1}>
-                <Flex gap={2} align="center" justify="flex-end">
-                  <FeedbackIcon /> {feedbackT('feedback.menu-item')}
-                </Flex>
-              </Text>
-            </TextButton>
+            <Flex gap={4} align="center" justify="flex-end">
+              <TextButton
+                onClick={() => inventoryRef.send({type: 'feedback.begin'})}
+                title={feedbackT('feedback.menu-item')}
+                aria-label={feedbackT('feedback.menu-item')}
+              >
+                <Text size={1}>
+                  <FeedbackIcon />
+                </Text>
+              </TextButton>
+              <TextButton
+                onClick={requestClose}
+                title={t('document-group-inventory.action.cancel')}
+                aria-label={t('document-group-inventory.action.cancel')}
+              >
+                <Text size={1}>
+                  <CloseIcon />
+                </Text>
+              </TextButton>
+            </Flex>
             <search>
               <TextInput
                 name={t('document-group-inventory.filter-string.label', {
@@ -223,42 +262,30 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
             <Select
               machine={selectionRef}
               inventoryRef={inventoryRef}
+              documentId={documentId}
               documentType={documentType}
               menuPortalElement={menuPortalElement}
               perspectiveList={perspectiveList}
-              onPrimaryAction={(variantId) => {
-                let perspective: TargetPerspective | undefined
-
-                switch (true) {
-                  case isPublishedId(variantId):
-                    perspective = 'published'
-                    break
-                  case isDraftId(variantId):
-                    perspective = 'drafts'
-                    break
-                  case isVersionId(variantId):
-                    perspective = getVersionFromId(variantId)
-                    break
-                  default:
-                    perspective = undefined
-                }
-
-                if (typeof perspective !== 'undefined') {
-                  navigatePerspective(perspective)
-                }
-              }}
+              onPrimaryAction={setVariant}
             />
           )}
         </Body>
         <Footer>
           <Button
-            text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
-            onClick={() => deletionRef.send({type: 'delete.request'})}
-            disabled={!canRequestDeletion}
-            tone="critical"
+            text={t('document-group-inventory.action.cancel')}
             size="large"
-            icon={TrashIcon}
+            mode="bleed"
+            onClick={requestClose}
           />
+          {canRequestDeletion && (
+            <Button
+              text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
+              onClick={() => deletionRef.send({type: 'delete.request'})}
+              tone="critical"
+              size="large"
+              icon={TrashIcon}
+            />
+          )}
         </Footer>
       </Container>
       <div ref={setMenuPortalElement} />
@@ -288,13 +315,15 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
 const Select: ComponentType<{
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
+  documentId: string
   documentType: string
-  onPrimaryAction: (variantId: string) => void
+  onPrimaryAction: SetVariant
   menuPortalElement: HTMLElement | null
   perspectiveList: DocumentGroupInventoryPerspectiveList
 }> = ({
   machine,
   inventoryRef,
+  documentId,
   documentType,
   onPrimaryAction,
   menuPortalElement,
@@ -319,15 +348,10 @@ const Select: ComponentType<{
   return (
     <Stack gap={5}>
       {sets.map((set) => (
-        <VariantSet key={set.key}>
+        <VariantSet key={set.key} data-variant-set={set.name}>
           <VariantSetHeader as="header">
-            <Text size={1} weight="bold">
-              {t('document-group-inventory.title', {
-                count: set.variants.length,
-                subject: t('document-group.subject.version', {
-                  count: set.variants.length,
-                }),
-              })}
+            <Text size={1} weight="medium">
+              {set.name}
             </Text>
             <TextButton
               onClick={() => {
@@ -354,6 +378,7 @@ const Select: ComponentType<{
                 inventoryRef={inventoryRef}
                 documentType={documentType}
                 onPrimaryAction={onPrimaryAction}
+                isActive={documentId === variant.id}
                 isSelectable={isSelectable}
                 menuPortalElement={menuPortalElement}
                 perspectiveList={perspectiveList}
@@ -366,11 +391,12 @@ const Select: ComponentType<{
 }
 
 const Variant: ComponentType<{
-  variant: {id: string; name: string}
+  variant: Variant
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
   documentType: string
-  onPrimaryAction: (variantId: string) => void
+  onPrimaryAction: SetVariant
+  isActive: boolean
   isSelectable: boolean
   menuPortalElement: HTMLElement | null
   perspectiveList: DocumentGroupInventoryPerspectiveList
@@ -380,6 +406,7 @@ const Variant: ComponentType<{
   inventoryRef,
   documentType,
   onPrimaryAction,
+  isActive: isSelected,
   isSelectable,
   menuPortalElement,
   perspectiveList,
@@ -394,22 +421,11 @@ const Variant: ComponentType<{
   const versionName = getVersionFromId(variant.id)
   const bundleId = isPublishedVersion ? 'published' : isDraftVersion ? 'draft' : (versionName ?? '')
 
-  const isReadOnly = useSelector(machine, (s) => s.matches('readonly'))
+  const isReadOnly = useSelector(machine, (snapshot) => snapshot.matches('readonly'))
   const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
 
-  const {
-    filteredReleases,
-    getReleaseChipState,
-    handleCopyToDraftsNavigate,
-    isDraftSelected,
-    isPublishSelected,
-  } = perspectiveList
-
-  const isSelected =
-    (isPublishedVersion && isPublishSelected) ||
-    (isDraftVersion && isDraftSelected) ||
-    (isVersion && getReleaseChipState(getVersionFromId(variant.id) ?? '').selected)
+  const {filteredReleases, handleCopyToDraftsNavigate} = perspectiveList
 
   const release = versionName
     ? releases.get(getReleaseDocumentIdFromReleaseId(versionName))
@@ -443,16 +459,39 @@ const Variant: ComponentType<{
 
   return (
     <>
-      <VariantSetEntry
-        data-testid={`document-group-inventory-variant-${variant.name.replaceAll(' ', '-')}`}
-        data-selected={isSelected || undefined}
-      >
+      <VariantSetEntry data-variant-name={variant.name} data-selected={isSelected || undefined}>
         <div className="atom">
           <button
             type="button"
             className="primary-action"
             ref={setReferenceElement}
-            onClick={() => onPrimaryAction(variant.id)}
+            onClick={() => {
+              let bundle
+
+              switch (readVersionType(variant.document)) {
+                case 'release':
+                  bundle = getReleaseIdFromReleaseDocumentId(
+                    variant?.document?._system.release?._ref ?? '',
+                  )
+                  break
+                case 'published':
+                  bundle = 'published'
+                  break
+                case 'draft':
+                  bundle = 'drafts'
+                  break
+              }
+
+              const variantId = isVariantId(variant.document?._system?.variant?._ref)
+                ? variant.document._system.variant._ref
+                : undefined
+
+              const agentId = isAgentBundleName(getVersionFromId(variant.id))
+                ? getVersionFromId(variant.id)
+                : undefined
+
+              onPrimaryAction({variantId, perspective: agentId ?? bundle})
+            }}
             onContextMenu={contextMenuHandler}
           >
             {variant.name}
@@ -469,7 +508,7 @@ const Variant: ComponentType<{
               }}
             />
           )}
-          <Text size={1} weight="bold" className="inert">
+          <Text size={1} weight="medium" className="inert">
             {variant.name}
           </Text>
         </div>
@@ -480,12 +519,16 @@ const Variant: ComponentType<{
             </StatusBadge>
           )}
           <Text size={1}>
-            <ReleaseAvatarIcon
-              release={
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
-                (isDraftVersion ? 'drafts' : isPublishedVersion ? 'published' : release) ?? ''
-              }
-            />
+            {isAgentBundleName(getVersionFromId(variant.id)) ? (
+              <ReleaseAvatarIcon tone="suggest" />
+            ) : (
+              <ReleaseAvatarIcon
+                release={
+                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
+                  (isDraftVersion ? 'drafts' : isPublishedVersion ? 'published' : release) ?? ''
+                }
+              />
+            )}
           </Text>
         </div>
       </VariantSetEntry>
@@ -587,7 +630,7 @@ const TextButton = styled.button(({theme}) => {
     padding: 0;
     outline: none;
     all: unset;
-    color: ${color.link.fg};
+    color: ${color.button.ghost.neutral.enabled.fg};
 
     * {
       color: inherit;

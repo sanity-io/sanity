@@ -1,4 +1,5 @@
-import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
+import {DownloadIcon} from '@sanity/icons/Download'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
 import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import uniqueId from 'lodash-es/uniqueId.js'
@@ -10,16 +11,18 @@ import {
   type MouseEvent,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react'
 import {type Subscription} from 'rxjs'
 import {styled} from 'styled-components'
 
-import {Button, Dialog} from '../../../../../ui-components'
-import {useClient, useListFormat} from '../../../../hooks'
-import {Translate, useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {useClient} from '../../../../hooks/useClient'
+import {useListFormat} from '../../../../hooks/useListFormat'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {FileListView} from '../file/FileListView'
 import {ImageListView} from '../image/ImageListView'
@@ -104,7 +107,6 @@ const SelectAssetsComponent = function SelectAssetsComponent(
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const versionedClient = useMemo(() => client.withConfig({apiVersion: '2023-02-14'}), [client])
   const [_elementId] = useState(() => `default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
   const {t} = useTranslation()
@@ -128,7 +130,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
       setIsLoading(true)
 
       if (typeof accept !== 'undefined') {
-        fetch$.current = versionedClient.observable
+        fetch$.current = client.observable
           .fetch(buildQuery(start, end, assetTypeParam, accept), {}, {tag})
           .subscribe({
             next: (result) => {
@@ -152,7 +154,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
           })
       }
     },
-    [assetType, accept, versionedClient, toast, t],
+    [assetType, accept, client, toast, t],
   )
 
   const handleDeleteFinished = useCallback(

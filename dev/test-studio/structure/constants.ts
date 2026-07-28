@@ -105,6 +105,7 @@ export const DEBUG_INPUT_TYPES = [
   'virtualizationInObject',
   'annotationCustomTypeTest',
   'arrayModalWidthReproTest',
+  'nestedArrayInsertMenuRepro',
   'arrayOfStringsGridCustomInputTest',
   'withObjectFieldsOrder',
 ]

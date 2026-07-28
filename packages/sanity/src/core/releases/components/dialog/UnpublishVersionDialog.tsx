@@ -7,8 +7,8 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
-import {useValuePreview} from '../../../preview'
 import {Preview} from '../../../preview/components/Preview'
+import {useValuePreview} from '../../../preview/useValuePreview'
 import {getVersionFromId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -118,7 +118,6 @@ export function UnpublishVersionDialog(props: {
               Label: ({children}) => {
                 return (
                   <span
-                    /* oxlint-disable typescript/no-unnecessary-type-assertion */
                     style={
                       {
                         color: `var(--card-badge-${tone ?? 'default'}-fg-color)`,
@@ -129,7 +128,6 @@ export function UnpublishVersionDialog(props: {
                         fontWeight: 500,
                       } as CSSProperties
                     }
-                    /* oxlint-enable typescript/no-unnecessary-type-assertion */
                   >
                     {children}
                   </span>

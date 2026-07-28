@@ -1,5 +1,5 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import {AddIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
 import {type SchemaType, type SortOrderingItem} from '@sanity/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, type InitialValueTemplateItem} from 'sanity'
 

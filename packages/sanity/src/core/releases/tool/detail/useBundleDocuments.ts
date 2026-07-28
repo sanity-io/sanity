@@ -11,31 +11,44 @@ import {combineLatest, from, type Observable, of} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {catchError, delay, filter, finalize, map, shareReplay, switchMap} from 'rxjs/operators'
 
-import {useSchema} from '../../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
 import {type LocaleSource} from '../../../i18n/types'
-import {type DocumentPreviewStore} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../../store/datastores'
-import {useSource} from '../../../studio'
+import {useSource} from '../../../studio/source'
 import {schedulerYield} from '../../../util/schedulerYield'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
 
 const bundleDocumentsCache: Record<string, BundleDocumentsObservableResult> = Object.create(null)
 
+/** @internal */
+export function resetBundleDocumentsCacheForTests(): void {
+  for (const key of Object.keys(bundleDocumentsCache)) {
+    delete bundleDocumentsCache[key]
+  }
+}
+
 export interface DocumentValidationStatus extends ValidationStatus {
   hasError: boolean
 }
 
-export interface DocumentInRelease {
+/**
+ * A document in a bundle (a set of documents resolved by a GROQ filter, e.g. a release or a
+ * variant), along with its validation status. Shared by the release- and variant-specific types.
+ *
+ * @public
+ */
+export interface BundleDocument {
   memoKey: string
   isPending?: boolean
-  document: SanityDocument & {publishedDocumentExists: boolean}
+  document: SanityDocument & {publishedDocumentExists: boolean; draftDocumentExists?: boolean}
   validation: DocumentValidationStatus
 }
 
 export type BundleDocumentsObservableResult = Observable<{
   loading: boolean
-  results: DocumentInRelease[]
+  results: BundleDocument[]
   error: Error | null
 }>
 
@@ -118,6 +131,7 @@ const buildBundleDocumentsObservable = ({
             map((availability) => ({
               ...doc,
               publishedDocumentExists: availability.published.available,
+              draftDocumentExists: availability.draft.available,
             })),
           )
         }),
@@ -217,7 +231,13 @@ export const getBundleDocumentsObservable = ({
   return bundleDocumentsCache[cacheKey]
 }
 
-const BUNDLE_DOCUMENTS_INITIAL_STATE = {
+const BUNDLE_DOCUMENTS_EMPTY = {
+  loading: false,
+  results: [],
+  error: null,
+}
+
+const BUNDLE_DOCUMENTS_LOADING = {
   loading: true,
   results: [],
   error: null,
@@ -234,30 +254,34 @@ export function useBundleDocuments(options: {
   params: Record<string, unknown>
   cacheKey: string
   skipValidation?: (document: SanityDocument) => boolean
+  enabled?: boolean
 }): {
   loading: boolean
-  results: DocumentInRelease[]
+  results: BundleDocument[]
   error: null | Error
 } {
-  const {groqFilter, params, cacheKey, skipValidation} = options
+  const {groqFilter, params, cacheKey, skipValidation, enabled = true} = options
   const documentPreviewStore = useDocumentPreviewStore()
   const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
 
   const bundleDocumentsObservable = useMemo(
     () =>
-      getBundleDocumentsObservable({
-        schema,
-        documentPreviewStore,
-        getClient,
-        i18n,
-        currentUser,
-        groqFilter,
-        params,
-        cacheKey,
-        skipValidation,
-      }),
+      enabled
+        ? getBundleDocumentsObservable({
+            schema,
+            documentPreviewStore,
+            getClient,
+            i18n,
+            currentUser,
+            groqFilter,
+            params,
+            cacheKey,
+            skipValidation,
+          })
+        : of(BUNDLE_DOCUMENTS_EMPTY),
     [
+      enabled,
       schema,
       documentPreviewStore,
       getClient,
@@ -270,5 +294,8 @@ export function useBundleDocuments(options: {
     ],
   )
 
-  return useObservable(bundleDocumentsObservable, BUNDLE_DOCUMENTS_INITIAL_STATE)
+  return useObservable(
+    bundleDocumentsObservable,
+    enabled ? BUNDLE_DOCUMENTS_LOADING : BUNDLE_DOCUMENTS_EMPTY,
+  )
 }

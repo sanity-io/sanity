@@ -4,11 +4,11 @@ import {BoundaryElementProvider, Box, type ResponsiveWidthProps, useGlobalKeyDow
 import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Dialog} from '../../../ui-components'
-import {PopoverDialog} from '../../components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {PopoverDialog} from '../../components/popoverDialog/PopoverDialog'
 import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
-import {PresenceOverlay} from '../../presence'
+import {PresenceOverlay} from '../../presence/overlay/PresenceOverlay'
 import {isNativeEditableElement} from '../../studio/copyPaste/utils'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {
@@ -19,6 +19,7 @@ import {
 } from '../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useFormBuilder} from '../useFormBuilder'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
+import {EditDialogOuterBoundaryProvider} from './EditDialogOuterBoundaryProvider'
 
 /**
  * Styled Dialog component that conditionally hides the dialog card and backdrop.
@@ -209,9 +210,11 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           animate={!shouldDisableAnimation}
           onClickOutside={handleCompleteDialogClose}
         >
-          <BoundaryElementProvider element={documentScrollElement}>
-            {contents}
-          </BoundaryElementProvider>
+          <EditDialogOuterBoundaryProvider>
+            <BoundaryElementProvider element={documentScrollElement}>
+              {contents}
+            </BoundaryElementProvider>
+          </EditDialogOuterBoundaryProvider>
         </StyledDialog>
       </VirtualizerScrollInstanceProvider>
     )
@@ -229,9 +232,11 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
         containerRef={setDocumentScrollElement}
         referenceElement={props.legacy_referenceElement}
       >
-        <BoundaryElementProvider element={documentScrollElement}>
-          {contents}
-        </BoundaryElementProvider>
+        <EditDialogOuterBoundaryProvider>
+          <BoundaryElementProvider element={documentScrollElement}>
+            {contents}
+          </BoundaryElementProvider>
+        </EditDialogOuterBoundaryProvider>
       </PopoverDialog>
     </VirtualizerScrollInstanceProvider>
   )

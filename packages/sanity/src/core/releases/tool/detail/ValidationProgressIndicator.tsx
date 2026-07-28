@@ -1,13 +1,14 @@
-import {CheckmarkCircleIcon, ErrorOutlineIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Card, type CardTone, Flex, Text} from '@sanity/ui'
 import {useEffect, useMemo, useState} from 'react'
 
-import {ProgressIcon} from '../../../../ui-components/progressIcon'
+import {ProgressIcon} from '../../../../ui-components/progressIcon/ProgressIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getDocumentValidationLoading} from '../../util/getDocumentValidationLoading'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {type DocumentInRelease} from './types'
 
 export function ValidationProgressIndicator({
   documents,

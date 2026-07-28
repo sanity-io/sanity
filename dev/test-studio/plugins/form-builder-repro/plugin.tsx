@@ -1,4 +1,4 @@
-import {DocumentIcon} from '@sanity/icons'
+import {DocumentIcon} from '@sanity/icons/Document'
 import {defineField, defineType, definePlugin} from 'sanity'
 
 import {FormBuilderRepro} from './FormBuilderRepro'

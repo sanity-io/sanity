@@ -236,6 +236,7 @@ import type {
   CommentThreadItem,
   CommentUpdateOperationOptions,
   CommentUpdatePayload,
+  CommitError,
   CommitFunction,
   CommitRequest,
   CommittedEvent,
@@ -475,6 +476,7 @@ import type {
   DocumentOptions,
   DocumentPairLoadedEvent,
   DocumentPairPermissionsOptions,
+  DocumentPairTarget,
   DocumentPermission,
   DocumentPluginOptions,
   DocumentPresence,
@@ -701,6 +703,7 @@ import type {
   getItemKeySegment,
   getNamelessWorkspaceIdentifier,
   getPairListener,
+  getPairTarget,
   getPreviewPaths,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
@@ -714,9 +717,11 @@ import type {
   getSearchableTypes,
   getSelectedVariant,
   getTargetDocument,
+  getTargetScopeId,
   getTemplatePermissions,
   getValueAtPath,
   getValueError,
+  getVariantPublishedSibling,
   getVariantTitle,
   getVersionFromId,
   getVersionId,
@@ -877,6 +882,7 @@ import type {
   isImageSchemaType,
   isIndexSegment,
   isIndexTuple,
+  isInvalidSessionError,
   isKeyedObject,
   isKeySegment,
   IsLastPaneProvider,
@@ -1192,6 +1198,7 @@ import type {
   PublishedId,
   QueryParams,
   ReactHook,
+  readVersionType,
   RebasePatchMsg,
   ReconnectEvent,
   Rect,
@@ -1404,6 +1411,7 @@ import type {
   Status,
   StatusButton,
   StatusButtonProps,
+  StoreRequestErrorHandler,
   StrictDefinition,
   StrictVersionLayeringOptions,
   StringComponents,
@@ -1452,6 +1460,7 @@ import type {
   TagsArrayInput,
   TagsArrayInputProps,
   TagValue,
+  TargetDocumentState,
   TargetPerspective,
   TelephoneInput,
   TelephoneInputProps,
@@ -1702,6 +1711,7 @@ import type {
   useStudioFeedbackTags,
   useStudioUrl,
   useSyncState,
+  useTargetDocumentState,
   useTelemetryConsent,
   useTemplatePermissions,
   useTemplatePermissionsFromHookFactory,
@@ -1756,10 +1766,12 @@ import type {
   ValueError,
   ValuelessSearchOperatorBuilder,
   ValuelessSearchOperatorParams,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
   VERSION_FOLDER,
   VersionChip,
   VersionInfoDocumentStub,
   VersionInlineBadge,
+  VersionType,
   VirtualizerScrollInstance,
   VirtualizerScrollInstanceProvider,
   VisibleWorkspacesContextValue,
@@ -2499,6 +2511,9 @@ describe('sanity', () => {
   test('CommentUpdatePayload', () => {
     expectTypeOf<CommentUpdatePayload>().not.toBeNever()
   })
+  test('CommitError', () => {
+    expectTypeOf<CommitError>().not.toBeNever()
+  })
   test('CommitFunction', () => {
     expectTypeOf<CommitFunction>().not.toBeNever()
   })
@@ -2775,7 +2790,7 @@ describe('sanity', () => {
     expectTypeOf<CurrentUser>().toBeObject()
   })
   test('CurrentUserAttribute', () => {
-    expectTypeOf<CurrentUserAttribute>().toBeObject()
+    expectTypeOf<CurrentUserAttribute>().not.toBeNever()
   })
   test('CustomValidator', () => {
     expectTypeOf<CustomValidator<any>>().toBeObject()
@@ -3220,6 +3235,9 @@ describe('sanity', () => {
   })
   test('DocumentPairPermissionsOptions', () => {
     expectTypeOf<DocumentPairPermissionsOptions>().toBeObject()
+  })
+  test('DocumentPairTarget', () => {
+    expectTypeOf<DocumentPairTarget>().not.toBeNever()
   })
   test('DocumentPermission', () => {
     expectTypeOf<DocumentPermission>().not.toBeNever()
@@ -3859,7 +3877,7 @@ describe('sanity', () => {
     expectTypeOf<typeof getDocumentIsInPerspective>().toBeFunction()
   })
   test('getDocumentPairPermissions', () => {
-    expectTypeOf<typeof getDocumentPairPermissions>().toBeFunction()
+    expectTypeOf<typeof getDocumentPairPermissions>().not.toBeNever()
   })
   test('getDocumentValuePermissions', () => {
     expectTypeOf<typeof getDocumentValuePermissions>().toBeFunction()
@@ -3905,6 +3923,9 @@ describe('sanity', () => {
   test('getPairListener', () => {
     expectTypeOf<typeof getPairListener>().toBeFunction()
   })
+  test('getPairTarget', () => {
+    expectTypeOf<typeof getPairTarget>().toBeFunction()
+  })
   test('getPreviewPaths', () => {
     expectTypeOf<typeof getPreviewPaths>().toBeFunction()
   })
@@ -3944,6 +3965,9 @@ describe('sanity', () => {
   test('getTargetDocument', () => {
     expectTypeOf<typeof getTargetDocument>().toBeFunction()
   })
+  test('getTargetScopeId', () => {
+    expectTypeOf<typeof getTargetScopeId>().toBeFunction()
+  })
   test('getTemplatePermissions', () => {
     expectTypeOf<typeof getTemplatePermissions>().toBeFunction()
   })
@@ -3952,6 +3976,9 @@ describe('sanity', () => {
   })
   test('getValueError', () => {
     expectTypeOf<typeof getValueError>().toBeFunction()
+  })
+  test('getVariantPublishedSibling', () => {
+    expectTypeOf<typeof getVariantPublishedSibling>().toBeFunction()
   })
   test('getVariantTitle', () => {
     expectTypeOf<typeof getVariantTitle>().toBeFunction()
@@ -4433,6 +4460,9 @@ describe('sanity', () => {
   })
   test('isIndexTuple', () => {
     expectTypeOf<typeof isIndexTuple>().toBeFunction()
+  })
+  test('isInvalidSessionError', () => {
+    expectTypeOf<typeof isInvalidSessionError>().toBeFunction()
   })
   test('isKeyedObject', () => {
     expectTypeOf<typeof isKeyedObject>().toBeFunction()
@@ -5382,6 +5412,9 @@ describe('sanity', () => {
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()
   })
+  test('readVersionType', () => {
+    expectTypeOf<typeof readVersionType>().toBeFunction()
+  })
   test('RebasePatchMsg', () => {
     expectTypeOf<RebasePatchMsg>().toBeObject()
   })
@@ -6021,6 +6054,9 @@ describe('sanity', () => {
   test('StatusButtonProps', () => {
     expectTypeOf<StatusButtonProps>().not.toBeNever()
   })
+  test('StoreRequestErrorHandler', () => {
+    expectTypeOf<StoreRequestErrorHandler>().toBeObject()
+  })
   test('StrictDefinition', () => {
     expectTypeOf<StrictDefinition>().not.toBeNever()
   })
@@ -6165,6 +6201,9 @@ describe('sanity', () => {
   })
   test('TagValue', () => {
     expectTypeOf<TagValue>().not.toBeNever()
+  })
+  test('TargetDocumentState', () => {
+    expectTypeOf<TargetDocumentState>().not.toBeNever()
   })
   test('TargetPerspective', () => {
     expectTypeOf<TargetPerspective>().not.toBeNever()
@@ -6920,6 +6959,9 @@ describe('sanity', () => {
   test('useSyncState', () => {
     expectTypeOf<typeof useSyncState>().toBeFunction()
   })
+  test('useTargetDocumentState', () => {
+    expectTypeOf<typeof useTargetDocumentState>().toBeFunction()
+  })
   test('useTelemetryConsent', () => {
     expectTypeOf<typeof useTelemetryConsent>().toBeFunction()
   })
@@ -7083,6 +7125,9 @@ describe('sanity', () => {
   test('ValuelessSearchOperatorParams', () => {
     expectTypeOf<ValuelessSearchOperatorParams>().not.toBeNever()
   })
+  test('VARIANTS_STUDIO_CLIENT_OPTIONS', () => {
+    expectTypeOf<typeof VARIANTS_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
+  })
   test('VERSION_FOLDER', () => {
     expectTypeOf<typeof VERSION_FOLDER>().not.toBeNever()
   })
@@ -7094,6 +7139,9 @@ describe('sanity', () => {
   })
   test('VersionInlineBadge', () => {
     expectTypeOf<typeof VersionInlineBadge>().not.toBeNever()
+  })
+  test('VersionType', () => {
+    expectTypeOf<VersionType>().not.toBeNever()
   })
   test('VirtualizerScrollInstance', () => {
     expectTypeOf<VirtualizerScrollInstance>().toBeObject()

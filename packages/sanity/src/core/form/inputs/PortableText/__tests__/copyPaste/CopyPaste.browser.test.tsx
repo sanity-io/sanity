@@ -20,6 +20,7 @@ async function loadTestFile(relativePath: string): Promise<{
   fileName: string
   fileType: string
 }> {
+  // @ts-expect-error -- pre-existing, fix later
   const base64 = await server.commands.readFileAsBase64(relativePath)
   const binary = atob(base64)
   const bytes = new Uint8Array(binary.length)

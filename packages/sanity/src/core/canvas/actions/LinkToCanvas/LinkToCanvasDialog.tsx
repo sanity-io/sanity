@@ -1,10 +1,10 @@
 import {type SanityDocument} from '@sanity/client'
-import {ComposeSparklesIcon} from '@sanity/icons'
+import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
 import {Box, Card, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback, useId} from 'react'
 
-import {Dialog} from '../../../../ui-components'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {canvasLocaleNamespace} from '../../i18n'

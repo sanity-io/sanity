@@ -8,6 +8,7 @@ export const useReleaseOperationsMockReturn: Mocked<ReleaseOperationsStore> = {
   unarchive: vi.fn(),
   createRelease: vi.fn(),
   createVersion: vi.fn(),
+  discardDrafts: vi.fn(),
   discardVersion: vi.fn(),
   publishRelease: vi.fn(),
   schedule: vi.fn(),
