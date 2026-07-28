@@ -47,8 +47,7 @@ function rectsAreEqual(current: Rect, next: Rect): boolean {
   )
 }
 
-// Compares only what the rendered connector reads (rect, bounds, id, zIndex) so the overlay can
-// bail out of re-rendering when a frame produces the same connector.
+// id is derived from the field path, so comparing id is sufficient identity for the pair.
 function connectorsAreEqual(current: ConnectorPair[], next: ConnectorPair[]): boolean {
   if (current.length !== next.length) {
     return false
@@ -136,8 +135,6 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
 
   const [connectors, setConnectors] = useState<ConnectorPair[]>(EMPTY_CONNECTORS)
 
-  // An effect event so it always reads the latest tracked values; bails when geometry is
-  // unchanged so the overlay doesn't re-render every scroll frame.
   const updateConnectors = useEffectEvent(() => {
     // Connectors are only shown while the review changes panel is open. Clearing them when
     // it closes ensures no stale connector lines linger on screen.
@@ -154,9 +151,8 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
 
   const frameRef = useRef<number | null>(null)
 
-  // Coalesces the value-change, scroll and resize paths onto one frame. Measuring synchronously
-  // per scroll event reads layout right after the previous frame's DOM write, forcing a reflow;
-  // deferring to rAF avoids that. The 1-frame lag matches the value-change path.
+  // Deferring the layout read to rAF avoids the forced reflow of measuring right after the
+  // previous frame's DOM write, and coalesces the value/scroll/resize paths onto one frame.
   const scheduleUpdate = useEffectEvent(() => {
     if (frameRef.current !== null) {
       return
@@ -167,7 +163,6 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
     })
   })
 
-  // Re-measure when the tracked elements, the hovered connector or the panel's open state change.
   useEffect(() => {
     scheduleUpdate()
   }, [allReportedValues, byId, hovered, isReviewChangesOpen, rootElement])
@@ -180,9 +175,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
     }
   }, [])
 
-  // Scrolling and resizing shift layout without changing the tracked values. Both subscriptions
-  // call the scheduler in place rather than passing it, as an effect event can only be invoked
-  // from within an effect.
+  // The scheduler is called inline rather than passed, as an effect event cannot be handed to a hook.
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
       if (entries.some((entry) => entry.target === rootElement)) {
