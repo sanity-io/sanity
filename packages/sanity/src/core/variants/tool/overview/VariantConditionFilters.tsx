@@ -1,5 +1,4 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {CloseIcon} from '@sanity/icons/Close'
@@ -58,34 +57,11 @@ function AddFilterMenu({
     return facets.filter((facet) => facetLabel(facet.key).toLowerCase().includes(normalized))
   }, [facets, query])
 
-  const content = activeFacet ? (
-    <Stack padding={1} space={1}>
-      <Button
-        icon={ArrowLeftIcon}
-        justify="flex-start"
-        mode="bleed"
-        onClick={() => setDimensionKey(null)}
-        text={facetLabel(activeFacet.key)}
-        tone="default"
-      />
-      {activeFacet.values.map((val) => {
-        const isSelected = (value[activeFacet.key] ?? []).includes(val)
-        return (
-          <Button
-            key={val}
-            iconRight={isSelected ? CheckmarkIcon : undefined}
-            justify="flex-start"
-            mode="bleed"
-            onClick={() => onToggleValue(activeFacet.key, val)}
-            selected={isSelected}
-            text={val}
-          />
-        )
-      })}
-    </Stack>
-  ) : (
-    <Stack padding={1} space={1}>
-      <Box paddingBottom={1}>
+  // Master-detail: dimensions on the left, the selected dimension's values on the right — both panes
+  // visible at once, so choosing a dimension and toggling its values needs no back-and-forth.
+  const content = (
+    <Stack space={0} style={{minWidth: 460}}>
+      <Box padding={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
         <TextInput
           fontSize={1}
           icon={SearchIcon}
@@ -94,31 +70,61 @@ function AddFilterMenu({
           value={query}
         />
       </Box>
-      {matchingFacets.length === 0 ? (
-        <Box padding={2}>
-          <Text muted size={1}>
-            {t('overview.filter.no-dimensions')}
-          </Text>
+      <Flex>
+        <Box style={{width: 220, borderRight: '1px solid var(--card-border-color)'}}>
+          <Stack padding={1} space={1}>
+            {matchingFacets.length === 0 ? (
+              <Box padding={2}>
+                <Text muted size={1}>
+                  {t('overview.filter.no-dimensions')}
+                </Text>
+              </Box>
+            ) : (
+              matchingFacets.map((facet) => {
+                const count = (value[facet.key] ?? []).length
+                return (
+                  <Button
+                    key={facet.key}
+                    icon={getVariantConditionIcon(facet.key)}
+                    iconRight={ChevronRightIcon}
+                    justify="space-between"
+                    mode="bleed"
+                    onClick={() => setDimensionKey(facet.key)}
+                    selected={facet.key === dimensionKey}
+                    text={count > 0 ? `${facetLabel(facet.key)} (${count})` : facetLabel(facet.key)}
+                  />
+                )
+              })
+            )}
+          </Stack>
         </Box>
-      ) : (
-        matchingFacets.map((facet) => {
-          const count = (value[facet.key] ?? []).length
-          return (
-            <Button
-              key={facet.key}
-              icon={getVariantConditionIcon(facet.key)}
-              iconRight={ChevronRightIcon}
-              justify="flex-start"
-              mode="bleed"
-              onClick={() => {
-                setDimensionKey(facet.key)
-                setQuery('')
-              }}
-              text={count > 0 ? `${facetLabel(facet.key)} (${count})` : facetLabel(facet.key)}
-            />
-          )
-        })
-      )}
+        <Box style={{flex: 1, minWidth: 240}}>
+          {activeFacet ? (
+            <Stack padding={1} space={1}>
+              {activeFacet.values.map((val) => {
+                const isSelected = (value[activeFacet.key] ?? []).includes(val)
+                return (
+                  <Button
+                    key={val}
+                    iconRight={isSelected ? CheckmarkIcon : undefined}
+                    justify="flex-start"
+                    mode="bleed"
+                    onClick={() => onToggleValue(activeFacet.key, val)}
+                    selected={isSelected}
+                    text={val}
+                  />
+                )
+              })}
+            </Stack>
+          ) : (
+            <Flex align="center" height="fill" justify="center" padding={4}>
+              <Text align="center" muted size={1}>
+                {t('overview.filter.pick-dimension-hint')}
+              </Text>
+            </Flex>
+          )}
+        </Box>
+      </Flex>
     </Stack>
   )
 
@@ -128,7 +134,15 @@ function AddFilterMenu({
         ref={setButtonEl}
         icon={AddIcon}
         mode="ghost"
-        onClick={() => (open ? close() : setOpen(true))}
+        onClick={() => {
+          if (open) {
+            close()
+          } else {
+            // Default to the first dimension so the value pane is populated on open.
+            setDimensionKey((prev) => prev ?? facets[0]?.key ?? null)
+            setOpen(true)
+          }
+        }}
         selected={open}
         text={t('overview.filter.add')}
       />

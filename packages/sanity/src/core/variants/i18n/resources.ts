@@ -111,6 +111,8 @@ const variantsLocaleStrings = {
   'overview.filter.back': 'All dimensions',
   /** Shown in the add-filter menu when a search matches no dimension. */
   'overview.filter.no-dimensions': 'No dimensions',
+  /** Hint in the add-filter menu's value pane before a dimension is chosen. */
+  'overview.filter.pick-dimension-hint': 'Select a dimension to see its values',
   /** Column header for the variant title column in the overview table. */
   'overview.table.variant': 'Variant definition',
   /** Column header for the documents count column in the overview table. */
