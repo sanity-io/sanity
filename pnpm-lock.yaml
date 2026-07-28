@@ -729,6 +729,9 @@ importers:
       '@sanity/react-loader':
         specifier: ^2.1.2
         version: 2.1.2(@sanity/types@packages+@sanity+types)(react@19.2.8)(typescript@6.0.3)
+      '@sanity/themer':
+        specifier: ^0.2.0
+        version: 0.2.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
@@ -6550,6 +6553,19 @@ packages:
     resolution: {integrity: sha512-pIy9yXosuA2duaJH0J1V8RYrabGB/Jh77FGYozr2pGwmCFwnLw/W/FS99qbcsJZa3wXHSMhMRyYq7IbulbijZw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
+
+  '@sanity/themer@0.2.0':
+    resolution: {integrity: sha512-Q+rzoAJfsf2I3VnSuW/PDEtncuBAAckVJDYY6mKXPA7sm2GXkW95AaJgj6WYHdrXczkMgiQymkjJB7ZXsFKLHw==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      react: ^19
+      sanity: ^6
+      styled-components: ^6
+    peerDependenciesMeta:
+      sanity:
+        optional: true
+      styled-components:
+        optional: true
 
   '@sanity/tsdown-config@0.21.1':
     resolution: {integrity: sha512-PtsZegKJ/HIF9jk/bkyYO3XUYzVvX6vQIbXC3fn0YA/EuEcHIe8F5tmJvc8hL+GSYDP3UW8LAL/nYwAtTUznRg==}
@@ -18711,6 +18727,22 @@ snapshots:
       '@actions/core': 3.0.1
       '@actions/github': 9.1.1
       yaml: 2.9.0
+
+  '@sanity/themer@0.2.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4)':
+    dependencies:
+      '@sanity/color': 3.0.8
+      '@sanity/icons': 5.2.1(react@19.2.8)
+      '@sanity/ui': 3.5.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
+      react: 19.2.8
+      react-compiler-runtime: 1.0.0(react@19.2.8)
+      react-refractor: 4.0.0(react@19.2.8)
+      refractor: 5.0.0
+    optionalDependencies:
+      sanity: link:packages/sanity
+      styled-components: 6.4.4(react-dom@19.2.8)(react@19.2.8)
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+      - react-dom
 
   '@sanity/tsdown-config@0.21.1(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@6.0.3)(vite@8.1.5)':
     dependencies:
