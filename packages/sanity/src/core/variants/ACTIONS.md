@@ -169,7 +169,7 @@ Required fields:
 Optional fields:
 
 - `ifSourceRevisionId`: optimistic lock on the source variant document's revision.
-- `ifPublishedRevisionId`: optimistic lock on the variant-of-published target's revision.
+- `ifPublishedVariantRevisionId`: optimistic lock on the variant-of-published target's revision.
 
 Behavior:
 
