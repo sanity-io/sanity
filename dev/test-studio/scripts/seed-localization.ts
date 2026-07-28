@@ -5,9 +5,12 @@ const client = getCliClient({apiVersion: 'X'}).withConfig({dataset: 'coffee-shop
 type LangMap = Record<string, string>
 
 function i18n(values: LangMap) {
+  // v5 shape: language lives in an explicit `language` field, not `_key`
+  // (the plugin's v4 format stored it in `_key`, which it now flags for migration).
   return Object.entries(values).map(([lang, value]) => ({
     _key: lang,
     _type: 'internationalizedArrayStringValue',
+    language: lang,
     value,
   }))
 }

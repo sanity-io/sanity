@@ -4,8 +4,9 @@ export const LANDING_PAGE_ID = 'demo-coffee-landing'
 
 // Localized via the regular internationalizedArray plugin (not Content Variants) —
 // $lang picks the requested locale, falling back to English when untranslated.
+// Filtering on `language` (not `_key`) matches the plugin's v5 data shape.
 function localized(field: string): string {
-  return `coalesce(${field}[_key == $lang][0].value, ${field}[_key == "en"][0].value)`
+  return `coalesce(${field}[language == $lang][0].value, ${field}[language == "en"][0].value)`
 }
 
 const PRODUCT_CARD_PROJECTION = `{
