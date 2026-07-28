@@ -99,33 +99,33 @@ Analytics team so downstream dbt models and Looker dashboards stay in sync.
 
 The UI surface an interaction happened on.
 
-| Value                  | Description                                                          |
-| ---------------------- | -------------------------------------------------------------------- |
-| `document_pane`        | The main document editor pane                                        |
-| `array_list`           | An array-of-objects list field                                       |
-| `nested_object_dialog` | A nested object edit dialog or popover (tree editing)                |
+| Value                  | Description                                           |
+| ---------------------- | ----------------------------------------------------- |
+| `document_pane`        | The main document editor pane                         |
+| `array_list`           | An array-of-objects list field                        |
+| `nested_object_dialog` | A nested object edit dialog or popover (tree editing) |
 
 ### `position`
 
 Where in a collection an object was created or edited. Pairs with
 `location: "array_list"`.
 
-| Value       | Description                                                       |
-| ----------- | ----------------------------------------------------------------- |
-| `new`       | Created via the array's primary add control                       |
-| `appended`  | Inserted after an existing item                                   |
-| `prepended` | Inserted before an existing item                                  |
-| `nested`    | An existing nested item opened for editing                        |
+| Value       | Description                                 |
+| ----------- | ------------------------------------------- |
+| `new`       | Created via the array's primary add control |
+| `appended`  | Inserted after an existing item             |
+| `prepended` | Inserted before an existing item            |
+| `nested`    | An existing nested item opened for editing  |
 
 ### `path`
 
 How a navigation or open interaction was triggered.
 
-| Value               | Description                                        |
-| ------------------- | -------------------------------------------------- |
-| `breadcrumb`        | Via a breadcrumb control                           |
-| `close_button`      | Via a dialog close button                          |
-| `keyboard_shortcut` | Via a keyboard shortcut                            |
+| Value               | Description               |
+| ------------------- | ------------------------- |
+| `breadcrumb`        | Via a breadcrumb control  |
+| `close_button`      | Via a dialog close button |
+| `keyboard_shortcut` | Via a keyboard shortcut   |
 
 ## How Events Are Sent
 
