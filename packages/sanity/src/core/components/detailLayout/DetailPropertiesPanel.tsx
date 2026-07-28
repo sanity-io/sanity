@@ -64,7 +64,7 @@ const GlyphCell = styled.div`
  * A single row: an optional leading `icon` (a glyph accompanying the label), a `label`, and a
  * `value`. `null`/`false` rows are skipped, so callers can inline conditions.
  */
-export interface DetailPropertyRow {
+interface DetailPropertyRow {
   icon?: ReactNode
   label: string
   value: ReactNode
