@@ -140,10 +140,10 @@ importers:
         version: 6.1.5
       eslint-plugin-testing-library:
         specifier: ^7.16.2
-        version: 7.16.2(@typescript/typescript6@6.0.2)(eslint@10.7.0)(supports-color@8.1.1)
+        version: 7.16.2(eslint@10.7.0)(supports-color@8.1.1)(typescript@7.0.2)
       eslint-plugin-tsdoc:
         specifier: ^0.5.2
-        version: 0.5.2(@typescript/typescript6@6.0.2)(eslint@10.7.0)(supports-color@8.1.1)
+        version: 0.5.2(eslint@10.7.0)(supports-color@8.1.1)(typescript@7.0.2)
       knip:
         specifier: ^6.29.0
         version: 6.29.0
@@ -180,15 +180,9 @@ importers:
       turbo:
         specifier: ^2.10.6
         version: 2.10.6
-      typedoc:
-        specifier: ^0.28.20
-        version: 0.28.20(@typescript/typescript6@6.0.2)
       typescript:
-        specifier: npm:@typescript/typescript6@^6.0.2
-        version: '@typescript/typescript6@6.0.2'
-      typescript7:
-        specifier: npm:typescript@^7.0.2
-        version: typescript@7.0.2
+        specifier: 'catalog:'
+        version: 7.0.2
       vercel:
         specifier: ^57.0.0
         version: 57.0.0(@vercel/go@3.10.2)(@vercel/hydrogen@1.4.0)(@vercel/next@4.20.4)(@vercel/redwood@2.5.0)(@vercel/remix-builder@5.9.1)(@vercel/ruby@2.5.1)(@vercel/rust@1.4.0)(supports-color@8.1.1)
@@ -516,7 +510,7 @@ importers:
         version: 2.1.1
       '@sanity/react-loader':
         specifier: ^2.1.2
-        version: 2.1.2(@sanity/types@packages+@sanity+types)(@typescript/typescript6@6.0.2)(react@19.2.8)
+        version: 2.1.2(@sanity/types@packages+@sanity+types)(react@19.2.8)(typescript@7.0.2)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
@@ -525,7 +519,7 @@ importers:
         version: 3.5.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
       '@sanity/visual-editing':
         specifier: ^5.7.3
-        version: 5.7.3(@emotion/is-prop-valid@1.4.0)(@sanity/client@7.25.0)(@typescript/typescript6@6.0.2)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
+        version: 5.7.3(@emotion/is-prop-valid@1.4.0)(@sanity/client@7.25.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)(typescript@7.0.2)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -1190,6 +1184,18 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
+
+  packages/@repo/typedoc:
+    devDependencies:
+      rimraf:
+        specifier: 'catalog:'
+        version: 6.1.3
+      typedoc:
+        specifier: ^0.28.20
+        version: 0.28.20(@typescript/typescript6@6.0.2)
+      typescript:
+        specifier: npm:@typescript/typescript6@^6.0.2
+        version: '@typescript/typescript6@6.0.2'
 
   packages/@repo/utils:
     dependencies:
@@ -1992,9 +1998,6 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.8(react@19.2.8)
-      rimraf:
-        specifier: 'catalog:'
-        version: 6.1.3
       rxjs-etc:
         specifier: ^10.6.2
         version: 10.6.2(rxjs@7.8.2)
@@ -18064,16 +18067,6 @@ snapshots:
       uuid: 13.0.2
       xstate: 5.32.5
 
-  '@sanity/core-loader@2.1.2(@sanity/types@packages+@sanity+types)(@typescript/typescript6@6.0.2)':
-    dependencies:
-      '@sanity/client': 7.25.0
-      '@sanity/comlink': 4.0.1
-      '@sanity/presentation-comlink': 2.2.0(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)
-      '@sanity/visual-editing-csm': 3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(@typescript/typescript6@6.0.2)
-    transitivePeerDependencies:
-      - '@sanity/types'
-      - typescript
-
   '@sanity/core-loader@2.1.2(@sanity/types@packages+@sanity+types)(typescript@7.0.2)':
     dependencies:
       '@sanity/client': 7.25.0
@@ -18274,16 +18267,6 @@ snapshots:
 
   '@sanity/prism-groq@1.1.2': {}
 
-  '@sanity/react-loader@2.1.2(@sanity/types@packages+@sanity+types)(@typescript/typescript6@6.0.2)(react@19.2.8)':
-    dependencies:
-      '@sanity/client': 7.25.0
-      '@sanity/core-loader': 2.1.2(@sanity/types@packages+@sanity+types)(@typescript/typescript6@6.0.2)
-      '@sanity/visual-editing-csm': 3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(@typescript/typescript6@6.0.2)
-      react: 19.2.8
-    transitivePeerDependencies:
-      - '@sanity/types'
-      - typescript
-
   '@sanity/react-loader@2.1.2(@sanity/types@packages+@sanity+types)(react@19.2.8)(typescript@7.0.2)':
     dependencies:
       '@sanity/client': 7.25.0
@@ -18482,15 +18465,6 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@sanity/visual-editing-csm@3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(@typescript/typescript6@6.0.2)':
-    dependencies:
-      '@sanity/client': 7.25.0
-      '@sanity/visual-editing-types': 2.0.12(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)
-      valibot: 1.4.2(@typescript/typescript6@6.0.2)
-    transitivePeerDependencies:
-      - '@sanity/types'
-      - typescript
-
   '@sanity/visual-editing-csm@3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)':
     dependencies:
       '@sanity/client': 7.25.0
@@ -18511,32 +18485,6 @@ snapshots:
       '@sanity/client': 7.25.0
     optionalDependencies:
       '@sanity/types': link:packages/@sanity/types
-
-  '@sanity/visual-editing@5.7.3(@emotion/is-prop-valid@1.4.0)(@sanity/client@7.25.0)(@typescript/typescript6@6.0.2)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)':
-    dependencies:
-      '@sanity/comlink': 4.0.1
-      '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/mutate': 0.18.1(xstate@5.32.5)
-      '@sanity/presentation-comlink': 2.2.0(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)
-      '@sanity/preview-url-secret': 4.1.2(@sanity/client@7.25.0)
-      '@sanity/types': link:packages/@sanity/types
-      '@sanity/ui': 3.5.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
-      '@sanity/visual-editing-csm': 3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(@typescript/typescript6@6.0.2)
-      '@vercel/stega': 1.1.0
-      dequal: 2.0.3
-      lodash-es: 4.18.1
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
-      react-is: 19.2.8
-      rxjs: 7.8.2
-      scroll-into-view-if-needed: 3.1.0
-      styled-components: 6.4.4(react-dom@19.2.8)(react@19.2.8)
-      xstate: 5.32.5
-    optionalDependencies:
-      '@sanity/client': 7.25.0
-    transitivePeerDependencies:
-      - '@emotion/is-prop-valid'
-      - typescript
 
   '@sanity/visual-editing@5.7.3(@emotion/is-prop-valid@1.4.0)(@sanity/client@7.25.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)(typescript@7.0.2)':
     dependencies:
@@ -19157,21 +19105,21 @@ snapshots:
     dependencies:
       '@types/node': 24.13.3
 
-  '@typescript-eslint/project-service@8.56.1(@typescript/typescript6@6.0.2)(supports-color@8.1.1)':
+  '@typescript-eslint/project-service@8.56.1(supports-color@8.1.1)(typescript@7.0.2)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.64.0(@typescript/typescript6@6.0.2)
+      '@typescript-eslint/tsconfig-utils': 8.64.0(typescript@7.0.2)
       '@typescript-eslint/types': 8.64.0
       debug: 4.4.3(supports-color@8.1.1)
-      typescript: '@typescript/typescript6@6.0.2'
+      typescript: 7.0.2
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/project-service@8.64.0(@typescript/typescript6@6.0.2)(supports-color@8.1.1)':
+  '@typescript-eslint/project-service@8.64.0(supports-color@8.1.1)(typescript@7.0.2)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.64.0(@typescript/typescript6@6.0.2)
+      '@typescript-eslint/tsconfig-utils': 8.64.0(typescript@7.0.2)
       '@typescript-eslint/types': 8.64.0
       debug: 4.4.3(supports-color@8.1.1)
-      typescript: '@typescript/typescript6@6.0.2'
+      typescript: 7.0.2
     transitivePeerDependencies:
       - supports-color
 
@@ -19185,67 +19133,67 @@ snapshots:
       '@typescript-eslint/types': 8.64.0
       '@typescript-eslint/visitor-keys': 8.64.0
 
-  '@typescript-eslint/tsconfig-utils@8.56.1(@typescript/typescript6@6.0.2)':
+  '@typescript-eslint/tsconfig-utils@8.56.1(typescript@7.0.2)':
     dependencies:
-      typescript: '@typescript/typescript6@6.0.2'
+      typescript: 7.0.2
 
-  '@typescript-eslint/tsconfig-utils@8.64.0(@typescript/typescript6@6.0.2)':
+  '@typescript-eslint/tsconfig-utils@8.64.0(typescript@7.0.2)':
     dependencies:
-      typescript: '@typescript/typescript6@6.0.2'
+      typescript: 7.0.2
 
   '@typescript-eslint/types@8.56.1': {}
 
   '@typescript-eslint/types@8.64.0': {}
 
-  '@typescript-eslint/typescript-estree@8.56.1(@typescript/typescript6@6.0.2)(supports-color@8.1.1)':
+  '@typescript-eslint/typescript-estree@8.56.1(supports-color@8.1.1)(typescript@7.0.2)':
     dependencies:
-      '@typescript-eslint/project-service': 8.56.1(@typescript/typescript6@6.0.2)(supports-color@8.1.1)
-      '@typescript-eslint/tsconfig-utils': 8.56.1(@typescript/typescript6@6.0.2)
+      '@typescript-eslint/project-service': 8.56.1(supports-color@8.1.1)(typescript@7.0.2)
+      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@7.0.2)
       '@typescript-eslint/types': 8.56.1
       '@typescript-eslint/visitor-keys': 8.56.1
       debug: 4.4.3(supports-color@8.1.1)
       minimatch: 10.2.5
       semver: 7.8.5
       tinyglobby: 0.2.17
-      ts-api-utils: 2.5.0(@typescript/typescript6@6.0.2)
-      typescript: '@typescript/typescript6@6.0.2'
+      ts-api-utils: 2.5.0(typescript@7.0.2)
+      typescript: 7.0.2
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/typescript-estree@8.64.0(@typescript/typescript6@6.0.2)(supports-color@8.1.1)':
+  '@typescript-eslint/typescript-estree@8.64.0(supports-color@8.1.1)(typescript@7.0.2)':
     dependencies:
-      '@typescript-eslint/project-service': 8.64.0(@typescript/typescript6@6.0.2)(supports-color@8.1.1)
-      '@typescript-eslint/tsconfig-utils': 8.64.0(@typescript/typescript6@6.0.2)
+      '@typescript-eslint/project-service': 8.64.0(supports-color@8.1.1)(typescript@7.0.2)
+      '@typescript-eslint/tsconfig-utils': 8.64.0(typescript@7.0.2)
       '@typescript-eslint/types': 8.64.0
       '@typescript-eslint/visitor-keys': 8.64.0
       debug: 4.4.3(supports-color@8.1.1)
       minimatch: 10.2.5
       semver: 7.8.5
       tinyglobby: 0.2.17
-      ts-api-utils: 2.5.0(@typescript/typescript6@6.0.2)
-      typescript: '@typescript/typescript6@6.0.2'
+      ts-api-utils: 2.5.0(typescript@7.0.2)
+      typescript: 7.0.2
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.56.1(@typescript/typescript6@6.0.2)(eslint@10.7.0)(supports-color@8.1.1)':
+  '@typescript-eslint/utils@8.56.1(eslint@10.7.0)(supports-color@8.1.1)(typescript@7.0.2)':
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.7.0)
       '@typescript-eslint/scope-manager': 8.56.1
       '@typescript-eslint/types': 8.56.1
-      '@typescript-eslint/typescript-estree': 8.56.1(@typescript/typescript6@6.0.2)(supports-color@8.1.1)
+      '@typescript-eslint/typescript-estree': 8.56.1(supports-color@8.1.1)(typescript@7.0.2)
       eslint: 10.7.0(jiti@2.7.0)(supports-color@8.1.1)
-      typescript: '@typescript/typescript6@6.0.2'
+      typescript: 7.0.2
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.64.0(@typescript/typescript6@6.0.2)(eslint@10.7.0)(supports-color@8.1.1)':
+  '@typescript-eslint/utils@8.64.0(eslint@10.7.0)(supports-color@8.1.1)(typescript@7.0.2)':
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.7.0)
       '@typescript-eslint/scope-manager': 8.64.0
       '@typescript-eslint/types': 8.64.0
-      '@typescript-eslint/typescript-estree': 8.64.0(@typescript/typescript6@6.0.2)(supports-color@8.1.1)
+      '@typescript-eslint/typescript-estree': 8.64.0(supports-color@8.1.1)(typescript@7.0.2)
       eslint: 10.7.0(jiti@2.7.0)(supports-color@8.1.1)
-      typescript: '@typescript/typescript6@6.0.2'
+      typescript: 7.0.2
     transitivePeerDependencies:
       - supports-color
 
@@ -21390,20 +21338,20 @@ snapshots:
     dependencies:
       requireindex: 1.1.0
 
-  eslint-plugin-testing-library@7.16.2(@typescript/typescript6@6.0.2)(eslint@10.7.0)(supports-color@8.1.1):
+  eslint-plugin-testing-library@7.16.2(eslint@10.7.0)(supports-color@8.1.1)(typescript@7.0.2):
     dependencies:
       '@typescript-eslint/scope-manager': 8.64.0
-      '@typescript-eslint/utils': 8.64.0(@typescript/typescript6@6.0.2)(eslint@10.7.0)(supports-color@8.1.1)
+      '@typescript-eslint/utils': 8.64.0(eslint@10.7.0)(supports-color@8.1.1)(typescript@7.0.2)
       eslint: 10.7.0(jiti@2.7.0)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  eslint-plugin-tsdoc@0.5.2(@typescript/typescript6@6.0.2)(eslint@10.7.0)(supports-color@8.1.1):
+  eslint-plugin-tsdoc@0.5.2(eslint@10.7.0)(supports-color@8.1.1)(typescript@7.0.2):
     dependencies:
       '@microsoft/tsdoc': 0.16.0
       '@microsoft/tsdoc-config': 0.18.1
-      '@typescript-eslint/utils': 8.56.1(@typescript/typescript6@6.0.2)(eslint@10.7.0)(supports-color@8.1.1)
+      '@typescript-eslint/utils': 8.56.1(eslint@10.7.0)(supports-color@8.1.1)(typescript@7.0.2)
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -25656,9 +25604,9 @@ snapshots:
 
   ts-algebra@2.0.0: {}
 
-  ts-api-utils@2.5.0(@typescript/typescript6@6.0.2):
+  ts-api-utils@2.5.0(typescript@7.0.2):
     dependencies:
-      typescript: '@typescript/typescript6@6.0.2'
+      typescript: 7.0.2
 
   ts-brand@0.2.0: {}
 
@@ -25984,10 +25932,6 @@ snapshots:
   uuid@9.0.1: {}
 
   uuidv7@0.4.4: {}
-
-  valibot@1.4.2(@typescript/typescript6@6.0.2):
-    optionalDependencies:
-      typescript: '@typescript/typescript6@6.0.2'
 
   valibot@1.4.2(typescript@7.0.2):
     optionalDependencies:

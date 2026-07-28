@@ -132,9 +132,12 @@
       ]
     },
     {
-      "description": "test-dts-exports needs the TypeScript 6 compiler API (ts-morph); never bump to 7",
+      "description": "Packages that need the TypeScript 6 compiler API (typedoc, ts-morph); never bump their typescript alias to 7",
       "matchPackageNames": ["typescript"],
-      "matchFileNames": ["packages/@repo/test-dts-exports/package.json"],
+      "matchFileNames": [
+        "packages/@repo/test-dts-exports/package.json",
+        "packages/@repo/typedoc/package.json"
+      ],
       "enabled": false
     },
     {
