@@ -16,7 +16,10 @@ import {
  */
 async function openTasksSidebar(page: Page) {
   await page.getByTestId('tasks-toolbar').click()
-  await expect(page.getByRole('button', {name: 'New task'})).toBeVisible({timeout: 30_000})
+  // `exact` avoids also matching the empty state's "Create new task" button.
+  await expect(page.getByRole('button', {name: 'New task', exact: true})).toBeVisible({
+    timeout: 30_000,
+  })
 }
 
 /**
@@ -25,9 +28,12 @@ async function openTasksSidebar(page: Page) {
  * automatically switches to the "Subscribed" tab, where the new task is listed.
  */
 async function createTask(page: Page, title: string) {
-  await page.getByRole('button', {name: 'New task'}).click()
+  await page.getByRole('button', {name: 'New task', exact: true}).click()
   const titleInput = page.getByPlaceholder('Task title')
   await expect(titleInput).toBeVisible({timeout: 30_000})
+  // The active document is picked up with a debounce; wait for the target field to be
+  // pre-populated so the task is created with the (version-aware) document target.
+  await expect(page.getByTestId('task-target-field-preview')).toBeVisible({timeout: 30_000})
   await titleInput.fill(title)
   await page.getByRole('button', {name: 'Create Task'}).click()
   await expect(page.getByTestId('tasks-list-item').filter({hasText: title})).toBeVisible({
