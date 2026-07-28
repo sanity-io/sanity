@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.7.0](https://github.com/sanity-io/sanity/compare/v6.6.0...v6.7.0) (2026-07-28)
+
+### Features
+
+* **variants:** add priority field to variant definition dialogs ([#13584](https://github.com/sanity-io/sanity/issues/13584)) ([5f7206e](https://github.com/sanity-io/sanity/commit/5f7206e6f49530d0d15a7281ce4f3dd679cec5d8))
+
+### Bug Fixes
+
+* **core:** disable schedule for publish actions while a variant is selected ([#13704](https://github.com/sanity-io/sanity/issues/13704)) ([865e527](https://github.com/sanity-io/sanity/commit/865e527533cc2a2e5d6fee807f4343696d7a8e1a))
+* **core:** remove stale hardcoded client api version pins ([#13691](https://github.com/sanity-io/sanity/issues/13691)) ([f4f059a](https://github.com/sanity-io/sanity/commit/f4f059a77312f8d2142a72406cd4bfce0d333d0d))
+* **core:** tasks now support variants and releases ([#13731](https://github.com/sanity-io/sanity/issues/13731)) ([6411830](https://github.com/sanity-io/sanity/commit/6411830d8f038b7e68c7e0f452fd69543bff61ca))
+* **deps:** update dependency @portabletext/react to v7 ([#13701](https://github.com/sanity-io/sanity/issues/13701)) ([b1c5b3e](https://github.com/sanity-io/sanity/commit/b1c5b3e71221b8ca379680ee293098db3483f721))
+* **deps:** update dependency @sanity/cli to ^7.13.0 ([#13709](https://github.com/sanity-io/sanity/issues/13709)) ([67f7a2d](https://github.com/sanity-io/sanity/commit/67f7a2d7fb235a2d527aa1fd20c5171bde009c53))
+* **deps:** update dependency @sanity/client to ^7.25.0 ([#13719](https://github.com/sanity-io/sanity/issues/13719)) ([3ba0834](https://github.com/sanity-io/sanity/commit/3ba08349ca06c0a4a26ce997af821d284022937f))
+* **deps:** update dependency @sanity/icons to ^5.2.1 ([#13684](https://github.com/sanity-io/sanity/issues/13684)) ([ad2634f](https://github.com/sanity-io/sanity/commit/ad2634fd01e69a5090896f68524984c06e48c74a))
+* **deps:** update dependency @sanity/preview-url-secret to ^4.1.1 ([#13685](https://github.com/sanity-io/sanity/issues/13685)) ([30caae1](https://github.com/sanity-io/sanity/commit/30caae1d7dd46f3817dc736098d419573eac182e))
+* **deps:** update dependency @sanity/preview-url-secret to ^4.1.2 ([#13716](https://github.com/sanity-io/sanity/issues/13716)) ([95a1884](https://github.com/sanity-io/sanity/commit/95a18846d049c10e7d5599274f8f25257c554550))
+* **deps:** update dependency groq-js to v2 ([#13677](https://github.com/sanity-io/sanity/issues/13677)) ([7ac6d86](https://github.com/sanity-io/sanity/commit/7ac6d86c9b844603a919c88e66e9f904ef95a991))
+* **deps:** update dev-non-major ([#13686](https://github.com/sanity-io/sanity/issues/13686)) ([cdc3753](https://github.com/sanity-io/sanity/commit/cdc3753bd7e998f0ddfb26c0256013d7a73d3d15))
+* **deps:** update dev-non-major ([#13707](https://github.com/sanity-io/sanity/issues/13707)) ([54328dc](https://github.com/sanity-io/sanity/commit/54328dc6e1876e8e5b44677a84ccc40c505eb1f4))
+* **deps:** update dev-non-major ([#13717](https://github.com/sanity-io/sanity/issues/13717)) ([b42ed85](https://github.com/sanity-io/sanity/commit/b42ed85d37e2a6b8cb93d4550a12c2971772a418))
+* **deps:** update dev-non-major ([#13736](https://github.com/sanity-io/sanity/issues/13736)) ([c96f8fc](https://github.com/sanity-io/sanity/commit/c96f8fcc9d8af9244d18d9acb43e51a1a7aebc77))
+* **deps:** update linters ([#13660](https://github.com/sanity-io/sanity/issues/13660)) ([669fc7d](https://github.com/sanity-io/sanity/commit/669fc7d62f5b8e52f35f41ae72eebcffc3e6a605))
+* **deps:** update playwright monorepo to v1.62.0 ([#13757](https://github.com/sanity-io/sanity/issues/13757)) ([5171fc7](https://github.com/sanity-io/sanity/commit/5171fc7321f0104b231d327c95a7f8953d5b8688))
+* **deps:** update portabletext ([#13687](https://github.com/sanity-io/sanity/issues/13687)) ([efd9014](https://github.com/sanity-io/sanity/commit/efd90149b2db40a20fcfe1ad81c95e70a2dcebdb))
+* **deps:** update portabletext ([#13708](https://github.com/sanity-io/sanity/issues/13708)) ([0d58f8d](https://github.com/sanity-io/sanity/commit/0d58f8d4037c175a0d9fd4e1cb28a36c9e31a403))
+* **deps:** update react monorepo to ^19.2.8 ([#13718](https://github.com/sanity-io/sanity/issues/13718)) ([eb158d8](https://github.com/sanity-io/sanity/commit/eb158d8982e7f91033837762f02bd4212d8f6775))
+* **deps:** update typescript-tooling ([#13720](https://github.com/sanity-io/sanity/issues/13720)) ([6fc4977](https://github.com/sanity-io/sanity/commit/6fc4977657f1105be7c80ede0ca91d5251cd1ad2))
+* **form:** keep menus open over PTE annotation popover ([#13671](https://github.com/sanity-io/sanity/issues/13671)) ([3bf01e6](https://github.com/sanity-io/sanity/commit/3bf01e6128726acc904205126d8ec1723af15ce3))
+* **release-notes:** stop extraction at horizontal rule to exclude tool-appended content ([#13672](https://github.com/sanity-io/sanity/issues/13672)) ([24ffb11](https://github.com/sanity-io/sanity/commit/24ffb118f2884a621549aa08443bff33c8d82d5c))
+* **releases:** keep copy-to sub-menu on the side at narrow widths ([#13673](https://github.com/sanity-io/sanity/issues/13673)) ([5487131](https://github.com/sanity-io/sanity/commit/5487131ffd97a9c1d9e6caa9de502931f6430be0))
+* **structure:** resolve base document for variant creation ([#13711](https://github.com/sanity-io/sanity/issues/13711)) ([dce5f27](https://github.com/sanity-io/sanity/commit/dce5f27d41326d9c1639b787ee6a9e16ca9f0736))
+* **test-studio:** keep readable component names in profiling builds ([#13674](https://github.com/sanity-io/sanity/issues/13674)) ([dc25743](https://github.com/sanity-io/sanity/commit/dc25743bf2688854f1feea47f74b52bb8dae4795))
+* **validation:** respect Rule.uri scheme in array validation ([#13670](https://github.com/sanity-io/sanity/issues/13670)) ([5500e82](https://github.com/sanity-io/sanity/commit/5500e828f5c0aa8caa579005cb7ce62eab3f4ab0))
 ## [6.6.0](https://github.com/sanity-io/sanity/compare/v6.5.0...v6.6.0) (2026-07-22)
 
 ### Features
