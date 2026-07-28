@@ -1,6 +1,6 @@
 import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {afterAll, beforeAll, describe, expect, it} from 'vitest'
+import {afterAll, afterEach, beforeAll, describe, expect, it} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {ChangeFieldWrapper} from '../ChangeFieldWrapper'
@@ -25,6 +25,11 @@ const originalDescriptors = {
   offsetHeight: Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight'),
 }
 
+// The tracked elements' vertical offset, made mutable so a test can shift the layout and assert
+// the connector re-measures on scroll.
+const DEFAULT_TRACKED_OFFSET_TOP = 100
+let trackedOffsetTop = DEFAULT_TRACKED_OFFSET_TOP
+
 beforeAll(() => {
   // jsdom does not do layout, so give the tracked elements just enough geometry for a
   // connector to be considered in bounds and drawn.
@@ -34,7 +39,7 @@ beforeAll(() => {
     offsetTop: {
       configurable: true,
       get(this: HTMLElement) {
-        return isRoot(this) ? 0 : 100
+        return isRoot(this) ? 0 : trackedOffsetTop
       },
     },
     offsetLeft: {
@@ -60,6 +65,10 @@ beforeAll(() => {
 
 afterAll(() => {
   Object.defineProperties(HTMLElement.prototype, originalDescriptors as PropertyDescriptorMap)
+})
+
+afterEach(() => {
+  trackedOffsetTop = DEFAULT_TRACKED_OFFSET_TOP
 })
 
 function Harness(props: {isReviewChangesOpen: boolean}) {
@@ -149,5 +158,27 @@ describe('ConnectorsOverlay', () => {
 
     await waitForOverlayToSettle()
     expect(overlay.querySelector('path')).toBeNull()
+  })
+
+  it('re-measures the connector when the scroll container scrolls', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(<Harness isReviewChangesOpen />, {wrapper: TestProvider})
+
+    const overlay = screen.getByTestId('change-connectors-overlay')
+
+    await waitForOverlayToSettle()
+    const initialPath = overlay.querySelector('path')?.getAttribute('d')
+    expect(initialPath).toBeTruthy()
+
+    // Shift the tracked layout and scroll. The overlay subscribes to the scroll container, so it
+    // should re-measure on the next frame and draw the connector at its new position.
+    trackedOffsetTop = 300
+    act(() => {
+      screen.getByTestId('scroll-container').dispatchEvent(new Event('scroll'))
+    })
+
+    await waitForOverlayToSettle()
+    expect(overlay.querySelector('path')?.getAttribute('d')).not.toBe(initialPath)
   })
 })
