@@ -144,6 +144,8 @@ const variantsLocaleStrings = {
   'detail.metadata.total-documents': 'Total documents',
   /** Label for the count of documents with unpublished (draft) changes. */
   'detail.metadata.unpublished-changes': 'Unpublished changes',
+  /** Label for the variant definition's resolution priority on the detail page. */
+  'detail.metadata.priority': 'Priority',
   /** Created status label in the Variant detail footer. */
   'detail.footer.created': 'Created',
   /** Loading message on the Variant detail page. */

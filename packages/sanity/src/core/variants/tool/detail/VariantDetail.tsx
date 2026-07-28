@@ -1,5 +1,6 @@
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
+import {SortIcon} from '@sanity/icons/Sort'
 import {UserIcon} from '@sanity/icons/User'
 import {Box, Card, Container, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
@@ -140,6 +141,17 @@ export function VariantDetail() {
             ),
             label: t('detail.metadata.unpublished-changes'),
             value: countValue(unpublishedCount),
+          },
+          variant && {
+            // Resolution priority — the tiebreaker when several definitions match. Shown here (it is
+            // authored in the create/edit dialog) so the detail page reflects the full definition.
+            icon: (
+              <Text muted size={1}>
+                <SortIcon />
+              </Text>
+            ),
+            label: t('detail.metadata.priority'),
+            value: String(variant.priority),
           },
           variant && {
             // A person glyph (not a clock — a clock reads as "time/schedule"). The author identity
