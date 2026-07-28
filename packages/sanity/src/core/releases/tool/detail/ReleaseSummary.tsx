@@ -1,24 +1,45 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
+import {CloseIcon} from '@sanity/icons/Close'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
+import {RestoreIcon} from '@sanity/icons/Restore'
+import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, Flex, Stack, Text, useToast} from '@sanity/ui'
-import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
+import {Card, Container, Flex, Menu, Stack, Text, useToast} from '@sanity/ui'
+import {
+  type CSSProperties,
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useWorkspace} from '../../../studio/workspace'
 import {getVersionId} from '../../../util/draftUtils'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {useAllVariants} from '../../../variants/store/useAllVariants'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {DocumentTable, type DocumentTableSelection} from '../components/Table/DocumentTable'
 import {Table} from '../components/Table/Table'
 import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
 import {ReleaseDocumentFilterTabs} from './components/ReleaseDocumentFilterTabs'
+import {CopyReleaseActions} from './CopyReleaseActions'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
+import {ReleaseBulkActionDialog, type ReleaseBulkAction} from './ReleaseBulkActionDialog'
+import {type ReleaseInspector} from './ReleaseDetail'
 import {type DocumentFilterType, documentMatchesFilter} from './releaseDocumentActions'
 import {type DocumentInRelease} from './types'
 
@@ -32,6 +53,9 @@ export interface ReleaseSummaryProps {
   documents: DocumentInRelease[]
   release: ReleaseDocument
   isLoading?: boolean
+  /** Activity inspector state, so the command lane can host the Activity toggle (beta.variants). */
+  inspector?: ReleaseInspector
+  setInspector?: Dispatch<SetStateAction<ReleaseInspector | undefined>>
 }
 
 const FULL_HEIGHT_STYLE: CSSProperties = {height: '100%'}
@@ -54,7 +78,7 @@ const isBundleDocumentRow = (
   'validation' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, isLoading = false, release} = props
+  const {documents, isLoading = false, release, inspector, setInspector} = props
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
@@ -63,8 +87,24 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const [openAddDocumentDialog, setAddDocumentDialog] = useState(false)
   const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow[]>([])
   const [activeFilter, setActiveFilter] = useState<DocumentFilterType>('all')
+  // A pending bulk action (Discard / Unpublish): the selected row keys + the table's clear callback,
+  // resolved into documents and confirmed via ReleaseBulkActionDialog.
+  const [bulkAction, setBulkAction] = useState<{
+    action: ReleaseBulkAction
+    keys: readonly string[]
+    clear: () => void
+  } | null>(null)
 
   const {t} = useTranslation(releasesLocaleNamespace)
+
+  // Behind beta.variants: adopt the shared three-zone DocumentTable (command-lane search + filter
+  // tabs). Otherwise keep the current table (search in the column header). No user-facing change to
+  // production Releases until the flag is on.
+  const {beta} = useWorkspace()
+  const variantsEnabled = Boolean(beta?.variants?.enabled)
+  // Resolves each document's variant (via `_system.variant._ref`) to its definition for the
+  // "Variant" column. Provider-free + cached; returns empty when variants are disabled.
+  const {byId: variantsById} = useAllVariants()
 
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
@@ -80,11 +120,20 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   const documentTableColumnDefs = useMemo(
-    () => getDocumentTableColumnDefs(release._id, release.state, t),
-    [release._id, release.state, t],
+    () =>
+      getDocumentTableColumnDefs(release._id, release.state, t, {
+        searchInCommandLane: variantsEnabled,
+        variantsById: variantsEnabled ? variantsById : undefined,
+      }),
+    [release._id, release.state, t, variantsEnabled, variantsById],
   )
 
   const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
+
+  const handleActivityClick = useCallback(
+    () => setInspector?.((prev) => (prev === 'activity' ? undefined : 'activity')),
+    [setInspector],
+  )
 
   const filterRows = useCallback(
     (data: DocumentInRelease[], searchTerm: string) => {
@@ -172,6 +221,97 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [documents, pendingAddedDocument],
   )
 
+  // In the DocumentTable (variants-enabled) shape, free-text search is owned by the table; the
+  // caller pre-filters by the active tab and passes those rows in.
+  const filterTabRows = useMemo(
+    () => tableData.filter((doc) => documentMatchesFilter(doc, activeFilter)),
+    [tableData, activeFilter],
+  )
+
+  // Resolve the pending bulk action's selected row keys back to their documents (from the visible,
+  // tab-filtered rows) for the confirmation dialog.
+  const selectedDocuments = useMemo(() => {
+    if (!bulkAction) return []
+    const byId = new Map(filterTabRows.map((row) => [row.document._id, row]))
+    return bulkAction.keys
+      .map((key) => byId.get(key))
+      .filter((row): row is DocumentInReleaseDetail => Boolean(row))
+  }, [bulkAction, filterTabRows])
+
+  // Multi-select is only meaningful on an active release (matching the per-row actions, which are
+  // hidden otherwise). Discard + Unpublish mirror the per-row menu, applied to the whole selection.
+  const isActiveRelease = release.state === 'active'
+  const selection = useMemo<DocumentTableSelection | undefined>(() => {
+    if (!isActiveRelease) return undefined
+    return {
+      labels: {
+        selectAll: t('dashboard.details.bulk.select-all'),
+        selectRow: t('dashboard.details.bulk.select-row'),
+        selectedCount: (count) => t('dashboard.details.bulk.selected', {count}),
+        clear: t('dashboard.details.bulk.clear'),
+      },
+      selectAllTestId: 'release-bulk-select-all',
+      renderActions: ({selectedKeys, compact, clear}) => {
+        const discard = () => setBulkAction({action: 'discard', keys: selectedKeys, clear})
+        const unpublish = () => setBulkAction({action: 'unpublish', keys: selectedKeys, clear})
+
+        if (compact) {
+          return (
+            <MenuButton
+              id="release-bulk-more"
+              button={
+                <Button
+                  data-testid="release-bulk-more"
+                  icon={EllipsisHorizontalIcon}
+                  mode="bleed"
+                  tooltipProps={{content: t('dashboard.details.bulk.more')}}
+                />
+              }
+              menu={
+                <Menu>
+                  <MenuItem
+                    data-testid="release-bulk-discard"
+                    icon={CloseIcon}
+                    onClick={discard}
+                    text={t('dashboard.details.bulk.discard')}
+                    tone="critical"
+                  />
+                  <MenuItem
+                    data-testid="release-bulk-unpublish"
+                    icon={UnpublishIcon}
+                    onClick={unpublish}
+                    text={t('dashboard.details.bulk.unpublish')}
+                  />
+                </Menu>
+              }
+              popover={{placement: 'bottom-end', portal: true}}
+            />
+          )
+        }
+
+        return (
+          <Flex align="center" flex="none" gap={2}>
+            <Button
+              data-testid="release-bulk-discard"
+              icon={CloseIcon}
+              mode="ghost"
+              onClick={discard}
+              text={t('dashboard.details.bulk.discard')}
+              tone="critical"
+            />
+            <Button
+              data-testid="release-bulk-unpublish"
+              icon={UnpublishIcon}
+              mode="ghost"
+              onClick={unpublish}
+              text={t('dashboard.details.bulk.unpublish')}
+            />
+          </Flex>
+        )
+      },
+    }
+  }, [isActiveRelease, t])
+
   const isCardinalityOne = isCardinalityOneRelease(release)
   const hasNoDocuments = !isLoading && documents.length === 0
 
@@ -197,49 +337,114 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     )
   }
 
+  // Old (non-variant) path: Add-document lives at the end of the list.
+  const addDocumentFooter = release.state === 'active' && (
+    <Container width={3}>
+      <Card padding={3}>
+        <Button
+          icon={AddIcon}
+          disabled={isLoading}
+          mode="bleed"
+          onClick={handleAddDocumentClick}
+          text={t('action.add-document')}
+        />
+      </Card>
+    </Container>
+  )
+
+  // New (DocumentTable) path: one action lane. Activity + Share (icons) sit alongside Add document
+  // (the labeled primary), so every "do something" control lives together at the right of the lane
+  // instead of being scattered into the header.
+  const addDocumentButton = release.state === 'active' && (
+    <Button
+      disabled={isLoading}
+      icon={AddIcon}
+      mode="ghost"
+      onClick={handleAddDocumentClick}
+      text={t('action.add-document')}
+    />
+  )
+  const commandLaneActions = (
+    <Flex align="center" gap={2}>
+      {setInspector && (
+        <Button
+          data-testid="activity-button"
+          icon={RestoreIcon}
+          mode="bleed"
+          onClick={handleActivityClick}
+          selected={inspector === 'activity'}
+          tooltipProps={{content: t('dashboard.details.activity')}}
+        />
+      )}
+      <CopyReleaseActions release={release} icon={CopyIcon} />
+      {addDocumentButton}
+    </Flex>
+  )
+
   return (
     <Flex direction="column" style={FULL_HEIGHT_STYLE}>
-      <ReleaseDocumentFilterTabs
-        documents={tableData}
-        releaseState={release.state}
-        isLoading={isLoading}
-        activeFilter={activeFilter}
-        onFilterChange={setActiveFilter}
-      />
-      <Card
-        ref={setScrollContainerRef}
-        data-testid="document-table-card"
-        flex={1}
-        borderTop
-        style={SCROLL_CONTAINER_STYLE}
-      >
-        <div style={FIT_CONTENT_STYLE}>
-          <Table<DocumentInReleaseDetail>
-            loading={isLoading}
-            data={tableData}
-            emptyState={t('summary.no-documents')}
-            // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
-            rowId="document._id"
-            columnDefs={documentTableColumnDefs}
-            rowActions={renderRowActions}
-            searchFilter={filterRows}
-            scrollContainerRef={scrollContainerRef}
-            defaultSort={{column: 'search', direction: 'asc'}}
-          />
-        </div>
-      </Card>
-      {release.state === 'active' && (
-        <Container width={3}>
-          <Card padding={3}>
-            <Button
-              icon={AddIcon}
-              disabled={isLoading}
-              mode="bleed"
-              onClick={handleAddDocumentClick}
-              text={t('action.add-document')}
+      {variantsEnabled ? (
+        <DocumentTable<DocumentInReleaseDetail>
+          columnDefs={documentTableColumnDefs}
+          defaultSort={{column: 'search', direction: 'asc'}}
+          emptyState={t('summary.no-documents')}
+          commandLaneActions={commandLaneActions}
+          filterTabs={
+            <ReleaseDocumentFilterTabs
+              activeFilter={activeFilter}
+              documents={tableData}
+              inline
+              isLoading={isLoading}
+              onFilterChange={setActiveFilter}
+              releaseState={release.state}
             />
+          }
+          getRowKey={(row) => row.document._id}
+          id="document-table-card"
+          loading={isLoading}
+          rowActions={renderRowActions}
+          rows={filterTabRows}
+          // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+          rowId="document._id"
+          searchPlaceholder={t('search-documents-placeholder')}
+          searchPredicate={(row, searchTerm) => searchDocumentRelease(row.document, searchTerm)}
+          searchTestId="release-documents-search"
+          searchWidth={260}
+          selection={selection}
+        />
+      ) : (
+        <>
+          <ReleaseDocumentFilterTabs
+            documents={tableData}
+            releaseState={release.state}
+            isLoading={isLoading}
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+          />
+          <Card
+            ref={setScrollContainerRef}
+            data-testid="document-table-card"
+            flex={1}
+            borderTop
+            style={SCROLL_CONTAINER_STYLE}
+          >
+            <div style={FIT_CONTENT_STYLE}>
+              <Table<DocumentInReleaseDetail>
+                loading={isLoading}
+                data={tableData}
+                emptyState={t('summary.no-documents')}
+                // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                rowId="document._id"
+                columnDefs={documentTableColumnDefs}
+                rowActions={renderRowActions}
+                searchFilter={filterRows}
+                scrollContainerRef={scrollContainerRef}
+                defaultSort={{column: 'search', direction: 'asc'}}
+              />
+            </div>
           </Card>
-        </Container>
+          {addDocumentFooter}
+        </>
       )}
       <AddDocumentSearch
         open={openAddDocumentDialog}
@@ -247,6 +452,15 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         releaseId={releaseId}
         idsInRelease={documents.map(({document}) => document._id)}
       />
+      {bulkAction && selectedDocuments.length > 0 && (
+        <ReleaseBulkActionDialog
+          action={bulkAction.action}
+          documents={selectedDocuments}
+          releaseId={releaseId}
+          onClose={() => setBulkAction(null)}
+          onSuccess={bulkAction.clear}
+        />
+      )}
     </Flex>
   )
 }

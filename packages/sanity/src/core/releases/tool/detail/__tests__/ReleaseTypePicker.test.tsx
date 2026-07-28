@@ -92,7 +92,7 @@ describe('ReleaseTypePicker', () => {
 
       expect(screen.getByTestId('published-release-type-label')).toBeInTheDocument()
 
-      expect(screen.getByText('Published on Oct 10, 2023, 3:00:00 AM')).toBeInTheDocument()
+      expect(screen.getByText('Published on Oct 10, 2023, 3:00 AM')).toBeInTheDocument()
     })
 
     it('renders the label with a published text when release was schedule published', async () => {
@@ -102,7 +102,7 @@ describe('ReleaseTypePicker', () => {
 
       expect(screen.getByTestId('published-release-type-label')).toBeInTheDocument()
 
-      expect(screen.getByText('Published on Oct 10, 2023, 3:00:00 AM')).toBeInTheDocument()
+      expect(screen.getByText('Published on Oct 10, 2023, 3:00 AM')).toBeInTheDocument()
     })
   })
 
