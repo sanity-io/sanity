@@ -1,5 +1,5 @@
 import {getVariantVersionInfo} from '../../../../variants/documents/getVariantVersionInfo'
-import {type OperationImpl} from '../operations/types'
+import {type OperationImpl, type PublishOptions} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
 import {assertNotVariantVersion} from '../utils/assertNotVariantVersion'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
@@ -7,7 +7,7 @@ import {variantActionsApiClient} from '../utils/variantActionsApiClient'
 
 type DisabledReason = 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES' | 'NOT_PUBLISHABLE'
 
-export const publish: OperationImpl<[], DisabledReason> = {
+export const publish: OperationImpl<[options?: PublishOptions], DisabledReason> = {
   disabled: ({schema, typeName, snapshots}) => {
     if (isLiveEditEnabled(schema, typeName)) {
       return 'LIVE_EDIT_ENABLED'
@@ -32,7 +32,7 @@ export const publish: OperationImpl<[], DisabledReason> = {
     }
     return false
   },
-  execute: ({client, idPair, snapshots}) => {
+  execute: ({client, idPair, snapshots}, options) => {
     // The editor must be able to see the draft they are choosing to publish.
     if (!snapshots.draft && !snapshots.version) {
       throw new Error('cannot execute "publish" when draft or version is missing')
@@ -52,10 +52,10 @@ export const publish: OperationImpl<[], DisabledReason> = {
       // Publishes the variant document into the variant-of-published document. The base
       // published document is never touched.
       //
-      // No optimistic locks yet: the deployed action does not accept `ifSourceRevisionId`
-      // (rejected with `json: unknown field`), and `ifPublishedRevisionId` (lock on the
-      // variant-of-published target) requires the sibling stub, which is not in any pair slot.
-      // Omitting them degrades to last-write-wins, same as release publish today.
+      // `ifPublishedVariantRevisionId` locks on the variant-of-published sibling revision
+      // (passed from PublishAction via `publishedSibling._rev` — that sibling is not in any
+      // pair snapshot slot). `ifSourceRevisionId` is still omitted: the deployed action
+      // rejects it (`json: unknown field`).
       // TODO(SAPP): send `ifSourceRevisionId: snapshots.version?._rev` once the action supports it.
       return variantActionsApiClient(client).observable.action(
         {
@@ -63,6 +63,7 @@ export const publish: OperationImpl<[], DisabledReason> = {
           publishedId: idPair.publishedId,
           variantId: variantVersion.variantId,
           bundleId: variantVersion.bundleId,
+          ifPublishedVariantRevisionId: options?.ifPublishedVariantRevisionId,
         },
         {tag: 'document.publish'},
       )

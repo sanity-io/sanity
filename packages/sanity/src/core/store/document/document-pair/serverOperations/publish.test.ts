@@ -305,6 +305,37 @@ describe('publish', () => {
             publishedId: 'my-id',
             variantId: 'french',
             bundleId: 'drafts',
+            ifPublishedVariantRevisionId: undefined,
+          },
+          options: {tag: 'document.publish'},
+        },
+      ])
+    })
+
+    it('sends ifPublishedVariantRevisionId when provided for a variant publish', () => {
+      const client = createMockSanityClient()
+
+      publish.execute(
+        {
+          client,
+          idPair: {
+            draftId: 'drafts.my-id',
+            publishedId: 'my-id',
+            versionId: 'versions.varscope.my-id',
+          },
+          snapshots: {version: variantVersion('drafts')},
+        } as unknown as OperationArgs,
+        {ifPublishedVariantRevisionId: 'publishedSiblingRev'},
+      )
+
+      expect(client.$log.observable.action).toEqual([
+        {
+          actions: {
+            actionType: 'sanity.action.document.variant.publish',
+            publishedId: 'my-id',
+            variantId: 'french',
+            bundleId: 'drafts',
+            ifPublishedVariantRevisionId: 'publishedSiblingRev',
           },
           options: {tag: 'document.publish'},
         },

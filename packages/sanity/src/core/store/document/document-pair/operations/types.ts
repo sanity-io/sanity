@@ -34,7 +34,7 @@ export interface OperationsAPI {
   del: Operation<[versions?: string[]], 'NOTHING_TO_DELETE' | 'TARGET_NOT_FOUND'> | GuardedOperation
   publish:
     | Operation<
-        [],
+        [options?: PublishOptions],
         | 'LIVE_EDIT_ENABLED'
         | 'ALREADY_PUBLISHED'
         | 'NO_CHANGES'
@@ -61,6 +61,24 @@ export interface OperationsAPI {
       >
     | GuardedOperation
   restore: Operation<[revision: DocumentRevision]> | GuardedOperation
+}
+
+/**
+ * Extra options for `publish.execute`.
+ *
+ * Variant publish locks cannot read the variant-of-published revision from pair
+ * snapshots (that sibling is not in any slot). Callers that have
+ * `publishedSibling` (e.g. PublishAction) pass its `_rev` here.
+ *
+ * @internal
+ */
+export interface PublishOptions {
+  /**
+   * Optimistic lock on the variant-of-published document's revision
+   * (`ifPublishedVariantRevisionId` on `sanity.action.document.variant.publish`).
+   * Ignored for base/release publish.
+   */
+  ifPublishedVariantRevisionId?: string
 }
 
 /** @internal */

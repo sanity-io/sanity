@@ -78,6 +78,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   // tracking) lives on the variant-of-published sibling — the base `published` document says
   // nothing about whether the *variant* is published.
   const publishedInfo = isVariantTarget ? targetDocumentState.publishedSibling : published
+  // Optimistic lock for variant.publish — sibling is not in any pair snapshot slot, so the
+  // revision is passed as an execute option (see PublishOptions.ifPublishedVariantRevisionId).
+  const ifPublishedVariantRevisionId = isVariantTarget
+    ? targetDocumentState.publishedSibling?._rev
+    : undefined
 
   const {publish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const validationStatus = useValidationStatus(value._id, type, !release)
@@ -113,10 +118,17 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const telemetry = useTelemetry()
 
   const doPublish = useCallback(() => {
-    publish.execute()
+    publish.execute(isVariantTarget ? {ifPublishedVariantRevisionId} : undefined)
     telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
-  }, [publish, currentPublishRevision, telemetry, id])
+  }, [
+    publish,
+    isVariantTarget,
+    ifPublishedVariantRevisionId,
+    currentPublishRevision,
+    telemetry,
+    id,
+  ])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
