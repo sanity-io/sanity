@@ -1,6 +1,7 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {type PortableTextBlock} from '@sanity/types'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
+import {useState} from 'react'
 import {Link} from 'react-router-dom'
 
 import {type CoffeeProductCard} from './queries'
@@ -135,6 +136,135 @@ export function SiteHeader() {
         <Link to="/">Home</Link>
       </nav>
     </header>
+  )
+}
+
+export type DemoVariantGroup = 'Baseline' | 'Personalization' | 'A/B testing' | 'Feature flag'
+
+export interface DemoVariantOption {
+  value: string
+  label: string
+  group: DemoVariantGroup
+}
+
+export const DEMO_VARIANT_OPTIONS: DemoVariantOption[] = [
+  {value: '', label: 'New visitor (baseline)', group: 'Baseline'},
+  {value: 'audience-returning', label: 'Returning visitor', group: 'Personalization'},
+  {value: 'audience-vip', label: 'VIP / loyalty member', group: 'Personalization'},
+  {value: 'audience-local', label: 'Local regular (pickup)', group: 'Personalization'},
+  {value: 'hero-treatment-b', label: 'Treatment B', group: 'A/B testing'},
+  {value: 'early-access', label: 'Early access (on)', group: 'Feature flag'},
+]
+
+const GROUP_STYLE: Record<DemoVariantGroup, {bg: string; fg: string; icon: string}> = {
+  'Baseline': {bg: '#3a3530', fg: '#cbb994', icon: '⚪️'},
+  'Personalization': {bg: '#1f5c3f', fg: '#c9f2dd', icon: '👤'},
+  'A/B testing': {bg: '#1c4a8a', fg: '#cfe3ff', icon: '🧪'},
+  'Feature flag': {bg: '#b64a1c', fg: '#ffe6d4', icon: '🚩'},
+}
+
+export function DemoVariantBadge({group}: {group: DemoVariantGroup}) {
+  const style = GROUP_STYLE[group]
+  return (
+    <span className="demo-variant-badge" style={{background: style.bg, color: style.fg}}>
+      <span aria-hidden>{style.icon}</span> {group}
+    </span>
+  )
+}
+
+export function DemoVariantSwitcher({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (value: string) => void
+}) {
+  const groups = Array.from(new Set(DEMO_VARIANT_OPTIONS.map((o) => o.group)))
+  const current = DEMO_VARIANT_OPTIONS.find((o) => o.value === value)
+
+  return (
+    <div className="demo-variant-switcher">
+      <label htmlFor="demo-variant-select">Viewing as</label>
+      <select id="demo-variant-select" value={value} onChange={(e) => onChange(e.target.value)}>
+        {groups.map((group) => (
+          <optgroup key={group} label={group}>
+            {DEMO_VARIANT_OPTIONS.filter((o) => o.group === group).map((option) => (
+              <option key={option.value || 'baseline'} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
+      {current && <DemoVariantBadge group={current.group} />}
+    </div>
+  )
+}
+
+export function DemoControlsMenu({
+  showSwitcher,
+  onToggleSwitcher,
+  showDebug,
+  onToggleDebug,
+}: {
+  showSwitcher: boolean
+  onToggleSwitcher: (value: boolean) => void
+  showDebug: boolean
+  onToggleDebug: (value: boolean) => void
+}) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="demo-controls-menu">
+      <button
+        type="button"
+        className="demo-controls-menu-toggle"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+      >
+        ⚙ Demo controls
+      </button>
+      {open && (
+        <div className="demo-controls-menu-panel">
+          <label>
+            <input
+              type="checkbox"
+              checked={showSwitcher}
+              onChange={(e) => onToggleSwitcher(e.target.checked)}
+            />
+            Viewing as bar
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={showDebug}
+              onChange={(e) => onToggleDebug(e.target.checked)}
+            />
+            Debug panel
+          </label>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function DemoDebugPanel({
+  requestOptions,
+  response,
+}: {
+  requestOptions: Record<string, unknown>
+  response: unknown
+}) {
+  return (
+    <div className="demo-debug-panel">
+      <div className="demo-debug-section">
+        <h3>Request options sent to client.fetch()</h3>
+        <pre>{JSON.stringify(requestOptions, null, 2)}</pre>
+      </div>
+      <div className="demo-debug-section">
+        <h3>Raw query response</h3>
+        <pre>{JSON.stringify(response, null, 2) ?? 'undefined'}</pre>
+      </div>
+    </div>
   )
 }
 

@@ -11,10 +11,17 @@ const studioUrl =
 const client = createClient({
   projectId: 'ppsg7ml5',
   dataset: 'coffee-shop',
-  useCdn: true,
-  apiVersion: '2025-03-19',
+  // Variant queries aren't served through the CDN yet — bypass it so `variant` takes effect.
+  useCdn: false,
+  // The `variant` query option requires the experimental API version during closed beta.
+  apiVersion: 'X',
   stega: {enabled: true, studioUrl},
+  // DEMO ONLY: anonymous requests can't resolve variant-scoped references during closed
+  // beta (see docs/initiatives/content-variants-closed-beta-gotchas.md #5). Never ship a
+  // token in a public storefront bundle — this is fine for a local-only dev demo only.
+  token: import.meta.env.SANITY_VIEWER_TOKEN,
 })
 
 export const {useQuery, useLiveMode} = createQueryStore({client})
+export {client}
 export const imageBuilder: ImageUrlBuilder = createImageUrlBuilder(client)

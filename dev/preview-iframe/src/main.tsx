@@ -1,9 +1,8 @@
 // oxlint-disable-next-line no-unassigned-import -- style import is effectful
 import './styles.css'
 
-import {type ClientPerspective} from '@sanity/client'
 import {enableVisualEditing} from '@sanity/visual-editing'
-import {Suspense, useEffect, useState} from 'react'
+import {Suspense, useEffect} from 'react'
 import {createRoot} from 'react-dom/client'
 import {BrowserRouter, Route, Routes} from 'react-router-dom'
 
@@ -11,26 +10,14 @@ import {HomePage} from './HomePage'
 import {useLiveMode} from './loader'
 import {ProductPage} from './ProductPage'
 
+// Kept running for click-to-edit overlays when opened inside Presentation, but
+// its perspective/variant state isn't shown — the demo uses its own manual
+// variant switcher (see DemoVariantSwitcher in HomePage), which is the source
+// of truth for what's currently being viewed.
 function VisualEditing() {
-  const [perspective, setPerspective] = useState<ClientPerspective>('published')
-  const [variant, setVariant] = useState<string | undefined>(undefined)
-
-  useEffect(
-    () =>
-      enableVisualEditing({
-        onPerspectiveChange: setPerspective,
-        onVariantChange: setVariant,
-      }),
-    [],
-  )
+  useEffect(() => enableVisualEditing({}), [])
   useLiveMode({})
-
-  return (
-    <div className="ve-debug" aria-hidden>
-      <span>perspective: {JSON.stringify(perspective)}</span>
-      <span>variant: {variant ? JSON.stringify(variant) : 'none'}</span>
-    </div>
-  )
+  return null
 }
 
 function App() {

@@ -11,10 +11,21 @@ function sectionAttr(pageId: string, sectionKey: string, field?: string) {
   return createDataAttribute({id: pageId, type: 'demoCoffeeLandingPage'}).scope(path).toString()
 }
 
-function HeroSection({pageId, section}: {pageId: string; section: LandingSection}) {
+function HeroSection({
+  pageId,
+  section,
+  activeVariant,
+}: {
+  pageId: string
+  section: LandingSection
+  activeVariant?: string
+}) {
   return (
     <section className="hero" data-sanity={sectionAttr(pageId, section._key)}>
       <div className="hero-copy">
+        {activeVariant === 'hero-treatment-b' && (
+          <span className="demo-ribbon demo-ribbon-ab">🧪 A/B test — Treatment B</span>
+        )}
         <h1 data-sanity={sectionAttr(pageId, section._key, 'headline')}>
           {section.headline || 'Brew & Bean'}
         </h1>
@@ -74,10 +85,17 @@ function PromoBannerSection({pageId, section}: {pageId: string; section: Landing
   const title = section.title || section.promo?.title
   const tagline = section.tagline || section.promo?.tagline
   const cta = section.ctaLabel || section.promo?.ctaLabel
+  const isFeatureFlagSection = section._key === 'early-access-beta'
 
   return (
-    <section className="promo-banner" data-sanity={sectionAttr(pageId, section._key)}>
+    <section
+      className={isFeatureFlagSection ? 'promo-banner promo-banner-flag' : 'promo-banner'}
+      data-sanity={sectionAttr(pageId, section._key)}
+    >
       <div>
+        {isFeatureFlagSection && (
+          <span className="demo-ribbon demo-ribbon-flag">🚩 Feature flag — early access on</span>
+        )}
         <h2 data-sanity={sectionAttr(pageId, section._key, 'title')}>{title || 'Special offer'}</h2>
         {tagline && <p data-sanity={sectionAttr(pageId, section._key, 'tagline')}>{tagline}</p>}
       </div>
@@ -164,16 +182,25 @@ function CtaSection({pageId, section}: {pageId: string; section: LandingSection}
 export function Sections({
   page,
   latestProducts,
+  activeVariant,
 }: {
   page: LandingPage
   latestProducts: CoffeeProductCard[]
+  activeVariant?: string
 }) {
   return (
     <>
       {(page.sections || []).map((section) => {
         switch (section._type) {
           case 'hero':
-            return <HeroSection key={section._key} pageId={page._id} section={section} />
+            return (
+              <HeroSection
+                key={section._key}
+                pageId={page._id}
+                section={section}
+                activeVariant={activeVariant}
+              />
+            )
           case 'featuredProducts':
             return (
               <FeaturedProductsSection
