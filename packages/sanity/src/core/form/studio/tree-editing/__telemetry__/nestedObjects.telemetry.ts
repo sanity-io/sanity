@@ -34,23 +34,16 @@ export const NavigatedToViaArrayList = defineEvent<NestedDialogOpenedInfo & Nest
   },
 )
 
-export const NavigatedToNestedObjectViaBreadcrumb = defineEvent<NestedDialogOpenedInfo>({
-  name: 'Navigated to Nested Object via Breadcrumb',
-  version: 1,
-  description: 'User navigated to a nested object via a breadcrumb',
-})
+interface NestedObjectOpenedInfo {
+  /** How the user navigated to (opened) the nested object */
+  path: 'breadcrumb' | 'close_button' | 'keyboard_shortcut'
+}
 
-export const NavigatedToNestedObjectViaCloseButton = defineEvent({
-  name: 'Navigated to Nested Object via Close Button',
+/** When a nested object is navigated to (opened), regardless of trigger */
+export const NestedObjectOpened = defineEvent<NestedObjectOpenedInfo>({
+  name: 'Nested Object Opened',
   version: 1,
-  description:
-    'User navigated to a nested object via closing the top most dialog via the close button',
-})
-
-export const navigatedToNestedObjectViaKeyboardShortcut = defineEvent({
-  name: 'Navigated to Nested Object via Keyboard Shortcut',
-  version: 1,
-  description: 'User navigated to a nested object via a keyboard shortcut',
+  description: 'User navigated to a nested object',
 })
 
 export const CreatedNewObject = defineEvent<NestedDialogOpenedInfo & NestedObjectInfoOrigin>({

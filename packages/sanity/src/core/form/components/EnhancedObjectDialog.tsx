@@ -12,10 +12,9 @@ import {PresenceOverlay} from '../../presence/overlay/PresenceOverlay'
 import {isNativeEditableElement} from '../../studio/copyPaste/utils'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {
-  NavigatedToNestedObjectViaCloseButton,
-  navigatedToNestedObjectViaKeyboardShortcut,
   NestedDialogClosed,
   NestedDialogOpened,
+  NestedObjectOpened,
 } from '../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useFormBuilder} from '../useFormBuilder'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
@@ -150,7 +149,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           const newLastStackPath = lastStackPath.slice(0, -1)
 
           if (newLastStackPath.length > 1) {
-            telemetry.log(navigatedToNestedObjectViaKeyboardShortcut)
+            telemetry.log(NestedObjectOpened, {path: 'keyboard_shortcut'})
             navigateTo(newLastStackPath)
           } else {
             telemetry.log(NestedDialogClosed)
@@ -165,7 +164,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   const handleStackedDialogClose = useCallback(
     (closeAll?: boolean) => {
       if (!closeAll && stack.length >= 2) {
-        telemetry.log(NavigatedToNestedObjectViaCloseButton)
+        telemetry.log(NestedObjectOpened, {path: 'close_button'})
         close({toParent: true})
       } else {
         telemetry.log(NestedDialogClosed)
