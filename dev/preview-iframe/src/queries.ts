@@ -61,7 +61,7 @@ export const PRODUCT_DETAIL_QUERY = `*[_type == "demoCoffeeProduct" && slug.curr
   "excerpt": ${localized('excerpt')},
   price,
   discount,
-  description,
+  "description": ${localized('description')},
   "imageUrl": image.asset->url,
   origin->${ORIGIN_PROJECTION},
   promo->{
@@ -137,7 +137,7 @@ export interface ProductSizeOption {
 }
 
 export interface CoffeeProductDetail extends CoffeeProductCard {
-  description?: PortableTextBlock[]
+  description?: string
   promo?: CoffeePromo
   sizeOptions?: ProductSizeOption[]
   grindOptions?: string[]

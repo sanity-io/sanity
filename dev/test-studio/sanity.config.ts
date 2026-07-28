@@ -717,7 +717,7 @@ export default defineConfig([
           {id: 'fr', title: 'French'},
         ],
         defaultLanguages: ['en'],
-        fieldTypes: ['string'],
+        fieldTypes: ['string', 'text'],
       }),
     ],
     mediaLibrary: {

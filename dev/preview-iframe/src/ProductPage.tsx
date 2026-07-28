@@ -11,7 +11,6 @@ import {
   ProductOptions,
   ProductPrice,
   queryErrorMessage,
-  RichText,
 } from './components'
 import {useDemoState} from './demoState'
 import {client} from './loader'
@@ -121,8 +120,13 @@ export function ProductPage() {
             </div>
           </div>
 
-          <div data-sanity={attr.scope('description').toString()}>
-            <RichText value={data.description} />
+          <div className="prose" data-sanity={attr.scope('description').toString()}>
+            {(data.description ?? '')
+              .split('\n\n')
+              .filter(Boolean)
+              .map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
           </div>
 
           {data.promo ? (

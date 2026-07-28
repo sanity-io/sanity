@@ -100,10 +100,9 @@ export const demoCoffeeProduct = defineType({
     defineField({
       name: 'description',
       title: 'Description',
-      type: 'array',
+      type: 'internationalizedArrayText',
       description:
-        'Rich text — not localized in this demo (the internationalizedArray plugin covers plain strings; portable text i18n is a separate, larger integration left out of scope here).',
-      of: [defineArrayMember({type: 'block'})],
+        'Longer plain-text description, localized (en/de/fr) via the regular internationalizedArray plugin. Plain text rather than rich text specifically so it localizes the same way the rest of this demo does — see gotcha #8 in the closed-beta doc for the rich-text tradeoff this sidesteps.',
     }),
     defineField({
       name: 'price',
