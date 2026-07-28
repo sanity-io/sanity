@@ -40,6 +40,7 @@ import {
   STANDARD_PORTABLE_TEXT_INPUT_TYPES,
 } from './constants'
 import {typesInOptionGroup} from './groupByOption'
+import {issue13703NestedListPanes} from './issue13703NestedListPanes'
 
 export const structure: StructureResolver = (
   S,
@@ -49,6 +50,9 @@ export const structure: StructureResolver = (
   return S.list()
     .title(t('testStudio:structure.root.title' as const) || 'Content')
     .items([
+      // Reproduces https://github.com/sanity-io/sanity/issues/13703. See
+      // `./issue13703NestedListPanes.ts` for the full navigation recipe.
+      issue13703NestedListPanes(S),
       S.documentListItem().id('validation').schemaType('allTypes'),
       S.listItem()
         .title('Sections by perspective')
