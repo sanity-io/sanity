@@ -1,4 +1,3 @@
-// oxlint-disable-next-line no-unassigned-import -- style import is effectful
 import './styles.css'
 // oxlint-disable-next-line no-unassigned-import -- Sanity UI POC styles are required for its components
 import '@sanity-labs/ui-poc/styles.css'
