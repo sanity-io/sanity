@@ -1,7 +1,7 @@
-import {render, screen, waitFor} from '@testing-library/react'
+import {act, render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
-import {of} from 'rxjs'
+import {of, Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {ReleaseBulkActionDialog} from '../ReleaseBulkActionDialog'
@@ -92,6 +92,7 @@ vi.mock('@sanity/ui', () => ({
   useToast: vi.fn(() => ({push: mockToastPush})),
   Box: ({children}: {children: ReactNode}) => <div>{children}</div>,
   Text: ({children}: {children: ReactNode}) => <span>{children}</span>,
+  Spinner: (props: {'data-testid'?: string}) => <div data-testid={props['data-testid']} />,
 }))
 
 function createRow(
@@ -182,6 +183,34 @@ describe('ReleaseBulkActionDialog', () => {
         title: 'No unpublish permission',
       }),
     )
+  })
+
+  it('does not show a zero document count while permissions are loading', async () => {
+    const permission$ = new Subject<{granted: boolean; reason: string}>()
+    mockGetDocumentPairPermissions.mockReturnValue(permission$.asObservable())
+
+    render(
+      <ReleaseBulkActionDialog
+        action="unpublish"
+        documents={[createRow('versions.rTest.doc-one')]}
+        releaseId="rTest"
+        onClose={vi.fn()}
+        onSuccess={vi.fn()}
+      />,
+    )
+
+    expect(screen.queryByText('Unpublish 0 documents')).not.toBeInTheDocument()
+    expect(screen.getByTestId('release-bulk-action-dialog-loading')).toBeInTheDocument()
+
+    await act(async () => {
+      permission$.next({granted: true, reason: ''})
+      permission$.complete()
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Unpublish 1 documents')).toBeInTheDocument()
+    })
+    expect(screen.queryByTestId('release-bulk-action-dialog-loading')).not.toBeInTheDocument()
   })
 
   it('shows the actionable document count in the dialog description', async () => {
