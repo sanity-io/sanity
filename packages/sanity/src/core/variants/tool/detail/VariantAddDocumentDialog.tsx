@@ -1,10 +1,14 @@
+import {AddIcon} from '@sanity/icons/Add'
 import {SearchIcon} from '@sanity/icons/Search'
 import {type SanityDocumentLike, type SchemaType} from '@sanity/types'
-import {Badge, Box, Card, Flex, Spinner, Stack, Text, TextInput} from '@sanity/ui'
+import {Badge, Box, Card, Flex, Menu, Spinner, Stack, Text, TextInput} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 
+import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
@@ -80,13 +84,28 @@ function AddDocumentResultItem({
 export function VariantAddDocumentDialog({
   onClose,
   onSelect,
+  onCreateNew,
 }: {
   onClose: () => void
   onSelect: (document: VariantAddDocumentSelection) => void
+  onCreateNew: (type: string) => void
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const schema = useSchema()
   const [query, setQuery] = useState('')
+
+  // The document types a new document can be created as (real document types, not internal ones).
+  const documentTypes = useMemo(
+    () =>
+      schema
+        .getTypeNames()
+        .map((name) => schema.get(name))
+        .filter((type): type is SchemaType => {
+          if (!type || type.type?.name !== 'document') return false
+          return !type.name.startsWith('sanity.') && !type.name.startsWith('system.')
+        }),
+    [schema],
+  )
 
   const {handleSearch, searchState} = useSearch({
     allowEmptyQueries: true,
@@ -160,6 +179,31 @@ export function VariantAddDocumentDialog({
                 )
               })}
             </Stack>
+          )}
+          {documentTypes.length > 0 && (
+            <MenuButton
+              id="variant-add-document-new"
+              button={
+                <Button
+                  data-testid="variant-add-document-new"
+                  icon={AddIcon}
+                  mode="ghost"
+                  text={t('detail.add-document.new')}
+                />
+              }
+              menu={
+                <Menu>
+                  {documentTypes.map((type) => (
+                    <MenuItem
+                      key={type.name}
+                      onClick={() => onCreateNew(type.name)}
+                      text={type.title || type.name}
+                    />
+                  ))}
+                </Menu>
+              }
+              popover={{placement: 'top-start', portal: true}}
+            />
           )}
         </Stack>
       </Box>

@@ -41,7 +41,7 @@ export function VariantActionRail({
   const {t} = useTranslation(variantsLocaleNamespace)
   const toast = useToast()
   const {selectedPerspective} = usePerspective()
-  const {createVariantDocument} = useVariantDocumentOperations()
+  const {createVariantDocument, createNewVariantDocument} = useVariantDocumentOperations()
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [addDocumentOpen, setAddDocumentOpen] = useState(false)
 
@@ -69,6 +69,27 @@ export function VariantActionRail({
       }
     },
     [createVariantDocument, selectedPerspective, t, toast, variant],
+  )
+
+  const handleCreateNew = useCallback(
+    async (type: string) => {
+      try {
+        await createNewVariantDocument({type, variant, selectedPerspective})
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: t('detail.add-document.toast.success'),
+        })
+        setAddDocumentOpen(false)
+      } catch {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('detail.add-document.toast.error'),
+        })
+      }
+    },
+    [createNewVariantDocument, selectedPerspective, t, toast, variant],
   )
 
   return (
@@ -110,6 +131,7 @@ export function VariantActionRail({
       {addDocumentOpen && (
         <VariantAddDocumentDialog
           onClose={() => setAddDocumentOpen(false)}
+          onCreateNew={handleCreateNew}
           onSelect={handleAddDocument}
         />
       )}

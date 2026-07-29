@@ -113,6 +113,8 @@ const variantsLocaleStrings = {
   'detail.action.edit-definition': 'Edit definition',
   /** Secondary action on the Variant detail rail: personalize a document into the variant. */
   'detail.add-document.action': 'Add document',
+  /** Menu button in the add-document dialog to create a brand-new document personalized for the variant. */
+  'detail.add-document.new': 'New document',
   /** Header of the add-document picker dialog. */
   'detail.add-document.header': 'Add document to variant',
   /** Placeholder for the add-document search field. */

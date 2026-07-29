@@ -1,4 +1,6 @@
 import {type SingleActionResult} from '@sanity/client'
+import {getDraftId} from '@sanity/client/csm'
+import {uuid} from '@sanity/uuid'
 import {useCallback} from 'react'
 
 import {useClient} from '../../hooks/useClient'
@@ -39,6 +41,27 @@ export function useVariantDocumentOperations() {
       await createVariantScopedDocument({
         client,
         ...options,
+      })
+    },
+    [client],
+  )
+
+  // Creates a brand-new document of `type` personalized into the variant. Variant version ids are
+  // opaque server hashes, so a version cannot be minted from scratch client-side (see
+  // variants/EDITING.md): instead mint a base draft, then personalize it via the FromBase create.
+  const createNewVariantDocument = useCallback(
+    async (options: {
+      type: string
+      variant: SystemVariant
+      selectedPerspective: TargetPerspective
+    }) => {
+      const draftId = getDraftId(uuid())
+      await client.createIfNotExists({_id: draftId, _type: options.type})
+      await createVariantScopedDocument({
+        client,
+        baseId: draftId,
+        variant: options.variant,
+        selectedPerspective: options.selectedPerspective,
       })
     },
     [client],
@@ -98,6 +121,7 @@ export function useVariantDocumentOperations() {
 
   return {
     createVariantDocument,
+    createNewVariantDocument,
     publishVariantDocument,
     unpublishVariantDocument,
     deleteVariantDocument,
