@@ -1,4 +1,4 @@
-import {render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor, type RenderResult} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -125,7 +125,10 @@ const mockRows: DocumentInVariantGroup[] = [
 ]
 
 describe('VariantDocumentsTable', () => {
-  const renderTable = async (rows: DocumentInVariantGroup[] = mockRows, loading = false) => {
+  const renderTable = async (
+    rows: DocumentInVariantGroup[] = mockRows,
+    loading = false,
+  ): Promise<RenderResult & {wrapper: Awaited<ReturnType<typeof createTestProvider>>}> => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
@@ -133,7 +136,7 @@ describe('VariantDocumentsTable', () => {
     // Search now lives in the command lane (only shown with documents), so settle on the table
     // container, which is always present regardless of rows/loading.
     await screen.findByTestId('variant-documents-table')
-    return result
+    return {...result, wrapper}
   }
 
   it('shows an empty state when there are no documents', async () => {
@@ -183,6 +186,49 @@ describe('VariantDocumentsTable', () => {
 
     expect(screen.getByText('Second article')).toBeInTheDocument()
     expect(screen.queryByText('First article')).not.toBeInTheDocument()
+  })
+
+  it('clears a stale release lane when its segment disappears and does not reapply when it returns', async () => {
+    const user = userEvent.setup()
+    const draftsOnlyRows: DocumentInVariantGroup[] = [
+      {
+        ...mockRows[0]!,
+        document: {
+          ...mockRows[0]!.document,
+          _id: 'drafts.scope.article-1',
+          publishedDocumentExists: false,
+        },
+        version: mockRows[0]!.versions[1]!,
+        versions: [mockRows[0]!.versions[1]!],
+      },
+      mockRows[1]!,
+    ]
+
+    const {rerender} = await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    await user.click(screen.getByTestId('variant-release-lane-segment-published'))
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    rerender(<VariantDocumentsTable rows={draftsOnlyRows} />)
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    rerender(<VariantDocumentsTable rows={mockRows} />)
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+    expect(screen.getByText('First article')).toBeInTheDocument()
+    expect(screen.getByText('Second article')).toBeInTheDocument()
   })
 
   it('filters documents by release lane and clears on re-click', async () => {

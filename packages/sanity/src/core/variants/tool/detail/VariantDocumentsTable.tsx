@@ -50,11 +50,16 @@ export function VariantDocumentsTable({
     [rows, releasesById],
   )
 
-  // If the active release lane disappears (e.g. its documents move), fall back to "All".
-  const resolvedActiveLane =
+  const activeLaneIsValid =
     activeLane === RELEASE_LANE_ALL || segments.some((segment) => segment.id === activeLane)
-      ? activeLane
-      : RELEASE_LANE_ALL
+
+  // If the active release lane disappears (e.g. its documents move), fall back to "All" and
+  // clear state so a later reappearance of that bundle does not resurrect the stale filter.
+  if (!activeLaneIsValid) {
+    setActiveLane(RELEASE_LANE_ALL)
+  }
+
+  const resolvedActiveLane = activeLaneIsValid ? activeLane : RELEASE_LANE_ALL
 
   // Filter tabs are the one way to scope by bundle (grouping was removed: filtering preserves
   // column sorting, which grouping cannot). A selected tab filters the flat, always-sortable list;
