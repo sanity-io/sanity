@@ -8,12 +8,13 @@ import {ReleaseBulkActionDialog} from '../ReleaseBulkActionDialog'
 import {type DocumentInRelease} from '../types'
 
 const mockUnpublishVersion = vi.fn().mockResolvedValue({})
+const mockDiscardVersion = vi.fn().mockResolvedValue({})
 const mockGetDocumentPairPermissions = vi.fn()
 const mockToastPush = vi.fn()
 
 vi.mock('../../../hooks/useVersionOperations', () => ({
   useVersionOperations: vi.fn(() => ({
-    discardVersion: vi.fn(),
+    discardVersion: mockDiscardVersion,
     unpublishVersion: mockUnpublishVersion,
   })),
 }))
@@ -45,6 +46,11 @@ vi.mock('../../../../i18n/hooks/useTranslation', () => ({
       if (key === 'dashboard.details.bulk.unpublish-dialog.header') return 'Unpublish documents'
       if (key === 'dashboard.details.bulk.unpublish-dialog.description') {
         return `Unpublish ${values?.count ?? 0} documents`
+      }
+      if (key === 'dashboard.details.bulk.discard-dialog.confirm') return 'Discard'
+      if (key === 'dashboard.details.bulk.discard-dialog.header') return 'Discard versions'
+      if (key === 'dashboard.details.bulk.discard-dialog.description') {
+        return `Discard ${values?.count ?? 0} versions`
       }
       return key
     },
@@ -152,5 +158,66 @@ describe('ReleaseBulkActionDialog', () => {
       expect(onClose).toHaveBeenCalled()
     })
     expect(mockUnpublishVersion).not.toHaveBeenCalled()
+  })
+
+  it('only discards documents the user has permission for', async () => {
+    const permitted = createRow('versions.rTest.doc-permitted')
+    const denied = createRow('versions.rTest.doc-denied')
+
+    mockGetDocumentPairPermissions.mockImplementation(
+      (options: {id: string; permission: string}) => {
+        if (options.permission !== 'discardVersion') {
+          return of({granted: true, reason: ''})
+        }
+        if (options.id === 'doc-permitted') {
+          return of({granted: true, reason: ''})
+        }
+        return of({granted: false, reason: 'denied'})
+      },
+    )
+
+    render(
+      <ReleaseBulkActionDialog
+        action="discard"
+        documents={[permitted, denied]}
+        releaseId="rTest"
+        onClose={vi.fn()}
+        onSuccess={vi.fn()}
+      />,
+    )
+
+    await userEvent.click(await screen.findByText('Discard'))
+
+    await waitFor(() => {
+      expect(mockDiscardVersion).toHaveBeenCalledTimes(1)
+    })
+    expect(mockDiscardVersion).toHaveBeenCalledWith('rTest', 'versions.rTest.doc-permitted')
+  })
+
+  it('does not call discard when no documents are permitted', async () => {
+    mockGetDocumentPairPermissions.mockImplementation((options: {permission: string}) => {
+      if (options.permission === 'discardVersion') {
+        return of({granted: false, reason: 'denied'})
+      }
+      return of({granted: true, reason: ''})
+    })
+
+    const onClose = vi.fn()
+    render(
+      <ReleaseBulkActionDialog
+        action="discard"
+        documents={[createRow('versions.rTest.doc-one')]}
+        releaseId="rTest"
+        onClose={onClose}
+        onSuccess={vi.fn()}
+      />,
+    )
+
+    await userEvent.click(await screen.findByText('Discard'))
+
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalled()
+    })
+    expect(mockDiscardVersion).not.toHaveBeenCalled()
   })
 })
