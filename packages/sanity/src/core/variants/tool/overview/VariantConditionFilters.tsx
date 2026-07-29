@@ -88,6 +88,7 @@ function AddFilterMenu({
                 return (
                   <Button
                     key={facet.key}
+                    data-testid={`variant-filter-dimension-${facet.key}`}
                     icon={getVariantConditionIcon(facet.key)}
                     justify="flex-start"
                     mode="bleed"
@@ -115,6 +116,7 @@ function AddFilterMenu({
                 return (
                   <Button
                     key={val}
+                    data-testid={`variant-filter-value-${activeFacet.key}-${val}`}
                     iconRight={isSelected ? CheckmarkIcon : undefined}
                     justify="space-between"
                     mode="bleed"

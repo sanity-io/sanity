@@ -334,11 +334,14 @@ describe('VariantsOverview', () => {
     if (!filterPopover) throw new Error('Filter popover not found')
     const filterMenu = within(filterPopover as HTMLElement)
 
-    await user.click(filterMenu.getByText('Audience'))
-    await user.click(filterMenu.getByRole('button', {name: 'alpha'}))
+    // Drive dimensions and values by testid: the selected dimension's label is echoed as a muted
+    // Text header in the right (values) pane, so getByText('Audience') is ambiguous, and the button's
+    // accessible name doesn't resolve cleanly for getByRole.
+    await user.click(filterMenu.getByTestId('variant-filter-dimension-audience'))
+    await user.click(filterMenu.getByTestId('variant-filter-value-audience-alpha'))
 
-    await user.click(filterMenu.getByText('Locale'))
-    await user.click(filterMenu.getByRole('button', {name: 'nb-NO'}))
+    await user.click(filterMenu.getByTestId('variant-filter-dimension-locale'))
+    await user.click(filterMenu.getByTestId('variant-filter-value-locale-nb-NO'))
 
     await waitFor(() => {
       expect(screen.queryByTestId('table-row')).not.toBeInTheDocument()

@@ -55,12 +55,20 @@ export function EditReleaseDialog({
     }
   }, [description, onClose, release, t, title, toast, updateRelease])
 
+  // Ignore click-outside / Escape / close while a save is in flight: dismissing mid-mutation would
+  // unmount the dialog while updateRelease continues, letting the user reopen and edit against a
+  // stale in-flight save. The success path calls onClose directly, so it is unaffected.
+  const handleClose = useCallback(() => {
+    if (isSaving) return
+    onClose()
+  }, [isSaving, onClose])
+
   return (
     <Dialog
       header={t('release.dialog.edit.title')}
       id="edit-release-dialog"
-      onClickOutside={onClose}
-      onClose={onClose}
+      onClickOutside={handleClose}
+      onClose={handleClose}
       padding={false}
       width={1}
     >

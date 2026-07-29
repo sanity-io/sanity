@@ -115,13 +115,9 @@ function bundleSortLabel(bundle: ResolvedVersionBundle): string {
 
 /**
  * Sort order shared by the release lane, row sort key, primary bundle badge, and bundle chips.
- *
- * @internal
+ * Module-private — consumed by getSortedRowBundles / computeReleaseLaneSegments below.
  */
-export function compareResolvedBundles(
-  left: ResolvedVersionBundle,
-  right: ResolvedVersionBundle,
-): number {
+function compareResolvedBundles(left: ResolvedVersionBundle, right: ResolvedVersionBundle): number {
   const kindDelta = getKindOrder(left.kind) - getKindOrder(right.kind)
   if (kindDelta !== 0) {
     return kindDelta

@@ -7,6 +7,7 @@ import {type PreviewLayoutKey} from '../../../../components/previews/types'
 import {DocumentPreviewPresence} from '../../../../presence/DocumentPreviewPresence'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
 import {ReleaseAvatarIcon} from '../../../../releases/components/ReleaseAvatar'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useDocumentPresence} from '../../../../store/presence/useDocumentPresence'
 import {useDocumentPreviewValues} from '../../../../tasks/hooks/useDocumentPreviewValues'
 import {getPublishedId} from '../../../../util/draftUtils'
@@ -111,10 +112,22 @@ export function VariantDocumentPreview({
 }: VariantDocumentPreviewProps): React.JSX.Element {
   const publishedId = getPublishedId(row.groupId)
   const documentPresence = useDocumentPresence(row.document._id)
-  const {perspectiveStack, searchParams} = useMemo(
-    () => getVersionPerspectiveNavigation(row.version.bundleId, variantId),
-    [row.version.bundleId, variantId],
-  )
+  // Navigate to the same bundle the leading badge shows — the row's primary bundle (published →
+  // drafts → releases), which is also what the "Appears in" chip leads with — so the icon and the
+  // open target never disagree. `row.version` is the most-recently-updated version, which can be a
+  // different bundle from the primary; falling back to it only when the primary can't be resolved.
+  const {perspectiveStack, searchParams} = useMemo(() => {
+    const primary = getPrimaryBundle(row, releasesById)
+    const navBundleId =
+      primary?.kind === 'published'
+        ? undefined
+        : primary?.kind === 'drafts'
+          ? 'drafts'
+          : primary?.release
+            ? getReleaseIdFromReleaseDocumentId(primary.release._id)
+            : row.version.bundleId
+    return getVersionPerspectiveNavigation(navBundleId, variantId)
+  }, [row, releasesById, variantId])
 
   const previewPresence = useMemo(
     () => documentPresence?.length > 0 && <DocumentPreviewPresence presence={documentPresence} />,

@@ -22,11 +22,6 @@ import {ReleaseActionRail} from './ReleaseActionRail'
 import {type ReleaseInspector} from './ReleaseDetail'
 import {type DocumentInRelease} from './types'
 
-// The bleed back-button carries its own horizontal padding, which would push the breadcrumb text
-// right of the title/table left edge. Cancel that padding so the breadcrumb sits on the same hard
-// left line as everything below it, framing the pane.
-const BREADCRUMB_ALIGN_STYLE = {marginLeft: -8}
-
 export function ReleaseDashboardHeader(props: {
   documents: DocumentInRelease[]
   inspector: ReleaseInspector | undefined
@@ -56,76 +51,78 @@ export function ReleaseDashboardHeader(props: {
     setInspector((prev) => (prev === 'activity' ? undefined : 'activity'))
   }, [setInspector])
 
-  return (
-    // Share the same width={3} gutter as the details/table panes below, so the breadcrumb aligns
-    // with the title and the Share/Activity actions align flush with the metadata rail's right edge.
-    <Container width={3}>
-      <Box padding={3}>
-        <Flex align="flex-start">
-          <Flex flex={1} align="center" style={{minWidth: 0}}>
-            {variantsEnabled ? (
-              // A single back affordance — the release title already headlines the pane below, so
-              // the breadcrumb's repeat of it is dropped. Mirrors the Variants detail's back arrow.
-              <DetailBackButton
-                text={t('overview.back-to-all-releases')}
-                onClick={handleNavigateToReleasesList}
-                testId="back-to-releases-button"
-              />
-            ) : (
-              <>
-                <Flex flex="none">
-                  <Button
-                    mode="bleed"
-                    onClick={handleNavigateToReleasesList}
-                    text={t('overview.title')}
-                    textWeight="regular"
-                    padding={2}
-                    style={BREADCRUMB_ALIGN_STYLE}
-                    data-testid="back-to-releases-button"
-                  />
-                </Flex>
-                <Box paddingY={2} flex="none">
-                  <Text size={1}>
-                    <ChevronRightIcon />
-                  </Text>
-                </Box>
-                <Box padding={2} style={{minWidth: 0, maxWidth: '300px'}}>
-                  <Text
-                    size={1}
-                    weight="semibold"
-                    textOverflow="ellipsis"
-                    style={release.metadata.title ? undefined : {opacity: 0.5}}
-                  >
-                    {title}
-                  </Text>
-                </Box>
-              </>
-            )}
-          </Flex>
-
+  const headerContent = (
+    <Box padding={3}>
+      <Flex align="flex-start">
+        <Flex flex={1} align="center" style={{minWidth: 0}}>
           {variantsEnabled ? (
-            // The F-pattern action rail: the release's primary action (Run release / Publish /
-            // Schedule / …) and its overflow menu sit top-right, where the eye lands first, instead
-            // of in a bottom footer. The footer is dropped in beta (see ReleaseDetail).
-            <Flex flex="none">
-              <ReleaseActionRail release={release} documents={documents} />
-            </Flex>
+            // A single back affordance — the release title already headlines the pane below, so
+            // the breadcrumb's repeat of it is dropped. Mirrors the Variants detail's back arrow.
+            <DetailBackButton
+              text={t('overview.back-to-all-releases')}
+              onClick={handleNavigateToReleasesList}
+              testId="back-to-releases-button"
+            />
           ) : (
-            <Flex flex="none" gap={2}>
-              <CopyReleaseActions release={release} />
-              <Button
-                icon={RestoreIcon}
-                mode="bleed"
-                onClick={handleActivityClick}
-                padding={2}
-                selected={inspector === 'activity'}
-                gap={2}
-                text={t('dashboard.details.activity')}
-              />
-            </Flex>
+<>
+              <Flex flex="none">
+                <Button
+                  mode="bleed"
+                  onClick={handleNavigateToReleasesList}
+                  text={t('overview.title')}
+                  textWeight="regular"
+                  padding={2}
+                  data-testid="back-to-releases-button"
+                />
+              </Flex>
+              <Box paddingY={2} flex="none">
+                <Text size={1}>
+                  <ChevronRightIcon />
+                </Text>
+              </Box>
+              <Box padding={2} style={{minWidth: 0, maxWidth: '300px'}}>
+                <Text
+                  size={1}
+                  weight="semibold"
+                  textOverflow="ellipsis"
+                  style={release.metadata.title ? undefined : {opacity: 0.5}}
+                >
+                  {title}
+                </Text>
+              </Box>
+            </>
           )}
         </Flex>
-      </Box>
-    </Container>
+
+        {variantsEnabled ? (
+          // The F-pattern action rail: the release's primary action (Run release / Publish /
+          // Schedule / …) and its overflow menu sit top-right, where the eye lands first, instead
+          // of in a bottom footer. The footer is dropped in beta (see ReleaseDetail).
+          <Flex flex="none">
+            <ReleaseActionRail release={release} documents={documents} />
+          </Flex>
+        ) : (
+          <Flex flex="none" gap={2}>
+            <CopyReleaseActions release={release} />
+            <Button
+              icon={RestoreIcon}
+              mode="bleed"
+              onClick={handleActivityClick}
+              padding={2}
+              selected={inspector === 'activity'}
+              space={2}
+              text={t('dashboard.details.activity')}
+            />
+          </Flex>
+        )}
+      </Flex>
+    </Box>
   )
+
+  // Only the beta layout constrains the header to the width={3} gutter shared with the new
+  // details/table panes below. With variants off the details and table stay on the old full-bleed
+  // path, so the header must too — otherwise a centered/constrained header sits over a full-width
+  // table, the hybrid layout flagged in review. Production padding is preserved by the inner Box
+  // (on main the parent Card supplied padding={3}; the redesign moved it here).
+  return variantsEnabled ? <Container width={3}>{headerContent}</Container> : headerContent
 }

@@ -48,10 +48,9 @@ function permissionOptionsForDocument(
 
 /**
  * Keeps only release documents the current user may act on with the given pair permission.
- *
- * @internal
+ * Module-private — consumed by {@link filterDocumentsForBulkAction} below.
  */
-export async function filterDocumentsWithPairPermission(
+async function filterDocumentsWithPairPermission(
   documents: DocumentInRelease[],
   permission: DocumentPermission,
   deps: PermissionDeps,

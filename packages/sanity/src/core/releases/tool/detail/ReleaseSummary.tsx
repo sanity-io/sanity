@@ -340,6 +340,15 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     </Flex>
   )
 
+  // ReleaseDocumentFilterTabs renders nothing for archived/published releases or an empty
+  // (non-loading) document set. Passing the element unconditionally would still read as "tabs
+  // present" to DocumentTable, pinning search to a fixed width and stranding an empty left gutter.
+  // Gate it here so the table falls back to a full-width search lane when there are no tabs to show.
+  const showFilterTabs =
+    release.state !== 'archived' &&
+    release.state !== 'published' &&
+    (isLoading || tableData.length > 0)
+
   return (
     <Flex direction="column" style={FULL_HEIGHT_STYLE}>
       {variantsEnabled ? (
@@ -350,14 +359,16 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           emptyState={t('summary.no-documents')}
           commandLaneActions={commandLaneActions}
           filterTabs={
-            <ReleaseDocumentFilterTabs
-              activeFilter={activeFilter}
-              documents={tableData}
-              inline
-              isLoading={isLoading}
-              onFilterChange={setActiveFilter}
-              releaseState={release.state}
-            />
+            showFilterTabs ? (
+              <ReleaseDocumentFilterTabs
+                activeFilter={activeFilter}
+                documents={tableData}
+                inline
+                isLoading={isLoading}
+                onFilterChange={setActiveFilter}
+                releaseState={release.state}
+              />
+            ) : undefined
           }
           getRowKey={(row) => row.document._id}
           id="document-table-card"
