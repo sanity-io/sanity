@@ -35,9 +35,14 @@ export function ReleaseBulkSelectionActions({
 
   const selectedRows = useMemo(() => {
     const byId = new Map(filterTabRows.map((row) => [row.document._id, row]))
-    return selectedKeys
-      .map((key) => byId.get(key))
-      .filter((row): row is DocumentInReleaseDetail => Boolean(row))
+    return (
+      selectedKeys
+        .map((key) => byId.get(key))
+        // Exclude "just added" pending placeholders — their ids are synthetic `-pending` ids, not
+        // real versions. The arm path already drops them; the permission gate must too, so the
+        // enable/disable decision isn't skewed by a phantom-document permission result.
+        .filter((row): row is DocumentInReleaseDetail => Boolean(row) && !row?.isPending)
+    )
   }, [filterTabRows, selectedKeys])
 
   const allSelectedEligibleForUnpublish =
