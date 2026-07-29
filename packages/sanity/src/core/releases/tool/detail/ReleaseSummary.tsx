@@ -91,7 +91,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   // resolved into documents and confirmed via ReleaseBulkActionDialog.
   const [bulkAction, setBulkAction] = useState<{
     action: ReleaseBulkAction
-    keys: readonly string[]
+    // The eligible documents are snapshotted when the action is armed, not re-derived from the live
+    // selection. This keeps the confirm dialog stable against reactive document changes and means a
+    // pending action can never linger with an empty (or later-repopulated) target set.
+    documents: DocumentInReleaseDetail[]
     clear: () => void
   } | null>(null)
 
@@ -228,23 +231,29 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [tableData, activeFilter],
   )
 
-  // Resolve the pending bulk action's selected row keys back to their documents (from the visible,
-  // tab-filtered rows) for the confirmation dialog.
-  const selectedDocuments = useMemo(() => {
-    if (!bulkAction) return []
-    const byId = new Map(filterTabRows.map((row) => [row.document._id, row]))
-    return bulkAction.keys
-      .map((key) => byId.get(key))
-      .filter((row): row is DocumentInReleaseDetail => Boolean(row))
-  }, [bulkAction, filterTabRows])
+  // Resolve the selected row keys to their documents (from the visible, tab-filtered rows) and, for
+  // unpublish, keep only the eligible ones. Computed when the action is armed so the snapshot stored
+  // in `bulkAction` is stable — the confirm dialog is not re-derived from the live selection.
+  const resolveBulkActionDocuments = useCallback(
+    (action: ReleaseBulkAction, keys: readonly string[]): DocumentInReleaseDetail[] => {
+      const byId = new Map(filterTabRows.map((row) => [row.document._id, row]))
+      const resolved = keys
+        .map((key) => byId.get(key))
+        .filter((row): row is DocumentInReleaseDetail => Boolean(row))
+      return action === 'unpublish' ? resolved.filter(isDocumentEligibleForUnpublish) : resolved
+    },
+    [filterTabRows],
+  )
 
-  const bulkActionDocuments = useMemo(() => {
-    if (!bulkAction) return []
-    if (bulkAction.action === 'unpublish') {
-      return selectedDocuments.filter(isDocumentEligibleForUnpublish)
-    }
-    return selectedDocuments
-  }, [bulkAction, selectedDocuments])
+  const armBulkAction = useCallback(
+    (action: ReleaseBulkAction, keys: readonly string[], clear: () => void) => {
+      const resolved = resolveBulkActionDocuments(action, keys)
+      // Never arm an action with no eligible documents — that would leave a pending action with no
+      // dialog and no way to clear it.
+      if (resolved.length > 0) setBulkAction({action, documents: resolved, clear})
+    },
+    [resolveBulkActionDocuments],
+  )
 
   // Multi-select is only meaningful on an active release (matching the per-row actions, which are
   // hidden otherwise). Discard + Unpublish mirror the per-row menu, applied to the whole selection.
@@ -263,13 +272,13 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         <ReleaseBulkSelectionActions
           compact={compact}
           filterTabRows={filterTabRows}
-          onDiscard={() => setBulkAction({action: 'discard', keys: selectedKeys, clear})}
-          onUnpublish={() => setBulkAction({action: 'unpublish', keys: selectedKeys, clear})}
+          onDiscard={() => armBulkAction('discard', selectedKeys, clear)}
+          onUnpublish={() => armBulkAction('unpublish', selectedKeys, clear)}
           selectedKeys={selectedKeys}
         />
       ),
     }
-  }, [isActiveRelease, t, filterTabRows])
+  }, [armBulkAction, isActiveRelease, t, filterTabRows])
 
   const isCardinalityOne = isCardinalityOneRelease(release)
   const hasNoDocuments = !isLoading && documents.length === 0
@@ -423,10 +432,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         releaseId={releaseId}
         idsInRelease={documents.map(({document}) => document._id)}
       />
-      {bulkAction && bulkActionDocuments.length > 0 && (
+      {bulkAction && (
         <ReleaseBulkActionDialog
           action={bulkAction.action}
-          documents={bulkActionDocuments}
+          documents={bulkAction.documents}
           releaseId={releaseId}
           onClose={() => setBulkAction(null)}
           onSuccess={bulkAction.clear}

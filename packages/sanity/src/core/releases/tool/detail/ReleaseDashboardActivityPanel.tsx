@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CloseIcon} from '@sanity/icons/Close'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Layer, Text, useLayer} from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {useEffect} from 'react'
 import {styled} from 'styled-components'
@@ -33,6 +33,23 @@ const FillHeight = styled.div`
   display: flex;
   flex-direction: column;
 `
+// In overlay mode the panel is not part of the layout, so Escape is the keyboard escape hatch (in
+// addition to the header close button and the Activity toggle). It sits in its own Layer so it only
+// claims Escape when it is the top layer — when a dialog or popover (e.g. EditReleaseDialog or a
+// bulk-action dialog) is open above the overlay, Escape dismisses only that topmost surface, not
+// both at once. Mirrors the useLayer/isTopLayer guard used by CommentsInspector.
+function OverlayEscapeHandler({onClose}: {onClose?: () => void}) {
+  const {isTopLayer} = useLayer()
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isTopLayer) onClose?.()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isTopLayer, onClose])
+  return null
+}
+
 export function ReleaseDashboardActivityPanel({
   events,
   release,
@@ -42,17 +59,6 @@ export function ReleaseDashboardActivityPanel({
 }: ReleaseDashboardActivityPanelProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-
-  // In overlay mode the panel is not part of the layout, so Escape is the keyboard escape hatch
-  // (in addition to the header close button and the Activity toggle).
-  useEffect(() => {
-    if (!overlay || !show) return undefined
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose?.()
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [overlay, show, onClose])
 
   const content = (
     <MotionFlex flex="none" height="fill" direction="column">
@@ -99,6 +105,12 @@ export function ReleaseDashboardActivityPanel({
       <AnimatePresence>
         {show && (
           <>
+            {/* An empty Layer purely to participate in the layer stack, so the Escape handler can
+                tell when a dialog/popover is open above the overlay. Kept as a sibling (not a
+                wrapper) so the scrim/drawer absolute positioning below is untouched. */}
+            <Layer>
+              <OverlayEscapeHandler onClose={onClose} />
+            </Layer>
             <motion.div
               onClick={onClose}
               initial={{opacity: 0}}
