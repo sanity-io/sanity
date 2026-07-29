@@ -1,5 +1,5 @@
 import {Box, Spinner, Text, useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {useCallback, useRef, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useClient} from '../../../hooks/useClient'
@@ -47,6 +47,9 @@ export function ReleaseBulkActionDialog({
   const currentUser = useCurrentUser()
   const {discardVersion, unpublishVersion} = useVersionOperations()
   const [isProcessing, setIsProcessing] = useState(false)
+  // Synchronous re-entry guard: the confirm button's `disabled` only applies after a re-render, so a
+  // fast double-click could otherwise start the discard/unpublish loop twice within the same tick.
+  const isProcessingRef = useRef(false)
   const {targets: actionTargets, isLoading: isTargetsLoading} = useReleaseBulkActionTargets(
     documents,
     action,
@@ -73,61 +76,79 @@ export function ReleaseBulkActionDialog({
       : t('dashboard.details.bulk.unpublish-dialog.description', {count})
 
   const handleConfirm = useCallback(async () => {
+    if (isProcessingRef.current) return
+    isProcessingRef.current = true
     setIsProcessing(true)
 
-    const targets = await filterDocumentsForBulkAction(documents, action, {
-      client,
-      schema,
-      grantsStore,
-      userId: currentUser?.id,
-    })
-
-    const skipped = documents.length - targets.length
-
-    if (targets.length === 0) {
-      toast.push({
-        closable: true,
-        status: 'error',
-        title:
-          action === 'discard'
-            ? t('dashboard.details.bulk.discard-toast.no-permission')
-            : t('dashboard.details.bulk.unpublish-toast.no-permission'),
+    try {
+      const targets = await filterDocumentsForBulkAction(documents, action, {
+        client,
+        schema,
+        grantsStore,
+        userId: currentUser?.id,
       })
-      setIsProcessing(false)
+
+      const skipped = documents.length - targets.length
+
+      if (targets.length === 0) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title:
+            action === 'discard'
+              ? t('dashboard.details.bulk.discard-toast.no-permission')
+              : t('dashboard.details.bulk.unpublish-toast.no-permission'),
+        })
+        onClose()
+        return
+      }
+
+      if (skipped > 0) {
+        toast.push({
+          closable: true,
+          status: 'warning',
+          title: t('dashboard.details.bulk.toast.documents-skipped', {count: skipped}),
+        })
+      }
+
+      const results = await Promise.allSettled(
+        targets.map((doc) =>
+          action === 'discard'
+            ? discardVersion(releaseId, doc.document._id)
+            : unpublishVersion(doc.document._id),
+        ),
+      )
+
+      const failed = results.filter((result) => result.status === 'rejected').length
+      const succeeded = targets.length - failed
+
+      if (succeeded > 0) {
+        toast.push({
+          closable: true,
+          status: 'success',
+          title:
+            action === 'discard'
+              ? t('dashboard.details.bulk.discard-toast.success', {count: succeeded})
+              : t('dashboard.details.bulk.unpublish-toast.success', {count: succeeded}),
+        })
+      }
+      if (failed > 0) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title:
+            action === 'discard'
+              ? t('dashboard.details.bulk.discard-toast.error')
+              : t('dashboard.details.bulk.unpublish-toast.error'),
+        })
+      }
+
+      onSuccess()
       onClose()
-      return
-    }
-
-    if (skipped > 0) {
-      toast.push({
-        closable: true,
-        status: 'warning',
-        title: t('dashboard.details.bulk.toast.documents-skipped', {count: skipped}),
-      })
-    }
-
-    const results = await Promise.allSettled(
-      targets.map((doc) =>
-        action === 'discard'
-          ? discardVersion(releaseId, doc.document._id)
-          : unpublishVersion(doc.document._id),
-      ),
-    )
-
-    const failed = results.filter((result) => result.status === 'rejected').length
-    const succeeded = targets.length - failed
-
-    if (succeeded > 0) {
-      toast.push({
-        closable: true,
-        status: 'success',
-        title:
-          action === 'discard'
-            ? t('dashboard.details.bulk.discard-toast.success', {count: succeeded})
-            : t('dashboard.details.bulk.unpublish-toast.success', {count: succeeded}),
-      })
-    }
-    if (failed > 0) {
+    } catch (err) {
+      // A thrown permission-resolution or mutation error must still release the dialog, otherwise
+      // isProcessing stays true and Cancel/close stay blocked (the dialog hangs).
+      console.error(err)
       toast.push({
         closable: true,
         status: 'error',
@@ -136,15 +157,14 @@ export function ReleaseBulkActionDialog({
             ? t('dashboard.details.bulk.discard-toast.error')
             : t('dashboard.details.bulk.unpublish-toast.error'),
       })
+    } finally {
+      isProcessingRef.current = false
+      setIsProcessing(false)
     }
-
-    setIsProcessing(false)
-    onSuccess()
-    onClose()
   }, [
     action,
     client,
-    currentUser?.id,
+    currentUser,
     discardVersion,
     documents,
     grantsStore,

@@ -102,16 +102,22 @@ export function ReleaseDashboardActivityPanel({
     // scrim recedes everything behind the drawer (the rail, the properties block) so partial
     // coverage reads as "behind the drawer" rather than clipped, and clicking it dismisses.
     return (
-      <AnimatePresence>
+      <>
+        {/* An empty Layer purely to participate in the layer stack, so the Escape handler can tell
+            when a dialog/popover is open above the overlay. Kept outside AnimatePresence (it is not
+            animated) and as a sibling of the scrim/drawer so their absolute positioning is untouched. */}
         {show && (
-          <>
-            {/* An empty Layer purely to participate in the layer stack, so the Escape handler can
-                tell when a dialog/popover is open above the overlay. Kept as a sibling (not a
-                wrapper) so the scrim/drawer absolute positioning below is untouched. */}
-            <Layer>
-              <OverlayEscapeHandler onClose={onClose} />
-            </Layer>
+          <Layer>
+            <OverlayEscapeHandler onClose={onClose} />
+          </Layer>
+        )}
+        {/* The scrim and drawer are direct, keyed children of AnimatePresence — not wrapped in a
+            fragment — so their exit animations actually run on close (AnimatePresence only tracks
+            direct keyed motion children). */}
+        <AnimatePresence>
+          {show && (
             <motion.div
+              key="activity-overlay-scrim"
               onClick={onClose}
               initial={{opacity: 0}}
               animate={{opacity: 1}}
@@ -124,7 +130,10 @@ export function ReleaseDashboardActivityPanel({
                 background: 'rgba(0, 0, 0, 0.45)',
               }}
             />
+          )}
+          {show && (
             <MotionCard
+              key="activity-overlay-drawer"
               borderLeft
               shadow={4}
               initial={{x: '100%'}}
@@ -152,9 +161,9 @@ export function ReleaseDashboardActivityPanel({
                 {content}
               </Resizable>
             </MotionCard>
-          </>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </>
     )
   }
 
