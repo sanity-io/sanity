@@ -132,13 +132,13 @@
       ]
     },
     {
-      "description": "Packages that need the TypeScript 6 compiler API (typedoc, ts-morph); never bump their typescript alias to 7",
-      "matchPackageNames": ["typescript"],
+      "description": "Keep typedoc/ts-morph workspaces on the TypeScript 6 API alias (dep name typescript -> @typescript/typescript6); block bumps to typescript@7",
+      "matchDepNames": ["typescript"],
       "matchFileNames": [
         "packages/@repo/test-dts-exports/package.json",
         "packages/@repo/typedoc/package.json"
       ],
-      "enabled": false
+      "allowedVersions": "/^6\\./"
     },
     {
       "description": "Always upgrade oxlint together",
