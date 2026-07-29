@@ -131,6 +131,10 @@ export function ReleaseBulkActionDialog({
               ? t('dashboard.details.bulk.discard-toast.success', {count: succeeded})
               : t('dashboard.details.bulk.unpublish-toast.success', {count: succeeded}),
         })
+        // Clear the table selection only when at least one document was actually acted on. On a
+        // total failure we keep the selection (and skip onSuccess, matching the no-permission path)
+        // so the user can retry without reselecting.
+        onSuccess()
       }
       if (failed > 0) {
         toast.push({
@@ -143,7 +147,6 @@ export function ReleaseBulkActionDialog({
         })
       }
 
-      onSuccess()
       onClose()
     } catch (err) {
       // A thrown permission-resolution or mutation error must still release the dialog, otherwise
