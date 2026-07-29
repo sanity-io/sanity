@@ -108,8 +108,6 @@ minimumReleaseAgeExclude:
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-utils'
   - 'tsdown'
-  # Fresh major (native Go compiler); exclude so install can resolve before the age gate
-  - 'typescript'
   # verkit is part of the tsdown toolchain (tsdown dependency since 0.22.12)
   - 'verkit'
   - 'vitest'
