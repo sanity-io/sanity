@@ -149,6 +149,26 @@ const variantsLocaleStrings = {
   'detail.documents.bulk.dialog.skipped_one': '{{count}} selected document is not affected.',
   /** Count of selected documents with nothing for this action to act on (plural). */
   'detail.documents.bulk.dialog.skipped_other': '{{count}} selected documents are not affected.',
+  /** Per-bundle consequence caption: publishing a draft variant. */
+  'detail.documents.bulk.dialog.effect.publish-drafts': 'into the published variant',
+  /** Per-bundle consequence caption: unpublishing the published variant. */
+  'detail.documents.bulk.dialog.effect.unpublish-published': 'unpublished immediately',
+  /** Per-bundle consequence caption: unpublishing a release-scoped variant. */
+  'detail.documents.bulk.dialog.effect.unpublish-release': 'unpublished when the release runs',
+  /** Per-bundle consequence caption: discarding a draft variant version. */
+  'detail.documents.bulk.dialog.effect.delete-drafts': 'removes unpublished edits',
+  /** Per-bundle consequence caption: removing a release-scoped variant version. */
+  'detail.documents.bulk.dialog.effect.delete-release': 'leaves this release',
+  /** Accessible label for a bundle section's select-all checkbox. */
+  'detail.documents.bulk.dialog.select-group': 'Select all in this section',
+  /** Tooltip for the expand/collapse control on a bundle section. */
+  'detail.documents.bulk.dialog.toggle-section': 'Expand or collapse section',
+  /** Tooltip on the validation-warning indicator for a target row. */
+  'detail.documents.bulk.dialog.validation-warning': 'Has validation errors',
+  /** Close button after a partial-failure run. */
+  'detail.documents.bulk.dialog.close': 'Close',
+  /** Summary shown after a run where some targets failed. */
+  'detail.documents.bulk.dialog.results-summary': '{{failed}} of {{total}} could not be completed.',
 
   /** Header of the bulk publish confirmation dialog. */
   'detail.documents.bulk.publish-dialog.header': 'Publish documents',

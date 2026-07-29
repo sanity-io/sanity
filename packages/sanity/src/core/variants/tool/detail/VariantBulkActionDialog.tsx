@@ -1,8 +1,17 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 
+import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {RelativeTime} from '../../../components/RelativeTime'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useVariantDocumentOperations} from '../../hooks/useVariantDocumentOperations'
@@ -24,31 +33,53 @@ const ACTION_TONE: Record<VariantBulkAction, 'positive' | 'caution' | 'critical'
   delete: 'critical',
 }
 
+/** The per-bundle consequence copy for a given action + bundle kind (null when not applicable). */
+function getEffectKey(action: VariantBulkAction, kind: ReleaseLaneKind): string | null {
+  const map: Record<string, string> = {
+    'publish:drafts': 'detail.documents.bulk.dialog.effect.publish-drafts',
+    'unpublish:published': 'detail.documents.bulk.dialog.effect.unpublish-published',
+    'unpublish:release': 'detail.documents.bulk.dialog.effect.unpublish-release',
+    'delete:drafts': 'detail.documents.bulk.dialog.effect.delete-drafts',
+    'delete:release': 'detail.documents.bulk.dialog.effect.delete-release',
+  }
+  return map[`${action}:${kind}`] ?? null
+}
+
+type TargetStatus = 'success' | 'error'
+
 interface BundleGroup {
   id: string
   kind: ReleaseLaneKind
   label: string
+  /** Scheduled run time of a release bundle, shown in the header. */
+  scheduledAt?: string
   targets: VariantBulkActionTarget[]
 }
 
 /**
- * A single target row: a deselect checkbox, the document's type glyph + title, and its type name —
- * the same [icon] [title] · [type] reading the detail table uses, so the confirm surface is visibly
- * the same family. Kept intentionally light for a dialog (no navigation link / presence / async
- * preview fetch); richer previews + status badges land in Phase 2.
+ * A single target row: a deselect checkbox (or a result icon after commit), the document's type
+ * glyph + title, an optional validation warning, and its type name — the same [icon] [title] · [type]
+ * reading the detail table uses, so the confirm surface is visibly the same family. Kept light for a
+ * dialog (no navigation link / presence / async preview fetch).
  */
 function BulkTargetRow({
   document,
   checked,
   disabled,
+  hasValidationError,
+  status,
   onToggle,
   testId,
+  validationLabel,
 }: {
   document: DocumentInVariantGroup['document']
   checked: boolean
   disabled: boolean
+  hasValidationError: boolean
+  status?: TargetStatus
   onToggle: () => void
   testId: string
+  validationLabel: string
 }): React.JSX.Element {
   const schema = useSchema()
   const schemaType = schema.get(document._type)
@@ -57,7 +88,18 @@ function BulkTargetRow({
 
   return (
     <Flex align="center" gap={3}>
-      <Checkbox checked={checked} disabled={disabled} id={testId} onChange={onToggle} />
+      <Box flex="none" style={{width: 17, display: 'flex', justifyContent: 'center'}}>
+        {status ? (
+          <Text size={1}>
+            <ToneIcon
+              icon={status === 'success' ? CheckmarkCircleIcon : ErrorOutlineIcon}
+              tone={status === 'success' ? 'positive' : 'critical'}
+            />
+          </Text>
+        ) : (
+          <Checkbox checked={checked} disabled={disabled} id={testId} onChange={onToggle} />
+        )}
+      </Box>
       {Icon && (
         <Text muted size={1}>
           <Icon />
@@ -68,6 +110,13 @@ function BulkTargetRow({
           {title}
         </Text>
       </Box>
+      {hasValidationError && (
+        <Tooltip content={validationLabel} portal>
+          <Text size={1}>
+            <ToneIcon icon={WarningOutlineIcon} tone="caution" />
+          </Text>
+        </Tooltip>
+      )}
       <Box flex="none">
         <Text muted size={1}>
           {schemaType?.title || document._type}
@@ -78,14 +127,15 @@ function BulkTargetRow({
 }
 
 /**
- * Confirmation dialog for a bulk action (Publish / Unpublish / Discard) over the documents selected
+ * Confirmation dialog for a bulk action (Publish / Unpublish / Delete) over the documents selected
  * on the variant definition detail table.
  *
  * A selected row is a document *group* that can span several bundles (a draft, the published
  * variant, one or more releases), but each operation targets a single (document × bundle) version.
  * So this dialog resolves the flat selection into the concrete per-bundle targets the chosen action
- * touches, groups them by bundle, and lets the editor deselect individual targets before
- * committing — an honest, itemised preview of exactly what will change (see
+ * touches, renders them as a grouped ("nested") table — group = bundle, row = target — with each
+ * group's consequence spelled out, and lets the editor deselect individual targets before
+ * committing. An honest, itemised preview of exactly what will change (see
  * `docs/initiatives/detail-bulk-actions/multi-bundle-disambiguation-decision.md`, Option B).
  *
  * @internal
@@ -112,14 +162,20 @@ export function VariantBulkActionDialog({
   const [isProcessing, setIsProcessing] = useState(false)
   // Targets are selected by default; deselecting removes a (document × bundle) target from the run.
   const [deselectedKeys, setDeselectedKeys] = useState<ReadonlySet<string>>(new Set())
+  const [collapsedGroups, setCollapsedGroups] = useState<ReadonlySet<string>>(new Set())
+  // Set after commit: a per-target success/error map. Present ⇒ the run happened; if any failed the
+  // dialog stays open showing which, rather than closing on a summary toast alone.
+  const [results, setResults] = useState<ReadonlyMap<string, TargetStatus> | null>(null)
 
   const targets = useMemo(
     () => getVariantBulkActionTargets(groups, variantId, action, releasesById),
     [groups, variantId, action, releasesById],
   )
 
+  const groupsById = useMemo(() => new Map(groups.map((group) => [group.groupId, group])), [groups])
+
   // Group targets by bundle, ordered published -> drafts -> releases (by title), each carrying a
-  // human label so the dialog reads as "here's what happens, bundle by bundle".
+  // human label + (for scheduled releases) a run time, so the dialog reads bundle by bundle.
   const bundleGroups = useMemo<BundleGroup[]>(() => {
     const byBundle = new Map<string, BundleGroup>()
     for (const target of targets) {
@@ -128,17 +184,21 @@ export function VariantBulkActionDialog({
         existing.targets.push(target)
         continue
       }
+      const release = target.bundle.release
       const label =
         target.bundle.kind === 'published'
           ? t('detail.documents.bulk.dialog.bundle.published')
           : target.bundle.kind === 'drafts'
             ? t('detail.documents.bulk.dialog.bundle.drafts')
-            : (target.bundle.release?.metadata?.title ??
-              t('detail.documents.bulk.dialog.bundle.release-unknown'))
+            : (release?.metadata?.title ?? t('detail.documents.bulk.dialog.bundle.release-unknown'))
       byBundle.set(target.bundle.id, {
         id: target.bundle.id,
         kind: target.bundle.kind,
         label,
+        scheduledAt:
+          release?.metadata?.releaseType === 'scheduled'
+            ? release.metadata.intendedPublishAt
+            : undefined,
         targets: [target],
       })
     }
@@ -147,8 +207,6 @@ export function VariantBulkActionDialog({
       return kindDelta === 0 ? left.label.localeCompare(right.label) : kindDelta
     })
   }, [targets, t])
-
-  const groupsById = useMemo(() => new Map(groups.map((group) => [group.groupId, group])), [groups])
 
   // Selected documents that produced no target for this action (e.g. publishing a published-only
   // document). Surfaced explicitly so the dialog never silently drops part of the selection.
@@ -172,6 +230,27 @@ export function VariantBulkActionDialog({
     })
   }, [])
 
+  const toggleGroup = useCallback((group: BundleGroup) => {
+    setDeselectedKeys((previous) => {
+      const next = new Set(previous)
+      const allSelected = group.targets.every((target) => !next.has(target.key))
+      for (const target of group.targets) {
+        if (allSelected) next.add(target.key)
+        else next.delete(target.key)
+      }
+      return next
+    })
+  }, [])
+
+  const toggleCollapse = useCallback((id: string) => {
+    setCollapsedGroups((previous) => {
+      const next = new Set(previous)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }, [])
+
   const runTarget = useCallback(
     (target: VariantBulkActionTarget) => {
       const params = {
@@ -190,8 +269,12 @@ export function VariantBulkActionDialog({
     if (selectedCount === 0) return
     setIsProcessing(true)
 
-    const results = await Promise.allSettled(selectedTargets.map(runTarget))
-    const failed = results.filter((result) => result.status === 'rejected').length
+    const settled = await Promise.allSettled(selectedTargets.map(runTarget))
+    const byKey = new Map<string, TargetStatus>()
+    settled.forEach((result, index) => {
+      byKey.set(selectedTargets[index]!.key, result.status === 'fulfilled' ? 'success' : 'error')
+    })
+    const failed = settled.filter((result) => result.status === 'rejected').length
     const succeeded = selectedCount - failed
 
     if (succeeded > 0) {
@@ -210,83 +293,161 @@ export function VariantBulkActionDialog({
     }
 
     setIsProcessing(false)
-    onSuccess()
-    onClose()
+
+    // Clean run: clear the selection and close. Partial/total failure: keep the dialog open with a
+    // per-row breakdown so the editor can see exactly which targets failed.
+    if (failed === 0) {
+      onSuccess()
+      onClose()
+      return
+    }
+    setResults(byKey)
   }, [action, onClose, onSuccess, runTarget, selectedCount, selectedTargets, t, toast])
 
+  const handleResultsClose = useCallback(() => {
+    // Some targets may have succeeded before the failures — clear the selection on the way out.
+    onSuccess()
+    onClose()
+  }, [onClose, onSuccess])
+
   const hasTargets = targets.length > 0
+  const showMixedUnpublishNote =
+    action === 'unpublish' &&
+    bundleGroups.some((group) => group.kind === 'release') &&
+    bundleGroups.some((group) => group.kind === 'published')
+  const failedCount = results
+    ? Array.from(results.values()).filter((status) => status === 'error').length
+    : 0
 
   return (
     <Dialog
       data-testid={`variant-bulk-${action}-dialog`}
-      footer={{
-        cancelButton: {disabled: isProcessing},
-        confirmButton: {
-          text: t(`detail.documents.bulk.${action}-dialog.confirm`),
-          tone: ACTION_TONE[action],
-          onClick: handleConfirm,
-          loading: isProcessing,
-          disabled: isProcessing || selectedCount === 0,
-        },
-      }}
+      footer={
+        results
+          ? {
+              confirmButton: {
+                text: t('detail.documents.bulk.dialog.close'),
+                tone: 'default',
+                onClick: handleResultsClose,
+              },
+            }
+          : {
+              cancelButton: {disabled: isProcessing},
+              confirmButton: {
+                text: t(`detail.documents.bulk.${action}-dialog.confirm`),
+                tone: ACTION_TONE[action],
+                onClick: handleConfirm,
+                loading: isProcessing,
+                disabled: isProcessing || selectedCount === 0,
+              },
+            }
+      }
       header={t(`detail.documents.bulk.${action}-dialog.header`)}
       id={`variant-bulk-${action}-dialog`}
-      onClose={() => !isProcessing && onClose()}
+      onClose={() => !isProcessing && (results ? handleResultsClose() : onClose())}
       width={1}
     >
       <Box padding={4}>
         {hasTargets ? (
           <Stack gap={4}>
             <Stack gap={3}>
-              <Text muted size={1}>
-                {t(`detail.documents.bulk.${action}-dialog.description`, {count: selectedCount})}
-              </Text>
-              {skippedCount > 0 && (
-                // Selected documents with no target for this action are shown as a count, never
-                // silently dropped — the editor knows the selection was larger than the target list.
+              {results ? (
                 <Text muted size={1}>
-                  {t('detail.documents.bulk.dialog.skipped', {count: skippedCount})}
+                  {t('detail.documents.bulk.dialog.results-summary', {
+                    failed: failedCount,
+                    total: results.size,
+                  })}
+                </Text>
+              ) : (
+                <Text muted size={1}>
+                  {t(`detail.documents.bulk.${action}-dialog.description`, {count: selectedCount})}
                 </Text>
               )}
-              {action === 'unpublish' &&
-                bundleGroups.some((group) => group.kind === 'release') &&
-                bundleGroups.some((group) => group.kind === 'published') && (
-                  // Unpublish means two different things across bundles; be explicit so the editor
-                  // isn't surprised that release targets don't take effect until the release runs.
+              {!results &&
+                skippedCount > 0 && (
+                  // Selected documents with no target for this action are shown as a count, never
+                  // silently dropped — the editor knows the selection was larger than the target list.
                   <Text muted size={1}>
-                    {t('detail.documents.bulk.unpublish-dialog.mixed-note')}
+                    {t('detail.documents.bulk.dialog.skipped', {count: skippedCount})}
                   </Text>
                 )}
+              {!results && showMixedUnpublishNote && (
+                <Text muted size={1}>
+                  {t('detail.documents.bulk.unpublish-dialog.mixed-note')}
+                </Text>
+              )}
             </Stack>
-            {bundleGroups.map((group) => (
-              // One section per bundle — the "nested table": a bundle header over its target rows.
-              <Stack key={group.id} gap={3}>
-                <Flex align="center" gap={2}>
-                  <Text size={1} weight="semibold">
-                    {group.label}
-                  </Text>
-                  <Text muted size={1}>
-                    {group.targets.length}
-                  </Text>
-                </Flex>
-                <Stack paddingLeft={1} gap={3}>
-                  {group.targets.map((target) => {
-                    const targetGroup = groupsById.get(target.groupId)
-                    if (!targetGroup) return null
-                    return (
-                      <BulkTargetRow
-                        key={target.key}
-                        checked={!deselectedKeys.has(target.key)}
-                        disabled={isProcessing}
-                        document={targetGroup.document}
-                        onToggle={() => toggleTarget(target.key)}
-                        testId={`variant-bulk-target-${target.key}`}
-                      />
-                    )
-                  })}
-                </Stack>
+            <Box style={{maxHeight: '50vh', overflowY: 'auto'}}>
+              <Stack gap={4}>
+                {bundleGroups.map((group) => {
+                  const collapsed = collapsedGroups.has(group.id)
+                  const allSelected = group.targets.every((tgt) => !deselectedKeys.has(tgt.key))
+                  const someSelected = group.targets.some((tgt) => !deselectedKeys.has(tgt.key))
+                  const effectKey = getEffectKey(action, group.kind)
+                  return (
+                    // One section per bundle — the "nested table": a bundle header over its rows.
+                    <Stack key={group.id} gap={3}>
+                      <Flex align="center" gap={2}>
+                        {!results && (
+                          <Checkbox
+                            checked={allSelected}
+                            indeterminate={someSelected && !allSelected}
+                            aria-label={t('detail.documents.bulk.dialog.select-group')}
+                            onChange={() => toggleGroup(group)}
+                          />
+                        )}
+                        <Button
+                          icon={collapsed ? ChevronRightIcon : ChevronDownIcon}
+                          mode="bleed"
+                          onClick={() => toggleCollapse(group.id)}
+                          tooltipProps={{content: t('detail.documents.bulk.dialog.toggle-section')}}
+                        />
+                        <Text size={1} weight="semibold">
+                          {group.label}
+                        </Text>
+                        <Text muted size={1}>
+                          {group.targets.length}
+                        </Text>
+                        {group.scheduledAt && (
+                          <Text muted size={1}>
+                            <RelativeTime time={group.scheduledAt} useTemporalPhrase />
+                          </Text>
+                        )}
+                        <Box flex={1} />
+                        {effectKey && (
+                          <Text muted size={1}>
+                            {t(effectKey)}
+                          </Text>
+                        )}
+                      </Flex>
+                      {!collapsed && (
+                        <Stack paddingLeft={1} gap={3}>
+                          {group.targets.map((target) => {
+                            const targetGroup = groupsById.get(target.groupId)
+                            if (!targetGroup) return null
+                            return (
+                              <BulkTargetRow
+                                key={target.key}
+                                checked={!deselectedKeys.has(target.key)}
+                                disabled={isProcessing}
+                                document={targetGroup.document}
+                                hasValidationError={Boolean(targetGroup.validation?.hasError)}
+                                onToggle={() => toggleTarget(target.key)}
+                                status={results?.get(target.key)}
+                                testId={`variant-bulk-target-${target.key}`}
+                                validationLabel={t(
+                                  'detail.documents.bulk.dialog.validation-warning',
+                                )}
+                              />
+                            )
+                          })}
+                        </Stack>
+                      )}
+                    </Stack>
+                  )
+                })}
               </Stack>
-            ))}
+            </Box>
           </Stack>
         ) : (
           <Card padding={3} radius={2} tone="transparent">
