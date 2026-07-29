@@ -3,7 +3,9 @@ import {describe, expect, it} from 'vitest'
 
 import {
   computeReleaseLaneSegments,
+  getPrimaryBundle,
   getRowBundleSortKey,
+  getSortedRowBundles,
   RELEASE_LANE_ALL,
   resolveVersionBundle,
   rowMatchesLane,
@@ -172,5 +174,30 @@ describe('getRowBundleSortKey', () => {
     const summerKey = getRowBundleSortKey(makeRow([summer]), releasesById)
     // "Fall campaign" sorts before "Summer launch".
     expect(fallKey < summerKey).toBe(true)
+  })
+})
+
+describe('getSortedRowBundles', () => {
+  it('orders bundles like the release lane regardless of version order', () => {
+    const bundles = getSortedRowBundles([summer, fall, draft, published], releasesById)
+
+    expect(bundles.map((bundle) => bundle.kind)).toEqual([
+      'published',
+      'drafts',
+      'release',
+      'release',
+    ])
+    expect(bundles[2]?.release?.metadata?.title).toBe('Fall campaign')
+    expect(bundles[3]?.release?.metadata?.title).toBe('Summer launch')
+  })
+})
+
+describe('getPrimaryBundle', () => {
+  it('matches the first sorted bundle', () => {
+    const row = makeRow([summer, fall])
+    expect(getPrimaryBundle(row, releasesById)).toEqual(
+      getSortedRowBundles(row.versions, releasesById)[0],
+    )
+    expect(getPrimaryBundle(row, releasesById)?.release?.metadata?.title).toBe('Fall campaign')
   })
 })

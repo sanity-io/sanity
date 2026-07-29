@@ -109,6 +109,46 @@ function getKindOrder(kind: ReleaseLaneKind): number {
   return 2
 }
 
+function bundleSortLabel(bundle: ResolvedVersionBundle): string {
+  return bundle.release?.metadata?.title ?? bundle.id
+}
+
+/**
+ * Sort order shared by the release lane, row sort key, primary bundle badge, and bundle chips.
+ *
+ * @internal
+ */
+export function compareResolvedBundles(
+  left: ResolvedVersionBundle,
+  right: ResolvedVersionBundle,
+): number {
+  const kindDelta = getKindOrder(left.kind) - getKindOrder(right.kind)
+  if (kindDelta !== 0) {
+    return kindDelta
+  }
+
+  return bundleSortLabel(left).localeCompare(bundleSortLabel(right))
+}
+
+/**
+ * Distinct bundles a document group appears in, ordered published → drafts → releases (by title).
+ *
+ * @internal
+ */
+export function getSortedRowBundles(
+  versions: VariantDocumentVersion[],
+  releasesById: Map<string, ReleaseDocument>,
+): ResolvedVersionBundle[] {
+  const seen = new Map<string, ResolvedVersionBundle>()
+  for (const version of versions) {
+    const resolved = resolveVersionBundle(version, releasesById)
+    if (!seen.has(resolved.id)) {
+      seen.set(resolved.id, resolved)
+    }
+  }
+  return Array.from(seen.values()).toSorted(compareResolvedBundles)
+}
+
 /**
  * Computes the release lane for a variant detail table: one segment per bundle the
  * documents participate in, ordered published → drafts → releases (by title), each
@@ -143,16 +183,7 @@ export function computeReleaseLaneSegments(
     }
   }
 
-  return Array.from(segments.values()).toSorted((left, right) => {
-    const kindDelta = getKindOrder(left.kind) - getKindOrder(right.kind)
-    if (kindDelta !== 0) {
-      return kindDelta
-    }
-
-    const leftTitle = left.release?.metadata?.title ?? left.id
-    const rightTitle = right.release?.metadata?.title ?? right.id
-    return leftTitle.localeCompare(rightTitle)
-  })
+  return Array.from(segments.values()).toSorted(compareResolvedBundles)
 }
 
 /**
@@ -182,21 +213,12 @@ export function getRowBundleSortKey(
   row: DocumentInVariantGroup,
   releasesById: Map<string, ReleaseDocument>,
 ): string {
-  let bestOrder = Number.POSITIVE_INFINITY
-  let bestLabel = ''
-
-  for (const version of row.versions) {
-    const resolved = resolveVersionBundle(version, releasesById)
-    const order = getKindOrder(resolved.kind)
-    const label = resolved.release?.metadata?.title ?? resolved.id
-
-    if (order < bestOrder || (order === bestOrder && label.localeCompare(bestLabel) < 0)) {
-      bestOrder = order
-      bestLabel = label
-    }
+  const primary = getSortedRowBundles(row.versions, releasesById)[0]
+  if (!primary) {
+    return ''
   }
 
-  return `${bestOrder}:${bestLabel}`
+  return `${getKindOrder(primary.kind)}:${bundleSortLabel(primary)}`
 }
 
 /**
@@ -209,21 +231,5 @@ export function getPrimaryBundle(
   row: DocumentInVariantGroup,
   releasesById: Map<string, ReleaseDocument>,
 ): ResolvedVersionBundle | undefined {
-  let best: ResolvedVersionBundle | undefined
-  let bestOrder = Number.POSITIVE_INFINITY
-  let bestLabel = ''
-
-  for (const version of row.versions) {
-    const resolved = resolveVersionBundle(version, releasesById)
-    const order = getKindOrder(resolved.kind)
-    const label = resolved.release?.metadata?.title ?? resolved.id
-
-    if (order < bestOrder || (order === bestOrder && label.localeCompare(bestLabel) < 0)) {
-      bestOrder = order
-      bestLabel = label
-      best = resolved
-    }
-  }
-
-  return best
+  return getSortedRowBundles(row.versions, releasesById)[0]
 }

@@ -28,8 +28,22 @@ const activeRelease = {
   },
 } as const
 
+const fallRelease = {
+  _id: '_.releases.rFall',
+  _type: 'system.release',
+  _rev: 'rev-2',
+  _createdAt: '2025-01-01T00:00:00Z',
+  _updatedAt: '2025-01-01T00:00:00Z',
+  state: 'active',
+  metadata: {
+    title: 'Fall campaign',
+    releaseType: 'asap',
+  },
+} as const
+
 const releasesById = new Map<string, ReleaseDocument>([
   [activeRelease._id, activeRelease as unknown as ReleaseDocument],
+  [fallRelease._id, fallRelease as unknown as ReleaseDocument],
 ])
 
 // @ts-expect-error -- pre-existing, fix later
@@ -101,5 +115,31 @@ describe('VariantDocumentBundleChips', () => {
     expect(screen.getByText('Summer launch')).toBeInTheDocument()
     expect(screen.getByTestId('release-intent-link')).toHaveAttribute('data-intent', 'release')
     expect(screen.queryByTestId('variant-bundle-chips-overflow')).not.toBeInTheDocument()
+  })
+
+  it('shows the primary bundle chip first when versions are not in sort order', async () => {
+    const wrapper = await createTestProvider()
+    const versions = [
+      {
+        documentId: 'versions.rASAP.scope.article-1',
+        bundleId: 'rASAP',
+        releaseRef: '_.releases.rASAP',
+        updatedAt: '2025-06-02T00:00:00Z',
+      },
+      {
+        documentId: 'versions.rFall.scope.article-1',
+        bundleId: 'rFall',
+        releaseRef: '_.releases.rFall',
+        updatedAt: '2025-06-02T00:00:00Z',
+      },
+    ]
+
+    render(<VariantDocumentBundleChips versions={versions} releasesById={releasesById} />, {
+      wrapper,
+    })
+
+    expect(screen.getByText('Fall campaign')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-bundle-chips-overflow')).toHaveTextContent('+1')
+    expect(screen.queryByText('Summer launch')).not.toBeInTheDocument()
   })
 })
