@@ -13,8 +13,14 @@ import {
 } from '../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {isDocumentGroupId} from '../../util/draftUtils'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
+import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
+import {isVariantId} from '../../variants/types'
+import {type VersionInfoDocumentStub} from '../store/types'
 import {LATEST, PUBLISHED} from '../util/const'
-import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  isReleaseDocumentId,
+} from '../util/getReleaseIdFromReleaseDocumentId'
 import {type CopyToDraftsOptions, useCopyToDrafts} from './useCopyToDrafts'
 import {useVersionOperations} from './useVersionOperations'
 
@@ -54,6 +60,11 @@ export interface UseVersionContextMenuOptions {
    * AKA the full document id
    */
   versionId: string
+  /**
+   * Required to add a variant version to a release, otherwise the created
+   * version wouldn't belong to the variant.
+   */
+  documentVersionInfoStub?: VersionInfoDocumentStub
   documentType: string
   /** The perspective the menu acts on: 'published', 'draft', or a release ID. */
   bundleId: string
@@ -122,6 +133,7 @@ export function useVersionContextMenu(
     isVersion,
     disabled = false,
     release,
+    documentVersionInfoStub,
     onCopyToDraftsComplete,
   } = options
 
@@ -130,6 +142,8 @@ export function useVersionContextMenu(
       `useVersionContextMenu: expected a document group id, got "${documentGroupId}". Pass the group (published) id as \`documentGroupId\` and the full document id as \`versionId\`.`,
     )
   }
+
+  const {createVariantDocument} = useVariantDocumentOperations()
 
   const [contextMenu, setContextMenu] = useState<VersionContextMenuState>({open: false})
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -194,8 +208,23 @@ export function useVersionContextMenu(
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
+      const runCreateVersion = async () => {
+        if (documentVersionInfoStub && isVariantId(documentVersionInfoStub._system.variant?._ref)) {
+          await createVariantDocument({
+            baseId: documentVersionInfoStub._id,
+            documentGroupId: documentVersionInfoStub._system.group._ref,
+            variant: {_id: documentVersionInfoStub._system.variant._ref},
+            selectedPerspective: isReleaseDocumentId(targetRelease)
+              ? getReleaseIdFromReleaseDocumentId(targetRelease)
+              : targetRelease,
+          })
+        } else {
+          await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), versionId)
+        }
+      }
+
       try {
-        await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), versionId)
+        await runCreateVersion()
       } catch (err) {
         toast.push({
           closable: true,
@@ -207,7 +236,15 @@ export function useVersionContextMenu(
 
       closeContextMenu()
     },
-    [closeContextMenu, createVersion, versionId, t, toast],
+    [
+      closeContextMenu,
+      createVersion,
+      versionId,
+      t,
+      toast,
+      createVariantDocument,
+      documentVersionInfoStub,
+    ],
   )
 
   const isScheduledDraft = Boolean(release && isVersion && isCardinalityOneRelease(release))
