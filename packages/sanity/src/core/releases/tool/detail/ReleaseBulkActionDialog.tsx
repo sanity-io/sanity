@@ -1,4 +1,4 @@
-import {Box, Text, useToast} from '@sanity/ui'
+import {Box, Spinner, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
@@ -58,15 +58,19 @@ export function ReleaseBulkActionDialog({
       ? {
           header: t('dashboard.details.bulk.discard-dialog.header'),
           confirm: t('dashboard.details.bulk.discard-dialog.confirm'),
-          description: t('dashboard.details.bulk.discard-dialog.description', {count}),
           tone: 'critical' as const,
         }
       : {
           header: t('dashboard.details.bulk.unpublish-dialog.header'),
           confirm: t('dashboard.details.bulk.unpublish-dialog.confirm'),
-          description: t('dashboard.details.bulk.unpublish-dialog.description', {count}),
           tone: 'caution' as const,
         }
+
+  const description = isTargetsLoading
+    ? null
+    : action === 'discard'
+      ? t('dashboard.details.bulk.discard-dialog.description', {count})
+      : t('dashboard.details.bulk.unpublish-dialog.description', {count})
 
   const handleConfirm = useCallback(async () => {
     setIsProcessing(true)
@@ -172,9 +176,13 @@ export function ReleaseBulkActionDialog({
       width={1}
     >
       <Box padding={4}>
-        <Text muted size={1}>
-          {copy.description}
-        </Text>
+        {description ? (
+          <Text muted size={1}>
+            {description}
+          </Text>
+        ) : (
+          <Spinner data-testid="release-bulk-action-dialog-loading" muted size={1} />
+        )}
       </Box>
     </Dialog>
   )
