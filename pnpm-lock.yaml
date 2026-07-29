@@ -438,8 +438,8 @@ importers:
         specifier: 'catalog:'
         version: 19.2.8(react@19.2.8)
       react-rx:
-        specifier: ^4.2.3
-        version: 4.2.3(react@19.2.8)(rxjs@7.8.2)
+        specifier: ^4.2.5
+        version: 4.2.5(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -706,8 +706,8 @@ importers:
         specifier: ^2.0.20
         version: 2.0.20(@sanity/client@7.25.0)(react@19.2.8)(sanity@packages+sanity)
       '@sanity/document-internationalization':
-        specifier: ^6.2.26
-        version: 6.2.26(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(sanity-plugin-internationalized-array@5.1.24)(sanity@packages+sanity)(styled-components@6.4.4)
+        specifier: ^6.2.27
+        version: 6.2.27(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(sanity-plugin-internationalized-array@5.1.24)(sanity@packages+sanity)(styled-components@6.4.4)
       '@sanity/google-maps-input':
         specifier: ^6.1.9
         version: 6.1.9(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4)
@@ -781,8 +781,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(react@19.2.8)
       react-rx:
-        specifier: ^4.2.3
-        version: 4.2.3(react@19.2.8)(rxjs@7.8.2)
+        specifier: ^4.2.5
+        version: 4.2.5(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -6193,8 +6193,8 @@ packages:
     resolution: {integrity: sha512-oJ5kZQV6C/DAlcpRLEU7AcVWXrSPuJb3Z1TQ9tm/qZOVWJENwWln45jtepQEYolTIuGx9jUlhYUi3hGIkOt8RA==}
     engines: {node: '>=18.2'}
 
-  '@sanity/document-internationalization@6.2.26':
-    resolution: {integrity: sha512-CwXGLYEjAAAiOGHjl94W3Z7zYgsnzEEt8roFWnaTI9D0EzwY6MjuEY5jY0LmaltrHKebUD2TPDMeZ3kai7BTwQ==}
+  '@sanity/document-internationalization@6.2.27':
+    resolution: {integrity: sha512-aV6qaAOvFCUwYiOrLNzL4IAdRrN7Rsq9ySvmZ/Gtxy3xlxExFCWcvyFRySBIohAolQFaG/KBSG8oZGYqshV9Lg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
@@ -11937,6 +11937,12 @@ packages:
 
   react-rx@4.2.3:
     resolution: {integrity: sha512-AzuecrOdmoIgVA/wYCCFUnWc1nFtu+6sd++uH03gYAHte/ujYApHPOPEgSlWbKDhMjiXrcYtzv9IJrxwtmurIw==}
+    peerDependencies:
+      react: ^18.3 || >=19.0.0-0
+      rxjs: ^7
+
+  react-rx@4.2.5:
+    resolution: {integrity: sha512-n1kHm1W81p9FgBygKpw1pkqJAIp2xAJS5Jpbef89UgPxG6twsuQfj5TRnCeTkr5GiA36qgxkMjkmUjNWQT1tVg==}
     peerDependencies:
       react: ^18.3 || >=19.0.0-0
       rxjs: ^7
@@ -18084,7 +18090,7 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
-  '@sanity/document-internationalization@6.2.26(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(sanity-plugin-internationalized-array@5.1.24)(sanity@packages+sanity)(styled-components@6.4.4)':
+  '@sanity/document-internationalization@6.2.27(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(sanity-plugin-internationalized-array@5.1.24)(sanity@packages+sanity)(styled-components@6.4.4)':
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/mutator': link:packages/@sanity/mutator
@@ -24559,6 +24565,14 @@ snapshots:
       unist-util-visit-parents: 6.0.2
 
   react-rx@4.2.3(react@19.2.8)(rxjs@7.8.2):
+    dependencies:
+      observable-callback: 1.0.3(rxjs@7.8.2)
+      react: 19.2.8
+      react-compiler-runtime: 1.0.0(react@19.2.8)
+      rxjs: 7.8.2
+      use-effect-event: 2.0.3(react@19.2.8)
+
+  react-rx@4.2.5(react@19.2.8)(rxjs@7.8.2):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.2)
       react: 19.2.8
