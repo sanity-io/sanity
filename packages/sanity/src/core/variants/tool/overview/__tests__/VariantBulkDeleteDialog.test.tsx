@@ -128,4 +128,35 @@ describe('VariantBulkDeleteDialog', () => {
     })
     expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(emptyVariant._id)
   })
+
+  it('does not claim unresolved document counts contain documents', async () => {
+    const loadingVariant: TableVariant = {...variantAlphaAudience, documentCount: undefined}
+    const failedCountVariant: TableVariant = {...variantNorwegianMarket, documentCount: null}
+
+    await renderDialog([loadingVariant, failedCountVariant])
+
+    expect(
+      screen.getByText(
+        'Document counts are still loading or unavailable for the selected definitions, so none can be deleted yet.',
+      ),
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/contain documents/)).not.toBeInTheDocument()
+    expect(screen.getByTestId('confirm-button')).toBeDisabled()
+  })
+
+  it('shows separate notes for definitions with documents and unknown counts', async () => {
+    const loadingVariant: TableVariant = {...variantAlphaAudience, documentCount: undefined}
+
+    await renderDialog([emptyVariant, variantWithDocs, loadingVariant])
+
+    expect(
+      screen.getByText('You are about to delete 1 variant definition. This cannot be undone.'),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('1 selected definition contains documents and will be kept.'),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('1 selected definition has an unknown document count and will be kept.'),
+    ).toBeInTheDocument()
+  })
 })

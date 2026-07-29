@@ -33,20 +33,41 @@ export function VariantBulkDeleteDialog({
   const {deleteVariant} = useVariantOperations()
   const [isProcessing, setIsProcessing] = useState(false)
 
-  // Deletable = definitely empty (count resolved to 0). Anything with documents — or whose count
-  // hasn't resolved yet — is kept, so we never delete a definition we can't confirm is empty.
-  const {deletable, kept} = useMemo(() => {
+  // Deletable = definitely empty (count resolved to 0). Definitions with documents, or whose count
+  // hasn't resolved yet, are kept so we never delete a definition we can't confirm is empty.
+  const {deletable, keptWithDocuments, keptUnresolved} = useMemo(() => {
     const deletableVariants: TableVariant[] = []
-    const keptVariants: TableVariant[] = []
+    const withDocuments: TableVariant[] = []
+    const unresolved: TableVariant[] = []
     for (const variant of variants) {
-      if (variant.documentCount === 0) deletableVariants.push(variant)
-      else keptVariants.push(variant)
+      if (variant.documentCount === 0) {
+        deletableVariants.push(variant)
+      } else if (typeof variant.documentCount === 'number' && variant.documentCount > 0) {
+        withDocuments.push(variant)
+      } else {
+        unresolved.push(variant)
+      }
     }
-    return {deletable: deletableVariants, kept: keptVariants}
+    return {
+      deletable: deletableVariants,
+      keptWithDocuments: withDocuments,
+      keptUnresolved: unresolved,
+    }
   }, [variants])
 
   const deletableCount = deletable.length
-  const keptCount = kept.length
+  const keptWithDocumentsCount = keptWithDocuments.length
+  const keptUnresolvedCount = keptUnresolved.length
+
+  const noneMessageKey = useMemo(() => {
+    if (keptUnresolvedCount > 0 && keptWithDocumentsCount === 0) {
+      return 'overview.bulk.delete-dialog.none-unresolved' as const
+    }
+    if (keptWithDocumentsCount > 0 && keptUnresolvedCount === 0) {
+      return 'overview.bulk.delete-dialog.none' as const
+    }
+    return 'overview.bulk.delete-dialog.none-mixed' as const
+  }, [keptUnresolvedCount, keptWithDocumentsCount])
 
   const handleConfirm = useCallback(async () => {
     if (deletableCount === 0) return
@@ -103,11 +124,16 @@ export function VariantBulkDeleteDialog({
               {t('overview.bulk.delete-dialog.description', {count: deletableCount})}
             </Text>
           ) : (
-            <Text size={1}>{t('overview.bulk.delete-dialog.none')}</Text>
+            <Text size={1}>{t(noneMessageKey)}</Text>
           )}
-          {keptCount > 0 && (
+          {keptWithDocumentsCount > 0 && (
             <Text muted size={1}>
-              {t('overview.bulk.delete-dialog.kept', {count: keptCount})}
+              {t('overview.bulk.delete-dialog.kept', {count: keptWithDocumentsCount})}
+            </Text>
+          )}
+          {keptUnresolvedCount > 0 && (
+            <Text muted size={1}>
+              {t('overview.bulk.delete-dialog.kept-unresolved', {count: keptUnresolvedCount})}
             </Text>
           )}
           {deletableCount > 0 && (
