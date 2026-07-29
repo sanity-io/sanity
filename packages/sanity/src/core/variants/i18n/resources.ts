@@ -188,6 +188,10 @@ const variantsLocaleStrings = {
   'detail.documents.bulk.dialog.bundle.drafts': 'Drafts',
   /** Bundle section heading when a release version's release cannot be resolved. */
   'detail.documents.bulk.dialog.bundle.release-unknown': 'Release',
+  /** Count of selected documents with nothing for this action to act on (singular). */
+  'detail.documents.bulk.dialog.skipped_one': '{{count}} selected document is not affected.',
+  /** Count of selected documents with nothing for this action to act on (plural). */
+  'detail.documents.bulk.dialog.skipped_other': '{{count}} selected documents are not affected.',
 
   /** Header of the bulk publish confirmation dialog. */
   'detail.documents.bulk.publish-dialog.header': 'Publish documents',

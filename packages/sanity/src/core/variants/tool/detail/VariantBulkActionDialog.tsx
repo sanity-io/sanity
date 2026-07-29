@@ -3,6 +3,7 @@ import {Box, Card, Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useVariantDocumentOperations} from '../../hooks/useVariantDocumentOperations'
 import {variantsLocaleNamespace} from '../../i18n'
@@ -13,6 +14,7 @@ import {
   type VariantBulkAction,
   type VariantBulkActionTarget,
 } from './variantBulkActions'
+import {getDocumentPreviewTitle} from './variantDocumentTable/getDocumentPreviewTitle'
 
 const KIND_ORDER: Record<ReleaseLaneKind, number> = {published: 0, drafts: 1, release: 2}
 
@@ -27,6 +29,52 @@ interface BundleGroup {
   kind: ReleaseLaneKind
   label: string
   targets: VariantBulkActionTarget[]
+}
+
+/**
+ * A single target row: a deselect checkbox, the document's type glyph + title, and its type name —
+ * the same [icon] [title] · [type] reading the detail table uses, so the confirm surface is visibly
+ * the same family. Kept intentionally light for a dialog (no navigation link / presence / async
+ * preview fetch); richer previews + status badges land in Phase 2.
+ */
+function BulkTargetRow({
+  document,
+  checked,
+  disabled,
+  onToggle,
+  testId,
+}: {
+  document: DocumentInVariantGroup['document']
+  checked: boolean
+  disabled: boolean
+  onToggle: () => void
+  testId: string
+}): React.JSX.Element {
+  const schema = useSchema()
+  const schemaType = schema.get(document._type)
+  const Icon = schemaType?.icon
+  const title = getDocumentPreviewTitle(document)
+
+  return (
+    <Flex align="center" gap={3}>
+      <Checkbox checked={checked} disabled={disabled} id={testId} onChange={onToggle} />
+      {Icon && (
+        <Text muted size={1}>
+          <Icon />
+        </Text>
+      )}
+      <Box flex={1} style={{minWidth: 0}}>
+        <Text size={1} textOverflow="ellipsis" title={title}>
+          {title}
+        </Text>
+      </Box>
+      <Box flex="none">
+        <Text muted size={1}>
+          {schemaType?.title || document._type}
+        </Text>
+      </Box>
+    </Flex>
+  )
 }
 
 /**
@@ -99,6 +147,15 @@ export function VariantBulkActionDialog({
       return kindDelta === 0 ? left.label.localeCompare(right.label) : kindDelta
     })
   }, [targets, t])
+
+  const groupsById = useMemo(() => new Map(groups.map((group) => [group.groupId, group])), [groups])
+
+  // Selected documents that produced no target for this action (e.g. publishing a published-only
+  // document). Surfaced explicitly so the dialog never silently drops part of the selection.
+  const skippedCount = useMemo(() => {
+    const withTargets = new Set(targets.map((target) => target.groupId))
+    return groups.filter((group) => !withTargets.has(group.groupId)).length
+  }, [groups, targets])
 
   const selectedTargets = useMemo(
     () => targets.filter((target) => !deselectedKeys.has(target.key)),
@@ -180,40 +237,51 @@ export function VariantBulkActionDialog({
       <Box padding={4}>
         {hasTargets ? (
           <Stack space={4}>
-            <Text muted size={1}>
-              {t(`detail.documents.bulk.${action}-dialog.description`, {count: selectedCount})}
-            </Text>
-            {action === 'unpublish' &&
-              bundleGroups.some((group) => group.kind === 'release') &&
-              bundleGroups.some((group) => group.kind === 'published') && (
-                // Unpublish means two different things across bundles; be explicit so the editor
-                // isn't surprised that release targets don't take effect until the release runs.
+            <Stack space={3}>
+              <Text muted size={1}>
+                {t(`detail.documents.bulk.${action}-dialog.description`, {count: selectedCount})}
+              </Text>
+              {skippedCount > 0 && (
+                // Selected documents with no target for this action are shown as a count, never
+                // silently dropped — the editor knows the selection was larger than the target list.
                 <Text muted size={1}>
-                  {t('detail.documents.bulk.unpublish-dialog.mixed-note')}
+                  {t('detail.documents.bulk.dialog.skipped', {count: skippedCount})}
                 </Text>
               )}
+              {action === 'unpublish' &&
+                bundleGroups.some((group) => group.kind === 'release') &&
+                bundleGroups.some((group) => group.kind === 'published') && (
+                  // Unpublish means two different things across bundles; be explicit so the editor
+                  // isn't surprised that release targets don't take effect until the release runs.
+                  <Text muted size={1}>
+                    {t('detail.documents.bulk.unpublish-dialog.mixed-note')}
+                  </Text>
+                )}
+            </Stack>
             {bundleGroups.map((group) => (
+              // One section per bundle — the "nested table": a bundle header over its target rows.
               <Stack key={group.id} space={3}>
-                <Text size={1} weight="semibold">
-                  {group.label}
-                </Text>
-                <Stack space={2}>
+                <Flex align="center" gap={2}>
+                  <Text size={1} weight="semibold">
+                    {group.label}
+                  </Text>
+                  <Text muted size={1}>
+                    {group.targets.length}
+                  </Text>
+                </Flex>
+                <Stack paddingLeft={1} space={3}>
                   {group.targets.map((target) => {
-                    const checked = !deselectedKeys.has(target.key)
+                    const targetGroup = groupsById.get(target.groupId)
+                    if (!targetGroup) return null
                     return (
-                      <Flex key={target.key} align="center" gap={3}>
-                        <Checkbox
-                          checked={checked}
-                          disabled={isProcessing}
-                          id={`variant-bulk-target-${target.key}`}
-                          onChange={() => toggleTarget(target.key)}
-                        />
-                        <Box flex={1} style={{minWidth: 0}}>
-                          <Text size={1} textOverflow="ellipsis" title={target.title}>
-                            {target.title}
-                          </Text>
-                        </Box>
-                      </Flex>
+                      <BulkTargetRow
+                        key={target.key}
+                        checked={!deselectedKeys.has(target.key)}
+                        disabled={isProcessing}
+                        document={targetGroup.document}
+                        onToggle={() => toggleTarget(target.key)}
+                        testId={`variant-bulk-target-${target.key}`}
+                      />
                     )
                   })}
                 </Stack>
