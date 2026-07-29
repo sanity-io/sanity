@@ -18,12 +18,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
-import {
-  decodeVariantIdFromRoute,
-  getVariantDescription,
-  getVariantId,
-  getVariantTitle,
-} from '../util'
+import {decodeVariantIdFromRoute, getVariantDescription, getVariantTitle} from '../util'
 import {groupVariantDocumentsByGroup} from './groupVariantDocumentsByGroup'
 import {VariantActionRail} from './VariantActionRail'
 import {getVariantConditionIcon} from './variantConditionIcons'
@@ -268,11 +263,7 @@ export function VariantDetail() {
             </Text>
           </Box>
         ) : (
-          <VariantDocumentsTable
-            loading={documentsLoading}
-            rows={tableRows}
-            variantId={getVariantId(variant._id)}
-          />
+          <VariantDocumentsTable loading={documentsLoading} rows={tableRows} variant={variant} />
         )}
       </Flex>
     </Flex>

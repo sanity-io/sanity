@@ -5,6 +5,7 @@ import {describe, expect, it, vi} from 'vitest'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
+import {type SystemVariant} from '../../../types'
 import {type DocumentInVariantGroup} from '../types'
 import {VariantDocumentsTable} from '../VariantDocumentsTable'
 
@@ -125,16 +126,23 @@ const mockRows: DocumentInVariantGroup[] = [
 ]
 
 describe('VariantDocumentsTable', () => {
+  const mockVariant = {
+    _id: '_.variants.summer',
+    _type: 'system.variant',
+    conditions: {},
+    priority: 0,
+  } as unknown as SystemVariant
+
   const renderTable = async (
     rows: DocumentInVariantGroup[] = mockRows,
     loading = false,
-    variantId = 'summer',
+    variant = mockVariant,
   ) => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
     const result = render(
-      <VariantDocumentsTable rows={rows} loading={loading} variantId={variantId} />,
+      <VariantDocumentsTable rows={rows} loading={loading} variant={variant} />,
       {wrapper},
     )
     // Search now lives in the command lane (only shown with documents), so settle on the table
