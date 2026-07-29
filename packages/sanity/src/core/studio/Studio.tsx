@@ -1,5 +1,4 @@
 import './styles.css'
-import '@sanity-labs/ui-poc/styles.css'
 
 /* disabling for now because the imports trigger side effects causing test snapshots to update */
 import {type Config} from '../config/types'
