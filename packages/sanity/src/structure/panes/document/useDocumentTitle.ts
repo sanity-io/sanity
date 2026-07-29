@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {prepareForPreview, useTranslation, useValuePreview} from 'sanity'
+import {prepareForPreview, useTranslation, useValuePreview, isGoingToUnpublish} from 'sanity'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
@@ -30,6 +30,7 @@ export function useDocumentTitle(): UseDocumentTitle {
     isDeleted,
     lastRevisionDocument,
     value: documentPaneValue,
+    editState,
   } = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -61,6 +62,8 @@ export function useDocumentTitle(): UseDocumentTitle {
     enabled: subscribed && !isDeleted,
     schemaType,
     value: documentValue,
+    // Documents that are going to be unpublished need to be handled specially
+    perspectiveStack: editState?.version && isGoingToUnpublish(editState?.version) ? [] : undefined,
   })
 
   if (connectionState === 'connecting' && !subscribed) {

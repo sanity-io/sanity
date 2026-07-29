@@ -252,6 +252,85 @@ describe('useDocumentTitle', () => {
       enabled: true,
       schemaType: {title: 'Test Schema', fields: [], jsonType: 'object', name: 'testSchema'},
       value: versionDocument,
+      perspectiveStack: undefined,
+    })
+  })
+
+  it('should pass an empty perspectiveStack when the version is going to unpublish', async () => {
+    const versionDocument = {
+      _id: 'versions.release1.test-id',
+      _type: 'testSchema',
+      _createdAt: '2023-01-01T00:00:00Z',
+      _updatedAt: '2023-01-01T00:00:00Z',
+      _rev: 'rev1',
+      title: 'Version Title',
+      _system: {delete: true},
+    }
+
+    mockUseDocumentPane.mockReturnValue({
+      ...defaultDocumentPaneValue,
+      value: versionDocument,
+      editState: {
+        ...defaultDocumentPaneValue.editState,
+        version: versionDocument,
+      },
+    } as unknown as DocumentPaneContextValue)
+
+    mockUseValuePreview.mockReturnValue({
+      error: undefined,
+      value: {title: 'Published Title'},
+      isLoading: false,
+    })
+
+    const {result} = renderHook(() => useDocumentTitle())
+
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        error: undefined,
+        title: 'Published Title',
+      })
+    })
+
+    expect(mockUseValuePreview).toHaveBeenCalledWith({
+      enabled: true,
+      schemaType: {title: 'Test Schema', fields: [], jsonType: 'object', name: 'testSchema'},
+      value: versionDocument,
+      perspectiveStack: [],
+    })
+  })
+
+  it('should not override perspectiveStack when the version is not going to unpublish', async () => {
+    const versionDocument = {
+      _id: 'versions.release1.test-id',
+      _type: 'testSchema',
+      _createdAt: '2023-01-01T00:00:00Z',
+      _updatedAt: '2023-01-01T00:00:00Z',
+      _rev: 'rev1',
+      title: 'Version Title',
+    }
+
+    mockUseDocumentPane.mockReturnValue({
+      ...defaultDocumentPaneValue,
+      value: versionDocument,
+      editState: {
+        ...defaultDocumentPaneValue.editState,
+        version: versionDocument,
+      },
+    } as unknown as DocumentPaneContextValue)
+
+    mockUseValuePreview.mockReturnValue({
+      error: undefined,
+      value: {title: 'Version Title'},
+      isLoading: false,
+    })
+
+    renderHook(() => useDocumentTitle())
+
+    expect(mockUseValuePreview).toHaveBeenCalledWith({
+      enabled: true,
+      schemaType: {title: 'Test Schema', fields: [], jsonType: 'object', name: 'testSchema'},
+      value: versionDocument,
+      perspectiveStack: undefined,
     })
   })
 
@@ -290,6 +369,7 @@ describe('useDocumentTitle', () => {
       enabled: true,
       schemaType: {title: 'Test Schema', name: 'testSchema', fields: [], jsonType: 'object'},
       value: draftDocument,
+      perspectiveStack: undefined,
     })
   })
 
@@ -328,6 +408,7 @@ describe('useDocumentTitle', () => {
       enabled: true,
       schemaType: {title: 'Test Schema', name: 'testSchema', fields: [], jsonType: 'object'},
       value: publishedDocument,
+      perspectiveStack: undefined,
     })
   })
 
@@ -345,6 +426,7 @@ describe('useDocumentTitle', () => {
         enabled: true,
         schemaType: {title: 'Test Schema', name: 'testSchema', fields: [], jsonType: 'object'},
         value: baseValue,
+        perspectiveStack: undefined,
       })
     })
   })
@@ -357,6 +439,7 @@ describe('useDocumentTitle', () => {
         enabled: true,
         schemaType: {title: 'Test Schema', name: 'testSchema', fields: [], jsonType: 'object'},
         value: defaultDocumentValue,
+        perspectiveStack: undefined,
       })
     })
   })
@@ -432,6 +515,7 @@ describe('useDocumentTitle', () => {
       enabled: false,
       schemaType: {title: 'Test Schema', name: 'testSchema', fields: [], jsonType: 'object'},
       value: lastRevisionDocument,
+      perspectiveStack: undefined,
     })
   })
 })
