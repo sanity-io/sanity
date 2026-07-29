@@ -16,10 +16,12 @@ export const Root = styled(Box)<{$visible?: boolean}>(({$visible}) => {
     pointer-events: none;
     transition: opacity 0.2s;
 
-    ${$visible &&
-    css`
-      opacity: 1;
-      pointer-events: auto;
-    `}
+    ${
+      $visible &&
+      css`
+        opacity: 1;
+        pointer-events: auto;
+      `
+    }
   `
 })

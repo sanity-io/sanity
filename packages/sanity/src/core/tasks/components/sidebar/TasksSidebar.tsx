@@ -8,6 +8,7 @@ import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
 import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
 import {useTasks} from '../../context/tasks/useTasks'
 import {TasksFormBuilder} from '../form/tasksFormBuilder/TasksFormBuilder'
+import {getTargetDocumentId} from '../form/utils'
 import {TasksList} from '../list/TasksList'
 import {TasksUpsellPanel} from '../upsell/TasksUpsellPanel'
 import {TasksListTabs} from './TasksListTabs'
@@ -49,7 +50,9 @@ function TasksStudioSidebarInner() {
       return currentUser?.id && item.subscribers?.includes(currentUser.id)
     }
     if (activeTabId === 'document') {
-      return activeDocument?.documentId && item.target?.document._ref === activeDocument.documentId
+      return (
+        activeDocument?.documentId && getTargetDocumentId(item.target) === activeDocument.documentId
+      )
     }
     return false
   })

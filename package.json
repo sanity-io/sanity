@@ -1,6 +1,6 @@
 {
   "name": "sanity-root",
-  "version": "6.6.0",
+  "version": "6.7.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -126,16 +126,16 @@
     "lefthook": "^2.1.10",
     "npm-run-all2": "^9.0.2",
     "only-allow": "^1.2.2",
-    "oxfmt": "^0.60.0",
+    "oxfmt": "^0.61.0",
     "oxlint": "^1.75.0",
     "oxlint-tsgolint": "^7.0.2001",
     "pkg-pr-new": "^0.0.78",
     "playwright": "catalog:",
     "sanity": "workspace:*",
     "tsx": "^4.23.1",
-    "turbo": "^2.10.5",
+    "turbo": "^2.10.6",
     "typedoc": "^0.28.20",
-    "vercel": "^56.3.1",
+    "vercel": "^57.0.0",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
