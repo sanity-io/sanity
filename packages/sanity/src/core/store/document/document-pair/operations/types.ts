@@ -34,7 +34,7 @@ export interface OperationsAPI {
   del: Operation<[versions?: string[]], 'NOTHING_TO_DELETE' | 'TARGET_NOT_FOUND'> | GuardedOperation
   publish:
     | Operation<
-        [],
+        [options?: PublishOptions],
         | 'LIVE_EDIT_ENABLED'
         | 'ALREADY_PUBLISHED'
         | 'NO_CHANGES'
@@ -61,6 +61,26 @@ export interface OperationsAPI {
       >
     | GuardedOperation
   restore: Operation<[revision: DocumentRevision]> | GuardedOperation
+}
+
+/**
+ * Extra options for `publish.execute`.
+ *
+ * Maps to the action-specific optimistic lock field:
+ * - variant publish → `ifPublishedVariantRevisionId`
+ * - base publish → `ifPublishedRevisionId` (falls back to `snapshots.published._rev`
+ *   when omitted)
+ *
+ * Variant publish locks cannot read the variant-of-published revision from pair
+ * snapshots (that sibling is not in any slot). Callers that have
+ * `publishedSibling` (e.g. PublishAction) pass its `_rev` here. Base draft
+ * publish should omit this and keep using the published snapshot.
+ *
+ * @internal
+ */
+export interface PublishOptions {
+  /** Revision of the published target to optimistic-lock against. */
+  publishedRevisionId?: string
 }
 
 /** @internal */
