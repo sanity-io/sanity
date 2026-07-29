@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Box, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
@@ -85,6 +86,24 @@ function ValidationStatusIndicator({
       >
         <Text size={1} data-testid="variant-document-validation-error">
           <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+        </Text>
+      </Tooltip>
+    )
+  }
+
+  if (datum.validation.isValidating) {
+    return (
+      <Tooltip
+        portal
+        placement="bottom-end"
+        content={
+          <Text muted size={1}>
+            <Box padding={1}>{t('detail.documents.table.validation.validating')}</Box>
+          </Text>
+        }
+      >
+        <Text muted size={1} data-testid="variant-document-validation-validating">
+          <ToneIcon icon={ClockIcon} tone="default" />
         </Text>
       </Tooltip>
     )
