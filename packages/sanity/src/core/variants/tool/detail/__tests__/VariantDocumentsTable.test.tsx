@@ -128,11 +128,15 @@ describe('VariantDocumentsTable', () => {
   const renderTable = async (
     rows: DocumentInVariantGroup[] = mockRows,
     loading = false,
+    variantId = 'summer',
   ): Promise<RenderResult & {wrapper: Awaited<ReturnType<typeof createTestProvider>>}> => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<VariantDocumentsTable rows={rows} loading={loading} />, {wrapper})
+    const result = render(
+      <VariantDocumentsTable rows={rows} loading={loading} variantId={variantId} />,
+      {wrapper},
+    )
     // Search now lives in the command lane (only shown with documents), so settle on the table
     // container, which is always present regardless of rows/loading.
     await screen.findByTestId('variant-documents-table')
@@ -299,6 +303,94 @@ describe('VariantDocumentsTable', () => {
     const renderedTitles = screen.getAllByTestId('preview').map((node) => node.textContent)
 
     expect(renderedTitles).toEqual(['Alpha article', 'Zulu article'])
+  })
+
+  it('swaps the command lane into a bulk toolbar on selection', async () => {
+    const user = userEvent.setup()
+
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    // Idle: search is shown, no bulk toolbar.
+    expect(screen.getByTestId('variant-documents-search')).toBeInTheDocument()
+    expect(screen.queryByTestId('variant-bulk-publish')).not.toBeInTheDocument()
+
+    const rowCheckboxes = screen.getAllByRole('checkbox', {name: 'Select document'})
+    expect(rowCheckboxes).toHaveLength(2)
+
+    await user.click(rowCheckboxes[0]!)
+
+    // Selecting swaps browse controls (search) for the bulk toolbar: count + primary actions.
+    expect(screen.getByText('1 selected')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-bulk-publish')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-bulk-add-to-release')).toBeInTheDocument()
+    expect(screen.queryByTestId('variant-documents-search')).not.toBeInTheDocument()
+  })
+
+  it('uses the select-all box to select every document and to clear', async () => {
+    const user = userEvent.setup()
+
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    // Select-all lives in the column-header row (above the row checkboxes), present from a cold
+    // state, and there is exactly one.
+    const selectAll = screen.getByRole('checkbox', {name: 'Select all documents'})
+
+    await user.click(selectAll)
+    expect(screen.getByText('2 selected')).toBeInTheDocument()
+
+    // Clicking it again clears (GitHub-style) — the toolbar reverts to the search control.
+    await user.click(screen.getByRole('checkbox', {name: 'Select all documents'}))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('variant-documents-search')).toBeInTheDocument()
+    })
+    expect(screen.queryByText('2 selected')).not.toBeInTheDocument()
+  })
+
+  it('enables Publish, Unpublish, and Delete bulk actions with Add to release still disabled', async () => {
+    const user = userEvent.setup()
+
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    await user.click(screen.getAllByRole('checkbox', {name: 'Select document'})[0]!)
+
+    // Publish is wired; Add to release still needs a target-release picker, so it stays disabled.
+    expect(screen.getByTestId('variant-bulk-publish')).toBeEnabled()
+    expect(screen.getByTestId('variant-bulk-add-to-release')).toBeDisabled()
+
+    // Unpublish + the destructive Delete live behind the "more" overflow, both wired.
+    await user.click(screen.getByTestId('variant-bulk-more'))
+    expect(await screen.findByTestId('variant-bulk-unpublish')).toBeEnabled()
+    expect(screen.getByTestId('variant-bulk-delete')).toBeEnabled()
+  })
+
+  it('opens the itemized confirm dialog with per-bundle targets when a bulk action is triggered', async () => {
+    const user = userEvent.setup()
+
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    // Row 1 (published + drafts) — Publish targets only its draft, grouped under the Drafts bundle.
+    await user.click(screen.getAllByRole('checkbox', {name: 'Select document'})[0]!)
+    await user.click(screen.getByTestId('variant-bulk-publish'))
+
+    expect(await screen.findByTestId('variant-bulk-publish-dialog')).toBeInTheDocument()
+    expect(screen.getByText('Drafts')).toBeInTheDocument()
   })
 
   it('puts search in the command lane, not the column header', async () => {

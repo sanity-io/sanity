@@ -118,6 +118,94 @@ const variantsLocaleStrings = {
   'detail.documents.table.validation.valid': 'No validation errors',
   /** Validation status tooltip while validation is still in progress. */
   'detail.documents.table.validation.validating': 'Validating',
+  /** Accessible label for the command-lane select-all checkbox. */
+  'detail.documents.bulk.select-all': 'Select all documents',
+  /** Accessible label for a per-row selection checkbox. */
+  'detail.documents.bulk.select-row': 'Select document',
+  /** Count of selected documents in the bulk-action bar (singular). */
+  'detail.documents.bulk.selected_one': '{{count}} selected',
+  /** Count of selected documents in the bulk-action bar (plural). */
+  'detail.documents.bulk.selected_other': '{{count}} selected',
+  /** Clears the current document selection (grouped with the selected count). */
+  'detail.documents.bulk.clear': 'Clear selection',
+  /** Primary bulk action: publish the selected documents. */
+  'detail.documents.bulk.publish': 'Publish',
+  /** Primary bulk action: delete the selected documents. */
+  'detail.documents.bulk.delete': 'Delete',
+  /** Overflow menu of secondary bulk actions. */
+  'detail.documents.bulk.more': 'More bulk actions',
+  /** Secondary bulk action: unpublish the selected documents. */
+  'detail.documents.bulk.unpublish': 'Unpublish',
+  /** Secondary bulk action: add the selected documents to a release. */
+  'detail.documents.bulk.add-to-release': 'Add to release',
+
+  /** Bundle section heading in the bulk-action dialog for the published variant. */
+  'detail.documents.bulk.dialog.bundle.published': 'Published',
+  /** Bundle section heading in the bulk-action dialog for draft versions. */
+  'detail.documents.bulk.dialog.bundle.drafts': 'Drafts',
+  /** Bundle section heading when a release version's release cannot be resolved. */
+  'detail.documents.bulk.dialog.bundle.release-unknown': 'Release',
+
+  /** Header of the bulk publish confirmation dialog. */
+  'detail.documents.bulk.publish-dialog.header': 'Publish documents',
+  /** Confirm button of the bulk publish dialog. */
+  'detail.documents.bulk.publish-dialog.confirm': 'Publish',
+  /** Description of the bulk publish dialog (singular). */
+  'detail.documents.bulk.publish-dialog.description_one':
+    'Publish {{count}} draft document into the published variant.',
+  /** Description of the bulk publish dialog (plural). */
+  'detail.documents.bulk.publish-dialog.description_other':
+    'Publish {{count}} draft documents into the published variant.',
+  /** Shown when none of the selected documents have a draft to publish. */
+  'detail.documents.bulk.publish-dialog.none':
+    'None of the selected documents have a draft to publish.',
+  /** Success toast after bulk publish (singular). */
+  'detail.documents.bulk.publish-toast.success_one': 'Published {{count}} document',
+  /** Success toast after bulk publish (plural). */
+  'detail.documents.bulk.publish-toast.success_other': 'Published {{count}} documents',
+  /** Error toast when some documents could not be published. */
+  'detail.documents.bulk.publish-toast.error': 'Some documents could not be published',
+
+  /** Header of the bulk unpublish confirmation dialog. */
+  'detail.documents.bulk.unpublish-dialog.header': 'Unpublish documents',
+  /** Confirm button of the bulk unpublish dialog. */
+  'detail.documents.bulk.unpublish-dialog.confirm': 'Unpublish',
+  /** Description of the bulk unpublish dialog (singular). */
+  'detail.documents.bulk.unpublish-dialog.description_one': 'Unpublish {{count}} variant version.',
+  /** Description of the bulk unpublish dialog (plural). */
+  'detail.documents.bulk.unpublish-dialog.description_other':
+    'Unpublish {{count}} variant versions.',
+  /** Note shown when an unpublish spans both the published variant and release versions. */
+  'detail.documents.bulk.unpublish-dialog.mixed-note':
+    'Published versions are unpublished immediately; release versions are unpublished when their release is published.',
+  /** Shown when none of the selected documents can be unpublished. */
+  'detail.documents.bulk.unpublish-dialog.none':
+    'None of the selected documents have a published or release version to unpublish.',
+  /** Success toast after bulk unpublish (singular). */
+  'detail.documents.bulk.unpublish-toast.success_one': 'Unpublished {{count}} version',
+  /** Success toast after bulk unpublish (plural). */
+  'detail.documents.bulk.unpublish-toast.success_other': 'Unpublished {{count}} versions',
+  /** Error toast when some documents could not be unpublished. */
+  'detail.documents.bulk.unpublish-toast.error': 'Some documents could not be unpublished',
+
+  /** Header of the bulk delete confirmation dialog. */
+  'detail.documents.bulk.delete-dialog.header': 'Delete versions',
+  /** Confirm button of the bulk delete dialog. */
+  'detail.documents.bulk.delete-dialog.confirm': 'Delete',
+  /** Description of the bulk delete dialog (singular). */
+  'detail.documents.bulk.delete-dialog.description_one': 'Delete {{count}} variant version.',
+  /** Description of the bulk delete dialog (plural). */
+  'detail.documents.bulk.delete-dialog.description_other': 'Delete {{count}} variant versions.',
+  /** Shown when none of the selected documents have a deletable version. */
+  'detail.documents.bulk.delete-dialog.none':
+    'None of the selected documents have a draft or release version to delete.',
+  /** Success toast after bulk delete (singular). */
+  'detail.documents.bulk.delete-toast.success_one': 'Deleted {{count}} version',
+  /** Success toast after bulk delete (plural). */
+  'detail.documents.bulk.delete-toast.success_other': 'Deleted {{count}} versions',
+  /** Error toast when some versions could not be deleted. */
+  'detail.documents.bulk.delete-toast.error': 'Some versions could not be deleted',
+
   /** Error message when variant documents fail to load. */
   'detail.documents.error': 'Unable to load documents for this variant definition',
   /** Description for the missing Variant detail page. */
