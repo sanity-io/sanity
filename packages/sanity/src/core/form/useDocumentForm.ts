@@ -20,6 +20,8 @@ import {
   useState,
 } from 'react'
 import deepEquals from 'react-fast-compare'
+import {useObservable} from 'react-rx'
+import {distinctUntilChanged} from 'rxjs/operators'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
@@ -53,7 +55,6 @@ import {isNewDocument} from '../store/document/isNewDocument'
 import {selectUpstreamVersion} from '../store/document/selectUpstreamVersion'
 import {useDocumentValuePermissions} from '../store/grants/documentValuePermissions'
 import {type PermissionCheckResult} from '../store/grants/types'
-import {type DocumentPresence} from '../store/presence/types'
 import {
   getDraftId,
   getPublishedId,
@@ -336,30 +337,25 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return comparisonValueRaw
   }, [comparisonValueRaw, upstreamEditState])
 
-  const [presence, setPresence] = useState<DocumentPresence[]>([])
-  useEffect(() => {
-    const subscription = presenceStore
-      .documentPresence(value._id, {excludeVersions: true})
-      .subscribe((nextPresence) => {
-        setPresence((prev) => {
-          if (
-            prev.length === nextPresence.length &&
-            prev.every(
-              (p, i) =>
-                p.sessionId === nextPresence[i].sessionId &&
-                p.lastActiveAt === nextPresence[i].lastActiveAt &&
-                p.path === nextPresence[i].path,
-            )
-          ) {
-            return prev
-          }
-          return nextPresence
-        })
-      })
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [presenceStore, value._id])
+  const presence$ = useMemo(
+    () =>
+      presenceStore
+        .documentPresence(value._id, {excludeVersions: true})
+        .pipe(
+          distinctUntilChanged(
+            (prev, next) =>
+              prev.length === next.length &&
+              prev.every(
+                (p, i) =>
+                  p.sessionId === next[i].sessionId &&
+                  p.lastActiveAt === next[i].lastActiveAt &&
+                  p.path === next[i].path,
+              ),
+          ),
+        ),
+    [presenceStore, value._id],
+  )
+  const presence = useObservable(presence$, [])
 
   const [openPath, onSetOpenPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()

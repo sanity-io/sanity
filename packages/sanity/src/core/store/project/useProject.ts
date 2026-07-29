@@ -1,4 +1,5 @@
-import {useEffect, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {from} from 'rxjs'
 
 import {useStudioErrorHandler} from '../../studio/requestErrors/useStudioErrorHandler'
@@ -9,14 +10,12 @@ import {type ProjectData} from './types'
 export function useProject(): {value: ProjectData | null} {
   const projectStore = useProjectStore()
   const errorHandler = useStudioErrorHandler()
-  const [value, setValue] = useState<ProjectData | null>(null)
 
-  useEffect(() => {
-    const sub = from(errorHandler.attempt(() => projectStore.get(), {retryable: true})).subscribe(
-      setValue,
-    )
-    return () => sub.unsubscribe()
-  }, [errorHandler, projectStore])
+  const project$ = useMemo(
+    () => from(errorHandler.attempt(() => projectStore.get(), {retryable: true})),
+    [errorHandler, projectStore],
+  )
+  const value = useObservable(project$, null)
 
   return {value}
 }

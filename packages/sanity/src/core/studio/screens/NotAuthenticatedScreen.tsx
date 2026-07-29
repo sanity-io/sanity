@@ -1,36 +1,36 @@
 /* oxlint-disable i18next/no-literal-string */
 import {type CurrentUser} from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, map, of} from 'rxjs'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {getProviderTitle} from '../../store/authStore/providerTitle'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 
 export function NotAuthenticatedScreen() {
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
-  const [error, handleError] = useState<unknown>(null)
-
-  if (error) throw error
-
   const {activeWorkspace} = useActiveWorkspace()
 
   const handleLogout = useCallback(() => {
     void activeWorkspace.auth.logout?.()
   }, [activeWorkspace])
 
-  useEffect(() => {
-    const subscription = activeWorkspace.auth.state.subscribe({
-      next: ({currentUser: user}) => {
-        setCurrentUser(user)
-      },
-      error: handleError,
-    })
+  const currentUser$ = useMemo(
+    () =>
+      activeWorkspace.auth.state.pipe(
+        map(({currentUser}): {type: 'value'; user: CurrentUser | null} => ({
+          type: 'value',
+          user: currentUser,
+        })),
+        catchError((error: unknown) => of({type: 'error' as const, error})),
+      ),
+    [activeWorkspace],
+  )
 
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [activeWorkspace])
+  const result = useObservable(currentUser$, {type: 'value' as const, user: null})
+  if (result.type === 'error') throw result.error
+  const currentUser = result.user
 
   const providerTitle = getProviderTitle(currentUser?.provider)
   const providerHelp = providerTitle ? ` through ${providerTitle}` : ''

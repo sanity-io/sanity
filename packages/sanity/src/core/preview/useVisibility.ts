@@ -1,6 +1,7 @@
-import {useLayoutEffect, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {concat, of} from 'rxjs'
-import {delay, distinctUntilChanged, map, switchMap} from 'rxjs/operators'
+import {delay, distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators'
 
 import {intersectionObservableFor} from './streams/intersectionObservableFor'
 import {visibilityChange$} from './streams/visibilityChange'
@@ -18,17 +19,13 @@ interface Props {
 
 export function useVisibility(props: Props): boolean {
   const {element, hideDelay = 0, disabled} = props
-  const [visible, setVisible] = useState(false)
 
-  useLayoutEffect(() => {
+  const visible$ = useMemo(() => {
     if (!element || disabled) {
-      return undefined
+      return of(false)
     }
 
-    if (element && 'checkVisibility' in element) {
-      // oxlint-disable-next-line react/react-compiler
-      setVisible(element.checkVisibility())
-    }
+    const initialVisible = 'checkVisibility' in element ? element.checkVisibility() : false
 
     const isDocumentVisible$ = concat(
       of(!document.hidden),
@@ -41,16 +38,15 @@ export function useVisibility(props: Props): boolean {
       map((event) => event.isIntersecting),
     )
 
-    const visible$ = isDocumentVisible$.pipe(
+    return isDocumentVisible$.pipe(
       switchMap((isDocumentVisible) => (isDocumentVisible ? inViewport$ : of(false))),
       switchMap((isVisible) => (isVisible ? of(true) : of(false).pipe(delay(hideDelay)))),
       distinctUntilChanged(),
+      startWith(initialVisible),
     )
-
-    const sub = visible$.subscribe(setVisible)
-
-    return () => sub.unsubscribe()
   }, [element, hideDelay, disabled])
+
+  const visible = useObservable(visible$, false)
 
   return disabled ? false : visible
 }

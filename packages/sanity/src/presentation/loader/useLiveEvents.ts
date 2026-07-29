@@ -1,5 +1,7 @@
 import {type LiveEvent, type LiveEventMessage} from '@sanity/client'
-import {useDeferredValue, useEffect, useReducer, useState} from 'react'
+import {useDeferredValue, useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, map, of, scan} from 'rxjs'
 import {type SanityClient} from 'sanity'
 
 type State = {
@@ -48,28 +50,33 @@ export const initialState: State = {
   resets: 0,
 }
 
+type LiveEventsResult = {type: 'value'; state: State} | {type: 'error'; error: unknown}
+
+const INITIAL_RESULT: LiveEventsResult = {type: 'value', state: initialState}
+
 export function useLiveEvents(client: SanityClient): State {
-  const [state, dispatch] = useReducer(reducer, initialState)
-  const [error, setError] = useState<unknown>(null)
-  if (error !== null) {
-    // Push error to nearest error boundary
-    throw error
+  const state$ = useMemo(
+    () =>
+      client.live.events({includeDrafts: true, tag: 'presentation-loader'}).pipe(
+        scan(reducer, initialState),
+        map((state): LiveEventsResult => ({type: 'value', state})),
+        catchError((err: unknown) =>
+          of({
+            type: 'error' as const,
+            error:
+              err instanceof Error
+                ? err
+                : new Error('Unexpected error in useLiveEvents', {cause: err}),
+          }),
+        ),
+      ),
+    [client.live],
+  )
+
+  const result = useObservable(state$, INITIAL_RESULT)
+  if (result.type === 'error') {
+    throw result.error
   }
 
-  useEffect(() => {
-    const subscription = client.live
-      .events({includeDrafts: true, tag: 'presentation-loader'})
-      .subscribe({
-        next: dispatch,
-        error: (err) =>
-          setError(
-            err instanceof Error
-              ? err
-              : new Error('Unexpected error in useLiveEvents', {cause: err}),
-          ),
-      })
-    return () => subscription.unsubscribe()
-  }, [client.live])
-
-  return useDeferredValue(state)
+  return useDeferredValue(result.state)
 }

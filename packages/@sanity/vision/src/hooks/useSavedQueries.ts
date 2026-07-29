@@ -1,7 +1,9 @@
 import {type ListenOptions} from '@sanity/client'
 import {uuid} from '@sanity/uuid' // Import the UUID library
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {map, startWith} from 'rxjs/operators'
+import {useObservable} from 'react-rx'
+import {catchError, map, of} from 'rxjs'
+import {startWith} from 'rxjs/operators'
 import {type KeyValueStoreValue, useClient, useCurrentUser, useKeyValueStore} from 'sanity'
 
 import {DEFAULT_API_VERSION} from '../apiVersions'
@@ -64,17 +66,38 @@ export function useSavedQueries(): {
   const workspaceClient = useClient({apiVersion: DEFAULT_API_VERSION})
   const currentUser = useCurrentUser()
 
-  const [value, setValue] = useState<StoredQueries>(defaultValue)
   const [sharedQueries, setSharedQueries] = useState<QueryConfig[]>([])
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState<string[]>([])
   const [saveQueryError, setSaveQueryError] = useState<Error | undefined>()
   const [deleteQueryError, setDeleteQueryError] = useState<Error | undefined>()
-  const [error, setError] = useState<Error | undefined>()
+  const [sharedError, setSharedError] = useState<Error | undefined>()
 
   const personalQueries = useMemo(() => {
     return keyValueStore.getKey(keyValueStoreKey)
   }, [keyValueStore])
+
+  const personalResult = useObservable(
+    useMemo(
+      () =>
+        personalQueries.pipe(
+          startWith(defaultValue as any),
+          map((data: StoredQueries | null): StoredQueries => {
+            if (!data) {
+              return defaultValue
+            }
+            return data
+          }),
+          map((queries) => ({type: 'value' as const, value: queries})),
+          catchError((err) => of({type: 'error' as const, error: err as Error})),
+        ),
+      [personalQueries],
+    ),
+    {type: 'value', value: defaultValue},
+  )
+
+  const value = personalResult.type === 'value' ? personalResult.value : defaultValue
+  const error = personalResult.type === 'error' ? personalResult.error : sharedError
 
   const mapSharedQueries = useCallback(
     (docs: SharedQueryDocument[]): QueryConfig[] => {
@@ -94,25 +117,6 @@ export function useSavedQueries(): {
   )
 
   useEffect(() => {
-    const sub = personalQueries
-      .pipe(
-        startWith(defaultValue as any),
-        map((data: StoredQueries) => {
-          if (!data) {
-            return defaultValue
-          }
-          return data
-        }),
-      )
-      .subscribe({
-        next: setValue,
-        error: (err) => setError(err as Error),
-      })
-
-    return () => sub?.unsubscribe()
-  }, [personalQueries])
-
-  useEffect(() => {
     let cancelled = false
 
     const fetchSharedQueries = async () => {
@@ -127,7 +131,7 @@ export function useSavedQueries(): {
 
     void fetchSharedQueries().catch((err) => {
       if (!cancelled) {
-        setError(err as Error)
+        setSharedError(err as Error)
       }
     })
 
@@ -143,13 +147,13 @@ export function useSavedQueries(): {
         next: () => {
           void fetchSharedQueries().catch((err) => {
             if (!cancelled) {
-              setError(err as Error)
+              setSharedError(err as Error)
             }
           })
         },
         error: (err) => {
           if (!cancelled) {
-            setError(err as Error)
+            setSharedError(err as Error)
           }
         },
       })
@@ -201,7 +205,6 @@ export function useSavedQueries(): {
       try {
         const newQuery = {...query, _key: uuid()} // Add a unique _key to the query
         const newQueries = [newQuery, ...value.queries]
-        setValue({queries: newQueries})
         await keyValueStore.setKey(keyValueStoreKey, {
           queries: newQueries,
         } as unknown as KeyValueStoreValue)
@@ -259,7 +262,6 @@ export function useSavedQueries(): {
         const updatedQueries = value.queries.map((q) =>
           q._key === query._key ? {...q, ...query} : q,
         )
-        setValue({queries: updatedQueries})
         await keyValueStore.setKey(keyValueStoreKey, {
           queries: updatedQueries,
         } as unknown as KeyValueStoreValue)
@@ -300,7 +302,6 @@ export function useSavedQueries(): {
 
       try {
         const filteredQueries = value.queries.filter((q) => q._key !== key)
-        setValue({queries: filteredQueries})
         await keyValueStore.setKey(keyValueStoreKey, {
           queries: filteredQueries,
         } as unknown as KeyValueStoreValue)
