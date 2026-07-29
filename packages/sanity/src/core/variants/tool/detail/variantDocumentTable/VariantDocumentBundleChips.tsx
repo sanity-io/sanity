@@ -10,7 +10,7 @@ import {ReleaseTitle} from '../../../../releases/components/ReleaseTitle'
 import {RELEASES_INTENT} from '../../../../releases/plugin'
 import {getReleaseIdFromReleaseDocumentId} from '../../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {variantsLocaleNamespace} from '../../../i18n'
-import {type ReleaseLaneKind, resolveVersionBundle} from '../releaseLane'
+import {getSortedRowBundles, type ReleaseLaneKind} from '../releaseLane'
 import {type VariantDocumentVersion} from '../types'
 
 // Only one chip fits comfortably in the fixed-width cell; the rest collapse into a "+N" badge
@@ -102,17 +102,14 @@ export function VariantDocumentBundleChips({
   const {t} = useTranslation(variantsLocaleNamespace)
   const getLabel = useChipLabel()
 
-  // Dedupe by resolved bundle id so a document with several versions in the same bundle
-  // shows a single chip.
+  // Dedupe by bundle and order like the release lane / preview primary badge so the visible
+  // chip always matches the leading icon when a document appears in multiple releases.
   const chips = useMemo<ResolvedChip[]>(() => {
-    const seen = new Map<string, ResolvedChip>()
-    for (const version of versions) {
-      const resolved = resolveVersionBundle(version, releasesById)
-      if (!seen.has(resolved.id)) {
-        seen.set(resolved.id, {key: resolved.id, kind: resolved.kind, release: resolved.release})
-      }
-    }
-    return Array.from(seen.values())
+    return getSortedRowBundles(versions, releasesById).map((resolved) => ({
+      key: resolved.id,
+      kind: resolved.kind,
+      release: resolved.release,
+    }))
   }, [versions, releasesById])
 
   const visible = chips.slice(0, MAX_VISIBLE_CHIPS)
