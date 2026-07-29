@@ -1,5 +1,6 @@
 import {expect, type Page} from '@playwright/test'
 
+import {expectSavedStatus} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
 import {partialASAPReleaseMetadata} from '../releases/utils/__fixtures__/releases'
 import {
@@ -9,6 +10,24 @@ import {
   getRandomReleaseId,
   skipIfBrowser,
 } from '../releases/utils/methods'
+
+/**
+ * Navigates to a new species draft, types a name to persist it, and waits for the save to
+ * complete before continuing.
+ */
+async function createSpeciesDocument(
+  page: Page,
+  createDraftDocument: (navigationPath: string) => Promise<string>,
+) {
+  await createDraftDocument('/content/species')
+
+  const nameInput = page.locator('#name')
+  await expect(nameInput).toBeVisible({timeout: 30_000})
+  await expect(nameInput).toBeEnabled()
+  await nameInput.fill(`Tasks e2e species ${Date.now()}`)
+
+  await expectSavedStatus(page.getByTestId('pane-footer'), {timeout: 30_000})
+}
 
 /**
  * Opens the tasks sidebar from the navbar. The first use in a fresh dataset may create the
@@ -47,7 +66,8 @@ test.describe('Tasks', () => {
   })
 
   test('creates a task targeting the active document', async ({page, createDraftDocument}) => {
-    await createDraftDocument('/content/species')
+    await createSpeciesDocument(page, createDraftDocument)
+
     const title = `Task e2e create ${Date.now()}`
 
     await openTasksSidebar(page)
@@ -122,7 +142,7 @@ test.describe('Tasks', () => {
   })
 
   test('resolves a task from the tasks list', async ({page, createDraftDocument}) => {
-    await createDraftDocument('/content/species')
+    await createSpeciesDocument(page, createDraftDocument)
     const title = `Task e2e resolve ${Date.now()}`
 
     await openTasksSidebar(page)
