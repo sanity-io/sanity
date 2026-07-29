@@ -111,6 +111,18 @@ const variantsLocaleStrings = {
   'detail.action.edit-variant': 'Edit variant definition',
   /** Primary action label on the Variant detail action rail. */
   'detail.action.edit-definition': 'Edit definition',
+  /** Secondary action on the Variant detail rail: personalize a document into the variant. */
+  'detail.add-document.action': 'Add document',
+  /** Header of the add-document picker dialog. */
+  'detail.add-document.header': 'Add document to variant',
+  /** Placeholder for the add-document search field. */
+  'detail.add-document.search-placeholder': 'Search documents…',
+  /** Shown when the add-document search returns nothing. */
+  'detail.add-document.no-results': 'No documents found',
+  /** Toast after a document is personalized into the variant. */
+  'detail.add-document.toast.success': 'Document personalized for this variant',
+  /** Toast when personalizing a document into the variant fails. */
+  'detail.add-document.toast.error': 'Could not add the document to this variant',
   /** Accessible label / tooltip for the Variant detail overflow menu button. */
   'detail.menu.label': 'Actions',
   /** Tooltip for pinning a variant to the studio. */
