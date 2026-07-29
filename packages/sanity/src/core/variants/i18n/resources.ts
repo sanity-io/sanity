@@ -113,13 +113,19 @@ const variantsLocaleStrings = {
   'detail.action.edit-definition': 'Edit definition',
   /** Secondary action on the Variant detail rail: personalize a document into the variant. */
   'detail.add-document.action': 'Add document',
-  /** Menu button in the add-document dialog to create a brand-new document personalized for the variant. */
-  'detail.add-document.new': 'New document',
   /** Header of the add-document picker dialog. */
   'detail.add-document.header': 'Add document to variant',
-  /** Placeholder for the add-document search field. */
+  /** Placeholder for the type-search field (step 1 of the picker). */
+  'detail.add-document.find-type': 'Find a type…',
+  /** Shown when the type search matches nothing (step 1). */
+  'detail.add-document.no-types': 'No matching types',
+  /** Back action from the document step (step 2) to the type step (step 1). */
+  'detail.add-document.back': 'All types',
+  /** Create-new action, scoped to the chosen type (e.g. "New Book"). */
+  'detail.add-document.new-of-type': 'New {{type}}',
+  /** Placeholder for the document search field (step 2, scoped to the chosen type). */
   'detail.add-document.search-placeholder': 'Search documents…',
-  /** Shown when the add-document search returns nothing. */
+  /** Shown when the document search returns nothing (step 2). */
   'detail.add-document.no-results': 'No documents found',
   /** Toast after a document is personalized into the variant. */
   'detail.add-document.toast.success': 'Document personalized for this variant',
