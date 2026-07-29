@@ -328,12 +328,17 @@ describe('VariantsOverview', () => {
     await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
 
     await user.click(screen.getByRole('button', {name: 'Add filter'}))
-    await user.click(screen.getByRole('button', {name: 'Audience'}))
-    await user.click(screen.getByRole('button', {name: 'alpha'}))
+    const filterPopover = (await screen.findByPlaceholderText('Find a dimension…')).closest(
+      '[data-ui="Popover"]',
+    )
+    if (!filterPopover) throw new Error('Filter popover not found')
+    const filterMenu = within(filterPopover as HTMLElement)
 
-    await user.click(screen.getByRole('button', {name: 'Add filter'}))
-    await user.click(screen.getByRole('button', {name: 'Locale'}))
-    await user.click(screen.getByRole('button', {name: 'nb-NO'}))
+    await user.click(filterMenu.getByText('Audience'))
+    await user.click(filterMenu.getByRole('button', {name: 'alpha'}))
+
+    await user.click(filterMenu.getByText('Locale'))
+    await user.click(filterMenu.getByRole('button', {name: 'nb-NO'}))
 
     await waitFor(() => {
       expect(screen.queryByTestId('table-row')).not.toBeInTheDocument()
