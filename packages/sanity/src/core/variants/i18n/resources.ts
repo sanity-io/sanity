@@ -74,9 +74,21 @@ const variantsLocaleStrings = {
   /** Note about selected definitions kept because they contain documents (plural). */
   'overview.bulk.delete-dialog.kept_other':
     '{{count}} selected definitions contain documents and will be kept.',
+  /** Note about selected definitions kept while document count is loading or failed (singular). */
+  'overview.bulk.delete-dialog.kept-unresolved_one':
+    '{{count}} selected definition has an unknown document count and will be kept.',
+  /** Note about selected definitions kept while document count is loading or failed (plural). */
+  'overview.bulk.delete-dialog.kept-unresolved_other':
+    '{{count}} selected definitions have unknown document counts and will be kept.',
   /** Bulk delete dialog body when nothing can be deleted (all selected hold documents). */
   'overview.bulk.delete-dialog.none':
     'All selected definitions contain documents, so none can be deleted. Remove their documents first.',
+  /** Bulk delete dialog body when nothing can be deleted (document counts unknown). */
+  'overview.bulk.delete-dialog.none-unresolved':
+    'Document counts are still loading or unavailable for the selected definitions, so none can be deleted yet.',
+  /** Bulk delete dialog body when nothing can be deleted (mix of documents and unknown counts). */
+  'overview.bulk.delete-dialog.none-mixed':
+    'None of the selected definitions can be deleted. Remove documents first or wait for document counts to load.',
   /** Toast shown after a successful bulk delete (singular). */
   'overview.bulk.delete-toast.success_one': 'Deleted {{count}} variant definition',
   /** Toast shown after a successful bulk delete (plural). */
