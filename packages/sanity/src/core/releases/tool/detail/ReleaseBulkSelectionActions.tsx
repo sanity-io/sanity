@@ -40,13 +40,29 @@ export function ReleaseBulkSelectionActions({
       .filter((row): row is DocumentInReleaseDetail => Boolean(row))
   }, [filterTabRows, selectedKeys])
 
-  const canUnpublishSelection = selectedRows.some(isDocumentEligibleForUnpublish)
+  const hasUnpublishEligibleSelection = selectedRows.some(isDocumentEligibleForUnpublish)
 
   const {granted: canDiscardSelection, isLoading: isDiscardPermissionsLoading} =
     useAnyDocumentInReleaseHasPairPermission(selectedRows, 'discardVersion')
 
+  const {granted: canUnpublishSelection, isLoading: isUnpublishPermissionsLoading} =
+    useAnyDocumentInReleaseHasPairPermission(selectedRows, 'unpublish')
+
   const isDiscardDisabled = !canDiscardSelection || isDiscardPermissionsLoading
   const discardTooltip = t('permissions.error.discard-version')
+
+  const isUnpublishDisabled =
+    !hasUnpublishEligibleSelection || !canUnpublishSelection || isUnpublishPermissionsLoading
+
+  const unpublishTooltip = useMemo(() => {
+    if (!canUnpublishSelection || isUnpublishPermissionsLoading) {
+      return t('permissions.error.unpublish')
+    }
+    if (!hasUnpublishEligibleSelection) {
+      return t('unpublish.no-published-version')
+    }
+    return null
+  }, [canUnpublishSelection, hasUnpublishEligibleSelection, isUnpublishPermissionsLoading, t])
 
   if (compact) {
     return (
@@ -76,10 +92,14 @@ export function ReleaseBulkSelectionActions({
             />
             <MenuItem
               data-testid="release-bulk-unpublish"
-              disabled={!canUnpublishSelection}
+              disabled={isUnpublishDisabled}
               icon={UnpublishIcon}
               onClick={onUnpublish}
               text={t('dashboard.details.bulk.unpublish')}
+              tooltipProps={{
+                disabled: !isUnpublishDisabled,
+                content: unpublishTooltip,
+              }}
             />
           </Menu>
         }
@@ -105,11 +125,15 @@ export function ReleaseBulkSelectionActions({
       />
       <Button
         data-testid="release-bulk-unpublish"
-        disabled={!canUnpublishSelection}
+        disabled={isUnpublishDisabled}
         icon={UnpublishIcon}
         mode="ghost"
         onClick={onUnpublish}
         text={t('dashboard.details.bulk.unpublish')}
+        tooltipProps={{
+          disabled: !isUnpublishDisabled,
+          content: unpublishTooltip,
+        }}
       />
     </Flex>
   )
