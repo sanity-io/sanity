@@ -1625,6 +1625,9 @@ importers:
       '@rexxars/react-json-inspector':
         specifier: ^9.0.1
         version: 9.0.1(react@19.2.8)
+      '@sanity-labs/ui-poc':
+        specifier: 0.0.1-alpha.22
+        version: 0.0.1-alpha.22(react-dom@19.2.8)(react@19.2.8)
       '@sanity/asset-utils':
         specifier: ^2.3.0
         version: 2.3.0
@@ -6066,6 +6069,13 @@ packages:
     resolution: {integrity: sha512-+i7GXix4Akt34VDWgSM1Lpq8Hxf8SH8022uNsDRXSNuAqQMjKVGWLItAyc2TyfWVwWZLhsCF3lj5tdW7cecDxQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
+  '@sanity-labs/ui-poc@0.0.1-alpha.22':
+    resolution: {integrity: sha512-tCqeNli37iywzAJMBItf5psypwi3GHleAwWWr3d2jfByzymlpDwinElYS2sCofsXKEFuCWOIu43YuQgob/EJPA==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      react: ^19.2
+      react-dom: ^19.2
+
   '@sanity/ailf@7.32.0':
     resolution: {integrity: sha512-M40pmQFraebMDrucx7FPAUPDu9sccX9Zp5xvthnM5c31QZpMoodnMc9IOko5+QvPDwdcMm7a9TebQe/c0pihUg==}
     hasBin: true
@@ -6223,6 +6233,12 @@ packages:
       react: ^19.2
       react-dom: ^19.2
       sanity: ^5 || ^6.0.0-0
+
+  '@sanity/icons@3.8.0':
+    resolution: {integrity: sha512-LXa8eoE6U2e46L/9Pk6VU1aOWNxEqEG1osTb2YWItPIAa8MyXkICRwdNRWwW3kr5gmf+Sh2ZmfKol/Q+oGKSqw==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: ^18.3 || ^19.0.0-0
 
   '@sanity/icons@5.2.1':
     resolution: {integrity: sha512-P5gY1HRungh4RgCcypdIpu/SKoTwRBTttpbHntZjdW1MO3MK6xEOs+pbAzSARyhh22OcN9PkBBEYk2FL34BvfQ==}
@@ -17623,6 +17639,15 @@ snapshots:
 
   '@sanity-labs/design-tokens@0.0.2-alpha.4': {}
 
+  '@sanity-labs/ui-poc@0.0.1-alpha.22(react-dom@19.2.8)(react@19.2.8)':
+    dependencies:
+      '@sanity-labs/design-tokens': 0.0.2-alpha.4
+      '@sanity/icons': 3.8.0(react@19.2.8)
+      clsx: 2.1.1
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      react-refractor: 4.0.0(react@19.2.8)
+
   '@sanity/ailf@7.32.0(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.17)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.62.0)(socks@2.8.9)(supports-color@8.1.1)':
     dependencies:
       '@google-cloud/bigquery': 8.3.1(supports-color@8.1.1)
@@ -18137,6 +18162,10 @@ snapshots:
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
       - styled-components
+
+  '@sanity/icons@3.8.0(react@19.2.8)':
+    dependencies:
+      react: 19.2.8
 
   '@sanity/icons@5.2.1(react@19.2.8)':
     dependencies:
