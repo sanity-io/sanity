@@ -1,5 +1,5 @@
 import {Box, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -32,6 +32,8 @@ export function VariantBulkDeleteDialog({
   const toast = useToast()
   const {deleteVariant} = useVariantOperations()
   const [isProcessing, setIsProcessing] = useState(false)
+  // Synchronous re-entry guard (the confirm button only disables on the next render).
+  const isProcessingRef = useRef(false)
 
   // Deletable = definitely empty (count resolved to 0). Definitions with documents, or whose count
   // hasn't resolved yet, are kept so we never delete a definition we can't confirm is empty.
@@ -70,32 +72,50 @@ export function VariantBulkDeleteDialog({
   }, [keptUnresolvedCount, keptWithDocumentsCount])
 
   const handleConfirm = useCallback(async () => {
-    if (deletableCount === 0) return
+    if (deletableCount === 0 || isProcessingRef.current) return
+    isProcessingRef.current = true
     setIsProcessing(true)
 
-    const results = await Promise.allSettled(deletable.map((variant) => deleteVariant(variant._id)))
-    const failed = results.filter((result) => result.status === 'rejected').length
-    const succeeded = deletableCount - failed
+    try {
+      const results = await Promise.allSettled(
+        deletable.map((variant) => deleteVariant(variant._id)),
+      )
+      const failed = results.filter((result) => result.status === 'rejected').length
+      const succeeded = deletableCount - failed
 
-    if (succeeded > 0) {
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: t('overview.bulk.delete-toast.success', {count: succeeded}),
-      })
-    }
-    if (failed > 0) {
+      if (succeeded > 0) {
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: t('overview.bulk.delete-toast.success', {count: succeeded}),
+        })
+      }
+      if (failed > 0) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('overview.bulk.delete-toast.error'),
+        })
+      }
+
+      // Only clear the selection / close on at least one success, so a total failure keeps the
+      // selection for retry.
+      if (succeeded > 0) {
+        onDeleted()
+        onClose()
+      }
+    } catch (err) {
+      // A synchronous throw from deleteVariant (e.g. a precondition error) must still release the
+      // dialog — otherwise isProcessing stays true and the dialog hangs with no exit.
+      console.error(err)
       toast.push({
         closable: true,
         status: 'error',
         title: t('overview.bulk.delete-toast.error'),
       })
-    }
-
-    setIsProcessing(false)
-    if (succeeded > 0) {
-      onDeleted()
-      onClose()
+    } finally {
+      isProcessingRef.current = false
+      setIsProcessing(false)
     }
   }, [deletable, deletableCount, deleteVariant, onClose, onDeleted, t, toast])
 

@@ -202,11 +202,16 @@ variantsList
         commandLaneMinHeight={47}
         emptyState={tableEmptyState}
         filterTabs={
-          <VariantConditionFilters
-            facets={facets}
-            onChange={setConditionFilters}
-            value={conditionFilters}
-          />
+          // VariantConditionFilters renders nothing when there are no condition facets; passing the
+          // element unconditionally would still read as "tabs present" to DocumentTable and strand a
+          // fixed-width search with an empty gutter. Omit it so the search lane fills the row.
+          facets.length > 0 ? (
+            <VariantConditionFilters
+              facets={facets}
+              onChange={setConditionFilters}
+              value={conditionFilters}
+            />
+          ) : undefined
         }
         filterTabsScroll={false}
         getRowKey={getRowKey}

@@ -220,7 +220,9 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       const byId = new Map(filterTabRows.map((row) => [row.document._id, row]))
       const resolved = keys
         .map((key) => byId.get(key))
-        .filter((row): row is DocumentInReleaseDetail => Boolean(row))
+        // Exclude "just added" pending placeholders — their ids are temporary `-pending` ids, not
+        // real release versions, so a bulk discard/unpublish must never target them.
+        .filter((row): row is DocumentInReleaseDetail => Boolean(row) && !row?.isPending)
       return action === 'unpublish' ? resolved.filter(isDocumentEligibleForUnpublish) : resolved
     },
     [filterTabRows],
