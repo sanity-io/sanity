@@ -319,6 +319,32 @@ describe('VariantsOverview', () => {
     expect(variantOperationsMock.deleteVariant).toHaveBeenCalledTimes(1)
   })
 
+  it('shows filter empty state when condition filters exclude every definition', async () => {
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
+
+    await user.click(screen.getByRole('button', {name: 'Add filter'}))
+    await user.click(screen.getByRole('button', {name: 'Audience'}))
+    await user.click(screen.getByRole('button', {name: 'alpha'}))
+
+    await user.click(screen.getByRole('button', {name: 'Add filter'}))
+    await user.click(screen.getByRole('button', {name: 'Locale'}))
+    await user.click(screen.getByRole('button', {name: 'nb-NO'}))
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('table-row')).not.toBeInTheDocument()
+    })
+
+    expect(screen.getByTestId('variants-filter-empty-state')).toHaveTextContent(
+      'No variant definitions match the active filters',
+    )
+    expect(screen.queryByTestId('variants-empty-state')).not.toBeInTheDocument()
+  })
+
   it('shows empty state when there are no variants', async () => {
     variantsMock.data = []
 
