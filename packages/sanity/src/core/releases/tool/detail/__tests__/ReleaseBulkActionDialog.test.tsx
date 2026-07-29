@@ -136,13 +136,14 @@ describe('ReleaseBulkActionDialog', () => {
     mockGetDocumentPairPermissions.mockReturnValue(of({granted: false, reason: 'denied'}))
 
     const onClose = vi.fn()
+    const onSuccess = vi.fn()
     render(
       <ReleaseBulkActionDialog
         action="unpublish"
         documents={[createRow('versions.rTest.doc-one')]}
         releaseId="rTest"
         onClose={onClose}
-        onSuccess={vi.fn()}
+        onSuccess={onSuccess}
       />,
     )
 
@@ -152,5 +153,12 @@ describe('ReleaseBulkActionDialog', () => {
       expect(onClose).toHaveBeenCalled()
     })
     expect(mockUnpublishVersion).not.toHaveBeenCalled()
+    expect(onSuccess).not.toHaveBeenCalled()
+    expect(mockToastPush).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'error',
+        title: 'dashboard.details.bulk.unpublish-toast.no-permission',
+      }),
+    )
   })
 })
