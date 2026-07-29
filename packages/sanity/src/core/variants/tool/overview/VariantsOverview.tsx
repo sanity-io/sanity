@@ -87,6 +87,10 @@ variantsList
   )
 
   const hasVariants = variantsList.length > 0
+  const hasActiveConditionFilters = useMemo(
+    () => Object.values(conditionFilters).some((values) => values.length > 0),
+    [conditionFilters],
+  )
 
   const createVariantButton = useMemo(
     () => (
@@ -136,8 +140,18 @@ variantsList
       )
     }
 
+    if (hasVariants && hasActiveConditionFilters && rows.length === 0) {
+      return (
+        <Flex align="center" direction="column" gap={3} justify="center" padding={4}>
+          <Text data-testid="variants-filter-empty-state" muted size={1}>
+            {t('overview.filter.no-matching-definitions')}
+          </Text>
+        </Flex>
+      )
+    }
+
     return <VariantsEmptyState createVariantButton={createVariantButton} />
-  }, [createVariantButton, error, hasVariants, t])
+  }, [createVariantButton, error, hasActiveConditionFilters, hasVariants, rows.length, t])
 
   const selectedVariants = useMemo(() => {
     if (!bulkDelete) return []
