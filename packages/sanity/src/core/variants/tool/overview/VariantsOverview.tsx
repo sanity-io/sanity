@@ -19,6 +19,7 @@ import {
   buildConditionFacets,
   filterVariantsForSearch,
   getVariantId,
+  resolveBulkDeleteVariants,
   variantMatchesConditionFilters,
 } from '../util'
 import {VariantBulkDeleteDialog} from './VariantBulkDeleteDialog'
@@ -153,11 +154,15 @@ variantsList
     return <VariantsEmptyState createVariantButton={createVariantButton} />
   }, [createVariantButton, error, hasActiveConditionFilters, hasVariants, rows.length, t])
 
-  const selectedVariants = useMemo(() => {
+  const selectedVariants = useMemo((): TableVariant[] => {
     if (!bulkDelete) return []
-    const keys = new Set(bulkDelete.keys)
-    return rows.filter((variant) => keys.has(variant._id))
-  }, [bulkDelete, rows])
+    return resolveBulkDeleteVariants(
+      bulkDelete.keys,
+      variantsList,
+      documentCounts,
+      documentCountsError,
+    )
+  }, [bulkDelete, variantsList, documentCounts, documentCountsError])
 
   return (
     <Flex direction="column" flex={1} height="fill">
