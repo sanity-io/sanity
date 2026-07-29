@@ -115,8 +115,9 @@ export function DocumentTable<Row extends object>({
   commandLaneMinHeight?: number
   /**
    * Keep the command lane (filters + search) mounted even when there are zero rows, so a filter or
-   * search that empties the result set doesn't also hide the controls needed to change it. Detail
-   * tables leave this off; list surfaces that own filters (the variants overview) turn it on.
+   * search that empties the result set doesn't also hide the controls needed to change it. Surfaces
+   * that own filter tabs and/or command-lane actions (release detail behind beta.variants, the
+   * variants overview) turn it on.
    */
   alwaysShowCommandLane?: boolean
   /** Extra command-lane controls rendered right of the search (e.g. an "Add document" button). */
