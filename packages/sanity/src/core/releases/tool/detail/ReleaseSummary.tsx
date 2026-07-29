@@ -385,6 +385,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     <Flex direction="column" style={FULL_HEIGHT_STYLE}>
       {variantsEnabled ? (
         <DocumentTable<DocumentInReleaseDetail>
+          alwaysShowCommandLane
           columnDefs={documentTableColumnDefs}
           defaultSort={{column: 'search', direction: 'asc'}}
           emptyState={t('summary.no-documents')}
