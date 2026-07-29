@@ -1,5 +1,6 @@
 import {type ReleaseState} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Badge, Box, Card, Flex, Text} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
@@ -467,7 +468,22 @@ export const getDocumentTableColumnDefs: (
           )}
           {/* Positive "ready" state so the column is a scannable ready-vs-error rail — an empty cell
               would be ambiguous ("fine" or "not checked?"). */}
-          {!datum.validation.hasError && (
+          {datum.validation.isValidating && !datum.validation.hasError && (
+            <Tooltip
+              portal
+              placement="bottom-end"
+              content={
+                <Text muted size={1}>
+                  <Box padding={1}>{t('dashboard.details.metadata.status-validating')}</Box>
+                </Text>
+              }
+            >
+              <Text muted size={1} data-testid={`validation-validating-${datum.document._id}`}>
+                <ToneIcon icon={ClockIcon} tone="default" />
+              </Text>
+            </Tooltip>
+          )}
+          {!datum.validation.hasError && !datum.validation.isValidating && (
             <Tooltip
               portal
               placement="bottom-end"
