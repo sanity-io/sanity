@@ -91,6 +91,9 @@ export function VariantDocumentPreview({
     documentId: row.document._id,
     documentType: row.document._type,
     perspectiveStack,
+    // The table lists documents of the variant being viewed, so previews resolve in that variant
+    // rather than whichever variant is selected globally
+    variant: variantId,
   })
 
   return (

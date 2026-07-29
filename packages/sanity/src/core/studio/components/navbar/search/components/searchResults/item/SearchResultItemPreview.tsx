@@ -23,6 +23,10 @@ interface SearchResultItemPreviewProps {
   layout?: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   perspective?: PerspectiveStack
+  /**
+   * The variant the preview is resolved in, as a bare variant id. Travels with `perspective`.
+   */
+  variant?: string
   schemaType: SchemaType
   showBadge?: boolean
 }
@@ -56,12 +60,20 @@ export function SearchResultItemPreview({
   schemaType,
   showBadge = true,
   perspective,
+  variant,
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
 
   const observable = useMemo(() => {
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspective)
-  }, [documentPreviewStore, schemaType, documentId, perspective])
+    return getPreviewStateObservable(
+      documentPreviewStore,
+      schemaType,
+      documentId,
+      perspective,
+      undefined,
+      variant,
+    )
+  }, [documentPreviewStore, schemaType, documentId, perspective, variant])
 
   const documentStub = useMemo(
     () => ({_id: documentId, _type: documentType}),

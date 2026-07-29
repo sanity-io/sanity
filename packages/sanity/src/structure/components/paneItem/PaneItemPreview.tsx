@@ -52,7 +52,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const versionsInfo = useDocumentVersionInfo(value._id)
 
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
     if (!sortOrder) return undefined
     return {
@@ -70,8 +70,16 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       value._id,
       perspectiveStack,
       viewOptions,
+      selectedVariantName,
     )
-  }, [props.documentPreviewStore, schemaType, value._id, perspectiveStack, viewOptions])
+  }, [
+    props.documentPreviewStore,
+    schemaType,
+    value._id,
+    perspectiveStack,
+    viewOptions,
+    selectedVariantName,
+  ])
 
   // Deferred: react-rx v5's deferral is identity-coherent, so when a
   // (recycled) list item switches to a new document id the live snapshot for

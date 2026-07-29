@@ -19,14 +19,21 @@ const EMPTY_STATE: PreviewState = {}
 
 export default function usePreviewState(documentId: string, schemaType?: SchemaType): PreviewState {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
 
   const preview$ = useMemo(
     () =>
       schemaType
-        ? getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspectiveStack)
+        ? getPreviewStateObservable(
+            documentPreviewStore,
+            schemaType,
+            documentId,
+            perspectiveStack,
+            undefined,
+            selectedVariantName,
+          )
         : of(EMPTY_STATE),
-    [documentPreviewStore, schemaType, documentId, perspectiveStack],
+    [documentPreviewStore, schemaType, documentId, perspectiveStack, selectedVariantName],
   )
 
   // Deferred: react-rx v5's deferral is identity-coherent, so on a document

@@ -68,6 +68,12 @@ export interface StructureResolverContext extends ConfigContext {
    * See {@link PerspectiveStack}
    */
   perspectiveStack: PerspectiveStack
+  /**
+   * The selected editing variant as a bare variant id, or `undefined` when no variant is selected.
+   * It can be used as the variant param in the client, alongside `perspectiveStack`, to get the
+   * view of the documents as seen through that variant.
+   */
+  selectedVariantName: string | undefined
 }
 
 /**

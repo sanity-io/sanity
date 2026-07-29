@@ -41,6 +41,7 @@ export interface StructureBuilderOptions {
   source: Source
   defaultDocumentNode?: DefaultDocumentNodeResolver
   perspectiveStack: PerspectiveStack
+  selectedVariantName: string | undefined
 }
 
 function hasIcon(schemaType?: SchemaType | string): boolean {
@@ -66,6 +67,7 @@ export function createStructureBuilder({
   defaultDocumentNode,
   source,
   perspectiveStack,
+  selectedVariantName,
 }: StructureBuilderOptions): StructureBuilder {
   const configContext = getConfigContextFromSource(source)
   const context: StructureContext = {
@@ -87,6 +89,7 @@ export function createStructureBuilder({
       return builder.schemaType(options.schemaType)
     },
     perspectiveStack,
+    selectedVariantName,
   }
 
   const structureBuilder: StructureBuilder = {
