@@ -11,6 +11,9 @@ const mockUnpublishVersion = vi.fn().mockResolvedValue({})
 const mockDiscardVersion = vi.fn().mockResolvedValue({})
 const mockGetDocumentPairPermissions = vi.fn()
 const mockToastPush = vi.fn()
+const mockClient = {}
+const mockSchema = {}
+const mockGrantsStore = {}
 
 vi.mock('../../../hooks/useVersionOperations', () => ({
   useVersionOperations: vi.fn(() => ({
@@ -24,15 +27,15 @@ vi.mock('../../../../store/grants/documentPairPermissions', () => ({
 }))
 
 vi.mock('../../../../hooks/useClient', () => ({
-  useClient: vi.fn(() => ({})),
+  useClient: vi.fn(() => mockClient),
 }))
 
 vi.mock('../../../../hooks/useSchema', () => ({
-  useSchema: vi.fn(() => ({})),
+  useSchema: vi.fn(() => mockSchema),
 }))
 
 vi.mock('../../../../store/datastores', () => ({
-  useGrantsStore: vi.fn(() => ({})),
+  useGrantsStore: vi.fn(() => mockGrantsStore),
 }))
 
 vi.mock('../../../../store/user/hooks', () => ({
@@ -51,6 +54,15 @@ vi.mock('../../../../i18n/hooks/useTranslation', () => ({
       if (key === 'dashboard.details.bulk.discard-dialog.header') return 'Discard versions'
       if (key === 'dashboard.details.bulk.discard-dialog.description') {
         return `Discard ${values?.count ?? 0} versions`
+      }
+      if (key === 'dashboard.details.bulk.unpublish-toast.no-permission') {
+        return 'No unpublish permission'
+      }
+      if (key === 'dashboard.details.bulk.discard-toast.no-permission') {
+        return 'No discard permission'
+      }
+      if (key === 'dashboard.details.bulk.toast.documents-skipped') {
+        return `Skipped ${values?.count ?? 0} documents`
       }
       return key
     },
@@ -142,15 +154,20 @@ describe('ReleaseBulkActionDialog', () => {
     mockGetDocumentPairPermissions.mockReturnValue(of({granted: false, reason: 'denied'}))
 
     const onClose = vi.fn()
+    const onSuccess = vi.fn()
     render(
       <ReleaseBulkActionDialog
         action="unpublish"
         documents={[createRow('versions.rTest.doc-one')]}
         releaseId="rTest"
         onClose={onClose}
-        onSuccess={vi.fn()}
+        onSuccess={onSuccess}
       />,
     )
+
+    await waitFor(() => {
+      expect(screen.getByText('Unpublish 0 documents')).toBeInTheDocument()
+    })
 
     await userEvent.click(await screen.findByText('Unpublish'))
 
@@ -158,6 +175,76 @@ describe('ReleaseBulkActionDialog', () => {
       expect(onClose).toHaveBeenCalled()
     })
     expect(mockUnpublishVersion).not.toHaveBeenCalled()
+    expect(onSuccess).not.toHaveBeenCalled()
+    expect(mockToastPush).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'error',
+        title: 'No unpublish permission',
+      }),
+    )
+  })
+
+  it('shows the actionable document count in the dialog description', async () => {
+    const permitted = createRow('versions.rTest.doc-permitted')
+    const denied = createRow('versions.rTest.doc-denied')
+
+    mockGetDocumentPairPermissions.mockImplementation((options: {id: string}) => {
+      if (options.id === 'doc-permitted') {
+        return of({granted: true, reason: ''})
+      }
+      return of({granted: false, reason: 'denied'})
+    })
+
+    render(
+      <ReleaseBulkActionDialog
+        action="discard"
+        documents={[permitted, denied]}
+        releaseId="rTest"
+        onClose={vi.fn()}
+        onSuccess={vi.fn()}
+      />,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Discard 1 versions')).toBeInTheDocument()
+    })
+  })
+
+  it('warns when confirm skips documents that cannot be acted on', async () => {
+    const permitted = createRow('versions.rTest.doc-permitted')
+    const denied = createRow('versions.rTest.doc-denied')
+
+    mockGetDocumentPairPermissions.mockImplementation((options: {id: string}) => {
+      if (options.id === 'doc-permitted') {
+        return of({granted: true, reason: ''})
+      }
+      return of({granted: false, reason: 'denied'})
+    })
+
+    render(
+      <ReleaseBulkActionDialog
+        action="discard"
+        documents={[permitted, denied]}
+        releaseId="rTest"
+        onClose={vi.fn()}
+        onSuccess={vi.fn()}
+      />,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Discard 1 versions')).toBeInTheDocument()
+    })
+
+    await userEvent.click(await screen.findByText('Discard'))
+
+    await waitFor(() => {
+      expect(mockToastPush).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'warning',
+          title: 'Skipped 1 documents',
+        }),
+      )
+    })
   })
 
   it('only discards documents the user has permission for', async () => {
@@ -203,15 +290,20 @@ describe('ReleaseBulkActionDialog', () => {
     })
 
     const onClose = vi.fn()
+    const onSuccess = vi.fn()
     render(
       <ReleaseBulkActionDialog
         action="discard"
         documents={[createRow('versions.rTest.doc-one')]}
         releaseId="rTest"
         onClose={onClose}
-        onSuccess={vi.fn()}
+        onSuccess={onSuccess}
       />,
     )
+
+    await waitFor(() => {
+      expect(screen.getByText('Discard 0 versions')).toBeInTheDocument()
+    })
 
     await userEvent.click(await screen.findByText('Discard'))
 
@@ -219,5 +311,12 @@ describe('ReleaseBulkActionDialog', () => {
       expect(onClose).toHaveBeenCalled()
     })
     expect(mockDiscardVersion).not.toHaveBeenCalled()
+    expect(onSuccess).not.toHaveBeenCalled()
+    expect(mockToastPush).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'error',
+        title: 'No discard permission',
+      }),
+    )
   })
 })
