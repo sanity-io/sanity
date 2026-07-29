@@ -207,7 +207,7 @@ describe('ReleaseSummary', () => {
       within(initialFirstDocument).getByText('First document')
       within(initialSecondDocument).getByText('Second document')
 
-      await userEvent.click(within(screen.getByRole('table')).getByText('Last edited'))
+      await userEvent.click(within(screen.getByRole('table')).getByText('Edited'))
 
       const [sortedCreatedAscFirstDocument, sortedCreatedAscSecondDocument] =
         screen.getAllByTestId('table-row')
@@ -215,7 +215,7 @@ describe('ReleaseSummary', () => {
       within(sortedCreatedAscFirstDocument).getByText('Second document')
       within(sortedCreatedAscSecondDocument).getByText('First document')
 
-      await userEvent.click(within(screen.getByRole('table')).getByText('Last edited'))
+      await userEvent.click(within(screen.getByRole('table')).getByText('Edited'))
 
       const [sortedEditedDescFirstDocument, sortedEditedDescSecondDocument] =
         screen.getAllByTestId('table-row')

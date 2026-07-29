@@ -68,7 +68,11 @@ const baseDatum: BundleDocumentRow = {
 
 function getValidationColumnCell() {
   const t = ((key: string) => key) as TFunction<'releases'>
-  const columns = getDocumentTableColumnDefs(releaseDocumentId, 'active', t)
+  // The validating/ready indicators are part of the beta (variants) column layout; production keeps
+  // an error-only validation column, so exercise the cell with the beta layout enabled.
+  const columns = getDocumentTableColumnDefs(releaseDocumentId, 'active', t, {
+    variantsEnabled: true,
+  })
   const validationColumn = columns.find((column) => column.id === 'validation')
   if (!validationColumn || validationColumn.hidden || !validationColumn.cell) {
     throw new Error('Expected validation column')

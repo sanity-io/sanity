@@ -112,6 +112,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       getDocumentTableColumnDefs(release._id, release.state, t, {
         searchInCommandLane: variantsEnabled,
         variantsById: variantsEnabled ? variantsById : undefined,
+        variantsEnabled,
       }),
     [release._id, release.state, t, variantsEnabled, variantsById],
   )

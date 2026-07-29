@@ -138,20 +138,28 @@ export function DocumentType({type}: {type: string}) {
 
 const MemoDocumentType = memo(DocumentType, (prev, next) => prev.type === next.type)
 
-const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentRow> = (t) => ({
+const documentActionColumn: (
+  t: TFunction<'releases'>,
+  variantsEnabled: boolean,
+) => Column<BundleDocumentRow> = (t, variantsEnabled) => ({
   id: 'action',
   width: null,
   style: {minWidth: 100},
-  sorting: true,
+  // Sortable only in the beta layout. Production kept a plain, non-sortable header — gating this
+  // keeps the non-beta releases table unchanged.
+  sorting: variantsEnabled,
   // Sort by the action type (Add / Change / Unpublish) so like actions group together.
-  sortTransform(value) {
-    return getDocumentActionType(value) || ''
-  },
-  header: (props) => (
-    <Flex {...props.headerProps} paddingY={3} sizing="border">
-      <Headers.SortHeaderButton text={t('table-header.action')} {...props} />
-    </Flex>
-  ),
+  sortTransform: variantsEnabled ? (value) => getDocumentActionType(value) || '' : undefined,
+  header: (props) =>
+    variantsEnabled ? (
+      <Flex {...props.headerProps} paddingY={3} sizing="border">
+        <Headers.SortHeaderButton text={t('table-header.action')} {...props} />
+      </Flex>
+    ) : (
+      <Flex {...props.headerProps} paddingY={3} sizing="border">
+        <Headers.BasicHeader text={t('table-header.action')} />
+      </Flex>
+    ),
   cell: ({cellProps, datum}) => {
     const actionBadge = () => {
       const actionType = getDocumentActionType(datum)
@@ -243,266 +251,349 @@ export const getDocumentTableColumnDefs: (
   releaseId: string,
   releaseState: ReleaseState,
   t: TFunction<'releases'>,
-  options?: {searchInCommandLane?: boolean; variantsById?: Map<string, SystemVariant>},
-) => Column<BundleDocumentRow>[] = (releaseId, releaseState, t, options) => [
-  /**
-   * Hiding action for archived and published releases of v1.0
-   * This will be added once Events API has reverse order lookup supported
-   */
-  ...(releaseState === 'archived' || releaseState === 'published' ? [] : [documentActionColumn(t)]),
-  {
-    id: 'document._type',
-    // Header and body rows are independent flexboxes, so a content-sized column (width: null)
-    // settles at different widths in each and misaligns. A fixed width keeps them in sync.
-    // Type only ever holds short schema titles (Book / Author / demoBlogPost), and DocumentType
-    // truncates + shows a tooltip on overflow, so a tighter width reclaims space for Document.
-    width: 120,
-    sorting: true,
-    header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton text={t('table-header.type')} {...props} />
-      </Flex>
-    ),
-    cell: ({cellProps, datum}) => (
-      <Flex align="center" {...cellProps}>
-        <Box paddingX={2} style={{minWidth: 0}}>
-          {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
-        </Box>
-      </Flex>
-    ),
+  options?: {
+    searchInCommandLane?: boolean
+    variantsById?: Map<string, SystemVariant>
+    /**
+     * Beta (variants) column layout. When false/omitted the column set must match production
+     * exactly — these columns feed the non-beta releases-detail table too, so any change here
+     * behind the flag-off path would leak into production Releases detail + scheduled drafts.
+     */
+    variantsEnabled?: boolean
   },
-  // "Variant" column — shows which variant each document targets. Only present when the caller
-  // passes a resolved variants map (i.e. variants enabled). This is the functional point of the
-  // release-detail reconciliation: the inverse of the Variants table's "Appears in" column.
-  ...(options?.variantsById
-    ? [
-        {
-          id: 'variant',
-          width: 180,
-          style: {minWidth: 120, maxWidth: 180},
-          sorting: true,
-          sortTransform(value) {
-            const variant = resolveDocumentVariant(value.document, options.variantsById!)
-            return variant ? getVariantTitle(variant).toLowerCase() : ''
-          },
-          header: (props) => (
-            <Flex {...props.headerProps} paddingY={3} sizing="border">
-              <Headers.SortHeaderButton text={t('table-header.variant')} {...props} />
-            </Flex>
-          ),
-          cell: ({cellProps, datum}) => (
-            <Flex align="center" {...cellProps}>
-              <Box paddingX={2} style={{minWidth: 0}}>
-                {!datum.isLoading && (
-                  <VariantCell document={datum.document} variantsById={options.variantsById!} />
-                )}
-              </Box>
-            </Flex>
-          ),
-        } satisfies Column<BundleDocumentRow>,
-      ]
-    : []),
-  {
-    id: 'search',
-    width: null,
-    // When search lives in the command lane, this column grows to fill (like Variants) so "Edited"
-    // pins to the right edge; otherwise it holds the header search input at a capped width.
-    style: options?.searchInCommandLane
-      ? {minWidth: 240}
-      : {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
-    sorting: options?.searchInCommandLane ? true : undefined,
-    sortTransform(value) {
-      return (
-        String(
-          value.document?.title || value.document?.name || value.document?._id,
-        ).toLowerCase() || 0
-      )
-    },
-    header: (props) =>
-      options?.searchInCommandLane ? (
-        // Search moved to the command lane; the header is a plain sortable "Document" label that
-        // grows to fill (flex) in both header and body.
-        <Flex {...props.headerProps} flex={1} paddingY={3} sizing="border">
-          <Headers.SortHeaderButton text={t('table-header.document')} {...props} />
+) => Column<BundleDocumentRow>[] = (releaseId, releaseState, t, options) => {
+  // Beta layout gate. Off (production) = the exact column set from before this redesign, since
+  // these defs also drive the non-beta releases-detail table.
+  const variantsEnabled = Boolean(options?.variantsEnabled)
+
+  return [
+    /**
+     * Hiding action for archived and published releases of v1.0
+     * This will be added once Events API has reverse order lookup supported
+     */
+    ...(releaseState === 'archived' || releaseState === 'published'
+      ? []
+      : [documentActionColumn(t, variantsEnabled)]),
+    {
+      id: 'document._type',
+      // Header and body rows are independent flexboxes, so a content-sized column (width: null)
+      // settles at different widths in each and misaligns. A fixed width keeps them in sync.
+      // Type only ever holds short schema titles (Book / Author / demoBlogPost), and DocumentType
+      // truncates + shows a tooltip on overflow, so a tighter width reclaims space for Document.
+      width: 120,
+      sorting: true,
+      header: (props) => (
+        <Flex {...props.headerProps} paddingY={3} sizing="border">
+          <Headers.SortHeaderButton text={t('table-header.type')} {...props} />
         </Flex>
-      ) : (
-        <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
       ),
-    cell: ({cellProps, datum}) => (
-      <Box {...cellProps} flex={1} padding={1} paddingRight={2} sizing="border">
-        {datum.isPending || datum.isLoading ? (
-          <SanityDefaultPreview isPlaceholder />
-        ) : (
-          <MemoReleaseDocumentPreview
-            item={datum}
-            releaseId={releaseId}
-            releaseState={releaseState}
-            documentRevision={datum.document._rev}
-          />
-        )}
-      </Box>
-    ),
-  },
-  {
-    // "Last edited" (relative time) comes BEFORE "Edited by" so this text column sits between the
-    // document preview's live-presence avatar and the edited-by avatar — otherwise the two round
-    // avatars would neighbour across the column boundary and read as one crowded cluster. Also reads
-    // naturally: "last edited 6 days ago, by …".
-    id: 'document._updatedAt',
-    sorting: true,
-    width: 130,
-    header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
-        <Headers.SortHeaderButton paddingLeft={2} text={t('table-header.last-edited')} {...props} />
-      </Flex>
-    ),
-    cell: ({cellProps, datum}) => (
-      <Flex
-        {...cellProps}
-        align="center"
-        paddingX={2}
-        paddingY={3}
-        style={{minWidth: 130}}
-        sizing="border"
-      >
-        {!datum.isLoading && datum.document._updatedAt && (
-          <Text muted size={1}>
-            <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
-          </Text>
-        )}
-      </Flex>
-    ),
-  },
-  {
-    // Edited by — the last editor (person), its own named column so authorship reads distinctly
-    // from live presence. Plain-text header so it aligns with the avatar at the content edge (a
-    // sort button never lands its label on the same edge).
-    id: 'editedBy',
-    sorting: false,
-    width: 170,
-    style: {minWidth: 44, maxWidth: 170},
-    header: ({headerProps}) => (
-      <Flex {...headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
-        <Text muted size={1} textOverflow="ellipsis" weight="medium">
-          {t('table-header.edited-by')}
-        </Text>
-      </Flex>
-    ),
-    cell: (props) => <EditedByReleaseCell {...props} releaseDocumentId={releaseId} />,
-  },
-
-  {
-    id: 'validation',
-    sorting: false,
-    width: 50,
-    header: ({headerProps}) => (
-      <Flex {...headerProps} paddingY={3} sizing="border">
-        <Headers.BasicHeader text={''} />
-      </Flex>
-    ),
-    cell: ({cellProps, datum}) => {
-      if (datum.isLoading) return null
-
-      const errors = datum.validation.validation.filter(
-        (validation) => validation.level === 'error',
-      )
-      const validationErrorCount = errors.length
-
-      // Deep-link to the first field-level error (fall back to the first error). The
-      // existing params.path -> field-focus plumbing in DocumentPaneProvider scrolls to
-      // and focuses the field when the document opens.
-      const firstError = errors.find((error) => error.path.length > 0) ?? errors[0]
-      const focusPath = firstError ? pathToString(firstError.path) : undefined
-      const intent = getReleaseDocumentIntent({
-        documentId: datum.document._id,
-        documentTypeName: datum.document._type,
-        releaseId,
-        releaseState,
-        documentRevision: datum.document._rev,
-        variantId: getVariantIdFromDocument(datum.document),
-        path: focusPath,
-      })
-      const errorLabel = t(
-        validationErrorCount === 1
-          ? 'document-validation.error_one'
-          : 'document-validation.error_other',
-        {count: validationErrorCount},
-      )
-
-      return (
-        // In the command-lane layout only the Document column grows; keep validation fixed at its
-        // width (flex:1 here would split the free space with Document and misalign the header/body).
-        <Flex
-          {...cellProps}
-          flex={options?.searchInCommandLane ? undefined : 1}
-          padding={1}
-          justify="center"
-          align="center"
-          sizing="border"
-        >
-          {datum.validation.hasError && (
-            <Tooltip
-              portal
-              placement="bottom-end"
-              content={
-                <Text muted size={1}>
-                  <Flex align={'center'} gap={3} padding={1}>
-                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-                    {errorLabel}
-                  </Flex>
-                </Text>
-              }
-            >
-              <Text size={1}>
-                <IntentLink
-                  intent="edit"
-                  params={intent.params}
-                  searchParams={intent.searchParams}
-                  aria-label={errorLabel}
-                  data-testid={`validation-error-link-${datum.document._id}`}
-                >
-                  <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-                </IntentLink>
-              </Text>
-            </Tooltip>
-          )}
-          {/* Positive "ready" state so the column is a scannable ready-vs-error rail — an empty cell
-              would be ambiguous ("fine" or "not checked?"). */}
-          {datum.validation.isValidating && !datum.validation.hasError && (
-            <Tooltip
-              portal
-              placement="bottom-end"
-              content={
-                <Text muted size={1}>
-                  <Box padding={1}>{t('dashboard.details.metadata.status-validating')}</Box>
-                </Text>
-              }
-            >
-              <Text muted size={1} data-testid={`validation-validating-${datum.document._id}`}>
-                <ToneIcon icon={ClockIcon} tone="default" />
-              </Text>
-            </Tooltip>
-          )}
-          {!datum.validation.hasError && !datum.validation.isValidating && (
-            <Tooltip
-              portal
-              placement="bottom-end"
-              content={
-                <Text muted size={1}>
-                  <Box padding={1}>{t('document-validation.valid')}</Box>
-                </Text>
-              }
-            >
-              <Text muted size={1} data-testid={`validation-valid-${datum.document._id}`}>
-                <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
-              </Text>
-            </Tooltip>
-          )}
+      cell: ({cellProps, datum}) => (
+        <Flex align="center" {...cellProps}>
+          <Box paddingX={2} style={{minWidth: 0}}>
+            {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
+          </Box>
         </Flex>
-      )
+      ),
     },
-  },
-]
+    // "Variant" column — shows which variant each document targets. Only present when the caller
+    // passes a resolved variants map (i.e. variants enabled). This is the functional point of the
+    // release-detail reconciliation: the inverse of the Variants table's "Appears in" column.
+    ...(options?.variantsById
+      ? [
+          {
+            id: 'variant',
+            width: 180,
+            style: {minWidth: 120, maxWidth: 180},
+            sorting: true,
+            sortTransform(value) {
+              const variant = resolveDocumentVariant(value.document, options.variantsById!)
+              return variant ? getVariantTitle(variant).toLowerCase() : ''
+            },
+            header: (props) => (
+              <Flex {...props.headerProps} paddingY={3} sizing="border">
+                <Headers.SortHeaderButton text={t('table-header.variant')} {...props} />
+              </Flex>
+            ),
+            cell: ({cellProps, datum}) => (
+              <Flex align="center" {...cellProps}>
+                <Box paddingX={2} style={{minWidth: 0}}>
+                  {!datum.isLoading && (
+                    <VariantCell document={datum.document} variantsById={options.variantsById!} />
+                  )}
+                </Box>
+              </Flex>
+            ),
+          } satisfies Column<BundleDocumentRow>,
+        ]
+      : []),
+    {
+      id: 'search',
+      width: null,
+      // When search lives in the command lane, this column grows to fill (like Variants) so "Edited"
+      // pins to the right edge; otherwise it holds the header search input at a capped width.
+      style: options?.searchInCommandLane
+        ? {minWidth: 240}
+        : {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
+      sorting: options?.searchInCommandLane ? true : undefined,
+      sortTransform(value) {
+        return (
+          String(
+            value.document?.title || value.document?.name || value.document?._id,
+          ).toLowerCase() || 0
+        )
+      },
+      header: (props) =>
+        options?.searchInCommandLane ? (
+          // Search moved to the command lane; the header is a plain sortable "Document" label that
+          // grows to fill (flex) in both header and body.
+          <Flex {...props.headerProps} flex={1} paddingY={3} sizing="border">
+            <Headers.SortHeaderButton text={t('table-header.document')} {...props} />
+          </Flex>
+        ) : (
+          <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
+        ),
+      cell: ({cellProps, datum}) => (
+        <Box {...cellProps} flex={1} padding={1} paddingRight={2} sizing="border">
+          {datum.isPending || datum.isLoading ? (
+            <SanityDefaultPreview isPlaceholder />
+          ) : (
+            <MemoReleaseDocumentPreview
+              item={datum}
+              releaseId={releaseId}
+              releaseState={releaseState}
+              documentRevision={datum.document._rev}
+            />
+          )}
+        </Box>
+      ),
+    },
+    // Beta splits authorship into two columns ("Last edited" time + "Edited by" person). Production
+    // (flag off) keeps the single combined "Edited" column (time + last-editor avatar) it had before
+    // the redesign, so the non-beta releases table is unchanged.
+    ...(variantsEnabled
+      ? ([
+          {
+            // "Last edited" (relative time) comes BEFORE "Edited by" so this text column sits between
+            // the document preview's live-presence avatar and the edited-by avatar — otherwise the two
+            // round avatars would neighbour across the column boundary and read as one crowded cluster.
+            id: 'document._updatedAt',
+            sorting: true,
+            width: 130,
+            header: (props) => (
+              <Flex {...props.headerProps} paddingY={3} sizing="border">
+                <Headers.SortHeaderButton
+                  paddingLeft={2}
+                  text={t('table-header.last-edited')}
+                  {...props}
+                />
+              </Flex>
+            ),
+            cell: ({cellProps, datum}) => (
+              <Flex
+                {...cellProps}
+                align="center"
+                paddingX={2}
+                paddingY={3}
+                style={{minWidth: 130}}
+                sizing="border"
+              >
+                {!datum.isLoading && datum.document._updatedAt && (
+                  <Text muted size={1}>
+                    <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
+                  </Text>
+                )}
+              </Flex>
+            ),
+          },
+          {
+            // Edited by — the last editor (person), its own named column so authorship reads distinctly
+            // from live presence. Plain-text header so it aligns with the avatar at the content edge (a
+            // sort button never lands its label on the same edge).
+            id: 'editedBy',
+            sorting: false,
+            width: 170,
+            style: {minWidth: 44, maxWidth: 170},
+            header: ({headerProps}) => (
+              <Flex {...headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
+                <Text muted size={1} textOverflow="ellipsis" weight="medium">
+                  {t('table-header.edited-by')}
+                </Text>
+              </Flex>
+            ),
+            cell: (props) => <EditedByReleaseCell {...props} releaseDocumentId={releaseId} />,
+          },
+        ] satisfies Column<BundleDocumentRow>[])
+      : ([
+          {
+            id: 'document._updatedAt',
+            sorting: true,
+            width: 130,
+            header: (props) => (
+              <Flex {...props.headerProps} paddingY={3} sizing="border">
+                <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
+              </Flex>
+            ),
+            cell: (props) => <UpdatedAtCell {...props} releaseDocumentId={releaseId} />,
+          },
+        ] satisfies Column<BundleDocumentRow>[])),
+
+    {
+      id: 'validation',
+      sorting: false,
+      width: 50,
+      header: ({headerProps}) => (
+        <Flex {...headerProps} paddingY={3} sizing="border">
+          <Headers.BasicHeader text={''} />
+        </Flex>
+      ),
+      cell: ({cellProps, datum}) => {
+        if (datum.isLoading) return null
+
+        const errors = datum.validation.validation.filter(
+          (validation) => validation.level === 'error',
+        )
+        const validationErrorCount = errors.length
+
+        // Deep-link to the first field-level error (fall back to the first error). The
+        // existing params.path -> field-focus plumbing in DocumentPaneProvider scrolls to
+        // and focuses the field when the document opens.
+        const firstError = errors.find((error) => error.path.length > 0) ?? errors[0]
+        const focusPath = firstError ? pathToString(firstError.path) : undefined
+        const intent = getReleaseDocumentIntent({
+          documentId: datum.document._id,
+          documentTypeName: datum.document._type,
+          releaseId,
+          releaseState,
+          documentRevision: datum.document._rev,
+          variantId: getVariantIdFromDocument(datum.document),
+          path: focusPath,
+        })
+        const errorLabel = t(
+          validationErrorCount === 1
+            ? 'document-validation.error_one'
+            : 'document-validation.error_other',
+          {count: validationErrorCount},
+        )
+
+        return (
+          // In the command-lane layout only the Document column grows; keep validation fixed at its
+          // width (flex:1 here would split the free space with Document and misalign the header/body).
+          <Flex
+            {...cellProps}
+            flex={options?.searchInCommandLane ? undefined : 1}
+            padding={1}
+            justify="center"
+            align="center"
+            sizing="border"
+          >
+            {datum.validation.hasError && (
+              <Tooltip
+                portal
+                placement="bottom-end"
+                content={
+                  <Text muted size={1}>
+                    <Flex align={'center'} gap={3} padding={1}>
+                      <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                      {errorLabel}
+                    </Flex>
+                  </Text>
+                }
+              >
+                <Text size={1}>
+                  <IntentLink
+                    intent="edit"
+                    params={intent.params}
+                    searchParams={intent.searchParams}
+                    aria-label={errorLabel}
+                    data-testid={`validation-error-link-${datum.document._id}`}
+                  >
+                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                  </IntentLink>
+                </Text>
+              </Tooltip>
+            )}
+            {/* Positive "ready" / "validating" states are beta-only: production kept an error-only
+              column, so gating them here keeps the non-beta releases table unchanged. */}
+            {variantsEnabled && datum.validation.isValidating && !datum.validation.hasError && (
+              <Tooltip
+                portal
+                placement="bottom-end"
+                content={
+                  <Text muted size={1}>
+                    <Box padding={1}>{t('dashboard.details.metadata.status-validating')}</Box>
+                  </Text>
+                }
+              >
+                <Text muted size={1} data-testid={`validation-validating-${datum.document._id}`}>
+                  <ToneIcon icon={ClockIcon} tone="default" />
+                </Text>
+              </Tooltip>
+            )}
+            {variantsEnabled && !datum.validation.hasError && !datum.validation.isValidating && (
+              <Tooltip
+                portal
+                placement="bottom-end"
+                content={
+                  <Text muted size={1}>
+                    <Box padding={1}>{t('document-validation.valid')}</Box>
+                  </Text>
+                }
+              >
+                <Text muted size={1} data-testid={`validation-valid-${datum.document._id}`}>
+                  <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
+                </Text>
+              </Tooltip>
+            )}
+          </Flex>
+        )
+      },
+    },
+  ]
+}
+
+// Production (non-beta) combined "Edited" cell: last-editor avatar + relative time in one column.
+// The beta layout splits this into separate "Last edited" and "Edited by" columns; this restores the
+// pre-redesign single column for the flag-off releases table.
+function UpdatedAtCell({
+  cellProps,
+  datum,
+  releaseDocumentId,
+}: {
+  cellProps: InjectedTableProps
+  datum: BundleDocumentRow & {isLoading?: boolean}
+  releaseDocumentId: string
+}) {
+  const {document, isLoading} = datum
+  const bundleId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
+  const historyDocumentId =
+    datum.isPending || document?._id?.endsWith('-pending') ? undefined : document?._id
+  const {documentHistory} = useReleaseHistory(historyDocumentId, bundleId, document?._rev)
+
+  return (
+    <Flex
+      {...cellProps}
+      align="center"
+      paddingX={2}
+      paddingY={3}
+      style={{minWidth: 130}}
+      sizing="border"
+    >
+      <Flex align="center" gap={2}>
+        {(isLoading || !documentHistory?.lastEditedBy) && <AvatarSkeleton $size={0} animated />}
+        {!isLoading && document._updatedAt && (
+          <>
+            {documentHistory?.lastEditedBy && (
+              <UserAvatar size={0} user={documentHistory.lastEditedBy} />
+            )}
+            <Text muted size={1}>
+              <RelativeTime time={document._updatedAt} useTemporalPhrase minimal />
+            </Text>
+          </>
+        )}
+      </Flex>
+    </Flex>
+  )
+}
 
 // "Edited by" cell: the last editor's avatar + name, resolved from the release document history.
 // Shares the EditedByAvatar presentation with the variant table so both read the same; presence
