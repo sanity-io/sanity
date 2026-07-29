@@ -438,8 +438,8 @@ importers:
         specifier: 'catalog:'
         version: 19.2.8(react@19.2.8)
       react-rx:
-        specifier: ^4.2.3
-        version: 4.2.3(react@19.2.8)(rxjs@7.8.2)
+        specifier: ^4.2.5
+        version: 4.2.5(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -781,8 +781,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(react@19.2.8)
       react-rx:
-        specifier: ^4.2.3
-        version: 4.2.3(react@19.2.8)(rxjs@7.8.2)
+        specifier: ^4.2.5
+        version: 4.2.5(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1485,8 +1485,8 @@ importers:
         specifier: ^7.3.0
         version: 7.3.0
       react-rx:
-        specifier: ^4.2.3
-        version: 4.2.3(react@19.2.8)(rxjs@7.8.2)
+        specifier: ^4.2.5
+        version: 4.2.5(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -1824,8 +1824,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(react@19.2.8)
       react-rx:
-        specifier: ^4.2.3
-        version: 4.2.3(react@19.2.8)(rxjs@7.8.2)
+        specifier: ^4.2.5
+        version: 4.2.5(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -11925,8 +11925,8 @@ packages:
     peerDependencies:
       react: '>=18.0.0'
 
-  react-rx@4.2.3:
-    resolution: {integrity: sha512-AzuecrOdmoIgVA/wYCCFUnWc1nFtu+6sd++uH03gYAHte/ujYApHPOPEgSlWbKDhMjiXrcYtzv9IJrxwtmurIw==}
+  react-rx@4.2.5:
+    resolution: {integrity: sha512-n1kHm1W81p9FgBygKpw1pkqJAIp2xAJS5Jpbef89UgPxG6twsuQfj5TRnCeTkr5GiA36qgxkMjkmUjNWQT1tVg==}
     peerDependencies:
       react: ^18.3 || >=19.0.0-0
       rxjs: ^7
@@ -18131,7 +18131,7 @@ snapshots:
       '@sanity/ui': 3.5.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
-      react-rx: 4.2.3(react@19.2.8)(rxjs@7.8.2)
+      react-rx: 4.2.5(react@19.2.8)(rxjs@7.8.2)
       rxjs: 7.8.2
       sanity: link:packages/sanity
     transitivePeerDependencies:
@@ -24451,7 +24451,7 @@ snapshots:
       unist-util-filter: 5.0.1
       unist-util-visit-parents: 6.0.2
 
-  react-rx@4.2.3(react@19.2.8)(rxjs@7.8.2):
+  react-rx@4.2.5(react@19.2.8)(rxjs@7.8.2):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.2)
       react: 19.2.8

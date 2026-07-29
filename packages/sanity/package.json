@@ -215,7 +215,7 @@
     "react-i18next": "^17.0.11",
     "react-is": "catalog:",
     "react-refractor": "^4.0.0",
-    "react-rx": "^4.2.3",
+    "react-rx": "^4.2.5",
     "refractor": "^5.0.0",
     "rxjs": "^7.8.2",
     "rxjs-exhaustmap-with-trailing": "^2.1.1",
