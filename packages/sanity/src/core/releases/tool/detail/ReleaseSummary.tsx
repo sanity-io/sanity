@@ -40,7 +40,11 @@ import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDef
 import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
 import {ReleaseBulkActionDialog, type ReleaseBulkAction} from './ReleaseBulkActionDialog'
 import {type ReleaseInspector} from './ReleaseDetail'
-import {type DocumentFilterType, documentMatchesFilter} from './releaseDocumentActions'
+import {
+  type DocumentFilterType,
+  documentMatchesFilter,
+  isDocumentEligibleForUnpublish,
+} from './releaseDocumentActions'
 import {type DocumentInRelease} from './types'
 
 export type DocumentInReleaseDetail = DocumentInRelease & {
@@ -238,6 +242,14 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       .filter((row): row is DocumentInReleaseDetail => Boolean(row))
   }, [bulkAction, filterTabRows])
 
+  const bulkActionDocuments = useMemo(() => {
+    if (!bulkAction) return []
+    if (bulkAction.action === 'unpublish') {
+      return selectedDocuments.filter(isDocumentEligibleForUnpublish)
+    }
+    return selectedDocuments
+  }, [bulkAction, selectedDocuments])
+
   // Multi-select is only meaningful on an active release (matching the per-row actions, which are
   // hidden otherwise). Discard + Unpublish mirror the per-row menu, applied to the whole selection.
   const isActiveRelease = release.state === 'active'
@@ -254,6 +266,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       renderActions: ({selectedKeys, compact, clear}) => {
         const discard = () => setBulkAction({action: 'discard', keys: selectedKeys, clear})
         const unpublish = () => setBulkAction({action: 'unpublish', keys: selectedKeys, clear})
+        const byId = new Map(filterTabRows.map((row) => [row.document._id, row]))
+        const selectedRows = selectedKeys
+          .map((key) => byId.get(key))
+          .filter((row): row is DocumentInReleaseDetail => Boolean(row))
+        const canUnpublishSelection = selectedRows.some(isDocumentEligibleForUnpublish)
 
         if (compact) {
           return (
@@ -278,6 +295,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
                   />
                   <MenuItem
                     data-testid="release-bulk-unpublish"
+                    disabled={!canUnpublishSelection}
                     icon={UnpublishIcon}
                     onClick={unpublish}
                     text={t('dashboard.details.bulk.unpublish')}
@@ -301,6 +319,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             />
             <Button
               data-testid="release-bulk-unpublish"
+              disabled={!canUnpublishSelection}
               icon={UnpublishIcon}
               mode="ghost"
               onClick={unpublish}
@@ -310,7 +329,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         )
       },
     }
-  }, [isActiveRelease, t])
+  }, [isActiveRelease, t, filterTabRows])
 
   const isCardinalityOne = isCardinalityOneRelease(release)
   const hasNoDocuments = !isLoading && documents.length === 0
@@ -453,10 +472,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         releaseId={releaseId}
         idsInRelease={documents.map(({document}) => document._id)}
       />
-      {bulkAction && selectedDocuments.length > 0 && (
+      {bulkAction && bulkActionDocuments.length > 0 && (
         <ReleaseBulkActionDialog
           action={bulkAction.action}
-          documents={selectedDocuments}
+          documents={bulkActionDocuments}
           releaseId={releaseId}
           onClose={() => setBulkAction(null)}
           onSuccess={bulkAction.clear}
