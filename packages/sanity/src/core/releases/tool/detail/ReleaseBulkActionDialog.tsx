@@ -10,10 +10,14 @@ import {useCurrentUser} from '../../../store/user/hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
-import {filterDocumentsWithPairPermission} from './releaseBulkDocumentPermissions'
+import {
+  filterDocumentsForBulkAction,
+  type ReleaseBulkAction,
+  useReleaseBulkActionTargets,
+} from './releaseBulkDocumentPermissions'
 import {type DocumentInRelease} from './types'
 
-export type ReleaseBulkAction = 'discard' | 'unpublish'
+export type {ReleaseBulkAction} from './releaseBulkDocumentPermissions'
 
 /**
  * Confirmation dialog for a bulk action (Discard versions / Unpublish) over the selected release
@@ -43,7 +47,11 @@ export function ReleaseBulkActionDialog({
   const currentUser = useCurrentUser()
   const {discardVersion, unpublishVersion} = useVersionOperations()
   const [isProcessing, setIsProcessing] = useState(false)
-  const count = documents.length
+  const {targets: actionTargets, isLoading: isTargetsLoading} = useReleaseBulkActionTargets(
+    documents,
+    action,
+  )
+  const count = actionTargets.length
 
   const copy =
     action === 'discard'
@@ -63,25 +71,35 @@ export function ReleaseBulkActionDialog({
   const handleConfirm = useCallback(async () => {
     setIsProcessing(true)
 
-    let targets = documents
+    const targets = await filterDocumentsForBulkAction(documents, action, {
+      client,
+      schema,
+      grantsStore,
+      userId: currentUser?.id,
+    })
 
-    if (action === 'unpublish' || action === 'discard') {
-      targets = await filterDocumentsWithPairPermission(
-        documents,
-        action === 'discard' ? 'discardVersion' : 'unpublish',
-        {
-          client,
-          schema,
-          grantsStore,
-          userId: currentUser?.id,
-        },
-      )
-    }
+    const skipped = documents.length - targets.length
 
     if (targets.length === 0) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title:
+          action === 'discard'
+            ? t('dashboard.details.bulk.discard-toast.no-permission')
+            : t('dashboard.details.bulk.unpublish-toast.no-permission'),
+      })
       setIsProcessing(false)
       onClose()
       return
+    }
+
+    if (skipped > 0) {
+      toast.push({
+        closable: true,
+        status: 'warning',
+        title: t('dashboard.details.bulk.toast.documents-skipped', {count: skipped}),
+      })
     }
 
     const results = await Promise.allSettled(
@@ -145,7 +163,7 @@ export function ReleaseBulkActionDialog({
           tone: copy.tone,
           onClick: handleConfirm,
           loading: isProcessing,
-          disabled: isProcessing,
+          disabled: isProcessing || isTargetsLoading || count === 0,
         },
       }}
       header={copy.header}

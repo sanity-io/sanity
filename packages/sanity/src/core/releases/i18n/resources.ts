@@ -194,12 +194,24 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'dashboard.details.bulk.discard-toast.success_other': 'Discarded {{count}} versions',
   /** Error toast when some bulk discards fail */
   'dashboard.details.bulk.discard-toast.error': 'Some versions could not be discarded',
+  /** Error toast when the user lacks permission to discard any selected documents */
+  'dashboard.details.bulk.discard-toast.no-permission':
+    'You do not have permission to discard the selected document versions',
   /** Success toast after a bulk unpublish (singular) */
   'dashboard.details.bulk.unpublish-toast.success_one': 'Marked 1 document to unpublish',
   /** Success toast after a bulk unpublish (plural) */
   'dashboard.details.bulk.unpublish-toast.success_other': 'Marked {{count}} documents to unpublish',
   /** Error toast when some bulk unpublishes fail */
   'dashboard.details.bulk.unpublish-toast.error': 'Some documents could not be unpublished',
+  /** Error toast when the user lacks permission to unpublish any selected documents */
+  'dashboard.details.bulk.unpublish-toast.no-permission':
+    'You do not have permission to unpublish the selected documents',
+  /** Warning toast when one selected document is skipped during a bulk action */
+  'dashboard.details.bulk.toast.documents-skipped_one':
+    '1 selected document was skipped because you cannot act on it',
+  /** Warning toast when some selected documents are skipped during a bulk action (plural) */
+  'dashboard.details.bulk.toast.documents-skipped_other':
+    '{{count}} selected documents were skipped because you cannot act on them',
 
   /** Header for deleting a release dialog */
   'delete-dialog.confirm-delete.header': 'Are you sure you want to delete this release?',
