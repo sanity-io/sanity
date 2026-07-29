@@ -95,6 +95,12 @@ const variantsLocaleStrings = {
   'overview.bulk.delete-toast.success_other': 'Deleted {{count}} variant definitions',
   /** Toast shown when some variant definitions could not be bulk deleted. */
   'overview.bulk.delete-toast.error': 'Some variant definitions could not be deleted',
+  /** Toast when a re-check at confirm found definitions that gained documents (singular). */
+  'overview.bulk.delete-toast.recount-dropped_one':
+    '{{count}} definition now contains documents and was not deleted.',
+  /** Toast when a re-check at confirm found definitions that gained documents (plural). */
+  'overview.bulk.delete-toast.recount-dropped_other':
+    '{{count}} definitions now contain documents and were not deleted.',
   /** Clears the selected values for a single condition filter dropdown. */
   'overview.filter.clear': 'Clear',
   /** Clears every active condition filter across all dimensions. */

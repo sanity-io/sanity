@@ -19,6 +19,13 @@ const toastMock = vi.hoisted(() => ({
   push: vi.fn(),
 }))
 
+// The dialog re-fetches authoritative document counts at confirm (interim guard, SAPT-48). Mock the
+// client so tests control that fresh count; default is an empty map, i.e. every deletable definition
+// re-checks as still empty (matches the pre-guard behavior).
+const clientMock = vi.hoisted(() => ({
+  fetch: vi.fn(),
+}))
+
 vi.mock('@sanity/ui', async (importOriginal) => ({
   ...(await importOriginal()),
   useToast: vi.fn(() => toastMock),
@@ -28,6 +35,10 @@ vi.mock('../../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+vi.mock('../../../../hooks/useClient', () => ({
+  useClient: vi.fn(() => clientMock),
+}))
+
 const emptyVariant: TableVariant = {...variantAlphaAudience, documentCount: 0}
 const variantWithDocs: TableVariant = {...variantNorwegianMarket, documentCount: 2}
 
@@ -35,6 +46,8 @@ describe('VariantBulkDeleteDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     variantOperationsMock.deleteVariant.mockResolvedValue(undefined)
+    // Default: the confirm-time re-check finds every definition still empty.
+    clientMock.fetch.mockResolvedValue({})
   })
 
   const renderDialog = async (
@@ -127,6 +140,25 @@ describe('VariantBulkDeleteDialog', () => {
       expect(variantOperationsMock.deleteVariant).toHaveBeenCalledTimes(1)
     })
     expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(emptyVariant._id)
+  })
+
+  it('skips a definition whose confirm-time re-check finds it now has documents', async () => {
+    const user = userEvent.setup()
+    // Shown as empty at render, but the authoritative re-check at confirm reports it now holds
+    // documents (listener lag). It must be skipped, not deleted, and the user warned.
+    clientMock.fetch.mockResolvedValue({[emptyVariant._id]: 3})
+    const onClose = vi.fn()
+    const onDeleted = vi.fn()
+    await renderDialog([emptyVariant], {onClose, onDeleted})
+
+    await user.click(screen.getByTestId('confirm-button'))
+
+    await waitFor(() => {
+      expect(toastMock.push).toHaveBeenCalledWith(expect.objectContaining({status: 'warning'}))
+    })
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
+    expect(onDeleted).not.toHaveBeenCalled()
+    expect(onClose).toHaveBeenCalled()
   })
 
   it('does not claim unresolved document counts contain documents', async () => {

@@ -2,8 +2,11 @@ import {Box, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {useClient} from '../../../hooks/useClient'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {buildVariantsDocumentCountsQuery} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../store/constants'
 import {useVariantOperations} from '../../store/useVariantOperations'
 import {getVariantTitle} from '../util'
 import {type TableVariant} from './VariantsOverviewColumnDefs'
@@ -31,6 +34,7 @@ export function VariantBulkDeleteDialog({
   const {t} = useTranslation(variantsLocaleNamespace)
   const toast = useToast()
   const {deleteVariant} = useVariantOperations()
+  const client = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
   const [isProcessing, setIsProcessing] = useState(false)
   // Synchronous re-entry guard (the confirm button only disables on the next render).
   const isProcessingRef = useRef(false)
@@ -77,11 +81,37 @@ export function VariantBulkDeleteDialog({
     setIsProcessing(true)
 
     try {
+      // Interim safety re-check (SAPT-48): `documentCount` driving `deletable` comes from a lagging
+      // listener, so re-fetch authoritative counts right before deleting and drop any definition
+      // that now holds documents. Best-effort only — NOT the real guard: there is still a race
+      // between this fetch and the delete, and no RBAC. The delete action must enforce emptiness +
+      // permission server-side (SAPT-48). If the re-check itself fails, we abort rather than delete.
+      const freshCounts = await client.fetch<Record<string, number>>(
+        buildVariantsDocumentCountsQuery(deletable.map((variant) => variant._id)).fetch,
+        {},
+        {perspective: 'raw', tag: 'variants-bulk-delete.recount'},
+      )
+      const confirmedEmpty = deletable.filter((variant) => (freshCounts[variant._id] ?? 0) === 0)
+      const droppedNonEmpty = deletable.length - confirmedEmpty.length
+
+      if (droppedNonEmpty > 0) {
+        toast.push({
+          closable: true,
+          status: 'warning',
+          title: t('overview.bulk.delete-toast.recount-dropped', {count: droppedNonEmpty}),
+        })
+      }
+
+      if (confirmedEmpty.length === 0) {
+        onClose()
+        return
+      }
+
       const results = await Promise.allSettled(
-        deletable.map((variant) => deleteVariant(variant._id)),
+        confirmedEmpty.map((variant) => deleteVariant(variant._id)),
       )
       const failed = results.filter((result) => result.status === 'rejected').length
-      const succeeded = deletableCount - failed
+      const succeeded = confirmedEmpty.length - failed
 
       if (succeeded > 0) {
         toast.push({
@@ -117,7 +147,7 @@ export function VariantBulkDeleteDialog({
       isProcessingRef.current = false
       setIsProcessing(false)
     }
-  }, [deletable, deletableCount, deleteVariant, onClose, onDeleted, t, toast])
+  }, [client, deletable, deletableCount, deleteVariant, onClose, onDeleted, t, toast])
 
   return (
     <Dialog
