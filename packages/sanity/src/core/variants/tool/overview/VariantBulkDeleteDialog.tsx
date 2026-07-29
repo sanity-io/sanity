@@ -72,8 +72,10 @@ export function VariantBulkDeleteDialog({
     }
 
     setIsProcessing(false)
-    onDeleted()
-    onClose()
+    if (succeeded > 0) {
+      onDeleted()
+      onClose()
+    }
   }, [deletable, deletableCount, deleteVariant, onClose, onDeleted, t, toast])
 
   return (
