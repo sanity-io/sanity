@@ -117,6 +117,13 @@ export function ReleaseBulkActionDialog({
     }
 
     if (targets.length === 0) {
+      if (action === 'unpublish') {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('dashboard.details.bulk.unpublish-toast.no-permission'),
+        })
+      }
       setIsProcessing(false)
       onClose()
       return

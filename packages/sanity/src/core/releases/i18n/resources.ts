@@ -199,6 +199,9 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'dashboard.details.bulk.unpublish-toast.success_other': 'Marked {{count}} documents to unpublish',
   /** Error toast when some bulk unpublishes fail */
   'dashboard.details.bulk.unpublish-toast.error': 'Some documents could not be unpublished',
+  /** Error toast when the user lacks permission to unpublish any selected documents */
+  'dashboard.details.bulk.unpublish-toast.no-permission':
+    'You do not have permission to unpublish the selected documents',
 
   /** Header for deleting a release dialog */
   'delete-dialog.confirm-delete.header': 'Are you sure you want to delete this release?',
