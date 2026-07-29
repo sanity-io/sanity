@@ -7,7 +7,7 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {type SystemVariant} from '../../../types'
 import {type DocumentInVariantGroup} from '../types'
-import {VariantDocumentsTable} from '../VariantDocumentsTable'
+import {getCreateAndOpenSearchParams, VariantDocumentsTable} from '../VariantDocumentsTable'
 
 vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
   SanityDefaultPreview: vi.fn(({isPlaceholder, title, subtitle}) => (
@@ -385,5 +385,32 @@ describe('VariantDocumentsTable', () => {
     await waitFor(() => {
       expect(screen.getAllByTestId('table-row')).toHaveLength(1)
     })
+  })
+})
+
+describe('getCreateAndOpenSearchParams (create-and-open navigation)', () => {
+  it('always carries the variant scope and a non-sticky origin marker', () => {
+    const params = getCreateAndOpenSearchParams('drafts', 'summer')
+
+    expect(params).toContainEqual(['variant', 'summer'])
+    expect(params).toContainEqual(['variantOrigin', 'summer'])
+  })
+
+  it('omits an explicit perspective param for the default drafts perspective', () => {
+    const params = getCreateAndOpenSearchParams('drafts', 'summer')
+
+    expect(params.some(([key]) => key === 'perspective')).toBe(false)
+  })
+
+  it('carries the published perspective when authored against published', () => {
+    const params = getCreateAndOpenSearchParams('published', 'summer')
+
+    expect(params).toContainEqual(['perspective', 'published'])
+  })
+
+  it('carries the release id as the perspective for a release-scoped variant', () => {
+    const params = getCreateAndOpenSearchParams('rSpringSale', 'summer')
+
+    expect(params).toContainEqual(['perspective', 'rSpringSale'])
   })
 })

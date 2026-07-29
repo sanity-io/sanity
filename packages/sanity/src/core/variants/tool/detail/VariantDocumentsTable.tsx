@@ -5,11 +5,13 @@ import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {Flex, Menu, MenuDivider, Stack, Text, useToast} from '@sanity/ui'
 import {Fragment, useCallback, useMemo, useState} from 'react'
+import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type TargetPerspective} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {
@@ -18,6 +20,7 @@ import {
 } from '../../../releases/tool/components/Table/DocumentTable'
 import {type Column} from '../../../releases/tool/components/Table/types'
 import {searchDocumentRelease} from '../../../releases/tool/detail/documentTable/searchDocumentRelease'
+import {getBundleIdFromPerspective} from '../../documents/getBundleIdFromPerspective'
 import {useVariantDocumentOperations} from '../../hooks/useVariantDocumentOperations'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
@@ -38,6 +41,29 @@ function searchVariantDocument(row: DocumentInVariantGroup, searchTerm: string):
   return searchDocumentRelease(row.document, searchTerm)
 }
 
+// Search params for the edit intent when opening a freshly-created variant document, so it lands in
+// the same variant + perspective it was created in — mirrors the row IntentLink navigation in
+// VariantDocumentPreview. `variant` and `perspective` are sticky params, but a raw navigateUrl does
+// not auto-merge sticky state, so both are passed explicitly. `variantOrigin` is a *non-sticky*
+// marker that Phase 2 (the return-to-variant affordance in the document pane) reads; being
+// non-sticky, it clears itself on the next navigation — exactly the persistence we want.
+export function getCreateAndOpenSearchParams(
+  selectedPerspective: TargetPerspective,
+  variantId: string,
+): Array<[string, string]> {
+  const params: Array<[string, string]> = [
+    ['variant', variantId],
+    ['variantOrigin', variantId],
+  ]
+  const bundleId = getBundleIdFromPerspective(selectedPerspective)
+  // 'drafts' is the default perspective, so like the row links we omit an explicit param for it;
+  // 'published' and release-scoped versions carry the perspective they were authored into.
+  if (bundleId !== 'drafts') {
+    params.push(['perspective', bundleId])
+  }
+  return params
+}
+
 interface PendingBulkAction {
   action: VariantBulkAction
   groups: DocumentInVariantGroup[]
@@ -56,6 +82,7 @@ export function VariantDocumentsTable({
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const toast = useToast()
+  const router = useRouter()
   const {selectedPerspective} = usePerspective()
   const {createVariantDocument, createNewVariantDocument} = useVariantDocumentOperations()
   const variantId = getVariantId(variant._id)
@@ -123,18 +150,28 @@ export function VariantDocumentsTable({
   const handleCreateNew = useCallback(
     async (type: string) => {
       try {
-        await createNewVariantDocument({type, variant, selectedPerspective})
+        const {publishedId} = await createNewVariantDocument({type, variant, selectedPerspective})
         toast.push({
           closable: true,
           status: 'success',
           title: t('detail.add-document.toast.success'),
         })
+        // A freshly-created document is empty and must be authored, so unlike personalizing an
+        // existing document we take the author straight into its editor — scoped to this variant and
+        // carrying the origin so a return-to-variant affordance can be offered there (Phase 2).
         setAddDocumentOpen(false)
+        router.navigateUrl({
+          path: router.resolveIntentLink(
+            'edit',
+            {id: publishedId, type},
+            getCreateAndOpenSearchParams(selectedPerspective, variantId),
+          ),
+        })
       } catch {
         toast.push({closable: true, status: 'error', title: t('detail.add-document.toast.error')})
       }
     },
-    [createNewVariantDocument, selectedPerspective, t, toast, variant],
+    [createNewVariantDocument, router, selectedPerspective, t, toast, variant, variantId],
   )
 
   // If the active release lane disappears (e.g. its documents move), fall back to "All".
