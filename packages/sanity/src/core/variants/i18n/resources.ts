@@ -163,6 +163,8 @@ const variantsLocaleStrings = {
   'detail.documents.table.validation.error_other': '{{count}} validation errors',
   /** Validation status tooltip when a document has no validation errors (the "ready" state). */
   'detail.documents.table.validation.valid': 'No validation errors',
+  /** Validation status tooltip while validation is still in progress. */
+  'detail.documents.table.validation.validating': 'Validating',
   /** Accessible label for the command-lane select-all checkbox. */
   'detail.documents.bulk.select-all': 'Select all documents',
   /** Accessible label for a per-row selection checkbox. */
