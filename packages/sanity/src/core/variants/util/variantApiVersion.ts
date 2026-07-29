@@ -7,7 +7,7 @@ import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../store/constants'
  * over any other version the caller would otherwise use (e.g. the releases version for stacked
  * perspectives).
  *
- * Intended to be used with {@link versionedClient}:
+ * Intended to be used with `versionedClient`:
  *
  * ```ts
  * versionedClient(client, variantApiVersion(variant, releaseApiVersion))

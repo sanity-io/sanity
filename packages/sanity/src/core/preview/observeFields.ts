@@ -260,7 +260,7 @@ export function createObserveFields(options: {
           // Variant documents are `versions.<opaqueScopeId>.<groupId>`, and scope ids never appear
           // in the perspective stack, so the stack check can't recognise them. Under a variant
           // selection, any mutation within the document group is treated as relevant.
-          return variant ? true : idMatchesPerspective(perspective, event.documentId)
+          return Boolean(variant) || idMatchesPerspective(perspective, event.documentId)
         }
         // if not using perspective, refetch previews for the document that was actually changed
         return event.documentId === documentId
