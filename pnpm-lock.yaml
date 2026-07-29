@@ -728,7 +728,7 @@ importers:
         version: 4.1.2(@sanity/client@7.25.0)
       '@sanity/react-loader':
         specifier: ^2.1.2
-        version: 2.1.2(@sanity/types@packages+@sanity+types)(react@19.2.8)(typescript@6.0.3)
+        version: 2.1.2(@sanity/types@packages+@sanity+types)(react@19.2.8)(typescript@7.0.2)
       '@sanity/themer':
         specifier: ^0.2.0
         version: 0.2.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4)
@@ -749,7 +749,7 @@ importers:
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
         specifier: ^5.7.3
-        version: 5.7.3(@emotion/is-prop-valid@1.4.0)(@sanity/client@7.25.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)(typescript@6.0.3)
+        version: 5.7.3(@emotion/is-prop-valid@1.4.0)(@sanity/client@7.25.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)(typescript@7.0.2)
       '@turf/helpers':
         specifier: ^7.3.5
         version: 7.3.5
@@ -822,7 +822,7 @@ importers:
         version: 1.21.2(babel-plugin-macros@3.1.0)
       '@vitejs/devtools':
         specifier: ^0.4.8
-        version: 0.4.8(@modelcontextprotocol/sdk@1.29.0)(crossws@0.4.10)(srvx@0.11.22)(typescript@6.0.3)(valibot@1.4.2)(vite@8.1.5)
+        version: 0.4.8(@modelcontextprotocol/sdk@1.29.0)(crossws@0.4.10)(srvx@0.11.22)(typescript@7.0.2)(valibot@1.4.2)(vite@8.1.5)
       babel-plugin-react-compiler:
         specifier: 'catalog:'
         version: 1.0.0
@@ -1122,8 +1122,8 @@ importers:
         specifier: ^28.0.0
         version: 28.0.0
       typescript:
-        specifier: 6.0.3
-        version: 6.0.3
+        specifier: 7.0.2
+        version: 7.0.2
       vite:
         specifier: 'catalog:'
         version: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.8)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
@@ -1180,13 +1180,13 @@ importers:
         version: link:../tsconfig
       '@sanity/tsdown-config':
         specifier: 'catalog:'
-        version: 0.21.2(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@6.0.3)(vite@8.1.5)
+        version: 0.21.2(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.1.5)
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.3
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@6.0.3)
+        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@7.0.2)
 
   packages/@repo/utils:
     dependencies:
@@ -1221,7 +1221,7 @@ importers:
         version: link:../../@repo/tsdown.config
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@6.0.3)
+        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@7.0.2)
 
   packages/@sanity/mutator:
     dependencies:
@@ -1261,7 +1261,7 @@ importers:
         version: 24.13.3
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@6.0.3)
+        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@7.0.2)
       vite:
         specifier: 'catalog:'
         version: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.8)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
@@ -1325,7 +1325,7 @@ importers:
         version: 19.2.17
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@6.0.3)
+        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@7.0.2)
       vite:
         specifier: 'catalog:'
         version: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.8)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
@@ -1362,7 +1362,7 @@ importers:
         version: 19.2.8
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@6.0.3)
+        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@7.0.2)
       vite:
         specifier: 'catalog:'
         version: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.8)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
@@ -1405,7 +1405,7 @@ importers:
         version: 24.13.3
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@6.0.3)
+        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@7.0.2)
       vite:
         specifier: 'catalog:'
         version: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.8)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
@@ -1544,7 +1544,7 @@ importers:
         version: 6.4.4(react-dom@19.2.8)(react@19.2.8)
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@6.0.3)
+        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@7.0.2)
       vite:
         specifier: 'catalog:'
         version: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.8)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
@@ -1636,7 +1636,7 @@ importers:
         version: 1.0.0
       '@sanity/cli':
         specifier: ^7.14.0
-        version: 7.14.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(oxfmt@0.61.0)(rolldown@1.2.0)(supports-color@8.1.1)(typescript@6.0.3)(xstate@5.32.5)
+        version: 7.14.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(oxfmt@0.61.0)(rolldown@1.2.0)(supports-color@8.1.1)(typescript@7.0.2)(xstate@5.32.5)
       '@sanity/client':
         specifier: 'catalog:'
         version: 7.25.0
@@ -1759,7 +1759,7 @@ importers:
         version: 5.3.0
       i18next:
         specifier: ^26.3.6
-        version: 26.3.6(typescript@6.0.3)
+        version: 26.3.6(typescript@7.0.2)
       is-hotkey-esm:
         specifier: ^1.0.0
         version: 1.0.0
@@ -1816,7 +1816,7 @@ importers:
         version: 2.13.7(@types/react@19.2.17)(react@19.2.8)
       react-i18next:
         specifier: ^17.0.11
-        version: 17.0.11(i18next@26.3.6)(react-dom@19.2.8)(react@19.2.8)(typescript@6.0.3)
+        version: 17.0.11(i18next@26.3.6)(react-dom@19.2.8)(react@19.2.8)(typescript@7.0.2)
       react-is:
         specifier: 'catalog:'
         version: 19.2.8
@@ -1901,7 +1901,7 @@ importers:
         version: 0.2.7(babel-plugin-macros@3.1.0)(vite@8.1.5)
       '@sanity/visual-editing-csm':
         specifier: ^3.0.13
-        version: 3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
+        version: 3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
       '@testing-library/jest-dom':
         specifier: ^6.9.1
         version: 6.9.1
@@ -1985,7 +1985,7 @@ importers:
         version: 6.4.4(react-dom@19.2.8)(react@19.2.8)
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@6.0.3)
+        version: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@7.0.2)
       tsx:
         specifier: ^4.23.1
         version: 4.23.1
@@ -7119,6 +7119,126 @@ packages:
   '@typescript/native-preview@7.0.0-dev.20260421.2':
     resolution: {integrity: sha512-CmajHI25HpVWE9R1XFoxr+cphJPxoYD3eFioQtAvXYkMFKnLdICMS9pXre9Pybizb75ejRxjKD5/CVG055rEIg==}
     hasBin: true
+
+  '@typescript/typescript-aix-ppc64@7.0.2':
+    resolution: {integrity: sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==}
+    engines: {node: '>=16.20.0'}
+    cpu: [ppc64]
+    os: [aix]
+
+  '@typescript/typescript-darwin-arm64@7.0.2':
+    resolution: {integrity: sha512-gowzar9MwS/aRWp6f3a4KUqzRjAZjOsmGNCM6LcTgXum+dBfgsBVMN+AgvOCCbguXyick6LJhpBszxMebJ8syA==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@typescript/typescript-darwin-x64@7.0.2':
+    resolution: {integrity: sha512-SZ9xZInqApNlNGc9s0W1VSsktYSOe9cFqNOIqmN1Gs8SmkjKZYFt017G4VwPxASInODuAdbTW7sXiFUf893RgA==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@typescript/typescript-freebsd-arm64@7.0.2':
+    resolution: {integrity: sha512-W5NH4y/J0plIIS5b2xvTEkU7JFxyqdMAOgf+Ilhl0vHQXKO5dZoxd+C/jEtq56c4F3wk71RB4BMRQ2XdI+bwYQ==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm64]
+    os: [freebsd]
+
+  '@typescript/typescript-freebsd-x64@7.0.2':
+    resolution: {integrity: sha512-UMGDx5sTpzNw3WiPebH7l90IWfJggEd+egHt/q6p7/Cm3zqoV7VxkGXt+3DxPIw8CcmvAB0j3sVVfbhX+M4Tpw==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [freebsd]
+
+  '@typescript/typescript-linux-arm64@7.0.2':
+    resolution: {integrity: sha512-Qh4eU4/y3yDjnfjjyPYihMj5/ODIlmt+Bzu17OI+fiSRDW57QmU5SiN63exPRNJPKUzcc1INa1NXdrJ+MqHjUQ==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@typescript/typescript-linux-arm@7.0.2':
+    resolution: {integrity: sha512-gffT3xPz9sR7j/YJExkyPntrI0P2EP9XbOyWzth2/Gs0RstK+90RBcO0ncXoXy/beYll1SXw846Nf2zdnEz0QQ==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm]
+    os: [linux]
+
+  '@typescript/typescript-linux-loong64@7.0.2':
+    resolution: {integrity: sha512-uEHck9i8hoAzXPiYRib1O7miOnz23SxIeVl6F4LXox+qov1K35jHcEW6VHKvZI+pyvl7fZEP4MCU5LYvIq1GuQ==}
+    engines: {node: '>=16.20.0'}
+    cpu: [loong64]
+    os: [linux]
+
+  '@typescript/typescript-linux-mips64el@7.0.2':
+    resolution: {integrity: sha512-R4KvAMnE43W5Qeqb0Ly56O3mWMWIAgsMyz36DCaycd5nbg/9kzm0liw3JocfRqyJY0KPmzFjbswozXyW0DnIYA==}
+    engines: {node: '>=16.20.0'}
+    cpu: [mips64el]
+    os: [linux]
+
+  '@typescript/typescript-linux-ppc64@7.0.2':
+    resolution: {integrity: sha512-DORx5b3sd/4S7eayxm4FQv+A7CrkUIGRaHiwI8oiHTAI1fAPWhF4J0vAlkC8biAlHSVVwxMQ3tjZ2/DVbnQiiA==}
+    engines: {node: '>=16.20.0'}
+    cpu: [ppc64]
+    os: [linux]
+
+  '@typescript/typescript-linux-riscv64@7.0.2':
+    resolution: {integrity: sha512-wf0jqEDOjrPRnKwYRyyJDRo11KMbvMFrU+q4zqKyChODBzvlkbhNQfKvLxQCcwTpdDaXSHZTVuh0JoCrKCUMHQ==}
+    engines: {node: '>=16.20.0'}
+    cpu: [riscv64]
+    os: [linux]
+
+  '@typescript/typescript-linux-s390x@7.0.2':
+    resolution: {integrity: sha512-IkwJc3L7yhytWd/ewjyxNDfOmswCm9GWMJT/ue/dU4aZNbwZeYAetq42VyLmsmSjvoX7z74X6ZaYCtzAr0EuGw==}
+    engines: {node: '>=16.20.0'}
+    cpu: [s390x]
+    os: [linux]
+
+  '@typescript/typescript-linux-x64@7.0.2':
+    resolution: {integrity: sha512-EYdf2cNg7rgCWJnxCdJ+F3V39O8ihb37eHAu1LK8oAFizgTQbPOK7zHHXbPt8rX24COqODXeI3sIf0fCXG7H/A==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@typescript/typescript-netbsd-arm64@7.0.2':
+    resolution: {integrity: sha512-+polYF4MF04aPpO5FTkHran9yUQDSXqy5GiSDKpsll5jy3l3+g9QLhpf39T+ePtefhXLOGrLl0QIjkQP6VnelA==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm64]
+    os: [netbsd]
+
+  '@typescript/typescript-netbsd-x64@7.0.2':
+    resolution: {integrity: sha512-8YIT0EHM/3dq10ZOVF/A7pc/YSMtbcecct4rWtexrnSCHOPcpC2KTLXfTCR6vDpnSiY12heNb1GiN/wu+T/FyA==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [netbsd]
+
+  '@typescript/typescript-openbsd-arm64@7.0.2':
+    resolution: {integrity: sha512-APT8+ClYnuYm1u9+kgGXoMj2VzWzcymwh2gNSQVySHfkRDGOTVkoWLjCmOQSaO+PoqQ57B0flRp9SA+7GnnkzQ==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm64]
+    os: [openbsd]
+
+  '@typescript/typescript-openbsd-x64@7.0.2':
+    resolution: {integrity: sha512-yX7s+Q0Dln0Dt9tEzZsAjXXR/+ytBM7AlglaqyeMPxQszJ1JhlJdZ6jLA+IzldHtflX81em7lDao1xXu+aRRkg==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [openbsd]
+
+  '@typescript/typescript-sunos-x64@7.0.2':
+    resolution: {integrity: sha512-dLJDGaLZ1D4HPQn62u1n8mBDkJREwMsAkCdkwd4Ieqw+x3TUyTsqY0YiBCtE6H6OzzgGk3iuZ3vFWRS+E8/d1g==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [sunos]
+
+  '@typescript/typescript-win32-arm64@7.0.2':
+    resolution: {integrity: sha512-Gyl1Vy6OsWesLzmq+EP0Fb7b4Nid5232AvcA2SFcdYreldpNtYFFofPjnt62y9hQy7VTaZp65ICJjuAQRaVcIQ==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@typescript/typescript-win32-x64@7.0.2':
+    resolution: {integrity: sha512-0BQ3HkAHHlKLSp1qRvf3SUhGpGsDuhB/jgFw75guyqbxJqEaS0Cw/VFO8i2nHglJUzQCRtMMR/IBAKE3ETMC4g==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [win32]
 
   '@typespec/ts-http-runtime@0.3.7':
     resolution: {integrity: sha512-JVUD8X2tfDMWjcjLs4yVxxVrS8yR5vnh386GAXT9Qj79nBxxXSaHFQZg5FweLmT8HlPQ3kii6noUB+Z9RN7DvQ==}
@@ -12951,9 +13071,9 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typescript@6.0.3:
-    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
-    engines: {node: '>=14.17'}
+  typescript@7.0.2:
+    resolution: {integrity: sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA==}
+    engines: {node: '>=16.20.0'}
     hasBin: true
 
   uc.micro@2.1.0:
@@ -15319,7 +15439,7 @@ snapshots:
     dependencies:
       birpc: 4.0.0
       destr: 2.0.5
-      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@6.0.3)
+      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@7.0.2)
       nostics: 1.2.0
       pathe: 2.0.3
       perfect-debounce: 2.1.0
@@ -15329,7 +15449,7 @@ snapshots:
   '@devframes/json-render@0.7.14(@devframes/hub@0.7.14)(devframe@0.7.14)':
     dependencies:
       '@json-render/core': 0.19.0(zod@4.4.3)
-      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@6.0.3)
+      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@7.0.2)
       nostics: 1.2.0
       zod: 4.4.3
     optionalDependencies:
@@ -15339,7 +15459,7 @@ snapshots:
     dependencies:
       '@valibot/to-json-schema': 1.7.1(valibot@1.4.2)
       cac: 7.0.0
-      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@6.0.3)
+      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@7.0.2)
       nostics: 1.2.0
     optionalDependencies:
       vite: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.8)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
@@ -15350,18 +15470,18 @@ snapshots:
     dependencies:
       '@devframes/hub': 0.7.14(devframe@0.7.14)
       cac: 7.0.0
-      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@6.0.3)
+      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@7.0.2)
       nostics: 1.2.0
     optionalDependencies:
       vite: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.8)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
 
-  '@devframes/plugin-terminals@0.7.14(devframe@0.7.14)(typescript@6.0.3)(vite@8.1.5)':
+  '@devframes/plugin-terminals@0.7.14(devframe@0.7.14)(typescript@7.0.2)(vite@8.1.5)':
     dependencies:
       cac: 7.0.0
-      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@6.0.3)
+      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@7.0.2)
       nostics: 1.2.0
       pathe: 2.0.3
-      valibot: 1.4.2(typescript@6.0.3)
+      valibot: 1.4.2(typescript@7.0.2)
       zigpty: 0.2.1
     optionalDependencies:
       vite: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.8)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
@@ -16386,7 +16506,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@module-federation/dts-plugin@2.8.0(typescript@6.0.3)':
+  '@module-federation/dts-plugin@2.8.0(typescript@7.0.2)':
     dependencies:
       '@module-federation/error-codes': 2.8.0
       '@module-federation/managers': 2.8.0
@@ -16394,7 +16514,7 @@ snapshots:
       '@module-federation/third-party-dts-extractor': 2.8.0
       adm-zip: 0.5.10
       isomorphic-ws: 5.0.0(ws@8.21.0)
-      typescript: 6.0.3
+      typescript: 7.0.2
       undici: 7.28.0
       ws: 8.21.0
     transitivePeerDependencies:
@@ -16422,9 +16542,9 @@ snapshots:
 
   '@module-federation/third-party-dts-extractor@2.8.0': {}
 
-  '@module-federation/vite@1.19.1(typescript@6.0.3)(vite@8.1.5)':
+  '@module-federation/vite@1.19.1(typescript@7.0.2)(vite@8.1.5)':
     dependencies:
-      '@module-federation/dts-plugin': 2.8.0(typescript@6.0.3)
+      '@module-federation/dts-plugin': 2.8.0(typescript@7.0.2)
       '@module-federation/runtime': 2.8.0
       '@module-federation/sdk': 2.8.0
       vite: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.8)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
@@ -17720,7 +17840,7 @@ snapshots:
 
   '@sanity/browserslist-config@1.0.5': {}
 
-  '@sanity/cli-build@5.0.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@6.0.3)(yaml@2.9.0)':
+  '@sanity/cli-build@5.0.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)':
     dependencies:
       '@oclif/core': 4.11.14
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.0)(vite@8.1.5)
@@ -17729,7 +17849,7 @@ snapshots:
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench-cli': 1.7.2(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@6.0.3)(yaml@2.9.0)
+      '@sanity/workbench-cli': 1.7.2(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)
       '@vitejs/plugin-react': 6.0.4(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.1.5)
       chokidar: 5.0.0
       cjs-module-lexer: 2.2.0
@@ -17812,12 +17932,12 @@ snapshots:
       - terser
       - yaml
 
-  '@sanity/cli@7.14.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(oxfmt@0.61.0)(rolldown@1.2.0)(supports-color@8.1.1)(typescript@6.0.3)(xstate@5.32.5)':
+  '@sanity/cli@7.14.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(oxfmt@0.61.0)(rolldown@1.2.0)(supports-color@8.1.1)(typescript@7.0.2)(xstate@5.32.5)':
     dependencies:
       '@oclif/core': 4.11.14
       '@oclif/plugin-help': 6.2.53
       '@oclif/plugin-not-found': 3.2.88(@types/node@24.13.3)
-      '@sanity/cli-build': 5.0.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@6.0.3)(yaml@2.9.0)
+      '@sanity/cli-build': 5.0.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)
       '@sanity/cli-core': 2.6.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/client': 7.25.0
       '@sanity/codegen': 7.0.3(@oclif/core@4.11.14)(@sanity/cli-core@2.6.0)(oxfmt@0.61.0)(react@19.2.8)(supports-color@8.1.1)
@@ -17832,7 +17952,7 @@ snapshots:
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/template-validator': 3.1.0
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench-cli': 1.7.2(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@6.0.3)(yaml@2.9.0)
+      '@sanity/workbench-cli': 1.7.2(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)
       '@sanity/worker-channels': 2.0.0
       '@vercel/frameworks': 3.29.0
       chokidar: 5.0.0
@@ -18000,12 +18120,12 @@ snapshots:
       - '@sanity/types'
       - typescript
 
-  '@sanity/core-loader@2.1.2(@sanity/types@packages+@sanity+types)(typescript@6.0.3)':
+  '@sanity/core-loader@2.1.2(@sanity/types@packages+@sanity+types)(typescript@7.0.2)':
     dependencies:
       '@sanity/client': 7.25.0
       '@sanity/comlink': 4.0.1
       '@sanity/presentation-comlink': 2.2.0(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)
-      '@sanity/visual-editing-csm': 3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
+      '@sanity/visual-editing-csm': 3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
     transitivePeerDependencies:
       - '@sanity/types'
       - typescript
@@ -18214,11 +18334,11 @@ snapshots:
       - '@sanity/types'
       - typescript
 
-  '@sanity/react-loader@2.1.2(@sanity/types@packages+@sanity+types)(react@19.2.8)(typescript@6.0.3)':
+  '@sanity/react-loader@2.1.2(@sanity/types@packages+@sanity+types)(react@19.2.8)(typescript@7.0.2)':
     dependencies:
       '@sanity/client': 7.25.0
-      '@sanity/core-loader': 2.1.2(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
-      '@sanity/visual-editing-csm': 3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
+      '@sanity/core-loader': 2.1.2(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
+      '@sanity/visual-editing-csm': 3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
       react: 19.2.8
     transitivePeerDependencies:
       - '@sanity/types'
@@ -18349,7 +18469,7 @@ snapshots:
       - '@emotion/is-prop-valid'
       - react-dom
 
-  '@sanity/tsdown-config@0.21.2(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@6.0.3)(vite@8.1.5)':
+  '@sanity/tsdown-config@0.21.2(@babel/runtime@7.29.7)(babel-plugin-react-compiler@1.0.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.1.5)':
     dependencies:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.0)(vite@8.1.5)
@@ -18360,8 +18480,8 @@ snapshots:
       lightningcss: 1.33.0
       package-manager-detector: 1.8.0
       publint: 0.3.22
-      tsdown: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@6.0.3)
-      typescript: 6.0.3
+      tsdown: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@7.0.2)
+      typescript: 7.0.2
     optionalDependencies:
       babel-plugin-react-compiler: 1.0.0
     transitivePeerDependencies:
@@ -18415,7 +18535,7 @@ snapshots:
   '@sanity/vanilla-extract-tsdown-plugin@0.2.11(rolldown@1.2.0)(tsdown@0.22.14)':
     dependencies:
       '@sanity/vanilla-extract-rolldown-plugin': 0.3.5(rolldown@1.2.0)
-      tsdown: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@6.0.3)
+      tsdown: 0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@7.0.2)
     transitivePeerDependencies:
       - babel-plugin-macros
       - rolldown
@@ -18437,11 +18557,11 @@ snapshots:
       - '@sanity/types'
       - typescript
 
-  '@sanity/visual-editing-csm@3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)':
+  '@sanity/visual-editing-csm@3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)':
     dependencies:
       '@sanity/client': 7.25.0
       '@sanity/visual-editing-types': 2.0.12(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)
-      valibot: 1.4.2(typescript@6.0.3)
+      valibot: 1.4.2(typescript@7.0.2)
     transitivePeerDependencies:
       - '@sanity/types'
       - typescript
@@ -18484,7 +18604,7 @@ snapshots:
       - '@emotion/is-prop-valid'
       - typescript
 
-  '@sanity/visual-editing@5.7.3(@emotion/is-prop-valid@1.4.0)(@sanity/client@7.25.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)(typescript@6.0.3)':
+  '@sanity/visual-editing@5.7.3(@emotion/is-prop-valid@1.4.0)(@sanity/client@7.25.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)(typescript@7.0.2)':
     dependencies:
       '@sanity/comlink': 4.0.1
       '@sanity/icons': 5.2.1(react@19.2.8)
@@ -18493,7 +18613,7 @@ snapshots:
       '@sanity/preview-url-secret': 4.1.2(@sanity/client@7.25.0)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 3.5.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
-      '@sanity/visual-editing-csm': 3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(typescript@6.0.3)
+      '@sanity/visual-editing-csm': 3.0.13(@sanity/client@7.25.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
       '@vercel/stega': 1.1.0
       dequal: 2.0.3
       lodash-es: 4.18.1
@@ -18510,9 +18630,9 @@ snapshots:
       - '@emotion/is-prop-valid'
       - typescript
 
-  '@sanity/workbench-cli@1.7.2(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@6.0.3)(yaml@2.9.0)':
+  '@sanity/workbench-cli@1.7.2(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)':
     dependencies:
-      '@module-federation/vite': 1.19.1(typescript@6.0.3)(vite@8.1.5)
+      '@module-federation/vite': 1.19.1(typescript@7.0.2)(vite@8.1.5)
       '@sanity/cli-core': 2.6.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@vitejs/plugin-react': 6.0.4(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.1.5)
       form-data: 4.0.6
@@ -19236,6 +19356,66 @@ snapshots:
       '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260421.2
       '@typescript/native-preview-win32-x64': 7.0.0-dev.20260421.2
 
+  '@typescript/typescript-aix-ppc64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-darwin-arm64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-darwin-x64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-freebsd-arm64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-freebsd-x64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-linux-arm64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-linux-arm@7.0.2':
+    optional: true
+
+  '@typescript/typescript-linux-loong64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-linux-mips64el@7.0.2':
+    optional: true
+
+  '@typescript/typescript-linux-ppc64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-linux-riscv64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-linux-s390x@7.0.2':
+    optional: true
+
+  '@typescript/typescript-linux-x64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-netbsd-arm64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-netbsd-x64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-openbsd-arm64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-openbsd-x64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-sunos-x64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-win32-arm64@7.0.2':
+    optional: true
+
+  '@typescript/typescript-win32-x64@7.0.2':
+    optional: true
+
   '@typespec/ts-http-runtime@0.3.7(supports-color@8.1.1)':
     dependencies:
       http-proxy-agent: 7.0.2(supports-color@8.1.1)
@@ -19350,7 +19530,7 @@ snapshots:
 
   '@valibot/to-json-schema@1.7.1(valibot@1.4.2)':
     dependencies:
-      valibot: 1.4.2(typescript@6.0.3)
+      valibot: 1.4.2(typescript@7.0.2)
 
   '@vanilla-extract/css@1.21.2(babel-plugin-macros@3.1.0)':
     dependencies:
@@ -19637,11 +19817,11 @@ snapshots:
       d3-time-format: 4.1.0
       internmap: 2.0.3
 
-  '@vitejs/devtools-kit@0.4.8(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@6.0.3)(vite@8.1.5)':
+  '@vitejs/devtools-kit@0.4.8(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@7.0.2)(vite@8.1.5)':
     dependencies:
       '@devframes/hub': 0.7.14(devframe@0.7.14)
       '@devframes/json-render': 0.7.14(@devframes/hub@0.7.14)(devframe@0.7.14)
-      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@6.0.3)
+      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@7.0.2)
       local-pkg: 1.2.1
       mlly: 1.8.2
       nostics: 1.2.0
@@ -19653,16 +19833,16 @@ snapshots:
       - srvx
       - typescript
 
-  '@vitejs/devtools@0.4.8(@modelcontextprotocol/sdk@1.29.0)(crossws@0.4.10)(srvx@0.11.22)(typescript@6.0.3)(valibot@1.4.2)(vite@8.1.5)':
+  '@vitejs/devtools@0.4.8(@modelcontextprotocol/sdk@1.29.0)(crossws@0.4.10)(srvx@0.11.22)(typescript@7.0.2)(valibot@1.4.2)(vite@8.1.5)':
     dependencies:
       '@devframes/hub': 0.7.14(devframe@0.7.14)
       '@devframes/plugin-inspect': 0.7.14(devframe@0.7.14)(valibot@1.4.2)(vite@8.1.5)
       '@devframes/plugin-messages': 0.7.14(@devframes/hub@0.7.14)(devframe@0.7.14)(vite@8.1.5)
-      '@devframes/plugin-terminals': 0.7.14(devframe@0.7.14)(typescript@6.0.3)(vite@8.1.5)
-      '@vitejs/devtools-kit': 0.4.8(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@6.0.3)(vite@8.1.5)
+      '@devframes/plugin-terminals': 0.7.14(devframe@0.7.14)(typescript@7.0.2)(vite@8.1.5)
+      '@vitejs/devtools-kit': 0.4.8(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@7.0.2)(vite@8.1.5)
       birpc: 4.0.0
       cac: 7.0.0
-      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@6.0.3)
+      devframe: 0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@7.0.2)
       h3: 2.0.1-rc.22(crossws@0.4.10)
       local-pkg: 1.2.1
       mlly: 1.8.2
@@ -19670,7 +19850,7 @@ snapshots:
       obug: 2.1.4
       pathe: 2.0.3
       vite: 8.1.5(@types/node@24.13.3)(@vitejs/devtools@0.4.8)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
-      vue: 3.5.40(typescript@6.0.3)
+      vue: 3.5.40(typescript@7.0.2)
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
       - crossws
@@ -20938,7 +21118,7 @@ snapshots:
   detect-node@2.1.0:
     optional: true
 
-  devframe@0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@6.0.3):
+  devframe@0.7.14(@modelcontextprotocol/sdk@1.29.0)(cac@7.0.0)(srvx@0.11.22)(typescript@7.0.2):
     dependencies:
       '@valibot/to-json-schema': 1.7.1(valibot@1.4.2)
       birpc: 4.0.0
@@ -20949,7 +21129,7 @@ snapshots:
       nostics: 1.2.0
       pathe: 2.0.3
       ufo: 1.6.4
-      valibot: 1.4.2(typescript@6.0.3)
+      valibot: 1.4.2(typescript@7.0.2)
     optionalDependencies:
       '@modelcontextprotocol/sdk': 1.29.0(supports-color@8.1.1)(zod@4.4.3)
       cac: 7.0.0
@@ -22196,9 +22376,9 @@ snapshots:
 
   humanize-list@1.0.1: {}
 
-  i18next@26.3.6(typescript@6.0.3):
+  i18next@26.3.6(typescript@7.0.2):
     optionalDependencies:
-      typescript: 6.0.3
+      typescript: 7.0.2
 
   ibm-cloud-sdk-core@5.6.0(supports-color@8.1.1):
     dependencies:
@@ -24403,16 +24583,16 @@ snapshots:
     dependencies:
       react: 19.2.8
 
-  react-i18next@17.0.11(i18next@26.3.6)(react-dom@19.2.8)(react@19.2.8)(typescript@6.0.3):
+  react-i18next@17.0.11(i18next@26.3.6)(react-dom@19.2.8)(react@19.2.8)(typescript@7.0.2):
     dependencies:
       '@babel/runtime': 7.29.7
       html-parse-stringify: 4.0.1
-      i18next: 26.3.6(typescript@6.0.3)
+      i18next: 26.3.6(typescript@7.0.2)
       react: 19.2.8
       use-sync-external-store: 1.6.0(react@19.2.8)
     optionalDependencies:
       react-dom: 19.2.8(react@19.2.8)
-      typescript: 6.0.3
+      typescript: 7.0.2
 
   react-icons@5.7.0(react@19.2.8):
     dependencies:
@@ -24710,7 +24890,7 @@ snapshots:
 
   robust-predicates@3.0.3: {}
 
-  rolldown-plugin-dts@0.27.13(@typescript/native-preview@7.0.0-dev.20260421.2)(oxc-resolver@11.24.2)(rolldown@1.2.0)(typescript@6.0.3):
+  rolldown-plugin-dts@0.27.13(@typescript/native-preview@7.0.0-dev.20260421.2)(oxc-resolver@11.24.2)(rolldown@1.2.0)(typescript@7.0.2):
     dependencies:
       dts-resolver: 3.0.0(oxc-resolver@11.24.2)
       get-tsconfig: 5.0.0-beta.5
@@ -24721,7 +24901,7 @@ snapshots:
       yuku-parser: 0.7.4
     optionalDependencies:
       '@typescript/native-preview': 7.0.0-dev.20260421.2
-      typescript: 6.0.3
+      typescript: 7.0.2
     transitivePeerDependencies:
       - oxc-resolver
 
@@ -25589,7 +25769,7 @@ snapshots:
       minimist: 1.2.8
       strip-bom: 3.0.0
 
-  tsdown@0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@6.0.3):
+  tsdown@0.22.14(@typescript/native-preview@7.0.0-dev.20260421.2)(@vitejs/devtools@0.4.8)(oxc-resolver@11.24.2)(publint@0.3.22)(tsx@4.23.1)(typescript@7.0.2):
     dependencies:
       ansis: 4.3.1
       cac: 7.0.0
@@ -25600,17 +25780,17 @@ snapshots:
       obug: 2.1.4
       picomatch: 4.0.5
       rolldown: 1.2.0
-      rolldown-plugin-dts: 0.27.13(@typescript/native-preview@7.0.0-dev.20260421.2)(oxc-resolver@11.24.2)(rolldown@1.2.0)(typescript@6.0.3)
+      rolldown-plugin-dts: 0.27.13(@typescript/native-preview@7.0.0-dev.20260421.2)(oxc-resolver@11.24.2)(rolldown@1.2.0)(typescript@7.0.2)
       tinyexec: 1.2.4
       tinyglobby: 0.2.17
       tree-kill: 1.2.2
       unconfig-core: 7.5.0
       verkit: 0.3.0
     optionalDependencies:
-      '@vitejs/devtools': 0.4.8(@modelcontextprotocol/sdk@1.29.0)(crossws@0.4.10)(srvx@0.11.22)(typescript@6.0.3)(valibot@1.4.2)(vite@8.1.5)
+      '@vitejs/devtools': 0.4.8(@modelcontextprotocol/sdk@1.29.0)(crossws@0.4.10)(srvx@0.11.22)(typescript@7.0.2)(valibot@1.4.2)(vite@8.1.5)
       publint: 0.3.22
       tsx: 4.23.1
-      typescript: 6.0.3
+      typescript: 7.0.2
     transitivePeerDependencies:
       - '@typescript/native-preview'
       - '@volar/typescript'
@@ -25688,7 +25868,28 @@ snapshots:
 
   typescript@5.9.3: {}
 
-  typescript@6.0.3: {}
+  typescript@7.0.2:
+    optionalDependencies:
+      '@typescript/typescript-aix-ppc64': 7.0.2
+      '@typescript/typescript-darwin-arm64': 7.0.2
+      '@typescript/typescript-darwin-x64': 7.0.2
+      '@typescript/typescript-freebsd-arm64': 7.0.2
+      '@typescript/typescript-freebsd-x64': 7.0.2
+      '@typescript/typescript-linux-arm': 7.0.2
+      '@typescript/typescript-linux-arm64': 7.0.2
+      '@typescript/typescript-linux-loong64': 7.0.2
+      '@typescript/typescript-linux-mips64el': 7.0.2
+      '@typescript/typescript-linux-ppc64': 7.0.2
+      '@typescript/typescript-linux-riscv64': 7.0.2
+      '@typescript/typescript-linux-s390x': 7.0.2
+      '@typescript/typescript-linux-x64': 7.0.2
+      '@typescript/typescript-netbsd-arm64': 7.0.2
+      '@typescript/typescript-netbsd-x64': 7.0.2
+      '@typescript/typescript-openbsd-arm64': 7.0.2
+      '@typescript/typescript-openbsd-x64': 7.0.2
+      '@typescript/typescript-sunos-x64': 7.0.2
+      '@typescript/typescript-win32-arm64': 7.0.2
+      '@typescript/typescript-win32-x64': 7.0.2
 
   uc.micro@2.1.0: {}
 
@@ -25875,9 +26076,9 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  valibot@1.4.2(typescript@6.0.3):
+  valibot@1.4.2(typescript@7.0.2):
     optionalDependencies:
-      typescript: 6.0.3
+      typescript: 7.0.2
 
   validate-npm-package-license@3.0.4:
     dependencies:
@@ -25956,7 +26157,7 @@ snapshots:
       tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 24.13.3
-      '@vitejs/devtools': 0.4.8(@modelcontextprotocol/sdk@1.29.0)(crossws@0.4.10)(srvx@0.11.22)(typescript@6.0.3)(valibot@1.4.2)(vite@8.1.5)
+      '@vitejs/devtools': 0.4.8(@modelcontextprotocol/sdk@1.29.0)(crossws@0.4.10)(srvx@0.11.22)(typescript@7.0.2)(valibot@1.4.2)(vite@8.1.5)
       esbuild: 0.28.1
       fsevents: 2.3.3
       jiti: 2.7.0
@@ -26009,7 +26210,7 @@ snapshots:
     transitivePeerDependencies:
       - msw
 
-  vue@3.5.40(typescript@6.0.3):
+  vue@3.5.40(typescript@7.0.2):
     dependencies:
       '@vue/compiler-dom': 3.5.40
       '@vue/compiler-sfc': 3.5.40
@@ -26017,7 +26218,7 @@ snapshots:
       '@vue/server-renderer': 3.5.40
       '@vue/shared': 3.5.40
     optionalDependencies:
-      typescript: 6.0.3
+      typescript: 7.0.2
 
   w3c-keyname@2.2.8: {}
 
