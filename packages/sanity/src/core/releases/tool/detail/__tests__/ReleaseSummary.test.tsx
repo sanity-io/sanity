@@ -329,7 +329,10 @@ describe('ReleaseSummary', () => {
 
       expect(screen.getByTestId('release-documents-search')).toBeInTheDocument()
       expect(screen.getByText('Add document')).toBeInTheDocument()
-      expect(screen.getByTestId('copy-release-actions')).toBeInTheDocument()
+      // Copy and Activity are release-level actions that now live in the always-rendered header
+      // (ReleaseDashboardHeader), not in this table's command lane, so they stay reachable when the
+      // table is loading/errored/empty. The command lane holds table operations only.
+      expect(screen.queryByTestId('copy-release-actions')).not.toBeInTheDocument()
     })
 
     it('keeps filter tabs when search yields no results', async () => {

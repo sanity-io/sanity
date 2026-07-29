@@ -244,17 +244,18 @@ export function VariantDetail() {
                     titleTestId="variant-title-display"
                   />
                 </Box>
-                <Flex align="flex-start" flex="none" gap={4} wrap="wrap">
-                  <DetailPropertiesPanel
-                    maxWidth={480}
-                    sections={definitionSections}
-                    testId="variant-detail-definition"
-                  />
-                  <DetailPropertiesPanel
-                    sections={documentSections}
-                    testId="variant-detail-documents"
-                  />
-                </Flex>
+                {/* Both panels are direct children of the wrapping row (not a nested flex="none"
+                    group) so each can wrap onto its own line when the viewport is too narrow to hold
+                    them side by side — otherwise the fit-content panels overflow on small screens. */}
+                <DetailPropertiesPanel
+                  maxWidth={480}
+                  sections={definitionSections}
+                  testId="variant-detail-definition"
+                />
+                <DetailPropertiesPanel
+                  sections={documentSections}
+                  testId="variant-detail-documents"
+                />
               </Flex>
             </Stack>
           </Box>

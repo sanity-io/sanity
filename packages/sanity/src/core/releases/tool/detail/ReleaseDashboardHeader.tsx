@@ -97,8 +97,22 @@ export function ReleaseDashboardHeader(props: {
         {variantsEnabled ? (
           // The F-pattern action rail: the release's primary action (Run release / Publish /
           // Schedule / …) and its overflow menu sit top-right, where the eye lands first, instead
-          // of in a bottom footer. The footer is dropped in beta (see ReleaseDetail).
-          <Flex flex="none">
+          // of in a bottom footer. The footer is dropped in beta (see ReleaseDetail). Copy + Activity
+          // sit alongside it here rather than in the table's command lane: the header always renders,
+          // so they stay reachable even when the table is loading, errored, or an empty
+          // cardinality-one release (where the command lane is not mounted).
+          <Flex flex="none" gap={2} align="center">
+            <CopyReleaseActions release={release} />
+            <Button
+              data-testid="activity-button"
+              icon={RestoreIcon}
+              mode="bleed"
+              onClick={handleActivityClick}
+              padding={2}
+              selected={inspector === 'activity'}
+              space={2}
+              text={t('dashboard.details.activity')}
+            />
             <ReleaseActionRail release={release} documents={documents} />
           </Flex>
         ) : (

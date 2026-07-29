@@ -72,6 +72,7 @@ function ReleaseDetailsEditorVariants({release}: {release: ReleaseDocument}): Re
   return (
     <DetailIdentity
       title={release.metadata.title}
+      titleAs="h1"
       titlePlaceholder={t('release.placeholder-untitled-release')}
       description={release.metadata.description}
       titleTestId="release-title-display"

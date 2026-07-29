@@ -88,15 +88,9 @@ export function ReleaseDetail() {
     if (!releaseInDetail) return null
 
     return (
-      <ReleaseSummary
-        isLoading={documentsLoading}
-        documents={results}
-        release={releaseInDetail}
-        inspector={inspector}
-        setInspector={setInspector}
-      />
+      <ReleaseSummary isLoading={documentsLoading} documents={results} release={releaseInDetail} />
     )
-  }, [bundleDocumentsError, documentsLoading, inspector, releaseInDetail, results, t])
+  }, [bundleDocumentsError, documentsLoading, releaseInDetail, results, t])
 
   if (loading) {
     return (
