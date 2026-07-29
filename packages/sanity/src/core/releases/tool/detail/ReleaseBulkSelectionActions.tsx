@@ -51,7 +51,14 @@ export function ReleaseBulkSelectionActions({
 
   const isDiscardDisabled =
     selectedRows.length === 0 || !canDiscardSelection || isDiscardPermissionsLoading
-  const discardTooltip = t('permissions.error.discard-version')
+  // Surface the permission-failure tooltip only when it's genuinely a permission failure — not while
+  // the check is still loading (granted starts false during load) or when nothing is selected, which
+  // would mislabel a transient/empty state as "no permission".
+  const discardTooltip = useMemo(() => {
+    if (selectedRows.length === 0 || isDiscardPermissionsLoading) return null
+    if (!canDiscardSelection) return t('permissions.error.discard-version')
+    return null
+  }, [selectedRows.length, isDiscardPermissionsLoading, canDiscardSelection, t])
 
   const isUnpublishDisabled =
     selectedRows.length === 0 ||
@@ -60,14 +67,23 @@ export function ReleaseBulkSelectionActions({
     isUnpublishPermissionsLoading
 
   const unpublishTooltip = useMemo(() => {
-    if (!canUnpublishSelection || isUnpublishPermissionsLoading) {
+    if (selectedRows.length === 0 || isUnpublishPermissionsLoading) {
+      return null
+    }
+    if (!canUnpublishSelection) {
       return t('permissions.error.unpublish')
     }
     if (!allSelectedEligibleForUnpublish) {
       return t('unpublish.no-published-version')
     }
     return null
-  }, [allSelectedEligibleForUnpublish, canUnpublishSelection, isUnpublishPermissionsLoading, t])
+  }, [
+    allSelectedEligibleForUnpublish,
+    canUnpublishSelection,
+    isUnpublishPermissionsLoading,
+    selectedRows.length,
+    t,
+  ])
 
   if (compact) {
     return (
@@ -91,7 +107,7 @@ export function ReleaseBulkSelectionActions({
               text={t('dashboard.details.bulk.discard')}
               tone="critical"
               tooltipProps={{
-                disabled: !isDiscardDisabled,
+                disabled: !discardTooltip,
                 content: discardTooltip,
               }}
             />
@@ -102,7 +118,7 @@ export function ReleaseBulkSelectionActions({
               onClick={onUnpublish}
               text={t('dashboard.details.bulk.unpublish')}
               tooltipProps={{
-                disabled: !isUnpublishDisabled,
+                disabled: !unpublishTooltip,
                 content: unpublishTooltip,
               }}
             />
@@ -124,7 +140,7 @@ export function ReleaseBulkSelectionActions({
         text={t('dashboard.details.bulk.discard')}
         tone="critical"
         tooltipProps={{
-          disabled: !isDiscardDisabled,
+          disabled: !discardTooltip,
           content: discardTooltip,
         }}
       />
@@ -136,7 +152,7 @@ export function ReleaseBulkSelectionActions({
         onClick={onUnpublish}
         text={t('dashboard.details.bulk.unpublish')}
         tooltipProps={{
-          disabled: !isUnpublishDisabled,
+          disabled: !unpublishTooltip,
           content: unpublishTooltip,
         }}
       />
