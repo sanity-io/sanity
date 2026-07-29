@@ -1,12 +1,9 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
-import {CloseIcon} from '@sanity/icons/Close'
 import {CopyIcon} from '@sanity/icons/Copy'
-import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {RestoreIcon} from '@sanity/icons/Restore'
-import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, Flex, Menu, Stack, Text, useToast} from '@sanity/ui'
+import {Card, Container, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {
   type CSSProperties,
   type Dispatch,
@@ -18,8 +15,6 @@ import {
 } from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
-import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../studio/workspace'
 import {getVersionId} from '../../../util/draftUtils'
@@ -39,6 +34,7 @@ import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
 import {ReleaseBulkActionDialog, type ReleaseBulkAction} from './ReleaseBulkActionDialog'
+import {ReleaseBulkSelectionActions} from './ReleaseBulkSelectionActions'
 import {type ReleaseInspector} from './ReleaseDetail'
 import {
   type DocumentFilterType,
@@ -263,71 +259,15 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         clear: t('dashboard.details.bulk.clear'),
       },
       selectAllTestId: 'release-bulk-select-all',
-      renderActions: ({selectedKeys, compact, clear}) => {
-        const discard = () => setBulkAction({action: 'discard', keys: selectedKeys, clear})
-        const unpublish = () => setBulkAction({action: 'unpublish', keys: selectedKeys, clear})
-        const byId = new Map(filterTabRows.map((row) => [row.document._id, row]))
-        const selectedRows = selectedKeys
-          .map((key) => byId.get(key))
-          .filter((row): row is DocumentInReleaseDetail => Boolean(row))
-        const canUnpublishSelection = selectedRows.some(isDocumentEligibleForUnpublish)
-
-        if (compact) {
-          return (
-            <MenuButton
-              id="release-bulk-more"
-              button={
-                <Button
-                  data-testid="release-bulk-more"
-                  icon={EllipsisHorizontalIcon}
-                  mode="bleed"
-                  tooltipProps={{content: t('dashboard.details.bulk.more')}}
-                />
-              }
-              menu={
-                <Menu>
-                  <MenuItem
-                    data-testid="release-bulk-discard"
-                    icon={CloseIcon}
-                    onClick={discard}
-                    text={t('dashboard.details.bulk.discard')}
-                    tone="critical"
-                  />
-                  <MenuItem
-                    data-testid="release-bulk-unpublish"
-                    disabled={!canUnpublishSelection}
-                    icon={UnpublishIcon}
-                    onClick={unpublish}
-                    text={t('dashboard.details.bulk.unpublish')}
-                  />
-                </Menu>
-              }
-              popover={{placement: 'bottom-end', portal: true}}
-            />
-          )
-        }
-
-        return (
-          <Flex align="center" flex="none" gap={2}>
-            <Button
-              data-testid="release-bulk-discard"
-              icon={CloseIcon}
-              mode="ghost"
-              onClick={discard}
-              text={t('dashboard.details.bulk.discard')}
-              tone="critical"
-            />
-            <Button
-              data-testid="release-bulk-unpublish"
-              disabled={!canUnpublishSelection}
-              icon={UnpublishIcon}
-              mode="ghost"
-              onClick={unpublish}
-              text={t('dashboard.details.bulk.unpublish')}
-            />
-          </Flex>
-        )
-      },
+      renderActions: ({selectedKeys, compact, clear}) => (
+        <ReleaseBulkSelectionActions
+          compact={compact}
+          filterTabRows={filterTabRows}
+          onDiscard={() => setBulkAction({action: 'discard', keys: selectedKeys, clear})}
+          onUnpublish={() => setBulkAction({action: 'unpublish', keys: selectedKeys, clear})}
+          selectedKeys={selectedKeys}
+        />
+      ),
     }
   }, [isActiveRelease, t, filterTabRows])
 
