@@ -25,6 +25,18 @@ type PermissionDeps = {
   userId: string | undefined
 }
 
+// A release can hold a document whose schema type is no longer registered (a renamed/removed type,
+// or a foreign document). getDocumentPairPermissions -> getSchemaType THROWS "No such schema type"
+// for those, and because the bulk-permission hooks run during render, that throw crashes the whole
+// pane. Such documents can't be permission-checked or acted on via the pair-permission path, so
+// exclude them up front — they simply aren't bulk-actionable targets.
+function hasResolvableSchemaType(
+  schema: PermissionDeps['schema'],
+  doc: DocumentInRelease,
+): boolean {
+  return Boolean(schema.get(doc.document._type))
+}
+
 function permissionOptionsForDocument(
   doc: DocumentInRelease,
   permission: DocumentPermission,
@@ -56,13 +68,15 @@ async function filterDocumentsWithPairPermission(
   deps: PermissionDeps,
 ): Promise<DocumentInRelease[]> {
   const permissionResults = await Promise.all(
-    documents.map(async (doc) => {
-      const {granted} = await firstValueFrom(
-        getDocumentPairPermissions(permissionOptionsForDocument(doc, permission, deps)),
-      )
+    documents
+      .filter((doc) => hasResolvableSchemaType(deps.schema, doc))
+      .map(async (doc) => {
+        const {granted} = await firstValueFrom(
+          getDocumentPairPermissions(permissionOptionsForDocument(doc, permission, deps)),
+        )
 
-      return granted ? doc : null
-    }),
+        return granted ? doc : null
+      }),
   )
 
   return permissionResults.filter((doc): doc is DocumentInRelease => doc !== null)
@@ -113,17 +127,18 @@ export function useAllDocumentsInReleaseHavePairPermission(
   )
 
   const observable = useMemo(() => {
-    if (documents.length === 0) {
+    const resolvable = documents.filter((doc) => hasResolvableSchemaType(deps.schema, doc))
+    if (resolvable.length === 0) {
       return of({granted: false, isLoading: false})
     }
 
     return combineLatest(
-      documents.map((doc) =>
+      resolvable.map((doc) =>
         getDocumentPairPermissions(permissionOptionsForDocument(doc, permission, deps)),
       ),
     ).pipe(
       map((results) => ({
-        granted: documents.length > 0 && results.every((result) => result.granted),
+        granted: results.every((result) => result.granted),
         isLoading: false,
       })),
       startWith({granted: false, isLoading: true}),
@@ -159,12 +174,13 @@ export function useReleaseBulkActionTargets(
   )
 
   const observable = useMemo(() => {
-    if (documents.length === 0) {
+    const resolvable = documents.filter((doc) => hasResolvableSchemaType(deps.schema, doc))
+    if (resolvable.length === 0) {
       return of({targets: [] as DocumentInRelease[], isLoading: false})
     }
 
     return combineLatest(
-      documents.map((doc) =>
+      resolvable.map((doc) =>
         getDocumentPairPermissions(permissionOptionsForDocument(doc, permission, deps)).pipe(
           map((result) => ({doc, granted: result.granted})),
         ),

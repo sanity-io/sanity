@@ -12,7 +12,12 @@ const mockDiscardVersion = vi.fn().mockResolvedValue({})
 const mockGetDocumentPairPermissions = vi.fn()
 const mockToastPush = vi.fn()
 const mockClient = {}
-const mockSchema = {}
+// `schema.get(type)` resolves the doc's schema type; the bulk-permission path filters out documents
+// whose type is unregistered (see hasResolvableSchemaType). Return a truthy type for any name so the
+// test docs are treated as resolvable; individual tests can override to simulate an unknown type.
+const mockSchema = {
+  get: vi.fn((typeName: string): {name: string} | undefined => ({name: typeName})),
+}
 const mockGrantsStore = {}
 
 vi.mock('../../../hooks/useVersionOperations', () => ({
@@ -306,6 +311,36 @@ describe('ReleaseBulkActionDialog', () => {
       expect(mockDiscardVersion).toHaveBeenCalledTimes(1)
     })
     expect(mockDiscardVersion).toHaveBeenCalledWith('rTest', 'versions.rTest.doc-permitted')
+  })
+
+  it('excludes documents whose schema type is unregistered (no crash on unknown types)', async () => {
+    const known = createRow('versions.rTest.doc-known')
+    const unknown = createRow('versions.rTest.doc-unknown')
+    unknown.document._type = 'markdownTest'
+
+    // 'markdownTest' is not in the schema (a removed/foreign type); getSchemaType would throw for it,
+    // which previously crashed the pane on bulk-select. It must be skipped, not passed to discard.
+    mockSchema.get.mockImplementation((typeName: string) =>
+      typeName === 'markdownTest' ? undefined : {name: typeName},
+    )
+    mockGetDocumentPairPermissions.mockReturnValue(of({granted: true, reason: ''}))
+
+    render(
+      <ReleaseBulkActionDialog
+        action="discard"
+        documents={[known, unknown]}
+        releaseId="rTest"
+        onClose={vi.fn()}
+        onSuccess={vi.fn()}
+      />,
+    )
+
+    await userEvent.click(await screen.findByText('Discard'))
+
+    await waitFor(() => {
+      expect(mockDiscardVersion).toHaveBeenCalledTimes(1)
+    })
+    expect(mockDiscardVersion).toHaveBeenCalledWith('rTest', 'versions.rTest.doc-known')
   })
 
   it('does not call discard when no documents are permitted', async () => {
