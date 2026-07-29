@@ -36,24 +36,23 @@ const initialRelease = {
 } as ReleaseDocument
 
 describe('ReleaseDetailsEditor', () => {
-  describe('as a display surface', () => {
+  describe('production (inline editing)', () => {
     beforeEach(() => {
       vi.clearAllMocks()
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
     })
 
-    it('renders the title and description as read-only display, not inline inputs', async () => {
+    it('renders inline title and description fields', async () => {
       const wrapper = await createTestProvider()
       render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
       await flushMicrotasksThisIsACodeSmell()
 
-      expect(screen.getByTestId('release-title-display')).toHaveTextContent('Initial Title')
-      expect(screen.getByTestId('release-description-display')).toHaveTextContent('A description')
-      // The editable fields are not present on the page itself — they live in the edit dialog.
-      expect(screen.queryByTestId('release-form-title')).toBeNull()
+      expect(screen.getByTestId('release-form-title')).toHaveValue('Initial Title')
+      expect(screen.queryByTestId('release-title-display')).toBeNull()
     })
 
-    it('opens the edit dialog and saves changes via updateRelease', async () => {
+    it('debounces changes and saves via updateRelease', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
       const wrapper = await createTestProvider()
       render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
       await flushMicrotasksThisIsACodeSmell()
@@ -61,14 +60,11 @@ describe('ReleaseDetailsEditor', () => {
       const updateReleaseMock = (useReleaseOperations as unknown as Mock).mock.results[0]?.value
         .updateRelease
 
-      const editButton = await screen.findByTestId('edit-release-details-button')
-      await userEvent.click(editButton)
-
-      const titleInput = (await screen.findByTestId('release-form-title')) as HTMLTextAreaElement
+      const titleInput = screen.getByTestId('release-form-title') as HTMLTextAreaElement
       await userEvent.clear(titleInput)
       await userEvent.type(titleInput, 'New Title')
 
-      await userEvent.click(screen.getByTestId('save-release-details-button'))
+      await vi.advanceTimersByTimeAsync(250)
 
       await waitFor(() => {
         expect(updateReleaseMock).toHaveBeenCalledWith(
@@ -77,6 +73,26 @@ describe('ReleaseDetailsEditor', () => {
           }),
         )
       })
+      vi.useRealTimers()
+    })
+  })
+
+  describe('with beta.variants (read-only identity)', () => {
+    beforeEach(() => {
+      vi.clearAllMocks()
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    })
+
+    it('renders the title and description as read-only display, not inline inputs', async () => {
+      const wrapper = await createTestProvider({
+        config: {beta: {variants: {enabled: true}}},
+      })
+      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.getByTestId('release-title-display')).toHaveTextContent('Initial Title')
+      expect(screen.getByTestId('release-description-display')).toHaveTextContent('A description')
+      expect(screen.queryByTestId('release-form-title')).toBeNull()
     })
   })
 
@@ -86,12 +102,12 @@ describe('ReleaseDetailsEditor', () => {
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnFalse)
     })
 
-    it('does not show the edit affordance', async () => {
+    it('disables inline fields in production', async () => {
       const wrapper = await createTestProvider()
       render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
       await flushMicrotasksThisIsACodeSmell()
 
-      expect(screen.queryByTestId('edit-release-details-button')).toBeNull()
+      expect(screen.getByTestId('release-form-title')).toBeDisabled()
     })
   })
 })

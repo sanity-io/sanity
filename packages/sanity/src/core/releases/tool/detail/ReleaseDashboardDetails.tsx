@@ -3,22 +3,30 @@ import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {PinIcon} from '@sanity/icons/Pin'
+import {PinFilledIcon} from '@sanity/icons/PinFilled'
 import {UserIcon} from '@sanity/icons/User'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 
+import {Button} from '../../../../ui-components/button/Button'
+import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {DetailPropertiesPanel, type DetailPropertiesSection} from '../../../components/detailLayout'
 import {RelativeTime} from '../../../components/RelativeTime'
+import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {Details} from '../../../form/components/Details'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {usePerspective} from '../../../perspective/usePerspective'
+import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {useWorkspace} from '../../../studio/workspace'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {getDocumentValidationLoading} from '../../util/getDocumentValidationLoading'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {isNotArchivedRelease} from '../../util/util'
 import {ArchivedReleaseBanner} from './ArchivedReleaseBanner'
 import {isCreateReleaseEvent, type ReleaseEvent} from './events/types'
@@ -27,6 +35,139 @@ import {ReleaseTypePicker} from './ReleaseTypePicker'
 import {ReleaseValidationBadge} from './ReleaseValidationBadge'
 import {type DocumentInRelease} from './types'
 import {ValidationProgressIndicator} from './ValidationProgressIndicator'
+
+function ReleaseDashboardDetailsProduction({
+  release,
+  documents,
+  shouldDisplayError,
+  shouldDisplayWarnings,
+  isAtTimeRelease,
+  isReleaseOpen,
+}: {
+  release: ReleaseDocument
+  documents: DocumentInRelease[]
+  shouldDisplayError: boolean
+  shouldDisplayWarnings: boolean
+  isAtTimeRelease: boolean
+  isReleaseOpen: boolean
+}) {
+  const {t: tRelease} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
+  const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
+  const {selectedReleaseId} = usePerspective()
+  const setPerspective = useSetPerspective()
+  const {document} = useWorkspace()
+  const {
+    drafts: {enabled: isDraftModelEnabled},
+  } = document
+
+  const isSelected = releaseId === selectedReleaseId
+  const releaseFullTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
+
+  const handlePinRelease = useCallback(() => {
+    if (isSelected) {
+      setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
+    } else {
+      setPerspective(releaseId)
+    }
+  }, [isDraftModelEnabled, isSelected, releaseId, setPerspective])
+
+  return (
+    <Container width={3}>
+      <Stack padding={3} paddingY={[3, 3, 4, 5]}>
+        <Flex gap={1} align="center">
+          {isReleaseOpen && (
+            <Button
+              icon={isSelected ? PinFilledIcon : PinIcon}
+              tooltipProps={{
+                placement: 'top',
+                content: isSelected
+                  ? tRelease('dashboard.details.unpin-release')
+                  : tRelease('dashboard.details.pin-release'),
+              }}
+              mode="bleed"
+              onClick={handlePinRelease}
+              radius="full"
+              selected={isSelected}
+              aria-label={
+                isSelected
+                  ? `${tRelease('dashboard.details.unpin-release')}: "${releaseFullTitle}"`
+                  : `${tRelease('dashboard.details.pin-release')}: "${releaseFullTitle}"`
+              }
+              aria-live="assertive"
+            />
+          )}
+          {isNotArchivedRelease(release) && <ReleaseTypePicker release={release} />}
+          <ValidationProgressIndicator documents={documents} />
+          {shouldDisplayError && (
+            <Flex gap={2} padding={2} data-testid="release-error-details">
+              <Text size={1}>
+                <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+              </Text>
+              <TextWithTone size={1} tone="critical">
+                {isAtTimeRelease
+                  ? tRelease('failed-schedule-title')
+                  : tRelease('failed-publish-title')}
+              </TextWithTone>
+            </Flex>
+          )}
+          {shouldDisplayWarnings && (
+            <Flex gap={2} padding={2} data-testid="release-permission-error-details">
+              <Text size={1}>
+                <ToneIcon icon={WarningOutlineIcon} tone="caution" />
+              </Text>
+              <TextWithTone size={1} tone="caution">
+                {tRelease('permission-missing-title')}
+              </TextWithTone>
+            </Flex>
+          )}
+        </Flex>
+        <Box padding={2}>
+          <ReleaseDetailsEditor release={release} />
+        </Box>
+        {shouldDisplayError && (
+          <Card padding={4} radius={4} tone="critical">
+            <Flex gap={3}>
+              <Text size={1}>
+                <ErrorOutlineIcon />
+              </Text>
+              <Stack space={4}>
+                <Text size={1} weight="semibold">
+                  {isAtTimeRelease
+                    ? tRelease('failed-schedule-title')
+                    : tRelease('failed-publish-title')}
+                </Text>
+                <Details title={tRelease('error-details-title')}>
+                  <Text size={1} accent>
+                    <code>{release.error?.message}</code>
+                  </Text>
+                </Details>
+              </Stack>
+            </Flex>
+          </Card>
+        )}
+
+        {shouldDisplayWarnings && (
+          <Card padding={4} radius={4} tone="caution">
+            <Flex gap={3}>
+              <Text size={1}>
+                <WarningOutlineIcon />
+              </Text>
+              <Stack space={3}>
+                <Text size={1}>{tRelease('permission-missing-title')}</Text>
+                <Text size={1} muted>
+                  {tRelease('permission-missing-description')}
+                </Text>
+              </Stack>
+            </Flex>
+          </Card>
+        )}
+
+        {!isReleaseOpen && <ArchivedReleaseBanner release={release} />}
+      </Stack>
+    </Container>
+  )
+}
 
 export function ReleaseDashboardDetails({
   release,
@@ -43,13 +184,9 @@ export function ReleaseDashboardDetails({
   const {publishRelease, schedule} = useReleaseOperations()
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
-  // Behind beta.variants the footer is dropped, so its "Created" status is rehomed here.
   const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const createAuthor = events.find(isCreateReleaseEvent)?.author
 
-  // Status glyph (beta): a semantic-coloured icon accompanying the Status label — checkmark when
-  // valid, error when any document fails, clock while validating. Mirrors the value that
-  // ReleaseValidationBadge renders. The tone-scoped transparent Card colours the icon.
   const validation = getDocumentValidationLoading(documents)
   const isFullyValidated = documents.length > 0 && validation.validatedCount === documents.length
   const statusTone = validation.hasError ? 'critical' : isFullyValidated ? 'positive' : 'default'
@@ -105,6 +242,19 @@ export function ReleaseDashboardDetails({
     schedule,
   ])
 
+  if (!variantsEnabled) {
+    return (
+      <ReleaseDashboardDetailsProduction
+        release={release}
+        documents={documents}
+        shouldDisplayError={shouldDisplayError}
+        shouldDisplayWarnings={shouldDisplayWarnings}
+        isAtTimeRelease={isAtTimeRelease}
+        isReleaseOpen={isReleaseOpen}
+      />
+    )
+  }
+
   return (
     <Container width={3}>
       {/* Tight top padding: the header above already pads its bottom, so the title sits close under
@@ -118,9 +268,6 @@ export function ReleaseDashboardDetails({
           <Box flex={1} style={{minWidth: 280}}>
             <ReleaseDetailsEditor release={release} />
           </Box>
-          {/* The metadata is its own bordered surface — the shared properties panel — so it reads
-              as a discrete block next to the identity. In production "Created" lives in the footer;
-              behind beta.variants the footer is dropped, so a Created row is added here instead. */}
           <DetailPropertiesPanel
             testId="release-detail-metadata"
             sections={
@@ -128,37 +275,25 @@ export function ReleaseDashboardDetails({
                 {
                   rows: [
                     isNotArchivedRelease(release) && {
-                      // Leading glyph reflects the live release type (bolt / clock / dot), tone-coloured.
-                      icon: variantsEnabled ? (
-                        <ReleaseAvatar release={release} padding={0} />
-                      ) : undefined,
+                      icon: <ReleaseAvatar release={release} padding={0} />,
                       label: tRelease('dashboard.details.metadata.schedule'),
                       value: <ReleaseTypePicker release={release} />,
                     },
                     {
-                      icon: variantsEnabled ? statusGlyph : undefined,
+                      icon: statusGlyph,
                       label: tRelease('dashboard.details.metadata.status'),
-                      // Beta: semantic-coloured text ("Valid" / "Errors" / …) so the panel clearly
-                      // signals "good to go". Production keeps the minimal icon indicator unchanged.
-                      value: variantsEnabled ? (
-                        <ReleaseValidationBadge documents={documents} />
-                      ) : (
-                        <ValidationProgressIndicator documents={documents} layout="minimal" />
-                      ),
+                      value: <ReleaseValidationBadge documents={documents} />,
                     },
                     {
-                      icon: variantsEnabled ? (
+                      icon: (
                         <Text size={1} muted>
                           <DocumentsIcon />
                         </Text>
-                      ) : undefined,
+                      ),
                       label: tRelease('dashboard.details.metadata.documents'),
                       value: String(documents.length),
                     },
-                    variantsEnabled && {
-                      // The author avatar is the Created row's leading glyph. When the create-event
-                      // author doesn't resolve, fall back to a muted person glyph ("created by —
-                      // unknown") rather than a skeleton, which would read as perpetually loading.
+                    {
                       icon: createAuthor ? (
                         <UserAvatar size={0} user={createAuthor} />
                       ) : (

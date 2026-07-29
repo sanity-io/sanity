@@ -1,11 +1,13 @@
 import {type ReleaseType} from '@sanity/client'
-import {Card, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {PublishIcon} from '@sanity/icons/Publish'
+import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {isBefore} from 'date-fns/isBefore'
 import {startOfMinute} from 'date-fns/startOfMinute'
 import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
+import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {Tab} from '../../../../ui-components/tab/Tab'
 import {MONTH_PICKER_VARIANT} from '../../../components/inputs/DateInputs/calendar/Calendar'
@@ -14,6 +16,8 @@ import {DatePicker} from '../../../components/inputs/DateInputs/DatePicker'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
+import {useWorkspace} from '../../../studio/workspace'
+import {ReleaseAvatar} from '../../components/ReleaseAvatar'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
@@ -24,6 +28,7 @@ import {
   isReleaseScheduledOrScheduling,
   type NotArchivedRelease,
 } from '../../util/util'
+import {ReleaseTime} from '../components/ReleaseTime'
 import {ReleaseDateInput} from './ReleaseDateInput'
 
 // The Schedule value reads as plain text (matching the other property values), but stays clickable
@@ -49,6 +54,7 @@ const ScheduleTrigger = styled.button`
 
 export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.JSX.Element {
   const {release} = props
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -134,9 +140,22 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
   const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
   const isReleaseScheduled = isReleaseScheduledOrScheduling(release)
 
+  const publishDateLabel = useMemo(() => {
+    if (release.state === 'published') {
+      if (isPublishDateInPast && publishDate)
+        return tRelease('dashboard.details.published-on', {
+          date: getReleaseTime(release),
+        })
+
+      return tRelease('dashboard.details.published-asap')
+    }
+
+    return <ReleaseTime release={release} />
+  }, [getReleaseTime, isPublishDateInPast, publishDate, release, tRelease])
+
   // A compact, single-line label for the properties-panel value: no seconds, and no
   // "Estimated ·"/"Scheduled ·" prefix (the row's leading glyph + label already convey the type).
-  const label = useMemo(() => {
+  const compactLabel = useMemo(() => {
     if (release.state === 'published') {
       return isPublishDateInPast && publishDate
         ? tRelease('dashboard.details.published-on', {
@@ -177,74 +196,133 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
 
   const tone = release.state === 'published' ? 'positive' : getReleaseTone(release)
 
+  const releaseTypeIcon = useMemo(() => {
+    if (isUpdating) return <Spinner size={1} data-testid="updating-release-spinner" />
+    if (release.state === 'published') return <PublishIcon />
+
+    return <ReleaseAvatar release={release} padding={0} />
+  }, [isUpdating, release])
+
+  const productionLabelContent = useMemo(
+    () => (
+      <Flex flex={1} gap={2} align={'center'}>
+        {releaseTypeIcon}
+        <span data-testid="release-type-label">{publishDateLabel}</span>
+      </Flex>
+    ),
+    [publishDateLabel, releaseTypeIcon],
+  )
+
+  const popoverContent = (
+    <Stack space={1}>
+      <TabList space={0.5}>
+        <Tab
+          aria-controls="release-timing-asap"
+          id="release-timing-asap-tab"
+          onClick={() => handleButtonReleaseTypeChange('asap')}
+          label={t('release.type.asap')}
+          selected={releaseType === 'asap'}
+        />
+        <Tab
+          aria-controls="release-timing-at-time"
+          id="release-timing-at-time-tab"
+          onClick={() => handleButtonReleaseTypeChange('scheduled')}
+          selected={releaseType === 'scheduled'}
+          label={t('release.type.scheduled')}
+        />
+        <Tab
+          aria-controls="release-timing-undecided"
+          id="release-timing-undecided-tab"
+          onClick={() => handleButtonReleaseTypeChange('undecided')}
+          selected={releaseType === 'undecided'}
+          label={t('release.type.undecided')}
+        />
+      </TabList>
+      {releaseType === 'scheduled' && (
+        <>
+          {isIntendedScheduleDateInPast && (
+            <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
+              <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
+            </Card>
+          )}
+          <ReleaseDateInput
+            setIsIntendedScheduleDateInPast={setIsIntendedScheduleDateInPast}
+            setIntendedPublishAt={setIntendedPublishAt}
+            intendedPublishAt={intendedPublishAt}
+          />
+          <DatePicker
+            ref={datePickerRef}
+            monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
+            calendarLabels={calendarLabels}
+            selectTime
+            padding={0}
+            value={intendedPublishAt}
+            onChange={handlePublishAtCalendarChange}
+            isPastDisabled
+            showTimeZone
+            timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
+          />
+        </>
+      )}
+    </Stack>
+  )
+
+  if (!variantsEnabled) {
+    return (
+      <Popover
+        content={popoverContent}
+        open={open}
+        padding={1}
+        placement="bottom-start"
+        ref={popoverRef}
+      >
+        {release.state === 'published' ? (
+          <Card
+            tone="default"
+            data-testid="published-release-type-label"
+            padding={2}
+            style={{borderRadius: '999px'}}
+          >
+            {productionLabelContent}
+          </Card>
+        ) : (
+          <Button
+            disabled={isReleaseScheduled}
+            mode="bleed"
+            onClick={handleOnPickerClick}
+            ref={buttonRef}
+            tooltipProps={{
+              placement: 'bottom',
+              content: isReleaseScheduled && tRelease('type-picker.tooltip.scheduled'),
+            }}
+            selected={open}
+            tone={tone}
+            style={{borderRadius: '999px'}}
+            data-testid="release-type-picker"
+          >
+            {productionLabelContent}
+          </Button>
+        )}
+      </Popover>
+    )
+  }
+
   const valueText = (
     <Text
       data-testid="release-type-label"
       size={1}
       weight="medium"
       textOverflow="ellipsis"
-      title={label}
+      title={compactLabel}
       style={{opacity: isUpdating ? 0.5 : 1}}
     >
-      {label}
+      {compactLabel}
     </Text>
   )
 
   return (
     <Popover
-      content={
-        <Stack space={1}>
-          <TabList space={0.5}>
-            <Tab
-              aria-controls="release-timing-asap"
-              id="release-timing-asap-tab"
-              onClick={() => handleButtonReleaseTypeChange('asap')}
-              label={t('release.type.asap')}
-              selected={releaseType === 'asap'}
-            />
-            <Tab
-              aria-controls="release-timing-at-time"
-              id="release-timing-at-time-tab"
-              onClick={() => handleButtonReleaseTypeChange('scheduled')}
-              selected={releaseType === 'scheduled'}
-              label={t('release.type.scheduled')}
-            />
-            <Tab
-              aria-controls="release-timing-undecided"
-              id="release-timing-undecided-tab"
-              onClick={() => handleButtonReleaseTypeChange('undecided')}
-              selected={releaseType === 'undecided'}
-              label={t('release.type.undecided')}
-            />
-          </TabList>
-          {releaseType === 'scheduled' && (
-            <>
-              {isIntendedScheduleDateInPast && (
-                <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
-                  <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
-                </Card>
-              )}
-              <ReleaseDateInput
-                setIsIntendedScheduleDateInPast={setIsIntendedScheduleDateInPast}
-                setIntendedPublishAt={setIntendedPublishAt}
-                intendedPublishAt={intendedPublishAt}
-              />
-              <DatePicker
-                ref={datePickerRef}
-                monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
-                calendarLabels={calendarLabels}
-                selectTime
-                padding={0}
-                value={intendedPublishAt}
-                onChange={handlePublishAtCalendarChange}
-                isPastDisabled
-                showTimeZone
-                timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
-              />
-            </>
-          )}
-        </Stack>
-      }
+      content={popoverContent}
       open={open}
       padding={1}
       placement="bottom-start"
