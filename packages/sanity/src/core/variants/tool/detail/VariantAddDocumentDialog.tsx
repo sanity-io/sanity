@@ -1,11 +1,16 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {type SanityDocumentLike} from '@sanity/types'
-import {Box, Card, Flex, Spinner, Stack, Text, TextInput} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {type SanityDocumentLike, type SchemaType} from '@sanity/types'
+import {Badge, Box, Card, Flex, Spinner, Stack, Text, TextInput} from '@sanity/ui'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
+import {getPreviewStateObservable} from '../../../preview/utils/getPreviewStateObservable'
+import {getPreviewValueWithFallback} from '../../../preview/utils/getPreviewValueWithFallback'
+import {useDocumentPreviewStore} from '../../../store/datastores'
 import {useSearch} from '../../../studio/components/navbar/search/hooks/useSearch'
 import {variantsLocaleNamespace} from '../../i18n'
 
@@ -15,9 +20,50 @@ export interface VariantAddDocumentSelection {
   _rev?: string
 }
 
-function getHitTitle(document: SanityDocumentLike): string {
-  const title = document.title ?? document.name
-  return typeof title === 'string' && title.trim() ? title : document._id
+/**
+ * A single search result, rendered with the document's real Studio preview (icon · title ·
+ * subtitle · media) via the shared preview store — the same reading as omnisearch and the tables,
+ * rather than a raw id. Clicking it personalizes the document into the variant.
+ */
+function AddDocumentResultItem({
+  hit,
+  schemaType,
+  onSelect,
+}: {
+  hit: SanityDocumentLike
+  schemaType: SchemaType
+  onSelect: (document: VariantAddDocumentSelection) => void
+}): React.JSX.Element {
+  const documentPreviewStore = useDocumentPreviewStore()
+  const observable = useMemo(
+    () => getPreviewStateObservable(documentPreviewStore, schemaType, hit._id, undefined),
+    [documentPreviewStore, schemaType, hit._id],
+  )
+  const documentStub = useMemo(() => ({_id: hit._id, _type: hit._type}), [hit._id, hit._type])
+  const {isLoading, snapshot, original} = useObservable(observable, {
+    snapshot: null,
+    isLoading: true,
+    original: null,
+  })
+
+  return (
+    <Card
+      as="button"
+      data-testid="variant-add-document-result"
+      onClick={() => onSelect({_id: hit._id, _rev: hit._rev})}
+      padding={2}
+      radius={2}
+      tone="inherit"
+    >
+      <SanityDefaultPreview
+        {...getPreviewValueWithFallback({snapshot, original, fallback: documentStub})}
+        icon={schemaType.icon}
+        isPlaceholder={isLoading ?? true}
+        layout="default"
+        status={<Badge>{schemaType.title || hit._type}</Badge>}
+      />
+    </Card>
+  )
 }
 
 /**
@@ -103,33 +149,14 @@ export function VariantAddDocumentDialog({
             <Stack space={1} style={{maxHeight: '45vh', overflowY: 'auto'}}>
               {hits.map(({hit}) => {
                 const schemaType = schema.get(hit._type)
-                const Icon = schemaType?.icon
+                if (!schemaType) return null
                 return (
-                  <Card
+                  <AddDocumentResultItem
                     key={hit._id}
-                    as="button"
-                    data-testid="variant-add-document-result"
-                    onClick={() => onSelect({_id: hit._id, _rev: hit._rev})}
-                    padding={2}
-                    radius={2}
-                    tone="inherit"
-                  >
-                    <Flex align="center" gap={3}>
-                      {Icon && (
-                        <Text muted size={1}>
-                          <Icon />
-                        </Text>
-                      )}
-                      <Box flex={1} style={{minWidth: 0}}>
-                        <Text align="left" size={1} textOverflow="ellipsis">
-                          {getHitTitle(hit)}
-                        </Text>
-                      </Box>
-                      <Text muted size={1}>
-                        {schemaType?.title || hit._type}
-                      </Text>
-                    </Flex>
-                  </Card>
+                    hit={hit}
+                    onSelect={onSelect}
+                    schemaType={schemaType}
+                  />
                 )
               })}
             </Stack>
