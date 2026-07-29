@@ -30,6 +30,19 @@ describe('useLiveEvents', () => {
     expect(reducer(initialState, {type: 'welcome'})).toEqual(initialState)
   })
 
+  test('the message list is capped, keeping the most recent messages', () => {
+    const messages = Array.from({length: 120}, (_, i) => ({
+      type: 'message' as const,
+      id: `${i}`,
+      tags: ['s1:abc' as const],
+    }))
+    const state = messages.reduce(reducer, initialState)
+
+    expect(state.messages).toHaveLength(100)
+    expect(state.messages.at(0)?.id).toBe('20')
+    expect(state.messages.at(-1)?.id).toBe('119')
+  })
+
   test('throws on unknown event types', () => {
     expect(() =>
       reducer(initialState, {

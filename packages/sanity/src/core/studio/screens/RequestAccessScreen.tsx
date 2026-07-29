@@ -1,6 +1,4 @@
 /* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {type SanityClient} from '@sanity/client'
-import {type CurrentUser} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {addWeeks} from 'date-fns/addWeeks'
 import {isAfter} from 'date-fns/isAfter'
@@ -33,28 +31,13 @@ export interface AccessRequest {
 
 const MAX_NOTE_LENGTH = 150
 
-type AuthStateResult =
-  | {
-      type: 'value'
-      projectId: string | undefined
-      client: SanityClient | undefined
-      currentUser: CurrentUser | null
-    }
-  | {type: 'error'; error: unknown}
-
-const INITIAL_AUTH_RESULT: AuthStateResult = {
-  type: 'value',
-  projectId: undefined,
-  client: undefined,
-  currentUser: null,
-}
-
 type AccessRequestStatus = {
   loading: boolean
   hasBeenDenied: boolean
   hasPendingRequest: boolean
   hasExpiredPendingRequest: boolean
-  error?: unknown
+  /** The Access API could not be reached; the screen falls back to `NotAuthenticatedScreen`. */
+  error: boolean
 }
 
 const INITIAL_ACCESS_REQUEST_STATUS: AccessRequestStatus = {
@@ -62,6 +45,7 @@ const INITIAL_ACCESS_REQUEST_STATUS: AccessRequestStatus = {
   hasBeenDenied: false,
   hasPendingRequest: false,
   hasExpiredPendingRequest: false,
+  error: false,
 }
 
 function deriveAccessRequestStatus(
@@ -124,15 +108,13 @@ function deriveAccessRequestStatus(
 export function RequestAccessScreen() {
   const toast = useToast()
 
+  // Set by submitting the form; the observable below only reports what the API already knows.
   const [msgError, setMsgError] = useState<string | undefined>()
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const [hasPendingRequest, setHasPendingRequest] = useState<boolean>(false)
-  const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean>(false)
-  const [hasBeenDenied, setHasBeenDenied] = useState<boolean>(false)
-
+  const [submittedRequest, setSubmittedRequest] = useState(false)
+  const [hasTooManyRequests, setHasTooManyRequests] = useState(false)
+  const [submitDenied, setSubmitDenied] = useState(false)
   const [note, setNote] = useState<string | undefined>()
-  const [noteLength, setNoteLength] = useState<number>(0)
 
   const {activeWorkspace} = useActiveWorkspace()
 
@@ -140,30 +122,12 @@ export function RequestAccessScreen() {
     void activeWorkspace.auth.logout?.()
   }, [activeWorkspace])
 
-  const auth$ = useMemo(
-    () =>
-      activeWorkspace.auth.state.pipe(
-        map(({client: sanityClient, currentUser: user}): AuthStateResult => {
-          // Need to get the client, projectId, and user from workspace
-          // because this screen is outside the SourceContext
-          return {
-            type: 'value',
-            projectId: sanityClient.config().projectId,
-            client: sanityClient.withConfig({apiVersion: '2024-07-01'}),
-            currentUser: user,
-          }
-        }),
-        catchError((authError: unknown) => of({type: 'error' as const, error: authError})),
-      ),
-    [activeWorkspace],
-  )
-
-  const authResult = useObservable(auth$, INITIAL_AUTH_RESULT)
-
-  const client = authResult.type === 'value' ? authResult.client : undefined
-  const projectId = authResult.type === 'value' ? authResult.projectId : undefined
-  const currentUser = authResult.type === 'value' ? authResult.currentUser : null
-  const authError = authResult.type === 'error' ? authResult.error : null
+  // The client, projectId and user come from the workspace because this screen
+  // renders outside the SourceContext.
+  const auth = useObservable(activeWorkspace.auth.state)
+  const currentUser = auth?.currentUser
+  const projectId = auth?.client.config().projectId
+  const client = useMemo(() => auth?.client.withConfig({apiVersion: '2024-07-01'}), [auth?.client])
 
   const accessRequests$ = useMemo(() => {
     if (!client || !projectId) {
@@ -179,16 +143,17 @@ export function RequestAccessScreen() {
         map(
           (requests): AccessRequestStatus => ({
             loading: false,
+            error: false,
             ...deriveAccessRequestStatus(requests, projectId),
           }),
         ),
+        // A failing Access API is not fatal: fall back to the plain not-authorized screen
+        // rather than throwing to an error boundary.
         catchError((err) => {
           console.error(err)
           return of<AccessRequestStatus>({
+            ...INITIAL_ACCESS_REQUEST_STATUS,
             loading: false,
-            hasBeenDenied: false,
-            hasPendingRequest: false,
-            hasExpiredPendingRequest: false,
             error: true,
           })
         }),
@@ -196,18 +161,14 @@ export function RequestAccessScreen() {
       )
   }, [client, projectId])
 
-  const accessRequestStatus = useObservable(accessRequests$, INITIAL_ACCESS_REQUEST_STATUS)
+  const {loading, error, hasExpiredPendingRequest, ...fetched} = useObservable(
+    accessRequests$,
+    INITIAL_ACCESS_REQUEST_STATUS,
+  )
 
-  const loading = accessRequestStatus.loading
-  const fetchedHasPendingRequest = accessRequestStatus.hasPendingRequest
-  const fetchedHasExpiredPendingRequest = accessRequestStatus.hasExpiredPendingRequest
-  const fetchedHasBeenDenied = accessRequestStatus.hasBeenDenied
-  const accessError = accessRequestStatus.error ?? null
-
-  const resolvedError = authError || accessError
-  const resolvedHasPendingRequest = fetchedHasPendingRequest || hasPendingRequest
-  const resolvedHasBeenDenied = fetchedHasBeenDenied || hasBeenDenied
-  const resolvedHasExpiredPendingRequest = fetchedHasExpiredPendingRequest
+  const hasPendingRequest = fetched.hasPendingRequest || submittedRequest
+  const hasBeenDenied = fetched.hasBeenDenied || submitDenied
+  const noteLength = note?.length ?? 0
 
   const handleSubmitRequest = useCallback(() => {
     // If we haven't loaded the client or projectId from
@@ -223,7 +184,7 @@ export function RequestAccessScreen() {
         body: {note, requestUrl: window?.location.href, type: 'access'},
       })
       .then((request) => {
-        if (request) setHasPendingRequest(true)
+        if (request) setSubmittedRequest(true)
       })
       .catch((err) => {
         const statusCode = err?.response?.statusCode
@@ -236,7 +197,7 @@ export function RequestAccessScreen() {
         if (statusCode === 409) {
           // If we get a 409, user has been denied on this project or has a valid pending request
           // valid pending request should be handled by GET request above
-          setHasBeenDenied(true)
+          setSubmitDenied(true)
           setMsgError(errMessage)
         } else {
           toast.push({
@@ -256,7 +217,7 @@ export function RequestAccessScreen() {
   if (loading) return <LoadingBlock />
   // Fallback to the old not authorized screen
   // if error communicating with Access API
-  if (resolvedError) return <NotAuthenticatedScreen />
+  if (error) return <NotAuthenticatedScreen />
   return (
     <Card height="fill">
       <Dialog id="not-authorized-dialog" header="Not authorized" width={1}>
@@ -270,25 +231,25 @@ export function RequestAccessScreen() {
               {providerHelp}
               ).
             </Text>
-            {hasTooManyRequests || resolvedHasPendingRequest || resolvedHasBeenDenied ? (
+            {hasTooManyRequests || hasPendingRequest || hasBeenDenied ? (
               <Card
-                tone={resolvedHasPendingRequest ? 'transparent' : 'caution'}
+                tone={hasPendingRequest ? 'transparent' : 'caution'}
                 padding={3}
                 radius={2}
                 shadow={1}
               >
                 <Text size={1}>
-                  {hasTooManyRequests && !resolvedHasPendingRequest && (
+                  {hasTooManyRequests && !hasPendingRequest && (
                     <>
                       {msgError ??
                         `You've reached the limit for access requests across all projects. Please wait
                       before submitting more requests or contact an admin for assistance.`}
                     </>
                   )}
-                  {resolvedHasPendingRequest && (
+                  {hasPendingRequest && (
                     <>Your request to access this project is pending approval.</>
                   )}
-                  {resolvedHasBeenDenied && (
+                  {hasBeenDenied && (
                     <>{msgError ?? `Your request to access this project has been declined.`}</>
                   )}
                 </Text>
@@ -296,7 +257,7 @@ export function RequestAccessScreen() {
             ) : (
               <>
                 <Text>
-                  {resolvedHasExpiredPendingRequest ? (
+                  {hasExpiredPendingRequest ? (
                     <>
                       Your previous request has expired. You may again request access below with an
                       optional note. The administrator(s) will receive an email letting them know
@@ -316,10 +277,7 @@ export function RequestAccessScreen() {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleSubmitRequest()
                     }}
-                    onChange={(e) => {
-                      setNote(e.currentTarget.value)
-                      setNoteLength(e.currentTarget.value.length)
-                    }}
+                    onChange={(e) => setNote(e.currentTarget.value)}
                     value={note}
                     placeholder="Add your note…"
                   />
@@ -336,11 +294,11 @@ export function RequestAccessScreen() {
               onClick={handleLogout}
               size="large"
             />
-            {!hasTooManyRequests && !resolvedHasBeenDenied && (
+            {!hasTooManyRequests && !hasBeenDenied && (
               <Button
                 mode="default"
-                text={resolvedHasPendingRequest ? 'Request sent' : 'Request access'}
-                disabled={resolvedHasPendingRequest || isSubmitting}
+                text={hasPendingRequest ? 'Request sent' : 'Request access'}
+                disabled={hasPendingRequest || isSubmitting}
                 loading={isSubmitting}
                 tone="default"
                 onClick={handleSubmitRequest}

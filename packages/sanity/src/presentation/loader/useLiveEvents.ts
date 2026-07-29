@@ -1,12 +1,18 @@
 import {type LiveEvent, type LiveEventMessage} from '@sanity/client'
 import {useDeferredValue, useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, map, of, scan} from 'rxjs'
+import {scan} from 'rxjs'
 import {type SanityClient} from 'sanity'
+
+/**
+ * Upper bound on retained messages. Only the most recent sync tags are useful for refetching,
+ * and the list would otherwise grow for the lifetime of the connection.
+ */
+const MAX_BUFFERED_MESSAGES = 100
 
 type State = {
   /**
-   * Growing list over live events with Sync Tags,
+   * List over the most recent live events with Sync Tags, capped at `MAX_BUFFERED_MESSAGES`,
    * that can be used to refetch with Sanity Client, using the id as the lastLiveEventId parameter
    */
   messages: LiveEventMessage[]
@@ -22,7 +28,7 @@ export function reducer(state: State, event: LiveEvent): State {
     case 'message':
       return {
         ...state,
-        messages: [...state.messages, event],
+        messages: [...state.messages, event].slice(-MAX_BUFFERED_MESSAGES),
       }
     case 'reconnect':
     case 'restart':
@@ -50,33 +56,16 @@ export const initialState: State = {
   resets: 0,
 }
 
-type LiveEventsResult = {type: 'value'; state: State} | {type: 'error'; error: unknown}
-
-const INITIAL_RESULT: LiveEventsResult = {type: 'value', state: initialState}
-
 export function useLiveEvents(client: SanityClient): State {
   const state$ = useMemo(
     () =>
-      client.live.events({includeDrafts: true, tag: 'presentation-loader'}).pipe(
-        scan(reducer, initialState),
-        map((state): LiveEventsResult => ({type: 'value', state})),
-        catchError((err: unknown) =>
-          of({
-            type: 'error' as const,
-            error:
-              err instanceof Error
-                ? err
-                : new Error('Unexpected error in useLiveEvents', {cause: err}),
-          }),
-        ),
-      ),
+      client.live
+        .events({includeDrafts: true, tag: 'presentation-loader'})
+        .pipe(scan(reducer, initialState)),
     [client.live],
   )
 
-  const result = useObservable(state$, INITIAL_RESULT)
-  if (result.type === 'error') {
-    throw result.error
-  }
-
-  return useDeferredValue(result.state)
+  // Stream errors are re-thrown by `useObservable` during render, so they reach the nearest
+  // error boundary without any explicit handling here.
+  return useDeferredValue(useObservable(state$, initialState))
 }

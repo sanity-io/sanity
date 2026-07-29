@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, map, of, ReplaySubject} from 'rxjs'
+import {map, ReplaySubject} from 'rxjs'
 import {type RouterState, useRouter} from 'sanity/router'
 
 import {LOADING_PANE} from '../constants'
@@ -65,7 +65,7 @@ export function useResolvedPanes(): Panes {
 
   const routerPanesStream = useRouterPanesStream()
 
-  const dataResult$ = useMemo(
+  const data$ = useMemo(
     () =>
       createResolvedPaneNodeStream({
         rootPaneNode,
@@ -114,15 +114,13 @@ export function useResolvedPanes(): Panes {
             resolvedPanes: paneDataItems.map((pane) => pane.pane),
           }
         }),
-        map((data) => ({type: 'value' as const, value: data})),
-        catchError((error) => of({type: 'error' as const, error})),
       ),
     [rootPaneNode, routerPanesStream, structureContext],
   )
 
-  const dataResult = useObservable(dataResult$, {type: 'value', value: INITIAL_DATA})
-  if (dataResult.type === 'error') throw dataResult.error
-  const data = dataResult.value
+  // Stream errors are re-thrown by `useObservable` during render, so they bubble to the
+  // nearest error boundary without any explicit handling here.
+  const data = useObservable(data$, INITIAL_DATA)
 
   useEffect(
     function maybeOpenDefaultPanes() {
