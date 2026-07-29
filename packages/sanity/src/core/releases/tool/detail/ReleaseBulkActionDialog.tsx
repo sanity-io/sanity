@@ -1,13 +1,61 @@
 import {Box, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {firstValueFrom} from 'rxjs'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {useClient} from '../../../hooks/useClient'
+import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useGrantsStore} from '../../../store/datastores'
+import {getDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {getPublishedId, getVersionFromId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type DocumentInRelease} from './types'
 
 export type ReleaseBulkAction = 'discard' | 'unpublish'
+
+async function filterDocumentsWithUnpublishPermission(
+  documents: DocumentInRelease[],
+  {
+    client,
+    schema,
+    grantsStore,
+    userId,
+  }: {
+    client: ReturnType<typeof useClient>
+    schema: ReturnType<typeof useSchema>
+    grantsStore: ReturnType<typeof useGrantsStore>
+    userId: string | undefined
+  },
+): Promise<DocumentInRelease[]> {
+  const permissionResults = await Promise.all(
+    documents.map(async (doc) => {
+      const publishedId = getPublishedId(doc.document._id)
+      const type = doc.document._type
+      const version = getVersionFromId(doc.document._id)
+
+      const {granted} = await firstValueFrom(
+        getDocumentPairPermissions({
+          client,
+          schema,
+          grantsStore,
+          id: publishedId,
+          type,
+          version,
+          permission: 'unpublish',
+          userId,
+        }),
+      )
+
+      return granted ? doc : null
+    }),
+  )
+
+  return permissionResults.filter((doc): doc is DocumentInRelease => doc !== null)
+}
 
 /**
  * Confirmation dialog for a bulk action (Discard versions / Unpublish) over the selected release
@@ -31,6 +79,10 @@ export function ReleaseBulkActionDialog({
 }): React.JSX.Element {
   const {t} = useTranslation(releasesLocaleNamespace)
   const toast = useToast()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const schema = useSchema()
+  const grantsStore = useGrantsStore()
+  const currentUser = useCurrentUser()
   const {discardVersion, unpublishVersion} = useVersionOperations()
   const [isProcessing, setIsProcessing] = useState(false)
   const count = documents.length
@@ -53,8 +105,25 @@ export function ReleaseBulkActionDialog({
   const handleConfirm = useCallback(async () => {
     setIsProcessing(true)
 
+    let targets = documents
+
+    if (action === 'unpublish') {
+      targets = await filterDocumentsWithUnpublishPermission(documents, {
+        client,
+        schema,
+        grantsStore,
+        userId: currentUser?.id,
+      })
+    }
+
+    if (targets.length === 0) {
+      setIsProcessing(false)
+      onClose()
+      return
+    }
+
     const results = await Promise.allSettled(
-      documents.map((doc) =>
+      targets.map((doc) =>
         action === 'discard'
           ? discardVersion(releaseId, doc.document._id)
           : unpublishVersion(doc.document._id),
@@ -62,7 +131,7 @@ export function ReleaseBulkActionDialog({
     )
 
     const failed = results.filter((result) => result.status === 'rejected').length
-    const succeeded = count - failed
+    const succeeded = targets.length - failed
 
     if (succeeded > 0) {
       toast.push({
@@ -90,12 +159,15 @@ export function ReleaseBulkActionDialog({
     onClose()
   }, [
     action,
-    count,
+    client,
+    currentUser?.id,
     discardVersion,
     documents,
+    grantsStore,
     onClose,
     onSuccess,
     releaseId,
+    schema,
     t,
     toast,
     unpublishVersion,
