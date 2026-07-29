@@ -5,6 +5,7 @@ import {type MouseEvent, type RefObject, useCallback, useRef, useState} from 're
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TargetPerspective} from '../../perspective/types'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
+import {useSetVariant} from '../../perspective/useSetVariant'
 import {useSingleDocRelease} from '../../singleDocRelease/context/SingleDocReleaseProvider'
 import {useClearScheduledDraftPerspectiveOnDelete} from '../../singleDocRelease/hooks/useClearScheduledDraftPerspectiveOnDelete'
 import {
@@ -145,6 +146,9 @@ export function useVersionContextMenu(
 
   const {createVariantDocument} = useVariantDocumentOperations()
 
+  const stubVariantRef = documentVersionInfoStub?._system.variant?._ref
+  const variantRef = isVariantId(stubVariantRef) ? stubVariantRef : undefined
+
   const [contextMenu, setContextMenu] = useState<VersionContextMenuState>({open: false})
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
@@ -155,6 +159,7 @@ export function useVersionContextMenu(
   const {t} = useTranslation()
   const {onSetScheduledDraftPerspective} = useSingleDocRelease()
   const setPerspective = useSetPerspective()
+  const setVariant = useSetVariant()
 
   const closeContextMenu = useCallback(() => setContextMenu(CONTEXT_MENU_CLOSED), [])
 
@@ -195,13 +200,19 @@ export function useVersionContextMenu(
   }, [])
 
   const handleCopyToDraftsNavigate = useCallback(() => {
-    setPerspective('drafts')
+    if (variantRef) {
+      // Keep the variant applied, otherwise the copy lands out of view.
+      setVariant({variantId: variantRef, perspective: 'drafts'})
+    } else {
+      setPerspective('drafts')
+    }
     onCopyToDraftsComplete?.()
-  }, [setPerspective, onCopyToDraftsComplete])
+  }, [variantRef, setVariant, setPerspective, onCopyToDraftsComplete])
 
   const {handleCopyToDrafts} = useCopyToDrafts({
     documentId: documentGroupId,
     fromRelease: bundleId,
+    fromVariant: variantRef,
     onNavigate: handleCopyToDraftsNavigate,
     onConfirmationRequest: () => setDialogState('copy-to-drafts'),
   })
@@ -209,11 +220,13 @@ export function useVersionContextMenu(
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
       const runCreateVersion = async () => {
-        if (documentVersionInfoStub && isVariantId(documentVersionInfoStub._system.variant?._ref)) {
+        if (documentVersionInfoStub && variantRef) {
+          // A variant version can only be created through the variant action, otherwise
+          // the new version would not belong to the variant.
           await createVariantDocument({
             baseId: documentVersionInfoStub._id,
-            documentGroupId: documentVersionInfoStub._system.group._ref,
-            variant: {_id: documentVersionInfoStub._system.variant._ref},
+            documentGroupId,
+            variant: {_id: variantRef},
             selectedPerspective: isReleaseDocumentId(targetRelease)
               ? getReleaseIdFromReleaseDocumentId(targetRelease)
               : targetRelease,
@@ -239,7 +252,9 @@ export function useVersionContextMenu(
     [
       closeContextMenu,
       createVersion,
+      documentGroupId,
       versionId,
+      variantRef,
       t,
       toast,
       createVariantDocument,

@@ -7,7 +7,8 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, getDraftId} from '../../util/draftUtils'
 import {getTargetDocument} from '../../util/getTargetDocument'
-import {isPublishedVersion} from '../../util/versionsUtils'
+import {type VariantDocumentAction} from '../../variants/store/variantsClient'
+import {getVariantId} from '../../variants/tool/util'
 import {useDocumentVersions} from './useDocumentVersions'
 
 export interface CopyToDraftsOptions {
@@ -17,6 +18,11 @@ export interface CopyToDraftsOptions {
 export interface UseCopyToDraftsOptions {
   documentId: string
   fromRelease: string
+  /**
+   * The variant reference (`_.variants.<id>`) of the version being copied. When
+   * set, the copy targets the variant's draft rather than the base draft.
+   */
+  fromVariant?: string
   onNavigate: () => void
   onConfirmationRequest: () => void
 }
@@ -26,7 +32,7 @@ export interface UseCopyToDraftsReturn {
 }
 
 export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraftsReturn {
-  const {documentId, fromRelease, onNavigate, onConfirmationRequest} = options
+  const {documentId, fromRelease, fromVariant, onNavigate, onConfirmationRequest} = options
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const {t} = useTranslation()
@@ -34,31 +40,35 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
   const publishedId = useMemo(() => getPublishedId(documentId), [documentId])
   const {versions} = useDocumentVersions({documentId: publishedId})
   const sourceDocumentInfo = useMemo(() => {
-    if (fromRelease === 'published') {
-      return getTargetDocument({
-        bundle: 'published',
-        variant: undefined,
-        documentVersions: versions,
-      })
-    }
     if (fromRelease === 'draft') {
       return undefined
     }
+    if (fromRelease === 'published') {
+      return getTargetDocument({
+        bundle: 'published',
+        variant: fromVariant,
+        documentVersions: versions,
+      })
+    }
     return versions.find((version) => {
-      // FromRelease now matches the scopeId of the version.
-      // So it will find the correct document, in the follow up enabling copying variants
-      // We need to check the variant and the release
-      // For that we can use the `getTargetDocument` function
-      return version._system.scopeId === fromRelease
+      const inVariant = fromVariant
+        ? version._system.variant?._ref === fromVariant
+        : !version._system.variant
+      // `fromRelease` matches a base version's `scopeId`, but a variant version's `scopeId`
+      // is its variant scope, so variant versions are matched by their bundle instead.
+      const inBundle = fromVariant
+        ? version._system.bundleId === fromRelease
+        : version._system.scopeId === fromRelease
+      return inVariant && inBundle
     })
-  }, [fromRelease, versions])
+  }, [fromRelease, fromVariant, versions])
 
   const hasDraftVersion = useMemo(
     () =>
       Boolean(
-        getTargetDocument({bundle: 'drafts', variant: undefined, documentVersions: versions}),
+        getTargetDocument({bundle: 'drafts', variant: fromVariant, documentVersions: versions}),
       ),
-    [versions],
+    [fromVariant, versions],
   )
 
   const handleCopyToDrafts = useCallback(
@@ -74,27 +84,47 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
             `Source document with id: ${documentId} and release: ${fromRelease} not found`,
           )
         }
-        if (sourceDocumentInfo._system.variant?._ref) {
-          throw new Error('Copying variant documents to drafts is not supported yet')
-        }
+        const actions: (Action | VariantDocumentAction)[] = []
 
-        const actions: Action[] = []
+        if (fromVariant) {
+          const variantId = getVariantId(fromVariant)
 
-        if (hasDraftVersion) {
+          if (hasDraftVersion) {
+            actions.push({
+              actionType: 'sanity.action.document.variant.delete',
+              bundleId: 'drafts',
+              publishedId,
+              variantId,
+            })
+          }
+
           actions.push({
-            actionType: 'sanity.action.document.discard',
-            draftId: getDraftId(publishedId),
+            actionType: 'sanity.action.document.variant.create',
+            bundleId: 'drafts',
+            publishedId,
+            variantId,
+            baseId: sourceDocumentInfo._id,
+            ifBaseRevisionId: sourceDocumentInfo._rev,
+          })
+        } else {
+          if (hasDraftVersion) {
+            actions.push({
+              actionType: 'sanity.action.document.discard',
+              draftId: getDraftId(publishedId),
+            })
+          }
+
+          actions.push({
+            actionType: 'sanity.action.document.version.create',
+            versionId: getDraftId(publishedId),
+            baseId: sourceDocumentInfo._id,
+            ifBaseRevisionId: sourceDocumentInfo._rev,
+            publishedId,
           })
         }
 
-        actions.push({
-          actionType: 'sanity.action.document.version.create',
-          versionId: getDraftId(publishedId),
-          baseId: sourceDocumentInfo._id,
-          ifBaseRevisionId: sourceDocumentInfo._rev,
-          publishedId,
-        })
-        await client.action(actions, {
+        // `client.action` is not typed for variant actions yet; see `variantsClient`.
+        await client.action(actions as Action[], {
           tag: 'document.copy-to-drafts',
         })
 
@@ -115,6 +145,7 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
       client,
       documentId,
       fromRelease,
+      fromVariant,
       hasDraftVersion,
       sourceDocumentInfo,
       publishedId,
