@@ -9,7 +9,7 @@ import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
-import {useAnyDocumentInReleaseHasPairPermission} from './releaseBulkDocumentPermissions'
+import {useAllDocumentsInReleaseHavePairPermission} from './releaseBulkDocumentPermissions'
 import {isDocumentEligibleForUnpublish} from './releaseDocumentActions'
 import {type DocumentInReleaseDetail} from './ReleaseSummary'
 
@@ -40,29 +40,34 @@ export function ReleaseBulkSelectionActions({
       .filter((row): row is DocumentInReleaseDetail => Boolean(row))
   }, [filterTabRows, selectedKeys])
 
-  const hasUnpublishEligibleSelection = selectedRows.some(isDocumentEligibleForUnpublish)
+  const allSelectedEligibleForUnpublish =
+    selectedRows.length > 0 && selectedRows.every(isDocumentEligibleForUnpublish)
 
   const {granted: canDiscardSelection, isLoading: isDiscardPermissionsLoading} =
-    useAnyDocumentInReleaseHasPairPermission(selectedRows, 'discardVersion')
+    useAllDocumentsInReleaseHavePairPermission(selectedRows, 'discardVersion')
 
   const {granted: canUnpublishSelection, isLoading: isUnpublishPermissionsLoading} =
-    useAnyDocumentInReleaseHasPairPermission(selectedRows, 'unpublish')
+    useAllDocumentsInReleaseHavePairPermission(selectedRows, 'unpublish')
 
-  const isDiscardDisabled = !canDiscardSelection || isDiscardPermissionsLoading
+  const isDiscardDisabled =
+    selectedRows.length === 0 || !canDiscardSelection || isDiscardPermissionsLoading
   const discardTooltip = t('permissions.error.discard-version')
 
   const isUnpublishDisabled =
-    !hasUnpublishEligibleSelection || !canUnpublishSelection || isUnpublishPermissionsLoading
+    selectedRows.length === 0 ||
+    !allSelectedEligibleForUnpublish ||
+    !canUnpublishSelection ||
+    isUnpublishPermissionsLoading
 
   const unpublishTooltip = useMemo(() => {
     if (!canUnpublishSelection || isUnpublishPermissionsLoading) {
       return t('permissions.error.unpublish')
     }
-    if (!hasUnpublishEligibleSelection) {
+    if (!allSelectedEligibleForUnpublish) {
       return t('unpublish.no-published-version')
     }
     return null
-  }, [canUnpublishSelection, hasUnpublishEligibleSelection, isUnpublishPermissionsLoading, t])
+  }, [allSelectedEligibleForUnpublish, canUnpublishSelection, isUnpublishPermissionsLoading, t])
 
   if (compact) {
     return (
