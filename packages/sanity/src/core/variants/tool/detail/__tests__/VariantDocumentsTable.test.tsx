@@ -125,11 +125,18 @@ const mockRows: DocumentInVariantGroup[] = [
 ]
 
 describe('VariantDocumentsTable', () => {
-  const renderTable = async (rows: DocumentInVariantGroup[] = mockRows, loading = false) => {
+  const renderTable = async (
+    rows: DocumentInVariantGroup[] = mockRows,
+    loading = false,
+    variantId = 'summer',
+  ) => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<VariantDocumentsTable rows={rows} loading={loading} />, {wrapper})
+    const result = render(
+      <VariantDocumentsTable rows={rows} loading={loading} variantId={variantId} />,
+      {wrapper},
+    )
     // Search now lives in the command lane (only shown with documents), so settle on the table
     // container, which is always present regardless of rows/loading.
     await screen.findByTestId('variant-documents-table')
@@ -297,7 +304,7 @@ describe('VariantDocumentsTable', () => {
     expect(screen.queryByText('2 selected')).not.toBeInTheDocument()
   })
 
-  it('shows Publish and Add to release as primary actions with Unpublish and Delete under a more menu', async () => {
+  it('enables Publish, Unpublish, and Delete bulk actions with Add to release still disabled', async () => {
     const user = userEvent.setup()
 
     await renderTable()
@@ -308,14 +315,31 @@ describe('VariantDocumentsTable', () => {
 
     await user.click(screen.getAllByRole('checkbox', {name: 'Select document'})[0]!)
 
-    // Publish + Add to release are the primary constructive buttons (stubbed disabled).
-    expect(screen.getByTestId('variant-bulk-publish')).toBeDisabled()
+    // Publish is wired; Add to release still needs a target-release picker, so it stays disabled.
+    expect(screen.getByTestId('variant-bulk-publish')).toBeEnabled()
     expect(screen.getByTestId('variant-bulk-add-to-release')).toBeDisabled()
 
-    // Unpublish + the destructive Delete live behind the "more" overflow.
+    // Unpublish + the destructive Delete live behind the "more" overflow, both wired.
     await user.click(screen.getByTestId('variant-bulk-more'))
-    expect(await screen.findByText('Unpublish')).toBeInTheDocument()
-    expect(screen.getByTestId('variant-bulk-delete')).toBeInTheDocument()
+    expect(await screen.findByTestId('variant-bulk-unpublish')).toBeEnabled()
+    expect(screen.getByTestId('variant-bulk-delete')).toBeEnabled()
+  })
+
+  it('opens the itemized confirm dialog with per-bundle targets when a bulk action is triggered', async () => {
+    const user = userEvent.setup()
+
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    // Row 1 (published + drafts) — Publish targets only its draft, grouped under the Drafts bundle.
+    await user.click(screen.getAllByRole('checkbox', {name: 'Select document'})[0]!)
+    await user.click(screen.getByTestId('variant-bulk-publish'))
+
+    expect(await screen.findByTestId('variant-bulk-publish-dialog')).toBeInTheDocument()
+    expect(screen.getByText('Drafts')).toBeInTheDocument()
   })
 
   it('puts search in the command lane, not the column header', async () => {

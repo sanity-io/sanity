@@ -4,7 +4,7 @@ import {PublishIcon} from '@sanity/icons/Publish'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {Flex, Menu, MenuDivider} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {Fragment, useCallback, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -20,12 +20,21 @@ import {searchDocumentRelease} from '../../../releases/tool/detail/documentTable
 import {variantsLocaleNamespace} from '../../i18n'
 import {computeReleaseLaneSegments, RELEASE_LANE_ALL, rowMatchesLane} from './releaseLane'
 import {type DocumentInVariantGroup} from './types'
+import {VariantBulkActionDialog} from './VariantBulkActionDialog'
+import {type VariantBulkAction} from './variantBulkActions'
 import {VariantDocumentActions} from './variantDocumentTable/VariantDocumentActions'
 import {getVariantDocumentTableColumnDefs} from './variantDocumentTable/VariantDocumentTableColumnDefs'
 import {VariantReleaseLane} from './VariantReleaseLane'
 
 function searchVariantDocument(row: DocumentInVariantGroup, searchTerm: string): boolean {
   return searchDocumentRelease(row.document, searchTerm)
+}
+
+interface PendingBulkAction {
+  action: VariantBulkAction
+  groups: DocumentInVariantGroup[]
+  /** Clears the table selection on success (absent for a single-row action). */
+  clear?: () => void
 }
 
 export function VariantDocumentsTable({
@@ -49,6 +58,27 @@ export function VariantDocumentsTable({
     () => computeReleaseLaneSegments(rows, releasesById),
     [rows, releasesById],
   )
+
+  const rowsById = useMemo(() => new Map(rows.map((row) => [row.groupId, row])), [rows])
+
+  // The active bulk/single action awaiting confirmation. Both the selection toolbar and the per-row
+  // menu funnel into this one dialog, so wiring lives in a single place (the disambiguation dialog
+  // resolves the flat selection into concrete per-bundle targets).
+  const [pendingAction, setPendingAction] = useState<PendingBulkAction | null>(null)
+
+  const openBulkAction = useCallback(
+    (action: VariantBulkAction, selectedKeys: string[], clear: () => void) => {
+      const groups = selectedKeys
+        .map((key) => rowsById.get(key))
+        .filter((row): row is DocumentInVariantGroup => Boolean(row))
+      if (groups.length > 0) setPendingAction({action, groups, clear})
+    },
+    [rowsById],
+  )
+
+  const openRowAction = useCallback((action: VariantBulkAction, row: DocumentInVariantGroup) => {
+    setPendingAction({action, groups: [row]})
+  }, [])
 
   // If the active release lane disappears (e.g. its documents move), fall back to "All".
   const resolvedActiveLane =
@@ -74,9 +104,13 @@ export function VariantDocumentsTable({
 
   const renderRowActions = useCallback(
     ({datum}: {datum: unknown}) => (
-      <VariantDocumentActions row={datum as DocumentInVariantGroup} t={t} />
+      <VariantDocumentActions
+        onAction={openRowAction}
+        row={datum as DocumentInVariantGroup}
+        t={t}
+      />
     ),
-    [t],
+    [openRowAction, t],
   )
 
   const hasReleaseControls = !loading && rows.length > 0 && segments.length > 1
@@ -96,16 +130,16 @@ export function VariantDocumentsTable({
       },
       selectAllTestId: 'variant-bulk-select-all',
       // Primary constructive actions Publish (green) + Add to release; Unpublish + the destructive
-      // Delete under the overflow. On narrow widths everything folds into the overflow. Stubbed
-      // (disabled) until wired up (FH-113).
-      renderActions: ({compact}) => (
+      // Delete under the overflow. On narrow widths everything folds into the overflow. Add to
+      // release still needs a target-release picker, so it stays disabled (tracked separately).
+      renderActions: ({selectedKeys, compact, clear}) => (
         <Flex align="center" flex="none" gap={2}>
           {!compact && (
             <>
               <Button
                 data-testid="variant-bulk-publish"
-                disabled
                 icon={PublishIcon}
+                onClick={() => openBulkAction('publish', selectedKeys, clear)}
                 text={t('detail.documents.bulk.publish')}
                 tone="positive"
               />
@@ -134,8 +168,8 @@ export function VariantDocumentsTable({
                   <>
                     <MenuItem
                       data-testid="variant-bulk-publish"
-                      disabled
                       icon={PublishIcon}
+                      onClick={() => openBulkAction('publish', selectedKeys, clear)}
                       text={t('detail.documents.bulk.publish')}
                       tone="positive"
                     />
@@ -149,14 +183,15 @@ export function VariantDocumentsTable({
                   </>
                 )}
                 <MenuItem
-                  disabled
+                  data-testid="variant-bulk-unpublish"
                   icon={UnpublishIcon}
+                  onClick={() => openBulkAction('unpublish', selectedKeys, clear)}
                   text={t('detail.documents.bulk.unpublish')}
                 />
                 <MenuItem
                   data-testid="variant-bulk-delete"
-                  disabled
                   icon={TrashIcon}
+                  onClick={() => openBulkAction('delete', selectedKeys, clear)}
                   text={t('detail.documents.bulk.delete')}
                   tone="critical"
                 />
@@ -167,35 +202,47 @@ export function VariantDocumentsTable({
         </Flex>
       ),
     }),
-    [t],
+    [openBulkAction, t],
   )
 
   return (
-    <DocumentTable<DocumentInVariantGroup>
-      columnDefs={columnDefs}
-      defaultSort={{column: 'documentGroup', direction: 'asc'}}
-      emptyState={t('detail.documents.no-documents')}
-      filterTabs={
-        hasReleaseControls ? (
-          <VariantReleaseLane
-            activeLane={resolvedActiveLane}
-            onSelectLane={handleSelectLane}
-            segments={segments}
-            totalCount={rows.length}
-          />
-        ) : undefined
-      }
-      getRowKey={(row) => row.groupId}
-      id="variant-documents-table"
-      loading={loading}
-      rowActions={renderRowActions}
-      rows={laneRows}
-      // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
-      rowId="rowKey"
-      searchPlaceholder={t('detail.documents.table.search-placeholder')}
-      searchPredicate={searchVariantDocument}
-      searchTestId="variant-documents-search"
-      selection={selection}
-    />
+    <Fragment>
+      <DocumentTable<DocumentInVariantGroup>
+        columnDefs={columnDefs}
+        defaultSort={{column: 'documentGroup', direction: 'asc'}}
+        emptyState={t('detail.documents.no-documents')}
+        filterTabs={
+          hasReleaseControls ? (
+            <VariantReleaseLane
+              activeLane={resolvedActiveLane}
+              onSelectLane={handleSelectLane}
+              segments={segments}
+              totalCount={rows.length}
+            />
+          ) : undefined
+        }
+        getRowKey={(row) => row.groupId}
+        id="variant-documents-table"
+        loading={loading}
+        rowActions={renderRowActions}
+        rows={laneRows}
+        // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+        rowId="rowKey"
+        searchPlaceholder={t('detail.documents.table.search-placeholder')}
+        searchPredicate={searchVariantDocument}
+        searchTestId="variant-documents-search"
+        selection={selection}
+      />
+      {pendingAction && variantId && (
+        <VariantBulkActionDialog
+          action={pendingAction.action}
+          groups={pendingAction.groups}
+          onClose={() => setPendingAction(null)}
+          onSuccess={() => pendingAction.clear?.()}
+          releasesById={releasesById}
+          variantId={variantId}
+        />
+      )}
+    </Fragment>
   )
 }
