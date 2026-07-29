@@ -59,17 +59,22 @@ function createRow(id: string): DocumentInReleaseDetail {
 describe('ReleaseBulkSelectionActions', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockUseAnyDocumentInReleaseHasPairPermission.mockReturnValue({
-      granted: true,
-      isLoading: false,
-    })
+    mockUseAnyDocumentInReleaseHasPairPermission.mockImplementation(
+      (_documents: unknown, permission: string) => ({
+        granted: true,
+        isLoading: false,
+        permission,
+      }),
+    )
   })
 
   it('disables bulk discard when the user lacks discardVersion on the selection', async () => {
-    mockUseAnyDocumentInReleaseHasPairPermission.mockReturnValue({
-      granted: false,
-      isLoading: false,
-    })
+    mockUseAnyDocumentInReleaseHasPairPermission.mockImplementation(
+      (_documents: unknown, permission: string) => ({
+        granted: permission !== 'discardVersion',
+        isLoading: false,
+      }),
+    )
 
     render(
       <ReleaseBulkSelectionActions
@@ -87,10 +92,12 @@ describe('ReleaseBulkSelectionActions', () => {
   })
 
   it('disables bulk discard while permissions are loading', async () => {
-    mockUseAnyDocumentInReleaseHasPairPermission.mockReturnValue({
-      granted: false,
-      isLoading: true,
-    })
+    mockUseAnyDocumentInReleaseHasPairPermission.mockImplementation(
+      (_documents: unknown, permission: string) => ({
+        granted: true,
+        isLoading: permission === 'discardVersion',
+      }),
+    )
 
     render(
       <ReleaseBulkSelectionActions
@@ -103,5 +110,49 @@ describe('ReleaseBulkSelectionActions', () => {
     )
 
     expect(screen.getByTestId('release-bulk-discard')).toBeDisabled()
+  })
+
+  it('disables bulk unpublish when the user lacks unpublish on the selection', async () => {
+    mockUseAnyDocumentInReleaseHasPairPermission.mockImplementation(
+      (_documents: unknown, permission: string) => ({
+        granted: permission !== 'unpublish',
+        isLoading: false,
+      }),
+    )
+
+    render(
+      <ReleaseBulkSelectionActions
+        compact={false}
+        filterTabRows={[createRow('versions.rTest.doc-one')]}
+        onDiscard={vi.fn()}
+        onUnpublish={vi.fn()}
+        selectedKeys={['versions.rTest.doc-one']}
+      />,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('release-bulk-unpublish')).toBeDisabled()
+    })
+  })
+
+  it('disables bulk unpublish while permissions are loading', async () => {
+    mockUseAnyDocumentInReleaseHasPairPermission.mockImplementation(
+      (_documents: unknown, permission: string) => ({
+        granted: true,
+        isLoading: permission === 'unpublish',
+      }),
+    )
+
+    render(
+      <ReleaseBulkSelectionActions
+        compact={false}
+        filterTabRows={[createRow('versions.rTest.doc-one')]}
+        onDiscard={vi.fn()}
+        onUnpublish={vi.fn()}
+        selectedKeys={['versions.rTest.doc-one']}
+      />,
+    )
+
+    expect(screen.getByTestId('release-bulk-unpublish')).toBeDisabled()
   })
 })
