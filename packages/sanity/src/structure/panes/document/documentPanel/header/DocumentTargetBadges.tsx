@@ -24,7 +24,7 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {Tooltip} from '../../../../../ui-components'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 
