@@ -220,9 +220,11 @@ export function DocumentTable<Row extends object>({
   )
 
   const hasDocuments = !loading && rows.length > 0
-  // Keep the lane mounted for filter-owning surfaces even when a filter/search empties the rows, so
-  // the controls to undo that never disappear with the results.
-  const showCommandLane = hasDocuments || (alwaysShowCommandLane && !loading)
+  // Keep the lane mounted for filter-owning surfaces even when a filter/search empties the rows (so
+  // the controls to undo that never disappear with the results) AND during the initial load (so the
+  // filter-tab loading skeletons stay up and the search/filters don't pop in with a layout shift
+  // once documents arrive).
+  const showCommandLane = hasDocuments || alwaysShowCommandLane
   const showBulkToolbar = Boolean(selection) && selectedVisibleCount > 0
 
   return (
