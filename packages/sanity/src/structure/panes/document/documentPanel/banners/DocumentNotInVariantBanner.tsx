@@ -63,10 +63,11 @@ export function DocumentNotInVariantBanner() {
     setStatus('in-progress')
     try {
       if (!value._createdAt) {
+        const {_id, _rev, _createdAt, _updatedAt, _system, ...document} = value
         // The document doesn't exists yet, so we can't use it's id as a base.
         // Instead, let's pass it as the initial value for the new document.
         await createVariantDocument({
-          document: value,
+          document: document,
           documentGroupId: documentId,
           variant: selectedVariant,
           selectedPerspective,
