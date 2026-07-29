@@ -1,17 +1,33 @@
 import {type Schema} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
+// oxlint-disable-next-line @sanity/i18n/no-i18next-import -- test stub for column defs
+import {type TFunction} from 'i18next'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {useSchema} from '../../../../../hooks/useSchema'
-import {DocumentType} from '../DocumentTableColumnDefs'
+import {type InjectedTableProps} from '../../../components/Table/types'
+import {type BundleDocumentRow} from '../../ReleaseSummary'
+import {DocumentType, getDocumentTableColumnDefs} from '../DocumentTableColumnDefs'
 
 vi.mock('../../../../../hooks/useSchema', () => ({useSchema: vi.fn()}))
 
 vi.mock('@sanity/ui', async (importOriginal) => ({
   ...(await importOriginal()),
-  Text: ({children, size: _size}: {children: React.ReactNode; size?: number}) => (
-    <span data-ui="Text">{children}</span>
+  Text: ({
+    children,
+    size: _size,
+    ...rest
+  }: {children: React.ReactNode; size?: number} & Record<string, unknown>) => (
+    <span data-ui="Text" {...rest}>
+      {children}
+    </span>
   ),
+  Flex: ({children}: {children: React.ReactNode}) => <div data-ui="Flex">{children}</div>,
+  Box: ({children}: {children: React.ReactNode}) => <div data-ui="Box">{children}</div>,
+}))
+
+vi.mock('../../../../../../ui-components/toneIcon/ToneIcon', () => ({
+  ToneIcon: () => <span data-testid="tone-icon" />,
 }))
 
 // Stub Tooltip so we can assert its presence without a portal/full DOM tree.
@@ -31,6 +47,66 @@ function buildMockSchema(typeTitle: string | undefined): Schema {
     get: vi.fn().mockReturnValue(typeTitle !== undefined ? {title: typeTitle} : undefined),
   } as unknown as Schema
 }
+
+const releaseDocumentId = '_.releases.active-release'
+const baseDatum: BundleDocumentRow = {
+  memoKey: 'doc-1',
+  document: {
+    _id: 'versions.doc-1',
+    _type: 'article',
+    _rev: 'rev-1',
+    _createdAt: '2023-10-01T08:00:00Z',
+    _updatedAt: '2023-10-01T09:00:00Z',
+    publishedDocumentExists: true,
+  },
+  validation: {
+    hasError: false,
+    isValidating: false,
+    validation: [],
+  },
+}
+
+function getValidationColumnCell() {
+  const t = ((key: string) => key) as TFunction<'releases'>
+  const columns = getDocumentTableColumnDefs(releaseDocumentId, 'active', t)
+  const validationColumn = columns.find((column) => column.id === 'validation')
+  if (!validationColumn || validationColumn.hidden || !validationColumn.cell) {
+    throw new Error('Expected validation column')
+  }
+  return validationColumn.cell
+}
+
+function renderValidationCell(datum: BundleDocumentRow) {
+  const ValidationCell = getValidationColumnCell()
+  const cellProps = {id: 'validation', style: {}} as InjectedTableProps
+
+  render(<ValidationCell datum={datum} cellProps={cellProps} sorting={false} />)
+}
+
+describe('validation column cell', () => {
+  it('shows a validating indicator while validation is in progress', () => {
+    renderValidationCell({
+      ...baseDatum,
+      validation: {hasError: false, isValidating: true, validation: []},
+    })
+
+    expect(
+      screen.getByTestId(`validation-validating-${baseDatum.document._id}`),
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId(`validation-valid-${baseDatum.document._id}`),
+    ).not.toBeInTheDocument()
+  })
+
+  it('shows the ready checkmark only after validation completes without errors', () => {
+    renderValidationCell(baseDatum)
+
+    expect(screen.getByTestId(`validation-valid-${baseDatum.document._id}`)).toBeInTheDocument()
+    expect(
+      screen.queryByTestId(`validation-validating-${baseDatum.document._id}`),
+    ).not.toBeInTheDocument()
+  })
+})
 
 describe('DocumentType', () => {
   beforeEach(() => {
