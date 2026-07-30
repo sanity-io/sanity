@@ -4,6 +4,7 @@ import {type MouseEvent, type RefObject, useCallback, useRef, useState} from 're
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TargetPerspective} from '../../perspective/types'
+import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {useSingleDocRelease} from '../../singleDocRelease/context/SingleDocReleaseProvider'
 import {useClearScheduledDraftPerspectiveOnDelete} from '../../singleDocRelease/hooks/useClearScheduledDraftPerspectiveOnDelete'
 import {
@@ -14,6 +15,7 @@ import {getVersionId} from '../../util/draftUtils'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {LATEST, PUBLISHED} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
+import {type CopyToDraftsOptions, useCopyToDrafts} from './useCopyToDrafts'
 import {useVersionOperations} from './useVersionOperations'
 
 const CONTEXT_MENU_CLOSED = {open: false as const}
@@ -51,6 +53,12 @@ export interface UseVersionContextMenuOptions {
   /** Disables the menu actions (the menu can still be opened). */
   disabled?: boolean
   release?: ReleaseDocument
+  /**
+   * Called after a successful copy-to-drafts (after navigating to drafts).
+   * Structure uses this to clear the pane-local scheduled draft perspective
+   * when needed.
+   */
+  onCopyToDraftsComplete?: () => void
 }
 
 /**
@@ -71,7 +79,12 @@ export interface UseVersionContextMenuReturn {
   closeDialog: () => void
   openDiscardDialog: () => void
   openCreateReleaseDialog: () => void
-  openCopyToDraftsDialog: () => void
+  /**
+   * Copies the version to drafts. Pass `shouldConfirmDraftDiscard: true` from
+   * the menu to open a confirm dialog when a draft already exists; pass
+   * `false` from the dialog confirm action to proceed without prompting.
+   */
+  handleCopyToDrafts: (options: CopyToDraftsOptions) => Promise<void>
   /** Creates a version of the document in the given release and closes the menu. */
   handleAddVersion: (targetRelease: string) => Promise<void>
   isScheduledDraft: boolean
@@ -93,7 +106,15 @@ export interface UseVersionContextMenuReturn {
 export function useVersionContextMenu(
   options: UseVersionContextMenuOptions,
 ): UseVersionContextMenuReturn {
-  const {documentId, documentType, bundleId, isVersion, disabled = false, release} = options
+  const {
+    documentId,
+    documentType,
+    bundleId,
+    isVersion,
+    disabled = false,
+    release,
+    onCopyToDraftsComplete,
+  } = options
 
   const [contextMenu, setContextMenu] = useState<VersionContextMenuState>({open: false})
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -106,6 +127,7 @@ export function useVersionContextMenu(
   const toast = useToast()
   const {t} = useTranslation()
   const {onSetScheduledDraftPerspective} = useSingleDocRelease()
+  const setPerspective = useSetPerspective()
 
   const closeContextMenu = useCallback(() => setContextMenu(CONTEXT_MENU_CLOSED), [])
 
@@ -145,9 +167,17 @@ export function useVersionContextMenu(
     setDialogState('create-release')
   }, [])
 
-  const openCopyToDraftsDialog = useCallback(() => {
-    setDialogState('copy-to-drafts')
-  }, [])
+  const handleCopyToDraftsNavigate = useCallback(() => {
+    setPerspective('drafts')
+    onCopyToDraftsComplete?.()
+  }, [setPerspective, onCopyToDraftsComplete])
+
+  const {handleCopyToDrafts} = useCopyToDrafts({
+    documentId,
+    fromRelease: bundleId,
+    onNavigate: handleCopyToDraftsNavigate,
+    onConfirmationRequest: () => setDialogState('copy-to-drafts'),
+  })
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
@@ -199,7 +229,7 @@ export function useVersionContextMenu(
     closeDialog,
     openDiscardDialog,
     openCreateReleaseDialog,
-    openCopyToDraftsDialog,
+    handleCopyToDrafts,
     handleAddVersion,
     isScheduledDraft,
     scheduledDraftMenuActions,

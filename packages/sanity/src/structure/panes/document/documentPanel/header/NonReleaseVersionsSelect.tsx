@@ -20,7 +20,7 @@ export function NonReleaseVersionsSelect(props: {
   nonReleaseVersions: VersionInfoDocumentStub[]
   selectedPerspective?: string
   onSelectBundle: (version: VersionInfoDocumentStub) => void
-  onCopyToDraftsNavigate: () => void
+  onCopyToDraftsComplete: () => void
   releases: ReleaseDocument[]
   releasesLoading: boolean
   documentType: string
@@ -31,7 +31,7 @@ export function NonReleaseVersionsSelect(props: {
     nonReleaseVersions,
     selectedPerspective,
     onSelectBundle,
-    onCopyToDraftsNavigate,
+    onCopyToDraftsComplete,
     documentType,
     getVersionDisplay,
     releasesLoading,
@@ -85,7 +85,7 @@ export function NonReleaseVersionsSelect(props: {
               text={versionDisplay?.displayName ?? bundleId}
               tone={versionDisplay?.tone ?? 'default'}
               onClick={() => onSelectBundle(selectedNonReleaseVersion)}
-              onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+              onCopyToDraftsComplete={onCopyToDraftsComplete}
               contextValues={{
                 documentId: getPublishedId(selectedNonReleaseVersion._id),
                 releases,
@@ -145,7 +145,7 @@ export function NonReleaseVersionsSelect(props: {
                     contextMenuPortal={false}
                     tone={versionDisplay?.tone ?? 'default'}
                     onClick={() => onSelectBundle(nonReleaseVersion)}
-                    onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+                    onCopyToDraftsComplete={onCopyToDraftsComplete}
                     contextValues={{
                       documentId: getPublishedId(nonReleaseVersion._id),
                       releases,

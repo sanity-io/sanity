@@ -548,7 +548,7 @@ const Variant: ComponentType<{
   const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
 
-  const {filteredReleases, handleCopyToDraftsNavigate} = perspectiveList
+  const {filteredReleases, clearScheduledDraftPerspective} = perspectiveList
 
   const release = versionName
     ? releases.get(getReleaseDocumentIdFromReleaseId(versionName))
@@ -564,7 +564,7 @@ const Variant: ComponentType<{
     closeDialog,
     openDiscardDialog,
     openCreateReleaseDialog,
-    openCopyToDraftsDialog,
+    handleCopyToDrafts,
     handleAddVersion,
     isScheduledDraft,
     scheduledDraftMenuActions,
@@ -576,6 +576,7 @@ const Variant: ComponentType<{
     isVersion,
     disabled: isReadOnly,
     release,
+    onCopyToDraftsComplete: clearScheduledDraftPerspective,
   })
 
   const contextMenuHandler = isReadOnly || !releasesToolAvailable ? undefined : handleContextMenu
@@ -668,8 +669,7 @@ const Variant: ComponentType<{
           releasesLoading={releasesLoading}
           onDiscard={openDiscardDialog}
           onCreateRelease={openCreateReleaseDialog}
-          onCopyToDrafts={openCopyToDraftsDialog}
-          onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+          onCopyToDrafts={handleCopyToDrafts}
           onCreateVersion={handleAddVersion}
           disabled={isReadOnly}
           release={release}
@@ -689,7 +689,7 @@ const Variant: ComponentType<{
         title={variant.name}
         sourceReleasePerspective={sourceReleasePerspective}
         onCreateVersion={handleAddVersion}
-        onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+        onCopyToDrafts={handleCopyToDrafts}
         scheduledDraftDialogs={isScheduledDraft && scheduledDraftMenuActions.dialogs}
       />
     </>

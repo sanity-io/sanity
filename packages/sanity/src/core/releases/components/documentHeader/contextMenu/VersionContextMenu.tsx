@@ -4,6 +4,7 @@ import {memo, useEffect, useRef, useState} from 'react'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
 import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
+import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {getReleaseDefaults} from '../../../util/util'
@@ -18,8 +19,7 @@ interface VersionContextMenuProps {
   isVersion: boolean
   onDiscard: () => void
   onCreateRelease: () => void
-  onCopyToDrafts: () => void
-  onCopyToDraftsNavigate: () => void
+  onCopyToDrafts: (options: CopyToDraftsOptions) => Promise<void>
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   locked?: boolean
@@ -45,7 +45,6 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     onDiscard,
     onCreateRelease,
     onCopyToDrafts,
-    onCopyToDraftsNavigate,
     onCreateVersion,
     disabled,
     locked,
@@ -97,13 +96,11 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
         release={release}
         onCreateRelease={onCreateRelease}
         onCopyToDrafts={onCopyToDrafts}
-        onCopyToDraftsNavigate={onCopyToDraftsNavigate}
         onCreateVersion={onCreateVersion}
         disabled={disabled}
         isGoingToUnpublish={isGoingToUnpublish}
         hasCreatePermission={hasCreatePermission}
         scheduledDraftMenuActions={scheduledDraftMenuActions}
-        documentId={documentId}
         documentType={type}
       />
     )
@@ -115,11 +112,9 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
       releasesLoading={releasesLoading}
       bundleId={fromRelease}
       release={release}
-      isVersion={isVersion}
       onDiscard={onDiscard}
       onCreateRelease={onCreateRelease}
       onCopyToDrafts={onCopyToDrafts}
-      onCopyToDraftsNavigate={onCopyToDraftsNavigate}
       onCreateVersion={onCreateVersion}
       disabled={disabled}
       locked={locked}
@@ -128,7 +123,6 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
       hasDiscardPermission={hasDiscardPermission || false}
       isPublished={isPublished}
       isDiscardable={isDiscardable}
-      documentId={documentId}
       documentType={type}
     />
   )

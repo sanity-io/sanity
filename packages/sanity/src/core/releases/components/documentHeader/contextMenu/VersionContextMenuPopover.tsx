@@ -3,6 +3,7 @@ import {memo, type RefObject} from 'react'
 
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
+import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
 import {type VersionContextMenuState} from '../../../hooks/useVersionContextMenu'
 import {VersionContextMenu} from './VersionContextMenu'
 
@@ -25,8 +26,7 @@ export interface VersionContextMenuPopoverProps {
   releasesLoading: boolean
   onDiscard: () => void
   onCreateRelease: () => void
-  onCopyToDrafts: () => void
-  onCopyToDraftsNavigate: () => void
+  onCopyToDrafts: (options: CopyToDraftsOptions) => Promise<void>
   onCreateVersion: (targetRelease: string) => void
   disabled?: boolean
   locked?: boolean
@@ -70,7 +70,6 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
     onDiscard,
     onCreateRelease,
     onCopyToDrafts,
-    onCopyToDraftsNavigate,
     onCreateVersion,
     disabled = false,
     locked = false,
@@ -95,7 +94,6 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
           onDiscard={onDiscard}
           onCreateRelease={onCreateRelease}
           onCopyToDrafts={onCopyToDrafts}
-          onCopyToDraftsNavigate={onCopyToDraftsNavigate}
           disabled={disabled}
           onCreateVersion={onCreateVersion}
           locked={locked}
