@@ -80,7 +80,7 @@ export function UserMenu() {
                 </AvatarBox>
               </Tooltip>
 
-              <Stack space={2} flex={1}>
+              <Stack gap={2} flex={1}>
                 <Text size={1} weight="medium" textOverflow="ellipsis">
                   {currentUser?.name}
                 </Text>

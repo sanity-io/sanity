@@ -30,7 +30,7 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
       }
       tone="caution"
     >
-      <Stack space={4}>
+      <Stack gap={4}>
         {documentType && (
           <Text as="p">
             <Translate

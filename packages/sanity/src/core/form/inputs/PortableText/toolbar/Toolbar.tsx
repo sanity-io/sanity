@@ -7,7 +7,7 @@ import {
 import {CollapseIcon} from '@sanity/icons/Collapse'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
-import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
+import {Box, Flex, useElementSize, useToast} from '@sanity/ui'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -85,9 +85,9 @@ const InnerToolbar = memo(function InnerToolbar({
   const showActionMenu = actionsLen > 0
   const showInsertMenu = insertMenuItems.length > 0
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-  const rootElementRect = useElementRect(rootElement)
+  const rootElementSize = useElementSize(rootElement)
 
-  const collapsed = collapsible && rootElementRect ? rootElementRect?.width < 400 : false
+  const collapsed = collapsible && rootElementSize ? rootElementSize.border.width < 400 : false
   const showBlockStyleSelect = blockStyles.length > 1
 
   useRovingFocus({

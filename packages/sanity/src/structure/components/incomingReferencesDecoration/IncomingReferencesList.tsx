@@ -32,7 +32,7 @@ export function IncomingReferencesList({
   }
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       {types.map((type) => {
         if (isCrossDatasetIncomingReference(type)) {
           return (

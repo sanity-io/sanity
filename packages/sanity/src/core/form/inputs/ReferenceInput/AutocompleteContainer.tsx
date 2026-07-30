@@ -1,4 +1,4 @@
-import {Grid, useElementRect} from '@sanity/ui'
+import {Grid, useElementSize} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useState} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -24,7 +24,7 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
 
   const handleNewRef = useCallback(
     (element: HTMLDivElement) => {
-      // there's a bit of "double bookkeeping" here. since useElementRect needs to re-run whenever the ref updates,
+      // there's a bit of "double bookkeeping" here. since useElementSize needs to re-run whenever the ref updates,
       // and thus we need to keep it in the state
       setForwardedRef(forwardedRef, element)
       setRootElement(element)
@@ -32,10 +32,10 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
     [forwardedRef],
   )
 
-  const inputWrapperRect = useElementRect(rootElement)
+  const inputWrapperSize = useElementSize(rootElement)
 
   return (
-    <Root ref={handleNewRef} gap={1} $narrow={(inputWrapperRect?.width || 480) < 480}>
+    <Root ref={handleNewRef} gap={1} $narrow={(inputWrapperSize?.border.width || 480) < 480}>
       {props.children}
     </Root>
   )

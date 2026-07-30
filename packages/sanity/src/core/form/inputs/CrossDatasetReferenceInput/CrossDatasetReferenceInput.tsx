@@ -290,9 +290,9 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         <DisabledFeatureWarning value={value} onClearValue={handleClear} />
       )}
       {(featureInfo.isLoading || featureInfo.enabled) && (
-        <Stack space={1}>
+        <Stack gap={1}>
           {isEditing ? (
-            <Stack space={2} ref={clickOutsideBoundaryRef}>
+            <Stack gap={2} ref={clickOutsideBoundaryRef}>
               <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
                 <div ref={setAutocompletePopoverReferenceElement}>
                   <ReferenceAutocomplete

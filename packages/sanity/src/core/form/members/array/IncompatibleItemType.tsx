@@ -52,7 +52,7 @@ export function IncompatibleItemType(props: Props) {
       tone="default"
       content={
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
-          <Stack space={4}>
+          <Stack gap={4}>
             <Text weight="medium">
               <Translate
                 t={t}
@@ -75,7 +75,7 @@ export function IncompatibleItemType(props: Props) {
                 <BulbOutlineIcon /> {t('inputs.array.error.can-delete-but-no-edit-description')}
               </Text>
             </Box>
-            <Stack space={2}>
+            <Stack gap={2}>
               <Text size={1} weight="medium">
                 {t('inputs.array.error.json-representation-description')}
               </Text>

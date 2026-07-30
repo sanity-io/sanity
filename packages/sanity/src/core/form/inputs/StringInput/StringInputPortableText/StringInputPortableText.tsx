@@ -11,7 +11,7 @@ import {BehaviorPlugin, EventListenerPlugin} from '@portabletext/editor/plugins'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {stegaClean} from '@sanity/client/stega'
 import {type Path} from '@sanity/types'
-import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
+import {Card, useRootTheme} from '@sanity/ui'
 import {type MutableRefObject, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -36,6 +36,10 @@ import {unpackageValue} from './unpackageValue'
 
 export const ROOT_PATH: Path = [{_key: 'root'}, 'children', {_key: 'root'}]
 const INVALID_CLASS_NAME = 'invalid'
+const FONT_SIZE = [2]
+const PADDING = [3]
+const RADIUS = [2]
+const SPACE = [3]
 
 const StyledRoot = styled.div`
   flex: 1;
@@ -142,10 +146,6 @@ export function StringInputPortableText(props: StringInputProps) {
   }))
 
   const rootTheme = useRootTheme()
-  const fontSize = useArrayProp(2)
-  const padding = useArrayProp(3)
-  const radius = useArrayProp(2)
-  const space = useArrayProp(3)
 
   const diffSegments = diff.type === 'string' ? diff.segments : undefined
 
@@ -160,14 +160,14 @@ export function StringInputPortableText(props: StringInputProps) {
 
     if (isEntireValuedDeleted && diffSegments) {
       return (
-        <StyledPlaceholder $fontSize={fontSize} $space={space} $padding={padding}>
+        <StyledPlaceholder $fontSize={FONT_SIZE} $space={SPACE} $padding={PADDING}>
           <DeletedSegment segment={diffSegments[0]} />
         </StyledPlaceholder>
       )
     }
 
     return null
-  }, [diff.fromValue, diff.toValue, diffSegments, fontSize, space, padding])
+  }, [diff.fromValue, diff.toValue, diffSegments])
 
   return (
     <StyledRoot>
@@ -183,9 +183,9 @@ export function StringInputPortableText(props: StringInputProps) {
           style={style}
           renderPlaceholder={props.displayInlineChanges ? renderPlaceholder : undefined}
           rangeDecorations={props.displayInlineChanges ? rangeDecorations : undefined}
-          $fontSize={fontSize}
-          $space={space}
-          $padding={padding}
+          $fontSize={FONT_SIZE}
+          $space={SPACE}
+          $padding={PADDING}
           $scheme={rootTheme.scheme}
           $tone={rootTheme.tone}
           data-scheme={rootTheme.scheme}
@@ -194,7 +194,7 @@ export function StringInputPortableText(props: StringInputProps) {
         />
       </EditorProvider>
       <StyledEditorRepresentation
-        radius={radius}
+        radius={RADIUS}
         $scheme={rootTheme.scheme}
         $tone={rootTheme.tone}
         data-scheme={rootTheme.scheme}

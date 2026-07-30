@@ -67,7 +67,7 @@ export function LinkToCanvasDiff({
               <WarningOutlineIcon />
             </Text>
           </Box>
-          <Stack space={2}>
+          <Stack gap={2}>
             <Box padding={1}>
               <Text size={1} weight="semibold">
                 {t('dialog.confirm-document-changes.title')}

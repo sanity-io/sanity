@@ -90,7 +90,7 @@ export function WorkspaceMenuButton() {
                   </Text>
                 </Box>
 
-                <Stack ref={stackRef} space={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
+                <Stack ref={stackRef} gap={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
                   {visibleWorkspaces.map((workspace) => (
                     <WorkspaceMenuItem
                       key={workspace.name}

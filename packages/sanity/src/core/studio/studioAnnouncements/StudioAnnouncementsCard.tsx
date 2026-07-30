@@ -135,7 +135,7 @@ export function StudioAnnouncementsCard({
             role="button"
             aria-label={t('announcement.floating-button.open-label')}
           >
-            <Stack space={3}>
+            <Stack gap={3}>
               <Box marginRight={6}>
                 <Text as={'h3'} size={1} muted>
                   {preHeader}

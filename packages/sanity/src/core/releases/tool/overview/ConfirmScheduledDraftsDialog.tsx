@@ -93,7 +93,7 @@ export function ConfirmScheduledDraftsDialog({
         },
       }}
     >
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text size={1} muted>
           {t('confirm-active-scheduled-drafts-dialog.description')}
         </Text>

@@ -339,9 +339,9 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       data-testid="comments-list-item-layout"
       onKeyDown={handleRootKeyDown}
       ref={rootElementRef}
-      space={4}
+      gap={4}
     >
-      <InnerStack space={1} data-muted={displayError}>
+      <InnerStack gap={1} data-muted={displayError}>
         <HeaderFlex align="center" gap={FLEX_GAP} flex={1} $size={avatarSize}>
           {withAvatar && <CommentsAvatar user={user} size={avatarSize} />}
 

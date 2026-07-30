@@ -18,7 +18,7 @@ export function RouterDebug() {
   return (
     <Card sizing="border" padding={5}>
       <Flex>
-        <Stack space={4}>
+        <Stack gap={4}>
           <Button onClick={() => createPreviewSecret(client, 'test-studio', location.href)}>
             Create Secret
           </Button>
@@ -70,7 +70,7 @@ export function RouterDebug() {
 
           <Card shadow={1} padding={3} radius={2}>
             <RouteScope scope="some-plugin">
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text weight="semibold">A (scoped) plugin</Text>
 
                 <StateLink
@@ -97,7 +97,7 @@ export function RouterDebug() {
 function InspectRouterState() {
   const {state} = useRouter()
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Text weight="semibold">Decoded router state</Text>
       <Code language="json" size={1}>
         {JSON.stringify(state, null, 2)}

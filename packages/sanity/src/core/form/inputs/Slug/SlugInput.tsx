@@ -143,7 +143,7 @@ export function SlugInput(props: SlugInputProps) {
   useImperativeHandle(elementProps.ref, () => inputRef.current)
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Flex gap={1}>
         <Box flex={1}>
           <TextInput

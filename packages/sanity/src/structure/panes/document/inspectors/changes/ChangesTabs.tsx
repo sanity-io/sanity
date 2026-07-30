@@ -68,7 +68,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
     >
       <Card paddingBottom={1}>
         <Flex align="center" padding={3} gap={2}>
-          <TabList space={1} flex={1}>
+          <TabList gap={1} flex={1}>
             <Tab
               aria-controls="history-panel"
               id="history-tab"

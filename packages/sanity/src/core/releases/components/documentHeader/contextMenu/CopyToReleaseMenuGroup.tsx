@@ -64,7 +64,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
       data-testid="copy-version-to-release-button-group"
     >
       {(hasCopyToDraftOption || releases.length > 0) && (
-        <ReleasesList key={bundleId} space={1}>
+        <ReleasesList key={bundleId} gap={1}>
           {hasCopyToDraftOption && (
             <CopyToDraftsMenuItem
               documentType={documentType}

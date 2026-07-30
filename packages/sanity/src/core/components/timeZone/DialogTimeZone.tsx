@@ -138,11 +138,11 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
       onClose={onClose}
       width={1}
     >
-      <Stack padding={4} space={5}>
+      <Stack padding={4} gap={5}>
         <Text size={1}>{timeZoneScopeTypeToLabel[timeZoneScope.type]}</Text>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Flex align="center" justify="space-between">
-            <Inline space={2}>
+            <Inline gap={2}>
               <Text size={1} weight="semibold">
                 {t('time-zone.time-zone')}
               </Text>
@@ -176,7 +176,7 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
               // Dialog is portaled to the document root, so its Autocomplete
               // popover should be bounded by document.body rather than any
               // panel-scoped scroll container.
-              boundaryElement: document.body,
+              floatingBoundary: document.body,
               constrainSize: true,
               placement: 'bottom-start',
             }}

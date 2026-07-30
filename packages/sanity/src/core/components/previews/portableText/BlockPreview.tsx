@@ -38,7 +38,7 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
   const isUploading = typeof progress === 'number' && progress > -1
 
   return (
-    <Stack data-testid="block-preview" space={1}>
+    <Stack data-testid="block-preview" gap={1}>
       <HeaderFlex data-testid="block-preview__header">
         {media && <Media dimensions={mediaDimensions} layout="block" media={media as any} />}
 

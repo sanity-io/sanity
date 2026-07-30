@@ -3,7 +3,7 @@ import {type RenderCustomMarkers} from 'sanity'
 
 export const renderCustomMarkers: RenderCustomMarkers = (markers) => {
   return (
-    <Stack space={1}>
+    <Stack gap={1}>
       {markers.map((marker) => (
         <Card
           key={`marker-${marker.type}-${JSON.stringify(marker.path)}`}

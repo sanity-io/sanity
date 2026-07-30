@@ -51,7 +51,7 @@ export function DefaultMarkers(props: MarkersProps) {
   }
 
   return (
-    <Stack space={1}>
+    <Stack gap={1}>
       {validation.length > 0 &&
         validation.map(({message, level}, index) => (
           <Flex key={`validationItem-${index}`}>

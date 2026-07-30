@@ -67,7 +67,7 @@ export function FormBuilderRepro() {
 
   return (
     <Card padding={5}>
-      <Stack space={4}>
+      <Stack gap={4}>
         <Heading>FormBuilder repro</Heading>
         <Text muted size={1}>
           Renders `&lt;FormBuilder&gt;` outside `DocumentPaneProvider`. Without the FormBuilder

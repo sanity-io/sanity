@@ -23,7 +23,7 @@ export function DocumentHeaderTabs() {
   const tabPanelId = `${paneKey}tabpanel`
 
   return (
-    <TabList space={1}>
+    <TabList gap={1}>
       {views.map((view, index) => (
         <DocumentHeaderTab
           key={view.id}

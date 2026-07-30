@@ -197,7 +197,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
       return null
     }
     return (
-      <ColumnarGrid columns={columns} gapX={4} gapY={5}>
+      <ColumnarGrid gridTemplateColumns={columns} gapX={4} gapY={5}>
         {getChildren(children)}
       </ColumnarGrid>
     )
@@ -211,7 +211,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
           {...restProps}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          space={2}
+          gap={2}
         >
           <FormFieldBaseHeader
             __internal_comments={comments}
@@ -222,7 +222,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
             presence={presence}
             inputId={inputId}
             content={
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Flex align="center">
                   {title && (
                     <FormFieldSetLegend

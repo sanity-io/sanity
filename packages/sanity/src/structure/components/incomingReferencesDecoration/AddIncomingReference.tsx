@@ -184,7 +184,7 @@ export function AddIncomingReference({
   )
 
   return (
-    <Stack space={2} padding={2}>
+    <Stack gap={2} padding={2}>
       <Box paddingY={2}>
         <Text size={1} weight="medium">
           {t('incoming-references-input.reference-from', {type})}

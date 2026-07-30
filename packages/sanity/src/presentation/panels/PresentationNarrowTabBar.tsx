@@ -37,7 +37,7 @@ export const PresentationNarrowTabBar: FunctionComponent<PresentationNarrowTabBa
       <Card borderBottom paddingX={2} paddingY={1}>
         {/* Center the tab group within the bar rather than letting it sit against the left edge. */}
         <Flex justify="center">
-          <TabList space={1}>
+          <TabList gap={1}>
             {tabs.map((tab) => (
               <Tab
                 key={tab.id}

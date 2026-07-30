@@ -141,7 +141,7 @@ export function RequestPermissionDialog({
         onClickOutside={onClose}
       >
         <DialogBody>
-          <Stack space={4}>
+          <Stack gap={4}>
             <Text>{t('request-permission-dialog.description.text')}</Text>
             {hasTooManyRequests || hasBeenDenied ? (
               <Card tone={'caution'} padding={3} radius={2} shadow={1}>
@@ -155,7 +155,7 @@ export function RequestPermissionDialog({
                 </Text>
               </Card>
             ) : (
-              <Stack space={3} paddingBottom={0}>
+              <Stack gap={3} paddingBottom={0}>
                 <TextInput
                   placeholder={t('request-permission-dialog.note-input.placeholder.text')}
                   disabled={isSubmitting}

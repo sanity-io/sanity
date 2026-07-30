@@ -221,8 +221,8 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
             <>
               <label style={{cursor: 'pointer'}}>
                 <Grid
-                  columns={2}
-                  rows={2}
+                  gridTemplateColumns={2}
+                  gridTemplateRows={2}
                   gapX={3}
                   gapY={1}
                   style={{
@@ -270,7 +270,7 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
                 </Grid>
               </label>
               <Box padding={3} paddingTop={2}>
-                <Stack space={3}>
+                <Stack gap={3}>
                   <Card
                     tone={busy || !url ? 'transparent' : undefined}
                     style={{

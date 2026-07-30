@@ -274,7 +274,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   return (
     <>
       <Box paddingX={3} paddingBottom={3}>
-        <Stack space={3}>
+        <Stack gap={3}>
           <TextInput
             aria-label={t('panes.document-list-pane.search-input.aria-label')}
             autoComplete="off"

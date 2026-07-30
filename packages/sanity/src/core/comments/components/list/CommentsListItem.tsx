@@ -266,7 +266,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
         // Add some extra padding to the bottom if there is no reply input.
         // This is to make the UI look more balanced.
         paddingBottom={canReply ? undefined : 1}
-        space={4}
+        gap={4}
       >
         <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
           <CommentsListItemLayout

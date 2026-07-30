@@ -61,7 +61,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
 
   return (
     <Box padding={2}>
-      <Inline space={2}>
+      <Inline gap={2}>
         <Text size={1} muted>
           {t('document-group.delete.other-reference-count.title', {count: difference})}
         </Text>

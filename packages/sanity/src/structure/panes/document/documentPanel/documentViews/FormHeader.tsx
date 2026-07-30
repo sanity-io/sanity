@@ -70,9 +70,9 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
     return null
   }
   return (
-    <TitleContainer marginBottom={6} space={4}>
+    <TitleContainer marginBottom={6} gap={4}>
       {!isSingleton && (
-        <Inline space={1}>
+        <Inline gap={1}>
           <Text muted size={1}>
             {schemaType.title ?? schemaType.name}
           </Text>

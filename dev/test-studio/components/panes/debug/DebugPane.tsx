@@ -55,7 +55,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
   return (
     <Box height="fill">
       <Box padding={4} paddingTop={0}>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text muted size={1} textOverflow="ellipsis">
             Random ID: <code>{randomId}</code>
           </Text>
@@ -66,7 +66,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
       </Box>
 
       <Card borderBottom padding={2}>
-        <Stack space={1}>
+        <Stack gap={1}>
           <Card
             as={ChildLink as ComponentType<Record<string, unknown>>}
             data-as="a"

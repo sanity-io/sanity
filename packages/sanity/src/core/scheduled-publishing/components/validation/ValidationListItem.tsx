@@ -51,7 +51,7 @@ export function ValidationListItem(props: ValidationListItemProps) {
         </Text>
       </Box>
 
-      <Stack space={2} flex={1} paddingLeft={3}>
+      <Stack gap={2} flex={1} paddingLeft={3}>
         {path && (
           <StyledText size={1} weight="semibold">
             {path}

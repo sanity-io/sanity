@@ -14,7 +14,7 @@ interface Props {
 
 export function NewScheduleInfo({id, schemaType}: Props) {
   return (
-    <Stack space={4}>
+    <Stack gap={4}>
       <Text size={1}>
         Schedule this document to be published at any time in the future.
         <br />

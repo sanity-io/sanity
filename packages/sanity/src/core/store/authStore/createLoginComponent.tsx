@@ -201,7 +201,7 @@ export function createLoginComponent({
                 <WarningOutlineIcon />
               </Text>
             </Box>
-            <Stack flex={1} marginLeft={3} space={4}>
+            <Stack flex={1} marginLeft={3} gap={4}>
               <Text as="h1" size={1} weight="medium">
                 No login providers available
               </Text>
@@ -240,7 +240,7 @@ export function createLoginComponent({
     }
 
     return (
-      <Stack space={4}>
+      <Stack gap={4}>
         <Heading align="center" size={1}>
           Choose login provider
         </Heading>
@@ -258,7 +258,7 @@ export function createLoginComponent({
             />
           )}
 
-          <Stack space={2}>
+          <Stack gap={2}>
             {providerList?.map((provider, index) => (
               <ProviderButton
                 key={`${provider.url}_${index}`}

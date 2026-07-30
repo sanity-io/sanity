@@ -121,7 +121,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         paneKey={paneKey}
         title={t('panes.document-pane.document-not-found.title')}
       >
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text as="p">
             <Translate
               t={t}

@@ -436,8 +436,8 @@ export function VariantVersionsView(props: {documentId: string}) {
   return (
     <Card overflow="auto" style={{minHeight: '100%'}} tone="transparent">
       <Box padding={4}>
-        <Stack space={4}>
-          <Stack space={2}>
+        <Stack gap={4}>
+          <Stack gap={2}>
             <Text size={3} weight="bold">
               Variant versions
             </Text>
@@ -464,7 +464,7 @@ export function VariantVersionsView(props: {documentId: string}) {
               </Text>
             )}
           </Stack>
-          <Grid columns={[1, 1, 2]} gap={4}>
+          <Grid gridTemplateColumns={[1, 1, 2]} gap={4}>
             {slots.map((slot) => (
               <VersionSlotCard key={slot.label} {...slot} />
             ))}
