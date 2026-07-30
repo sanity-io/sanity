@@ -22,7 +22,7 @@
     "babel-plugin-react-compiler": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-rx": "^4.2.3",
+    "react-rx": "^4.2.5",
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
     "styled-components": "catalog:",
