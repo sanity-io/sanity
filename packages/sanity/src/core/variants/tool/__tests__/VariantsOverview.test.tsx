@@ -84,6 +84,16 @@ vi.mock('../../hooks/useVariantsDocumentCounts', () => ({
     loading: documentCountsMock.loading,
     error: documentCountsMock.error,
   })),
+  // Used by the bulk-delete dialog's confirm-time count re-check; the query text is irrelevant here
+  // because the client fetch is mocked below.
+  buildVariantsDocumentCountsQuery: vi.fn(() => ({fetch: '{}', listen: '*'})),
+}))
+
+// The bulk-delete dialog re-fetches authoritative counts at confirm (interim guard). Default to an
+// empty map so every deletable definition re-checks as still empty (pre-guard behavior).
+const clientMock = vi.hoisted(() => ({fetch: vi.fn()}))
+vi.mock('../../../hooks/useClient', () => ({
+  useClient: vi.fn(() => clientMock),
 }))
 
 setupVirtualListEnv()
@@ -99,6 +109,8 @@ describe('VariantsOverview', () => {
     documentCountsMock.loading = true
     documentCountsMock.error = null
     mockNavigate.mockClear()
+    clientMock.fetch.mockReset()
+    clientMock.fetch.mockResolvedValue({})
     variantOperationsMock.createVariant.mockReset()
     variantOperationsMock.deleteVariant.mockReset()
     variantOperationsMock.createVariant.mockImplementation(
