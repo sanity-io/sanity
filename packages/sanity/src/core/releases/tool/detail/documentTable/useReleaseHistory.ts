@@ -55,7 +55,11 @@ export function useReleaseHistory(
 
   const fetchAndParse = useCallback(async (): Promise<void> => {
     if (!versionId) {
-      setHistory(null)
+      // No document to fetch history for (e.g. a pending / just-added placeholder row passes an
+      // undefined id). Settle to an empty history so `loading` reports false instead of hanging
+      // true — otherwise the Edited / Edited-by cells keep an endless skeleton on rows that will
+      // never resolve a history.
+      setHistory([])
       return
     }
 

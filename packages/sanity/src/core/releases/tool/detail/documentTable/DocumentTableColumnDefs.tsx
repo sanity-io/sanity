@@ -567,7 +567,7 @@ function UpdatedAtCell({
   const bundleId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
   const historyDocumentId =
     datum.isPending || document?._id?.endsWith('-pending') ? undefined : document?._id
-  const {documentHistory} = useReleaseHistory(historyDocumentId, bundleId, document?._rev)
+  const {documentHistory, loading} = useReleaseHistory(historyDocumentId, bundleId, document?._rev)
 
   return (
     <Flex
@@ -579,7 +579,10 @@ function UpdatedAtCell({
       sizing="border"
     >
       <Flex align="center" gap={2}>
-        {(isLoading || !documentHistory?.lastEditedBy) && <AvatarSkeleton $size={0} animated />}
+        {/* Skeleton only while the history is actually loading — NOT whenever there is no editor.
+            A settled-but-empty or failed history has loading:false and no lastEditedBy, and must
+            render just the timestamp (or nothing) rather than an endless skeleton. */}
+        {(isLoading || loading) && <AvatarSkeleton $size={0} animated />}
         {!isLoading && document._updatedAt && (
           <>
             {documentHistory?.lastEditedBy && (
