@@ -187,6 +187,8 @@
     "import/newline-after-import": "error",
     "import/no-duplicates": ["error", {"prefer-inline": true}],
     "import/consistent-type-specifier-style": ["error", "prefer-inline"],
+    // Side-effect CSS imports are intentional (bundler injects styles)
+    "import/no-unassigned-import": ["error", {"allow": ["**/*.css"]}],
     "import/extensions": [
       "error",
       {
