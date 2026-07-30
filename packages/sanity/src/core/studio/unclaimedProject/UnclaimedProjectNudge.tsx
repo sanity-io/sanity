@@ -1,23 +1,20 @@
 import {ClockIcon} from '@sanity/icons/Clock'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Badge, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {startTransition, useCallback, useEffect, useState} from 'react'
 
-import {Button} from '../../../ui-components'
-import {useConditionalToast, useRelativeTime} from '../../hooks'
-import {Translate, useTranslation} from '../../i18n'
+import {Button} from '../../../ui-components/button/Button'
+import {useConditionalToast} from '../../hooks/useConditionalToast'
+import {useDateTimeFormat} from '../../hooks/useDateTimeFormat'
+import {useRelativeTime} from '../../hooks/useRelativeTime'
 import {
   readUnclaimedProjectSnoozedAt,
   writeUnclaimedProjectSnoozedAt,
 } from '../../store/authStore/unclaimedProjectStorage'
+import {interpolateTemplate} from '../../util/interpolateTemplate'
 import {useWorkspace} from '../workspace'
 import {useUnclaimedProject} from './useUnclaimedProject'
-
-/** Dismissing the toast buys this much quiet before it nudges again. */
-const SNOOZE_DURATION_MS = 30 * 60_000
-
-/** Below this long left, the nudge escalates from caution to critical. */
-const CRITICAL_THRESHOLD_MS = 8 * 3_600_000
+import {useUnclaimedProjectCopy} from './useUnclaimedProjectCopy'
 
 /**
  * Persistent banner + snoozable toast nudging the user to claim a minted-but-unclaimed project
@@ -28,28 +25,38 @@ const CRITICAL_THRESHOLD_MS = 8 * 3_600_000
  */
 export function UnclaimedProjectNudge() {
   const state = useUnclaimedProject()
+  const copy = useUnclaimedProjectCopy(Boolean(state))
   const {auth, projectId} = useWorkspace()
-  const {t} = useTranslation()
 
   const unclaimed = state?.status === 'unclaimed' ? state : undefined
   const now = useMinuteTick(Boolean(unclaimed))
-  const expiry = useRelativeTime(unclaimed?.expiresAt ?? '', {useTemporalPhrase: true})
+  const timeLeft = useRelativeTime(unclaimed?.expiresAt ?? '')
+  const expiresAtFormatter = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
+  const expiresAt = unclaimed ? expiresAtFormatter.format(unclaimed.expiresAt) : ''
+  const templateValues = {expiresAt, timeLeft}
 
-  const [snoozedAt, setSnoozedAt] = useState(() => readUnclaimedProjectSnoozedAt(projectId))
-  const [snoozeProject, setSnoozeProject] = useState(projectId)
-  if (snoozeProject !== projectId) {
-    setSnoozeProject(projectId)
-    setSnoozedAt(readUnclaimedProjectSnoozedAt(projectId))
-  }
+  const [snoozeState, setSnoozeState] = useState(() => ({
+    projectId,
+    snoozedAt: readUnclaimedProjectSnoozedAt(projectId),
+  }))
+  const snoozedAt =
+    snoozeState.projectId === projectId
+      ? snoozeState.snoozedAt
+      : readUnclaimedProjectSnoozedAt(projectId)
   const handleSnooze = useCallback(() => {
     const at = new Date().toISOString()
     writeUnclaimedProjectSnoozedAt(projectId, at)
-    setSnoozedAt(at)
+    setSnoozeState({projectId, snoozedAt: at})
   }, [projectId])
-  const isSnoozed = Boolean(snoozedAt && now - new Date(snoozedAt).getTime() < SNOOZE_DURATION_MS)
+  const snoozeDurationMs = (copy?.snoozeMinutes ?? 0) * 60_000
+  const isSnoozed = Boolean(
+    snoozedAt && snoozeDurationMs && now - new Date(snoozedAt).getTime() < snoozeDurationMs,
+  )
 
   const critical = Boolean(
-    unclaimed && unclaimed.expiresAt.getTime() - now <= CRITICAL_THRESHOLD_MS,
+    copy &&
+    unclaimed &&
+    unclaimed.expiresAt.getTime() - now <= copy.criticalThresholdHours * 3_600_000,
   )
 
   // The claim URL is spent; the robot token still works, so the token is cleared through this
@@ -61,19 +68,23 @@ export function UnclaimedProjectNudge() {
   useConditionalToast({
     id: 'unclaimed-project-nudge',
     status: critical ? 'error' : 'warning',
-    enabled: Boolean(unclaimed) && !isSnoozed,
-    title: t(
-      critical ? 'unclaimed-project.toast.critical.title' : 'unclaimed-project.toast.title',
-      {expiry},
+    enabled: Boolean(copy && unclaimed) && !isSnoozed,
+    title: copy ? (
+      <strong>
+        {interpolateTemplate(
+          critical ? copy.toast.criticalTitle : copy.toast.title,
+          templateValues,
+        )}
+      </strong>
+    ) : (
+      ''
     ),
-    description: unclaimed && (
-      <Stack space={4} paddingY={1}>
-        <Text size={1}>
-          {unclaimed.claimUrl || unclaimed.claimLinkSpent ? (
-            t('unclaimed-project.toast.description')
-          ) : (
-            <Translate t={t} i18nKey="unclaimed-project.no-claim-url.text" />
-          )}
+    description: unclaimed && copy && (
+      <Stack space={4} paddingY={2}>
+        <Text size={1} weight="regular">
+          {unclaimed.claimUrl || unclaimed.claimLinkSpent
+            ? copy.toast.description
+            : copy.noClaimUrl.text}
         </Text>
         <Flex gap={3}>
           {unclaimed.claimUrl && (
@@ -82,19 +93,21 @@ export function UnclaimedProjectNudge() {
               href={unclaimed.claimUrl}
               target="_blank"
               rel="noopener noreferrer"
-              mode="ghost"
-              tone="primary"
+              mode="default"
+              tone={critical ? 'critical' : 'primary'}
               size="default"
-              icon={LaunchIcon}
-              text={t('unclaimed-project.toast.claim-button.text')}
+              iconRight={LaunchIcon}
+              text={copy.toast.claimButtonText}
             />
           )}
           <Button
             mode="bleed"
             tone="neutral"
             size="default"
-            text={t('unclaimed-project.toast.snooze-button.text')}
+            paddingY={1}
+            text={copy.toast.snoozeButtonText}
             onClick={handleSnooze}
+            style={{fontSize: '0.6875rem', opacity: 0.6}}
           />
         </Flex>
       </Stack>
@@ -106,28 +119,30 @@ export function UnclaimedProjectNudge() {
   const toast = useToast()
   const expired = state?.status === 'expired'
   useEffect(() => {
-    if (!expired) return
+    if (!expired || !copy) return
     toast.push({
       id: 'unclaimed-project-expired',
       status: 'warning',
       closable: true,
       duration: Infinity,
-      title: t('unclaimed-project.expired.toast.title'),
+      title: copy.expired.toastTitle,
     })
-  }, [expired, t, toast])
+  }, [copy, expired, toast])
+
+  if (!copy) return null
 
   if (state?.status === 'claimed') {
     return (
       <Card data-testid="unclaimed-project-banner" tone="positive" padding={3} borderBottom>
         <Flex align="center" gap={3} justify="center" wrap="wrap">
           <Text size={1} weight="medium">
-            {t('unclaimed-project.claimed.text')}
+            {copy.claimed.text}
           </Text>
           <Button
             mode="default"
             tone="positive"
             size="default"
-            text={t('unclaimed-project.claimed.sign-in-button.text')}
+            text={copy.claimed.signInButtonText}
             onClick={handleSignIn}
           />
         </Flex>
@@ -145,13 +160,18 @@ export function UnclaimedProjectNudge() {
       borderBottom
     >
       <Flex align="center" gap={3} justify="center" wrap="wrap">
-        <Text size={1} weight="medium">
-          <ClockIcon style={{verticalAlign: 'text-bottom', marginRight: '0.5em'}} />
-          {t(
-            critical ? 'unclaimed-project.banner.critical.text' : 'unclaimed-project.banner.text',
-            {expiry},
-          )}
-        </Text>
+        <Flex align="center" gap={2}>
+          <Flex aria-hidden="true" align="center" justify="center" style={{lineHeight: 0}}>
+            <ClockIcon style={{display: 'block'}} />
+          </Flex>
+          <Text size={1} weight="medium">
+            {interpolateTemplate(
+              critical ? copy.banner.criticalText : copy.banner.text,
+              templateValues,
+            )}
+          </Text>
+        </Flex>
+        <UnclaimedProjectCountdown expiresAt={unclaimed.expiresAt} critical={critical} />
         {unclaimed.claimUrl ? (
           <Button
             as="a"
@@ -162,16 +182,60 @@ export function UnclaimedProjectNudge() {
             tone={critical ? 'critical' : 'primary'}
             size="default"
             iconRight={LaunchIcon}
-            text={t('unclaimed-project.banner.claim-button.text')}
+            text={copy.banner.claimButtonText}
           />
         ) : unclaimed.claimLinkSpent ? null : (
-          <Text size={1}>
-            <Translate t={t} i18nKey="unclaimed-project.no-claim-url.text" />
-          </Text>
+          <Text size={1}>{copy.noClaimUrl.text}</Text>
         )}
       </Flex>
     </Card>
   )
+}
+
+/** Isolates the per-second update so the full nudge does not re-render on every tick. */
+export function UnclaimedProjectCountdown({
+  critical,
+  expiresAt,
+}: {
+  critical: boolean
+  expiresAt: Date
+}) {
+  const [now, setNow] = useState(() => Date.now())
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1_000)
+    return () => clearInterval(id)
+  }, [])
+
+  return (
+    <Badge
+      aria-hidden="true"
+      data-testid="unclaimed-project-countdown"
+      fontSize={1}
+      mode="outline"
+      padding={2}
+      radius={2}
+      tone={critical ? 'critical' : 'caution'}
+      style={{
+        fontVariantNumeric: 'tabular-nums',
+        letterSpacing: '0.08em',
+        minWidth: '7.5ch',
+        textAlign: 'center',
+      }}
+    >
+      {formatCountdown(expiresAt, now)}
+    </Badge>
+  )
+}
+
+/** Formats the remaining expiry window without locale-specific unit labels. */
+export function formatCountdown(expiresAt: Date, now: number): string {
+  const totalSeconds = Math.max(0, Math.ceil((expiresAt.getTime() - now) / 1_000))
+  const hours = Math.floor(totalSeconds / 3_600)
+  const minutes = Math.floor((totalSeconds % 3_600) / 60)
+  const seconds = totalSeconds % 60
+
+  return [hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':')
 }
 
 /** Re-evaluates the snooze window and the critical flip once a minute while the nudge shows. */

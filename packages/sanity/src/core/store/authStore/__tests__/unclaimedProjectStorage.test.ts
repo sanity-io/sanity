@@ -48,6 +48,37 @@ describe('unclaimedProjectStorage', () => {
     expect(readUnclaimedProjectRecord(PROJECT_ID)).toBeUndefined()
   })
 
+  it('drops invalid optional dates from an otherwise valid record', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        claimUrl: CLAIM_URL,
+        expiresAt: 'not-a-date',
+        lastLookupAt: 123,
+      }),
+    )
+
+    expect(readUnclaimedProjectRecord(PROJECT_ID)).toEqual({claimUrl: CLAIM_URL})
+  })
+
+  it('keeps valid optional dates and drops unknown properties', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        claimUrl: CLAIM_URL,
+        expiresAt: '2026-07-27T00:00:00.000Z',
+        lastLookupAt: '2026-07-24T12:00:00.000Z',
+        unexpected: 'value',
+      }),
+    )
+
+    expect(readUnclaimedProjectRecord(PROJECT_ID)).toEqual({
+      claimUrl: CLAIM_URL,
+      expiresAt: '2026-07-27T00:00:00.000Z',
+      lastLookupAt: '2026-07-24T12:00:00.000Z',
+    })
+  })
+
   it('scopes records by project', () => {
     writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
     expect(readUnclaimedProjectRecord('other-project')).toBeUndefined()

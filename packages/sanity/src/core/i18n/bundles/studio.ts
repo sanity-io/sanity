@@ -2365,35 +2365,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'tree-editing-dialog.sidebar.action.expand': 'Expand',
   /** Label to open the sidebar */
   'tree-editing-dialog.sidebar.action.open': 'Open sidebar',
-  /** Claim CTA in the unclaimed-project banner */
-  'unclaimed-project.banner.claim-button.text': "Claim it — it's free",
-  /** Unclaimed-project banner text as expiry nears; `expiry` is a localized relative time, e.g. "in 3 hours" */
-  'unclaimed-project.banner.critical.text':
-    'Last call — everything in this project is deleted {{expiry}} unless you claim it.',
-  /** Unclaimed-project banner text; `expiry` is a localized relative time, e.g. "in 2 days" */
-  'unclaimed-project.banner.text':
-    "You're building on a 72-hour fuse: this unclaimed project expires {{expiry}}.",
-  /** CTA in the banner shown once the project has been claimed */
-  'unclaimed-project.claimed.sign-in-button.text': 'Sign in',
-  /** Banner text shown once the project has been claimed while still on the pre-claim token */
-  'unclaimed-project.claimed.text':
-    'Claimed — this project is yours. Sign in to continue as yourself.',
-  /** Toast shown once when an unclaimed project has expired and been deleted */
-  'unclaimed-project.expired.toast.title': 'This unclaimed project expired and was deleted',
-  /** Recovery hint when the project is unclaimed but no claim link is stored in this browser */
-  'unclaimed-project.no-claim-url.text':
-    'Your claim link is in the terminal — run <code>sanity dev</code> and open the printed URL.',
-  /** Claim CTA in the unclaimed-project toast */
-  'unclaimed-project.toast.claim-button.text': 'Claim this project',
-  /** Unclaimed-project toast title as expiry nears; `expiry` is a localized relative time, e.g. "in 3 hours" */
-  'unclaimed-project.toast.critical.title': 'Last call: this project self-destructs {{expiry}}',
-  /** Unclaimed-project toast body */
-  'unclaimed-project.toast.description':
-    "It's minted but unclaimed. Claim it — free, takes about a minute — and the content, this Studio, and everything you've built stay yours for good.",
-  /** Snooze CTA in the unclaimed-project toast */
-  'unclaimed-project.toast.snooze-button.text': 'Remind me in 30 minutes',
-  /** Unclaimed-project toast title; `expiry` is a localized relative time, e.g. "in 2 days" */
-  'unclaimed-project.toast.title': 'This project self-destructs {{expiry}}',
   /** Label for the button showed after trial ended */
   'user-menu.action.free-trial-finished': 'Upgrade from free',
   /** Label for button showing the free trial days left */

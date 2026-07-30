@@ -17,7 +17,7 @@ const {mockRequest, mockUseWorkspace} = vi.hoisted(() => ({
 }))
 
 vi.mock('../../workspace', () => ({useWorkspace: mockUseWorkspace}))
-vi.mock('../../../hooks', () => {
+vi.mock('../../../hooks/useClient', () => {
   const client = {config: () => ({apiHost: 'https://api.sanity.io'}), request: mockRequest}
   return {useClient: () => client}
 })
@@ -112,6 +112,20 @@ describe('useUnclaimedProject', () => {
     expect(readUnclaimedProjectSnoozedAt(PROJECT_ID)).toBeUndefined()
   })
 
+  it('stays quiet for a regular robot-token session on a claimed project', async () => {
+    mockRequest.mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
+
+    const {result} = renderHook(() => useUnclaimedProject())
+
+    await waitFor(() =>
+      expect(mockRequest).toHaveBeenCalledExactlyOnceWith({
+        tag: 'unclaimed-project',
+        uri: `/projects/${PROJECT_ID}`,
+      }),
+    )
+    expect(result.current).toBeUndefined()
+  })
+
   it('reports expired and clears record and token when the project is gone', async () => {
     mockRequest.mockRejectedValue({statusCode: 404})
     writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
@@ -122,6 +136,27 @@ describe('useUnclaimedProject', () => {
     await waitFor(() => expect(result.current).toEqual({status: 'expired'}))
     expect(readUnclaimedProjectRecord(PROJECT_ID)).toBeUndefined()
     expect(localStorage.getItem(getAuthTokenStorageKey(PROJECT_ID))).toBeNull()
+  })
+
+  it('does not expire a regular robot-token session with no mint provenance', async () => {
+    mockRequest.mockRejectedValue({statusCode: 404})
+    localStorage.setItem(getAuthTokenStorageKey(PROJECT_ID), JSON.stringify({token: 'sk-live'}))
+
+    const {result} = renderHook(() => useUnclaimedProject())
+
+    await waitFor(() => expect(mockRequest).toHaveBeenCalled())
+    expect(result.current).toBeUndefined()
+    expect(localStorage.getItem(getAuthTokenStorageKey(PROJECT_ID))).not.toBeNull()
+  })
+
+  it('stays quiet when an unclaimed project has no usable creation time', async () => {
+    mockRequest.mockResolvedValue({organizationId: 'oSystemUnclaimed'})
+
+    const {result} = renderHook(() => useUnclaimedProject())
+
+    await waitFor(() => expect(mockRequest).toHaveBeenCalled())
+    expect(result.current).toBeUndefined()
+    expect(mockFetch).not.toHaveBeenCalled()
   })
 
   it('treats a missing organization id as unverifiable, not as claimed', async () => {
@@ -326,6 +361,40 @@ describe('useUnclaimedProject', () => {
     rerender()
 
     await waitFor(() => expect(result.current).toBeUndefined())
+  })
+
+  it('does not carry mint provenance across a robot to human to robot session change', async () => {
+    const {result, rerender} = renderHook(() => useUnclaimedProject())
+    await waitFor(() => expect(result.current?.status).toBe('unclaimed'))
+
+    mockUseWorkspace.mockReturnValue({currentUser: HUMAN_USER, projectId: PROJECT_ID})
+    rerender()
+    await waitFor(() => expect(result.current).toBeUndefined())
+
+    mockRequest.mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
+    mockUseWorkspace.mockReturnValue({currentUser: ROBOT_USER, projectId: PROJECT_ID})
+    rerender()
+
+    await waitFor(() => expect(mockRequest).toHaveBeenCalledTimes(2))
+    expect(result.current).toBeUndefined()
+  })
+
+  it('does not restore stale state after switching away from and back to a project', async () => {
+    const {result, rerender} = renderHook(() => useUnclaimedProject())
+    await waitFor(() => expect(result.current?.status).toBe('unclaimed'))
+
+    mockRequest.mockRejectedValue({statusCode: 500})
+    mockUseWorkspace.mockReturnValue({currentUser: ROBOT_USER, projectId: 'other-project'})
+    rerender()
+    await waitFor(() => expect(mockRequest).toHaveBeenCalledTimes(2))
+    expect(result.current).toBeUndefined()
+
+    mockRequest.mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
+    mockUseWorkspace.mockReturnValue({currentUser: ROBOT_USER, projectId: PROJECT_ID})
+    rerender()
+
+    await waitFor(() => expect(mockRequest).toHaveBeenCalledTimes(3))
+    expect(result.current).toBeUndefined()
   })
 
   it('picks up a claim record stored by a mid-session hash paste', async () => {

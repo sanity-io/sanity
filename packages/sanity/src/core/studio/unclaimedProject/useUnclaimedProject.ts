@@ -1,6 +1,6 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {getAuthTokenStorageKey} from '../../store/authStore/constants'
 import {
   clearUnclaimedProjectRecord,
@@ -57,6 +57,11 @@ function claimTokenFromClaimUrl(claimUrl: string): string | undefined {
   }
 }
 
+function getStatusCode(error: unknown): number | undefined {
+  if (!error || typeof error !== 'object' || !('statusCode' in error)) return undefined
+  return typeof error.statusCode === 'number' ? error.statusCode : undefined
+}
+
 /**
  * Claim lifecycle of the current project.
  * Defaults to `undefined` when the project wasn't created via `sanity new` or public provisioning APIs.
@@ -67,18 +72,22 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
   const {currentUser, projectId} = useWorkspace()
   const client = useClient({apiVersion: PROJECTS_API_VERSION})
   const isRobot = currentUser?.provider === ROBOT_PROVIDER
-  const [state, setState] = useState<UnclaimedProjectState>()
-
-  // A workspace switch can swap the project or the identity under the mounted layout — reset
-  // during render so a previous project's nudge never lingers.
   const sessionKey = `${projectId}:${isRobot}`
-  const [prevSessionKey, setPrevSessionKey] = useState(sessionKey)
-  if (prevSessionKey !== sessionKey) {
-    setPrevSessionKey(sessionKey)
-    setState(undefined)
-  }
+  const provenanceRef = useRef({sessionKey, seenUnclaimed: false})
+  const [sessionState, setSessionState] = useState<{
+    sessionKey: string
+    value: UnclaimedProjectState
+  }>()
+  // A workspace switch can swap the project or identity under the mounted layout. Tagging the
+  // async state makes the previous session disappear immediately without setting state in render.
+  const state = sessionState?.sessionKey === sessionKey ? sessionState.value : undefined
 
   useEffect(() => {
+    if (provenanceRef.current.sessionKey !== sessionKey) {
+      provenanceRef.current = {sessionKey, seenUnclaimed: false}
+      setSessionState(undefined)
+    }
+
     if (!isRobot) {
       // An unclaimed project has no human members, so a human session means any stored claim
       // record is stale — storage never outlives the state that justified it.
@@ -92,8 +101,11 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
     let lookupSawNotFound = false
     let claimLinkSpent = false
 
+    const hasSeenUnclaimed = () =>
+      provenanceRef.current.sessionKey === sessionKey && provenanceRef.current.seenUnclaimed
+
     const update = (next: UnclaimedProjectState) => {
-      if (!disposed) setState(next)
+      if (!disposed) setSessionState({sessionKey, value: next})
     }
 
     const finishClaimed = () => {
@@ -121,11 +133,15 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
       claimLinkSpent = true
       clearUnclaimedProjectRecord(projectId)
       if (!disposed) {
-        setState((prev) =>
-          prev?.status === 'unclaimed'
-            ? {...prev, claimUrl: undefined, claimLinkSpent: true}
-            : prev,
-        )
+        setSessionState((prev) => {
+          const value = prev?.sessionKey === sessionKey ? prev.value : undefined
+          return value?.status === 'unclaimed'
+            ? {
+                sessionKey,
+                value: {...value, claimUrl: undefined, claimLinkSpent: true},
+              }
+            : prev
+        })
       }
     }
 
@@ -186,29 +202,42 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
       try {
         project = await client.request({uri: `/projects/${projectId}`, tag: 'unclaimed-project'})
       } catch (err) {
-        const statusCode = (err as {statusCode?: number} | null)?.statusCode
-        if (statusCode === 404 || statusCode === 401) finishExpired()
+        const statusCode = getStatusCode(err)
+        const hasMintProvenance =
+          hasSeenUnclaimed() || Boolean(readUnclaimedProjectRecord(projectId))
+        if ((statusCode === 404 || statusCode === 401) && hasMintProvenance) finishExpired()
         return
       }
       if (disposed || terminal) return
       // A response without an organization id is unverifiable, not a claim: fail open.
       if (!project.organizationId) return
+      const record = readUnclaimedProjectRecord(projectId)
       if (project.organizationId !== UNCLAIMED_ORGANIZATION_ID) {
-        finishClaimed()
+        if (hasSeenUnclaimed() || record) finishClaimed()
         return
       }
 
-      const record = readUnclaimedProjectRecord(projectId)
-      const expiresAt = record?.expiresAt
-        ? new Date(record.expiresAt)
-        : new Date(new Date(project.createdAt ?? Date.now()).getTime() + UNCLAIMED_PROJECT_TTL_MS)
+      provenanceRef.current = {sessionKey, seenUnclaimed: true}
+      const createdAt = project.createdAt ? new Date(project.createdAt) : undefined
+      const derivedExpiresAt =
+        createdAt && !Number.isNaN(createdAt.getTime())
+          ? new Date(createdAt.getTime() + UNCLAIMED_PROJECT_TTL_MS)
+          : undefined
+      const expiresAt = record?.expiresAt ? new Date(record.expiresAt) : derivedExpiresAt
+      if (!expiresAt) return
       if (!disposed) {
-        setState((prev) => ({
-          status: 'unclaimed',
-          claimUrl: record?.claimUrl,
-          expiresAt: !record && prev?.status === 'unclaimed' ? prev.expiresAt : expiresAt,
-          claimLinkSpent,
-        }))
+        setSessionState((prev) => {
+          const value = prev?.sessionKey === sessionKey ? prev.value : undefined
+          return {
+            sessionKey,
+            value: {
+              status: 'unclaimed',
+              claimUrl: record?.claimUrl,
+              expiresAt: !record && value?.status === 'unclaimed' ? value.expiresAt : expiresAt,
+              claimLinkSpent,
+            },
+          }
+        })
       }
       if (record) await refineFromLookup(record, expiresAt.getTime())
     }
@@ -235,16 +264,20 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
       const record = readUnclaimedProjectRecord(projectId)
       if (!record || disposed) return
       claimLinkSpent = false
-      setState((prev) =>
-        prev?.status === 'unclaimed'
+      setSessionState((prev) => {
+        const value = prev?.sessionKey === sessionKey ? prev.value : undefined
+        return value?.status === 'unclaimed'
           ? {
-              ...prev,
-              claimUrl: record.claimUrl,
-              expiresAt: record.expiresAt ? new Date(record.expiresAt) : prev.expiresAt,
-              claimLinkSpent: false,
+              sessionKey,
+              value: {
+                ...value,
+                claimUrl: record.claimUrl,
+                expiresAt: record.expiresAt ? new Date(record.expiresAt) : value.expiresAt,
+                claimLinkSpent: false,
+              },
             }
-          : prev,
-      )
+          : prev
+      })
     }
     window.addEventListener('hashchange', onHashChange)
 
@@ -254,7 +287,7 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
       window.removeEventListener('focus', onFocus)
       window.removeEventListener('hashchange', onHashChange)
     }
-  }, [client, isRobot, projectId])
+  }, [client, isRobot, projectId, sessionKey])
 
   return state
 }

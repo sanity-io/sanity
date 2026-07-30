@@ -16,17 +16,37 @@ export interface UnclaimedProjectRecord {
   lastLookupAt?: string
 }
 
+function isValidDateString(value: unknown): value is string {
+  return typeof value === 'string' && !Number.isNaN(new Date(value).getTime())
+}
+
 /** @internal */
 export function readUnclaimedProjectRecord(projectId: string): UnclaimedProjectRecord | undefined {
   if (!supportsLocalStorage) return undefined
   try {
     const raw = localStorage.getItem(getUnclaimedProjectStorageKey(projectId))
-    const record = raw ? JSON.parse(raw) : undefined
+    const record: unknown = raw ? JSON.parse(raw) : undefined
     // The claim URL is rendered as a link, so a stored value must pass the same allowlist as
     // hash intake — a tampered record reads as absent, like any other corruption.
-    return typeof record?.claimUrl === 'string' && isValidClaimUrl(record.claimUrl)
-      ? record
-      : undefined
+    if (
+      !record ||
+      typeof record !== 'object' ||
+      !('claimUrl' in record) ||
+      typeof record.claimUrl !== 'string' ||
+      !isValidClaimUrl(record.claimUrl)
+    ) {
+      return undefined
+    }
+
+    return {
+      claimUrl: record.claimUrl,
+      ...('expiresAt' in record && isValidDateString(record.expiresAt)
+        ? {expiresAt: record.expiresAt}
+        : {}),
+      ...('lastLookupAt' in record && isValidDateString(record.lastLookupAt)
+        ? {lastLookupAt: record.lastLookupAt}
+        : {}),
+    }
   } catch {
     return undefined
   }
