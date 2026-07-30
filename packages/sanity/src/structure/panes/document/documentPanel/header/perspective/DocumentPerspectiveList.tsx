@@ -172,7 +172,10 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           onCopyToDraftsComplete={clearScheduledDraftPerspective}
           contextValues={{
             documentGroupId,
-            versionId: getDraftId(documentId),
+            // With no draft the chip displays the published document, so act on that instead —
+            // adding to a release should duplicate the content on screen.
+            versionId:
+              editState?.draft?._id ?? editState?.published?._id ?? getDraftId(documentGroupId),
             documentType: documentType,
             releases: filteredReleases.notCurrentReleases,
             releasesLoading: loading,
