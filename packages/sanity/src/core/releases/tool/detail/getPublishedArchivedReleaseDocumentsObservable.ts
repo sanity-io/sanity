@@ -1,7 +1,16 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
-import {of} from 'rxjs'
-import {catchError, expand, finalize, map, reduce, shareReplay} from 'rxjs/operators'
+import {EMPTY, of} from 'rxjs'
+import {
+  catchError,
+  delay,
+  expand,
+  finalize,
+  map,
+  reduce,
+  shareReplay,
+  switchMap,
+} from 'rxjs/operators'
 
 import {type useSource} from '../../../studio/source'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
@@ -11,6 +20,15 @@ import {type BundleDocumentsObservableResult} from './useBundleDocuments'
 
 const publishedArchivedReleaseDocumentsCache: Record<string, BundleDocumentsObservableResult> =
   Object.create(null)
+
+/** Matches the active-release batch size used elsewhere in the release detail view. */
+const HISTORY_BATCH_SIZE = 10
+/**
+ * Delay before each subsequent `/data/history` batch.
+ * That endpoint is not CDN-cached and counts fully against the shared per-IP rate limit;
+ * zero-gap sequential batches on large multi-locale releases can exhaust retries and 429.
+ */
+const HISTORY_BATCH_DELAY_MS = 100
 
 const buildPublishedArchivedReleaseDocumentsObservable = ({
   getClient,
@@ -26,7 +44,7 @@ const buildPublishedArchivedReleaseDocumentsObservable = ({
   if (!release.finalDocumentStates?.length) return of({loading: false, results: [], error: null})
 
   function batchRequestDocumentFromHistory(startIndex: number) {
-    const finalIndex = startIndex + 10
+    const finalIndex = startIndex + HISTORY_BATCH_SIZE
     return observableClient
       .request<{documents: DocumentInRelease['document'][]}>({
         url: `/data/history/${dataset}/documents/${release.finalDocumentStates
@@ -40,11 +58,13 @@ const buildPublishedArchivedReleaseDocumentsObservable = ({
   const documents$ = batchRequestDocumentFromHistory(0).pipe(
     expand((response) => {
       if (release.finalDocumentStates && response.finalIndex < release.finalDocumentStates.length) {
-        // Continue with next batch
-        return batchRequestDocumentFromHistory(response.finalIndex)
+        // Space subsequent batches (first batch is immediate), mirroring useBundleDocuments
+        return of(null).pipe(
+          delay(HISTORY_BATCH_DELAY_MS),
+          switchMap(() => batchRequestDocumentFromHistory(response.finalIndex)),
+        )
       }
-      // End recursion by emitting an empty observable
-      return of()
+      return EMPTY
     }),
     reduce(
       (documents: DocumentInRelease['document'][], batch) => documents.concat(batch.documents),
