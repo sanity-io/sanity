@@ -10,15 +10,7 @@ import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Box, Button, Flex, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {
-  type ChangeEvent,
-  useCallback,
-  useEffect,
-  useEffectEvent,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
@@ -35,6 +27,7 @@ import {
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {groqExtensions} from '../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
+import {useEffectEvent} from '../hooks/useEffectEvent'
 import {visionLocaleNamespace} from '../i18n'
 import {
   getActivePerspective,
@@ -620,7 +613,6 @@ export function VisionGui(props: VisionGuiProps) {
   })
   // Handle pinned perspective changes
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
     handleStudioPerspectiveChange(perspectiveStack)
   }, [perspectiveStack])
 

@@ -13,7 +13,6 @@ import {
   type RefObject,
   useCallback,
   useEffect,
-  useEffectEvent,
   useInsertionEffect,
   useMemo,
   useRef,
@@ -27,6 +26,7 @@ import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {type DocumentSyncState, useDocumentSyncState} from '../hooks/useDocumentSyncState'
 import {useEditState} from '../hooks/useEditState'
+import {useEffectEvent} from '../hooks/useEffectEvent'
 import {useReconnectingToast} from '../hooks/useReconnectingToast'
 import {useSchema} from '../hooks/useSchema'
 import {

@@ -1,12 +1,12 @@
 import {Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {useObservableEvent} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
+import {useObservableEvent} from '../../../hooks/useObservableEvent'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {usePerspective} from '../../../perspective/usePerspective'

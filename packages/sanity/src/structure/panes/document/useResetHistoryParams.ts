@@ -1,5 +1,5 @@
-import {useEffect, useEffectEvent, useRef} from 'react'
-import {usePerspective} from 'sanity'
+import {useEffect, useRef} from 'react'
+import {useEffectEvent, usePerspective} from 'sanity'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {EMPTY_PARAMS} from './constants'

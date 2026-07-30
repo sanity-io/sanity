@@ -16,16 +16,7 @@ import {
 } from '@sanity/preview-url-secret/constants'
 import {BoundaryElementProvider, Flex, useMediaIndex} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useEffectEvent,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type CommentIntentGetter,
   COMMENTS_INSPECTOR_NAME,
@@ -39,6 +30,7 @@ import {
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
+import {useEffectEvent} from '../core/hooks/useEffectEvent'
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE, NARROW_MEDIA_INDEX} from './constants'
 import PostMessageFeatures from './features/PostMessageFeatures'
 import {presentationMachine} from './machines/presentation-machine'

@@ -24,13 +24,13 @@ import {
   startTransition,
   useCallback,
   useEffect,
-  useEffectEvent,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
 } from 'react'
 
+import {useEffectEvent} from '../../../hooks/useEffectEvent'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {pathToString} from '../../../validation/util/pathToString'
@@ -238,7 +238,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const focusedDivergence = divergenceNavigator.enabled
     ? divergenceNavigator.state.focusedDivergence
     : undefined
-  // oxlint-disable-next-line react/react-compiler
   useEffect(() => controlImplicitExpandedState(), [focusedDivergence])
 
   const toast = useToast()

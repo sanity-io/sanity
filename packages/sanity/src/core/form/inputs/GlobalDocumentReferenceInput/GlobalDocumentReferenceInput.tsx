@@ -17,7 +17,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useObservableEvent} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 
@@ -27,6 +26,7 @@ import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
 import {PreviewCard} from '../../../components/previewCard/PreviewCard'
 import {type FIXME} from '../../../FIXME'
+import {useObservableEvent} from '../../../hooks/useObservableEvent'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getPublishedId} from '../../../util/draftUtils'
 import {isNonNullable} from '../../../util/isNonNullable'

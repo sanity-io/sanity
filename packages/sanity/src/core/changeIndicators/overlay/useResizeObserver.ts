@@ -1,4 +1,6 @@
-import {useEffect, useEffectEvent} from 'react'
+import {useEffect} from 'react'
+
+import {useEffectEvent} from '../../hooks/useEffectEvent'
 
 export function useResizeObserver(
   element: HTMLDivElement,

@@ -2,7 +2,7 @@ import {SanityEncoder} from '@sanity/mutate'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type SanityDocument} from '@sanity/types'
 import {fromString, get} from '@sanity/util/paths'
-import {useContext, useEffect, useEffectEvent, useState} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {
   type Observable,
@@ -23,6 +23,7 @@ import {DocumentDivergencesContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks/useClient'
 import {useDocumentOperation} from '../../hooks/useDocumentOperation'
+import {useEffectEvent} from '../../hooks/useEffectEvent'
 import {useDocumentStore} from '../../store/datastores'
 import {selectUpstreamVersion} from '../../store/document/selectUpstreamVersion'
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'

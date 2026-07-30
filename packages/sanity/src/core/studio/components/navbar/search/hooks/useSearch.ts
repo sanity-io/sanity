@@ -1,7 +1,6 @@
 import {type Schema} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useMemo, useState} from 'react'
-import {useObservableEvent} from 'react-rx'
 import {concat, EMPTY, iif, type Observable, of, timer} from 'rxjs'
 import {
   catchError,
@@ -15,6 +14,7 @@ import {
 } from 'rxjs/operators'
 
 import {useClient} from '../../../../../hooks/useClient'
+import {useObservableEvent} from '../../../../../hooks/useObservableEvent'
 import {
   type SearchHit,
   type SearchOptions,

@@ -1,14 +1,7 @@
-import {
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffectEvent,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from 'react'
+import {type ReactNode, useCallback, useContext, useLayoutEffect, useMemo, useState} from 'react'
 import {PresentationDocumentContext} from 'sanity/_singletons'
 
+import {useEffectEvent} from '../../core/hooks/useEffectEvent'
 import {type PresentationPluginOptions} from '../types'
 import {type PresentationDocumentContextValue} from './types'
 
@@ -49,7 +42,6 @@ export function PresentationDocumentProvider(props: {
   const registerEffectEvent = useEffectEvent((options: PresentationPluginOptions) =>
     register(options),
   )
-  // oxlint-disable-next-line react/react-compiler
   useLayoutEffect(() => registerEffectEvent(options), [options])
 
   return (
