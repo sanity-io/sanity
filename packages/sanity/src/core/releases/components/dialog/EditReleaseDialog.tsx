@@ -1,6 +1,6 @@
 import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
 import {Card, Flex, Stack, Text, TextArea, TextInput, useToast} from '@sanity/ui'
-import {type ChangeEvent, useCallback, useId, useState} from 'react'
+import {type ChangeEvent, useCallback, useId, useRef, useState} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
@@ -33,8 +33,14 @@ export function EditReleaseDialog({
   const [title, setTitle] = useState(release.metadata.title ?? '')
   const [description, setDescription] = useState(release.metadata.description ?? '')
   const [isSaving, setIsSaving] = useState(false)
+  // Synchronous re-entry guard. `loading={isSaving}` only disables the button after a re-render, so
+  // two clicks in the same tick would both reach updateRelease. This ref blocks the second call
+  // immediately. Mirrors the guard in ReleaseBulkActionDialog.
+  const isSavingRef = useRef(false)
 
   const handleSave = useCallback(async () => {
+    if (isSavingRef.current) return
+    isSavingRef.current = true
     setIsSaving(true)
     try {
       const next: EditableReleaseDocument = {
@@ -51,6 +57,7 @@ export function EditReleaseDialog({
         title: t('release.toast.edit-release-error.title'),
       })
     } finally {
+      isSavingRef.current = false
       setIsSaving(false)
     }
   }, [description, onClose, release, t, title, toast, updateRelease])
