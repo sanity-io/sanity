@@ -29,8 +29,8 @@ import {
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
+import {useEffectEvent} from 'use-effect-event'
 
-import {useEffectEvent} from '../core/hooks/useEffectEvent'
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE, NARROW_MEDIA_INDEX} from './constants'
 import PostMessageFeatures from './features/PostMessageFeatures'
 import {presentationMachine} from './machines/presentation-machine'

@@ -19,6 +19,7 @@ import {
   useState,
 } from 'react'
 import deepEquals from 'react-fast-compare'
+import {useEffectEvent} from 'use-effect-event'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
@@ -26,7 +27,6 @@ import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {type DocumentSyncState, useDocumentSyncState} from '../hooks/useDocumentSyncState'
 import {useEditState} from '../hooks/useEditState'
-import {useEffectEvent} from '../hooks/useEffectEvent'
 import {useReconnectingToast} from '../hooks/useReconnectingToast'
 import {useSchema} from '../hooks/useSchema'
 import {

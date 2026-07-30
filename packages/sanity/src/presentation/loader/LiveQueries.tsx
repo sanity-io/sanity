@@ -29,8 +29,8 @@ import {
   useProjectId,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
-import {useEffectEvent} from '../../core/hooks/useEffectEvent'
 import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
 import {type LoaderConnection, type PresentationPerspective} from '../types'
 import {type DocumentOnPage} from '../useDocumentsOnPage'

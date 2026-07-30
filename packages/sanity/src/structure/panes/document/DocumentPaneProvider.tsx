@@ -39,7 +39,6 @@ import {
   useDocumentDivergences,
   useDocumentForm,
   useDocumentIdStack,
-  useEffectEvent,
   usePerspective,
   useSchema,
   useSource,
@@ -49,6 +48,7 @@ import {
 } from 'sanity'
 import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
+import {useEffectEvent} from 'use-effect-event'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentTitle} from '../../components/structureTool/StructureTitle'

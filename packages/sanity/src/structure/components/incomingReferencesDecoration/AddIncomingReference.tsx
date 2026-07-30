@@ -2,6 +2,7 @@ import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
 import {Box, Grid, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
+import {useObservableEvent} from 'react-rx'
 import {catchError, concat, filter, map, type Observable, of, scan, switchMap, tap} from 'rxjs'
 import {
   createSearch,
@@ -17,7 +18,6 @@ import {
   type SearchStrategy,
   useClient,
   useDocumentPreviewStore,
-  useObservableEvent,
   useSchema,
   useSource,
   useTranslation,

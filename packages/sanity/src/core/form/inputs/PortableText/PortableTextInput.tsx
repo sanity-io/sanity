@@ -29,8 +29,8 @@ import {
   useRef,
   useState,
 } from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
-import {useEffectEvent} from '../../../hooks/useEffectEvent'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {pathToString} from '../../../validation/util/pathToString'

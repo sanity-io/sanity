@@ -1,7 +1,7 @@
 import {type ReactNode, useCallback, useContext, useLayoutEffect, useMemo, useState} from 'react'
 import {PresentationDocumentContext} from 'sanity/_singletons'
+import {useEffectEvent} from 'use-effect-event'
 
-import {useEffectEvent} from '../../core/hooks/useEffectEvent'
 import {type PresentationPluginOptions} from '../types'
 import {type PresentationDocumentContextValue} from './types'
 

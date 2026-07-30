@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState} from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {useClient} from '../../hooks/useClient'
-import {useEffectEvent} from '../../hooks/useEffectEvent'
 import {getTransactionsLogs} from '../../store/translog/getTransactionsLogs'
 import {getPublishedId} from '../../util/draftUtils'
 import {type FieldChange, trackFieldChanges} from '../components/activity/helpers/parseTransactions'

@@ -868,8 +868,6 @@ export {decodePath, encodePath} from '../core/form/utils/path'
 export {TransformPatches} from '../core/form/utils/TransformPatches'
 export {useClient} from '../core/hooks/useClient'
 export {useConditionalToast} from '../core/hooks/useConditionalToast'
-export {useEffectEvent} from '../core/hooks/useEffectEvent'
-export {useObservableEvent} from '../core/hooks/useObservableEvent'
 export {
   connectionState,
   type ConnectionState,

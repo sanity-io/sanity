@@ -3,8 +3,8 @@ import {match} from 'path-to-regexp'
 import {useEffect, useRef, useState} from 'react'
 import {useClient, VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity'
 import {type RouterState, useRouter} from 'sanity/router'
+import {useEffectEvent} from 'use-effect-event'
 
-import {useEffectEvent} from '../core/hooks/useEffectEvent'
 import {API_VERSION} from './constants'
 import {
   type DocumentResolver,

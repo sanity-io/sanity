@@ -17,10 +17,10 @@ import {
   useConditionalToast,
   useDocumentPresence,
   useDocumentStore,
-  useEffectEvent,
   usePerspective,
   useTranslation,
 } from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'

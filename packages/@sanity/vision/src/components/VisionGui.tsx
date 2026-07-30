@@ -23,11 +23,11 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {groqExtensions} from '../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
-import {useEffectEvent} from '../hooks/useEffectEvent'
 import {visionLocaleNamespace} from '../i18n'
 import {
   getActivePerspective,

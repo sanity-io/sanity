@@ -37,8 +37,8 @@ import {
 } from 'react'
 import {flushSync} from 'react-dom'
 import {Translate, useTranslation} from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
-import {useEffectEvent} from '../../core/hooks/useEffectEvent'
 import {Button} from '../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {ErrorCard} from '../components/ErrorCard'

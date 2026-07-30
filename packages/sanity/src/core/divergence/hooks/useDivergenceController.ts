@@ -20,10 +20,10 @@ import {
   zip,
 } from 'rxjs'
 import {DocumentDivergencesContext} from 'sanity/_singletons'
+import {useEffectEvent} from 'use-effect-event'
 
 import {useClient} from '../../hooks/useClient'
 import {useDocumentOperation} from '../../hooks/useDocumentOperation'
-import {useEffectEvent} from '../../hooks/useEffectEvent'
 import {useDocumentStore} from '../../store/datastores'
 import {selectUpstreamVersion} from '../../store/document/selectUpstreamVersion'
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'

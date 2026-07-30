@@ -12,6 +12,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {useObservableEvent} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 
@@ -22,7 +23,6 @@ import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMe
 import {PreviewCard, ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
 import {type FIXME} from '../../../FIXME'
 import {useFeatureEnabled, FEATURES} from '../../../hooks/useFeatureEnabled'
-import {useObservableEvent} from '../../../hooks/useObservableEvent'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getPublishedId} from '../../../util/draftUtils'
 import {isNonNullable} from '../../../util/isNonNullable'
