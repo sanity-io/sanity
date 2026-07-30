@@ -30,7 +30,7 @@ catalog:
   '@sanity/migrate': ^8.0.1
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.21.2
-  '@sanity/ui': ^3.5.0
+  '@sanity/ui': 4.0.0-next.0
   '@types/node': ^24.13.3
   '@types/react': ^19.2.17
   '@types/react-dom': ^19.2.3
@@ -99,6 +99,10 @@ minimumReleaseAgeExclude:
   - 'react-hook-form'
   - 'react-is'
   - 'react-rx'
+  # @sanity/ui next pulls motion ^12.43.0; those packages often ship inside the age gate
+  - 'framer-motion'
+  - 'motion'
+  - 'motion-dom'
   # tsdown and its rolldown/rolldown-plugin-dts/yuku toolchain release frequently and in
   # lockstep, so new releases are often younger than minimumReleaseAge
   - 'rolldown'
@@ -119,6 +123,7 @@ minimumReleaseAgeExclude:
   - 'yuku-*'
 
 overrides:
+  '@sanity/ui': 'catalog:'
   vitest: 'catalog:'
 
 preferWorkspacePackages: true
