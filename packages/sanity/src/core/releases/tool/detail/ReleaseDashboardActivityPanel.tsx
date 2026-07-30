@@ -3,6 +3,7 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {Box, Card, Flex, Layer, Text, useLayer} from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {useEffect} from 'react'
+import TrapFocus from 'react-focus-lock'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -134,6 +135,12 @@ export function ReleaseDashboardActivityPanel({
           {show && (
             <MotionCard
               key="activity-overlay-drawer"
+              // Modal drawer: announce it as a modal dialog to assistive tech (aria-modal), and trap
+              // focus inside it (TrapFocus below) so keyboard users can't Tab to the covered rail/
+              // table behind the scrim, with focus restored to the trigger on close.
+              role="dialog"
+              aria-modal
+              aria-label={t('activity.panel.title')}
               borderLeft
               shadow={4}
               initial={{x: '100%'}}
@@ -150,16 +157,18 @@ export function ReleaseDashboardActivityPanel({
                 flexDirection: 'column',
               }}
             >
-              <Resizable
-                as={FillHeight}
-                minWidth={320}
-                maxWidth={800}
-                initialWidth={360}
-                resizerPosition="left"
-                style={{display: 'flex', flexDirection: 'column', flex: 'none', height: '100%'}}
-              >
-                {content}
-              </Resizable>
+              <TrapFocus returnFocus autoFocus>
+                <Resizable
+                  as={FillHeight}
+                  minWidth={320}
+                  maxWidth={800}
+                  initialWidth={360}
+                  resizerPosition="left"
+                  style={{display: 'flex', flexDirection: 'column', flex: 'none', height: '100%'}}
+                >
+                  {content}
+                </Resizable>
+              </TrapFocus>
             </MotionCard>
           )}
         </AnimatePresence>
