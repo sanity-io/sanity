@@ -108,8 +108,14 @@ export function useReleaseHistory(
 
   return useMemo(() => {
     const collaborators: string[] = []
-    if (!history || history.length === 0) {
+    // `null` = not yet fetched → genuinely loading. `[]` = settled with no history (a legitimately
+    // empty log, or a failed fetch that set `[]` on line 93) → NOT loading, just nothing to show.
+    // Keying `loading` off length would leave those rows on a permanent skeleton.
+    if (history === null) {
       return {documentHistory: undefined, collaborators, loading: true}
+    }
+    if (history.length === 0) {
+      return {documentHistory: undefined, collaborators, loading: false}
     }
 
     const aggregated: DocumentHistory = {
