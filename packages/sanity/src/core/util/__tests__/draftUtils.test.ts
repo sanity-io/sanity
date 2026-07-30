@@ -8,6 +8,7 @@ import {
   getPublishedId,
   getVersionFromId,
   getVersionId,
+  isDocumentGroupId,
   removeDupes,
 } from '../draftUtils'
 
@@ -99,6 +100,16 @@ describe('getVersionFromId', () => {
   it('should return the undefined if no bundle slug is found and document is published', () => {
     expect(getVersionFromId('my-document-id')).toBe(undefined)
   })
+})
+
+test.each([
+  ['published id', 'agot', true],
+  ['draft id', 'drafts.agot', false],
+  ['version id', 'versions.summer-drop.agot', false],
+  ['id starting with the drafts folder name', 'draftsy', true],
+  ['id starting with the versions folder name', 'versionsy', true],
+])('isDocumentGroupId(): %s', (_, documentId, shouldEqual) => {
+  expect(isDocumentGroupId(documentId)).toBe(shouldEqual)
 })
 
 describe('getIdPair', () => {

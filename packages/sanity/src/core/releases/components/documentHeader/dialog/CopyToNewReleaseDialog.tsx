@@ -25,13 +25,13 @@ import {ReleaseAvatar} from '../../ReleaseAvatar'
 
 export function CopyToNewReleaseDialog(props: {
   onClose: () => void
-  documentId: string
+  versionId: string
   documentType: string
   release: TargetPerspective
   title: string
   onCreateVersion: (releaseId: string) => void
 }): React.JSX.Element {
-  const {onClose, documentId, documentType, release: sourceRelease, title, onCreateVersion} = props
+  const {onClose, versionId, documentType, release: sourceRelease, title, onCreateVersion} = props
   const {t} = useTranslation()
   const toast = useToast()
   const createReleaseMetadata = useCreateReleaseMetadata()
@@ -139,7 +139,7 @@ export function CopyToNewReleaseDialog(props: {
       >
         <Flex align="center" padding={4} paddingTop={1} justify="space-between">
           {schemaType ? (
-            <Preview value={{_id: documentId}} schemaType={schemaType} />
+            <Preview value={{_id: versionId}} schemaType={schemaType} />
           ) : (
             <LoadingBlock />
           )}

@@ -2,8 +2,11 @@ import {Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 import {
   Chip,
+  getDraftId,
+  getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
+  getVersionId,
   isGoingToUnpublish,
   isReleaseScheduledOrScheduling,
   type ReleaseDocument,
@@ -78,9 +81,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {t} = useTranslation()
   const dateTimeFormat = useDateTimeFormat(DATE_TIME_FORMAT)
   const {loading} = useActiveReleases()
-  const {editState, displayed} = useDocumentPane()
+  const {editState, displayed, documentId} = useDocumentPane()
   const {documentType} = useDocumentPaneInfo()
-
+  const documentGroupId = getPublishedId(documentId)
   const {
     filteredReleases,
     getVersionDisplay,
@@ -122,7 +125,8 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         tone="positive"
         onCopyToDraftsComplete={clearScheduledDraftPerspective}
         contextValues={{
-          documentId: editState?.published?._id || editState?.id || '',
+          documentGroupId,
+          versionId: getPublishedId(documentGroupId),
           releases: filteredReleases.notCurrentReleases,
           releasesLoading: loading,
           documentType,
@@ -167,7 +171,11 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           onClick={() => handlePerspectiveChange('drafts')}
           onCopyToDraftsComplete={clearScheduledDraftPerspective}
           contextValues={{
-            documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
+            documentGroupId,
+            // With no draft the chip displays the published document, so act on that instead —
+            // adding to a release should duplicate the content on screen.
+            versionId:
+              editState?.draft?._id ?? editState?.published?._id ?? getDraftId(documentGroupId),
             documentType: documentType,
             releases: filteredReleases.notCurrentReleases,
             releasesLoading: loading,
@@ -203,7 +211,11 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               text={displayTitle}
               onCopyToDraftsComplete={clearScheduledDraftPerspective}
               contextValues={{
-                documentId: displayed?._id || '',
+                documentGroupId,
+                versionId: getVersionId(
+                  documentGroupId,
+                  getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation!._id),
+                ),
                 documentType,
                 disabled: true,
                 releases: filteredReleases.notCurrentReleases,
@@ -246,7 +258,11 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
                 locked={isReleaseScheduledOrScheduling(release)}
                 onCopyToDraftsComplete={clearScheduledDraftPerspective}
                 contextValues={{
-                  documentId: displayed?._id || '',
+                  documentGroupId,
+                  versionId: getVersionId(
+                    documentGroupId,
+                    getReleaseIdFromReleaseDocumentId(release._id),
+                  ),
                   documentType,
                   releases: filteredReleases.notCurrentReleases,
                   releasesLoading: loading,

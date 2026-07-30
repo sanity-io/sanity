@@ -2,15 +2,31 @@ import {BehaviorSubject, EMPTY, type Observable, Subject} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 import {createActor, fromObservable} from 'xstate'
 
+import {getPublishedId, isDraftId} from '../../util/draftUtils'
 import {selectionMachine, type Variant} from './selectionMachine'
+
+// The selection machine only reads `id` and `name`; the document stub is present to satisfy the
+// `Variant` shape. Only drafts and published documents are needed here.
+function variant(id: string, name: string): Variant {
+  const group = {_ref: getPublishedId(id), _weak: true} as const
+
+  return {
+    id,
+    name,
+    document: {
+      _id: id,
+      _rev: 'rev',
+      _createdAt: '2026-01-01T00:00:00.000Z',
+      _updatedAt: '2026-01-01T00:00:00.000Z',
+      _system: isDraftId(id) ? {bundleId: 'drafts', group} : {group},
+    },
+  }
+}
 
 // The available variants are computed by the parent inventory machine and
 // relayed down as a `variants.changed` event; name derivation is covered in
 // documentGroupInventoryMachine.test.ts.
-const DEFAULT_VARIANTS: Variant[] = [
-  {id: 'drafts.foo', name: 'Draft'},
-  {id: 'foo', name: 'Published'},
-]
+const DEFAULT_VARIANTS: Variant[] = [variant('drafts.foo', 'Draft'), variant('foo', 'Published')]
 
 function createSelectionActor({
   variants = DEFAULT_VARIANTS,
@@ -148,11 +164,11 @@ describe('selectionMachine', () => {
     // The published variant is no longer available, so it is pruned.
     selection.send({
       type: 'variants.changed',
-      variants: [{id: 'drafts.foo', name: 'Draft'}],
+      variants: [variant('drafts.foo', 'Draft')],
       loaded: true,
     })
     expect([...selection.getSnapshot().context.selectedIds]).toEqual(['drafts.foo'])
-    expect(selection.getSnapshot().context.variants).toEqual([{id: 'drafts.foo', name: 'Draft'}])
+    expect(selection.getSnapshot().context.variants).toEqual([variant('drafts.foo', 'Draft')])
   })
 
   it('computes case-insensitive filter matches', () => {
