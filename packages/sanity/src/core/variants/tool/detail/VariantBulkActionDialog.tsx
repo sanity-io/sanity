@@ -12,6 +12,7 @@ import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {RelativeTime} from '../../../components/RelativeTime'
+import {useAsyncAction} from '../../../hooks/useAsyncAction'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useVariantDocumentOperations} from '../../hooks/useVariantDocumentOperations'
@@ -159,7 +160,6 @@ export function VariantBulkActionDialog({
   const toast = useToast()
   const {publishVariantDocument, unpublishVariantDocument, deleteVariantDocument} =
     useVariantDocumentOperations()
-  const [isProcessing, setIsProcessing] = useState(false)
   // Targets are selected by default; deselecting removes a (document × bundle) target from the run.
   const [deselectedKeys, setDeselectedKeys] = useState<ReadonlySet<string>>(new Set())
   const [collapsedGroups, setCollapsedGroups] = useState<ReadonlySet<string>>(new Set())
@@ -265,44 +265,58 @@ export function VariantBulkActionDialog({
     [action, publishVariantDocument, unpublishVariantDocument, deleteVariantDocument],
   )
 
-  const handleConfirm = useCallback(async () => {
-    if (selectedCount === 0) return
-    setIsProcessing(true)
+  // useAsyncAction owns the re-entry guard + isProcessing lifecycle: the confirm button's `disabled`
+  // only applies after a re-render, so a fast double-click could otherwise start the action loop
+  // twice within the same tick. Promise.allSettled never rejects, so per-target failures are reported
+  // inline (toast + results map); onError only catches an unexpected throw before the settle,
+  // releasing the dialog rather than leaving isProcessing stuck true.
+  const {run: handleConfirm, isRunning: isProcessing} = useAsyncAction(
+    async () => {
+      if (selectedCount === 0) return
 
-    const settled = await Promise.allSettled(selectedTargets.map(runTarget))
-    const byKey = new Map<string, TargetStatus>()
-    settled.forEach((result, index) => {
-      byKey.set(selectedTargets[index]!.key, result.status === 'fulfilled' ? 'success' : 'error')
-    })
-    const failed = settled.filter((result) => result.status === 'rejected').length
-    const succeeded = selectedCount - failed
-
-    if (succeeded > 0) {
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: t(`detail.documents.bulk.${action}-toast.success`, {count: succeeded}),
+      const settled = await Promise.allSettled(selectedTargets.map(runTarget))
+      const byKey = new Map<string, TargetStatus>()
+      settled.forEach((result, index) => {
+        byKey.set(selectedTargets[index]!.key, result.status === 'fulfilled' ? 'success' : 'error')
       })
-    }
-    if (failed > 0) {
-      toast.push({
-        closable: true,
-        status: 'error',
-        title: t(`detail.documents.bulk.${action}-toast.error`),
-      })
-    }
+      const failed = settled.filter((result) => result.status === 'rejected').length
+      const succeeded = selectedCount - failed
 
-    setIsProcessing(false)
+      if (succeeded > 0) {
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: t(`detail.documents.bulk.${action}-toast.success`, {count: succeeded}),
+        })
+      }
+      if (failed > 0) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t(`detail.documents.bulk.${action}-toast.error`),
+        })
+      }
 
-    // Clean run: clear the selection and close. Partial/total failure: keep the dialog open with a
-    // per-row breakdown so the editor can see exactly which targets failed.
-    if (failed === 0) {
-      onSuccess()
-      onClose()
-      return
-    }
-    setResults(byKey)
-  }, [action, onClose, onSuccess, runTarget, selectedCount, selectedTargets, t, toast])
+      // Clean run: clear the selection and close. Partial/total failure: keep the dialog open with a
+      // per-row breakdown so the editor can see exactly which targets failed.
+      if (failed === 0) {
+        onSuccess()
+        onClose()
+        return
+      }
+      setResults(byKey)
+    },
+    {
+      onError: (err) => {
+        console.error(err)
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t(`detail.documents.bulk.${action}-toast.error`),
+        })
+      },
+    },
+  )
 
   const handleResultsClose = useCallback(() => {
     // Some targets may have succeeded before the failures — clear the selection on the way out.
