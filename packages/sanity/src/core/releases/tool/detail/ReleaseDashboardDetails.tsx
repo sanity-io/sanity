@@ -301,7 +301,7 @@ export function ReleaseDashboardDetails({
                           <UserIcon />
                         </Text>
                       ),
-                      label: tRelease('footer.status.created'),
+                      label: tRelease('dashboard.details.metadata.created'),
                       value: (
                         <Text size={1}>
                           <RelativeTime time={release._createdAt} useTemporalPhrase minimal />
