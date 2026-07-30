@@ -17,13 +17,13 @@ export interface VersionContextMenuPopoverProps {
   popoverRef: RefObject<HTMLDivElement | null>
   /** The element the menu popover is positioned relative to. */
   referenceElement: HTMLElement | null
-  documentId: string
+  documentGroupId: string
   documentType: string
   /** The perspective the menu acts on: 'published', 'draft', or a release ID. */
   bundleId: string
-  isVersion: boolean
   releases: ReleaseDocument[]
   releasesLoading: boolean
+  versionId: string
   onDiscard: () => void
   onCreateRelease: () => void
   onCopyToDrafts: (options: CopyToDraftsOptions) => Promise<void>
@@ -61,10 +61,10 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
     contextMenu,
     popoverRef,
     referenceElement,
-    documentId,
+    documentGroupId,
+    versionId,
     documentType,
     bundleId,
-    isVersion,
     releases,
     releasesLoading,
     onDiscard,
@@ -86,11 +86,11 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
       animate={false}
       content={
         <VersionContextMenu
-          documentId={documentId}
+          documentGroupId={documentGroupId}
           releases={releases}
           releasesLoading={releasesLoading}
           fromRelease={bundleId}
-          isVersion={isVersion}
+          versionId={versionId}
           onDiscard={onDiscard}
           onCreateRelease={onCreateRelease}
           onCopyToDrafts={onCopyToDrafts}

@@ -36,7 +36,6 @@ import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {feedbackLocaleNamespace, studioLocaleNamespace} from '../../i18n/localeNamespaces'
-import {type TargetPerspective} from '../../perspective/types'
 import {type SetVariant, useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
@@ -45,7 +44,6 @@ import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVer
 import {useVersionContextMenu} from '../../releases/hooks/useVersionContextMenu'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
-import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
@@ -53,14 +51,7 @@ import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
 import {useDocumentStore} from '../../store/datastores'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {
-  getPublishedId,
-  getVersionFromId,
-  isDraftId,
-  isPublishedId,
-  isVersionId,
-  type SystemBundle,
-} from '../../util/draftUtils'
+import {getPublishedId, isVersionId, type SystemBundle} from '../../util/draftUtils'
 import {readVersionType} from '../../util/versionsUtils'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
@@ -537,12 +528,24 @@ const Variant: ComponentType<{
   const {t} = useTranslation(studioLocaleNamespace)
   const releasesToolAvailable = useReleasesToolAvailable()
   const {loading: releasesLoading} = useActiveReleases()
-  const isPublishedVersion = isPublishedId(variant.id)
-  const isDraftVersion = isDraftId(variant.id)
-  const isVersion = isVersionId(variant.id)
-  const documentId = getPublishedId(variant.id)
-  const versionName = getVersionFromId(variant.id)
-  const bundleId = isPublishedVersion ? 'published' : isDraftVersion ? 'draft' : (versionName ?? '')
+  // Derived from `_system` rather than the id, because `_system` is authoritative: it
+  // distinguishes a variant-scoped draft (`versions.<scope>.<id>` with `bundleId: 'drafts'`)
+  // from a release version, which the id alone cannot.
+  const {document} = variant
+  const versionId = document._id
+  const documentGroupId = document._system.group._ref
+  const releaseRef = document._system.release?._ref
+  const isPublishedVersion = !document._system.bundleId
+  const isDraftVersion = document._system.bundleId === 'drafts'
+  const isVersion = isVersionId(versionId)
+  const bundleId = isPublishedVersion
+    ? 'published'
+    : isDraftVersion
+      ? 'draft'
+      : (document._system.bundleId ?? '')
+  const agentBundleName = isAgentBundleName(document._system.bundleId)
+    ? document._system.bundleId
+    : undefined
 
   const isReadOnly = useSelector(machine, (snapshot) => snapshot.matches('readonly'))
   const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
@@ -550,10 +553,7 @@ const Variant: ComponentType<{
 
   const {filteredReleases, clearScheduledDraftPerspective} = perspectiveList
 
-  const release = versionName
-    ? releases.get(getReleaseDocumentIdFromReleaseId(versionName))
-    : undefined
-
+  const release = releaseRef ? releases.get(releaseRef) : undefined
   const {
     contextMenu,
     handleContextMenu,
@@ -570,7 +570,8 @@ const Variant: ComponentType<{
     scheduledDraftMenuActions,
     sourceReleasePerspective,
   } = useVersionContextMenu({
-    documentId,
+    documentGroupId,
+    versionId,
     documentType,
     bundleId,
     isVersion,
@@ -592,11 +593,9 @@ const Variant: ComponentType<{
             onClick={() => {
               let bundle
 
-              switch (readVersionType(variant.document)) {
+              switch (readVersionType(document)) {
                 case 'release':
-                  bundle = getReleaseIdFromReleaseDocumentId(
-                    variant?.document?._system.release?._ref ?? '',
-                  )
+                  bundle = getReleaseIdFromReleaseDocumentId(releaseRef ?? '')
                   break
                 case 'published':
                   bundle = 'published'
@@ -606,15 +605,11 @@ const Variant: ComponentType<{
                   break
               }
 
-              const variantId = isVariantId(variant.document?._system?.variant?._ref)
-                ? variant.document._system.variant._ref
+              const variantId = isVariantId(document._system.variant?._ref)
+                ? document._system.variant._ref
                 : undefined
 
-              const agentId = isAgentBundleName(getVersionFromId(variant.id))
-                ? getVersionFromId(variant.id)
-                : undefined
-
-              onPrimaryAction({variantId, perspective: agentId ?? bundle})
+              onPrimaryAction({variantId, perspective: agentBundleName ?? bundle})
             }}
             onContextMenu={contextMenuHandler}
           >
@@ -643,7 +638,7 @@ const Variant: ComponentType<{
             </StatusBadge>
           )}
           <Text size={1}>
-            {isAgentBundleName(getVersionFromId(variant.id)) ? (
+            {agentBundleName ? (
               <ReleaseAvatarIcon tone="suggest" />
             ) : (
               <ReleaseAvatarIcon
@@ -661,12 +656,12 @@ const Variant: ComponentType<{
           contextMenu={contextMenu}
           popoverRef={popoverRef}
           referenceElement={referenceElement}
-          documentId={documentId}
+          documentGroupId={documentGroupId}
           documentType={documentType}
           bundleId={bundleId}
-          isVersion={isVersion}
           releases={filteredReleases.notCurrentReleases}
           releasesLoading={releasesLoading}
+          versionId={versionId}
           onDiscard={openDiscardDialog}
           onCreateRelease={openCreateReleaseDialog}
           onCopyToDrafts={handleCopyToDrafts}
@@ -682,10 +677,8 @@ const Variant: ComponentType<{
       <VersionContextMenuDialogs
         dialogState={dialogState}
         onClose={closeDialog}
-        documentId={documentId}
+        versionId={versionId}
         documentType={documentType}
-        bundleId={bundleId}
-        isVersion={isVersion}
         title={variant.name}
         sourceReleasePerspective={sourceReleasePerspective}
         onCreateVersion={handleAddVersion}

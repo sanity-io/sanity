@@ -49,7 +49,8 @@ export const VersionChip = memo(function VersionChip(props: {
   locked?: boolean
   onCopyToDraftsComplete?: () => void
   contextValues: {
-    documentId: string
+    documentGroupId: string
+    versionId: string
     documentType: string
     releases: ReleaseDocument[]
     releasesLoading: boolean
@@ -71,7 +72,8 @@ export const VersionChip = memo(function VersionChip(props: {
     locked = false,
     onCopyToDraftsComplete,
     contextValues: {
-      documentId,
+      documentGroupId,
+      versionId,
       releases,
       releasesLoading,
       documentType,
@@ -83,8 +85,7 @@ export const VersionChip = memo(function VersionChip(props: {
     },
   } = props
   const releasesToolAvailable = useReleasesToolAvailable()
-  const isLinked = useVersionIsLinked(documentId, bundleId)
-
+  const isLinked = useVersionIsLinked(documentGroupId, bundleId)
   const chipRef = useRef<HTMLButtonElement | null>(null)
 
   useEffect(() => {
@@ -107,7 +108,8 @@ export const VersionChip = memo(function VersionChip(props: {
     scheduledDraftMenuActions,
     sourceReleasePerspective,
   } = useVersionContextMenu({
-    documentId,
+    documentGroupId,
+    versionId,
     documentType,
     bundleId,
     isVersion,
@@ -152,10 +154,10 @@ export const VersionChip = memo(function VersionChip(props: {
         contextMenu={contextMenu}
         popoverRef={popoverRef}
         referenceElement={referenceElement}
-        documentId={documentId}
+        documentGroupId={documentGroupId}
+        versionId={versionId}
         documentType={documentType}
         bundleId={bundleId}
-        isVersion={isVersion}
         releases={releases}
         releasesLoading={releasesLoading}
         onDiscard={openDiscardDialog}
@@ -174,10 +176,8 @@ export const VersionChip = memo(function VersionChip(props: {
       <VersionContextMenuDialogs
         dialogState={dialogState}
         onClose={closeDialog}
-        documentId={documentId}
+        versionId={versionId}
         documentType={documentType}
-        bundleId={bundleId}
-        isVersion={isVersion}
         title={text}
         sourceReleasePerspective={sourceReleasePerspective}
         onCreateVersion={handleAddVersion}

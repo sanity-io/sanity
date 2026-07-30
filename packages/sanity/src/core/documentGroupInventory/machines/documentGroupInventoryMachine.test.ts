@@ -562,7 +562,11 @@ describe('documentGroupInventoryMachine', () => {
     const expectedVariants = [
       // Agent bundle versions are dropped from the version state and only the
       // most recent bundle is prepended, labelled through the translator.
-      {id: 'versions.agent-abc.foo', name: 'version.agent-bundle.proposed-changes'},
+      {
+        id: 'versions.agent-abc.foo',
+        name: 'version.agent-bundle.proposed-changes',
+        document: versionStub('versions.agent-abc.foo'),
+      },
       {id: 'drafts.foo', name: 'release.chip.draft', document: versionStub('drafts.foo')},
       {id: 'foo', name: 'release.chip.published', document: versionStub('foo')},
     ]
