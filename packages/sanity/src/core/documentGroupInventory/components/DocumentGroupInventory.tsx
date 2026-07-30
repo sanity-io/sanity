@@ -51,14 +51,7 @@ import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
 import {useDocumentStore} from '../../store/datastores'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {
-  getPublishedId,
-  getVersionFromId,
-  isDraftId,
-  isPublishedId,
-  isVersionId,
-  type SystemBundle,
-} from '../../util/draftUtils'
+import {getPublishedId, isVersionId, type SystemBundle} from '../../util/draftUtils'
 import {readVersionType} from '../../util/versionsUtils'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
@@ -535,22 +528,24 @@ const Variant: ComponentType<{
   const {t} = useTranslation(studioLocaleNamespace)
   const releasesToolAvailable = useReleasesToolAvailable()
   const {loading: releasesLoading} = useActiveReleases()
-  // Agent bundle entries are listed without a document, so their ids remain the only source of
-  // truth. Everything else is derived from `_system`, which is authoritative: it distinguishes a
-  // variant-scoped draft (`versions.<scope>.<id>` with `bundleId: 'drafts'`) from a release
-  // version, which the id alone cannot.
+  // Derived from `_system` rather than the id, because `_system` is authoritative: it
+  // distinguishes a variant-scoped draft (`versions.<scope>.<id>` with `bundleId: 'drafts'`)
+  // from a release version, which the id alone cannot.
   const {document} = variant
-  const versionId = document?._id ?? variant.id
-  const documentGroupId = document?._system.group._ref ?? getPublishedId(variant.id)
-  const releaseRef = document?._system.release?._ref
-  const isPublishedVersion = document ? !document._system.bundleId : isPublishedId(variant.id)
-  const isDraftVersion = document ? document._system.bundleId === 'drafts' : isDraftId(variant.id)
+  const versionId = document._id
+  const documentGroupId = document._system.group._ref
+  const releaseRef = document._system.release?._ref
+  const isPublishedVersion = !document._system.bundleId
+  const isDraftVersion = document._system.bundleId === 'drafts'
   const isVersion = isVersionId(versionId)
   const bundleId = isPublishedVersion
     ? 'published'
     : isDraftVersion
       ? 'draft'
-      : (document?._system.bundleId ?? getVersionFromId(variant.id) ?? '')
+      : (document._system.bundleId ?? '')
+  const agentBundleName = isAgentBundleName(document._system.bundleId)
+    ? document._system.bundleId
+    : undefined
 
   const isReadOnly = useSelector(machine, (snapshot) => snapshot.matches('readonly'))
   const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
@@ -598,11 +593,9 @@ const Variant: ComponentType<{
             onClick={() => {
               let bundle
 
-              switch (readVersionType(variant.document)) {
+              switch (readVersionType(document)) {
                 case 'release':
-                  bundle = getReleaseIdFromReleaseDocumentId(
-                    variant?.document?._system.release?._ref ?? '',
-                  )
+                  bundle = getReleaseIdFromReleaseDocumentId(releaseRef ?? '')
                   break
                 case 'published':
                   bundle = 'published'
@@ -612,15 +605,11 @@ const Variant: ComponentType<{
                   break
               }
 
-              const variantId = isVariantId(variant.document?._system?.variant?._ref)
-                ? variant.document._system.variant._ref
+              const variantId = isVariantId(document._system.variant?._ref)
+                ? document._system.variant._ref
                 : undefined
 
-              const agentId = isAgentBundleName(getVersionFromId(variant.id))
-                ? getVersionFromId(variant.id)
-                : undefined
-
-              onPrimaryAction({variantId, perspective: agentId ?? bundle})
+              onPrimaryAction({variantId, perspective: agentBundleName ?? bundle})
             }}
             onContextMenu={contextMenuHandler}
           >
@@ -649,7 +638,7 @@ const Variant: ComponentType<{
             </StatusBadge>
           )}
           <Text size={1}>
-            {isAgentBundleName(getVersionFromId(variant.id)) ? (
+            {agentBundleName ? (
               <ReleaseAvatarIcon tone="suggest" />
             ) : (
               <ReleaseAvatarIcon
