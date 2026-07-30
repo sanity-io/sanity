@@ -41,7 +41,7 @@ const FILTER_TABS_STYLE: CSSProperties = {
  *
  * @internal
  */
-export interface DocumentTableSelection {
+export interface DocumentTableSelection<Row = unknown> {
   labels: {
     selectAll: string
     selectRow: string
@@ -57,6 +57,12 @@ export interface DocumentTableSelection {
   }) => ReactNode
   /** testId for the select-all checkbox (per-surface, so existing tests keep working). */
   selectAllTestId?: string
+  /**
+   * Optional predicate: rows for which this returns false get no row checkbox and never count toward
+   * the selection or select-all (e.g. pending "just added" placeholder rows that can't be bulk-acted
+   * on). Defaults to every row selectable.
+   */
+  isRowSelectable?: (row: Row) => boolean
 }
 
 /**
@@ -122,7 +128,7 @@ export function DocumentTable<Row extends object>({
   alwaysShowCommandLane?: boolean
   /** Extra command-lane controls rendered right of the search (e.g. an "Add document" button). */
   commandLaneActions?: ReactNode
-  selection?: DocumentTableSelection
+  selection?: DocumentTableSelection<Row>
   rowActions?: (props: {datum: unknown}) => ReactNode
   footer?: ReactNode
   emptyState: (() => React.JSX.Element) | string
@@ -144,8 +150,13 @@ export function DocumentTable<Row extends object>({
   // Selection is keyed by the caller's row key. The count reflects only currently-visible rows so a
   // filtered-out selection never inflates the bar.
   const selectableKeys = useMemo(
-    () => new Set(displayRows.map((row) => getRowKey(row))),
-    [displayRows, getRowKey],
+    () =>
+      new Set(
+        displayRows
+          .filter((row) => selection?.isRowSelectable?.(row) ?? true)
+          .map((row) => getRowKey(row)),
+      ),
+    [displayRows, getRowKey, selection],
   )
   const selectedVisibleCount = useMemo(
     () => [...selectedKeys].filter((key) => selectableKeys.has(key)).length,
@@ -196,7 +207,7 @@ export function DocumentTable<Row extends object>({
       ),
       cell: ({cellProps, datum}) => (
         <Flex {...cellProps} align="center" justify="center" paddingX={2} sizing="border">
-          {!datum.isLoading && (
+          {!datum.isLoading && (selection?.isRowSelectable?.(datum) ?? true) && (
             <Checkbox
               aria-label={labels.selectRow}
               checked={selectedKeys.has(getRowKey(datum))}

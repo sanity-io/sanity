@@ -241,7 +241,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   // Multi-select is only meaningful on an active release (matching the per-row actions, which are
   // hidden otherwise). Discard + Unpublish mirror the per-row menu, applied to the whole selection.
   const isActiveRelease = release.state === 'active'
-  const selection = useMemo<DocumentTableSelection | undefined>(() => {
+  const selection = useMemo<DocumentTableSelection<DocumentInReleaseDetail> | undefined>(() => {
     if (!isActiveRelease) return undefined
     return {
       labels: {
@@ -251,6 +251,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         clear: t('dashboard.details.bulk.clear'),
       },
       selectAllTestId: 'release-bulk-select-all',
+      // Pending "just added" placeholder rows have synthetic `-pending` ids and can't be bulk-acted
+      // on; make them non-selectable so they don't inflate the count or leave a pending-only
+      // selection with disabled actions and no explanation.
+      isRowSelectable: (row) => !row.isPending,
       renderActions: ({selectedKeys, compact, clear}) => (
         <ReleaseBulkSelectionActions
           compact={compact}
