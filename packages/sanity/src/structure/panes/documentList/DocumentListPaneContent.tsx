@@ -4,6 +4,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
   type CommandListRenderItemCallback,
+  Delay,
   ErrorActions,
   type GeneralPreviewLayoutKey,
   getPublishedId,
@@ -16,7 +17,6 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {Delay} from '../../components/Delay'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePane} from '../../components/pane/usePane'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'

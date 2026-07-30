@@ -1,5 +1,10 @@
 import {Box, rem, Stack} from '@sanity/ui'
-import {type ScrollToOptions, useVirtualizer, type Virtualizer} from '@tanstack/react-virtual'
+import {
+  measureElement,
+  type ScrollToOptions,
+  useVirtualizer,
+  type Virtualizer,
+} from '@tanstack/react-virtual'
 import throttle from 'lodash-es/throttle.js'
 import {
   cloneElement,
@@ -157,6 +162,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
     getItemKey,
     getScrollElement: () => virtualListElement,
     estimateSize: () => itemHeight,
+    measureElement: measureVisibleElement,
     onChange: handleChange,
     overscan,
   })
@@ -748,4 +754,40 @@ function getItemIndicies(
     }
     return acc
   }, [])
+}
+
+/**
+ * Retrieve the element's measured dimensions if its scroll element is visible
+ * or its measured dimensions are greater than zero, otherwise retrieve its
+ * cached or estimated dimensions.
+ *
+ * This prevents the element's lack of dimensions when its scroll element is
+ * hidden from poisoning its virtualization state.
+ */
+function measureVisibleElement(
+  element: Element,
+  entry: ResizeObserverEntry | undefined,
+  instance: Virtualizer<HTMLElement, Element>,
+): number {
+  const measuredSize = measureElement(element, entry, instance)
+
+  if (measuredSize > 0) {
+    return measuredSize
+  }
+
+  const scrollElement = instance.scrollElement
+  const isHidden = scrollElement?.offsetWidth === 0 || scrollElement?.offsetHeight === 0
+
+  if (!isHidden) {
+    return measuredSize
+  }
+
+  const index = instance.indexFromElement(element)
+  const cachedSize = instance.itemSizeCache.get(instance.options.getItemKey(index))
+
+  if (cachedSize !== undefined && cachedSize > 0) {
+    return cachedSize
+  }
+
+  return instance.options.estimateSize(index)
 }

@@ -1,6 +1,6 @@
 {
   "name": "sanity",
-  "version": "6.6.0",
+  "version": "6.7.0",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
   "keywords": [
     "cms",
@@ -147,9 +147,10 @@
     "@portabletext/to-html": "^5.0.2",
     "@portabletext/toolkit": "^5.0.2",
     "@rexxars/react-json-inspector": "^9.0.1",
+    "@sanity-labs/ui-poc": "0.0.1-alpha.22",
     "@sanity/asset-utils": "^2.3.0",
     "@sanity/bifur-client": "^1.0.0",
-    "@sanity/cli": "^7.13.0",
+    "@sanity/cli": "^7.14.0",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.8",
     "@sanity/comlink": "^4.0.1",
@@ -212,7 +213,7 @@
     "react-i18next": "^17.0.11",
     "react-is": "catalog:",
     "react-refractor": "^4.0.0",
-    "react-rx": "^4.2.3",
+    "react-rx": "^4.2.5",
     "refractor": "^5.0.0",
     "rxjs": "^7.8.2",
     "rxjs-exhaustmap-with-trailing": "^2.1.1",

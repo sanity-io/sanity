@@ -68,6 +68,7 @@ minimumReleaseAgeExclude:
   - '@vitejs/plugin-react'
   - '@portabletext/*'
   - '@sanity/*'
+  - '@sanity-labs/ui-poc'
   - '@yuku-codegen/*'
   - '@yuku-parser/*'
   - '@yuku-toolchain/types'

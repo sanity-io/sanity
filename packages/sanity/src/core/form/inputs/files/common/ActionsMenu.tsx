@@ -48,6 +48,7 @@ export function ActionsMenu(props: Props) {
           icon={DownloadIcon}
           text={t('inputs.files.common.actions-menu.download.label')}
           href={downloadUrl}
+          target="_blank"
         />
       )}
       {copyUrl && (

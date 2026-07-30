@@ -383,6 +383,7 @@ import type {
   defineSearchFilterOperators,
   defineSearchOperator,
   defineType,
+  Delay,
   DeleteDocumentGroupEvent,
   DeleteDocumentVersionEvent,
   DeleteMutation,
@@ -2955,6 +2956,9 @@ describe('sanity', () => {
   })
   test('defineType', () => {
     expectTypeOf<typeof defineType>().toBeFunction()
+  })
+  test('Delay', () => {
+    expectTypeOf<typeof Delay>().toBeFunction()
   })
   test('DeleteDocumentGroupEvent', () => {
     expectTypeOf<DeleteDocumentGroupEvent>().toBeObject()
