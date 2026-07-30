@@ -2,6 +2,7 @@ import {memo, type ReactNode} from 'react'
 
 import {type TargetPerspective} from '../../../../perspective/types'
 import {getVersionId} from '../../../../util/draftUtils'
+import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
 import {type VersionContextMenuDialogState} from '../../../hooks/useVersionContextMenu'
 import {DiscardVersionDialog} from '../../dialog/DiscardVersionDialog'
 import {CopyToDraftsDialog} from '../dialog/CopyToDraftsDialog'
@@ -24,7 +25,7 @@ export interface VersionContextMenuDialogsProps {
   /** The release or system bundle the dialogs act on behalf of. */
   sourceReleasePerspective: TargetPerspective
   onCreateVersion: (targetRelease: string) => void
-  onCopyToDraftsNavigate: () => void
+  onCopyToDrafts: (options: CopyToDraftsOptions) => Promise<void>
   isGoingToUnpublish?: boolean
   /**
    * Whether the UI permits discarding versions.
@@ -54,7 +55,7 @@ export const VersionContextMenuDialogs = memo(function VersionContextMenuDialogs
     title,
     sourceReleasePerspective,
     onCreateVersion,
-    onCopyToDraftsNavigate,
+    onCopyToDrafts,
     isGoingToUnpublish = false,
     isDiscardable = true,
     scheduledDraftDialogs,
@@ -84,12 +85,7 @@ export const VersionContextMenuDialogs = memo(function VersionContextMenuDialogs
       )}
 
       {dialogState === 'copy-to-drafts' && (
-        <CopyToDraftsDialog
-          onClose={onClose}
-          documentId={documentId}
-          fromRelease={bundleId}
-          onNavigate={onCopyToDraftsNavigate}
-        />
+        <CopyToDraftsDialog onClose={onClose} onConfirm={onCopyToDrafts} />
       )}
       {scheduledDraftDialogs}
     </>

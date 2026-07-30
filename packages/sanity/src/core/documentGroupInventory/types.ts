@@ -22,7 +22,7 @@ export interface DocumentGroupInventoryReferencePreviewLinkProps {
 export interface DocumentGroupInventoryPerspectiveList {
   filteredReleases: {notCurrentReleases: ReleaseDocument[]}
   getReleaseChipState: (releaseId: string) => {selected: boolean; disabled?: boolean}
-  handleCopyToDraftsNavigate: () => void
+  clearScheduledDraftPerspective: () => void
   isDraftSelected: boolean
   isPublishSelected: boolean
 }

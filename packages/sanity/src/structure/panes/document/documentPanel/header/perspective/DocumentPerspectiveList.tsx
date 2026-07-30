@@ -85,7 +85,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     filteredReleases,
     getVersionDisplay,
     getReleaseChipState,
-    handleCopyToDraftsNavigate,
+    clearScheduledDraftPerspective,
     handlePerspectiveChange,
     handleVariantSelectionChange,
     isDraftDisabled,
@@ -120,7 +120,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         selected={isPublishSelected}
         text={t('release.chip.published')}
         tone="positive"
-        onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+        onCopyToDraftsComplete={clearScheduledDraftPerspective}
         contextValues={{
           documentId: editState?.published?._id || editState?.id || '',
           releases: filteredReleases.notCurrentReleases,
@@ -165,7 +165,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           text={t('release.chip.draft')}
           tone={editState?.draft ? 'caution' : 'neutral'}
           onClick={() => handlePerspectiveChange('drafts')}
-          onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+          onCopyToDraftsComplete={clearScheduledDraftPerspective}
           contextValues={{
             documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
             documentType: documentType,
@@ -201,7 +201,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               locked={false}
               tone={getReleaseTone(filteredReleases.inCreation!)}
               text={displayTitle}
-              onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+              onCopyToDraftsComplete={clearScheduledDraftPerspective}
               contextValues={{
                 documentId: displayed?._id || '',
                 documentType,
@@ -244,7 +244,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
                 text={displayTitle}
                 tone={getReleaseTone(release)}
                 locked={isReleaseScheduledOrScheduling(release)}
-                onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+                onCopyToDraftsComplete={clearScheduledDraftPerspective}
                 contextValues={{
                   documentId: displayed?._id || '',
                   documentType,
@@ -268,7 +268,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           const scopeId = version._system.scopeId!
           handlePerspectiveChange(scopeId)
         }}
-        onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+        onCopyToDraftsComplete={clearScheduledDraftPerspective}
         releases={filteredReleases.notCurrentReleases}
         releasesLoading={loading}
         documentType={documentType}
@@ -288,7 +288,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           nonReleaseVersions={variantVersions}
           selectedPerspective={selectedPerspectiveName}
           onSelectBundle={handleVariantSelectionChange}
-          onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+          onCopyToDraftsComplete={clearScheduledDraftPerspective}
           releases={filteredReleases.notCurrentReleases}
           releasesLoading={loading}
           documentType={documentType}

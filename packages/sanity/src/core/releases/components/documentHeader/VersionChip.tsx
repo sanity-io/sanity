@@ -47,7 +47,7 @@ export const VersionChip = memo(function VersionChip(props: {
   contextMenuPortal?: boolean
   tone: BadgeTone
   locked?: boolean
-  onCopyToDraftsNavigate: () => void
+  onCopyToDraftsComplete?: () => void
   contextValues: {
     documentId: string
     documentType: string
@@ -69,7 +69,7 @@ export const VersionChip = memo(function VersionChip(props: {
     contextMenuPortal = true,
     tone,
     locked = false,
-    onCopyToDraftsNavigate,
+    onCopyToDraftsComplete,
     contextValues: {
       documentId,
       releases,
@@ -101,7 +101,7 @@ export const VersionChip = memo(function VersionChip(props: {
     closeDialog,
     openDiscardDialog,
     openCreateReleaseDialog,
-    openCopyToDraftsDialog,
+    handleCopyToDrafts,
     handleAddVersion,
     isScheduledDraft,
     scheduledDraftMenuActions,
@@ -113,6 +113,7 @@ export const VersionChip = memo(function VersionChip(props: {
     isVersion,
     disabled: contextMenuDisabled,
     release,
+    onCopyToDraftsComplete,
   })
 
   const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
@@ -159,8 +160,7 @@ export const VersionChip = memo(function VersionChip(props: {
         releasesLoading={releasesLoading}
         onDiscard={openDiscardDialog}
         onCreateRelease={openCreateReleaseDialog}
-        onCopyToDrafts={openCopyToDraftsDialog}
-        onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+        onCopyToDrafts={handleCopyToDrafts}
         onCreateVersion={handleAddVersion}
         disabled={contextMenuDisabled}
         locked={locked}
@@ -181,7 +181,7 @@ export const VersionChip = memo(function VersionChip(props: {
         title={text}
         sourceReleasePerspective={sourceReleasePerspective}
         onCreateVersion={handleAddVersion}
-        onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+        onCopyToDrafts={handleCopyToDrafts}
         isGoingToUnpublish={isGoingToUnpublish}
         scheduledDraftDialogs={isScheduledDraft && scheduledDraftMenuActions.dialogs}
       />
