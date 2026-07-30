@@ -12,6 +12,7 @@ on:
       - "packages/sanity/typedoc.config.json"
       - "packages/sanity/tsconfig.docs.json"
       - "packages/sanity/package.json"
+      - "packages/@repo/typedoc/**"
       - ".github/workflows/typedoc.yml"
   # Manual trigger
   workflow_dispatch:
