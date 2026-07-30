@@ -36,7 +36,6 @@ import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {feedbackLocaleNamespace, studioLocaleNamespace} from '../../i18n/localeNamespaces'
-import {type TargetPerspective} from '../../perspective/types'
 import {type SetVariant, useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
@@ -45,7 +44,6 @@ import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVer
 import {useVersionContextMenu} from '../../releases/hooks/useVersionContextMenu'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
-import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
@@ -537,12 +535,22 @@ const Variant: ComponentType<{
   const {t} = useTranslation(studioLocaleNamespace)
   const releasesToolAvailable = useReleasesToolAvailable()
   const {loading: releasesLoading} = useActiveReleases()
-  const isPublishedVersion = isPublishedId(variant.id)
-  const isDraftVersion = isDraftId(variant.id)
-  const isVersion = isVersionId(variant.id)
-  const documentId = getPublishedId(variant.id)
-  const versionName = getVersionFromId(variant.id)
-  const bundleId = isPublishedVersion ? 'published' : isDraftVersion ? 'draft' : (versionName ?? '')
+  // Agent bundle entries are listed without a document, so their ids remain the only source of
+  // truth. Everything else is derived from `_system`, which is authoritative: it distinguishes a
+  // variant-scoped draft (`versions.<scope>.<id>` with `bundleId: 'drafts'`) from a release
+  // version, which the id alone cannot.
+  const {document} = variant
+  const versionId = document?._id ?? variant.id
+  const documentGroupId = document?._system.group._ref ?? getPublishedId(variant.id)
+  const releaseRef = document?._system.release?._ref
+  const isPublishedVersion = document ? !document._system.bundleId : isPublishedId(variant.id)
+  const isDraftVersion = document ? document._system.bundleId === 'drafts' : isDraftId(variant.id)
+  const isVersion = isVersionId(versionId)
+  const bundleId = isPublishedVersion
+    ? 'published'
+    : isDraftVersion
+      ? 'draft'
+      : (document?._system.bundleId ?? getVersionFromId(variant.id) ?? '')
 
   const isReadOnly = useSelector(machine, (snapshot) => snapshot.matches('readonly'))
   const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
@@ -550,10 +558,7 @@ const Variant: ComponentType<{
 
   const {filteredReleases, clearScheduledDraftPerspective} = perspectiveList
 
-  const release = versionName
-    ? releases.get(getReleaseDocumentIdFromReleaseId(versionName))
-    : undefined
-
+  const release = releaseRef ? releases.get(releaseRef) : undefined
   const {
     contextMenu,
     handleContextMenu,
@@ -570,7 +575,8 @@ const Variant: ComponentType<{
     scheduledDraftMenuActions,
     sourceReleasePerspective,
   } = useVersionContextMenu({
-    documentId,
+    documentGroupId,
+    versionId,
     documentType,
     bundleId,
     isVersion,
@@ -661,12 +667,12 @@ const Variant: ComponentType<{
           contextMenu={contextMenu}
           popoverRef={popoverRef}
           referenceElement={referenceElement}
-          documentId={documentId}
+          documentGroupId={documentGroupId}
           documentType={documentType}
           bundleId={bundleId}
-          isVersion={isVersion}
           releases={filteredReleases.notCurrentReleases}
           releasesLoading={releasesLoading}
+          versionId={versionId}
           onDiscard={openDiscardDialog}
           onCreateRelease={openCreateReleaseDialog}
           onCopyToDrafts={handleCopyToDrafts}
@@ -682,10 +688,8 @@ const Variant: ComponentType<{
       <VersionContextMenuDialogs
         dialogState={dialogState}
         onClose={closeDialog}
-        documentId={documentId}
+        versionId={versionId}
         documentType={documentType}
-        bundleId={bundleId}
-        isVersion={isVersion}
         title={variant.name}
         sourceReleasePerspective={sourceReleasePerspective}
         onCreateVersion={handleAddVersion}

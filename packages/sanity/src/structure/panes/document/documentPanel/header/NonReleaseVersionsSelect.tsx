@@ -87,7 +87,8 @@ export function NonReleaseVersionsSelect(props: {
               onClick={() => onSelectBundle(selectedNonReleaseVersion)}
               onCopyToDraftsComplete={onCopyToDraftsComplete}
               contextValues={{
-                documentId: getPublishedId(selectedNonReleaseVersion._id),
+                documentGroupId: getPublishedId(selectedNonReleaseVersion._id),
+                versionId: selectedNonReleaseVersion._id,
                 releases,
                 releasesLoading: releasesLoading,
                 documentType: documentType,
@@ -147,7 +148,8 @@ export function NonReleaseVersionsSelect(props: {
                     onClick={() => onSelectBundle(nonReleaseVersion)}
                     onCopyToDraftsComplete={onCopyToDraftsComplete}
                     contextValues={{
-                      documentId: getPublishedId(nonReleaseVersion._id),
+                      documentGroupId: getPublishedId(nonReleaseVersion._id),
+                      versionId: nonReleaseVersion._id,
                       releases,
                       releasesLoading: releasesLoading,
                       documentType: documentType,

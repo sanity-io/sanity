@@ -11,7 +11,7 @@ import {
   useScheduledDraftMenuActions,
   type UseScheduledDraftMenuActionsReturn,
 } from '../../singleDocRelease/hooks/useScheduledDraftMenuActions'
-import {getVersionId} from '../../util/draftUtils'
+import {isDocumentGroupId} from '../../util/draftUtils'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {LATEST, PUBLISHED} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -45,7 +45,15 @@ export type VersionContextMenuState =
  * @internal
  */
 export interface UseVersionContextMenuOptions {
-  documentId: string
+  /**
+   * The document group id (published id with no `drafts.` / `versions.` prefix).
+   */
+  documentGroupId: string
+  /**
+   * The version id (with `drafts.` / `versions.` prefix) or even the published id (with no prefix).
+   * AKA the full document id
+   */
+  versionId: string
   documentType: string
   /** The perspective the menu acts on: 'published', 'draft', or a release ID. */
   bundleId: string
@@ -107,7 +115,8 @@ export function useVersionContextMenu(
   options: UseVersionContextMenuOptions,
 ): UseVersionContextMenuReturn {
   const {
-    documentId,
+    documentGroupId,
+    versionId,
     documentType,
     bundleId,
     isVersion,
@@ -116,12 +125,16 @@ export function useVersionContextMenu(
     onCopyToDraftsComplete,
   } = options
 
+  if (process.env.NODE_ENV !== 'production' && !isDocumentGroupId(documentGroupId)) {
+    console.warn(
+      `useVersionContextMenu: expected a document group id, got "${documentGroupId}". Pass the group (published) id as \`documentGroupId\` and the full document id as \`versionId\`.`,
+    )
+  }
+
   const [contextMenu, setContextMenu] = useState<VersionContextMenuState>({open: false})
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [dialogState, setDialogState] = useState<VersionContextMenuDialogState>('idle')
-
-  const docId = isVersion ? getVersionId(documentId, bundleId) : documentId // operations recognises publish and draft as empty
 
   const {createVersion} = useVersionOperations()
   const toast = useToast()
@@ -173,7 +186,7 @@ export function useVersionContextMenu(
   }, [setPerspective, onCopyToDraftsComplete])
 
   const {handleCopyToDrafts} = useCopyToDrafts({
-    documentId,
+    documentId: documentGroupId,
     fromRelease: bundleId,
     onNavigate: handleCopyToDraftsNavigate,
     onConfirmationRequest: () => setDialogState('copy-to-drafts'),
@@ -182,7 +195,7 @@ export function useVersionContextMenu(
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
       try {
-        await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
+        await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), versionId)
       } catch (err) {
         toast.push({
           closable: true,
@@ -194,7 +207,7 @@ export function useVersionContextMenu(
 
       closeContextMenu()
     },
-    [closeContextMenu, createVersion, docId, t, toast],
+    [closeContextMenu, createVersion, versionId, t, toast],
   )
 
   const isScheduledDraft = Boolean(release && isVersion && isCardinalityOneRelease(release))
@@ -209,7 +222,7 @@ export function useVersionContextMenu(
   const scheduledDraftMenuActions = useScheduledDraftMenuActions({
     release,
     documentType,
-    documentId,
+    documentId: documentGroupId,
     disabled,
     onActionComplete: handleEditScheduleComplete,
     onDeleteComplete,
