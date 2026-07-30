@@ -157,7 +157,16 @@ export function ReleaseDashboardActivityPanel({
                 flexDirection: 'column',
               }}
             >
-              <TrapFocus returnFocus autoFocus>
+              {/* preventScroll on both the open (focusOptions) and close (returnFocus) focus moves:
+                  the drawer mounts translated off-screen (translateX(100%)) and then slides in, so a
+                  default focus() would scroll the off-screen target into view and jerk the whole
+                  layout left→right before the animation settles. preventScroll keeps the focus move
+                  (a11y) without the scroll (the flash). */}
+              <TrapFocus
+                returnFocus={{preventScroll: true}}
+                autoFocus
+                focusOptions={{preventScroll: true}}
+              >
                 <Resizable
                   as={FillHeight}
                   minWidth={320}
