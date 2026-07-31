@@ -8,9 +8,9 @@ import {Button} from '../../../../ui-components/button/Button'
 import {type NavbarProps} from '../../../config/studio/types'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
+import {useGetDefaultPerspective} from '../../../perspective/useGetDefaultPerspective'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
-import {isDraftPerspective, isPublishedPerspective} from '../../../releases/util/util'
 import {variantsLocaleNamespace} from '../../i18n'
 import {VariantsNav} from './VariantsNav'
 
@@ -27,9 +27,8 @@ export function VariantsStudioNavbar(props: NavbarProps) {
   const router = useRouter()
 
   const hasVariantSelection = Boolean(router.stickyParams.variant)
-  const hasNonDefaultPerspective =
-    !isDraftPerspective(selectedPerspective) && !isPublishedPerspective(selectedPerspective)
-  const canClear = hasVariantSelection || hasNonDefaultPerspective
+  const defaultPerspective = useGetDefaultPerspective()
+  const canClear = hasVariantSelection || selectedPerspective !== defaultPerspective
 
   const handleClearViewAs = useCallback(() => {
     router.navigate({

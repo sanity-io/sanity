@@ -63,6 +63,7 @@ minimumReleaseAgeExclude:
   - '@oxfmt/*'
   - '@oxlint/*'
   - '@oxlint-tsgolint/*'
+  - '@oclif/core'
   - '@vitest/*'
   - '@vite/*'
   - '@vitejs/plugin-react'

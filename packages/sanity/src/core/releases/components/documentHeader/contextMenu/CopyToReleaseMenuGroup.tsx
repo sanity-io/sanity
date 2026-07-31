@@ -7,6 +7,7 @@ import {styled} from 'styled-components'
 import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
 import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
 import {CopyToDraftsMenuItem} from './CopyToDraftsMenuItem'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
@@ -21,12 +22,10 @@ interface CopyToReleaseMenuGroupProps {
   releases: ReleaseDocument[]
   bundleId: string
   onCreateRelease: () => void
-  onCopyToDrafts: () => void
-  onCopyToDraftsNavigate: () => void
+  onCopyToDrafts: (options: CopyToDraftsOptions) => Promise<void>
   onCreateVersion: (targetId: string) => void
   disabled: boolean
   hasCreatePermission: boolean | null
-  documentId: string
   documentType: string
   hasCopyToDraftOption?: boolean
   isReleasesEnabled?: boolean
@@ -40,13 +39,11 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
     bundleId,
     onCreateRelease,
     onCopyToDrafts,
-    onCopyToDraftsNavigate,
     onCreateVersion,
     disabled,
     isReleasesEnabled,
     hasCreatePermission,
     hasCopyToDraftOption,
-    documentId,
     documentType,
   } = props
   const {t} = useTranslation()
@@ -68,10 +65,8 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
           {hasCopyToDraftOption && (
             <CopyToDraftsMenuItem
               documentType={documentType}
-              documentId={documentId}
               fromRelease={bundleId}
               onClick={onCopyToDrafts}
-              onNavigate={onCopyToDraftsNavigate}
             />
           )}
           {releases.map((targetRelease) => {

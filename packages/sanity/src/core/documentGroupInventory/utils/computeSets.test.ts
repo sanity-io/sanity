@@ -142,6 +142,7 @@ describe('computeSets', () => {
             {
               id: `versions.${AGENT_BUNDLE_ID}.${PUBLISHED_ID}`,
               name: 'version.agent-bundle.proposed-changes',
+              document: versions[3],
             },
             {id: `drafts.${PUBLISHED_ID}`, name: 'release.chip.draft', document: versions[0]},
             {id: PUBLISHED_ID, name: 'release.chip.published', document: versions[1]},
@@ -189,6 +190,7 @@ describe('computeSets', () => {
             {
               id: `versions.${AGENT_BUNDLE_ID}.${PUBLISHED_ID}`,
               name: 'version.agent-bundle.proposed-changes',
+              document: versions[8],
             },
           ],
         },
