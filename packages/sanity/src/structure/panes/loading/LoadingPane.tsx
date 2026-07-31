@@ -66,6 +66,7 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
 
   useEffect(() => {
     if (typeof resolvedMessage !== 'object') return undefined
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     if (typeof resolvedMessage.subscribe !== 'function') return undefined
 
     const sub = resolvedMessage.subscribe((message) => {

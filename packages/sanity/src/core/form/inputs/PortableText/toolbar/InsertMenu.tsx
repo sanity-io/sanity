@@ -28,12 +28,14 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   const applicable = useApplicableSchema()
   const {t} = useTranslation()
   const focusBlock = useFocusBlock()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
 
   const isVoidFocus = focusBlock && focusBlock._type !== schemaTypes.block.name
 
   const handleMenuClose = useCallback(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [editor])
 

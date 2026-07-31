@@ -35,6 +35,7 @@ vi.mock('@sanity/client', () => ({
 }))
 
 vi.mock('../../../hooks/useClient')
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const useClientMock = useClient as ReturnType<typeof vi.fn>
 
 const mockObservableRequest = vi.fn((announcements) => of(announcements))
@@ -120,8 +121,8 @@ describe('StudioAnnouncementsProvider', () => {
       const {result} = renderHook(() => useStudioAnnouncements(), {
         wrapper,
       })
-      expect(seenAnnouncementsMock).toBeCalled()
-      expect(mockObservableRequest).toBeCalled()
+      expect(seenAnnouncementsMock).toHaveBeenCalled()
+      expect(mockObservableRequest).toHaveBeenCalled()
       expect(result.current.unseenAnnouncements).toEqual([])
       expect(result.current.studioAnnouncements).toEqual(mockAnnouncements)
     })
@@ -234,22 +235,22 @@ describe('StudioAnnouncementsProvider', () => {
       expect(announcement2Elements.length).toBeGreaterThan(0)
 
       // Opening the dialog calls the telemetry only once, with the seen card
-      expect(mockLog).toBeCalledTimes(3)
-      expect(mockLog).toBeCalledWith(ProductAnnouncementCardSeen, {
+      expect(mockLog).toHaveBeenCalledTimes(3)
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardSeen, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
         source: 'studio',
         studio_version: '3.57.0',
       })
-      expect(mockLog).toBeCalledWith(ProductAnnouncementCardClicked, {
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardClicked, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
         source: 'studio',
         studio_version: '3.57.0',
       })
-      expect(mockLog).toBeCalledWith(ProductAnnouncementViewed, {
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementViewed, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
@@ -277,15 +278,15 @@ describe('StudioAnnouncementsProvider', () => {
       expect(screen.queryByText(mockAnnouncements[1].title)).toBeNull()
 
       // Dismissing the card calls telemetry with the seen and dismiss logs
-      expect(mockLog).toBeCalledTimes(2)
-      expect(mockLog).toBeCalledWith(ProductAnnouncementCardSeen, {
+      expect(mockLog).toHaveBeenCalledTimes(2)
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardSeen, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
         source: 'studio',
         studio_version: '3.57.0',
       })
-      expect(mockLog).toBeCalledWith(ProductAnnouncementCardDismissed, {
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardDismissed, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
@@ -315,22 +316,22 @@ describe('StudioAnnouncementsProvider', () => {
       expect(screen.queryByText("What's new")).toBeNull()
       expect(screen.queryByText(mockAnnouncements[1].title)).toBeNull()
 
-      expect(mockLog).toBeCalledTimes(4)
-      expect(mockLog).toBeCalledWith(ProductAnnouncementCardSeen, {
+      expect(mockLog).toHaveBeenCalledTimes(4)
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardSeen, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
         source: 'studio',
         studio_version: '3.57.0',
       })
-      expect(mockLog).toBeCalledWith(ProductAnnouncementCardClicked, {
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardClicked, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
         source: 'studio',
         studio_version: '3.57.0',
       })
-      expect(mockLog).toBeCalledWith(ProductAnnouncementModalDismissed, {
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementModalDismissed, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
@@ -338,7 +339,7 @@ describe('StudioAnnouncementsProvider', () => {
         source: 'studio',
         studio_version: '3.57.0',
       })
-      expect(mockLog).toBeCalledWith(ProductAnnouncementViewed, {
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementViewed, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
@@ -670,7 +671,7 @@ describe('StudioAnnouncementsProvider-Disabled', () => {
 
     expect(result.current.unseenAnnouncements).toEqual([])
     expect(result.current.studioAnnouncements).toEqual([])
-    expect(seenAnnouncementsMock).not.toBeCalled()
-    expect(mockObservableRequest).not.toBeCalled()
+    expect(seenAnnouncementsMock).not.toHaveBeenCalled()
+    expect(mockObservableRequest).not.toHaveBeenCalled()
   })
 })

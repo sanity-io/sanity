@@ -65,6 +65,7 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
       .request<FreeTrialResponse | null>({
         url: `${queryURL}?${queryParams.toString()}`,
       })
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       .subscribe(
         (response) => {
           setData(response)

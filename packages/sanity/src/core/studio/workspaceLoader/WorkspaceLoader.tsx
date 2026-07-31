@@ -30,6 +30,7 @@ export function useWorkspaceLoader(activeWorkspace: WorkspaceSummary) {
 
   useEffect(() => {
     const subscription = combineLatest(
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       activeWorkspace.__internal.sources.map(({source}) =>
         source.pipe(
           catchError((err) => {

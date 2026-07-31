@@ -36,6 +36,6 @@ describe('useLiveEvents', () => {
         // @ts-expect-error - intentionally invalid event type
         type: 'unknown',
       }),
-    ).toThrowError('Unknown event: unknown')
+    ).toThrow('Unknown event: unknown')
   })
 })

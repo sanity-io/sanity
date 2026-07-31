@@ -371,8 +371,10 @@ export const customPlugins = defineType({
               plugins: {
                 ...props.plugins,
                 markdown: {
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   boldDecorator: ({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'bold')?.name,
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   unorderedList: ({schema}) =>
                     schema.lists.find((list) => list.name === 'dot')?.name,
                 },
@@ -423,8 +425,10 @@ export const customPlugins = defineType({
                 ...props.plugins,
                 markdown: {
                   config: {
+                    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                     boldDecorator: ({schema}) =>
                       schema.decorators.find((decorator) => decorator.name === 'bold')?.name,
+                    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                     unorderedListStyle: ({schema}) =>
                       schema.lists.find((list) => list.name === 'dot')?.name,
                   },
@@ -501,6 +505,7 @@ export const customPlugins = defineType({
                   },
                 })}
                 <CharacterPairDecoratorPlugin
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'strong')?.name
                   }
@@ -510,6 +515,7 @@ export const customPlugins = defineType({
                   }}
                 />
                 <CharacterPairDecoratorPlugin
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'strong')?.name
                   }
@@ -519,6 +525,7 @@ export const customPlugins = defineType({
                   }}
                 />
                 <CharacterPairDecoratorPlugin
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'em')?.name
                   }
@@ -528,6 +535,7 @@ export const customPlugins = defineType({
                   }}
                 />
                 <CharacterPairDecoratorPlugin
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'em')?.name
                   }

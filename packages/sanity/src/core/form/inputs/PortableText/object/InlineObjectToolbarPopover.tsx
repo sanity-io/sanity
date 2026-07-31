@@ -38,12 +38,15 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const deleteButtonRef = useRef<HTMLButtonElement | null>(null)
   const focusTrappedRef = useRef<HTMLButtonElement | null>(null)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const contentRef = useRef<HTMLDivElement | null>(null)
 
   const handleClosePopover = useCallback(() => {
     setPopoverOpen(false)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
     focusTrappedRef.current = null
   }, [editor])
@@ -72,6 +75,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             event.preventDefault()
             event.stopPropagation()
             focusTrappedRef.current = null
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             PortableTextEditor.focus(editor)
             return
           }

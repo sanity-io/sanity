@@ -202,7 +202,7 @@ test('it throws an MaxBufferExceededError if the buffer exceeds `maxBuffer`', as
 
   await expect(
     lastValueFrom(events.pipe(sequentializeListenerEvents({maxBufferSize: 3}), toArray())),
-  ).rejects.toThrowError(MaxBufferExceededError)
+  ).rejects.toThrow(MaxBufferExceededError)
 })
 
 test('it throws an OutOfSyncError if the buffer exceeds `maxBuffer`', async () => {
@@ -258,7 +258,7 @@ test('it throws an OutOfSyncError if the buffer exceeds `maxBuffer`', async () =
 
   await expect(
     lastValueFrom(events.pipe(sequentializeListenerEvents({resolveChainDeadline: 100}), toArray())),
-  ).rejects.toThrowError(DeadlineExceededError)
+  ).rejects.toThrow(DeadlineExceededError)
 })
 
 test('it throws an OutOfSyncError after `resolveChainDeadline` ms has passed', async () => {
@@ -347,7 +347,7 @@ test('it throws an OutOfSyncError after `resolveChainDeadline` ms has passed', a
         toArray(),
       ),
     ),
-  ).rejects.toThrowError(DeadlineExceededError)
+  ).rejects.toThrow(DeadlineExceededError)
 
   // Make sure the error is thrown within 50ms of when the first gap is detected and `resolveChainDeadline` ms
   // has passed without chain resolution

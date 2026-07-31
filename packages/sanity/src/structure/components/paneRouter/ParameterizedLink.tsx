@@ -18,7 +18,9 @@ export const ParameterizedLink = forwardRef(function ParameterizedLink(
 ) {
   const {routerPanesState: currentPanes, groupIndex, siblingIndex} = useContext(PaneRouterContext)
   const {params, payload, ...rest} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const nextParams = useUnique(params)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const nextPayload = useUnique(payload)
 
   const nextState = useMemo(() => {

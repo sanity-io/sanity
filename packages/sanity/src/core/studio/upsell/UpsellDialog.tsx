@@ -106,7 +106,7 @@ export function UpsellDialog(props: UpsellDialogProps) {
       />
       {data.image && <Image src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
       <Box padding={3} marginTop={2}>
-        <Stack space={4} paddingBottom={2}>
+        <Stack gap={4} paddingBottom={2}>
           <UpsellDescriptionSerializer
             blocks={data.descriptionText}
             interpolation={interpolation}

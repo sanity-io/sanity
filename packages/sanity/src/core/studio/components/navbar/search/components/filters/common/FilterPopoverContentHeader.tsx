@@ -15,7 +15,8 @@ interface FilterPopoverContentHeaderProps {
 }
 
 const SearchHeaderBox = styled(Box)`
-  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
+  border-bottom: 1px solid
+    ${({theme}) => theme.sanity.color.base.border /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   flex-shrink: 0;
 `
 

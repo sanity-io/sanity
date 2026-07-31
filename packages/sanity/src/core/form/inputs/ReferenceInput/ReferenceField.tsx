@@ -50,7 +50,9 @@ export function ReferenceField(props: ReferenceFieldProps) {
         path={path}
       >
         <FormField
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_comments={props.__internal_comments}
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_slot={props.__internal_slot}
           __unstable_headerActions={fieldActionsNodes}
           __unstable_presence={props.presence}

@@ -6,6 +6,7 @@ import {defineLocalesResources} from '../../../core/i18n/helpers'
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const mediaLibraryLocaleStrings = defineLocalesResources('media-library', {
   /** Warning description for invalid video value */
   'invalid-video-warning.description':

@@ -2,8 +2,8 @@ import escapeRegExp from 'lodash-es/escapeRegExp.js'
 import isEqual from 'lodash-es/isEqual.js'
 import {
   type ComponentType,
-  type MutableRefObject,
   type ReactNode,
+  type RefObject,
   useCallback,
   useEffect,
   useMemo,
@@ -157,7 +157,7 @@ function maybeResolveIntent(
   event: RouterStateEvent | null,
   router: Router,
   tools: Tool[],
-  prevEvent: MutableRefObject<RouterStateEvent | null>,
+  prevEvent: RefObject<RouterStateEvent | null>,
 ): string | null {
   if (event?.type === 'state' && event.state?.intent) {
     const redirectState = resolveIntentState(

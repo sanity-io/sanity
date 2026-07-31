@@ -77,7 +77,11 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
 
   return (
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
-      <Grid gap={2} columns={isGrid ? Math.min(options.length, 4) : 1} {...elementProps}>
+      <Grid
+        gap={2}
+        gridTemplateColumns={isGrid ? Math.min(options.length, 4) : 1}
+        {...elementProps}
+      >
         {options.map((option, index) => {
           const optionType = getMemberTypeOfItem(schemaType, option)
           const checked = value.includes(option.value)

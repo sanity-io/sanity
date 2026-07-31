@@ -45,6 +45,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
     useCallback((state) => typeof state.intent === 'string', []),
   )
   const {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     sanity: {media},
   } = useTheme()
 

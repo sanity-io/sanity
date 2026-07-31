@@ -324,6 +324,7 @@ export function FormBuilder(props: FormBuilderProps) {
           <DocumentFieldActionsProvider actions={fieldActions}>
             <FullscreenPTEProvider>
               <DialogStackProvider>
+                {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
                 <EnhancedObjectDialogProvider>
                   <RootInput
                     rootInputProps={rootInputProps}

@@ -28,6 +28,7 @@ const HeaderFlex = styled(Flex)`
 `
 
 const BreadcrumbsButton = styled(Button)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const fg = theme.sanity.color.base.fg
   return css`
     --card-fg-color: ${fg};
@@ -124,7 +125,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   const lastCrumb = crumbsTitlePath[crumbsTitlePath.length - 1]
 
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       <HeaderFlex align="center" gap={2} paddingRight={1} sizing="border">
         <Stack flex={1}>
           <Flex align="center">
@@ -135,7 +136,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
               mode="bleed"
               onClick={handleBreadcrumbsClick}
               padding={2}
-              space={2}
+              gap={2}
             >
               <CommentBreadcrumbs maxLength={3} titlePath={crumbsTitlePath} />
             </BreadcrumbsButton>
@@ -156,7 +157,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
         </ThreadCard>
       )}
 
-      <Stack space={2}>{children}</Stack>
+      <Stack gap={2}>{children}</Stack>
     </Stack>
   )
 }

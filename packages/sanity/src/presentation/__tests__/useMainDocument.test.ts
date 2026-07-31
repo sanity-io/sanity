@@ -64,6 +64,6 @@ describe('getRouteContext', () => {
   test('throws if an incorrect path is provided', () => {
     const path = '/foo'
     const url = new URL(path, location.origin)
-    expect(() => getRouteContext('/*', url)).toThrowError('"/*" is not a valid route pattern')
+    expect(() => getRouteContext('/*', url)).toThrow('"/*" is not a valid route pattern')
   })
 })

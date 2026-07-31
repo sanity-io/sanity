@@ -29,6 +29,7 @@ export function TextInput(props: TextInputProps) {
     <StyledTextArea
       customValidity={validationError}
       value={value || ''}
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       placeholder={schemaType.placeholder}
       rows={typeof schemaType.rows === 'number' ? schemaType.rows : 10}
       {...elementProps}

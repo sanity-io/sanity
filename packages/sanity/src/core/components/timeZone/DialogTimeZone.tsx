@@ -13,24 +13,27 @@ export interface DialogTimeZoneProps {
   timeZoneScope: TimeZoneScope
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const TimeZoneCitySpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
-    color: ${theme.sanity.color.base.fg};
+    color: ${theme.sanity.color.base.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     font-weight: 500;
     margin-left: 1em;
   `
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const TimeZoneOffsetSpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
-    color: ${theme.sanity.color.muted.default.enabled.fg};
+    color: ${theme.sanity.color.muted.default.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     font-weight: 500;
   `
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
-    color: ${theme.sanity.color.input.default.readOnly.fg};
+    color: ${theme.sanity.color.input.default.readOnly.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     float: right;
   `
 })
@@ -138,11 +141,11 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
       onClose={onClose}
       width={1}
     >
-      <Stack padding={4} space={5}>
+      <Stack padding={4} gap={5}>
         <Text size={1}>{timeZoneScopeTypeToLabel[timeZoneScope.type]}</Text>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Flex align="center" justify="space-between">
-            <Inline space={2}>
+            <Inline gap={2}>
               <Text size={1} weight="semibold">
                 {t('time-zone.time-zone')}
               </Text>
@@ -176,6 +179,7 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
               // Dialog is portaled to the document root, so its Autocomplete
               // popover should be bounded by document.body rather than any
               // panel-scoped scroll container.
+              // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
               boundaryElement: document.body,
               constrainSize: true,
               placement: 'bottom-start',

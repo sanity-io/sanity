@@ -17,6 +17,7 @@ import {type StudioThemeColorSchemeKey} from '../theme/types'
 import {getSnapshot, setSnapshot, subscribe} from './colorSchemeStore'
 
 /** @internal */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function useSystemScheme(): ThemeColorSchemeKey {
   const prefersDark = usePrefersDark()
   return prefersDark ? 'dark' : 'light'
@@ -27,12 +28,14 @@ function ColorThemeProvider({
   scheme: _scheme,
 }: {
   children: ReactNode
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   scheme: StudioThemeColorSchemeKey
 }) {
   const systemScheme = useSystemScheme()
   const scheme = _scheme === 'system' ? systemScheme : _scheme
 
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider scheme={scheme} theme={studioTheme}>
       {/* Note: this is a fallback ThemeProvider that is for any components */}
       {/* that may render before the StudioThemeProvider renders. this is */}
@@ -48,7 +51,9 @@ const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
 /** @internal */
 export interface ColorSchemeProviderProps {
   children: ReactNode
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onSchemeChange?: (nextScheme: StudioThemeColorSchemeKey) => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   scheme?: StudioThemeColorSchemeKey
 }
 
@@ -81,6 +86,7 @@ export function ColorSchemeLocalStorageProvider({
   children,
   onSchemeChange,
 }: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'>) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const scheme = useSyncExternalStore<StudioThemeColorSchemeKey>(
     subscribe,
     getSnapshot,
@@ -114,6 +120,7 @@ export function ColorSchemeCustomProvider({
   onSchemeChange,
   scheme,
 }: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'> & {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   scheme: StudioThemeColorSchemeKey
 }): React.JSX.Element {
   return (
@@ -130,6 +137,7 @@ export function ColorSchemeCustomProvider({
 /** @alpha */
 export function useColorSchemeSetValue():
   | false
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   | ((nextScheme: StudioThemeColorSchemeKey) => void) {
   const setValue = useContext(ColorSchemeSetValueContext)
   if (setValue === null) throw new Error('Could not find `ColorSchemeSetValueContext` context')
@@ -137,6 +145,7 @@ export function useColorSchemeSetValue():
 }
 
 /** @internal */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function useColorSchemeInternalValue(): StudioThemeColorSchemeKey {
   const value = useContext(ColorSchemeValueContext)
   if (value === null) throw new Error('Could not find `ColorSchemeValueContext` context')
@@ -144,6 +153,7 @@ export function useColorSchemeInternalValue(): StudioThemeColorSchemeKey {
 }
 
 /** @alpha */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function useColorSchemeValue(): ThemeColorSchemeKey {
   const scheme = useColorSchemeInternalValue()
   const systemScheme = useSystemScheme()
@@ -169,6 +179,7 @@ export function useColorScheme() {
 interface ColorSchemeOption {
   icon: ComponentType
   label: string
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   name: StudioThemeColorSchemeKey
   onSelect: () => void
   selected: boolean
@@ -178,6 +189,7 @@ interface ColorSchemeOption {
  * @internal
  */
 export function useColorSchemeOptions(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   setScheme: (nextScheme: StudioThemeColorSchemeKey) => void,
   t: TFunction<'studio'>,
 ) {

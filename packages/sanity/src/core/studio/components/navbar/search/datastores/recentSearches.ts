@@ -68,6 +68,7 @@ export function useRecentSearchesStore(): RecentSearchesStore {
   const schema = useSchema()
   const {
     search: {operators, filters},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
 
   // Create field, filter and operator dictionaries

@@ -303,9 +303,9 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
   ])
 
   return (
-    <Stack space={1}>
+    <Stack gap={1}>
       {isEditing ? (
-        <Stack space={2} ref={clickOutsideBoundaryRef}>
+        <Stack gap={2} ref={clickOutsideBoundaryRef}>
           <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
             <div ref={setAutocompletePopoverReferenceElement}>
               <ReferenceAutocomplete

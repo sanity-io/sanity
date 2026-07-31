@@ -33,6 +33,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const {disabled: disabledProp, groups, isFullscreen, collapsed} = props
   const focusBlock = useFocusBlock()
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const legacyEditor = usePortableTextEditor()
   const editor = useEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
@@ -70,6 +71,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const activeKeys = useActiveActionKeys({actions})
 
   const handleMenuClose = useCallback(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(legacyEditor)
   }, [legacyEditor])
 

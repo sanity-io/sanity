@@ -45,7 +45,7 @@ export const AgentBundleMenuItem = memo(function AgentBundleMenuItem({
           flex={1}
           paddingY={2}
           paddingRight={2}
-          space={2}
+          gap={2}
           style={{maxWidth: '200px', minWidth: 0}}
         >
           <Flex gap={3} align="center" style={{minWidth: 0}}>

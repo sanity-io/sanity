@@ -98,6 +98,7 @@ export function uploadTarget<Props>(
     const {push: pushToast} = useToast()
     const {t} = useTranslation()
     const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const source = useSource()
 
     const formBuilder = useFormBuilder()

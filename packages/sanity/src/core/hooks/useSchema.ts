@@ -16,5 +16,6 @@ import {useSource} from '../studio/source'
  * ```
  */
 export function useSchema(): Schema {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return useSource().schema
 }

@@ -7,5 +7,6 @@ import {type Template} from '../templates/types'
  * @beta
  */
 export function useTemplates(): Template[] {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return useSource().templates
 }

@@ -30,6 +30,7 @@ export function PaneLayout(
   const {children, minWidth, onCollapse, onExpand, ...restProps} = props
   const [controller] = useState(() => createPaneLayoutController())
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const rootRect = useElementRect(rootElement)
   const width = rootRect?.width || 0
   const collapsed = width === undefined || !minWidth ? undefined : width < minWidth

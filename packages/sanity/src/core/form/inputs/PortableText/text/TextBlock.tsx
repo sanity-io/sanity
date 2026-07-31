@@ -62,7 +62,9 @@ export interface TextBlockProps {
   referenceBoundary: HTMLElement | null
   renderAnnotation?: RenderAnnotationCallback
   renderBlock?: RenderBlockCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderBlockActions?: RenderBlockActionsCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
   renderField: RenderFieldCallback
   renderInlineBlock?: RenderBlockCallback
@@ -109,10 +111,12 @@ export function TextBlock(props: TextBlockProps) {
   } = props
   // A path deeper than the root array means the block is nested in a container.
   const nested = relativePath.length > 1
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {Markers} = useFormBuilder().__internal.components
   const markers = usePortableTextMarkers(path)
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const {onChange} = useFormCallbacks()
@@ -169,7 +173,9 @@ export function TextBlock(props: TextBlockProps) {
       focus: point,
       anchor: point,
     }
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [path, editor])
 

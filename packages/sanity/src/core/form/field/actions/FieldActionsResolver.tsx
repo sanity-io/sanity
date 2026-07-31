@@ -130,6 +130,7 @@ function defineFieldActionComponent({
       path,
       schemaType,
     })
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const node = useUnique(_action)
 
     useEffect(() => {

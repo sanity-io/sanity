@@ -228,6 +228,7 @@ export interface BlockAnnotationProps {
    * Markers (meta data) connected to this annotation.
    * @deprecated - use `renderBlock` and `renderInlineBlock` interfaces instead
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   markers: PortableTextMarker[]
   /**
    * Closes the editing form connected to this annotation.
@@ -354,6 +355,7 @@ export interface BlockProps {
    * Markers (meta data) connected to this annotation.
    * @deprecated - use `renderBlock` and `renderInlineBlock` interfaces instead
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   markers: PortableTextMarker[]
   /**
    * Closes the editing form connected to this block.

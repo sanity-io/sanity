@@ -276,6 +276,7 @@ describe('registerStudioManifest', () => {
     it('should handle workspace with no sources', async () => {
       const workspace = createMockWorkspace()
       // Override to have empty sources
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       workspace.__internal.sources = []
 
       await registerStudioManifest(mockUserApplication, [workspace], mockTheme)

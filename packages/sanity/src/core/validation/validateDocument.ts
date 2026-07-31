@@ -60,11 +60,14 @@ function extractFieldRulesFromRule(rule: Rule): NonNullable<Rule['_fieldRules']>
   const results: NonNullable<Rule['_fieldRules']>[] = []
 
   // Add direct _fieldRules if present
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   if (rule._fieldRules) {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     results.push(rule._fieldRules)
   }
 
   // Check for nested rules in 'all' or 'either' constraints
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   for (const ruleSpec of rule._rules) {
     if (ruleSpec.flag === 'all' || ruleSpec.flag === 'either') {
       const childRules = ruleSpec.constraint
@@ -186,6 +189,7 @@ export function validateDocument({
   currentUser,
   ...options
 }: ValidateDocumentOptions): Promise<ValidationMarker[]> {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const getClient = options.getClient || workspace.getClient
   const limitConcurrency = getConcurrencyLimiter(
     maxFetchConcurrency ?? DEFAULT_MAX_FETCH_CONCURRENCY,
@@ -295,6 +299,7 @@ export function validateDocumentObservable({
       const errorMarker: ValidationMarker = {
         level: 'error',
         message,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         item: {message},
         path: [],
       }
@@ -401,6 +406,7 @@ function validateItemObservable({
         parent,
         path,
         type,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         __internal: {customValidationConcurrencyLimiter},
       }),
     ),
@@ -451,6 +457,7 @@ function validateItemObservable({
                   type: fieldType,
                   environment,
                   hidden: nestedHidden,
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   __internal: {customValidationConcurrencyLimiter},
                 }),
               )

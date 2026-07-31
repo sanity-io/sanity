@@ -239,7 +239,7 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
 
   return (
     <WithFocusRingCard border $radius={2} padding={1} tone={tone} ref={setCardRef} tabIndex={-1}>
-      <Stack space={1}>
+      <Stack gap={1}>
         <Flex gap={1} align="center" style={{lineHeight: 0}}>
           <TooltipDelayGroupProvider>
             <ReferenceLinkCard

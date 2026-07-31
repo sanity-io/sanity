@@ -75,7 +75,9 @@ interface BlockObjectProps extends PropsWithChildren {
   relativePath: Path
   renderAnnotation?: RenderAnnotationCallback
   renderBlock?: RenderBlockCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderBlockActions?: RenderBlockActionsCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
   renderField: RenderFieldCallback
   renderInlineBlock?: RenderBlockCallback
@@ -117,12 +119,14 @@ export function BlockObject(props: BlockObjectProps) {
   // A path deeper than the root array means the block is nested in a container.
   const nested = relativePath.length > 1
   const {onChange} = useFormCallbacks()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {Markers} = useFormBuilder().__internal.components
   const hoveredChange = useHoveredChange()
   const changeHovered =
     hoveredChange && pathToString(hoveredChange.path).startsWith(pathToString(path))
 
   const markers = usePortableTextMarkers(path)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
@@ -140,6 +144,7 @@ export function BlockObject(props: BlockObjectProps) {
   const onOpen = useCallback(() => {
     if (memberItem) {
       // Take focus away from the editor so that it doesn't propagate a new focusPath and interfere here.
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       PortableTextEditor.blur(editor)
       onItemOpen(memberItem.node.path)
     }
@@ -147,7 +152,9 @@ export function BlockObject(props: BlockObjectProps) {
 
   const onClose = useCallback(() => {
     onItemClose()
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.select(editor, selfSelection)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [onItemClose, editor, selfSelection])
 
@@ -157,6 +164,7 @@ export function BlockObject(props: BlockObjectProps) {
       return
     }
     try {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       PortableTextEditor.delete(editor, selfSelection, {mode: 'blocks'})
     } catch (err) {
       console.error(err)
@@ -170,6 +178,7 @@ export function BlockObject(props: BlockObjectProps) {
   useEffect(
     () => () => {
       if (isDeleting.current) {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.focus(editor)
       }
     },
@@ -375,6 +384,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     __unstable_referenceElement,
     children,
     focused,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     markers,
     onClose,
     onOpen,

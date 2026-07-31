@@ -28,6 +28,7 @@ describe('usePostPublishTransactions', () => {
 
   const mockClient = {getUrl: vi.fn(), config: vi.fn()}
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const mockUseClient = useClient as Mock
   const mockGetTransactionsLogs = getTransactionsLogs as Mock<typeof getTransactionsLogs>
 

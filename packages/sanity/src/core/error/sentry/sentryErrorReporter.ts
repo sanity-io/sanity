@@ -52,6 +52,7 @@ const clientOptions: BrowserOptions = {
 }
 
 const integrations = [
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   inboundFiltersIntegration(),
   functionToStringIntegration(),
   browserApiErrorsIntegration({eventTarget: false}),

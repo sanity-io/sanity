@@ -62,6 +62,7 @@ describe('ErrorBoundary', () => {
       })
 
       return (
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         <ThemeProvider theme={studioTheme}>
           <LocaleProviderBase
             projectId={'test'}

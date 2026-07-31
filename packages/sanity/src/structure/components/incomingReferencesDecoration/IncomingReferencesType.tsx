@@ -52,6 +52,7 @@ export function IncomingReferencesType({
 }) {
   const documentPreviewStore = useDocumentPreviewStore()
   const {displayed} = useDocumentPane()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient} = useSource()
   const displayedId = displayed?._id as string
   /**
@@ -177,7 +178,7 @@ export function IncomingReferencesType({
     return <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
   }
   return (
-    <Stack space={2} marginBottom={2}>
+    <Stack gap={2} marginBottom={2}>
       {shouldRenderTitle && (
         <Box paddingY={2} paddingX={0}>
           <Text size={1} weight="medium">

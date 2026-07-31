@@ -67,6 +67,7 @@ export function getDocumentChanges({
   let lastResolvedTo: string | null = null
   let lastTransactions: TransactionLogEventWithEffects[] = []
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return combineLatest(to$, since$, eventsObservable$).pipe(
     switchMap(([toObs, since, {events}]) => {
       const to = toObs?.document

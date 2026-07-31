@@ -144,6 +144,7 @@ export function TestForm(props: TestFormProps) {
   const schemaType = workspace.schema.get('test')
   const {
     document: {unstable_fieldActions: fieldActionsResolver},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
 
   if (!schemaType) {
@@ -345,6 +346,7 @@ async function validateStaticDocument(
   const result = await validateDocument({
     document,
     workspace,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     getClient,
     getDocumentExists: () => Promise.resolve(true),
   })

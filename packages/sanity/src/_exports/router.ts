@@ -33,4 +33,5 @@ export {RouterContext, useRouter} from '../router/useRouter'
 export {useRouterState} from '../router/useRouterState'
 export {useStateLink, type UseStateLinkOptions} from '../router/useStateLink'
 export {decodeJsonParams, encodeJsonParams} from '../router/utils/jsonParamsEncoding'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {withRouter, WithRouter, type WithRouterProps} from '../router/withRouter'
