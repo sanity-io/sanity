@@ -17,7 +17,7 @@ import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocum
 import {isVariantId} from '../../variants/types'
 import {type VersionInfoDocumentStub} from '../store/types'
 import {useAllReleases} from '../store/useAllReleases'
-import {PUBLISHED} from '../util/const'
+import {LATEST, PUBLISHED} from '../util/const'
 import {
   getReleaseIdFromReleaseDocumentId,
   isReleaseDocumentId,
@@ -300,8 +300,11 @@ export function useVersionContextMenu(
     onDeleteComplete,
   })
 
-  // Published stubs omit `_system.bundleId`; falling back to drafts would mislabel them.
-  const sourceReleasePerspective = release ?? documentVersionInfoStub?._system.bundleId ?? PUBLISHED
+  // A published stub omits `_system.bundleId`, so it can only be told apart from a version
+  // that doesn't exist yet (drafts, the only chip rendered without a document) by the stub.
+  const sourceReleasePerspective =
+    release ??
+    (documentVersionInfoStub ? (documentVersionInfoStub._system.bundleId ?? PUBLISHED) : LATEST)
 
   return {
     contextMenu,
