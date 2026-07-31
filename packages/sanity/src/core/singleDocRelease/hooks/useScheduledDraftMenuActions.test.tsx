@@ -51,8 +51,8 @@ const mockOperations = {
 // Mock toast push function
 const mockToastPush = vi.fn()
 
-vi.mock('@sanity/ui', async () => {
-  const actual = await vi.importActual('@sanity/ui')
+vi.mock('@sanity/ui/toast', async () => {
+  const actual = await vi.importActual('@sanity/ui/toast')
   return {
     ...actual,
     useToast: () => ({

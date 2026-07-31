@@ -162,7 +162,11 @@ describe('ReleaseForm', () => {
         wrapper,
       })
 
-      expect(screen.getByText('As soon as possible')).toBeInTheDocument()
+      // The closed menu keeps its items mounted, so assert on the button the label points at
+      // rather than on the identically labelled menu item.
+      expect(screen.getByLabelText('Approximate time of release')).toHaveTextContent(
+        'As soon as possible',
+      )
     })
   })
 
@@ -265,7 +269,9 @@ describe('ReleaseForm', () => {
         wrapper,
       })
 
-      expect(screen.getByText('At time')).toBeInTheDocument()
+      // The closed menu keeps its items mounted, so assert on the button the label points at
+      // rather than on the identically labelled menu item.
+      expect(screen.getByLabelText('Approximate time of release')).toHaveTextContent('At time')
     })
   })
 

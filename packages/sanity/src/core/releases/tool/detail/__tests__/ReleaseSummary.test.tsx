@@ -188,7 +188,9 @@ describe('ReleaseSummary', () => {
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
       await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
-      await userEvent.click(screen.getByText('Discard version'))
+      // Every row keeps its menu mounted even while closed, and the menus are portaled in row
+      // order, so the first match belongs to the row whose menu was just opened.
+      await userEvent.click(screen.getAllByText('Discard version')[0])
     })
 
     it('allows for sorting of documents', async () => {

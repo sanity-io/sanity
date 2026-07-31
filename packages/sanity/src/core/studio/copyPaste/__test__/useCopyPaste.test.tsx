@@ -14,9 +14,9 @@ import {createMockClient} from './mockClient'
 import {mockTypes, schema} from './schema'
 import {setupClipboard, writeItemsToClipboard} from './viClipboard'
 
-vi.mock('@sanity/ui', async () => {
+vi.mock('@sanity/ui/toast', async () => {
   // oxlint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual = await vi.importActual<typeof import('@sanity/ui')>('@sanity/ui')
+  const actual = await vi.importActual<typeof import('@sanity/ui/toast')>('@sanity/ui/toast')
   return {
     ...actual,
     useToast: vi.fn(),
