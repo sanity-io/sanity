@@ -21,7 +21,7 @@ export interface FreeTrialProviderProps {
  */
 export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   const router = useRouter()
-  const [dismissedAutoShow, setDismissedAutoShow] = useState(false)
+  const [dismissedFetchKey, setDismissedFetchKey] = useState<string | null>(null)
   const [manualDialogOpen, setManualDialogOpen] = useState(false)
   const client = useClient({apiVersion: '2023-12-11'})
   const telemetry = useTelemetry()
@@ -36,6 +36,9 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   // Allows us to set whether we've seen the modals before
   // or whether this is our first time seeing them (i.e. show a popup)
   const seenBefore = searchParams.get('seenBefore')
+  // Key auto-dismiss to the same inputs that drive the trial request so a URL
+  // override / refetch can show again (matches prior effect setShowOnLoad(true)).
+  const fetchKey = `${trialState ?? ''}:${seenBefore ?? ''}`
 
   const data = useObservable(
     useMemo(() => {
@@ -57,7 +60,7 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   )
 
   // Derive auto-show from the response instead of syncing into state in an effect
-  const showOnLoad = Boolean(data?.showOnLoad) && !dismissedAutoShow
+  const showOnLoad = Boolean(data?.showOnLoad) && dismissedFetchKey !== fetchKey
   const showDialog = showOnLoad || manualDialogOpen
 
   // Whenever showDialog changes, run effect to track
@@ -79,7 +82,7 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
 
   const toggleShowContent = (closeAndReOpen = false) => {
     if (showOnLoad) {
-      setDismissedAutoShow(true)
+      setDismissedFetchKey(fetchKey)
       // If the user clicks on the button, while the show on load is open, we want to trigger the modal.
       setManualDialogOpen(closeAndReOpen)
       if (data?.showOnLoad?.id) {

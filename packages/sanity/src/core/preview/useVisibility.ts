@@ -20,12 +20,17 @@ interface Props {
 export function useVisibility(props: Props): boolean {
   const {element, hideDelay = 0, disabled} = props
 
+  // Seed useObservable with the same initial check the stream uses so the first
+  // paint is correct before subscription settles (avoids a false→true flash).
+  const initialVisible =
+    !element || disabled ? false : 'checkVisibility' in element ? element.checkVisibility() : false
+
   const visible$ = useMemo(() => {
     if (!element || disabled) {
       return of(false)
     }
 
-    const initialVisible = 'checkVisibility' in element ? element.checkVisibility() : false
+    const seed = 'checkVisibility' in element ? element.checkVisibility() : false
 
     const isDocumentVisible$ = concat(
       of(!document.hidden),
@@ -42,11 +47,11 @@ export function useVisibility(props: Props): boolean {
       switchMap((isDocumentVisible) => (isDocumentVisible ? inViewport$ : of(false))),
       switchMap((isVisible) => (isVisible ? of(true) : of(false).pipe(delay(hideDelay)))),
       distinctUntilChanged(),
-      startWith(initialVisible),
+      startWith(seed),
     )
   }, [element, hideDelay, disabled])
 
-  const visible = useObservable(visible$, false)
+  const visible = useObservable(visible$, initialVisible)
 
   return disabled ? false : visible
 }

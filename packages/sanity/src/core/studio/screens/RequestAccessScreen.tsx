@@ -124,7 +124,7 @@ export function RequestAccessScreen() {
 
   // The client, projectId and user come from the workspace because this screen
   // renders outside the SourceContext.
-  const auth = useObservable(activeWorkspace.auth.state)
+  const auth = useObservable(activeWorkspace.auth.state, null)
   const currentUser = auth?.currentUser
   const projectId = auth?.client.config().projectId
   const client = useMemo(() => auth?.client.withConfig({apiVersion: '2024-07-01'}), [auth?.client])
