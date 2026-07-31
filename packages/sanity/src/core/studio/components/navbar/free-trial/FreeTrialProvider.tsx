@@ -1,7 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, of} from 'rxjs'
+import {BehaviorSubject, catchError, distinctUntilChanged, EMPTY, switchMap} from 'rxjs'
 import {FreeTrialContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
@@ -40,22 +40,43 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   // override / refetch can show again (matches prior effect setShowOnLoad(true)).
   const fetchKey = `${trialState ?? ''}:${seenBefore ?? ''}`
 
-  const data = useObservable(
-    useMemo(() => {
-      const queryParams = new URLSearchParams()
-      queryParams.append('studioVersion', SANITY_VERSION)
-      if (trialState) queryParams.append('trialState', trialState)
-      if (seenBefore) queryParams.append('seenBefore', seenBefore)
-      // If we have trialState, query the override endpoint so that we
-      // get back trial modals for that state
-      const queryURL = queryParams.get('trialState') ? `/journey/trial/override` : `/journey/trial`
+  // Bridge the params into a stable stream so a param change refetches within
+  // the same subscription: the last response stays visible while the refetch
+  // is in flight, and a failed refetch keeps it (matches the previous
+  // setState behavior).
+  const [params$] = useState(() => new BehaviorSubject({seenBefore, trialState}))
+  useEffect(() => {
+    params$.next({seenBefore, trialState})
+  }, [params$, seenBefore, trialState])
 
-      return client.observable
-        .request<FreeTrialResponse | null>({
-          url: `${queryURL}?${queryParams.toString()}`,
-        })
-        .pipe(catchError(() => of(null)))
-    }, [client, seenBefore, trialState]),
+  const data = useObservable(
+    useMemo(
+      () =>
+        params$.pipe(
+          distinctUntilChanged(
+            (prev, next) =>
+              prev.trialState === next.trialState && prev.seenBefore === next.seenBefore,
+          ),
+          switchMap((params) => {
+            const queryParams = new URLSearchParams()
+            queryParams.append('studioVersion', SANITY_VERSION)
+            if (params.trialState) queryParams.append('trialState', params.trialState)
+            if (params.seenBefore) queryParams.append('seenBefore', params.seenBefore)
+            // If we have trialState, query the override endpoint so that we
+            // get back trial modals for that state
+            const queryURL = queryParams.get('trialState')
+              ? `/journey/trial/override`
+              : `/journey/trial`
+
+            return client.observable
+              .request<FreeTrialResponse | null>({
+                url: `${queryURL}?${queryParams.toString()}`,
+              })
+              .pipe(catchError(() => EMPTY))
+          }),
+        ),
+      [client, params$],
+    ),
     null,
   )
 
