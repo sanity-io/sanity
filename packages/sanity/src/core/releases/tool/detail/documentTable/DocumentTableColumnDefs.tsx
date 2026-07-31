@@ -280,7 +280,9 @@ export const getDocumentTableColumnDefs: (
       // settles at different widths in each and misaligns. A fixed width keeps them in sync.
       // Type only ever holds short schema titles (Book / Author / demoBlogPost), and DocumentType
       // truncates + shows a tooltip on overflow, so a tighter width reclaims space for Document.
-      width: 120,
+      // The tighter width is beta-only: production (flag off) must keep its existing 150 so Releases
+      // detail and scheduled drafts don't shift layout.
+      width: variantsEnabled ? 120 : 150,
       sorting: true,
       header: (props) => (
         <Flex {...props.headerProps} paddingY={3} sizing="border">
