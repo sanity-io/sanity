@@ -21,6 +21,12 @@ const UNCLAIMED_PROJECT_TTL_MS = 72 * 3_600_000
 /** Focus-driven project reads are throttled to this window. */
 const PROJECT_CHECK_INTERVAL_MS = 5 * 60_000
 
+/** While a claim is in progress, recheck often enough for the Studio to transition live. */
+const CLAIM_STATUS_POLL_INTERVAL_MS = 10_000
+
+/** Stop elevated polling if the claim flow is abandoned. */
+const CLAIM_STATUS_POLL_DURATION_MS = 10 * 60_000
+
 /** The unauthenticated provision lookup shares a ~20/hour per-IP budget with the CLI. */
 const CLAIM_LOOKUP_INTERVAL_MS = 30 * 60_000
 
@@ -47,6 +53,11 @@ interface ClaimLookupResponse {
   state?: 'claimable' | 'claimed' | 'expired'
 }
 
+interface UseUnclaimedProjectOptions {
+  /** Timestamp set when the claim flow is opened for this project. */
+  claimAttemptedAt?: number
+}
+
 // Claim tokens are base64url; anything else must not reach the lookup URL we build from it.
 function claimTokenFromClaimUrl(claimUrl: string): string | undefined {
   try {
@@ -68,7 +79,9 @@ function getStatusCode(error: unknown): number | undefined {
  *
  * @internal
  */
-export function useUnclaimedProject(): UnclaimedProjectState | undefined {
+export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptions = {}):
+  | UnclaimedProjectState
+  | undefined {
   const {currentUser, projectId} = useWorkspace()
   const client = useClient({apiVersion: PROJECTS_API_VERSION})
   const isRobot = currentUser?.provider === ROBOT_PROVIDER
@@ -100,6 +113,25 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
     let lastCheckedAt = 0
     let lookupSawNotFound = false
     let claimLinkSpent = false
+    let checkInFlight = false
+    let pendingCheck: ReturnType<typeof setTimeout> | undefined
+    let claimPollInterval: ReturnType<typeof setInterval> | undefined
+    let claimPollTimeout: ReturnType<typeof setTimeout> | undefined
+
+    const stopClaimPolling = () => {
+      if (claimPollInterval) clearInterval(claimPollInterval)
+      if (claimPollTimeout) clearTimeout(claimPollTimeout)
+      claimPollInterval = undefined
+      claimPollTimeout = undefined
+    }
+
+    const getRemainingClaimPollingDuration = () => {
+      if (claimAttemptedAt === undefined) return 0
+      const elapsed = Math.max(0, Date.now() - claimAttemptedAt)
+      return Math.max(0, CLAIM_STATUS_POLL_DURATION_MS - elapsed)
+    }
+
+    const isClaimPollingActive = () => getRemainingClaimPollingDuration() > 0
 
     const hasSeenUnclaimed = () =>
       provenanceRef.current.sessionKey === sessionKey && provenanceRef.current.seenUnclaimed
@@ -110,6 +142,7 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
 
     const finishClaimed = () => {
       terminal = true
+      stopClaimPolling()
       clearUnclaimedProjectRecord(projectId)
       clearUnclaimedProjectSnooze(projectId)
       update({status: 'claimed'})
@@ -117,6 +150,7 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
 
     const finishExpired = () => {
       terminal = true
+      stopClaimPolling()
       clearUnclaimedProjectRecord(projectId)
       clearUnclaimedProjectSnooze(projectId)
       if (supportsLocalStorage) {
@@ -194,10 +228,7 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
       }
     }
 
-    const check = async () => {
-      if (terminal) return
-      lastCheckedAt = Date.now()
-
+    const performCheck = async () => {
       let project: {createdAt?: string; organizationId?: string}
       try {
         project = await client.request({uri: `/projects/${projectId}`, tag: 'unclaimed-project'})
@@ -242,10 +273,30 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
       if (record) await refineFromLookup(record, expiresAt.getTime())
     }
 
+    const check = async () => {
+      if (terminal || checkInFlight) return
+      checkInFlight = true
+      lastCheckedAt = Date.now()
+
+      try {
+        await performCheck()
+      } finally {
+        checkInFlight = false
+      }
+    }
+
     void check()
 
-    let pendingCheck: ReturnType<typeof setTimeout> | undefined
+    if (isClaimPollingActive()) {
+      claimPollInterval = setInterval(() => void check(), CLAIM_STATUS_POLL_INTERVAL_MS)
+      claimPollTimeout = setTimeout(stopClaimPolling, getRemainingClaimPollingDuration())
+    }
+
     const onFocus = () => {
+      if (isClaimPollingActive()) {
+        void check()
+        return
+      }
       const wait = PROJECT_CHECK_INTERVAL_MS - (Date.now() - lastCheckedAt)
       if (wait <= 0) {
         void check()
@@ -257,6 +308,11 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
       }
     }
     window.addEventListener('focus', onFocus)
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isClaimPollingActive()) void check()
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
 
     // The auth store consumes a `#claim=` fragment pasted into the open tab and writes the
     // record (see hashClaim.ts); pick it up here without waiting for the next check.
@@ -284,10 +340,12 @@ export function useUnclaimedProject(): UnclaimedProjectState | undefined {
     return () => {
       disposed = true
       if (pendingCheck) clearTimeout(pendingCheck)
+      stopClaimPolling()
       window.removeEventListener('focus', onFocus)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
       window.removeEventListener('hashchange', onHashChange)
     }
-  }, [client, isRobot, projectId, sessionKey])
+  }, [claimAttemptedAt, client, isRobot, projectId, sessionKey])
 
   return state
 }

@@ -353,6 +353,70 @@ describe('useUnclaimedProject', () => {
     }
   })
 
+  it('polls project status after a claim attempt and stops once claimed', async () => {
+    vi.useFakeTimers()
+    try {
+      mockRequest
+        .mockResolvedValueOnce({createdAt: CREATED_AT, organizationId: 'oSystemUnclaimed'})
+        .mockResolvedValueOnce({createdAt: CREATED_AT, organizationId: 'oSystemUnclaimed'})
+        .mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
+
+      const initialProps: {claimAttemptedAt: number | undefined} = {claimAttemptedAt: undefined}
+      const {result, rerender} = renderHook(
+        ({claimAttemptedAt}: {claimAttemptedAt: number | undefined}) =>
+          useUnclaimedProject({claimAttemptedAt}),
+        {initialProps},
+      )
+      await act(() => vi.advanceTimersByTimeAsync(0))
+      expect(result.current?.status).toBe('unclaimed')
+
+      rerender({claimAttemptedAt: Date.now()})
+      await act(() => vi.advanceTimersByTimeAsync(0))
+      expect(mockRequest).toHaveBeenCalledTimes(2)
+
+      await act(() => vi.advanceTimersByTimeAsync(10_000))
+      expect(mockRequest).toHaveBeenCalledTimes(3)
+      expect(result.current).toEqual({status: 'claimed'})
+
+      await act(() => vi.advanceTimersByTimeAsync(30_000))
+      expect(mockRequest).toHaveBeenCalledTimes(3)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('checks immediately on focus during a claim attempt', async () => {
+    vi.useFakeTimers()
+    try {
+      mockRequest
+        .mockResolvedValueOnce({createdAt: CREATED_AT, organizationId: 'oSystemUnclaimed'})
+        .mockResolvedValueOnce({createdAt: CREATED_AT, organizationId: 'oSystemUnclaimed'})
+        .mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
+
+      const initialProps: {claimAttemptedAt: number | undefined} = {claimAttemptedAt: undefined}
+      const {result, rerender} = renderHook(
+        ({claimAttemptedAt}: {claimAttemptedAt: number | undefined}) =>
+          useUnclaimedProject({claimAttemptedAt}),
+        {initialProps},
+      )
+      await act(() => vi.advanceTimersByTimeAsync(0))
+
+      rerender({claimAttemptedAt: Date.now()})
+      await act(() => vi.advanceTimersByTimeAsync(0))
+      expect(mockRequest).toHaveBeenCalledTimes(2)
+
+      act(() => {
+        window.dispatchEvent(new Event('focus'))
+      })
+      await act(() => vi.advanceTimersByTimeAsync(0))
+
+      expect(mockRequest).toHaveBeenCalledTimes(3)
+      expect(result.current).toEqual({status: 'claimed'})
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('resets state when the session stops being the robot', async () => {
     const {result, rerender} = renderHook(() => useUnclaimedProject())
     await waitFor(() => expect(result.current?.status).toBe('unclaimed'))
