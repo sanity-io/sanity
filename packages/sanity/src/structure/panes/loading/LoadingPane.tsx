@@ -1,7 +1,7 @@
 import {_raf2, type CardTone, Flex} from '@sanity/ui'
 import {memo, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {type Observable, of} from 'rxjs'
+import {isObservable, type Observable, of} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {Delay, LoadingBlock, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
@@ -69,7 +69,8 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
       return of(resolvedMessage)
     }
 
-    if (typeof resolvedMessage !== 'object' || typeof resolvedMessage.subscribe !== 'function') {
+    // Require a real RxJS Observable (`pipe`), not a bare Subscribable.
+    if (!isObservable(resolvedMessage)) {
       return of(defaultMessage)
     }
 
