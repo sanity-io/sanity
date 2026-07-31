@@ -73,7 +73,8 @@ export async function createTestProvider({
     i18n: {bundles: resources},
   })
 
-  const router = route.create('/')
+  // Include intent routes so always-mounted Menu content can resolve IntentLinks.
+  const router = route.create('/', [route.intents('/intent')])
 
   await i18next.init()
 

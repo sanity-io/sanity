@@ -45,7 +45,10 @@ function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorR
   return <ChangeConnectorRoot {...restProps} className={clsx(changeConnectorRoot, className)} />
 }
 
-const router = route.create('/')
+// Include intent routes so always-mounted Menu content (e.g. reference
+// "Open in new tab" IntentLinks kept mounted by @sanity/ui Activity) can
+// resolve hrefs without throwing during render.
+const router = route.create('/', [route.intents('/intent')])
 const getCachedMockWorkspace = memoize(
   (
     client: SanityClient,

@@ -299,6 +299,19 @@ Conventions that follow from this:
   throws "Styles were unable to be assigned to a file". `disableRuntimeStyles` only skips style
   injection, not the transform.
 
+#### @sanity/ui overlays stay mounted when closed
+
+From `@sanity/ui` v4, Tooltip/Popover/Menu keep their content mounted via React `<Activity>`
+while closed (hidden with `display: none`). Consequences for tests:
+
+- Plain text / test-id queries can match **closed** overlay content. Prefer scoping to the
+  visible element under test (or assert visibility) instead of `getByText` / `getByTestId` on
+  the whole document.
+- Test routers must include intent routes (`route.create('/', [route.intents('/intent')])`).
+  Reference item menus render `IntentLink` ("Open in new tab") even while closed; without
+  intent routes, `resolveIntentLink` throws during render and the form subtree disappears.
+  See `packages/sanity/test/browser/TestWrapper.tsx` and `test/testUtils/TestProvider.tsx`.
+
 ### E2E Tests (Playwright)
 
 ```bash
