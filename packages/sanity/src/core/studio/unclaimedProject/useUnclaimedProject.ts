@@ -45,8 +45,19 @@ export type UnclaimedProjectState =
       /** The lookup reported the claim link spent or gone — don't point the user at it. */
       claimLinkSpent?: boolean
     }
-  | {status: 'claimed'}
+  | {status: 'claimed'; email?: string}
   | {status: 'expired'}
+
+interface ProjectMember {
+  id?: string
+  isRobot?: boolean
+}
+
+interface ProjectResponse {
+  createdAt?: string
+  organizationId?: string
+  members?: ProjectMember[]
+}
 
 interface ClaimLookupResponse {
   expiresAt?: string | null
@@ -140,12 +151,31 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
       if (!disposed) setSessionState({sessionKey, value: next})
     }
 
-    const finishClaimed = () => {
+    const finishClaimed = (members?: ProjectMember[]) => {
       terminal = true
       stopClaimPolling()
       clearUnclaimedProjectRecord(projectId)
       clearUnclaimedProjectSnooze(projectId)
       update({status: 'claimed'})
+
+      const humanMembers = members?.filter(
+        (member): member is ProjectMember & {id: string} =>
+          member.isRobot === false && typeof member.id === 'string' && Boolean(member.id),
+      )
+      if (humanMembers?.length !== 1) return
+
+      void client
+        .request<{email?: string}>({
+          uri: `/users/${humanMembers[0].id}`,
+          tag: 'unclaimed-project.claimant',
+        })
+        .then((user) => {
+          const email = typeof user.email === 'string' ? user.email.trim() : ''
+          if (!disposed && email) update({status: 'claimed', email})
+        })
+        .catch(() => {
+          // The targeted label is optional; keep the generic sign-in CTA on any lookup failure.
+        })
     }
 
     const finishExpired = () => {
@@ -229,7 +259,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
     }
 
     const performCheck = async () => {
-      let project: {createdAt?: string; organizationId?: string}
+      let project: ProjectResponse
       try {
         project = await client.request({uri: `/projects/${projectId}`, tag: 'unclaimed-project'})
       } catch (err) {
@@ -244,7 +274,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
       if (!project.organizationId) return
       const record = readUnclaimedProjectRecord(projectId)
       if (project.organizationId !== UNCLAIMED_ORGANIZATION_ID) {
-        if (hasSeenUnclaimed() || record) finishClaimed()
+        if (hasSeenUnclaimed() || record) finishClaimed(project.members)
         return
       }
 

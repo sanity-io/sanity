@@ -112,6 +112,54 @@ describe('useUnclaimedProject', () => {
     expect(readUnclaimedProjectSnoozedAt(PROJECT_ID)).toBeUndefined()
   })
 
+  it('resolves the sole human project member for the claimed sign-in CTA', async () => {
+    mockRequest.mockImplementation(({uri}: {uri: string}) => {
+      if (uri === `/projects/${PROJECT_ID}`) {
+        return Promise.resolve({
+          createdAt: CREATED_AT,
+          organizationId: 'oReal',
+          members: [
+            {id: 'robot', isRobot: true},
+            {id: 'claimant', isRobot: false},
+          ],
+        })
+      }
+      if (uri === '/users/claimant') return Promise.resolve({email: 'claimant@example.com'})
+      return Promise.reject(new Error(`Unexpected request: ${uri}`))
+    })
+    writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
+
+    const {result} = renderHook(() => useUnclaimedProject())
+
+    await waitFor(() =>
+      expect(result.current).toEqual({status: 'claimed', email: 'claimant@example.com'}),
+    )
+    expect(mockRequest).toHaveBeenCalledWith({
+      tag: 'unclaimed-project.claimant',
+      uri: '/users/claimant',
+    })
+  })
+
+  it('keeps the generic claimed state when the claimant is ambiguous', async () => {
+    mockRequest.mockResolvedValue({
+      createdAt: CREATED_AT,
+      organizationId: 'oReal',
+      members: [
+        {id: 'first-human', isRobot: false},
+        {id: 'second-human', isRobot: false},
+      ],
+    })
+    writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
+
+    const {result} = renderHook(() => useUnclaimedProject())
+
+    await waitFor(() => expect(result.current).toEqual({status: 'claimed'}))
+    expect(mockRequest).toHaveBeenCalledExactlyOnceWith({
+      tag: 'unclaimed-project',
+      uri: `/projects/${PROJECT_ID}`,
+    })
+  })
+
   it('stays quiet for a regular robot-token session on a claimed project', async () => {
     mockRequest.mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
 

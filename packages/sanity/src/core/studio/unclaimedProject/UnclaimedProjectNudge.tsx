@@ -1,6 +1,6 @@
 import {ClockIcon} from '@sanity/icons/Clock'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Badge, Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {startTransition, useCallback, useEffect, useState} from 'react'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -14,11 +14,15 @@ import {
 import {interpolateTemplate} from '../../util/interpolateTemplate'
 import {useWorkspace} from '../workspace'
 import {useUnclaimedProject} from './useUnclaimedProject'
-import {useUnclaimedProjectCopy} from './useUnclaimedProjectCopy'
+import {
+  getClaimedIdentityText,
+  getClaimedIdentityTextParts,
+  useUnclaimedProjectCopy,
+} from './useUnclaimedProjectCopy'
 
 /**
  * Persistent banner + snoozable toast nudging the user to claim a minted-but-unclaimed project
- * before it expires, flipping to a "sign in as yourself" banner once it's claimed. Renders
+ * before it expires, flipping to an identity-aware login banner once it's claimed. Renders
  * nothing for anything not part of mint-and-claim — see {@link useUnclaimedProject}.
  *
  * @internal
@@ -142,18 +146,41 @@ export function UnclaimedProjectNudge() {
   if (state?.status === 'claimed') {
     return (
       <Card data-testid="unclaimed-project-banner" tone="positive" padding={3} borderBottom>
-        <Flex align="center" gap={3} justify="center" wrap="wrap">
-          <Text size={1} weight="medium">
-            {copy.claimed.text}
-          </Text>
-          <Button
-            mode="default"
-            tone="positive"
-            size="default"
-            text={copy.claimed.signInButtonText}
-            onClick={handleSignIn}
-          />
-        </Flex>
+        <Box display={['block', 'block', 'none']}>
+          <Stack space={3}>
+            <Flex align="center" gap={3} justify="space-between">
+              <Text size={1} weight="medium" style={{flex: 1, minWidth: 0}}>
+                {copy.claimed.text}
+              </Text>
+              <Button
+                mode="default"
+                tone="positive"
+                size="default"
+                text={copy.claimed.signInButtonText}
+                onClick={handleSignIn}
+                style={{flexShrink: 0}}
+              />
+            </Flex>
+            <Text size={1} weight="medium" style={{overflowWrap: 'anywhere'}}>
+              <ClaimedIdentityText text={copy.claimed.identityText} email={state.email} />
+            </Text>
+          </Stack>
+        </Box>
+        <Box display={['none', 'none', 'block']}>
+          <Flex align="center" gap={3} justify="center" wrap="wrap">
+            <Text size={1} weight="medium" style={{overflowWrap: 'anywhere'}}>
+              {copy.claimed.text}{' '}
+              <ClaimedIdentityText text={copy.claimed.identityText} email={state.email} />
+            </Text>
+            <Button
+              mode="default"
+              tone="positive"
+              size="default"
+              text={copy.claimed.signInButtonText}
+              onClick={handleSignIn}
+            />
+          </Flex>
+        </Box>
       </Card>
     )
   }
@@ -198,6 +225,20 @@ export function UnclaimedProjectNudge() {
         )}
       </Flex>
     </Card>
+  )
+}
+
+function ClaimedIdentityText({text, email}: {text: string; email?: string}) {
+  const parts = getClaimedIdentityTextParts(text, email)
+
+  return parts ? (
+    <>
+      {parts.before}
+      <strong>{parts.identity}</strong>
+      {parts.after}
+    </>
+  ) : (
+    getClaimedIdentityText(text, email)
   )
 }
 
