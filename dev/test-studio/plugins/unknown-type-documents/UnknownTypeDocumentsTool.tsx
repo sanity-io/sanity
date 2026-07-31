@@ -159,7 +159,8 @@ export function UnknownTypeDocumentsTool() {
           for (const id of batch) {
             tx = tx.delete(id)
           }
-          await tx.commit({visibility: 'async'})
+          // Default (sync) visibility so the reload below sees the deletions
+          await tx.commit()
           deleted += batch.length
         } catch {
           // The batch failed as a whole (e.g. one doc has incoming references) —
