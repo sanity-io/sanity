@@ -1,5 +1,5 @@
-import {SearchFilterNumberInput} from '../../components/filters/filter/inputs/number/Number'
-import {SearchFilterNumberRangeInput} from '../../components/filters/filter/inputs/number/NumberRange'
+import {type ComponentType, lazy} from 'react'
+
 import {GteIcon} from '../../components/filters/icons/GteIcon'
 import {GtIcon} from '../../components/filters/icons/GtIcon'
 import {LteIcon} from '../../components/filters/icons/LteIcon'
@@ -7,6 +7,19 @@ import {LtIcon} from '../../components/filters/icons/LtIcon'
 import {type OperatorNumberRangeValue} from './common'
 import {defineSearchOperator, type SearchOperatorInput} from './operatorTypes'
 import {toJSON} from './operatorUtils'
+
+// Operator definitions are evaluated pre-auth via prepareConfig; lazy-load filter input
+// components to keep them out of the eager bundle.
+const SearchFilterNumberInput = lazy(() =>
+  import('../../components/filters/filter/inputs/number/Number').then((m) => ({
+    default: m.SearchFilterNumberInput,
+  })),
+) as ComponentType<any>
+const SearchFilterNumberRangeInput = lazy(() =>
+  import('../../components/filters/filter/inputs/number/NumberRange').then((m) => ({
+    default: m.SearchFilterNumberRangeInput,
+  })),
+) as ComponentType<any>
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once
 // we understand why `npm etl` fails with 'Unable to follow symbol' errors

@@ -1,10 +1,6 @@
 import {type ReferenceValue} from '@sanity/types'
+import {type ComponentType, lazy} from 'react'
 
-import {SearchButtonValueReference} from '../../components/filters/common/ButtonValue'
-import {SearchFilterNumberInput} from '../../components/filters/filter/inputs/number/Number'
-import {SearchFilterNumberRangeInput} from '../../components/filters/filter/inputs/number/NumberRange'
-import {SearchFilterReferenceInput} from '../../components/filters/filter/inputs/reference/Reference'
-import {SearchFilterStringListInput} from '../../components/filters/filter/inputs/string/StringList'
 import {GteIcon} from '../../components/filters/icons/GteIcon'
 import {GtIcon} from '../../components/filters/icons/GtIcon'
 import {LteIcon} from '../../components/filters/icons/LteIcon'
@@ -16,6 +12,34 @@ import {
   type SearchOperatorInput,
 } from './operatorTypes'
 import {toJSON} from './operatorUtils'
+
+// Operator definitions are evaluated pre-auth via prepareConfig; lazy-load filter input
+// components to keep them out of the eager bundle.
+const SearchButtonValueReference = lazy(() =>
+  import('../../components/filters/common/ButtonValue').then((m) => ({
+    default: m.SearchButtonValueReference,
+  })),
+) as ComponentType<any>
+const SearchFilterNumberInput = lazy(() =>
+  import('../../components/filters/filter/inputs/number/Number').then((m) => ({
+    default: m.SearchFilterNumberInput,
+  })),
+) as ComponentType<any>
+const SearchFilterNumberRangeInput = lazy(() =>
+  import('../../components/filters/filter/inputs/number/NumberRange').then((m) => ({
+    default: m.SearchFilterNumberRangeInput,
+  })),
+) as ComponentType<any>
+const SearchFilterReferenceInput = lazy(() =>
+  import('../../components/filters/filter/inputs/reference/Reference').then((m) => ({
+    default: m.SearchFilterReferenceInput,
+  })),
+) as ComponentType<any>
+const SearchFilterStringListInput = lazy(() =>
+  import('../../components/filters/filter/inputs/string/StringList').then((m) => ({
+    default: m.SearchFilterStringListInput,
+  })),
+) as ComponentType<any>
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once
 // we understand why `npm run etl` fails with 'Unable to follow symbol' errors

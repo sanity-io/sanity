@@ -5,21 +5,8 @@ import {startOfDay} from 'date-fns/startOfDay'
 import {startOfMinute} from 'date-fns/startOfMinute'
 import {startOfToday} from 'date-fns/startOfToday'
 import {sub} from 'date-fns/sub'
+import {type ComponentType, lazy} from 'react'
 
-import {
-  SearchButtonValueDate,
-  SearchButtonValueDateLast,
-  SearchButtonValueDateRange,
-} from '../../components/filters/common/ButtonValue'
-import {SearchFilterDateAfterInput} from '../../components/filters/filter/inputs/date/DateAfter'
-import {SearchFilterDateBeforeInput} from '../../components/filters/filter/inputs/date/DateBefore'
-import {SearchFilterDateEqualInput} from '../../components/filters/filter/inputs/date/DateEqual'
-import {SearchFilterDateLastInput} from '../../components/filters/filter/inputs/date/DateLast'
-import {SearchFilterDateRangeInput} from '../../components/filters/filter/inputs/date/DateRange'
-import {SearchFilterDateTimeAfterInput} from '../../components/filters/filter/inputs/date/DateTimeAfter'
-import {SearchFilterDateTimeBeforeInput} from '../../components/filters/filter/inputs/date/DateTimeBefore'
-import {SearchFilterDateTimeEqualInput} from '../../components/filters/filter/inputs/date/DateTimeEqual'
-import {SearchFilterDateTimeRangeInput} from '../../components/filters/filter/inputs/date/DateTimeRange'
 import {
   defineSearchOperator,
   type SearchOperatorButtonValue,
@@ -27,6 +14,69 @@ import {
   type SearchOperatorParams,
 } from './operatorTypes'
 import {toJSON} from './operatorUtils'
+
+// Operator definitions are evaluated pre-auth via prepareConfig; lazy-load filter input
+// components to keep them out of the eager bundle.
+const SearchButtonValueDate = lazy(() =>
+  import('../../components/filters/common/ButtonValue').then((m) => ({
+    default: m.SearchButtonValueDate,
+  })),
+) as ComponentType<any>
+const SearchButtonValueDateLast = lazy(() =>
+  import('../../components/filters/common/ButtonValue').then((m) => ({
+    default: m.SearchButtonValueDateLast,
+  })),
+) as ComponentType<any>
+const SearchButtonValueDateRange = lazy(() =>
+  import('../../components/filters/common/ButtonValue').then((m) => ({
+    default: m.SearchButtonValueDateRange,
+  })),
+) as ComponentType<any>
+const SearchFilterDateAfterInput = lazy(() =>
+  import('../../components/filters/filter/inputs/date/DateAfter').then((m) => ({
+    default: m.SearchFilterDateAfterInput,
+  })),
+) as ComponentType<any>
+const SearchFilterDateBeforeInput = lazy(() =>
+  import('../../components/filters/filter/inputs/date/DateBefore').then((m) => ({
+    default: m.SearchFilterDateBeforeInput,
+  })),
+) as ComponentType<any>
+const SearchFilterDateEqualInput = lazy(() =>
+  import('../../components/filters/filter/inputs/date/DateEqual').then((m) => ({
+    default: m.SearchFilterDateEqualInput,
+  })),
+) as ComponentType<any>
+const SearchFilterDateLastInput = lazy(() =>
+  import('../../components/filters/filter/inputs/date/DateLast').then((m) => ({
+    default: m.SearchFilterDateLastInput,
+  })),
+) as ComponentType<any>
+const SearchFilterDateRangeInput = lazy(() =>
+  import('../../components/filters/filter/inputs/date/DateRange').then((m) => ({
+    default: m.SearchFilterDateRangeInput,
+  })),
+) as ComponentType<any>
+const SearchFilterDateTimeAfterInput = lazy(() =>
+  import('../../components/filters/filter/inputs/date/DateTimeAfter').then((m) => ({
+    default: m.SearchFilterDateTimeAfterInput,
+  })),
+) as ComponentType<any>
+const SearchFilterDateTimeBeforeInput = lazy(() =>
+  import('../../components/filters/filter/inputs/date/DateTimeBefore').then((m) => ({
+    default: m.SearchFilterDateTimeBeforeInput,
+  })),
+) as ComponentType<any>
+const SearchFilterDateTimeEqualInput = lazy(() =>
+  import('../../components/filters/filter/inputs/date/DateTimeEqual').then((m) => ({
+    default: m.SearchFilterDateTimeEqualInput,
+  })),
+) as ComponentType<any>
+const SearchFilterDateTimeRangeInput = lazy(() =>
+  import('../../components/filters/filter/inputs/date/DateTimeRange').then((m) => ({
+    default: m.SearchFilterDateTimeRangeInput,
+  })),
+) as ComponentType<any>
 
 // 'Before' and 'after' dates
 export interface OperatorDateDirectionValue {
