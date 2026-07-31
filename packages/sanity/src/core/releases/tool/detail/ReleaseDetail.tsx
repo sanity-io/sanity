@@ -130,6 +130,7 @@ export function ReleaseDetail() {
                 release={releaseInDetail}
                 documents={results}
                 events={releaseEvents.events}
+                loading={documentsLoading}
               />
               {detailContent}
             </Card>

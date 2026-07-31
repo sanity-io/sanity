@@ -7,7 +7,7 @@ import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
 import {UserIcon} from '@sanity/icons/User'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Container, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -173,10 +173,14 @@ export function ReleaseDashboardDetails({
   release,
   documents,
   events,
+  loading = false,
 }: {
   release: ReleaseDocument
   documents: DocumentInRelease[]
   events: ReleaseEvent[]
+  /** True while the release documents are still loading — skeleton the count/status instead of
+   * rendering an empty ("No documents" / "0") state prematurely. */
+  loading?: boolean
 }) {
   const {state} = release
 
@@ -282,7 +286,11 @@ export function ReleaseDashboardDetails({
                     {
                       icon: statusGlyph,
                       label: tRelease('dashboard.details.metadata.status'),
-                      value: <ReleaseValidationBadge documents={documents} />,
+                      value: loading ? (
+                        <Skeleton animated radius={1} style={{width: 48, height: 11}} />
+                      ) : (
+                        <ReleaseValidationBadge documents={documents} />
+                      ),
                     },
                     {
                       icon: (
@@ -291,7 +299,11 @@ export function ReleaseDashboardDetails({
                         </Text>
                       ),
                       label: tRelease('dashboard.details.metadata.documents'),
-                      value: String(documents.length),
+                      value: loading ? (
+                        <Skeleton animated radius={1} style={{width: 24, height: 11}} />
+                      ) : (
+                        String(documents.length)
+                      ),
                     },
                     {
                       icon: createAuthor ? (
