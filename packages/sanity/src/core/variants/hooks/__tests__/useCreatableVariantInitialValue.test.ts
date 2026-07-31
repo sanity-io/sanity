@@ -184,4 +184,124 @@ describe('useCreatableVariantInitialValue', () => {
       }),
     })
   })
+
+  describe('publish-gap bridge (lastKnownDraftRef)', () => {
+    // The draft snapshot captured by the pane while the draft variant existed. `_rev` must be
+    // dropped when served (the draft-to-be has no revision).
+    const draftSnapshot = {
+      _id: DRAFT_TARGET.id,
+      _type: 'book',
+      _rev: 'rev-draft',
+      _createdAt: '2026-01-01T00:00:00Z',
+      _updatedAt: '2026-01-03T00:00:00Z',
+      _system: {
+        group: {_ref: PUBLISHED_ID, _weak: true as const},
+        variant: {_ref: variantAlphaAudience._id, _weak: true as const},
+        bundleId: 'drafts',
+        scopeId: DRAFT_TARGET.scopeId,
+      },
+      title: 'Just-published draft title',
+    }
+    const {_rev, ...draftSnapshotWithoutRev} = draftSnapshot
+
+    it('bridges with the last-known draft while the sibling loads, when the sibling rev changed (publish)', async () => {
+      const wrapper = await createTestProvider()
+      // Captured before publish: the sibling stub had a different rev then.
+      const lastKnownDraftRef = {
+        current: {value: draftSnapshot, publishedSiblingRev: 'rev-before-publish'},
+      }
+
+      const {result} = renderHook(
+        () => useCreatableVariantInitialValue(creatableState, fallback, lastKnownDraftRef),
+        {wrapper},
+      )
+
+      expect(result.current).toEqual({
+        loading: false,
+        error: null,
+        value: draftSnapshotWithoutRev,
+      })
+    })
+
+    it('bridges when captured before the variant was ever published (no sibling rev at capture)', async () => {
+      const wrapper = await createTestProvider()
+      const lastKnownDraftRef = {
+        current: {value: draftSnapshot, publishedSiblingRev: undefined},
+      }
+
+      const {result} = renderHook(
+        () => useCreatableVariantInitialValue(creatableState, fallback, lastKnownDraftRef),
+        {wrapper},
+      )
+
+      expect(result.current).toEqual({
+        loading: false,
+        error: null,
+        value: draftSnapshotWithoutRev,
+      })
+    })
+
+    it('stays loading when the sibling rev is unchanged (discard): never flashes discarded content', async () => {
+      const wrapper = await createTestProvider()
+      // Captured rev matches the current sibling stub rev: the draft was discarded, not published.
+      const lastKnownDraftRef = {
+        current: {value: draftSnapshot, publishedSiblingRev: siblingStub._rev},
+      }
+
+      const {result} = renderHook(
+        () => useCreatableVariantInitialValue(creatableState, fallback, lastKnownDraftRef),
+        {wrapper},
+      )
+
+      expect(result.current).toEqual({
+        loading: true,
+        error: null,
+        value: {_id: DRAFT_TARGET.id, _type: 'book'},
+      })
+    })
+
+    it('ignores a snapshot captured for a different target id', async () => {
+      const wrapper = await createTestProvider()
+      const lastKnownDraftRef = {
+        current: {
+          value: {...draftSnapshot, _id: 'versions.otherScope.other-doc'},
+          publishedSiblingRev: 'rev-before-publish',
+        },
+      }
+
+      const {result} = renderHook(
+        () => useCreatableVariantInitialValue(creatableState, fallback, lastKnownDraftRef),
+        {wrapper},
+      )
+
+      expect(result.current).toEqual({
+        loading: true,
+        error: null,
+        value: {_id: DRAFT_TARGET.id, _type: 'book'},
+      })
+    })
+
+    it('prefers the published sibling over the bridge once it arrives', async () => {
+      const wrapper = await createTestProvider()
+      documentPreviewStoreMock.unstable_observeDocument.mockReturnValue(of(siblingDocument))
+      const lastKnownDraftRef = {
+        current: {value: draftSnapshot, publishedSiblingRev: 'rev-before-publish'},
+      }
+
+      const {result} = renderHook(
+        () => useCreatableVariantInitialValue(creatableState, fallback, lastKnownDraftRef),
+        {wrapper},
+      )
+
+      expect(result.current).toEqual({
+        loading: false,
+        error: null,
+        value: buildCreatableVariantInitialValue({
+          publishedSibling: siblingDocument,
+          target: DRAFT_TARGET,
+          variantId: variantAlphaAudience._id,
+        }),
+      })
+    })
+  })
 })

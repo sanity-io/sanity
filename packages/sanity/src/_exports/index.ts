@@ -1704,7 +1704,10 @@ export {Rule as ConcreteRuleClass} from '../core/validation/Rule'
 export {type ValidationContext} from '../core/validation/types'
 export {validateDocument, type ValidateDocumentOptions} from '../core/validation/validateDocument'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
-export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
+export {
+  type LastKnownVariantDraft,
+  useCreatableVariantInitialValue,
+} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'

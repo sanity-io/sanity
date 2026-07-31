@@ -31,6 +31,7 @@ import {
   isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
   isVersionId,
+  type LastKnownVariantDraft,
   ParseErrorsProvider,
   type PartialContext,
   pathToString,
@@ -168,11 +169,23 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     params,
   })
 
+  // The last snapshot of the draft variant while it existed (captured in an effect below, once
+  // `editState` is available). When publishing deletes the draft and the pane re-enters the
+  // creatable state, this snapshot bridges the gap until the published sibling document arrives —
+  // without it the form flashes empty over the content the user just published. A ref, not state:
+  // it updates on every keystroke and must never re-render the pane.
+  const lastKnownVariantDraftRef = useRef<LastKnownVariantDraft | null>(null)
+
   // For a creatable missing draft variant, the initial value is the published sibling
   // (re-identified as the draft target, `_system` rewritten for the draft): the form displays it
   // until the document exists, and the first keystroke creates the draft variant seeded from it.
   // Every other state passes the template-resolved initial value through.
-  const initialValue = useCreatableVariantInitialValue(targetDocumentState, templateInitialValue)
+  const initialValue = useCreatableVariantInitialValue(
+    targetDocumentState,
+    templateInitialValue,
+    lastKnownVariantDraftRef,
+  )
+  console.log('initialValue', initialValue)
 
   const isInitialValueLoading = initialValue.loading
   const {
@@ -336,6 +349,23 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     displayInlineChanges: router.stickyParams.displayInlineChanges === 'true',
     isOlderRevision: onOlderRevision,
   })
+
+  // Capture the draft variant snapshot while it exists, together with the published sibling's
+  // `_rev` (publishing bumps it, discarding doesn't — the bridge in
+  // `useCreatableVariantInitialValue` uses the comparison to serve the snapshot only after a
+  // publish). The id guard on the serving side keeps a snapshot from another bundle inert.
+  useEffect(() => {
+    if (
+      targetDocumentState.status === 'ready' &&
+      targetDocumentState.variant &&
+      editState.version
+    ) {
+      lastKnownVariantDraftRef.current = {
+        value: editState.version,
+        publishedSiblingRev: targetDocumentState.publishedSibling?._rev,
+      }
+    }
+  }, [targetDocumentState, editState.version])
 
   const actionsVersionType = useMemo(
     () =>
