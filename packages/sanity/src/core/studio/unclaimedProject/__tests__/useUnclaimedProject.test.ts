@@ -197,6 +197,19 @@ describe('useUnclaimedProject', () => {
     expect(localStorage.getItem(getAuthTokenStorageKey(PROJECT_ID))).not.toBeNull()
   })
 
+  it('keeps mint credentials on a resource-level unauthorized response', async () => {
+    mockRequest.mockRejectedValue({statusCode: 401})
+    writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
+    localStorage.setItem(getAuthTokenStorageKey(PROJECT_ID), JSON.stringify({token: 'sk-live'}))
+
+    const {result} = renderHook(() => useUnclaimedProject())
+
+    await waitFor(() => expect(mockRequest).toHaveBeenCalled())
+    expect(result.current).toBeUndefined()
+    expect(readUnclaimedProjectRecord(PROJECT_ID)).toEqual({claimUrl: CLAIM_URL})
+    expect(localStorage.getItem(getAuthTokenStorageKey(PROJECT_ID))).not.toBeNull()
+  })
+
   it('stays quiet when an unclaimed project has no usable creation time', async () => {
     mockRequest.mockResolvedValue({organizationId: 'oSystemUnclaimed'})
 

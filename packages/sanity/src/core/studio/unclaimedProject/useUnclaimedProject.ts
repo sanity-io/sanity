@@ -266,7 +266,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
         const statusCode = getStatusCode(err)
         const hasMintProvenance =
           hasSeenUnclaimed() || Boolean(readUnclaimedProjectRecord(projectId))
-        if ((statusCode === 404 || statusCode === 401) && hasMintProvenance) finishExpired()
+        if (statusCode === 404 && hasMintProvenance) finishExpired()
         return
       }
       if (disposed || terminal) return
