@@ -1717,6 +1717,11 @@ export {
   type WelcomeEvent,
 } from '@sanity/client'
 export {type ImageUrlBuilder} from '@sanity/image-url'
-export {DEFAULT_ANNOTATIONS, DEFAULT_DECORATORS} from '@sanity/schema'
+export {
+  DEFAULT_ANNOTATIONS,
+  DEFAULT_BLOCK_STYLES,
+  DEFAULT_DECORATORS,
+  DEFAULT_LIST_TYPES,
+} from '@sanity/schema'
 export * from '@sanity/types'
 export {type TFunction} from 'i18next'
