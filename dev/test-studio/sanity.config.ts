@@ -47,6 +47,7 @@ import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
+import {unknownTypeDocumentsTool} from './plugins/unknown-type-documents/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
@@ -246,6 +247,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       }),
       themerTool(),
       routerDebugTool(),
+      unknownTypeDocumentsTool(),
       formBuilderReproTool(),
       errorReportingTestPlugin(),
       media(),
