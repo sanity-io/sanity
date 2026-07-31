@@ -220,6 +220,28 @@ describe('useUnclaimedProject', () => {
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
+  it('looks up the authoritative expiry when a claim URL has no usable creation time', async () => {
+    mockRequest.mockResolvedValue({organizationId: 'oSystemUnclaimed'})
+    writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
+    mockFetch.mockResolvedValue(
+      lookupResponse(200, {state: 'claimable', expiresAt: '2026-07-26T18:00:00.000Z'}),
+    )
+
+    const {result} = renderHook(() => useUnclaimedProject())
+
+    await waitFor(() =>
+      expect(result.current).toEqual({
+        status: 'unclaimed',
+        claimUrl: CLAIM_URL,
+        expiresAt: new Date('2026-07-26T18:00:00.000Z'),
+        claimLinkSpent: false,
+      }),
+    )
+    expect(mockFetch).toHaveBeenCalledExactlyOnceWith(
+      'https://api.sanity.io/v2026-06-23/provision/some-claim-token/lookup',
+    )
+  })
+
   it('treats a missing organization id as unverifiable, not as claimed', async () => {
     mockRequest.mockResolvedValue({createdAt: CREATED_AT, organizationId: null})
     writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})

@@ -209,7 +209,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
       }
     }
 
-    const refineFromLookup = async (record: UnclaimedProjectRecord, localExpiry: number) => {
+    const refineFromLookup = async (record: UnclaimedProjectRecord, localExpiry?: number) => {
       const claimToken = claimTokenFromClaimUrl(record.claimUrl)
       if (!claimToken) return
       const lastLookupAt = record.lastLookupAt ? new Date(record.lastLookupAt).getTime() : 0
@@ -231,7 +231,9 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
       writeUnclaimedProjectRecord(projectId, throttled)
 
       if (response.status === 404) {
-        if (lookupSawNotFound || Date.now() > localExpiry) dropClaimRecord()
+        if (lookupSawNotFound || (localExpiry !== undefined && Date.now() > localExpiry)) {
+          dropClaimRecord()
+        }
         lookupSawNotFound = true
         return
       }
@@ -285,8 +287,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
           ? new Date(createdAt.getTime() + UNCLAIMED_PROJECT_TTL_MS)
           : undefined
       const expiresAt = record?.expiresAt ? new Date(record.expiresAt) : derivedExpiresAt
-      if (!expiresAt) return
-      if (!disposed) {
+      if (expiresAt && !disposed) {
         setSessionState((prev) => {
           const value = prev?.sessionKey === sessionKey ? prev.value : undefined
           return {
@@ -300,7 +301,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
           }
         })
       }
-      if (record) await refineFromLookup(record, expiresAt.getTime())
+      if (record) await refineFromLookup(record, expiresAt?.getTime())
     }
 
     const check = async () => {
