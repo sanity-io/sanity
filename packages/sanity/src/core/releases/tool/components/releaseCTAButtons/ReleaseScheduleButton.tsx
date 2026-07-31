@@ -100,23 +100,6 @@ export const ReleaseScheduleButton = ({
   const handleConfirmSchedule = useCallback(async () => {
     if (!publishAt) return
 
-    // this means that it will linely need to change the releaseType to scheduled
-    if (isMenuItem) {
-      const newRelease = {
-        ...release,
-        metadata: {
-          ...release.metadata,
-          releaseType: 'scheduled' as const,
-
-          intendedPublishAt: publishAt.toISOString(),
-        },
-      }
-
-      if (!isEqual(newRelease, release)) {
-        void updateRelease(newRelease)
-      }
-    }
-
     if (isScheduledDateInPast()) {
       // rerender dialog to recalculate isScheduledDateInPast
       setRerenderDialog((cur) => cur + 1)
@@ -126,6 +109,25 @@ export const ReleaseScheduleButton = ({
     // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
     const run = async () => {
       setStatus('scheduling')
+
+      // Lock in the intended publish date to the date the release is being
+      // scheduled for. Without this, unscheduling later reverts the release to a
+      // previously planned date instead of the most recently scheduled one
+      // (SAPP-2726). From the menu item entry point this also switches the
+      // release type to "scheduled".
+      const newRelease = {
+        ...release,
+        metadata: {
+          ...release.metadata,
+          releaseType: 'scheduled' as const,
+          intendedPublishAt: publishAt.toISOString(),
+        },
+      }
+
+      if (!isEqual(newRelease, release)) {
+        await updateRelease(newRelease)
+      }
+
       await schedule(release._id, publishAt)
       telemetry.log(ScheduledRelease)
       toast.push({
@@ -168,7 +170,6 @@ export const ReleaseScheduleButton = ({
     setStatus('idle')
   }, [
     publishAt,
-    isMenuItem,
     isScheduledDateInPast,
     release,
     updateRelease,
