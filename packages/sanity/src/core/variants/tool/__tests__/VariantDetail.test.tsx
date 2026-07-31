@@ -178,9 +178,10 @@ describe('VariantDetail', () => {
     expect(screen.getByText('Appears in')).toBeInTheDocument()
     expect(screen.getByText('Type')).toBeInTheDocument()
     // Search moved out of the column-header row into the command lane; the preview column header is
-    // now a plain "Document" label. The command lane (and its search) is hidden with no documents.
+    // now a plain "Document" label. The command lane (with search) stays mounted even with no
+    // documents (alwaysShowCommandLane) so it doesn't pop in on load — matching the release detail table.
     expect(screen.getByText('Document')).toBeInTheDocument()
-    expect(screen.queryByPlaceholderText('Search documents')).not.toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Search documents')).toBeInTheDocument()
     expect(screen.getByText('Edited by')).toBeInTheDocument()
     expect(screen.getByText('Last edited')).toBeInTheDocument()
     expect(screen.getByText('No documents in this variant definition')).toBeInTheDocument()
