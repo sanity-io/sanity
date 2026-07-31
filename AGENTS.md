@@ -265,19 +265,19 @@ pnpm lint:fix          # Auto-fix issues (oxfmt + oxlint --fix)
 
 All packages use **ESM** (`"type": "module"`). TypeScript strict mode is enabled.
 
-### Dependencies
+Rules that the linter already enforces (restricted imports, type-aware rules, React Compiler rules, i18n rules, module boundaries) are not repeated in this guide — run `pnpm lint` and follow the reported messages, which explain the expected pattern.
 
-**Always use `lodash-es` instead of `lodash`**
+### Do Not Weaken the Linter
 
-Prefer per-function ESM imports so unused helpers can tree-shake:
+Fix the reported problem instead of silencing it. In order of preference:
 
-```ts
-import get from 'lodash-es/get.js'
-```
+1. **Fix the code** so the rule passes. This is almost always the right answer.
+2. **Suppress the single line** as a last resort, when the rule is genuinely wrong for that one spot: `// oxlint-disable-next-line <rule> -- <why>`. Always name the specific rule and explain the exception after `--`. Never suppress a rule merely to make CI green.
+3. **Change `.oxlintrc.json` only when a human explicitly asks.** Do not turn rules off, downgrade severity, add `overrides` entries, or widen `ignorePatterns` on your own initiative — an override silences the rule for every current and future file it matches. If you think a rule is wrong, leave it failing and raise it in your summary or the PR description.
 
-**Prefer `date-fns` subpath imports**
+File-wide `/* oxlint-disable <rule> */` is reserved for files that are an exception as a whole — vendored code, the `packages/sanity/src/ui-components` wrappers around raw `@sanity/ui`, CLI scripts that print to `console`. Follow that existing precedent rather than reaching for it to clear a handful of errors.
 
-Import from subpaths (e.g. `date-fns/format`), not the package barrel.
+`options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
 
 ## Testing
 
