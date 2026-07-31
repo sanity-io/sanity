@@ -1,6 +1,6 @@
 import {type ClientPerspective, type ReleaseDocument} from '@sanity/client'
 // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
-import {type MenuItem} from '@sanity/ui'
+import {type MenuItem} from '@sanity/ui/menu'
 import {type ComponentProps} from 'react'
 
 import {type SystemBundle} from '../util/draftUtils'

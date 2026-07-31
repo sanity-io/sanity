@@ -3,8 +3,8 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
-  useToast,
 } from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {styled} from 'styled-components'

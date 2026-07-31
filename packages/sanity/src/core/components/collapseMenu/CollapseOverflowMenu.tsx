@@ -1,4 +1,4 @@
-import {Menu, MenuDivider} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {type ForwardedRef, forwardRef, Fragment} from 'react'
 
 import {MenuButton, type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'

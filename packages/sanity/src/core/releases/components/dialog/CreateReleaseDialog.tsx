@@ -1,6 +1,7 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Flex, useToast} from '@sanity/ui'
+import {Box, Card, Flex} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type FormEvent, useCallback, useState} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'

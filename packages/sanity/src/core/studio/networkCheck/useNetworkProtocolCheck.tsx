@@ -1,6 +1,7 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {of} from 'rxjs'
 

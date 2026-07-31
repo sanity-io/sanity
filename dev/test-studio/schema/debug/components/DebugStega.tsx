@@ -1,6 +1,7 @@
 import {type ContentSourceMap, type ContentSourceMapDocuments, studioPath} from '@sanity/client/csm'
 import {stegaEncodeSourceMap} from '@sanity/client/stega'
-import {Box, Button, Card, Code, Label, Stack} from '@sanity/ui'
+import {Box, Button, Card, Label, Stack} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {vercelStegaDecodeAll} from '@vercel/stega'
 import {useMemo} from 'react'
 import {type InputProps, isDocumentSchemaType} from 'sanity'

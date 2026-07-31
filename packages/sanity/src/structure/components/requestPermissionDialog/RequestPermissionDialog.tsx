@@ -1,5 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, DialogProvider, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
+import {Box, Card, DialogProvider, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useId, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, type Observable, of, startWith} from 'rxjs'

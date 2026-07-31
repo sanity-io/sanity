@@ -8,18 +8,9 @@ import {
   enablePreviewAccessSharing,
 } from '@sanity/preview-url-secret/toggle-preview-access-sharing'
 import {setSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
-import {
-  Box,
-  Card,
-  Grid,
-  Menu,
-  MenuDivider,
-  Spinner,
-  Stack,
-  Switch,
-  Text,
-  useToast,
-} from '@sanity/ui'
+import {Box, Card, Grid, Spinner, Stack, Switch, Text} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {AnimatePresence, motion} from 'motion/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser, useTranslation} from 'sanity'

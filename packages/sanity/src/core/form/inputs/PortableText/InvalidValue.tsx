@@ -5,11 +5,11 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
-  Code,
   Grid,
   Stack,
   Text,
 } from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'

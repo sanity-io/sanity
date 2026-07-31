@@ -3,7 +3,8 @@
 import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {UploadIcon} from '@sanity/icons/Upload'
 import {type SchemaType} from '@sanity/types'
-import {Box, Card, Flex, Inline, Layer, Text, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Inline, Layer, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import sortBy from 'lodash-es/sortBy.js'
 import {
   type ComponentType,

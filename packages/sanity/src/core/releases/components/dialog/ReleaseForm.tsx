@@ -5,13 +5,15 @@ import {
   // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   Button,
   Flex,
-  Menu,
-  // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
-  MenuItem,
   Stack,
   TabPanel,
   Text,
 } from '@sanity/ui'
+import {
+  Menu,
+  // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
+  MenuItem,
+} from '@sanity/ui/menu'
 import {addHours} from 'date-fns/addHours'
 import {startOfHour} from 'date-fns/startOfHour'
 import {

@@ -1,5 +1,5 @@
 /* oxlint-disable no-restricted-imports */
-import {Popover as UIPopover, type PopoverProps as UIPopoverProps} from '@sanity/ui'
+import {Popover as UIPopover, type PopoverProps as UIPopoverProps} from '@sanity/ui/popover'
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
 /** @internal */

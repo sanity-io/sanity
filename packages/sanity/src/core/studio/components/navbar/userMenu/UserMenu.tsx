@@ -2,14 +2,14 @@ import {LeaveIcon} from '@sanity/icons/Leave'
 import {
   Box,
   // oxlint-disable-next-line no-restricted-imports
-  Button, // Button with specific styling, user avatar .
+  Button,
+  // Button with specific styling, user avatar .
   Card,
   Flex,
-  Menu,
-  MenuDivider,
   Stack,
   Text,
 } from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 

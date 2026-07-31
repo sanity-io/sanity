@@ -11,17 +11,9 @@ import {
   urlSearchParamVercelSetBypassCookie,
   type VercelSetBypassCookieValue,
 } from '@sanity/preview-url-secret/constants'
-import {
-  Card,
-  Code,
-  Flex,
-  Label,
-  Spinner,
-  Stack,
-  Text,
-  usePrefersReducedMotion,
-  useToast,
-} from '@sanity/ui'
+import {Card, Flex, Label, Spinner, Stack, Text, usePrefersReducedMotion} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
+import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {AnimatePresence, motion, MotionConfig} from 'motion/react'
 import {

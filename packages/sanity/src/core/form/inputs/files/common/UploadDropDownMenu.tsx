@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {UploadIcon} from '@sanity/icons/Upload'
 import {type AssetSource} from '@sanity/types'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import uniqueId from 'lodash-es/uniqueId.js'
 import {type ForwardedRef, forwardRef, memo, useCallback, useMemo} from 'react'
 

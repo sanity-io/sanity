@@ -1,4 +1,4 @@
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useRouter} from 'sanity/router'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'

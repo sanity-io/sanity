@@ -1,4 +1,5 @@
-import {Card, Code, Grid, Stack, Text} from '@sanity/ui'
+import {Card, Grid, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'

@@ -1,5 +1,6 @@
 import {studioPath} from '@sanity/client/csm'
-import {Card, Code, Label, Stack} from '@sanity/ui'
+import {Card, Label, Stack} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path, useTranslation} from 'sanity'
 import {decodeJsonParams} from 'sanity/router'

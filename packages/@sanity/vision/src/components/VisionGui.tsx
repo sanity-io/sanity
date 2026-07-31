@@ -8,7 +8,8 @@ import {
 } from '@sanity/client'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Box, Button, Flex, useToast} from '@sanity/ui'
+import {Box, Button, Flex} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {isHotkey} from 'is-hotkey-esm'
 import {
   type ChangeEvent,

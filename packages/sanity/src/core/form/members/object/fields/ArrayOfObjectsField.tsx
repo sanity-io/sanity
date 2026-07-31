@@ -4,7 +4,7 @@ import {
   type Path,
   type SchemaType,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import noop from 'lodash-es/noop.js'
 import {
   type FocusEvent,

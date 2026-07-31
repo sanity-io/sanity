@@ -14,7 +14,7 @@
  * `useFormBuilder` mocked with a `focusPath` that matches the `path` passed in props so the
  * component can mount.
  */
-import {type Autocomplete, type AutocompleteProps} from '@sanity/ui'
+import {type Autocomplete, type AutocompleteProps} from '@sanity/ui/autocomplete'
 import {render, waitFor} from '@testing-library/react'
 import {
   type ForwardedRef,

@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
-import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {Card, LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
+import {ToastProvider} from '@sanity/ui/toast'
 import {clsx} from 'clsx'
 import memoize from 'lodash-es/memoize.js'
 import noop from 'lodash-es/noop.js'

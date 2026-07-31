@@ -1,5 +1,5 @@
 import {type InitialValueResolverContext, type SanityDocumentLike} from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useEffect, useMemo, useState} from 'react'
 
 import {useDataset} from '../../hooks/useDataset'
