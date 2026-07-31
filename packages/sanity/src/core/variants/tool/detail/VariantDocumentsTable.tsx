@@ -81,6 +81,9 @@ export function VariantDocumentsTable({
 
   return (
     <DocumentTable<DocumentInVariantGroup>
+      // Keep the command lane (search + filter tabs) mounted during load so it doesn't pop in when
+      // rows arrive — matching the release detail table and avoiding a layout jump.
+      alwaysShowCommandLane
       columnDefs={columnDefs}
       defaultSort={{column: 'documentGroup', direction: 'asc'}}
       emptyState={t('detail.documents.no-documents')}
