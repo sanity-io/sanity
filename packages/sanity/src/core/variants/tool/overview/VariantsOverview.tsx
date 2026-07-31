@@ -1,15 +1,11 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {TrashIcon} from '@sanity/icons/Trash'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {
-  DocumentTable,
-  type DocumentTableSelection,
-} from '../../../releases/tool/components/Table/DocumentTable'
+import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
 import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
@@ -19,10 +15,8 @@ import {
   buildConditionFacets,
   filterVariantsForSearch,
   getVariantId,
-  resolveBulkDeleteVariants,
   variantMatchesConditionFilters,
 } from '../util'
-import {VariantBulkDeleteDialog} from './VariantBulkDeleteDialog'
 import {VariantConditionFilters} from './VariantConditionFilters'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
@@ -40,7 +34,6 @@ export function VariantsOverview(): React.JSX.Element {
   const router = useRouter()
   const {data: variants, error, loading} = useAllVariants()
   const [isCreateVariantDialogOpen, setIsCreateVariantDialogOpen] = useState(false)
-  const [bulkDelete, setBulkDelete] = useState<{keys: string[]; clear: () => void} | null>(null)
   const [conditionFilters, setConditionFilters] = useState<Record<string, string[]>>({})
 
   const handleCreateVariant = useCallback(() => setIsCreateVariantDialogOpen(true), [])
@@ -105,31 +98,6 @@ variantsList
     [handleCreateVariant, isCreateVariantDialogOpen, t],
   )
 
-  // Bulk selection + a single destructive action. The delete itself is guarded per-definition in the
-  // dialog (only empty definitions are removed), so the toolbar keeps one clear "Delete" affordance.
-  const selection = useMemo<DocumentTableSelection>(
-    () => ({
-      labels: {
-        selectAll: t('overview.bulk.select-all'),
-        selectRow: t('overview.bulk.select-row'),
-        selectedCount: (count) => t('overview.bulk.selected', {count}),
-        clear: t('overview.bulk.clear'),
-      },
-      selectAllTestId: 'variant-bulk-select-all',
-      renderActions: ({selectedKeys, clear}) => (
-        <Button
-          data-testid="variant-bulk-delete"
-          icon={TrashIcon}
-          mode="bleed"
-          onClick={() => setBulkDelete({keys: selectedKeys, clear})}
-          text={t('overview.bulk.delete')}
-          tone="critical"
-        />
-      ),
-    }),
-    [t],
-  )
-
   const tableEmptyState = useCallback(() => {
     if (error && !hasVariants) {
       return (
@@ -153,16 +121,6 @@ variantsList
 
     return <VariantsEmptyState createVariantButton={createVariantButton} />
   }, [createVariantButton, error, hasActiveConditionFilters, hasVariants, rows.length, t])
-
-  const selectedVariants = useMemo((): TableVariant[] => {
-    if (!bulkDelete) return []
-    return resolveBulkDeleteVariants(
-      bulkDelete.keys,
-      variantsList,
-      documentCounts,
-      documentCountsError,
-    )
-  }, [bulkDelete, variantsList, documentCounts, documentCountsError])
 
   return (
     <Flex direction="column" flex={1} height="fill">
@@ -193,7 +151,8 @@ variantsList
       </Container>
 
       {/* Shared DocumentTable — the same table the release and variant detail surfaces use: search in
-          the command lane, checkbox selection, and a bulk toolbar on selection. */}
+          the command lane and per-row actions. (Multi-select is supported by the component but not
+          wired here yet — bulk operations ship separately once transactional batching lands.) */}
       <DocumentTable<TableVariant>
         alwaysShowCommandLane
         columnDefs={columnDefs}
@@ -222,21 +181,12 @@ variantsList
         rows={rows}
         searchPlaceholder={t('overview.search.placeholder')}
         searchPredicate={searchPredicate}
-        selection={selection}
       />
 
       {isCreateVariantDialogOpen && (
         <CreateVariantDialog
           onCancel={() => setIsCreateVariantDialogOpen(false)}
           onSubmit={handleOnCreateVariant}
-        />
-      )}
-
-      {bulkDelete && (
-        <VariantBulkDeleteDialog
-          onClose={() => setBulkDelete(null)}
-          onDeleted={() => bulkDelete.clear()}
-          variants={selectedVariants}
         />
       )}
     </Flex>

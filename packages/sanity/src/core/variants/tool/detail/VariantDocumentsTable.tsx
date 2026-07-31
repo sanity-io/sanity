@@ -1,20 +1,8 @@
-import {AddIcon} from '@sanity/icons/Add'
-import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
-import {PublishIcon} from '@sanity/icons/Publish'
-import {TrashIcon} from '@sanity/icons/Trash'
-import {UnpublishIcon} from '@sanity/icons/Unpublish'
-import {Flex, Menu, MenuDivider} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 
-import {Button} from '../../../../ui-components/button/Button'
-import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
-import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
-import {
-  DocumentTable,
-  type DocumentTableSelection,
-} from '../../../releases/tool/components/Table/DocumentTable'
+import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
 import {type Column} from '../../../releases/tool/components/Table/types'
 import {searchDocumentRelease} from '../../../releases/tool/detail/documentTable/searchDocumentRelease'
 import {variantsLocaleNamespace} from '../../i18n'
@@ -91,90 +79,6 @@ export function VariantDocumentsTable({
     [t, variantId, releasesById],
   )
 
-  const selection = useMemo<DocumentTableSelection>(
-    () => ({
-      labels: {
-        selectAll: t('detail.documents.bulk.select-all'),
-        selectRow: t('detail.documents.bulk.select-row'),
-        selectedCount: (count) => t('detail.documents.bulk.selected', {count}),
-        clear: t('detail.documents.bulk.clear'),
-      },
-      selectAllTestId: 'variant-bulk-select-all',
-      // Primary constructive actions Publish (green) + Add to release; Unpublish + the destructive
-      // Delete under the overflow. On narrow widths everything folds into the overflow. Stubbed
-      // (disabled) until wired up (FH-113).
-      renderActions: ({compact}) => (
-        <Flex align="center" flex="none" gap={2}>
-          {!compact && (
-            <>
-              <Button
-                data-testid="variant-bulk-publish"
-                disabled
-                icon={PublishIcon}
-                text={t('detail.documents.bulk.publish')}
-                tone="positive"
-              />
-              <Button
-                data-testid="variant-bulk-add-to-release"
-                disabled
-                icon={AddIcon}
-                mode="ghost"
-                text={t('detail.documents.bulk.add-to-release')}
-              />
-            </>
-          )}
-          <MenuButton
-            id="variant-bulk-more"
-            button={
-              <Button
-                data-testid="variant-bulk-more"
-                icon={EllipsisHorizontalIcon}
-                mode="bleed"
-                tooltipProps={{content: t('detail.documents.bulk.more')}}
-              />
-            }
-            menu={
-              <Menu>
-                {compact && (
-                  <>
-                    <MenuItem
-                      data-testid="variant-bulk-publish"
-                      disabled
-                      icon={PublishIcon}
-                      text={t('detail.documents.bulk.publish')}
-                      tone="positive"
-                    />
-                    <MenuItem
-                      data-testid="variant-bulk-add-to-release"
-                      disabled
-                      icon={AddIcon}
-                      text={t('detail.documents.bulk.add-to-release')}
-                    />
-                    <MenuDivider />
-                  </>
-                )}
-                <MenuItem
-                  disabled
-                  icon={UnpublishIcon}
-                  text={t('detail.documents.bulk.unpublish')}
-                />
-                <MenuItem
-                  data-testid="variant-bulk-delete"
-                  disabled
-                  icon={TrashIcon}
-                  text={t('detail.documents.bulk.delete')}
-                  tone="critical"
-                />
-              </Menu>
-            }
-            popover={{placement: 'bottom-end', portal: true}}
-          />
-        </Flex>
-      ),
-    }),
-    [t],
-  )
-
   return (
     <DocumentTable<DocumentInVariantGroup>
       columnDefs={columnDefs}
@@ -200,7 +104,6 @@ export function VariantDocumentsTable({
       searchPlaceholder={t('detail.documents.table.search-placeholder')}
       searchPredicate={searchVariantDocument}
       searchTestId="variant-documents-search"
-      selection={selection}
     />
   )
 }

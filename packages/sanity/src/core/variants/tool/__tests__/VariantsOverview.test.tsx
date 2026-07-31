@@ -302,35 +302,6 @@ describe('VariantsOverview', () => {
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
   })
 
-  it('bulk-deletes only the selected definitions that have no documents', async () => {
-    setVariants([variantAlphaAudience, variantNorwegianMarket])
-    documentCountsMock.data = {
-      [variantAlphaAudience._id]: 0,
-      [variantNorwegianMarket._id]: 2,
-    }
-    documentCountsMock.loading = false
-    const user = userEvent.setup()
-
-    await renderOverview()
-
-    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
-
-    // Select every row, then trigger the bulk delete.
-    await user.click(screen.getByTestId('variant-bulk-select-all'))
-    await user.click(await screen.findByTestId('variant-bulk-delete'))
-
-    // The confirmation dialog opens; confirm it.
-    await screen.findByTestId('variant-bulk-delete-dialog')
-    await user.click(await screen.findByTestId('confirm-button'))
-
-    // The empty definition is deleted; the one with documents is kept.
-    await waitFor(() => {
-      expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
-    })
-    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalledWith(variantNorwegianMarket._id)
-    expect(variantOperationsMock.deleteVariant).toHaveBeenCalledTimes(1)
-  })
-
   it('shows filter empty state when condition filters exclude every definition', async () => {
     setVariants([variantAlphaAudience, variantNorwegianMarket])
     const user = userEvent.setup()

@@ -15,20 +15,14 @@ import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {DocumentTable, type DocumentTableSelection} from '../components/Table/DocumentTable'
+import {DocumentTable} from '../components/Table/DocumentTable'
 import {Table} from '../components/Table/Table'
 import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
 import {ReleaseDocumentFilterTabs} from './components/ReleaseDocumentFilterTabs'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
-import {ReleaseBulkActionDialog, type ReleaseBulkAction} from './ReleaseBulkActionDialog'
-import {ReleaseBulkSelectionActions} from './ReleaseBulkSelectionActions'
-import {
-  type DocumentFilterType,
-  documentMatchesFilter,
-  isDocumentEligibleForUnpublish,
-} from './releaseDocumentActions'
+import {type DocumentFilterType, documentMatchesFilter} from './releaseDocumentActions'
 import {type DocumentInRelease} from './types'
 
 export type DocumentInReleaseDetail = DocumentInRelease & {
@@ -72,16 +66,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const [openAddDocumentDialog, setAddDocumentDialog] = useState(false)
   const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow[]>([])
   const [activeFilter, setActiveFilter] = useState<DocumentFilterType>('all')
-  // A pending bulk action (Discard / Unpublish): the selected row keys + the table's clear callback,
-  // resolved into documents and confirmed via ReleaseBulkActionDialog.
-  const [bulkAction, setBulkAction] = useState<{
-    action: ReleaseBulkAction
-    // The eligible documents are snapshotted when the action is armed, not re-derived from the live
-    // selection. This keeps the confirm dialog stable against reactive document changes and means a
-    // pending action can never linger with an empty (or later-repopulated) target set.
-    documents: DocumentInReleaseDetail[]
-    clear: () => void
-  } | null>(null)
 
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -212,61 +196,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [tableData, activeFilter],
   )
 
-  // Resolve the selected row keys to their documents (from the visible, tab-filtered rows) and, for
-  // unpublish, keep only the eligible ones. Computed when the action is armed so the snapshot stored
-  // in `bulkAction` is stable — the confirm dialog is not re-derived from the live selection.
-  const resolveBulkActionDocuments = useCallback(
-    (action: ReleaseBulkAction, keys: readonly string[]): DocumentInReleaseDetail[] => {
-      const byId = new Map(filterTabRows.map((row) => [row.document._id, row]))
-      const resolved = keys
-        .map((key) => byId.get(key))
-        // Exclude "just added" pending placeholders — their ids are temporary `-pending` ids, not
-        // real release versions, so a bulk discard/unpublish must never target them.
-        .filter((row): row is DocumentInReleaseDetail => Boolean(row) && !row?.isPending)
-      return action === 'unpublish' ? resolved.filter(isDocumentEligibleForUnpublish) : resolved
-    },
-    [filterTabRows],
-  )
-
-  const armBulkAction = useCallback(
-    (action: ReleaseBulkAction, keys: readonly string[], clear: () => void) => {
-      const resolved = resolveBulkActionDocuments(action, keys)
-      // Never arm an action with no eligible documents — that would leave a pending action with no
-      // dialog and no way to clear it.
-      if (resolved.length > 0) setBulkAction({action, documents: resolved, clear})
-    },
-    [resolveBulkActionDocuments],
-  )
-
-  // Multi-select is only meaningful on an active release (matching the per-row actions, which are
-  // hidden otherwise). Discard + Unpublish mirror the per-row menu, applied to the whole selection.
-  const isActiveRelease = release.state === 'active'
-  const selection = useMemo<DocumentTableSelection<DocumentInReleaseDetail> | undefined>(() => {
-    if (!isActiveRelease) return undefined
-    return {
-      labels: {
-        selectAll: t('dashboard.details.bulk.select-all'),
-        selectRow: t('dashboard.details.bulk.select-row'),
-        selectedCount: (count) => t('dashboard.details.bulk.selected', {count}),
-        clear: t('dashboard.details.bulk.clear'),
-      },
-      selectAllTestId: 'release-bulk-select-all',
-      // Pending "just added" placeholder rows have synthetic `-pending` ids and can't be bulk-acted
-      // on; make them non-selectable so they don't inflate the count or leave a pending-only
-      // selection with disabled actions and no explanation.
-      isRowSelectable: (row) => !row.isPending,
-      renderActions: ({selectedKeys, compact, clear}) => (
-        <ReleaseBulkSelectionActions
-          compact={compact}
-          filterTabRows={filterTabRows}
-          onDiscard={() => armBulkAction('discard', selectedKeys, clear)}
-          onUnpublish={() => armBulkAction('unpublish', selectedKeys, clear)}
-          selectedKeys={selectedKeys}
-        />
-      ),
-    }
-  }, [armBulkAction, isActiveRelease, t, filterTabRows])
-
   const isCardinalityOne = isCardinalityOneRelease(release)
   const hasNoDocuments = !isLoading && documents.length === 0
 
@@ -365,7 +294,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           searchPredicate={(row, searchTerm) => searchDocumentRelease(row.document, searchTerm)}
           searchTestId="release-documents-search"
           searchWidth={260}
-          selection={selection}
         />
       ) : (
         <>
@@ -407,15 +335,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         releaseId={releaseId}
         idsInRelease={documents.map(({document}) => document._id)}
       />
-      {bulkAction && (
-        <ReleaseBulkActionDialog
-          action={bulkAction.action}
-          documents={bulkAction.documents}
-          releaseId={releaseId}
-          onClose={() => setBulkAction(null)}
-          onSuccess={bulkAction.clear}
-        />
-      )}
     </Flex>
   )
 }

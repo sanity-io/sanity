@@ -45,7 +45,7 @@ vi.mock('../../../../releases/store/useActiveReleases', () => ({
   })),
 }))
 
-// Wide viewport so the primary bulk buttons render inline (not collapsed into the "more" menu).
+// Pin a wide viewport so responsive rendering is deterministic across tests.
 vi.mock('@sanity/ui', async (importOriginal) => ({
   ...(await importOriginal()),
   useMediaIndex: vi.fn(() => 4),
@@ -291,77 +291,6 @@ describe('VariantDocumentsTable', () => {
     const renderedTitles = screen.getAllByTestId('preview').map((node) => node.textContent)
 
     expect(renderedTitles).toEqual(['Alpha article', 'Zulu article'])
-  })
-
-  it('swaps the command lane into a bulk toolbar on selection', async () => {
-    const user = userEvent.setup()
-
-    await renderTable()
-
-    await waitFor(() => {
-      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
-    })
-
-    // Idle: search is shown, no bulk toolbar.
-    expect(screen.getByTestId('variant-documents-search')).toBeInTheDocument()
-    expect(screen.queryByTestId('variant-bulk-publish')).not.toBeInTheDocument()
-
-    const rowCheckboxes = screen.getAllByRole('checkbox', {name: 'Select document'})
-    expect(rowCheckboxes).toHaveLength(2)
-
-    await user.click(rowCheckboxes[0]!)
-
-    // Selecting swaps browse controls (search) for the bulk toolbar: count + primary actions.
-    expect(screen.getByText('1 selected')).toBeInTheDocument()
-    expect(screen.getByTestId('variant-bulk-publish')).toBeInTheDocument()
-    expect(screen.getByTestId('variant-bulk-add-to-release')).toBeInTheDocument()
-    expect(screen.queryByTestId('variant-documents-search')).not.toBeInTheDocument()
-  })
-
-  it('uses the select-all box to select every document and to clear', async () => {
-    const user = userEvent.setup()
-
-    await renderTable()
-
-    await waitFor(() => {
-      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
-    })
-
-    // Select-all lives in the column-header row (above the row checkboxes), present from a cold
-    // state, and there is exactly one.
-    const selectAll = screen.getByRole('checkbox', {name: 'Select all documents'})
-
-    await user.click(selectAll)
-    expect(screen.getByText('2 selected')).toBeInTheDocument()
-
-    // Clicking it again clears (GitHub-style) — the toolbar reverts to the search control.
-    await user.click(screen.getByRole('checkbox', {name: 'Select all documents'}))
-
-    await waitFor(() => {
-      expect(screen.getByTestId('variant-documents-search')).toBeInTheDocument()
-    })
-    expect(screen.queryByText('2 selected')).not.toBeInTheDocument()
-  })
-
-  it('shows Publish and Add to release as primary actions with Unpublish and Delete under a more menu', async () => {
-    const user = userEvent.setup()
-
-    await renderTable()
-
-    await waitFor(() => {
-      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
-    })
-
-    await user.click(screen.getAllByRole('checkbox', {name: 'Select document'})[0]!)
-
-    // Publish + Add to release are the primary constructive buttons (stubbed disabled).
-    expect(screen.getByTestId('variant-bulk-publish')).toBeDisabled()
-    expect(screen.getByTestId('variant-bulk-add-to-release')).toBeDisabled()
-
-    // Unpublish + the destructive Delete live behind the "more" overflow.
-    await user.click(screen.getByTestId('variant-bulk-more'))
-    expect(await screen.findByText('Unpublish')).toBeInTheDocument()
-    expect(screen.getByTestId('variant-bulk-delete')).toBeInTheDocument()
   })
 
   it('puts search in the command lane, not the column header', async () => {

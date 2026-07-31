@@ -1,7 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
 import {createMockVariant} from '../../__fixtures__/createMockVariant'
-import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
 import {VARIANT_DOCUMENTS_PATH} from '../../store/constants'
 import {type SystemVariant} from '../../types'
 import {
@@ -15,7 +14,6 @@ import {
   getVariantTitle,
   isPublishedBundleId,
   isReleaseBundle,
-  resolveBulkDeleteVariants,
   variantMatchesConditionFilters,
 } from '../util'
 
@@ -163,31 +161,5 @@ describe('variantMatchesConditionFilters', () => {
       false,
     )
     expect(variantMatchesConditionFilters(variant, {brand: ['brand-z']})).toBe(false)
-  })
-})
-
-describe('resolveBulkDeleteVariants', () => {
-  it('keeps snapshotted keys when condition filters would hide them from table rows', () => {
-    const keys = [variantAlphaAudience._id, variantNorwegianMarket._id]
-    const variants = [variantAlphaAudience, variantNorwegianMarket]
-    const localeNbNoOnly = {locale: ['nb-NO']}
-
-    const filteredRows = variants.filter((variant) =>
-      variantMatchesConditionFilters(variant, localeNbNoOnly),
-    )
-    expect(filteredRows.map((variant) => variant._id)).toEqual([variantNorwegianMarket._id])
-
-    const rowsBasedSelection = filteredRows.filter((variant) => keys.includes(variant._id))
-    expect(rowsBasedSelection).toHaveLength(1)
-
-    const resolved = resolveBulkDeleteVariants(
-      keys,
-      variants,
-      {[variantAlphaAudience._id]: 0, [variantNorwegianMarket._id]: 2},
-      null,
-    )
-    expect(resolved.map((variant) => variant._id)).toEqual(keys)
-    expect(resolved[0]?.documentCount).toBe(0)
-    expect(resolved[1]?.documentCount).toBe(2)
   })
 })

@@ -174,28 +174,3 @@ export function variantMatchesConditionFilters(
     return typeof value === 'string' && selectedValues.includes(value)
   })
 }
-
-/** Variant definition plus overview document count (see `TableVariant`). */
-export type VariantWithDocumentCount = SystemVariant & {
-  documentCount?: number | null
-}
-
-/**
- * Resolves bulk-delete targets from the full variant list and snapshotted row keys.
- * Must not use condition-filtered table rows, or changing filters while the dialog is open
- * can drop selected ids from the confirm action.
- */
-export function resolveBulkDeleteVariants(
-  keys: readonly string[],
-  variantsList: SystemVariant[],
-  documentCounts: Record<string, number> | null | undefined,
-  documentCountsError: Error | null | undefined,
-): VariantWithDocumentCount[] {
-  const keySet = new Set(keys)
-  return variantsList
-    .filter((variant) => keySet.has(variant._id))
-    .map((variant) => ({
-      ...variant,
-      documentCount: documentCounts?.[variant._id] ?? (documentCountsError ? null : undefined),
-    }))
-}
