@@ -114,10 +114,11 @@ const TableInner = <TableData, AdditionalRowTableData>({
       // Header and body rows are independent flexboxes: this trailing gutter must be the SAME width
       // in both, otherwise the flex:1 "Document" column absorbs the difference in the body only and
       // every column to its right (Last edited, Edited by) drifts out of alignment with its header.
-      // Match the 25px used by the body cell below.
-      width: 25,
+      // The body cell below is content-box (width:25px + padding:3 => ~50px actual), so reserve 50
+      // here and size the header (border-box) to 50px to match — under-reserving clips the ⋯.
+      width: 50,
       header: ({headerProps: {id}}) => (
-        <Flex as="th" id={id} paddingY={3} paddingX={3} sizing="border" style={{width: '25px'}}>
+        <Flex as="th" id={id} paddingY={3} paddingX={3} sizing="border" style={{width: '50px'}}>
           <Text muted size={1} weight="medium">
             &nbsp;
           </Text>
