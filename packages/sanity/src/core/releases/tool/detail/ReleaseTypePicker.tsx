@@ -10,6 +10,7 @@ import {styled} from 'styled-components'
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {Tab} from '../../../../ui-components/tab/Tab'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {MONTH_PICKER_VARIANT} from '../../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 import {DatePicker} from '../../../components/inputs/DateInputs/DatePicker'
@@ -332,16 +333,20 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
           schedule is editable it's a flush, chrome-free clickable trigger; when locked/published
           it's static text. Either way it reads as plain text aligned with the other values. */}
       {release.state === 'published' || isReleaseScheduled ? (
-        <Card
-          tone={tone}
-          padding={0}
-          style={{background: 'transparent'}}
-          data-testid={
-            release.state === 'published' ? 'published-release-type-label' : 'release-type-picker'
-          }
-        >
-          {valueText}
-        </Card>
+        // When the schedule is locked because the release is scheduled, keep the same explanation the
+        // production disabled control shows. Disabled for published releases (no scheduled tooltip).
+        <Tooltip content={tRelease('type-picker.tooltip.scheduled')} disabled={!isReleaseScheduled}>
+          <Card
+            tone={tone}
+            padding={0}
+            style={{background: 'transparent'}}
+            data-testid={
+              release.state === 'published' ? 'published-release-type-label' : 'release-type-picker'
+            }
+          >
+            {valueText}
+          </Card>
+        </Tooltip>
       ) : (
         <Card tone={tone} padding={0} style={{background: 'transparent'}}>
           <ScheduleTrigger
