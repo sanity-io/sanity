@@ -123,7 +123,9 @@ export function useInitialValue(props: {
     idleState,
   ])
 
-  return useObservable(state$, idleState)
+  // Seeded with loadingState to match the stream's synchronous
+  // startWith(loadingState) first emission.
+  return useObservable(state$, loadingState)
 }
 
 /**

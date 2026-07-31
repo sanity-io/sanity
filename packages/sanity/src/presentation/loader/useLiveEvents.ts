@@ -1,7 +1,7 @@
 import {type LiveEvent, type LiveEventMessage} from '@sanity/client'
 import {useDeferredValue, useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {scan} from 'rxjs'
+import {catchError, scan, throwError} from 'rxjs'
 import {type SanityClient} from 'sanity'
 
 /**
@@ -59,9 +59,18 @@ export const initialState: State = {
 export function useLiveEvents(client: SanityClient): State {
   const state$ = useMemo(
     () =>
-      client.live
-        .events({includeDrafts: true, tag: 'presentation-loader'})
-        .pipe(scan(reducer, initialState)),
+      client.live.events({includeDrafts: true, tag: 'presentation-loader'}).pipe(
+        scan(reducer, initialState),
+        // Normalize non-Error failures so the error boundary always receives
+        // an Error with the original throwable as `cause`.
+        catchError((err) =>
+          throwError(() =>
+            err instanceof Error
+              ? err
+              : new Error('Unexpected error in useLiveEvents', {cause: err}),
+          ),
+        ),
+      ),
     [client.live],
   )
 

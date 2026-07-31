@@ -172,7 +172,7 @@ export function RequestAccessScreen() {
 
   const handleSubmitRequest = useCallback(() => {
     // If we haven't loaded the client or projectId from
-    // current worspace, return early
+    // current workspace, return early
     if (!client || !projectId) return
 
     setIsSubmitting(true)
@@ -193,8 +193,7 @@ export function RequestAccessScreen() {
           // User is over their cross-project request limit
           setHasTooManyRequests(true)
           setMsgError(errMessage)
-        }
-        if (statusCode === 409) {
+        } else if (statusCode === 409) {
           // If we get a 409, user has been denied on this project or has a valid pending request
           // valid pending request should be handled by GET request above
           setSubmitDenied(true)

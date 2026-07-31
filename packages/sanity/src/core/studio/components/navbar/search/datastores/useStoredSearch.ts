@@ -1,7 +1,7 @@
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {merge, Subject} from 'rxjs'
-import {map, startWith} from 'rxjs/operators'
+import {map, startWith, tap} from 'rxjs/operators'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {useKeyValueStore} from '../../../../../store/datastores'
@@ -37,18 +37,21 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
     () =>
       merge(
         keyValueStore.getKey(keyValueStoreKey).pipe(
+          // Reset outdated stored versions (per original verifySearchVersionNumber
+          // logic) — side effect kept in `tap` so the `map` below stays pure.
+          tap((raw) => {
+            const data = raw as StoredSearch | null
+            if (data && data.version !== RECENT_SEARCH_VERSION) {
+              void keyValueStore.setKey(keyValueStoreKey, defaultValue as any)
+            }
+          }),
           map((raw): StoredSearch => {
             const data = raw as StoredSearch | null
-            if (!data) {
+            // Fall back to the default when nothing is stored or the stored
+            // version is outdated
+            if (!data || data.version !== RECENT_SEARCH_VERSION) {
               return defaultValue
             }
-            // Check if the version matches RECENT_SEARCH_VERSION
-            if (data.version !== RECENT_SEARCH_VERSION) {
-              // If not, return the default object and mutate the store (per original verifySearchVersionNumber logic)
-              void keyValueStore.setKey(keyValueStoreKey, defaultValue as any)
-              return defaultValue
-            }
-            // Otherwise, return the data as is
             return data
           }),
         ),
