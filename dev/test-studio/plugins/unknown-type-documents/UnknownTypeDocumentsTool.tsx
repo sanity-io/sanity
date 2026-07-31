@@ -20,6 +20,13 @@ import {useClient, useSchema} from 'sanity'
 
 const API_VERSION = '2025-02-19'
 
+/**
+ * Excludes system documents (`_.**` id path, e.g. `system.group` permission
+ * documents) — they don't count towards the document quota and must never be
+ * deleted from here.
+ */
+const NON_SYSTEM_FILTER = '!(_id in path("_.**"))'
+
 /** Max number of documents listed in the UI ("Delete all" is not limited by this) */
 const MAX_LISTED_DOCUMENTS = 500
 
@@ -63,7 +70,7 @@ export function UnknownTypeDocumentsTool() {
   const loadDocuments = useCallback(async () => {
     try {
       // Every distinct `_type` present in the dataset (drafts + published + versions)
-      const allTypes = await client.fetch<string[]>('array::unique(*[]._type)')
+      const allTypes = await client.fetch<string[]>(`array::unique(*[${NON_SYSTEM_FILTER}]._type)`)
       const unknownTypes = allTypes
         .filter((typeName) => !schemaTypeNames.has(typeName))
         .sort((a, b) => a.localeCompare(b))
@@ -74,9 +81,11 @@ export function UnknownTypeDocumentsTool() {
       }
 
       const [totalCount, documents] = await Promise.all([
-        client.fetch<number>('count(*[_type in $types])', {types: unknownTypes}),
+        client.fetch<number>(`count(*[_type in $types && ${NON_SYSTEM_FILTER}])`, {
+          types: unknownTypes,
+        }),
         client.fetch<UnknownDocument[]>(
-          `*[_type in $types]{_id, _type, _createdAt, _updatedAt} | order(_type asc, _id asc) [0...${MAX_LISTED_DOCUMENTS}]`,
+          `*[_type in $types && ${NON_SYSTEM_FILTER}]{_id, _type, _createdAt, _updatedAt} | order(_type asc, _id asc) [0...${MAX_LISTED_DOCUMENTS}]`,
           {types: unknownTypes},
         ),
       ])
@@ -136,7 +145,7 @@ export function UnknownTypeDocumentsTool() {
     setConfirmDeleteAll(false)
     setDeleteAllProgress('Fetching document ids…')
     try {
-      const ids = await client.fetch<string[]>('*[_type in $types]._id', {
+      const ids = await client.fetch<string[]>(`*[_type in $types && ${NON_SYSTEM_FILTER}]._id`, {
         types: state.unknownTypes,
       })
       const failedIds: string[] = []
