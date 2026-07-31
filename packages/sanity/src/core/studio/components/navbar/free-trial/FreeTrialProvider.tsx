@@ -1,7 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {BehaviorSubject, catchError, distinctUntilChanged, EMPTY, switchMap} from 'rxjs'
+import {BehaviorSubject, catchError, distinctUntilChanged, EMPTY, map, switchMap} from 'rxjs'
 import {FreeTrialContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
@@ -14,6 +14,15 @@ import {type FreeTrialResponse} from './types'
  */
 export interface FreeTrialProviderProps {
   children: ReactNode
+}
+
+interface TrialParams {
+  seenBefore: string | null
+  trialState: string | null
+}
+
+function getFetchKey({seenBefore, trialState}: TrialParams): string {
+  return `${trialState ?? ''}:${seenBefore ?? ''}`
 }
 
 /**
@@ -38,18 +47,20 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   const seenBefore = searchParams.get('seenBefore')
   // Key auto-dismiss to the same inputs that drive the trial request so a URL
   // override / refetch can show again (matches prior effect setShowOnLoad(true)).
-  const fetchKey = `${trialState ?? ''}:${seenBefore ?? ''}`
+  const fetchKey = getFetchKey({seenBefore, trialState})
 
   // Bridge the params into a stable stream so a param change refetches within
   // the same subscription: the last response stays visible while the refetch
   // is in flight, and a failed refetch keeps it (matches the previous
   // setState behavior).
-  const [params$] = useState(() => new BehaviorSubject({seenBefore, trialState}))
+  const [params$] = useState(() => new BehaviorSubject<TrialParams>({seenBefore, trialState}))
   useEffect(() => {
     params$.next({seenBefore, trialState})
   }, [params$, seenBefore, trialState])
 
-  const data = useObservable(
+  // Each response is tagged with the fetch key it answers, so auto-show can
+  // tell a kept-while-refetching response from one matching the current params.
+  const trial = useObservable(
     useMemo(
       () =>
         params$.pipe(
@@ -72,16 +83,23 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
               .request<FreeTrialResponse | null>({
                 url: `${queryURL}?${queryParams.toString()}`,
               })
-              .pipe(catchError(() => EMPTY))
+              .pipe(
+                map((response) => ({key: getFetchKey(params), response})),
+                catchError(() => EMPTY),
+              )
           }),
         ),
       [client, params$],
     ),
     null,
   )
+  const data = trial?.response ?? null
 
-  // Derive auto-show from the response instead of syncing into state in an effect
-  const showOnLoad = Boolean(data?.showOnLoad) && dismissedFetchKey !== fetchKey
+  // Derive auto-show from the response instead of syncing into state in an
+  // effect. Only a response for the current params may auto-show — a stale
+  // response kept while refetching must not reopen a dismissed dialog.
+  const showOnLoad =
+    Boolean(data?.showOnLoad) && trial?.key === fetchKey && dismissedFetchKey !== fetchKey
   const showDialog = showOnLoad || manualDialogOpen
 
   // Whenever showDialog changes, run effect to track
