@@ -147,6 +147,47 @@ describe('ReleaseDocumentPreview', () => {
     expect(searchParams).toBeNull()
   })
 
+  it('resolves the published document preview with a published perspective for unpublish documents', async () => {
+    const {useDocumentPreviewValues} =
+      await import('../../../../tasks/hooks/useDocumentPreviewValues')
+    vi.mocked(useDocumentPreviewValues).mockClear()
+
+    await renderTest({
+      documentId: 'versions.rASAP.doc123',
+      documentTypeName: 'post',
+      releaseId: activeASAPRelease._id,
+      releaseState: 'active',
+      isGoingToUnpublish: true,
+    })
+
+    // A version tombstone has no preview fields, so we must resolve the still-published
+    // document via its published id and an explicit `['published']` perspective.
+    expect(useDocumentPreviewValues).toHaveBeenCalledWith({
+      documentId: 'doc123',
+      documentType: 'post',
+      perspectiveStack: ['published'],
+    })
+  })
+
+  it('resolves the version preview with the release perspective for non-unpublish documents', async () => {
+    const {useDocumentPreviewValues} =
+      await import('../../../../tasks/hooks/useDocumentPreviewValues')
+    vi.mocked(useDocumentPreviewValues).mockClear()
+
+    await renderTest({
+      documentId: 'versions.rASAP.doc123',
+      documentTypeName: 'post',
+      releaseId: activeASAPRelease._id,
+      releaseState: 'active',
+    })
+
+    expect(useDocumentPreviewValues).toHaveBeenCalledWith({
+      documentId: 'versions.rASAP.doc123',
+      documentType: 'post',
+      perspectiveStack: ['rASAP'],
+    })
+  })
+
   it('creates link with variant and release perspective sticky params', async () => {
     const {container} = await renderTest({
       documentId: 'versions.buz.doc123',

@@ -20,7 +20,7 @@ interface ReleaseDocumentPreviewProps {
   documentRevision?: string
   hasValidationError?: boolean
   layout?: PreviewLayoutKey
-  isGoingToBePublished?: boolean
+  isGoingToUnpublish?: boolean
   isCardinalityOneRelease?: boolean
   variantId?: string
 }
@@ -33,7 +33,7 @@ export function ReleaseDocumentPreview({
   isCardinalityOneRelease,
   documentRevision,
   layout,
-  isGoingToBePublished = false,
+  isGoingToUnpublish = false,
   variantId,
 }: ReleaseDocumentPreviewProps) {
   const documentPresence = useDocumentPresence(documentId)
@@ -85,9 +85,15 @@ export function ReleaseDocumentPreview({
   )
 
   const {isLoading: previewLoading, value: resolvedPreview} = useDocumentPreviewValues({
-    documentId: isGoingToBePublished ? getPublishedId(documentId) : documentId,
+    documentId: isGoingToUnpublish ? getPublishedId(documentId) : documentId,
     documentType: documentTypeName,
-    perspectiveStack: isGoingToBePublished ? [] : [getReleaseIdFromReleaseDocumentId(releaseId)],
+    // A document going to be unpublished has a version tombstone (`_system.delete`) with no
+    // preview fields, so we resolve the still-existing published document instead. This must be
+    // an explicit `['published']` perspective: an empty stack (`[]`) no longer resolves the
+    // published document, which left these rows showing "Untitled".
+    perspectiveStack: isGoingToUnpublish
+      ? ['published']
+      : [getReleaseIdFromReleaseDocumentId(releaseId)],
   })
 
   return (
