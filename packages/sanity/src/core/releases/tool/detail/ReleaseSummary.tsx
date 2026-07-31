@@ -76,7 +76,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const variantsEnabled = Boolean(beta?.variants?.enabled)
   // Resolves each document's variant (via `_system.variant._ref`) to its definition for the
   // "Variant" column. Provider-free + cached; returns empty when variants are disabled.
-  const {byId: variantsById} = useAllVariants()
+  const {byId: variantsById, loading: variantsLoading} = useAllVariants()
 
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
@@ -96,9 +96,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       getDocumentTableColumnDefs(release._id, release.state, t, {
         searchInCommandLane: variantsEnabled,
         variantsById: variantsEnabled ? variantsById : undefined,
+        variantsLoading: variantsEnabled ? variantsLoading : false,
         variantsEnabled,
       }),
-    [release._id, release.state, t, variantsEnabled, variantsById],
+    [release._id, release.state, t, variantsEnabled, variantsById, variantsLoading],
   )
 
   const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])

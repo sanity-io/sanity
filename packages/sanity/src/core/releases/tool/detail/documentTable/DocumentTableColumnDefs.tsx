@@ -2,7 +2,7 @@ import {type ReleaseState} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Badge, Box, Card, Flex, Text} from '@sanity/ui'
+import {Badge, Box, Card, Flex, Skeleton, Text} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
@@ -231,13 +231,15 @@ const VariantCell = memo(
           ) : undefined
         }
       >
-        <Flex align="center" gap={2}>
+        <Flex align="center" gap={2} style={{minWidth: 0}}>
           <Card tone="suggest" padding={0} style={VARIANT_ICON_CARD_STYLE}>
             <Text size={1} style={VARIANT_ICON_STYLE}>
               <RhombusIcon />
             </Text>
           </Card>
-          <Text size={1} textOverflow="ellipsis" weight="medium">
+          {/* flex + min-width:0 lets the label shrink below its content width so a long variant name
+              truncates with an ellipsis instead of overflowing the column. */}
+          <Text size={1} textOverflow="ellipsis" weight="medium" style={{flex: 1, minWidth: 0}}>
             {getVariantTitle(variant)}
           </Text>
         </Flex>
@@ -254,6 +256,9 @@ export const getDocumentTableColumnDefs: (
   options?: {
     searchInCommandLane?: boolean
     variantsById?: Map<string, SystemVariant>
+    /** True while the variant definitions map is still loading — skeleton the Variant cell instead
+     * of rendering a blank that pops in when definitions arrive. */
+    variantsLoading?: boolean
     /**
      * Beta (variants) column layout. When false/omitted the column set must match production
      * exactly — these columns feed the non-beta releases-detail table too, so any change here
@@ -265,6 +270,7 @@ export const getDocumentTableColumnDefs: (
   // Beta layout gate. Off (production) = the exact column set from before this redesign, since
   // these defs also drive the non-beta releases-detail table.
   const variantsEnabled = Boolean(options?.variantsEnabled)
+  const variantsLoading = Boolean(options?.variantsLoading)
 
   return [
     /**
@@ -319,9 +325,12 @@ export const getDocumentTableColumnDefs: (
             cell: ({cellProps, datum}) => (
               <Flex align="center" {...cellProps}>
                 <Box paddingX={2} style={{minWidth: 0}}>
-                  {!datum.isLoading && (
-                    <VariantCell document={datum.document} variantsById={options.variantsById!} />
-                  )}
+                  {!datum.isLoading &&
+                    (variantsLoading ? (
+                      <Skeleton animated radius={1} style={{width: 60, height: 11}} />
+                    ) : (
+                      <VariantCell document={datum.document} variantsById={options.variantsById!} />
+                    ))}
                 </Box>
               </Flex>
             ),
