@@ -97,11 +97,16 @@ describe('documentStore.pair.editOperations target handling', () => {
     expect(mockEditOperations).not.toHaveBeenCalled()
   })
 
-  it('prepares the version pair id from a variant target scope', () => {
+  it('prepares the version pair id from a variant target scope and forwards the target', () => {
     const {store} = setup()
     mockEditOperations.mockReturnValue(of(createOperationsAPIStub()))
 
-    collectFirst(store, {kind: 'variant', scopeId: 'varscope', variantId: '_.variants.alpha'})
+    const target: DocumentPairTarget = {
+      kind: 'variant',
+      scopeId: 'varscope',
+      variantId: '_.variants.alpha',
+    }
+    collectFirst(store, target)
 
     expect(mockEditOperations).toHaveBeenCalledWith(
       expect.anything(),
@@ -111,6 +116,33 @@ describe('documentStore.pair.editOperations target handling', () => {
         versionId: 'versions.varscope.incoming-id',
       },
       'movie',
+      target,
+    )
+  })
+
+  it('checks out the pair for a creatable variant target (allowCreate) and forwards the target', () => {
+    const {store} = setup()
+    mockEditOperations.mockReturnValue(of(createOperationsAPIStub()))
+
+    const target: DocumentPairTarget = {
+      kind: 'variant',
+      scopeId: 'varscope',
+      variantId: '_.variants.alpha',
+      allowCreate: true,
+    }
+    collectFirst(store, target)
+
+    // Not a guarded kind: the pair is checked out at the advertised id, and the target reaches
+    // the operations layer so the missing-version guard can honor `allowCreate`.
+    expect(mockEditOperations).toHaveBeenCalledWith(
+      expect.anything(),
+      {
+        publishedId: 'incoming-id',
+        draftId: 'drafts.incoming-id',
+        versionId: 'versions.varscope.incoming-id',
+      },
+      'movie',
+      target,
     )
   })
 
@@ -128,6 +160,7 @@ describe('documentStore.pair.editOperations target handling', () => {
         versionId: 'versions.release.incoming-id',
       },
       'movie',
+      {kind: 'version', scopeId: 'release'},
     )
   })
 
@@ -141,6 +174,7 @@ describe('documentStore.pair.editOperations target handling', () => {
       expect.anything(),
       {publishedId: 'incoming-id', draftId: 'drafts.incoming-id'},
       'movie',
+      undefined,
     )
   })
 })

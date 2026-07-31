@@ -84,6 +84,14 @@ export interface DocumentSystem {
    * Set when the document is marked for unpublishing inside a release.
    */
   delete?: boolean
+  /**
+   * Only on variant-of-published documents: a weak reference to the (stable, server-generated)
+   * id the drafts-bundle sibling of this variant occupies — `versions.<scopeId>.<groupId>` —
+   * whether or not that document currently exists. Lets clients check out and create the draft
+   * variant without computing scope ids client-side. Not populated for normal published docs or
+   * variants of releases.
+   */
+  draft?: DocumentSystemRef
 }
 
 /**

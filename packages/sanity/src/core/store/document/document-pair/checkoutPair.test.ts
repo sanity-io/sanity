@@ -2740,6 +2740,82 @@ describe('checkoutPair -- version documents', () => {
     sub.unsubscribe()
   })
 
+  test('variant version create (typing into a creatable target) maps to variant.create, not document.create', async () => {
+    const variantIdPair = {
+      publishedId: 'publishedId',
+      draftId: 'draftId',
+      versionId: 'versions.varscope.publishedId',
+    }
+
+    const versionClient = {
+      ...client,
+      observable: {
+        ...client.observable,
+        action: mockedActionRequest,
+      },
+      withConfig: vi.fn(() => versionClient),
+    }
+
+    const {version, draft, published} = checkoutPair(
+      versionClient as any as SanityClient,
+      variantIdPair,
+      of(true),
+    )
+    const combined = merge(draft.events, published.events, version!.events)
+    const sub = combined.subscribe()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    // The seed written by the creatable-variant flow always carries `_system.variant` — the
+    // discriminator that routes the create to `variant.create` (addressed by coordinates, with
+    // the seeded document). `document.create` would reject with documentAlreadyExistsError,
+    // since the group already exists (the published variant sibling at minimum).
+    const system = {
+      group: {_ref: 'publishedId', _weak: true as const},
+      variant: {_ref: '_.variants.alpha', _weak: true as const},
+      bundleId: 'drafts',
+      scopeId: 'varscope',
+    }
+    version!.mutate([
+      version!.create({
+        _type: 'any',
+        _createdAt: 'now',
+        title: 'seeded from published variant',
+        _system: system,
+      }),
+      ...version!.patch([{set: {title: 'edited'}}]),
+    ])
+    version!.commit()
+
+    expect(mockedActionRequest).toHaveBeenCalledWith(
+      [
+        {
+          actionType: 'sanity.action.document.variant.create',
+          publishedId: 'publishedId',
+          variantId: 'alpha',
+          bundleId: 'drafts',
+          document: expect.objectContaining({
+            _id: 'versions.varscope.publishedId',
+            _type: 'any',
+            title: 'seeded from published variant',
+            _system: system,
+          }),
+        },
+        {
+          actionType: 'sanity.action.document.edit',
+          draftId: 'versions.varscope.publishedId',
+          publishedId: 'publishedId',
+          patch: {set: {title: 'edited'}},
+        },
+      ],
+      {
+        tag: 'document.commit',
+        transactionId: expect.any(String),
+      },
+    )
+
+    sub.unsubscribe()
+  })
+
   test('version document latency tracking works', async () => {
     vi.useFakeTimers()
     vi.spyOn(global, 'fetch').mockResolvedValue({
