@@ -1,6 +1,5 @@
-import {type ReleaseDocument} from '@sanity/client'
 import {useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
-import {type MouseEvent, type RefObject, useCallback, useRef, useState} from 'react'
+import {type MouseEvent, type RefObject, useCallback, useMemo, useRef, useState} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TargetPerspective} from '../../perspective/types'
@@ -17,12 +16,13 @@ import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {isVariantId} from '../../variants/types'
 import {type VersionInfoDocumentStub} from '../store/types'
-import {LATEST, PUBLISHED} from '../util/const'
+import {useAllReleases} from '../store/useAllReleases'
 import {
   getReleaseIdFromReleaseDocumentId,
   isReleaseDocumentId,
 } from '../util/getReleaseIdFromReleaseDocumentId'
 import {type CopyToDraftsOptions, useCopyToDrafts} from './useCopyToDrafts'
+import {useDocumentVersions} from './useDocumentVersions'
 import {useVersionOperations} from './useVersionOperations'
 
 const CONTEXT_MENU_CLOSED = {open: false as const}
@@ -48,31 +48,14 @@ export type VersionContextMenuState =
   | {open: true; translate: {x: number; y: number}}
   | {open: false}
 
-/**
- * @internal
- */
-export interface UseVersionContextMenuOptions {
+interface UseVersionContextMenuBaseOptions {
   /**
    * The document group id (published id with no `drafts.` / `versions.` prefix).
    */
   documentGroupId: string
-  /**
-   * The version id (with `drafts.` / `versions.` prefix) or even the published id (with no prefix).
-   * AKA the full document id
-   */
-  versionId: string
-  /**
-   * Required to add a variant version to a release, otherwise the created
-   * version wouldn't belong to the variant.
-   */
-  documentVersionInfoStub?: VersionInfoDocumentStub
   documentType: string
-  /** The perspective the menu acts on: 'published', 'draft', or a release ID. */
-  bundleId: string
-  isVersion: boolean
   /** Disables the menu actions (the menu can still be opened). */
   disabled?: boolean
-  release?: ReleaseDocument
   /**
    * Called after a successful copy-to-drafts (after navigating to drafts).
    * Structure uses this to clear the pane-local scheduled draft perspective
@@ -80,6 +63,30 @@ export interface UseVersionContextMenuOptions {
    */
   onCopyToDraftsComplete?: () => void
 }
+/**
+ * @internal
+ */
+type UseVersionContextMenuOptions =
+  | (UseVersionContextMenuBaseOptions & {
+      /**
+       * The version id (with `drafts.` / `versions.` prefix) or even the published id (with no prefix).
+       * AKA the full document id
+       *
+       * Provided by the legacy VersionChip
+       */
+      versionId: string
+      documentVersionInfoStub?: undefined
+    })
+  | (UseVersionContextMenuBaseOptions & {
+      /**
+       * Will be used if provided, for example coming from the document group inventory.
+       * If not provided, the versionId will be used to find it.
+       *
+       * Provided by the document group inventory
+       */
+      documentVersionInfoStub: VersionInfoDocumentStub
+      versionId?: undefined
+    })
 
 /**
  * @internal
@@ -130,13 +137,21 @@ export function useVersionContextMenu(
     documentGroupId,
     versionId,
     documentType,
-    bundleId,
-    isVersion,
     disabled = false,
-    release,
-    documentVersionInfoStub,
+    documentVersionInfoStub: _documentVersionInfoStub,
     onCopyToDraftsComplete,
   } = options
+
+  const {map: releasesMap} = useAllReleases()
+  const {versions} = useDocumentVersions({documentId: documentGroupId})
+  const documentVersionInfoStub = useMemo(() => {
+    if (_documentVersionInfoStub) return _documentVersionInfoStub
+
+    return versions.find((version) => version._id === versionId)
+  }, [versions, versionId, _documentVersionInfoStub])
+
+  const releaseRef = documentVersionInfoStub?._system.release?._ref
+  const release = releaseRef ? releasesMap.get(releaseRef) : undefined
 
   if (process.env.NODE_ENV !== 'production' && !isDocumentGroupId(documentGroupId)) {
     console.warn(
@@ -210,9 +225,8 @@ export function useVersionContextMenu(
   }, [variantRef, setVariant, setPerspective, onCopyToDraftsComplete])
 
   const {handleCopyToDrafts} = useCopyToDrafts({
-    documentId: documentGroupId,
-    fromRelease: bundleId,
-    fromVariant: variantRef,
+    documentGroupId,
+    documentVersionInfoStub,
     onNavigate: handleCopyToDraftsNavigate,
     onConfirmationRequest: () => setDialogState('copy-to-drafts'),
   })
@@ -220,7 +234,10 @@ export function useVersionContextMenu(
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
       const runCreateVersion = async () => {
-        if (documentVersionInfoStub && variantRef) {
+        if (!documentVersionInfoStub?._id) {
+          throw new Error('Document version info stub is required')
+        }
+        if (variantRef) {
           // A variant version can only be created through the variant action, otherwise
           // the new version would not belong to the variant.
           await createVariantDocument({
@@ -232,7 +249,10 @@ export function useVersionContextMenu(
               : targetRelease,
           })
         } else {
-          await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), versionId)
+          await createVersion(
+            getReleaseIdFromReleaseDocumentId(targetRelease),
+            documentVersionInfoStub._id,
+          )
         }
       }
 
@@ -253,7 +273,6 @@ export function useVersionContextMenu(
       closeContextMenu,
       createVersion,
       documentGroupId,
-      versionId,
       variantRef,
       t,
       toast,
@@ -262,7 +281,7 @@ export function useVersionContextMenu(
     ],
   )
 
-  const isScheduledDraft = Boolean(release && isVersion && isCardinalityOneRelease(release))
+  const isScheduledDraft = Boolean(release && isCardinalityOneRelease(release))
 
   const handleEditScheduleComplete = useCallback(() => {
     if (!release) return
@@ -280,8 +299,7 @@ export function useVersionContextMenu(
     onDeleteComplete,
   })
 
-  const sourceReleasePerspective =
-    release ?? (bundleId === 'published' ? PUBLISHED : bundleId === 'draft' ? LATEST : bundleId)
+  const sourceReleasePerspective = release ?? documentVersionInfoStub?._system.bundleId ?? 'drafts'
 
   return {
     contextMenu,

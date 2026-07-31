@@ -13,6 +13,7 @@ export function useAllReleases(): {
   data: ReleaseDocument[]
   error?: Error
   loading: boolean
+  map: Map<string, ReleaseDocument>
 } {
   const {state$} = useReleasesStore()
   const {releases, error, state} = useObservable(state$)!
@@ -20,6 +21,7 @@ export function useAllReleases(): {
   return useMemo(
     () => ({
       data: sortReleases(Array.from(releases.values())),
+      map: releases,
       error: error,
       loading: ['loading', 'initialising'].includes(state),
     }),

@@ -4,7 +4,7 @@ import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type SanityDocumentLike} from '@sanity/types'
-import {Card, Flex, PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
+import {Flex, PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ComponentType,
@@ -578,13 +578,9 @@ const Variant: ComponentType<{
     sourceReleasePerspective,
   } = useVersionContextMenu({
     documentGroupId,
-    versionId,
     documentVersionInfoStub: document,
     documentType,
-    bundleId,
-    isVersion,
     disabled: isReadOnly,
-    release,
     onCopyToDraftsComplete: clearScheduledDraftPerspective,
   })
 

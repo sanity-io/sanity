@@ -111,10 +111,7 @@ export const VersionChip = memo(function VersionChip(props: {
     documentGroupId,
     versionId,
     documentType,
-    bundleId,
-    isVersion,
     disabled: contextMenuDisabled,
-    release,
     onCopyToDraftsComplete,
   })
 

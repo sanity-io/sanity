@@ -124,13 +124,13 @@ describe('useCopyToDrafts', () => {
     })
   })
 
-  async function renderCopyToDrafts(fromRelease: string, fromVariant?: string) {
+  async function renderCopyToDrafts(fromBundle: string, fromVariant?: string) {
     const wrapper = await createTestProvider()
     return renderHook(
       () =>
         useCopyToDrafts({
           documentId: publishedId,
-          fromRelease,
+          fromBundle,
           fromVariant,
           onNavigate,
           onConfirmationRequest,
@@ -162,7 +162,7 @@ describe('useCopyToDrafts', () => {
     expect(onNavigate).toHaveBeenCalledTimes(1)
   })
 
-  it('copies a release version to drafts by matching scopeId', async () => {
+  it('copies a release version to drafts by matching its bundle', async () => {
     const {result} = await renderCopyToDrafts('release1')
 
     await act(async () => {
@@ -184,8 +184,8 @@ describe('useCopyToDrafts', () => {
     expect(onNavigate).toHaveBeenCalledTimes(1)
   })
 
-  it('copies an opaque agent version to drafts by matching scopeId', async () => {
-    const {result} = await renderCopyToDrafts('opaque-scope-abc')
+  it('copies an agent version to drafts by matching its bundle, not its opaque id', async () => {
+    const {result} = await renderCopyToDrafts('agent.user-123')
 
     await act(async () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
@@ -260,7 +260,7 @@ describe('useCopyToDrafts', () => {
   })
 
   it('shows an error toast when the source version is not found', async () => {
-    const {result} = await renderCopyToDrafts('missing-scope')
+    const {result} = await renderCopyToDrafts('missing-bundle')
 
     await act(async () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
@@ -271,8 +271,36 @@ describe('useCopyToDrafts', () => {
     expect(toastMock.push).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'error',
-        description: `Source document with id: ${publishedId} and release: missing-scope not found`,
+        description: `Source document with id: ${publishedId} and bundle: missing-bundle not found`,
       }),
+    )
+  })
+
+  it('copies the base version when the same bundle also holds a variant version', async () => {
+    mockUseDocumentVersions.mockReturnValue({
+      data: [],
+      versions: [publishedVersion, releaseVersion, variantVersion],
+      error: null,
+      loading: false,
+    })
+
+    const {result} = await renderCopyToDrafts('release1')
+
+    await act(async () => {
+      await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
+    })
+
+    expect(mockAction).toHaveBeenCalledWith(
+      [
+        {
+          actionType: 'sanity.action.document.version.create',
+          versionId: 'drafts.article-123',
+          baseId: releaseVersion._id,
+          ifBaseRevisionId: 'release-rev',
+          publishedId,
+        },
+      ],
+      {tag: 'document.copy-to-drafts'},
     )
   })
 
@@ -362,11 +390,18 @@ describe('useCopyToDrafts', () => {
     expect(onNavigate).toHaveBeenCalledTimes(1)
   })
 
-  it('shows an error toast when fromRelease is draft', async () => {
-    const {result} = await renderCopyToDrafts('draft')
+  it('refuses to copy drafts onto themselves', async () => {
+    mockUseDocumentVersions.mockReturnValue({
+      data: [],
+      versions: [publishedVersion, draftVersion],
+      error: null,
+      loading: false,
+    })
+
+    const {result} = await renderCopyToDrafts('drafts')
 
     await act(async () => {
-      await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
+      await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: false})
     })
 
     expect(mockAction).not.toHaveBeenCalled()
@@ -374,7 +409,7 @@ describe('useCopyToDrafts', () => {
     expect(toastMock.push).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'error',
-        description: `Source document with id: ${publishedId} and release: draft not found`,
+        description: `Source document with id: ${publishedId} and bundle: drafts not found`,
       }),
     )
   })
