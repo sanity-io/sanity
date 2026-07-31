@@ -1,5 +1,6 @@
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
+import {merge, Subject} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
 import {useClient} from '../../../../../hooks/useClient'
@@ -26,35 +27,44 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
 
   const keyValueStoreKey = useMemo(() => `${STORED_SEARCHES_NAMESPACE}.${dataset}`, [dataset])
 
+  // Local echo of writes: the store's change events are not delivered to
+  // subscribers while getKey's initial fetch is in flight, so without this
+  // the UI would wait for the server round-trip (or miss the write entirely)
+  // instead of updating immediately.
+  const optimisticWrites$ = useMemo(() => new Subject<StoredSearch>(), [])
+
   const value$ = useMemo(
     () =>
-      keyValueStore.getKey(keyValueStoreKey).pipe(
-        map((raw): StoredSearch => {
-          const data = raw as StoredSearch | null
-          if (!data) {
-            return defaultValue
-          }
-          // Check if the version matches RECENT_SEARCH_VERSION
-          if (data.version !== RECENT_SEARCH_VERSION) {
-            // If not, return the default object and mutate the store (per original verifySearchVersionNumber logic)
-            void keyValueStore.setKey(keyValueStoreKey, defaultValue as any)
-            return defaultValue
-          }
-          // Otherwise, return the data as is
-          return data
-        }),
-        startWith(defaultValue),
-      ),
-    [keyValueStore, keyValueStoreKey],
+      merge(
+        keyValueStore.getKey(keyValueStoreKey).pipe(
+          map((raw): StoredSearch => {
+            const data = raw as StoredSearch | null
+            if (!data) {
+              return defaultValue
+            }
+            // Check if the version matches RECENT_SEARCH_VERSION
+            if (data.version !== RECENT_SEARCH_VERSION) {
+              // If not, return the default object and mutate the store (per original verifySearchVersionNumber logic)
+              void keyValueStore.setKey(keyValueStoreKey, defaultValue as any)
+              return defaultValue
+            }
+            // Otherwise, return the data as is
+            return data
+          }),
+        ),
+        optimisticWrites$,
+      ).pipe(startWith(defaultValue)),
+    [keyValueStore, keyValueStoreKey, optimisticWrites$],
   )
 
   const value = useObservable(value$, defaultValue)
 
   const set = useCallback(
     (newValue: StoredSearch) => {
+      optimisticWrites$.next(newValue)
       void keyValueStore.setKey(keyValueStoreKey, newValue as any)
     },
-    [keyValueStore, keyValueStoreKey],
+    [keyValueStore, keyValueStoreKey, optimisticWrites$],
   )
 
   return useMemo(() => [value, set], [set, value])
