@@ -234,6 +234,9 @@ export function useVersionContextMenu(
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
+      const perspective = isReleaseDocumentId(targetRelease)
+        ? getReleaseIdFromReleaseDocumentId(targetRelease)
+        : targetRelease
       const runCreateVersion = async () => {
         if (!documentVersionInfoStub?._id) {
           throw new Error('Document version info stub is required')
@@ -245,9 +248,7 @@ export function useVersionContextMenu(
             baseId: documentVersionInfoStub._id,
             documentGroupId,
             variant: {_id: variantRef},
-            selectedPerspective: isReleaseDocumentId(targetRelease)
-              ? getReleaseIdFromReleaseDocumentId(targetRelease)
-              : targetRelease,
+            selectedPerspective: perspective,
           })
         } else {
           await createVersion(
@@ -259,6 +260,8 @@ export function useVersionContextMenu(
 
       try {
         await runCreateVersion()
+        // Navigates to the new created version
+        setVariant({variantId: variantRef, perspective})
       } catch (err) {
         toast.push({
           closable: true,
@@ -274,6 +277,7 @@ export function useVersionContextMenu(
       closeContextMenu,
       createVersion,
       documentGroupId,
+      setVariant,
       variantRef,
       t,
       toast,
