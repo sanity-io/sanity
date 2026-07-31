@@ -66,8 +66,9 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
         }
         const actions: (Action | VariantDocumentAction)[] = []
 
-        if (documentVersionInfoStub._system.variant?._ref) {
-          const variantId = getVariantId(documentVersionInfoStub._system.variant?._ref)
+        const variantRef = documentVersionInfoStub._system.variant?._ref
+        if (variantRef) {
+          const variantId = getVariantId(variantRef)
 
           if (hasDraftVersion) {
             actions.push({
