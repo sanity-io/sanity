@@ -35,7 +35,7 @@ export function EditReleaseDialog({
   const [isSaving, setIsSaving] = useState(false)
   // Synchronous re-entry guard. `loading={isSaving}` only disables the button after a re-render, so
   // two clicks in the same tick would both reach updateRelease. This ref blocks the second call
-  // immediately. Mirrors the guard in ReleaseBulkActionDialog.
+  // immediately.
   const isSavingRef = useRef(false)
 
   const handleSave = useCallback(async () => {

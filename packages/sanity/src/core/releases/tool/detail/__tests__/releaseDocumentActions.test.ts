@@ -4,7 +4,6 @@ import {
   countDocumentsByAction,
   type DocumentFilterType,
   documentMatchesFilter,
-  isDocumentEligibleForUnpublish,
 } from '../releaseDocumentActions'
 import {type DocumentInRelease} from '../types'
 
@@ -164,35 +163,6 @@ describe('releaseDocumentActions', () => {
       expect(documentMatchesFilter(addedDoc, 'changed')).toBe(false)
       expect(documentMatchesFilter(addedDoc, 'unpublished')).toBe(false)
       expect(documentMatchesFilter(addedDoc, 'errors')).toBe(false)
-    })
-  })
-
-  describe('isDocumentEligibleForUnpublish', () => {
-    it('returns true for published documents not already marked to unpublish', () => {
-      const changedDoc = createMockDocument({publishedDocumentExists: true})
-
-      expect(isDocumentEligibleForUnpublish(changedDoc)).toBe(true)
-    })
-
-    it('returns false when there is no published document', () => {
-      const addedDoc = createMockDocument({publishedDocumentExists: false})
-
-      expect(isDocumentEligibleForUnpublish(addedDoc)).toBe(false)
-    })
-
-    it('returns false when the version is already marked to unpublish', () => {
-      const unpublishedDoc = createMockDocument({
-        publishedDocumentExists: true,
-        systemDelete: true,
-      })
-
-      expect(isDocumentEligibleForUnpublish(unpublishedDoc)).toBe(false)
-    })
-
-    it('returns false for pending rows', () => {
-      const pendingDoc = createMockDocument({isPending: true, publishedDocumentExists: true})
-
-      expect(isDocumentEligibleForUnpublish(pendingDoc)).toBe(false)
     })
   })
 })

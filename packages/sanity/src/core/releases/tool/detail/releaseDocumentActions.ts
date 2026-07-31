@@ -97,24 +97,6 @@ export function getDocumentActionType(
   return 'added'
 }
 
-/**
- * Whether a release row can be marked to unpublish (matches per-row menu gating, excluding
- * permissions which are checked separately).
- */
-export function isDocumentEligibleForUnpublish(
-  document: DocumentInRelease | BundleDocumentRow,
-): boolean {
-  if (!document.document || document.isPending) {
-    return false
-  }
-
-  if (!document.document.publishedDocumentExists) {
-    return false
-  }
-
-  return !isGoingToUnpublish(document.document)
-}
-
 export function getReleaseDocumentActionConfig(
   actionType: DocumentActionConfig['key'],
 ): DocumentActionConfig | undefined {
