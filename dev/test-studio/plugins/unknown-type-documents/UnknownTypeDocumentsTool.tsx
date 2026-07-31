@@ -21,11 +21,13 @@ import {useClient, useSchema} from 'sanity'
 const API_VERSION = '2025-02-19'
 
 /**
- * Excludes system documents (`_.**` id path, e.g. `system.group` permission
- * documents) — they don't count towards the document quota and must never be
- * deleted from here.
+ * Excludes system documents — they must never be deleted from here:
+ * - anything under the `_.**` id path (releases `_.releases.*`, variants
+ *   `_.variants.*`, permission groups, retention policies, schemas, …)
+ * - anything with a `system.*` type (`system.release`, `system.variant`,
+ *   `system.group`, `system.retention`, `system.schema`, …)
  */
-const NON_SYSTEM_FILTER = '!(_id in path("_.**"))'
+const NON_SYSTEM_FILTER = '!(_id in path("_.**")) && !string::startsWith(_type, "system.")'
 
 /** Max number of documents listed in the UI ("Delete all" is not limited by this) */
 const MAX_LISTED_DOCUMENTS = 500
