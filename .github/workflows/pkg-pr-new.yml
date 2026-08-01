@@ -22,7 +22,8 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
-      - id: pre-flight
+      - name: Resolve packages and PR version
+        id: pre-flight
         run: |
           PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
           # --silent keeps pnpm's own notices (e.g. the deprecated "$" overrides
