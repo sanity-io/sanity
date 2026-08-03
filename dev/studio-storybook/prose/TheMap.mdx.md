@@ -1,0 +1,304 @@
+---
+source: stories/TheMap.mdx
+format: mdx-verbatim
+roundtrip: true
+sourceHash: ca1a12131979008a
+---
+
+import {Meta} from '@storybook/addon-docs/blocks'
+
+<Meta title="Start Here/The Map" />
+
+# The Map
+
+This catalog holds 1,749 entries covering 777 components of the Sanity Studio interface,
+mounting the real component source. It is organized as a taxonomy.
+
+## The shape of the territory
+
+The sidebar is ordered into 5 sections:
+
+**1. The ground floor.**
+
+- Foundations: Design system as measured: tokens, typography and themes.
+- UI v3 Primitives: Atom shelf every later page composes from.
+
+**2. The shell.**
+
+- Actions & Commands: What you click
+- Overlays & Navigation: What floats
+- Navbar & Shell: Where you are
+- Search: How you find things
+
+**3. The content surfaces.**
+
+- Lists & Data: How collections and changes render.
+- Forms & Input: Where authoring happens: every input, the Portable Text stack, the asset pipeline.
+
+**4. The document lifecycle.**
+
+- Document Pane: What a document is.
+- Document Banners: What it announces above the form.
+- Document Status: Whether it is published, draft or changed.
+- Collaboration: Who else is in the document.
+- Versioning: How it varies and versions.
+- Scheduling: When it publishes.
+- Releases: Shipping a set of documents together.
+- Canvas: Where it connects outward.
+
+The sidebar shows the arc as a stack. Node size is proportional to entry count.
+
+<svg viewBox="0 0 880 168" role="img" aria-labelledby="lifecycleTitle lifecycleDesc" style={{width: '100%', height: 'auto', margin: '26px 0 34px', display: 'block'}}>
+  <title id="lifecycleTitle">The document lifecycle, read as one arc</title>
+  <desc id="lifecycleDesc">
+    A left-to-right arc with a node for each group in the fourth movement, sized by entry count:
+    Document Pane 218, Banners 26, Status 48, Collaboration 53, Versioning 15, Scheduling 16,
+    Releases 183, Canvas 10. The arc runs from what a document is, through what it says about
+    itself and who is working on it, to when it ships and where it connects outward. Document
+    Pane and Releases are far larger than the six groups between them.
+  </desc>
+  <defs>
+    {/* The dashed arc is masked out under each node, so the dots stop reading as
+        speckle inside the circles. Radius +2.5 leaves a hairline of clearance. */}
+    <mask id="arcNodeMask">
+      <rect x="0" y="0" width="880" height="168" fill="white" />
+      <circle cx="60" cy="92.5" r="13.20" fill="black" />
+      <circle cx="170" cy="76.4" r="8.80" fill="black" />
+      <circle cx="265" cy="66.9" r="9.65" fill="black" />
+      <circle cx="360" cy="61.4" r="9.80" fill="black" />
+      <circle cx="460" cy="60.1" r="8.26" fill="black" />
+      <circle cx="555" cy="63" r="8.30" fill="black" />
+      <circle cx="670" cy="71.9" r="12.65" fill="black" />
+      <circle cx="800" cy="89.2" r="7.90" fill="black" />
+    </mask>
+    <marker id="arcArrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0 1 L8 4.5 L0 8 Z" fill="rgba(245,166,35,0.8)" />
+    </marker>
+  </defs>
+
+  <g>
+    {/* y = 96 - 144t + 144t^2 where t = (x - 40) / 800. Every node centre sits on this curve. */}
+    <path
+      d="M 40 96 Q 440 24 840 96"
+      fill="none"
+      stroke="rgba(245,166,35,0.55)"
+      strokeWidth="1.6"
+      strokeDasharray="1 5"
+      strokeLinecap="round"
+      markerEnd="url(#arcArrow)"
+      mask="url(#arcNodeMask)"
+    />
+    <g fill="rgba(245,166,35,0.32)" stroke="rgba(245,166,35,0.9)" strokeWidth="1.4">
+      <circle cx="60" cy="92.5" r="10.7" />
+      <circle cx="170" cy="76.4" r="6.3" />
+      <circle cx="265" cy="66.9" r="7.15" />
+      <circle cx="360" cy="61.4" r="7.3" />
+      <circle cx="460" cy="60.1" r="5.76" />
+      <circle cx="555" cy="63" r="5.8" />
+      <circle cx="670" cy="71.9" r="10.15" />
+      <circle cx="800" cy="89.2" r="5.4" />
+    </g>
+  </g>
+
+{/* Labels alternate above and below the arc so neighbours never collide. */}
+<g fontFamily="Inter, system-ui, sans-serif" fontSize="13.75" fontWeight="600" fill="var(--sbx-fg)" textAnchor="middle">
+<text x="60" y="128">Document Pane</text>
+<text x="170" y="56">Banners</text>
+<text x="265" y="102">Status</text>
+<text x="360" y="41">Collaboration</text>
+<text x="460" y="96">Versioning</text>
+<text x="555" y="43">Scheduling</text>
+<text x="670" y="107">Releases</text>
+<text x="800" y="69">Canvas</text>
+</g>
+<g fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace" fontSize="12.5" fill="var(--sbx-faint)" textAnchor="middle">
+<text x="60" y="142">218</text>
+<text x="170" y="42">26</text>
+<text x="265" y="116">48</text>
+<text x="360" y="27">53</text>
+<text x="460" y="110">15</text>
+<text x="555" y="29">16</text>
+<text x="670" y="121">183</text>
+<text x="800" y="55">10</text>
+</g>
+<g fontFamily="Inter, system-ui, sans-serif" fontSize="12.5" fontWeight="600" fill="var(--sbx-faint)" letterSpacing="0.09em">
+<text x="8" y="160">WHAT IT IS</text>
+<text x="760" y="160">WHERE IT GOES</text>
+</g>
+</svg>
+
+**5. The seams and the record.**
+
+- Customisation: Where users extend Studio, placed after the defaults it is measured against.
+- Laws & Behaviors: Cross-cutting rules and the honesty pairs.
+- Envisioned: Proposals for things that do not exist yet.
+
+Drawn to scale, the sections are not equal. The ground floor is 3% of the catalog; the content
+surfaces and the document lifecycle are two thirds of it.
+
+<svg viewBox="0 0 880 200" role="img" aria-labelledby="territoryTitle territoryDesc" style={{width: '100%', height: 'auto', margin: '26px 0 34px', display: 'block'}}>
+  <title id="territoryTitle">The five sections, drawn proportional to entry count</title>
+  <desc id="territoryDesc">
+    A horizontal strip 1,747 entries wide. Each outlined band is one section, its width proportional
+    to the entries it holds: the ground floor 52, the shell 405, the content surfaces 596, the
+    document lifecycle 569, the seams and the record 125. Inside a band, each separate block is one
+    sidebar group, also drawn to size. The two middle sections together are two thirds of the catalog.
+  </desc>
+
+{/* One block per sidebar group, separated by a real gap rather than a drawn line: the
+structure reads as composition instead of as tick marks on a bar. */}
+<g>
+<rect x="0.00" y="26" width="13.04" height="46" rx="1.5" fill="rgba(78,145,252,0.34)"><title>Foundations, 28 entries</title></rect>
+<rect x="14.54" y="26" width="11.18" height="46" rx="1.5" fill="rgba(78,145,252,0.34)"><title>UI v3 Primitives, 24 entries</title></rect>
+<rect x="29.72" y="26" width="33.84" height="46" rx="1.5" fill="rgba(255,255,255,0.16)"><title>Actions & Commands, 70 entries</title></rect>
+<rect x="65.06" y="26" width="47.38" height="46" rx="1.5" fill="rgba(255,255,255,0.16)"><title>Overlays & Navigation, 98 entries</title></rect>
+<rect x="113.94" y="26" width="43.99" height="46" rx="1.5" fill="rgba(255,255,255,0.16)"><title>Navbar & Shell, 91 entries</title></rect>
+<rect x="159.43" y="26" width="70.58" height="46" rx="1.5" fill="rgba(255,255,255,0.16)"><title>Search, 146 entries</title></rect>
+<rect x="234.01" y="26" width="111.69" height="46" rx="1.5" fill="rgba(240,62,47,0.30)"><title>Lists & Data, 227 entries</title></rect>
+<rect x="347.21" y="26" width="181.56" height="46" rx="1.5" fill="rgba(240,62,47,0.30)"><title>Forms & Input, 369 entries</title></rect>
+<rect x="532.77" y="26" width="103.79" height="46" rx="1.5" fill="rgba(245,166,35,0.30)"><title>Document Pane, 218 entries</title></rect>
+<rect x="638.07" y="26" width="12.38" height="46" rx="1.5" fill="rgba(245,166,35,0.30)"><title>Document Banners, 26 entries</title></rect>
+<rect x="651.94" y="26" width="22.85" height="46" rx="1.5" fill="rgba(245,166,35,0.30)"><title>Document Status, 48 entries</title></rect>
+<rect x="676.30" y="26" width="25.23" height="46" rx="1.5" fill="rgba(245,166,35,0.30)"><title>Collaboration, 53 entries</title></rect>
+<rect x="703.03" y="26" width="7.14" height="46" rx="1.5" fill="rgba(245,166,35,0.30)"><title>Versioning, 15 entries</title></rect>
+<rect x="711.67" y="26" width="7.62" height="46" rx="1.5" fill="rgba(245,166,35,0.30)"><title>Scheduling, 16 entries</title></rect>
+<rect x="720.79" y="26" width="87.13" height="46" rx="1.5" fill="rgba(245,166,35,0.30)"><title>Releases, 183 entries</title></rect>
+<rect x="809.42" y="26" width="4.76" height="46" rx="1.5" fill="rgba(245,166,35,0.30)"><title>Canvas, 10 entries</title></rect>
+<rect x="818.18" y="26" width="25.41" height="46" rx="1.5" fill="rgba(67,214,117,0.26)"><title>Customisation, 54 entries</title></rect>
+<rect x="845.09" y="26" width="16.00" height="46" rx="1.5" fill="rgba(67,214,117,0.26)"><title>Laws & Behaviors, 34 entries</title></rect>
+<rect x="862.59" y="26" width="17.41" height="46" rx="1.5" fill="rgba(67,214,117,0.26)"><title>Envisioned, 37 entries</title></rect>
+</g>
+
+{/* Section outlines, drawn over the blocks so each section reads as one unit. */}
+<g>
+<rect x="0.00" y="26" width="25.72" height="46" rx="3" fill="none" stroke="rgba(78,145,252,0.55)" />
+<rect x="29.72" y="26" width="200.30" height="46" rx="3" fill="none" stroke="rgba(255,255,255,0.30)" />
+<rect x="234.01" y="26" width="294.76" height="46" rx="3" fill="none" stroke="rgba(240,62,47,0.55)" />
+<rect x="532.77" y="26" width="281.41" height="46" rx="3" fill="none" stroke="rgba(245,166,35,0.55)" />
+<rect x="818.18" y="26" width="61.82" height="46" rx="3" fill="none" stroke="rgba(67,214,117,0.55)" />
+</g>
+
+  <g fontFamily="Inter, system-ui, sans-serif" fontSize="13.75" fontWeight="650" fill="var(--sbx-fg)" textAnchor="middle">
+    <text x="12.9" y="55">1</text>
+    <text x="129.9" y="55">2</text>
+    <text x="381.4" y="55">3</text>
+    <text x="673.5" y="55">4</text>
+    <text x="849.1" y="55">5</text>
+  </g>
+
+  <text x="0" y="88" fontFamily="Inter, system-ui, sans-serif" fontSize="12.5" fill="var(--sbx-faint)" letterSpacing="0.04em">
+    Each block is one sidebar group, sized by its entry count. Hover a block for its name.
+  </text>
+
+  <g>
+    <rect x="0" y="104" width="11" height="11" rx="2" fill="rgba(78,145,252,0.55)" />
+    <rect x="176" y="104" width="11" height="11" rx="2" fill="rgba(255,255,255,0.42)" />
+    <rect x="352" y="104" width="11" height="11" rx="2" fill="rgba(240,62,47,0.65)" />
+    <rect x="528" y="104" width="11" height="11" rx="2" fill="rgba(245,166,35,0.65)" />
+    <rect x="704" y="104" width="11" height="11" rx="2" fill="rgba(67,214,117,0.6)" />
+    <g fontFamily="Inter, system-ui, sans-serif" fontSize="15.625" fontWeight="600" fill="var(--sbx-fg)">
+      <text x="19" y="114">The ground floor</text>
+      <text x="195" y="114">The shell</text>
+      <text x="371" y="114">The content surfaces</text>
+      <text x="547" y="114">The document lifecycle</text>
+      <text x="723" y="114">The seams, the record</text>
+    </g>
+    <g fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace" fontSize="13.75" fill="var(--sbx-faint)">
+      <text x="19" y="134">52 · 3%</text>
+      <text x="195" y="134">405 · 23%</text>
+      <text x="371" y="134">596 · 34%</text>
+      <text x="547" y="134">569 · 33%</text>
+      <text x="723" y="134">125 · 7%</text>
+    </g>
+    <g fontFamily="Inter, system-ui, sans-serif" fontSize="13.125" fill="var(--sbx-muted)">
+      <text x="19" y="154">Foundations,</text>
+      <text x="19" y="168">UI v3 Primitives</text>
+      <text x="195" y="154">Actions, Overlays,</text>
+      <text x="195" y="168">Navbar, Search</text>
+      <text x="371" y="154">Lists &amp; Data,</text>
+      <text x="371" y="168">Forms &amp; Input</text>
+      <text x="547" y="154">Pane, Banners, Status,</text>
+      <text x="547" y="168">Collaboration, Releases…</text>
+      <text x="723" y="154">Customisation, Laws,</text>
+      <text x="723" y="168">Envisioned</text>
+    </g>
+  </g>
+</svg>
+
+## Trails, by errand
+
+Four errands, four routes in. None of them is "read the sidebar top to bottom".
+
+<svg viewBox="0 0 880 192" role="img" aria-labelledby="trailsTitle trailsDesc" style={{width: '100%', height: 'auto', margin: '22px 0 30px', display: 'block'}}>
+  <title id="trailsTitle">Four trails through the catalog, by errand</title>
+  <desc id="trailsDesc">
+    A single starting point on the left with four paths fanning out to the right, one per errand:
+    learning Studio's anatomy, judging error UX, judging form authoring, and finding what is
+    broken. Each path is labelled with the errand and the page it starts at.
+  </desc>
+  <defs>
+  </defs>
+
+  <g>
+    <g fill="none" stroke="rgba(78,145,252,0.6)" strokeWidth="1.5" strokeLinecap="round">
+      <path d="M 70 96 C 132 96, 146 30, 214 30 L 244 30" />
+      <path d="M 70 96 C 132 96, 146 74, 214 74 L 244 74" />
+      <path d="M 70 96 C 132 96, 146 118, 214 118 L 244 118" />
+      <path d="M 70 96 C 132 96, 146 162, 214 162 L 244 162" />
+    </g>
+    <circle cx="58" cy="96" r="9" fill="rgba(78,145,252,0.25)" stroke="rgba(78,145,252,0.9)" strokeWidth="1.6" />
+    <g fill="rgba(78,145,252,0.9)">
+      <circle cx="248" cy="30" r="3.2" />
+      <circle cx="248" cy="74" r="3.2" />
+      <circle cx="248" cy="118" r="3.2" />
+      <circle cx="248" cy="162" r="3.2" />
+    </g>
+  </g>
+
+  <g fontFamily="Inter, system-ui, sans-serif" fontSize="12.5" fontWeight="650" fill="var(--sbx-faint)" letterSpacing="0.09em" textAnchor="middle">
+    <text x="58" y="124">HERE</text>
+  </g>
+  <g fontFamily="Inter, system-ui, sans-serif" fontSize="15.625" fontWeight="600" fill="var(--sbx-fg)">
+    <text x="262" y="27">New to Studio's anatomy</text>
+    <text x="262" y="71">Judging error UX</text>
+    <text x="262" y="115">Judging form authoring</text>
+    <text x="262" y="159">Looking for what is broken</text>
+  </g>
+  <g fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace" fontSize="13.125" fill="var(--sbx-muted)">
+    <text x="262" y="43">Foundations → UI v3 Primitives → one deep group, end to end</text>
+    <text x="262" y="87">Laws &amp; Behaviors/ErrorBoundary, the Current and Recommended pair</text>
+    <text x="262" y="131">Forms &amp; Input/ArrayInput docs page, then pull the validation thread</text>
+    <text x="262" y="175">the findings ledger, then the Component Atlas on port 3420</text>
+  </g>
+</svg>
+
+- **New to Studio's anatomy:** Foundations → UI v3 Primitives → one group end to end
+  (Forms & Input/BooleanInput is small, complete, and shows every state on one page). Then the
+  lifecycle arc in order. Around half a day.
+- **Judging error UX:** Laws & Behaviors/ErrorBoundary (the Current and Recommended pair) →
+  Navbar & Shell/Screens (the four error screens) → Forms & Input/MemberFieldError → Lists &
+  Data/Vision errors → Foundations/Typography's size-floor study. 68 of the ledger's 173
+  findings are here.
+- **Judging form authoring:** Forms & Input/ArrayInput docs page → StringInput → the Portable
+  Text shell → the asset inputs. Ledger 31 covers premature validation: watch how each input
+  treats a value nobody has typed yet.
+- **Finding what is broken:** the findings ledger, 173 entries with file, line and quoted code.
+  Its aggregate shape is in the Component Atlas on port 3420. Two thirds of the weight sits in
+  forms and fields; the dominant failure pattern is error messaging.
+
+## How to read any single page
+
+Every component page carries the same contract:
+
+- What it is
+- Its source path
+- Its provenance lane
+- An audit verdict, where one exists
+- Stories that demonstrate rather than assert
+
+A story named Current shows a shipped defect; its Recommended sibling shows the fix. A state
+that looks empty, with a docblock saying it is empty on purpose, is the component behaving as
+shipped.
+
+The deeper reference is the Storybook Codex in the workspace docs: twelve chapters on the
+architecture, the harnesses, the conventions, and why the catalog is built the way it is.

@@ -1,0 +1,242 @@
+#!/usr/bin/env node
+/**
+ * catalog-map.mjs - regenerates CATALOG-MAP.md, a walking map of the whole catalog.
+ *
+ * Every number is derived: entry counts from storybook-static/index.json, and Tier /
+ * Audit / Source from the metadata tables in prose/. Nothing is transcribed, so the
+ * map cannot drift from the catalog the way hand-written counts do.
+ *
+ *   npm run map          (after a build, so index.json is current)
+ */
+
+import {readdirSync, readFileSync, statSync, writeFileSync} from 'node:fs'
+import {dirname, join, resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const INDEX = join(ROOT, 'storybook-static', 'index.json')
+const PROSE = join(ROOT, 'prose')
+
+// The reading order, as pinned in .storybook/preview.tsx. Movements are the narrative
+// grouping The Map tells; the sidebar shows them as one flat stack.
+const MOVEMENTS = [
+  ['Start Here', 'The front door', ['Start Here']],
+  [
+    'The ground floor',
+    'The design system as measured, and the atoms every later page composes from',
+    ['Foundations', 'UI v3 Primitives'],
+  ],
+  [
+    'The shell',
+    'The frame around the content: what you click, what floats, where you are, how you find things',
+    ['Actions & Commands', 'Overlays & Navigation', 'Navbar & Shell', 'Search'],
+  ],
+  [
+    'The content surfaces',
+    'How collections render, and where authoring actually happens',
+    ['Lists & Data', 'Forms & Input'],
+  ],
+  [
+    'The document lifecycle',
+    'One arc: what a document is, what it says about itself, who else is in it, how it versions, when it ships, where it goes',
+    [
+      'Document Pane',
+      'Document Banners',
+      'Document Status',
+      'Collaboration',
+      'Versioning',
+      'Scheduling',
+      'Releases',
+      'Canvas',
+    ],
+  ],
+  [
+    'The seams and the record',
+    'Where users extend Studio, the cross-cutting rules, and proposals that do not exist yet',
+    ['Customisation', 'Laws & Behaviors', 'Envisioned'],
+  ],
+]
+
+// ---------------------------------------------------------------- prose lookup
+
+const walk = (d, o = []) => {
+  for (const n of readdirSync(d)) {
+    const f = join(d, n)
+    if (statSync(f).isDirectory()) walk(f, o)
+    else if (f.endsWith('.md') && !f.endsWith('README.md')) o.push(f)
+  }
+  return o
+}
+
+/** Title -> {tier, audit, source, opener} pulled from each page's metadata table. */
+function readProse() {
+  const byTitle = {}
+  for (const f of walk(PROSE)) {
+    const text = readFileSync(f, 'utf8')
+    const title = /^title:\s*"?(.+?)"?$/m.exec(text)?.[1]
+    if (!title) continue
+
+    const body = text.slice(text.indexOf('<!-- @component -->') + 19)
+    const row = (label) => {
+      const m = new RegExp(`^\\|\\s*${label}\\s*\\|\\s*(.+?)\\s*\\|\\s*$`, 'm').exec(body)
+      return m ? m[1] : null
+    }
+
+    // First prose line that is not a table row, marker or blank: the page's opener.
+    const opener =
+      body
+        .split('\n')
+        .find(
+          (l) => l.trim() && !l.startsWith('|') && !l.startsWith('<!--') && !l.startsWith('>'),
+        ) ?? ''
+
+    const tierRaw = row('Tier')
+    const auditRaw = row('Audit')
+
+    byTitle[title] = {
+      tier: tierRaw ? (/^(CORE|SERVICE|CHROME)/.exec(tierRaw)?.[1] ?? 'n/a') : '',
+      audit: auditRaw
+        ? (/^(🔴|🟠|🟡|🟢|⚪)\s*([\w-]+)/.exec(auditRaw)?.slice(1).join(' ') ??
+          auditRaw.slice(0, 24))
+        : '',
+      source: row('Source')?.replace(/,.*$/, '') ?? '',
+      opener: opener.replace(/\s+/g, ' ').trim(),
+    }
+  }
+  return byTitle
+}
+
+// ---------------------------------------------------------------- build the map
+
+const index = JSON.parse(readFileSync(INDEX, 'utf8'))
+const prose = readProse()
+
+const pages = {}
+for (const e of Object.values(index.entries)) {
+  const title = e.title || ''
+  pages[title] ??= {group: title.split('/')[0], stories: 0, docsId: null, entries: 0}
+  pages[title].entries++
+  if (e.type === 'docs') pages[title].docsId = e.id
+  else pages[title].stories++
+}
+
+const byGroup = {}
+for (const [title, p] of Object.entries(pages)) (byGroup[p.group] ??= []).push([title, p])
+for (const g of Object.values(byGroup)) g.sort((a, b) => a[0].localeCompare(b[0]))
+
+const groupEntries = (g) => (byGroup[g] ?? []).reduce((n, [, p]) => n + p.entries, 0)
+const groupStories = (g) => (byGroup[g] ?? []).reduce((n, [, p]) => n + p.stories, 0)
+const totalEntries = Object.values(pages).reduce((n, p) => n + p.entries, 0)
+const totalPages = Object.keys(pages).length
+
+const L = []
+const w = (s = '') => L.push(s)
+const link = (p) => (p.docsId ? `[open](http://localhost:6071/?path=/docs/${p.docsId})` : '')
+const esc = (s) => s.replace(/\|/g, '\\|')
+
+w('# The Catalog Map')
+w()
+w(
+  `A walking map of the Sanity Studio component catalog: **${totalPages} pages, ${totalEntries} entries**,`,
+)
+w('in the order the sidebar presents them.')
+w()
+w('Generated by `npm run map`. Every count and every Tier/Audit value is read from')
+w('`storybook-static/index.json` and the metadata tables in `prose/`, so this file cannot drift')
+w('from the catalog. Regenerate it after a build rather than editing it.')
+w()
+w(
+  '**Serving on** `:6071` (candidate, what you are reviewing) and `:6070` (the signed-off reference).',
+)
+w('Every `open` link below points at `:6071`.')
+w()
+w('---')
+w()
+
+w('## How to walk it')
+w()
+w('The sidebar is a reading order, not a taxonomy. Alphabetical sorting applies only *inside*')
+w('a group. Read top to bottom and each movement earns the next: the ground floor is the')
+w('standard you will judge everything else against.')
+w()
+w('For an inspection pass, three questions per page:')
+w()
+w('1. **Does the metadata table tell the truth?** Source path resolves, Tier is defensible,')
+w('   Audit reflects what the stories actually show.')
+w('2. **Do the stories cover the states that matter?** Not just the happy path: empty, error,')
+w('   loading, permission-denied, and whatever the Audit row claims.')
+w('3. **Does the prose open by saying what the thing is?** If sentence one is an argument')
+w('   rather than an identification, it is on the rewrite list.')
+w()
+w('---')
+w()
+
+w('## At a glance')
+w()
+w('| # | Movement | Entries | Share | Groups |')
+w('|---|---|---:|---:|---|')
+const movementTotal = (gs) => gs.reduce((n, g) => n + groupEntries(g), 0)
+const catalogless = MOVEMENTS.slice(1).reduce((n, [, , gs]) => n + movementTotal(gs), 0)
+MOVEMENTS.forEach(([name, , gs], i) => {
+  const n = movementTotal(gs)
+  const share = i === 0 ? '' : `${Math.round((100 * n) / catalogless)}%`
+  w(`| ${i || '—'} | **${name}** | ${n} | ${share} | ${gs.join(', ')} |`)
+})
+w()
+w('---')
+w()
+
+for (const [name, blurb, groups] of MOVEMENTS) {
+  w(`## ${name}`)
+  w()
+  w(`*${blurb}*`)
+  w()
+  for (const g of groups) {
+    const rows = byGroup[g]
+    if (!rows) {
+      w(`### ${g}`)
+      w()
+      w('> Pinned in `storySort` but no such group exists in the build.')
+      w()
+      continue
+    }
+    w(`### ${g}  ·  ${rows.length} pages, ${groupStories(g)} stories`)
+    w()
+    w('| Page | Stories | Tier | Audit | |')
+    w('|---|---:|---|---|---|')
+    for (const [title, p] of rows) {
+      const meta = prose[title] ?? {}
+      const short = title.slice(g.length + 1) || title
+      w(
+        `| **${esc(short)}**${meta.opener ? `<br/><span title="opener">${esc(meta.opener.slice(0, 150))}${meta.opener.length > 150 ? '…' : ''}</span>` : ''} | ${p.stories} | ${meta.tier ?? ''} | ${meta.audit ?? ''} | ${link(p)} |`,
+      )
+    }
+    w()
+  }
+  w('---')
+  w()
+}
+
+// Pages carrying an open finding, so component-by-component review has a worklist.
+const flagged = Object.entries(pages)
+  .map(([t, p]) => [t, p, prose[t]])
+  .filter(([, , m]) => m && /needs-work/.test(m.audit))
+  .sort((a, b) => a[0].localeCompare(b[0]))
+
+w('## Worklist: pages with an open audit finding')
+w()
+w(
+  `${flagged.length} of ${totalPages} pages carry a \`needs-work\` verdict in their own metadata table.`,
+)
+w('This is the catalog grading itself, not an external review.')
+w()
+w('| Page | Finding | |')
+w('|---|---|---|')
+for (const [title, p, m] of flagged) w(`| ${esc(title)} | ${esc(m.audit)} | ${link(p)} |`)
+w()
+
+writeFileSync(join(ROOT, 'CATALOG-MAP.md'), `${L.join('\n')}\n`)
+// oxlint-disable-next-line no-console -- CLI script; this is the tool's result, not incidental logging
+console.log(
+  `wrote CATALOG-MAP.md: ${totalPages} pages, ${totalEntries} entries, ${flagged.length} flagged`,
+)

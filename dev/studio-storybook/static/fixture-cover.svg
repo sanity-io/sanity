@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f03e2f"/><stop offset="1" stop-color="#2276fc"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#g)"/>
+  <circle cx="400" cy="300" r="180" fill="#ffffff" fill-opacity="0.18"/>
+  <circle cx="1180" cy="640" r="260" fill="#0b0b0b" fill-opacity="0.20"/>
+  <text x="800" y="470" font-family="Helvetica,Arial,sans-serif" font-size="86" font-weight="600" fill="#ffffff" text-anchor="middle">launch-cover.jpg</text>
+  <text x="800" y="560" font-family="Helvetica,Arial,sans-serif" font-size="40" fill="#ffffff" fill-opacity="0.75" text-anchor="middle">1600 x 900 fixture asset</text>
+</svg>

@@ -1,0 +1,121 @@
+import {Meta} from '@storybook/addon-docs/blocks'
+
+<Meta title="Search/About this chapter" />
+
+# Search
+
+Search is the only surface in this catalog that is not a component. It is a small application
+living inside the navbar: a reducer holding the whole interaction state, a filter engine that
+derives itself from the schema at runtime, and a query lifecycle that reaches the Content Lake and
+comes back. Around 130 files.
+
+That shape is why the chapter is built the way it is. A screenshot of a search box tells you
+nothing about search. So these stories run it.
+
+export const Row = ({title, children, links}) => (
+  <div style={{padding: '16px 20px', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 10, margin: '14px 0'}}>
+    <strong>{title}</strong>
+    <div style={{color: 'var(--sbx-muted)', marginTop: 6}}>{children}</div>
+    {links && (
+      <div style={{marginTop: 10, fontSize: 13}}>
+        {links.map(([label, href], i) => (
+          <span key={href}>
+            {i > 0 && ' · '}
+            <a href={href}>{label}</a>
+          </span>
+        ))}
+      </div>
+    )}
+  </div>
+)
+
+## The search actually searches
+
+Every result you see in this chapter was found, not seeded. The storybook is backed by a mock
+Content Lake: a client whose GROQ queries are evaluated in the browser by `groq-js` against a set
+of fixture documents. The query the studio builds is the query that runs. Type something else into
+any of these stories and the results change, because there is a real query engine underneath.
+
+<Row
+  title="Try it"
+  links={[
+    ['The popover, at rest', '?path=/story/search-search-popover--default'],
+    ['A query with results', '?path=/story/search-search-popover--with-results'],
+  ]}
+>
+  Open the popover story and type <code>pricing</code>, or <code>guide</code>, or{' '}
+  <code>release</code>. Each matches a different subset of the fixtures. Then type something no
+  document contains and watch it reach the no-results state honestly.
+</Row>
+
+## How the chapter is laid out
+
+<Row
+  title="The surfaces"
+  links={[
+    ['Search Popover', '?path=/docs/search-search-popover--docs'],
+    ['Search Dialog', '?path=/docs/search-search-dialog--docs'],
+  ]}
+>
+  The two frames search runs in: an anchored popover on a wide viewport, a full-screen dialog on a
+  narrow one. Same machine, different container. Start here.
+</Row>
+
+<Row
+  title="The results"
+  links={[['Results', '?path=/docs/search-results--docs']]}
+>
+  What comes back, and the three ways it can come back empty: nothing matched, nothing exists yet,
+  or the request failed. Search is careful to distinguish them and so are these stories.
+</Row>
+
+<Row
+  title="The filter shell"
+  links={[['Filter Shell', '?path=/docs/search-filter-shell--docs']]}
+>
+  How a filter gets built: the add-filter flow, the filter bar, document-type narrowing, sorting.
+  The field list here is <em>derived from the schema</em>, not configured, which means what a studio
+  can filter by is a consequence of how its content was modelled.
+</Row>
+
+<Row
+  title="The operator inputs"
+  links={[
+    ['String', '?path=/docs/search-filter-inputs-string--docs'],
+    ['Number', '?path=/docs/search-filter-inputs-number--docs'],
+    ['Boolean', '?path=/docs/search-filter-inputs-boolean--docs'],
+    ['Date', '?path=/docs/search-filter-inputs-date--docs'],
+    ['Reference and Asset', '?path=/docs/search-filter-inputs-reference-and-asset--docs'],
+  ]}
+>
+  The small controls you get after choosing a field and an operator. A dozen components serve
+  roughly fifty operators, all through one three-prop contract:{' '}
+  <code>{'{fieldDefinition, value, onChange}'}</code>. Each story prints what its input{' '}
+  <strong>emits</strong>, because the emitted value is the component's real output and the rendered
+  box is only how it asks for it.
+</Row>
+
+## Three things to know before you read the code
+
+<Row title="The filter bar cannot be collapsed in the popover">
+  <code>SearchHeader</code> forces <code>filtersVisible</code> back to true whenever{' '}
+  <code>!fullscreen</code>. A consequence most people never notice: the instructional empty state
+  renders only when <code>!filtersVisible && fullscreen</code>, so search's one piece of onboarding
+  copy is unreachable on a wide viewport. It has its own story in the dialog, precisely because it
+  is so easy to never see.
+</Row>
+
+<Row title="The default search strategy has no offline execution path">
+  Studio search ships two strategies. The default, <code>groq2024</code>, searches with{' '}
+  <code>text::matchQuery</code> and ranks with <code>score()</code>; <code>groq-js</code> implements
+  neither, so it cannot be evaluated locally at all. This chapter therefore runs the documented{' '}
+  <code>groqLegacy</code> strategy. Everything these stories demonstrate is identical between the
+  two, since both drive the same UI, but hit <em>ordering</em> here is indicative rather than
+  production-identical.
+</Row>
+
+<Row title="Type narrowing and filters are different axes">
+  Narrowing constrains <em>what is searched</em>; a filter constrains <em>which values qualify</em>.
+  They are stored separately in the reducer and compile into different parts of the query. Stories
+  exist for each on its own so the difference is visible rather than asserted.
+</Row>

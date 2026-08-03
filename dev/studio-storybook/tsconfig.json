@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.dev.json",
+  "include": ["./.storybook/**/*", "./stories/**/*", "./lib/**/*", "./typings/**/*"],
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "types": ["node"],
+    "jsx": "react-jsx"
+  }
+}

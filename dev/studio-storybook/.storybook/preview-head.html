@@ -1,0 +1,391 @@
+<!--
+  Load Inter for the STORY CANVASES. @sanity/ui's theme font stack leads with Inter
+  (`Inter, -apple-system, …`) but the harness never loaded the webfont, so every
+  component story fell back to the system UI font. No Inter woff2 is vendored in the
+  monorepo, so this is a localhost-tool Google Fonts link (not self-hosted).
+
+  The code/mono stack (`ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, …`) is
+  entirely OS-native, so Code primitives and code inputs need no webfont — they already
+  render in the platform monospace face.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+/>
+<!--
+  Newsreader is the essay voice of the docs layer: the serif sanity.io itself reads in
+  (the workspace's brand-faithful Content OS build vendors this exact family). Loaded the
+  same way as Inter above: a localhost-tool Google Fonts link, Georgia stack as fallback.
+  Optical sizing on; italics carried for the arguing register.
+-->
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap"
+/>
+<style>
+  /* Catch any bare text outside a @sanity/ui <Text>; components already lead with Inter. */
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /*
+    DOCS EXPERIENCE LAYER (scoped to .sbdocs so story canvases are never touched).
+    Target: the sanity.io marketing feel — typographic contrast and confidence, not a
+    dry manual. Type-scale DNA mirrored (not imported) from _Sanity/content-os-site:
+    display clamp headings, tight tracking, balanced wrapping, a lighter oversized lede.
+    The docs shell is fixed dark (parameters.docs.theme = themes.dark), so callout tints
+    are tuned for dark but use rgba so they hold up on any background.
+  */
+  :root {
+    --sbx-fg: #e6e8ec;
+    --sbx-muted: #a7adb8; /* reading-text muted; 7.2:1 on the dark docs shell (was #9aa0aa, 6.0:1) */
+    --sbx-faint: #8b919c; /* small labels; kept ≥4.5:1 — no "muted exemption" for text a user reads */
+    --sbx-accent: #f03e2f; /* Sanity brand red */
+    --sbx-line: rgba(255, 255, 255, 0.1);
+    /*
+      THE THREE VOICES (docs-voice system, 2026-07-30). One page speaks in three registers
+      and the type now says which is which:
+        chrome     Inter        headings, labels, UI: the surface components live in
+        essay      Newsreader   the argued prose: what it is, why it matters
+        instrument OS mono      everything measured or cited: paths, tiers, counts, verdicts
+      The principle travels to the Atlas and the Interface Pattern Library (Carbon skins,
+      same split). Serif runs optically small, so essay sizes sit a step above Inter's.
+    */
+    --sbx-serif: 'Newsreader', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+    --sbx-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+      monospace;
+    /*
+      THE TRI-VOICE SCALE (calibrated with Faheem in the docs-voice lab, 2026-07-30).
+      Two sizes per family, six tokens, one base; the multipliers hold optical parity
+      (Newsreader runs ~20% small, mono ~10% large). Change --sbx-base and the whole
+      docs surface rescales with the parity intact. Inline code in prose is ALWAYS a
+      chip at 0.84em; bare mono exists only where mono is the ambient voice.
+    */
+    /* 17.5px (Faheem, 2026-08-03): everything read too small at 14. This is 14 x 1.25,
+       and the floors below moved by the same factor so the small tiers scale with the
+       rest rather than being pinned. Note this deliberately breaks parity with the UI
+       scale of the components rendered beside the prose, which is what 14 bought.
+       Floors keep the two smallest mono tiers legible where the multipliers would
+       crush them. */
+    --sbx-base: 17.5px;
+    --sbx-display: calc(var(--sbx-base) * 3.05); /* the page H1, one per page */
+    --sbx-title: calc(var(--sbx-base) * 2.1); /* section and story titles */
+    --sbx-body: var(--sbx-base); /* working prose, descriptions */
+    --sbx-lead: calc(var(--sbx-base) * 1.48); /* the standfirst, serif, one per page */
+    --sbx-voice: calc(var(--sbx-base) * 1.19); /* the callout, serif, code-free */
+    --sbx-data: calc(var(--sbx-base) * 0.88); /* metadata values, tables */
+    --sbx-label: max(12.5px, calc(var(--sbx-base) * 0.67)); /* uppercase labels, kickers */
+    --sbx-whisper: max(11.25px, calc(var(--sbx-base) * 0.55)); /* affordances and asides */
+  }
+
+  /*
+    CONTRAST FLOOR (law 8). The docs shell is fixed dark (bg ~#222325), but Storybook only
+    themes its own `.sbdocs-*` typography elements — the container's BASE text color is the
+    browser default BLACK. So custom MDX JSX (raw <div>/<strong>/<span> authored in the
+    Foundations/* .mdx pages: law titles, "See it:" labels, swatch text) inherits black on
+    dark = 1.34:1, invisible. Give the docs container a readable base so all un-coloured MDX
+    text clears the floor. Elements that set their own color (e.g. an explicit muted body)
+    keep it — inheritance only fills where a child has no color of its own.
+  */
+  .sbdocs-wrapper,
+  .sbdocs.sbdocs-content {
+    color: #d7dae1 !important; /* 10.9:1 on the dark shell */
+  }
+
+  /* Component name lands like a hero, not a manpage title. */
+  .sbdocs.sbdocs-title {
+    font-size: var(--sbx-display) !important;
+    line-height: 1.02 !important;
+    letter-spacing: -0.033em !important;
+    font-weight: 700 !important;
+    text-wrap: balance;
+    margin-bottom: 8px !important;
+  }
+
+  /* The docblock's first prose paragraph reads as a lead: the essay voice at full size.
+     With metadata moved into the mono table (see below), the first paragraph is once again
+     the opening argument rather than a wall of citations dressed as one. */
+  .sbdocs.sbdocs-content > .sbdocs-p:first-of-type {
+    font-family: var(--sbx-serif) !important;
+    font-size: var(--sbx-lead) !important;
+    line-height: 1.45 !important;
+    color: var(--sbx-fg) !important;
+    max-width: 62ch;
+    letter-spacing: 0;
+  }
+
+  /*
+    THE METADATA STRIP (instrument voice). Convention: a docblock opens with a two-column
+    markdown table (Source / Tier / Audit / whatever is measured), which renders here as a
+    compact mono block instead of a bolded prose wall. The lede selector above then lands on
+    the first REAL paragraph, because a table is not a p. Content tables further down the
+    page inherit the same treatment on purpose: a table in these docs is by convention a
+    measurement, and measurements speak mono.
+  */
+  .sbdocs.sbdocs-content table {
+    font-family: var(--sbx-mono);
+    font-size: var(--sbx-data);
+    line-height: 1.55;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--sbx-line);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 22px 0 30px;
+    width: 100%;
+  }
+  .sbdocs.sbdocs-content table tr {
+    background: transparent !important; /* the stripe rides the tr, not the td; kill it there */
+  }
+  .sbdocs.sbdocs-content table td,
+  .sbdocs.sbdocs-content table th {
+    border: none !important;
+    border-bottom: 1px solid var(--sbx-line) !important;
+    background: transparent !important;
+    padding: 14px 26px 14px 0 !important;
+    text-align: left;
+    vertical-align: top;
+    color: var(--sbx-muted);
+  }
+  .sbdocs.sbdocs-content table td:first-child,
+  .sbdocs.sbdocs-content table th {
+    padding-left: 20px !important;
+    color: var(--sbx-faint);
+    font-size: var(--sbx-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Clear, confident size steps. */
+  .sbdocs.sbdocs-h2 {
+    font-size: var(--sbx-title) !important;
+    line-height: 1.12 !important;
+    letter-spacing: -0.022em !important;
+    font-weight: 650 !important;
+    text-wrap: balance;
+    margin-top: 44px !important;
+    padding-top: 24px;
+    border-top: 1px solid var(--sbx-line);
+  }
+  .sbdocs.sbdocs-h3 {
+    font-size: clamp(18px, 1.6vw, 21px) !important;
+    line-height: 1.25 !important;
+    letter-spacing: -0.015em !important;
+    font-weight: 600 !important;
+    margin-top: 28px !important;
+  }
+
+  /* Body prose is the essay voice: Newsreader, sized a step up because the serif runs
+     optically small, measure held to the reading law. Inter stays on headings and UI. */
+  .sbdocs.sbdocs-p,
+  .sbdocs.sbdocs-li {
+    /* v2 of the voice boundary: body prose is WORKING prose and cites code, so it is
+       sans; serif is reserved for the lead and the callout, the two code-free argument
+       moments. Calibrated in the lab against real content. */
+    font-family: Inter, system-ui, sans-serif !important;
+    font-size: var(--sbx-body) !important;
+    line-height: 1.65 !important;
+    max-width: 68ch;
+    letter-spacing: -0.008em;
+  }
+  .sbdocs.sbdocs-p em,
+  .sbdocs.sbdocs-li em {
+    font-style: italic; /* Newsreader's true italic carries the arguing register */
+  }
+  /* Bold runs inside essay prose are structural labels leaking from the old convention;
+     render them as small Inter caps so residual pages degrade gracefully until rewritten. */
+  .sbdocs.sbdocs-p strong {
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 0.78em;
+    font-weight: 650;
+    letter-spacing: 0.03em;
+  }
+
+  /* Inline code as quiet monospace chips (also lifts the Source/Tier/Audit meta lines). */
+  .sbdocs code:not(pre code) {
+    font-family: var(--sbx-mono);
+    font-size: 0.84em;
+    padding: 0.12em 0.44em;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--sbx-line);
+    color: #d7dae0;
+  }
+
+  /*
+    CALLOUTS: a markdown blockquote inside a docblock becomes a designed card, so crews
+    can write `> **Why it matters:** …` and get an info callout for free. Documented in
+    the org contract §2.
+  */
+  .sbdocs.sbdocs-blockquote {
+    border: 1px solid var(--sbx-line) !important;
+    border-left: 3px solid var(--sbx-accent) !important;
+    background: rgba(240, 62, 47, 0.07) !important;
+    border-radius: 8px !important;
+    padding: 14px 18px !important;
+    margin: 22px 0 !important;
+    color: var(--sbx-fg) !important;
+    font-style: normal !important;
+    font-size: var(--sbx-voice) !important;
+    line-height: 1.55 !important;
+  }
+  /* The callout is one of the two serif moments (lab calibration): its prose runs
+     serif italic at the voice size; the leading bold label renders as a mono whisper
+     in the accent, which is why callout copy stays code-free by convention. */
+  .sbdocs.sbdocs-blockquote .sbdocs-p {
+    font-family: var(--sbx-serif) !important;
+    font-style: italic !important;
+    font-size: var(--sbx-voice) !important;
+    line-height: 1.55 !important;
+    max-width: none;
+  }
+  .sbdocs.sbdocs-blockquote .sbdocs-p strong {
+    font-family: var(--sbx-mono);
+    font-style: normal;
+    font-size: var(--sbx-label);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sbx-accent);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .sbdocs.sbdocs-blockquote > :last-child {
+    margin-bottom: 0 !important;
+  }
+
+  /*
+    THE WALL, TAMED (lab policy, 2026-07-30): long finding lists render as claim and
+    evidence via <details> in the docblock markdown. The summary is the always-visible
+    bold claim; the evidence sits one fold deep. A reader skims the spine.
+  */
+  /* Story-section headings, element-scoped like everything else that actually works */
+  .sbdocs.sbdocs-content h2 {
+    font-size: var(--sbx-title);
+    line-height: 1.1;
+    letter-spacing: -0.022em;
+    font-weight: 650;
+    margin-top: 52px;
+    padding-top: 26px;
+    border-top: 1px solid var(--sbx-line);
+    text-wrap: balance;
+  }
+  .sbdocs.sbdocs-content h3 {
+    font-size: calc(var(--sbx-base) * 1.35);
+    line-height: 1.2;
+    letter-spacing: -0.012em;
+    font-weight: 600;
+    margin-top: 40px;
+  }
+
+  .sbdocs details {
+    border-bottom: 1px solid var(--sbx-line);
+    padding: 16px 4px;
+  }
+  /* The fold affordance is an icon, not a word: the disclosure marker plus a whisper-sized
+     hint on hover. Calibrated in the lab: a text label at label size competed with the claim. */
+  .sbdocs details summary::after {
+    content: '';
+  }
+  .sbdocs details summary {
+    cursor: pointer;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: var(--sbx-body);
+    font-weight: 600;
+    color: var(--sbx-fg);
+  }
+  .sbdocs details[open] summary {
+    margin-bottom: 8px;
+  }
+
+  /*
+    STORY FRAME CEILING. A docs page renders every story of a component into one document, so a
+    single tall story turns the page into a scroll marathon and buries the prose it is supposed to
+    illustrate. Cap the preview and let it scroll inside its own frame instead: the story is still
+    fully reachable, the page stays navigable, and nothing is silently cropped because the frame
+    scrolls rather than clips.
+
+    Scoped to .sbdocs so canvas view is untouched - a story on its own page should have the whole
+    viewport if it wants it.
+  */
+  .sbdocs .docs-story {
+    max-height: 60vh !important;
+    overflow: auto !important;
+  }
+  /*
+    ELEMENT-SCOPED VOICE RULES (2026-07-31). The docs renderer emits UNCLASSED p, li and
+    blockquote elements (verified by DOM probe: p., blockquote., inside div. inside
+    .sbdocs-content). Every .sbdocs-p classed rule above silently never matched; these
+    element-scoped rules are the ones that actually carry the tri-voice system.
+  */
+  .sbdocs.sbdocs-content p,
+  .sbdocs.sbdocs-content li {
+    font-family: Inter, system-ui, sans-serif;
+    font-size: var(--sbx-body);
+    line-height: 1.65;
+    max-width: 68ch;
+    letter-spacing: -0.008em;
+  }
+  /* THE LEDE IS OPT-IN (2026-07-31): only a paragraph that FOLLOWS the leading metadata
+     table gets the serif lead, and only in the first content region, so it fires once per
+     page and only on converted pages. Unconverted pages degrade to plain sans body: old
+     bones in quiet clothes, never a 25px serif wall of citations. The same gate scopes the
+     serif voice to converted callouts below. */
+  .sbdocs.sbdocs-content > div > p:first-child:has(+ table) {
+    font-family: var(--sbx-serif);
+    font-size: var(--sbx-lead);
+    line-height: 1.45;
+    color: var(--sbx-fg);
+    max-width: 58ch;
+    letter-spacing: 0;
+  }
+  .sbdocs.sbdocs-content blockquote {
+    border: 1px solid var(--sbx-line);
+    border-left: 3px solid var(--sbx-accent);
+    background: rgba(240, 62, 47, 0.07);
+    border-radius: 0 8px 8px 0;
+    padding: 20px 26px;
+    margin: 26px 0;
+    max-width: 980px;
+  }
+  .sbdocs.sbdocs-content > div:has(> p:first-child + table) blockquote p {
+    /* Upright, and a step above the voice tier: italic serif at 16px was
+       unreadable on dark (Faheem, 2026-07-31). The serif face alone carries
+       the register; the slant and small size fought the reader. */
+    font-family: var(--sbx-serif);
+    font-style: normal;
+    font-size: calc(var(--sbx-base) * 1.29);
+    line-height: 1.6;
+    max-width: none;
+    margin: 0;
+  }
+  .sbdocs.sbdocs-content > div:has(> p:first-child + table) blockquote p strong {
+    font-family: var(--sbx-mono);
+    font-style: normal;
+    font-size: var(--sbx-label);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sbx-accent);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .sbdocs.sbdocs-content p code,
+  .sbdocs.sbdocs-content li code {
+    font-family: var(--sbx-mono);
+    font-size: 0.84em;
+    font-style: normal;
+    padding: 0.1em 0.44em;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--sbx-line);
+  }
+  .docblock-argstable { font-family: var(--sbx-mono) !important; }
+  .sbdocs .docs-story { border: 1px solid var(--sbx-line); border-radius: 10px; }
+</style>

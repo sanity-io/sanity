@@ -1,0 +1,12 @@
+<!--
+  Load Inter for the MANAGER chrome (sidebar, toolbar, docs shell). The manager runs in
+  a separate document from the preview, so preview-head.html does not reach it. Without
+  this, the `fontBase: Inter` set in manager.ts silently fell back to the system font,
+  and the Inter text baked into the brand lockup SVG would not render in Inter either.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+/>
