@@ -24,7 +24,7 @@ interface CreateOperationProps {
   documentVersionId?: string
   getComment?: (id: string) => CommentDocument | undefined
   getIntent?: CommentIntentGetter
-  getNotificationValue: (comment: {commentId: string}) => CommentContext['notification']
+  getNotificationValue: (comment: {commentId: string}) => Promise<CommentContext['notification']>
   getThreadLength?: (threadId: string) => number
   onCreate?: (comment: CommentPostPayload) => void
   onCreateError: (id: string, error: Error) => void
@@ -104,7 +104,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
       url = '',
       workspaceTitle = '',
       workspaceName = '',
-    } = getNotificationValue({commentId}) || {}
+    } = (await getNotificationValue({commentId})) || {}
 
     const notification: CommentContext['notification'] = {
       currentThreadLength,
