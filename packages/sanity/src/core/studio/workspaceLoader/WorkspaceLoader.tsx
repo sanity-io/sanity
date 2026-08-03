@@ -106,6 +106,7 @@ function WorkspaceLoader({
        * Studio session.
        */}
       <ResourceProvider
+        key={workspace.name}
         projectId={workspace.projectId}
         dataset={workspace.dataset}
         studio={{
