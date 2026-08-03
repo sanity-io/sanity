@@ -10,11 +10,13 @@ import {
   UnclaimedProjectNudge,
 } from '../UnclaimedProjectNudge'
 
-const {mockUseUnclaimedProject, mockUseWorkspace} = vi.hoisted(() => ({
+const {mockEnvironment, mockUseUnclaimedProject, mockUseWorkspace} = vi.hoisted(() => ({
+  mockEnvironment: {isDev: true},
   mockUseUnclaimedProject: vi.fn(),
   mockUseWorkspace: vi.fn(),
 }))
 
+vi.mock('../../../environment', () => mockEnvironment)
 vi.mock('../../workspace', () => ({useWorkspace: mockUseWorkspace}))
 vi.mock('../useUnclaimedProject', () => ({useUnclaimedProject: mockUseUnclaimedProject}))
 
@@ -26,7 +28,17 @@ const wrapper = ({children}: {children: ReactNode}) => (
 
 describe('UnclaimedProjectNudge', () => {
   afterEach(() => {
+    mockEnvironment.isDev = true
     vi.clearAllMocks()
+  })
+
+  it('does not inspect the workspace outside development', () => {
+    mockEnvironment.isDev = false
+
+    render(<UnclaimedProjectNudge />, {wrapper})
+
+    expect(mockUseWorkspace).not.toHaveBeenCalled()
+    expect(mockUseUnclaimedProject).not.toHaveBeenCalled()
   })
 
   it('does not run the project state check for non-robot users', () => {

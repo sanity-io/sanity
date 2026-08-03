@@ -4,6 +4,7 @@ import {Badge, Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {startTransition, useCallback, useEffect, useState} from 'react'
 
 import {Button} from '../../../ui-components/button/Button'
+import {isDev} from '../../environment'
 import {useConditionalToast} from '../../hooks/useConditionalToast'
 import {useDateTimeFormat} from '../../hooks/useDateTimeFormat'
 import {useRelativeTime} from '../../hooks/useRelativeTime'
@@ -28,6 +29,12 @@ import {
  * @internal
  */
 export function UnclaimedProjectNudge() {
+  if (!isDev) return null
+
+  return <UnclaimedProjectNudgeAuthCheck />
+}
+
+function UnclaimedProjectNudgeAuthCheck() {
   const {currentUser} = useWorkspace()
 
   if (currentUser?.provider !== 'sanity-token') return null
