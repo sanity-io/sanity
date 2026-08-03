@@ -1,6 +1,5 @@
 import {type SchemaType} from '@sanity/types'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {
   getPreviewStateObservable,
@@ -9,6 +8,8 @@ import {
   useDocumentPreviewStore,
   usePerspective,
 } from 'sanity'
+
+import {useDeferredObservableValue} from '../../core/util/useDeferredObservableValue'
 
 interface PreviewState {
   isLoading?: boolean
@@ -29,5 +30,8 @@ export default function usePreviewState(documentId: string, schemaType?: SchemaT
     [documentPreviewStore, schemaType, documentId, perspectiveStack],
   )
 
-  return useObservable(preview$, EMPTY_STATE)
+  // Identity-coherent deferral: on a document id change the live snapshot
+  // wins, so the previous document's preview never renders under the new
+  // identity.
+  return useDeferredObservableValue(preview$, EMPTY_STATE)
 }

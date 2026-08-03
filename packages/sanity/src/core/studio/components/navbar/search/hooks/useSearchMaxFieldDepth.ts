@@ -2,12 +2,12 @@ import {type SanityClient} from '@sanity/client'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import isFinite from 'lodash-es/isFinite.js'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
+import {useDeferredObservableValue} from '../../../../../util/useDeferredObservableValue'
 import {useWorkspace} from '../../../../workspace'
 
 /** By default the API will return 0 = all fields */
@@ -87,7 +87,7 @@ export function useSearchMaxFieldDepth(overrideClient?: SanityClient): number {
       ),
     [dataset],
   )
-  const indexSettings = useObservable(indexSettingsObservable, INITIAL_LOADING_STATE)
+  const indexSettings = useDeferredObservableValue(indexSettingsObservable, INITIAL_LOADING_STATE)
 
   const maxFieldDepth = indexSettings?.settings?.partialIndexSettings?.maxFieldDepth
 

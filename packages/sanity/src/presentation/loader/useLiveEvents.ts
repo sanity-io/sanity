@@ -1,6 +1,6 @@
 import {type LiveEvent, type LiveEventMessage} from '@sanity/client'
 import {useDeferredValue, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {catchError, scan, throwError} from 'rxjs'
 import {type SanityClient} from 'sanity'
 
@@ -74,7 +74,7 @@ export function useLiveEvents(client: SanityClient): State {
     [client.live],
   )
 
-  // Stream errors are re-thrown by `useObservable` during render, so they reach the nearest
+  // Stream errors are re-thrown by `useSyncObservable` during render, so they reach the nearest
   // error boundary without any explicit handling here.
-  return useDeferredValue(useObservable(state$, initialState))
+  return useDeferredValue(useSyncObservable(state$, initialState))
 }

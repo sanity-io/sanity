@@ -1,6 +1,5 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {
   getDocumentVariantType,
   getPreviewStateObservable,
@@ -19,6 +18,8 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
+
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 
 const EllipsisText = styled(Text)`
   /* text-overflow: ellipsis;
@@ -59,7 +60,7 @@ const VersionItemPreview = ({
     snapshot,
     original,
     isLoading: previewIsLoading,
-  } = useObservable(previewStateObservable, {
+  } = useDeferredObservableValue(previewStateObservable, {
     snapshot: null,
     isLoading: true,
     original: null,

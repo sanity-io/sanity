@@ -3,7 +3,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {type AssetSource} from '@sanity/types'
 import get from 'lodash-es/get.js'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {EMPTY} from 'rxjs'
 
 import {ActionsMenu} from '../../../core/form/inputs/files/common/ActionsMenu'
@@ -132,7 +132,9 @@ export function VideoPreview(props: VideoAssetInputProps) {
     () => (documentId && observeAsset ? observeAsset(documentId) : EMPTY),
     [documentId, observeAsset],
   )
-  const resolvedAsset = useObservable(observable)
+  // Kept synchronous: a deferred snapshot could pair the previous asset with a
+  // newly selected reference, pointing open-in-source at the wrong asset.
+  const resolvedAsset = useSyncObservable(observable)
 
   const openInSourceResult = useMemo(() => {
     if (resolvedAsset) {

@@ -1,4 +1,5 @@
-import {act, renderHook, waitFor} from '@testing-library/react'
+import {act, render, renderHook, waitFor} from '@testing-library/react'
+import {useEffect, useState} from 'react'
 import {Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -535,6 +536,51 @@ describe('useResolvedPanes', () => {
       expect(result.current.routerPanes[1]).toEqual([
         {id: 'doc-123', params: {}, payload: undefined},
       ])
+    })
+  })
+
+  describe('live pane data (not deferred)', () => {
+    it('commits a new pane emission on the first frame, even when urgent updates land in the same batch', async () => {
+      // Guards the "pane tree stays live" behavior: the pane data must be
+      // read synchronously (not via useDeferredValue). If it were deferred,
+      // the first committed frame after a pane emission batched with an
+      // urgent update would still show the PREVIOUS pane tree — and under
+      // continuous urgent updates (presence/sync/validation on a fresh
+      // draft), each interruption restarts the deferred catch-up, so that
+      // stale frame can repeat indefinitely: the livelock this test pins the
+      // first frame of.
+      const frames: {tick: number; itemIds: string[]}[] = []
+      let bumpTick: (() => void) | null = null
+
+      function LiveRenderProbe() {
+        const {paneDataItems} = useResolvedPanes()
+        const [tick, setTick] = useState(0)
+        useEffect(() => {
+          bumpTick = () => setTick((current) => current + 1)
+        }, [])
+        frames.push({tick, itemIds: paneDataItems.map((item) => item.itemId)})
+        return null
+      }
+      render(<LiveRenderProbe />)
+
+      act(() => {
+        resolvedPanesSubject.next([createMockListPane()])
+      })
+      await waitFor(() => expect(frames[frames.length - 1].itemIds).toEqual(['root']))
+
+      // Model navigation: the pane stream emits the new tree while an urgent
+      // update (like a presence/sync emission re-rendering the tree) lands in
+      // the same batch.
+      act(() => {
+        resolvedPanesSubject.next([createMockListPane(), createMockDocumentPane()])
+        bumpTick!()
+      })
+
+      // The frame carrying the urgent update must already show the new pane
+      // tree. A deferred pane read would commit {tick: 1, itemIds: ['root']}
+      // first — the stale tree under fresh urgent state.
+      expect(frames).toContainEqual({tick: 1, itemIds: ['root', 'doc-123']})
+      expect(frames).not.toContainEqual({tick: 1, itemIds: ['root']})
     })
   })
 

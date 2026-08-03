@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {catchError, map, Observable, of, startWith} from 'rxjs'
 
 // http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever
@@ -60,5 +60,8 @@ export function useLoadImage(url: string): ImageLoadState {
     [url],
   )
 
-  return useObservable(state$, INITIAL_STATE)
+  // Kept synchronous: `state$` resets to loading when `url` changes, and a
+  // deferred snapshot could briefly render the previous image element under
+  // the new url.
+  return useSyncObservable(state$, INITIAL_STATE)
 }

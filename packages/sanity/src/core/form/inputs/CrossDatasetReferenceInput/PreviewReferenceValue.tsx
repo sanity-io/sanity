@@ -19,7 +19,7 @@ export function PreviewReferenceValue(props: {
   const {t} = useTranslation()
   const projectId = useProjectId()
 
-  if (referenceInfo.isLoading || referenceInfo.error) {
+  if (referenceInfo.isLoading || referenceInfo.error || !referenceInfo.result) {
     return (
       <Stack gap={2} padding={1}>
         <TextSkeleton style={{maxWidth: 320}} radius={1} animated={!referenceInfo.error} />
@@ -29,7 +29,7 @@ export function PreviewReferenceValue(props: {
   }
   const showTypeLabel = type.to.length > 1
 
-  const refTypeName = referenceInfo.result?.type
+  const refTypeName = referenceInfo.result.type
   const refType = type.to.find((toType) => toType.type === refTypeName)
 
   if (referenceInfo.result.availability?.available && !refType) {

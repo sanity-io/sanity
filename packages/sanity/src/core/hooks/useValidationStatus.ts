@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 
 import {useDocumentStore} from '../store/datastores'
+import {useDeferredObservableValue} from '../util/useDeferredObservableValue'
 import {type ValidationStatus} from '../validation'
 
 const INITIAL: ValidationStatus = {validation: [], isValidating: false}
@@ -20,5 +20,5 @@ export function useValidationStatus(
     [docTypeName, documentStore.pair, validationTargetId, requirePublishedReferences],
   )
 
-  return useObservable(observable, INITIAL)
+  return useDeferredObservableValue(observable, INITIAL)
 }

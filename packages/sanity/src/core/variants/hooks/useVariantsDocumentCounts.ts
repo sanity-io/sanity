@@ -1,11 +1,11 @@
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, startWith, switchMap} from 'rxjs/operators'
 
 import {useClient} from '../../hooks/useClient'
 import {listenQuery} from '../../store/document/listenQuery'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../store/constants'
 import {type VariantStoreState} from '../store/reducer'
 import {useVariantsStore} from '../store/useVariantsStore'
@@ -163,5 +163,5 @@ export function useVariantsDocumentCounts(): VariantsDocumentCountsState {
 
   const observable = useMemo(() => getVariantsDocumentCounts(client, state$), [client, state$])
 
-  return useObservable(observable, INITIAL_STATE)
+  return useDeferredObservableValue(observable, INITIAL_STATE)
 }

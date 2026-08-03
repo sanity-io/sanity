@@ -1,6 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
 
 import {useDocumentPreviewStore} from '../store/datastores'
@@ -30,7 +30,10 @@ export function useUnstableObserveDocument<T extends SanityDocument>(
         .pipe(map((document) => ({loading: false, document: document as T}))),
     [documentId, documentPreviewStore, apiConfig],
   )
-  return useObservable(observable, INITIAL_STATE)
+  // Kept synchronous: the observable is keyed to the live `documentId`, so a
+  // deferred snapshot could briefly hand callers the previous document with
+  // `loading: false` under the new id.
+  return useSyncObservable(observable, INITIAL_STATE)
 }
 
 /**

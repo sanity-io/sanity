@@ -2,7 +2,6 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
 import {LayerProvider, useClickOutsideEvent} from '@sanity/ui'
 import {type ComponentType, type PropsWithChildren, useMemo, useRef} from 'react'
-import {useObservable} from 'react-rx'
 import {map} from 'rxjs'
 import {styled} from 'styled-components'
 
@@ -16,6 +15,7 @@ import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 
 export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{
@@ -38,7 +38,7 @@ export const DocumentGroupInventoryAction: ComponentType<
 
   const versionState = useDocumentVersionsObservable({documentId})
 
-  const isAvailable = useObservable(
+  const isAvailable = useDeferredObservableValue(
     useMemo(
       () => versionState.pipe(map(({loading, versions}) => !loading && versions.length !== 0)),
       [versionState],

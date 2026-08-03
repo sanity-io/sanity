@@ -2,7 +2,6 @@ import {AddIcon} from '@sanity/icons/Add'
 import {type SanityDocument} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
 import {
   CommandList,
   type CommandListRenderItemCallback,
@@ -22,6 +21,7 @@ import {
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {AddIncomingReference} from './AddIncomingReference'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {getIncomingReferences, INITIAL_STATE} from './getIncomingReferences'
@@ -82,7 +82,7 @@ export function IncomingReferencesType({
     [documentPreviewStore, type.type, memoizedFilter, memoizedFilterParams, displayedId, getClient],
   )
 
-  const {documents, loading} = useObservable(references$, INITIAL_STATE)
+  const {documents, loading} = useDeferredObservableValue(references$, INITIAL_STATE)
 
   const schema = useSchema()
   const {t} = useTranslation(structureLocaleNamespace)

@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 
 import {useClient} from '../../hooks/useClient'
 import {useWorkspace} from '../../studio/workspace'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {useProjectStore} from '../datastores'
 import {useResourceCache} from '../ResourceCacheProvider'
 import {
@@ -58,5 +58,5 @@ export function useAgentBundlesStore(): AgentBundlesStore {
  */
 export function useAgentBundles(): AgentBundlesState {
   const {state$} = useAgentBundlesStore()
-  return useObservable(state$, INITIAL_STATE)
+  return useDeferredObservableValue(state$, INITIAL_STATE)
 }

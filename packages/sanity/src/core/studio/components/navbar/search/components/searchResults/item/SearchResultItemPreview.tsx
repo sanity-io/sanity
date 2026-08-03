@@ -1,7 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {styled} from 'styled-components'
 
 import {DocumentStatus} from '../../../../../../../components/documentStatus/DocumentStatus'
@@ -16,6 +15,7 @@ import {useDocumentVersions} from '../../../../../../../releases/hooks/useDocume
 import {getDocumentVersionInfoFromVersions} from '../../../../../../../releases/util/getDocumentVersionInfoFromVersions'
 import {useDocumentPreviewStore} from '../../../../../../../store/datastores'
 import {type DocumentPresence} from '../../../../../../../store/presence/types'
+import {useDeferredObservableValue} from '../../../../../../../util/useDeferredObservableValue'
 
 interface SearchResultItemPreviewProps {
   documentId: string
@@ -25,6 +25,12 @@ interface SearchResultItemPreviewProps {
   perspective?: PerspectiveStack
   schemaType: SchemaType
   showBadge?: boolean
+}
+
+const INITIAL_PREVIEW_STATE = {
+  snapshot: null,
+  isLoading: true,
+  original: null,
 }
 
 /**
@@ -62,11 +68,13 @@ export function SearchResultItemPreview({
     [documentId, documentType],
   )
 
-  const {isLoading, snapshot, original} = useObservable(observable, {
-    snapshot: null,
-    isLoading: true,
-    original: null,
-  })
+  // Identity-coherent deferral: on a document id change the live (loading)
+  // snapshot wins, so the previous document's title/media never renders next
+  // to the new document's version badges.
+  const {isLoading, snapshot, original} = useDeferredObservableValue(
+    observable,
+    INITIAL_PREVIEW_STATE,
+  )
 
   const {versions} = useDocumentVersions({documentId})
   const versionsInfo = useMemo(() => getDocumentVersionInfoFromVersions(versions), [versions])

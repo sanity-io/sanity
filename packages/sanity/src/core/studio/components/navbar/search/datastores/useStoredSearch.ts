@@ -1,5 +1,5 @@
 import {useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {merge, Subject} from 'rxjs'
 import {map, startWith, tap} from 'rxjs/operators'
 
@@ -60,7 +60,10 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
     [keyValueStore, keyValueStoreKey, optimisticWrites$],
   )
 
-  const value = useObservable(value$, defaultValue)
+  // Kept synchronous: callers (recentSearches) rebuild the stored list from
+  // this value before writing it back, so a stale deferred snapshot could
+  // clobber a concurrent write and drop a recent search.
+  const value = useSyncObservable(value$, defaultValue)
 
   const set = useCallback(
     (newValue: StoredSearch) => {

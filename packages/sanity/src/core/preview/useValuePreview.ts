@@ -5,7 +5,7 @@ import {
   type SortOrdering,
 } from '@sanity/types'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
@@ -100,5 +100,6 @@ export function useValuePreview(props: {
     ordering,
   ])
 
-  return useObservable(observable, INITIAL_STATE)
+  // Do not defer: search/reference UIs assert on preview titles synchronously after selection.
+  return useSyncObservable(observable, INITIAL_STATE)
 }

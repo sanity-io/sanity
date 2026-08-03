@@ -1,6 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 
 import {
@@ -13,6 +12,7 @@ import {
 import {type UpsellData} from '../studio/upsell/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {interpolateTemplate} from '../util/interpolateTemplate'
+import {useDeferredObservableValue} from '../util/useDeferredObservableValue'
 import {useClient} from './useClient'
 import {useProjectId} from './useProjectId'
 
@@ -105,7 +105,7 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
     [client, projectId, baseUrl, dataUri],
   )
 
-  const {upsellData, hasError} = useObservable(upsellResult$, INITIAL_UPSELL_RESULT)
+  const {upsellData, hasError} = useDeferredObservableValue(upsellResult$, INITIAL_UPSELL_RESULT)
 
   return {upsellData, telemetryLogs, hasError}
 }

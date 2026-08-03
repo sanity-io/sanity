@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 
 import {sortReleases} from '../hooks/utils'
 import {ARCHIVED_RELEASE_STATES} from '../util/const'
@@ -23,7 +23,12 @@ interface ReleasesState {
  */
 export function useActiveReleases(): ReleasesState {
   const {state$, dispatch} = useReleasesStore()
-  const state = useObservable(state$)!
+  // Kept synchronous: PerspectiveProvider derives `selectedReleaseId` from
+  // this list while `selectedPerspectiveName` stays live, so a deferred
+  // snapshot could tear the release identity (e.g. reference create-in-place
+  // writing `_weak` or opening the wrong version). Executable proof:
+  // perspective/__tests__/deferralSafety.test.tsx.
+  const state = useSyncObservable(state$)!
   const releasesAsArray = useMemo(
     () =>
       sortReleases(

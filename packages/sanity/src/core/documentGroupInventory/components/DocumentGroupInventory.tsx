@@ -7,14 +7,14 @@ import {type SanityDocumentLike} from '@sanity/types'
 import {Flex, PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
-  type ComponentType,
-  useMemo,
   type ChangeEvent,
-  useState,
+  type ComponentType,
   useEffect,
   useLayoutEffect,
+  useMemo,
+  useState,
 } from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {
   combineLatest,
   debounceTime,
@@ -706,7 +706,11 @@ function usePreserveIntrinsicBlockSize({
   element: HTMLElement | null
 }): void {
   const size = useMemo(() => new Subject<DOMRect | undefined>(), [])
-  const currentSize = useObservable(size)
+  // Kept synchronous: this drives an imperative style write
+  // (`--intrinsic-block-size`) that preserves layout during activation, so a
+  // deferred snapshot lagging the latest ResizeObserver measurement could
+  // cause visible layout jumps.
+  const currentSize = useSyncObservable(size)
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(([entry]) => {

@@ -1,5 +1,5 @@
-import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useDeferredValue, useMemo} from 'react'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
 
@@ -65,9 +65,30 @@ export function createHookFromObservableFactory<T, TArg = void>(
         ),
       [arg],
     )
-    const result = useObservable(observable, initialResult)
+    const syncResult = useSyncObservable(observable, initialResult)
+    // Identity and result are deferred as one snapshot so they can never tear
+    // (the deferred result always belongs to the deferred observable).
+    const syncSnapshot = useMemo(() => ({observable, result: syncResult}), [observable, syncResult])
+    const deferredSnapshot = useDeferredValue(syncSnapshot)
 
-    if (result.type === 'error') throw result.error
+    // Throw from the live snapshot so errors reach the error boundary as soon
+    // as the observable errors, instead of after the deferred snapshot
+    // catches up.
+    if (syncResult.type === 'error') throw syncResult.error
+
+    // A deferred snapshot is only coherent while it belongs to the current
+    // observable identity (same `arg`). Across identity changes (e.g. a new
+    // document id) fall back to the live snapshot — which synchronously resets
+    // to loading — so the previous arg's value never renders as loaded state
+    // for the new one.
+    const deferredResult =
+      deferredSnapshot.observable === observable ? deferredSnapshot.result : syncResult
+    // Defense-in-depth: an error result should never commit (the render that
+    // observes it throws above, and recovery remounts with fresh state), so a
+    // stale deferred error should be unreachable. But if observable identity
+    // is ever cached/reused across an error (e.g. a future factory-level
+    // cache), fall back to the live tuple rather than re-throwing it.
+    const result = deferredResult.type === 'error' ? syncResult : deferredResult
 
     return result.tuple
   }

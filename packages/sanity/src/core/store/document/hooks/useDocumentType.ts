@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
@@ -43,7 +43,11 @@ export function useDocumentType(documentId: string, specifiedType = '*'): Docume
     [documentStore, isResolved, publishedId, specifiedType, SYNC_RESOLVED_STATE],
   )
 
-  const resolvedState = useObservable(
+  // Kept synchronous: the lookup is keyed to the live document id, so a
+  // deferred snapshot could report the previous document's type as
+  // `isLoaded: true` during an id transition, mounting the form against the
+  // wrong schema type.
+  const resolvedState = useSyncObservable(
     resolvedState$,
     isResolved ? SYNC_RESOLVED_STATE : LOADING_STATE,
   )

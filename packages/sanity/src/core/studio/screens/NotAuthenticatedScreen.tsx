@@ -1,10 +1,10 @@
 /* oxlint-disable i18next/no-literal-string */
 import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {useObservable} from 'react-rx'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {getProviderTitle} from '../../store/authStore/providerTitle'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 
 export function NotAuthenticatedScreen() {
@@ -14,7 +14,7 @@ export function NotAuthenticatedScreen() {
     void activeWorkspace.auth.logout?.()
   }, [activeWorkspace])
 
-  const currentUser = useObservable(activeWorkspace.auth.state, null)?.currentUser
+  const currentUser = useDeferredObservableValue(activeWorkspace.auth.state, null)?.currentUser
 
   const providerTitle = getProviderTitle(currentUser?.provider)
   const providerHelp = providerTitle ? ` through ${providerTitle}` : ''

@@ -1,6 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {catchError, forkJoin, from, map, type Observable, of, switchMap} from 'rxjs'
 
 import {useClient} from '../../../../../hooks/useClient'
@@ -111,7 +111,10 @@ export const useDocumentRevertStates = (releaseDocuments: DocumentInRelease[]) =
     return documentRevertStates$
   }, [client, releaseDocuments, transactionId, observableClient, dataset])
 
-  const documentRevertStatesResult = useObservable(memoDocumentRevertStates, null)
+  // Kept synchronous: the effect below resolves an imperative promise/ref with
+  // this value for the revert action, so a deferred snapshot could delay the
+  // resolution or hand the action a stale revert state.
+  const documentRevertStatesResult = useSyncObservable(memoDocumentRevertStates, null)
 
   useEffect(() => {
     if (documentRevertStatesResult !== null) {

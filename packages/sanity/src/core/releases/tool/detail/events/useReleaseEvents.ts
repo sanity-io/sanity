@@ -1,9 +1,9 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 
 import {useClient} from '../../../../hooks/useClient'
 import {useDocumentPreviewStore} from '../../../../store/datastores'
 import {useSource} from '../../../../studio/source'
+import {useDeferredObservableValue} from '../../../../util/useDeferredObservableValue'
 import {useReleasesStore} from '../../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../../util/getReleaseDocumentIdFromReleaseId'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
@@ -37,7 +37,7 @@ export function useReleaseEvents(releaseId: string): ReleaseEvents {
       }),
     [releaseId, client, releasesState$, documentPreviewStore, eventsAPIEnabled],
   )
-  const events = useObservable(releaseEvents.events$, EVENTS_INITIAL_VALUE)
+  const events = useDeferredObservableValue(releaseEvents.events$, EVENTS_INITIAL_VALUE)
 
   return {
     events: events.events,

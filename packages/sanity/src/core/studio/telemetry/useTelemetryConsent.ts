@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {catchError, of} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {type ConsentStatus, getTelemetryConsent$} from './telemetryConsent'
 
 /**
@@ -20,5 +20,5 @@ export function useTelemetryConsent(): ConsentStatus {
     [client],
   )
 
-  return useObservable(consent$, 'loading')
+  return useDeferredObservableValue(consent$, 'loading')
 }

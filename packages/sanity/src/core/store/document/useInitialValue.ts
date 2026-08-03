@@ -1,7 +1,7 @@
 import {type InitialValueResolverContext, type SanityDocumentLike} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {map, startWith, tap} from 'rxjs/operators'
 
 import {useDataset} from '../../hooks/useDataset'
@@ -126,7 +126,7 @@ export function useInitialValue(props: {
 
   // Seeded with loadingState to match the stream's synchronous
   // startWith(loadingState) first emission.
-  return useObservable(state$, loadingState)
+  return useSyncObservable(state$, loadingState)
 }
 
 /**

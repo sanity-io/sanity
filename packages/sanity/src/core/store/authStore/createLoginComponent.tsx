@@ -4,13 +4,13 @@ import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Badge, Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
-import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 import {Button, type ButtonProps} from '../../../ui-components/button/Button'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {type AuthConfig} from '../../config/auth/types'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {CustomLogo, providerLogos} from './providerLogos'
 import {type LoginComponentProps} from './types'
 
@@ -122,7 +122,11 @@ export function createLoginComponent({
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
 
-    const client = useObservable(client$)
+    // Deferred (per review): the only way to change workspace mid-login is a
+    // URL change, which triggers a full reload — so `client$` doesn't swap
+    // under a mounted login screen. The identity-coherent deferral also falls
+    // back to the live value if the client ever does change.
+    const client = useDeferredObservableValue(client$)
 
     const getProviderData = useCallback(async () => {
       let providers = [] as AuthProvider[]

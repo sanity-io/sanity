@@ -1,10 +1,10 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 
 import {type WorkspaceSummary} from '../../../../../config/types'
 import {probeWorkspaceAuth} from '../../../../../store/authStore/probeWorkspaceAuth'
+import {useDeferredObservableValue} from '../../../../../util/useDeferredObservableValue'
 import {WorkspacePreview} from '../WorkspacePreview'
 
 interface WorkspaceAuthCardProps {
@@ -29,7 +29,7 @@ export function WorkspaceAuthCard({workspace, onSelect}: WorkspaceAuthCardProps)
       }),
     [workspace.apiHost, workspace.dataset, workspace.projectId],
   )
-  const probe = useObservable(probe$)
+  const probe = useDeferredObservableValue(probe$)
 
   const state: 'loading' | 'logged-in' | 'logged-out' | 'no-access' = !probe
     ? 'loading'

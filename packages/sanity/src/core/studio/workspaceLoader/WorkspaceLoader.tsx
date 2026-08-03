@@ -1,5 +1,5 @@
 import {type ComponentType, type ReactNode, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {combineLatest, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
@@ -68,7 +68,10 @@ export function useWorkspaceLoader(activeWorkspace: WorkspaceSummary) {
     [activeWorkspace],
   )
 
-  const result = useObservable(workspace$, INITIAL_WORKSPACE_RESULT)
+  // Kept synchronous: `activeWorkspace` (identity) updates synchronously on a
+  // workspace switch, so a deferred resolved workspace would briefly serve the
+  // previous workspace's project/dataset/schema under the new identity.
+  const result = useSyncObservable(workspace$, INITIAL_WORKSPACE_RESULT)
   if (result.type === 'error') throw result.error
 
   return result.value

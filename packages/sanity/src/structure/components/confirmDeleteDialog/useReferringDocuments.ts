@@ -1,6 +1,5 @@
 import {type ClientError, type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {combineLatest, concat, EMPTY, fromEvent, type Observable, of, timer} from 'rxjs'
 import {
   catchError,
@@ -19,6 +18,8 @@ import {
   useClient,
   useDocumentStore,
 } from 'sanity'
+
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 
 // this is used in place of `instanceof` so the matching can be more robust and
 // won't have any issues with dual packages etc
@@ -253,13 +254,13 @@ export function useReferringDocuments(documentId: string): ReferringDocuments {
     [documentId, versionedClient, documentStore],
   )
 
-  return useObservable(referringDocuments$, INITIAL_STATE)
+  return useDeferredObservableValue(referringDocuments$, INITIAL_STATE)
 }
 
 /**
-+ * Fetches the documents within the same dataset that reference the subject
-+ * document using the document store's `listenQuery`
-+ */
+ * Fetches the documents within the same dataset that reference the subject
+ * document using the document store's `listenQuery`
+ */
 function fetchInternalReferences(
   documentId: string,
   documentStore: DocumentStore,

@@ -1,6 +1,5 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {
   CommandList,
   type CommandListRenderItemCallback,
@@ -13,6 +12,7 @@ import {
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../../../i18n'
+import {useDeferredObservableValue} from '../../../util/useDeferredObservableValue'
 import {INITIAL_STATE} from '../getIncomingReferences'
 import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from '../shared'
 import {type CrossDatasetIncomingReference} from '../types'
@@ -45,7 +45,7 @@ export function CrossDatasetIncomingReferenceType({
     [client, type, referenced.id, documentPreviewStore],
   )
 
-  const {documents, loading} = useObservable(references$, INITIAL_STATE)
+  const {documents, loading} = useDeferredObservableValue(references$, INITIAL_STATE)
 
   const schema = useSchema()
   const {t} = useTranslation(structureLocaleNamespace)

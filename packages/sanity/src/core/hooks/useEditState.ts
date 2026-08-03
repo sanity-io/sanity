@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {debounce, distinctUntilChanged, merge, share, shareReplay, skip, take, timer} from 'rxjs'
 
 import {useDocumentStore} from '../store/datastores'
@@ -51,5 +51,5 @@ export function useEditState(
    * We know that since the observable has a startWith operator, it will always emit a value
    * and that's why the non-null assertion is used here
    */
-  return useObservable(observable)!
+  return useSyncObservable(observable)!
 }

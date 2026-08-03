@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {useProjectStore} from '../datastores'
 import {type ProjectDatasetData} from './types'
 
@@ -9,7 +9,7 @@ export function useProjectDatasets(): {value: ProjectDatasetData[] | null} {
   const projectStore = useProjectStore()
 
   const project$ = useMemo(() => projectStore.getDatasets(), [projectStore])
-  const value = useObservable(project$, null)
+  const value = useDeferredObservableValue(project$, null)
 
   return {value}
 }
