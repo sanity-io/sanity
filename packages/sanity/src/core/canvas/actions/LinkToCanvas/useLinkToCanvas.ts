@@ -1,6 +1,7 @@
 import {type SanityClient, type SanityDocument} from '@sanity/client'
 import {type Bridge} from '@sanity/message-protocol'
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, type Observable, of, tap} from 'rxjs'
 
 import {useClient} from '../../../hooks/useClient'
@@ -9,7 +10,6 @@ import {useComlinkStore, useProjectStore} from '../../../store/datastores'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {useStudioAppIdStore} from '../../../store/studio-app/useStudioAppIdStore'
 import {useWorkspace} from '../../../studio/workspace'
-import {useDeferredObservableValue} from '../../../util/useDeferredObservableValue'
 import {type CanvasDiff} from '../../types'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 
@@ -215,7 +215,7 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
 
   // Deferred (per review): keyed on the stable document `_id`/`_type` and
   // consumed inside a dialog the user opens for a fixed document, so there's
-  // no cross-document tear. The identity-coherent deferral falls back to the
-  // live value if the observable identity changes.
-  return useDeferredObservableValue(linkToCanvas$, initialState)
+  // no cross-document tear. react-rx v5's identity-coherent deferral falls
+  // back to the live value if the observable identity changes.
+  return useObservable(linkToCanvas$, initialState)
 }

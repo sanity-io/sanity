@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {EMPTY} from 'rxjs'
 
 import {useClient} from '../../../hooks/useClient'

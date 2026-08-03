@@ -1,10 +1,10 @@
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {catchError, from, map, of} from 'rxjs'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionsLogs'
 import {getPublishedId} from '../../../../../util/draftUtils'
-import {useDeferredObservableValue} from '../../../../../util/useDeferredObservableValue'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../util/releasesClient'
 import {type DocumentInRelease} from '../../../detail/types'
 
@@ -33,5 +33,5 @@ export const usePostPublishTransactions = (documents: DocumentInRelease[]) => {
     )
   }, [client, documents, transactionId])
 
-  return useDeferredObservableValue(memoHasPostPublishTransactions, null)
+  return useObservable(memoHasPostPublishTransactions, null)
 }

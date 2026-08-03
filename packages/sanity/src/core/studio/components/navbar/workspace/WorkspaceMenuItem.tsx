@@ -1,10 +1,10 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {type WorkspaceSummary} from '../../../../config/types'
 import {probeWorkspaceAuth} from '../../../../store/authStore/probeWorkspaceAuth'
-import {useDeferredObservableValue} from '../../../../util/useDeferredObservableValue'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 
 interface WorkspaceMenuItemProps {
@@ -30,7 +30,7 @@ export function WorkspaceMenuItem({workspace, isSelected, scrollbarWidth}: Works
       }),
     [workspace.apiHost, workspace.dataset, workspace.projectId],
   )
-  const probe = useDeferredObservableValue(probe$)
+  const probe = useObservable(probe$)
 
   const state: keyof typeof STATE_TITLES = !probe
     ? 'loading'

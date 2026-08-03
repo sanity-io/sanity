@@ -1,10 +1,10 @@
 import {type SchemaType} from '@sanity/types'
 import {Skeleton} from '@sanity/ui'
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 
 import {getPreviewStateObservable} from '../../../../../../../preview/utils/getPreviewStateObservable'
 import {useDocumentPreviewStore} from '../../../../../../../store/datastores'
-import {useDeferredObservableValue} from '../../../../../../../util/useDeferredObservableValue'
 
 const INITIAL_PREVIEW_STATE = {
   isLoading: true,
@@ -25,13 +25,10 @@ export function ReferencePreviewTitle({
     () => getPreviewStateObservable(documentPreviewStore, schemaType, documentId),
     [documentId, documentPreviewStore, schemaType],
   )
-  // Identity-coherent deferral: on a document id change the live (loading)
-  // snapshot wins, so the previous document's title never renders for the
-  // new id (including its slice fallback).
-  const {snapshot, original, isLoading} = useDeferredObservableValue(
-    observable,
-    INITIAL_PREVIEW_STATE,
-  )
+  // Deferred: react-rx v5's deferral is identity-coherent, so on a document
+  // id change the live snapshot wins and the previous document's title never
+  // renders for the new id.
+  const {snapshot, original, isLoading} = useObservable(observable, INITIAL_PREVIEW_STATE)
 
   if (isLoading) {
     return <Skeleton animated marginLeft={1} radius={2} style={{width: '10ch', height: '1em'}} />

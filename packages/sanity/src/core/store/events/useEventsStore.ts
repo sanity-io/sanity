@@ -1,6 +1,6 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {useCallback, useEffect, useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useObservable, useSyncObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
@@ -8,7 +8,6 @@ import {useSchema} from '../../hooks/useSchema'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
-import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {createEventsStore} from './createEventsStore'
 import {getDocumentAtRevision as getDocumentAtRevisionFunction} from './getDocumentAtRevision'
 import {
@@ -73,7 +72,7 @@ export function useEventsStore({
   // pairing a stale diff with fresh state. Verified against the
   // `revertArrayChanges` e2e flow, which previously crashed only when the
   // diff was deferred incoherently while events stayed live.
-  const {events, loading, error, nextCursor} = useDeferredObservableValue(
+  const {events, loading, error, nextCursor} = useObservable(
     eventsStore.eventsObservable$,
     INITIAL_VALUE,
   )

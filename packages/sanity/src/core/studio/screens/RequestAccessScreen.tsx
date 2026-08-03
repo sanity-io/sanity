@@ -4,14 +4,13 @@ import {addWeeks} from 'date-fns/addWeeks'
 import {isAfter} from 'date-fns/isAfter'
 import {isBefore} from 'date-fns/isBefore'
 import {useCallback, useMemo, useState} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useObservable, useSyncObservable} from 'react-rx'
 import {catchError, map, of, startWith} from 'rxjs'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {getProviderTitle} from '../../store/authStore/providerTitle'
-import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 import {NotAuthenticatedScreen} from './NotAuthenticatedScreen'
 
@@ -164,7 +163,7 @@ export function RequestAccessScreen() {
       )
   }, [client, projectId])
 
-  const {loading, error, hasExpiredPendingRequest, ...fetched} = useDeferredObservableValue(
+  const {loading, error, hasExpiredPendingRequest, ...fetched} = useObservable(
     accessRequests$,
     INITIAL_ACCESS_REQUEST_STATUS,
   )

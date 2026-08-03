@@ -1,7 +1,7 @@
 import {startTransition, useEffect, useMemo, useReducer} from 'react'
+import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
-import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {usePresenceStore} from '../datastores'
 import {type DocumentPresence} from './types'
 
@@ -19,5 +19,5 @@ export function useDocumentPresence(documentId: string): DocumentPresence[] {
     () => (mounted ? presenceStore.documentPresence(documentId) : fallback),
     [mounted, presenceStore, documentId],
   )
-  return useDeferredObservableValue(presence$, initial)
+  return useObservable(presence$, initial)
 }

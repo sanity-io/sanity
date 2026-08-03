@@ -3,7 +3,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {type AssetSource} from '@sanity/types'
 import get from 'lodash-es/get.js'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {EMPTY} from 'rxjs'
 
 import {ActionsMenu} from '../../../core/form/inputs/files/common/ActionsMenu'

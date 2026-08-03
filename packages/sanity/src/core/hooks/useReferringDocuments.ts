@@ -1,9 +1,9 @@
 import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {map, startWith} from 'rxjs/operators'
 
 import {useDocumentStore} from '../store/datastores'
-import {useDeferredObservableValue} from '../util/useDeferredObservableValue'
 
 interface ReferringDocumentsState<Doc> {
   isLoading: boolean
@@ -61,7 +61,7 @@ export function useReferringDocuments<DocumentType extends SanityDocument>(
         startWith(INITIAL_STATE),
       )
   }, [documentStore, id, projection])
-  return useDeferredObservableValue(observable, INITIAL_STATE)
+  return useObservable(observable, INITIAL_STATE)
 }
 
 const EMPTY_FIELDS: never[] = []

@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
 import {useClient} from '../hooks/useClient'
 import {useSchema} from '../hooks/useSchema'

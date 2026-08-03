@@ -1,12 +1,12 @@
 import {type PreviewValue} from '@sanity/types'
 import {type ElementType, type ReactNode, useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useSchema} from '../../hooks/useSchema'
 import {usePerspective} from '../../perspective/usePerspective'
 import {getPreviewStateObservable} from '../../preview/utils/getPreviewStateObservable'
 import {useDocumentPreviewStore} from '../../store/datastores'
-import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 
 interface PreviewHookOptions {
   documentId: string
@@ -40,10 +40,10 @@ export function useDocumentPreviewValues(options: PreviewHookOptions): PreviewHo
       perspectiveStackFromOptions ?? perspectiveStack,
     )
   }, [documentId, documentPreviewStore, schemaType, perspectiveStackFromOptions, perspectiveStack])
-  // Identity-coherent deferral: on a document id change the live (loading)
-  // snapshot wins, so the previous document's title/media never pairs with
-  // the new identity.
-  const previewState = useDeferredObservableValue(previewStateObservable)
+  // Deferred: react-rx v5's deferral is identity-coherent, so on a document
+  // id change the live snapshot wins and the previous document's title/media
+  // never pairs with the new identity.
+  const previewState = useObservable(previewStateObservable)
 
   const isLoading = previewState?.isLoading ?? true
 

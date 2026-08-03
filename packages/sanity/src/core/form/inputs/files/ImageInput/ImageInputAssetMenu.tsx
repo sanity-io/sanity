@@ -4,7 +4,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
 import get from 'lodash-es/get.js'
 import {memo, type ReactNode, type RefObject, useCallback, useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'

@@ -1,6 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
 
 import {useDocumentPreviewStore} from '../store/datastores'

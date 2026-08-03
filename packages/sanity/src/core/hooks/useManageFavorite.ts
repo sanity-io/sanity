@@ -9,7 +9,7 @@ import {
 } from '@sanity/message-protocol'
 import {type DocumentHandle} from '@sanity/sdk'
 import {useCallback, useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {
   catchError,
   connect,

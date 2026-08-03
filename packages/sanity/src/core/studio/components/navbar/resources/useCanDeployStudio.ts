@@ -1,7 +1,7 @@
+import {useObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 
 import {useProjectStore} from '../../../../store/datastores'
-import {useDeferredObservableValue} from '../../../../util/useDeferredObservableValue'
 import {hasDeployStudioGrant} from '../../../manifest/canDeployStudio'
 
 /**
@@ -17,5 +17,5 @@ export function useCanDeployStudio(enabled: boolean = true): boolean {
   // If the hook is disabled, don't subscribe to the observable
   const canDeploy$ = enabled ? result$ : of(false)
 
-  return useDeferredObservableValue(canDeploy$, false)
+  return useObservable(canDeploy$, false)
 }

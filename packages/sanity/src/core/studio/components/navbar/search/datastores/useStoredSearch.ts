@@ -1,5 +1,5 @@
 import {useCallback, useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {merge, Subject} from 'rxjs'
 import {map, startWith, tap} from 'rxjs/operators'
 

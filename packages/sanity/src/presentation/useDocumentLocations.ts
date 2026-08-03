@@ -1,4 +1,5 @@
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {isObservable, map, of} from 'rxjs'
 import {startWith} from 'rxjs/operators'
 import {
@@ -8,7 +9,6 @@ import {
   useDocumentStore,
 } from 'sanity'
 
-import {useDeferredObservableValue} from '../core/util/useDeferredObservableValue'
 import {
   type DocumentLocationResolver,
   type DocumentLocationResolvers,
@@ -90,7 +90,7 @@ export function useDocumentLocations(props: {
     )
   }, [result, initialResult])
 
-  const {state, status} = useDeferredObservableValue(locationsResult$, initialResult)
+  const {state, status} = useObservable(locationsResult$, initialResult)
 
   return {
     state,

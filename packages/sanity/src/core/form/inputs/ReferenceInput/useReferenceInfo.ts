@@ -1,6 +1,6 @@
 import {observableCallback} from 'observable-callback'
 import {useMemo, useState} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, concatMap, map, startWith} from 'rxjs/operators'
 

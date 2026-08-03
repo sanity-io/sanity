@@ -2,11 +2,10 @@ import {addWeeks} from 'date-fns/addWeeks'
 import {isAfter} from 'date-fns/isAfter'
 import {isBefore} from 'date-fns/isBefore'
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {catchError, map, startWith} from 'rxjs/operators'
 import {type SanityClient, useClient, useProjectId} from 'sanity'
-
-import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 
 /** @internal */
 export interface AccessRequest {
@@ -42,7 +41,7 @@ export const useRoleRequestsStatus = () => {
     return checkRoleRequests(client, projectId)
   }, [client, projectId])
 
-  const {loading, error, status} = useDeferredObservableValue(checkRoleRequests$, LOADING_STATE)
+  const {loading, error, status} = useObservable(checkRoleRequests$, LOADING_STATE)
   return {data: status, loading, error}
 }
 

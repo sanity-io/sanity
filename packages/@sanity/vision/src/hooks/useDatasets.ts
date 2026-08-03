@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
-import {useDeferredValue, useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {catchError, map, type Observable, of} from 'rxjs'
 
 import {type VisionConfig} from '../types'
@@ -26,10 +26,11 @@ export function useDatasets({
       catchError((err) => of(err)),
     )
   }, [client, configDatasets])
-  // A bare deferral is fine here: `datasets$` is memoized on `client`, and
-  // switching project triggers a full reload, so the client never swaps while
-  // this component stays mounted — there's no identity churn to guard against.
-  const datasets = useDeferredValue(useSyncObservable(datasets$, null))
+  // Deferred: `datasets$` is memoized on `client`, and switching project
+  // triggers a full reload, so the client never swaps while this component
+  // stays mounted. react-rx v5's built-in deferral is also identity-coherent,
+  // so even a client swap would fall back to the new observable's live value.
+  const datasets = useObservable(datasets$, null)
 
   return datasets
 }

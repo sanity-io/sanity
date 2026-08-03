@@ -1,6 +1,6 @@
 import {type SanityDocumentLike} from '@sanity/types'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 
 import {
@@ -86,7 +86,10 @@ export function useCreatableVariantInitialValue(
       .unstable_observeDocument(publishedSiblingId)
       .pipe(map((doc) => doc ?? null))
   }, [targetId, publishedSiblingId, documentPreviewStore])
-  const publishedSibling = useObservable(publishedSibling$, null)
+  // Kept synchronous: the sibling snapshot feeds the initial value used when
+  // creating the variant document, so a deferred read could seed the new
+  // document from a stale sibling.
+  const publishedSibling = useSyncObservable(publishedSibling$, null)
 
   return useMemo(() => {
     if (!targetId || !targetScopeId || !variantId) {

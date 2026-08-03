@@ -1,5 +1,5 @@
-import {useCallback, useDeferredValue, useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useCallback, useMemo} from 'react'
+import {useObservable, useSyncObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
 import {type KeyValueStoreValue, useKeyValueStore} from 'sanity'
 
@@ -24,19 +24,13 @@ export function useStructureToolSetting<ValueType>(
     )
   }, [defaultValue, keyValueStore, keyValueStoreKey])
 
-  // Keep the immediate store value for write-side equality checks; only defer
-  // the value returned for rendering so a stale deferred snapshot cannot skip
-  // (or redundantly issue) a setKey while the store has already moved on. The
-  // rendered value defers identity and value as one snapshot (reusing the
-  // single subscription) so a storage key change never renders the previous
-  // key's value.
+  // Keep the immediate store value for write-side equality checks so a stale
+  // deferred snapshot cannot skip (or redundantly issue) a setKey while the
+  // store has already moved on. The rendered value is deferred by react-rx v5
+  // (identity-coherent, and sharing the same store subscription as the sync
+  // read), so a storage key change never renders the previous key's value.
   const observedValue = useSyncObservable(value$, defaultValue) as ValueType
-  const snapshot = useMemo(
-    () => ({observable: value$, value: observedValue}),
-    [value$, observedValue],
-  )
-  const deferredSnapshot = useDeferredValue(snapshot)
-  const value = deferredSnapshot.observable === value$ ? deferredSnapshot.value : observedValue
+  const value = useObservable(value$, defaultValue) as ValueType
   const set = useCallback(
     async (newValue: ValueType | null) => {
       if (newValue !== observedValue) {

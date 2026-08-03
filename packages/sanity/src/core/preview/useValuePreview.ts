@@ -5,7 +5,7 @@ import {
   type SortOrdering,
 } from '@sanity/types'
 import {useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 

@@ -1,6 +1,6 @@
 import {type Reference} from '@sanity/types'
 import {type ReactNode, useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 interface Props<AssetDoc> {

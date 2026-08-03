@@ -1,7 +1,7 @@
 import {type InitialValueResolverContext, type SanityDocumentLike} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {map, startWith, tap} from 'rxjs/operators'
 
 import {useDataset} from '../../hooks/useDataset'

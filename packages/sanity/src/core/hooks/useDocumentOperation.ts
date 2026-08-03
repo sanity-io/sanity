@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
 import {useDocumentStore} from '../store/datastores'
 import {type OperationsAPI} from '../store/document/document-pair/operations/types'

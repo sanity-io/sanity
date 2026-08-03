@@ -1,11 +1,11 @@
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
 
 import {useClient} from '../../../hooks/useClient'
 import {useWorkspace} from '../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {useDeferredObservableValue} from '../../../util/useDeferredObservableValue'
 
 export interface HasUsedScheduledPublishing {
   used: boolean
@@ -60,5 +60,5 @@ export function useHasUsedScheduledPublishing({
     return cachedUsedScheduledPublishing.get(key) || of(HAS_USED_SCHEDULED_PUBLISHING)
   }, [key, explicitEnabled, isWorkspaceEnabled])
 
-  return useDeferredObservableValue(hasUsedScheduledPublishing$, HAS_USED_SCHEDULED_PUBLISHING)
+  return useObservable(hasUsedScheduledPublishing$, HAS_USED_SCHEDULED_PUBLISHING)
 }

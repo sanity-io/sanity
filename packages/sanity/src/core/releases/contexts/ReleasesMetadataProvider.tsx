@@ -1,7 +1,7 @@
 import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {ReleasesMetadataContext} from 'sanity/_singletons'
 
-import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {type MetadataWrapper} from '../store/createReleaseMetadataAggregator'
 import {type ReleasesMetadata} from '../store/useReleasesMetadata'
 import {useReleasesStore} from '../store/useReleasesStore'
@@ -33,7 +33,7 @@ const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) 
     [getMetadataStateForSlugs$, listenerReleaseIds],
   )
 
-  const observedResult = useDeferredObservableValue(memoObservable) || DEFAULT_METADATA_STATE
+  const observedResult = useObservable(memoObservable) || DEFAULT_METADATA_STATE
 
   // patch metadata in local state
   useEffect(

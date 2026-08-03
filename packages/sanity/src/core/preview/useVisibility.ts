@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {concat, of} from 'rxjs'
 import {delay, distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators'
 
-import {useDeferredObservableValue} from '../util/useDeferredObservableValue'
 import {intersectionObservableFor} from './streams/intersectionObservableFor'
 import {visibilityChange$} from './streams/visibilityChange'
 
@@ -49,7 +49,7 @@ export function useVisibility(props: Props): boolean {
     )
   }, [element, hideDelay, disabled])
 
-  const visible = useDeferredObservableValue(visible$, false)
+  const visible = useObservable(visible$, false)
 
   return disabled ? false : visible
 }

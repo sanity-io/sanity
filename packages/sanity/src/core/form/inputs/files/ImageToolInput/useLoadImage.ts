@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {catchError, map, Observable, of, startWith} from 'rxjs'
 
 // http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever

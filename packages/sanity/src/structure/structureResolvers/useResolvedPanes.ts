@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {map, ReplaySubject} from 'rxjs'
 import {type RouterState, useRouter} from 'sanity/router'
 
