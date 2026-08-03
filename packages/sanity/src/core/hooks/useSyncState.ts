@@ -1,6 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
-import {type Observable} from 'rxjs'
+import {useSyncObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
 
 import {useDocumentStore} from '../store/datastores'
@@ -28,5 +27,5 @@ export function useSyncState(
         .pipe(map((isConsistent) => (isConsistent ? NOT_SYNCING : SYNCING))),
     [documentStore.pair, documentType, publishedDocId, version],
   )
-  return useSyncObservable<Observable<SyncState>>(observable, NOT_SYNCING)
+  return useSyncObservable(observable, NOT_SYNCING)
 }

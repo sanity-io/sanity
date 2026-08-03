@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {debounce, distinctUntilChanged, merge, share, shareReplay, skip, take, timer} from 'rxjs'
 
 import {useDocumentStore} from '../store/datastores'

@@ -2,11 +2,11 @@ import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
 import {type ComponentType, useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {useTranslation} from 'sanity'
 import {styled, css} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../../../../i18n'
-import {useDeferredObservableValue} from '../../../../../util/useDeferredObservableValue'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {DocumentGroupInventoryHintPressed} from '../__telemetry__/documentGroupInventoryHint.telemetry'
 import {browserStorageAdapter, hintStatus, suppressHint} from './hintStatus'
@@ -15,7 +15,7 @@ export const DocumentGroupInventoryHint: ComponentType = () => {
   const {t} = useTranslation(structureLocaleNamespace)
   const {setIsDocumentGroupInventoryActive} = useDocumentPane()
   const telemetry = useTelemetry()
-  const status = useDeferredObservableValue(useMemo(() => hintStatus(browserStorageAdapter), []))
+  const status = useObservable(useMemo(() => hintStatus(browserStorageAdapter), []))
 
   if (status === 'inactive') {
     return null

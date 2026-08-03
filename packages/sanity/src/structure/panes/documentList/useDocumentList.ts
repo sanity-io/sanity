@@ -8,6 +8,7 @@ import {
 import {useTelemetry} from '@sanity/telemetry/react'
 import {observableCallback} from 'observable-callback'
 import {useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {concat, fromEvent, merge, NEVER, of, timer} from 'rxjs'
 import {
   filter,
@@ -29,7 +30,6 @@ import {
   useWorkspace,
 } from 'sanity'
 
-import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {DocumentListLoadTimeMeasured} from './__telemetry__/documentListSearch.telemetry'
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
 import {findStaticTypesInFilter, removePublishedWithDrafts} from './helpers'
@@ -286,7 +286,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     isRetrying,
     autoRetry,
     retryCount,
-  } = useDeferredObservableValue(queryResults$, INITIAL_QUERY_STATE)
+  } = useObservable(queryResults$, INITIAL_QUERY_STATE)
 
   return {
     error,

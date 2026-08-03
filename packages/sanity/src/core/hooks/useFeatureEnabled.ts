@@ -1,11 +1,11 @@
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 
 import {useSource} from '../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
-import {useDeferredObservableValue} from '../util/useDeferredObservableValue'
 import {useClient} from './useClient'
 
 const EMPTY_ARRAY: [] = []
@@ -87,7 +87,7 @@ export function useFeatureEnabled(featureKey: keyof typeof FEATURES): Features {
       ),
     [featureKey, req],
   )
-  const featureInfo = useDeferredObservableValue(featureInfoObservable, INITIAL_LOADING_STATE)
+  const featureInfo = useObservable(featureInfoObservable, INITIAL_LOADING_STATE)
 
   return featureInfo
 }

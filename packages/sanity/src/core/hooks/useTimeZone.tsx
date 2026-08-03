@@ -4,7 +4,7 @@ import {useToast} from '@sanity/ui'
 import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
 import {format as dateFnsFormat} from 'date-fns/format'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {startWith} from 'rxjs/operators'
 
 import {useKeyValueStore} from '../store/datastores'

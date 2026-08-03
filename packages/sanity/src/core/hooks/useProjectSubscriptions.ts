@@ -1,11 +1,11 @@
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 
 import {useSource} from '../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
-import {useDeferredObservableValue} from '../util/useDeferredObservableValue'
 import {useClient} from './useClient'
 
 type FeatureAttributes = Record<string, string | number | boolean | null>
@@ -152,5 +152,5 @@ export function useProjectSubscriptions(): ProjectSubscriptions {
     )
   }, [projectId])
 
-  return useDeferredObservableValue(projectSubscriptionsObservable, INITIAL_LOADING_STATE)
+  return useObservable(projectSubscriptionsObservable, INITIAL_LOADING_STATE)
 }

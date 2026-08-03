@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {act, render} from '@testing-library/react'
 import {useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useObservable, useSyncObservable} from 'react-rx'
 import {BehaviorSubject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -12,7 +12,6 @@ import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useAllReleases} from '../../releases/store/useAllReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {ARCHIVED_RELEASE_STATES} from '../../releases/util/const'
-import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {variantAlphaAudience} from '../../variants/__fixtures__/variants.fixture'
 import {type VariantStoreState} from '../../variants/store/reducer'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
@@ -29,10 +28,10 @@ import {usePerspective} from '../usePerspective'
  * > `useAllVariants` hooks.. we can defer those, but it's ok to keep them
  * > sync now. We can have a follow up to verify that"
  *
- * Verdict, as proof: it is NOT safe to defer them — not even through the
- * identity-coherent `useDeferredObservableValue` helper. Their store
+ * Verdict, as proof: it is NOT safe to defer them — not even through
+ * react-rx v5's identity-coherent deferred `useObservable`. Their store
  * observables have a stable identity for the lifetime of the workspace, so
- * the helper's identity fallback never engages; deferral simply makes the
+ * the identity fallback never engages; deferral simply makes the
  * list lag one render behind urgent updates. The lists are paired with LIVE
  * selection state (the router-driven perspective / variant params feeding
  * `PerspectiveProvider`) and with each other, so that one-render lag is a
@@ -140,13 +139,13 @@ function SyncVariantHarness() {
 
 /**
  * `useActiveReleases` body with only the read deferred — what the hook would
- * become if it adopted `useDeferredObservableValue` — paired with the same
+ * become if it adopted the deferred `useObservable` — paired with the same
  * live selection and `getSelectedReleaseId` derivation the provider uses.
  */
 function DeferredActiveReleasesCounterfactual() {
   const name = useSyncObservable(selectedReleaseName$)
   const {state$} = useReleasesStore()
-  const state = useDeferredObservableValue(state$)!
+  const state = useObservable(state$)!
   const data = useMemo(
     () =>
       sortReleases(
@@ -167,7 +166,7 @@ function DeferredActiveReleasesCounterfactual() {
 function DeferredAllVariantsCounterfactual() {
   const name = useSyncObservable(selectedVariantName$)
   const {state$} = useVariantsStore()
-  const {variants} = useDeferredObservableValue(state$)!
+  const {variants} = useObservable(state$)!
   variantFrames.push({
     name,
     variantId: getSelectedVariant({selectedVariantName: name, variantsById: variants})?._id,
@@ -182,7 +181,7 @@ function DeferredAllVariantsCounterfactual() {
 function MixedSyncDeferredReleasesProbe() {
   const {data: active} = useActiveReleases()
   const {state$} = useReleasesStore()
-  const deferredState = useDeferredObservableValue(state$)!
+  const deferredState = useObservable(state$)!
   const all = useMemo(
     () => sortReleases(Array.from(deferredState.releases.values())),
     [deferredState.releases],

@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {BehaviorSubject, catchError, distinctUntilChanged, EMPTY, map, switchMap} from 'rxjs'
 import {FreeTrialContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'

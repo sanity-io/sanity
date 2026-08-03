@@ -1,7 +1,7 @@
 import {startTransition, useEffect, useReducer} from 'react'
+import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
-import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {usePresenceStore} from '../datastores'
 import {type GlobalPresence} from './types'
 
@@ -15,5 +15,5 @@ export function useGlobalPresence(): GlobalPresence[] {
   useEffect(() => startTransition(mount), [])
 
   const presenceStore = usePresenceStore()
-  return useDeferredObservableValue(mounted ? presenceStore.globalPresence$ : fallback, initial)
+  return useObservable(mounted ? presenceStore.globalPresence$ : fallback, initial)
 }

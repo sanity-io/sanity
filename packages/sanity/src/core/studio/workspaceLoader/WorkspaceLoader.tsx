@@ -1,5 +1,5 @@
 import {type ComponentType, type ReactNode, useMemo, useState} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {combineLatest, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 

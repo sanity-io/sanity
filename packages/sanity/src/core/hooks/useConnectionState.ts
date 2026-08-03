@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {type Observable, of, timer} from 'rxjs'
 import {distinctUntilChanged, map, mapTo, startWith, switchMap} from 'rxjs/operators'
 

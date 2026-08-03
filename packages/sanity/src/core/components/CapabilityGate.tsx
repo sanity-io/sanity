@@ -1,5 +1,5 @@
 import {type ComponentType, type PropsWithChildren} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
 import {useRenderingContextStore} from '../store/datastores'
 import {type Capability} from '../store/renderingContext/types'

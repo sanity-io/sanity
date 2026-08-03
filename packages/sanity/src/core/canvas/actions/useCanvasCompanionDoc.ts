@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 
 import {getPublishedId} from '../../util/draftUtils'
-import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
 
 /**
@@ -18,10 +18,10 @@ export const useCanvasCompanionDoc = (documentId: string) => {
   )
   // Deferred (per review): the companion docs stream is keyed on the stable
   // published id, and the `<DocumentPaneProvider>` remount on navigation
-  // resets this state, so there's no cross-document tear. The
+  // resets this state, so there's no cross-document tear. react-rx v5's
   // identity-coherent deferral additionally falls back to the live value if
   // the observable identity ever changes.
-  const companionDocs = useDeferredObservableValue(companionDocs$)
+  const companionDocs = useObservable(companionDocs$)
 
   const companionDoc = useMemo(
     () => companionDocs?.data.find((companion) => companion?.studioDocumentId === documentId),

@@ -1,4 +1,4 @@
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
 import {useRenderingContextStore} from '../datastores'
 

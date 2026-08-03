@@ -79,6 +79,9 @@ catalogs:
     react-is:
       specifier: ^19.2.8
       version: 19.2.8
+    react-rx:
+      specifier: ^5.1.1
+      version: 5.1.1
     rimraf:
       specifier: ^6.1.3
       version: 6.1.3
@@ -435,8 +438,8 @@ importers:
         specifier: 'catalog:'
         version: 19.2.8(react@19.2.8)
       react-rx:
-        specifier: ^4.2.5
-        version: 4.2.5(react@19.2.8)(rxjs@7.8.2)
+        specifier: 'catalog:'
+        version: 5.1.1(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -778,8 +781,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(react@19.2.8)
       react-rx:
-        specifier: ^4.2.5
-        version: 4.2.5(react@19.2.8)(rxjs@7.8.2)
+        specifier: 'catalog:'
+        version: 5.1.1(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1512,8 +1515,8 @@ importers:
         specifier: ^7.3.0
         version: 7.3.0
       react-rx:
-        specifier: ^4.2.5
-        version: 4.2.5(react@19.2.8)(rxjs@7.8.2)
+        specifier: 'catalog:'
+        version: 5.1.1(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -1854,8 +1857,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(react@19.2.8)
       react-rx:
-        specifier: ^4.2.5
-        version: 4.2.5(react@19.2.8)(rxjs@7.8.2)
+        specifier: 'catalog:'
+        version: 5.1.1(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -12058,6 +12061,13 @@ packages:
     peerDependencies:
       react: ^18.3 || >=19.0.0-0
       rxjs: ^7
+
+  react-rx@5.1.1:
+    resolution: {integrity: sha512-4GNme4kL2F825aNnsIDqrOSxK6j6tjkpVdbdeILS8WMWOpX1QFO/Wyb28WREYZmcXr9Vys4ZV7yDdw6k9OxuMQ==}
+    engines: {node: '>=22.12'}
+    peerDependencies:
+      react: ^19.2
+      rxjs: ^7.2
 
   react-select@5.10.2:
     resolution: {integrity: sha512-Z33nHdEFWq9tfnfVXaiM12rbJmk+QjFEztWLtmXqQhz6Al4UZZ9xc0wiatmGtUOCCnHN0WizL3tCMYRENX4rVQ==}
@@ -24583,6 +24593,12 @@ snapshots:
       observable-callback: 1.0.3(rxjs@7.8.2)
       react: 19.2.8
       react-compiler-runtime: 1.0.0(react@19.2.8)
+      rxjs: 7.8.2
+      use-effect-event: 2.0.3(react@19.2.8)
+
+  react-rx@5.1.1(react@19.2.8)(rxjs@7.8.2):
+    dependencies:
+      react: 19.2.8
       rxjs: 7.8.2
       use-effect-event: 2.0.3(react@19.2.8)
 

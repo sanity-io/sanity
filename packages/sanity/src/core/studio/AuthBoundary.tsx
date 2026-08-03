@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ComponentType, type ReactNode, useEffect, useMemo, useState} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'

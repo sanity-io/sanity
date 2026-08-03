@@ -1,5 +1,6 @@
 import {type ObservableSanityClient} from '@sanity/client'
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {
   catchError,
   concatMap,
@@ -14,7 +15,6 @@ import {
 } from 'rxjs'
 
 import {useClient} from '../../../../hooks/useClient'
-import {useDeferredObservableValue} from '../../../../util/useDeferredObservableValue'
 import {type MediaLibrary} from '../types'
 
 type ErrorCode = 'ERROR_NO_ORGANIZATION_FOUND' | 'ERROR_NO_LIBRARY_FOUND'
@@ -172,5 +172,5 @@ export function useEnsureMediaLibrary(
     )
   }, [client, props])
 
-  return useDeferredObservableValue(observable, {status: 'loading'})
+  return useObservable(observable, {status: 'loading'})
 }

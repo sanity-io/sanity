@@ -1,12 +1,12 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, type Observable, startWith} from 'rxjs'
 import {StudioAnnouncementContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks/useClient'
 import {useSource} from '../../studio/source'
 import {useWorkspace} from '../../studio/workspace'
-import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {SANITY_VERSION} from '../../version'
 import {
   ProductAnnouncementCardClicked,
@@ -68,7 +68,7 @@ function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProvide
     )
   }, [client.observable, currentUser?.roles, seenAnnouncements$])
 
-  const announcements = useDeferredObservableValue(getAnnouncements$, {unseen: [], all: []})
+  const announcements = useObservable(getAnnouncements$, {unseen: [], all: []})
   const unseenAnnouncements = announcements.unseen
   const studioAnnouncements = announcements.all
 

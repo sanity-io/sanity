@@ -2,7 +2,7 @@ import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 import {fromString, startsWith, toString} from '@sanity/util/paths'
 import pick from 'lodash-es/pick.js'
 import {useCallback, useEffect, useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {
   BehaviorSubject,
   combineLatest,

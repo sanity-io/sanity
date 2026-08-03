@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
 import {type SystemVariant} from '../types'
 import {useVariantsStore} from './useVariantsStore'

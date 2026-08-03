@@ -5,7 +5,7 @@ import {type KeyedSegment, type Reference} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
 import {memo, useCallback, useMemo} from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {debounceTime, map} from 'rxjs/operators'
 import {

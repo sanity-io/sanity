@@ -1,6 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import {type BadgeTone, Text} from '@sanity/ui'
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {
   type DocumentPreviewStore,
   getPreviewStateObservable,
@@ -18,8 +19,6 @@ import {
   useTranslation,
   VersionInlineBadge,
 } from 'sanity'
-
-import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 
 export interface LinkToExistingPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -55,11 +54,11 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
     )
   }, [props.documentPreviewStore, schemaType, value._id])
 
-  // Identity-coherent deferral: when this component is reused for a new
-  // document id the live (loading) snapshot wins, so the previous document's
-  // title/media never renders beside the new document's version badge
-  // (derived from the live `value._id`).
-  const {snapshot, original, isLoading} = useDeferredObservableValue(
+  // Deferred: react-rx v5's deferral is identity-coherent, so when this
+  // component is reused for a new document id the live snapshot wins and the
+  // previous document's title/media never renders beside the new document's
+  // version badge.
+  const {snapshot, original, isLoading} = useObservable(
     previewStateObservable,
     INITIAL_PREVIEW_STATE,
   )

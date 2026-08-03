@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useObservable as useSyncObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {defer, firstValueFrom, from, NEVER, Subject, type Observable} from 'rxjs'
 import {catchError, mergeMap, take, tap} from 'rxjs/operators'
 import {

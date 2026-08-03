@@ -2,6 +2,7 @@ import {type SanityDocument} from '@sanity/client'
 import {type User} from '@sanity/types'
 import sortBy from 'lodash-es/sortBy.js'
 import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {
   catchError,
   concat,
@@ -20,7 +21,6 @@ import {type DocumentValuePermission, type Grant} from '../store/grants/types'
 import {type ProjectData} from '../store/project/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {getSystemGroups$} from '../util/getSystemGroups$'
-import {useDeferredObservableValue} from '../util/useDeferredObservableValue'
 import {useClient} from './useClient'
 
 type Loadable<T> = {
@@ -175,5 +175,5 @@ export function useUserListWithPermissions(
     )
   }, [documentValue, permission, users$, systemGroup$])
 
-  return useDeferredObservableValue(state$, INITIAL_STATE)
+  return useObservable(state$, INITIAL_STATE)
 }

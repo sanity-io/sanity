@@ -19,9 +19,9 @@ import {useValidationStatus} from '../useValidationStatus'
  * the value lags.
  *
  * The discriminating assertion below fails if the hook is ever routed
- * through `useDeferredValue` / `useDeferredObservableValue` again: a
- * deferred read commits one frame pairing fresh urgent state with the stale
- * (error-free) validation snapshot.
+ * through a deferred read (`useDeferredValue` / react-rx's deferred
+ * `useObservable`) again: a deferred read commits one frame pairing fresh
+ * urgent state with the stale (error-free) validation snapshot.
  */
 
 let validationSubject: Subject<ValidationStatus>

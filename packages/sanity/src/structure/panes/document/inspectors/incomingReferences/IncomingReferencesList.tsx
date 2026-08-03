@@ -1,6 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {map} from 'rxjs'
 import {
   CommandList,
@@ -25,7 +26,6 @@ import {
   IncomingReferencesListContainer,
 } from '../../../../components/incomingReferencesDecoration/shared'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {useDeferredObservableValue} from '../../../../util/useDeferredObservableValue'
 import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
 
@@ -126,7 +126,7 @@ export function IncomingReferencesList() {
       ),
     [documentId, documentPreviewStore, getClient],
   )
-  const references = useDeferredObservableValue(references$, null)
+  const references = useObservable(references$, null)
 
   const crossDatasetIncomingRefs$ = useMemo(
     () =>
@@ -152,7 +152,7 @@ export function IncomingReferencesList() {
     [client, documentId, documentPreviewStore],
   )
 
-  const crossDatasetRefs = useDeferredObservableValue(crossDatasetIncomingRefs$, null)
+  const crossDatasetRefs = useObservable(crossDatasetIncomingRefs$, null)
 
   const renderSameDatasetItem = useCallback<CommandListRenderItemCallback<SanityDocument>>(
     (document) => <IncomingReferenceDocument document={document} referenceToId={documentId} />,
