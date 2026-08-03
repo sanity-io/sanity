@@ -27,12 +27,10 @@ type Week = {
 }
 
 export const getWeeksOfMonth = (date: Date): Week[] =>
-  getWeekDaysFromWeekStarts(getWeekStartsOfMonth(date)).map(
-    (days): Week => ({
-      number: getWeek(days[0]),
-      days,
-    }),
-  )
+  getWeekDaysFromWeekStarts(getWeekStartsOfMonth(date)).map((days): Week => ({
+    number: getWeek(days[0]),
+    days,
+  }))
 
 export const formatTime = (hours: number, minutes: number): string =>
   `${`${hours}`.padStart(2, '0')}:${`${minutes}`.padStart(2, '0')}`

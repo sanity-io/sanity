@@ -607,15 +607,13 @@ function resolveSource({
   const initialTemplatesResponses = templates
     // filter out the ones with parameters to fill
     .filter((template) => !template.parameters?.length)
-    .map(
-      (template): TemplateItem => ({
-        templateId: template.id,
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        description: template.description,
-        icon: template.icon,
-        title: template.title,
-      }),
-    )
+    .map((template): TemplateItem => ({
+      templateId: template.id,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      description: template.description,
+      icon: template.icon,
+      title: template.title,
+    }))
 
   const templateMap = templates.reduce((acc, template) => {
     acc.set(template.id, template)

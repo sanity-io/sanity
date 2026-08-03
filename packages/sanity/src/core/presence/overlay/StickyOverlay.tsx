@@ -90,12 +90,10 @@ function group(regionsWithIntersectionDetails: RegionWithIntersectionDetails[]):
           .reduce((w, _withIntersection) => w + _withIntersection.region.rect.width, 0),
       }),
     ),
-    inside: orderByTop(grouped.inside).map(
-      (withIntersection): RegionWithSpacerHeightAndIndent => ({
-        ...(withIntersection as RegionWithSpacerHeight),
-        indent: 0,
-      }),
-    ),
+    inside: orderByTop(grouped.inside).map((withIntersection): RegionWithSpacerHeightAndIndent => ({
+      ...(withIntersection as RegionWithSpacerHeight),
+      indent: 0,
+    })),
     bottom: orderByTop(grouped.bottom).map(
       (withIntersection, i, grp): RegionWithSpacerHeightAndIndent => ({
         ...(withIntersection as RegionWithSpacerHeight),

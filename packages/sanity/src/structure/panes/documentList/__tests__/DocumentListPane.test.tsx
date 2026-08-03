@@ -21,18 +21,16 @@ vi.mock('../DocumentListPaneContent', () => ({
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useActiveReleases: vi.fn(() => ({loading: false, data: []})),
-  usePerspective: vi.fn(
-    (): PerspectiveContextValue => ({
-      perspectiveStack: ['drafts'],
-      excludedPerspectives: [],
-      selectedPerspective: 'drafts',
-      selectedPerspectiveName: undefined,
-      selectedReleaseId: undefined,
-      selectedVariantName: undefined,
-      selectedVariant: undefined,
-      bundle: 'drafts',
-    }),
-  ),
+  usePerspective: vi.fn((): PerspectiveContextValue => ({
+    perspectiveStack: ['drafts'],
+    excludedPerspectives: [],
+    selectedPerspective: 'drafts',
+    selectedPerspectiveName: undefined,
+    selectedReleaseId: undefined,
+    selectedVariantName: undefined,
+    selectedVariant: undefined,
+    bundle: 'drafts',
+  })),
   useReconnectingToast: vi.fn(),
 }))
 

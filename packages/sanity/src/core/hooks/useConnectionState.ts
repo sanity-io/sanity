@@ -27,10 +27,9 @@ export function connectionState(
   return documentStore.pair.documentEvents(publishedDocId, docTypeName, version).pipe(
     map((ev: {type: string}) => ev.type),
     map((eventType) => eventType !== 'reconnect'),
-    switchMap(
-      (isConnected): Observable<ConnectionState> =>
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        isConnected ? of('connected') : timer(200).pipe(mapTo('reconnecting')),
+    switchMap((isConnected): Observable<ConnectionState> =>
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      isConnected ? of('connected') : timer(200).pipe(mapTo('reconnecting')),
     ),
     startWith(INITIAL),
     distinctUntilChanged(),
