@@ -234,6 +234,8 @@ export function useVersionContextMenu(
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
+      // Menu items and the create release dialog pass a release document id, but a bare
+      // release id is accepted too so every branch addresses the release the same way.
       const perspective = isReleaseDocumentId(targetRelease)
         ? getReleaseIdFromReleaseDocumentId(targetRelease)
         : targetRelease
@@ -241,6 +243,7 @@ export function useVersionContextMenu(
         if (!documentVersionInfoStub?._id) {
           throw new Error('Document version info stub is required')
         }
+
         if (variantRef) {
           // A variant version can only be created through the variant action, otherwise
           // the new version would not belong to the variant.
@@ -251,10 +254,7 @@ export function useVersionContextMenu(
             selectedPerspective: perspective,
           })
         } else {
-          await createVersion(
-            getReleaseIdFromReleaseDocumentId(targetRelease),
-            documentVersionInfoStub._id,
-          )
+          await createVersion(perspective, documentVersionInfoStub._id)
         }
       }
 
