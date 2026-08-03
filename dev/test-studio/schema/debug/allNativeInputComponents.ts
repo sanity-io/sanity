@@ -136,6 +136,7 @@ export const allNativeInputComponents = defineType({
         {
           type: 'allNativeInputComponents',
           preview: {select: {title: 'title'}},
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __experimental_search: [{path: 'title'}],
         },
       ],

@@ -10,21 +10,18 @@ describe('deriveSearchWeightsFromType2024', () => {
     const range = [...Array(60).keys()]
 
     const componentRefs = range.map((index) => ({type: `component_${index}`}))
-    const components = range.map((index) => {
-      // Declared outside of defineType so spreading the mapped fields doesn't get
-      // inferred as a variadic tuple type via defineType's return-type precision.
-      const fields = [
-        ...[...Array(10).keys()].map((fieldIndex) =>
-          defineField({name: `component_${index}_field_${fieldIndex}`, type: 'string'}),
-        ),
-        defineField({name: `children_${index}`, type: 'array', of: [...componentRefs]}),
-      ]
-      return defineType({
+    const components = range.map((index) =>
+      defineType({
         name: `component_${index}`,
         type: 'object',
-        fields,
-      })
-    })
+        fields: [
+          ...[...Array(10).keys()].map((fieldIndex) =>
+            defineField({name: `component_${index}_field_${fieldIndex}`, type: 'string'}),
+          ),
+          defineField({name: `children_${index}`, type: 'array', of: [...componentRefs]}),
+        ],
+      }),
+    )
 
     const schema = createSchema({
       name: 'default',

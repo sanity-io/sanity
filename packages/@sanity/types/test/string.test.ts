@@ -81,7 +81,6 @@ describe('string types', () => {
         name: 'custom-string',
         //@ts-expect-error preview does not exist in type StringDefinition
         preview: {},
-        //@ts-expect-error of does not exist in type StringDefinition
         of: [],
       })
     })

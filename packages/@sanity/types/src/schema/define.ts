@@ -3,7 +3,7 @@ import {
   type DefineFieldDefinition,
   type DefineSchemaOptions,
   type DefineTypeDefinition,
-  type MaybeEnsureNoUnknownProps,
+  type InferSchemaDefinition,
   type MaybeWidenInitialValue,
   type MaybeWidenValidation,
   type StrictDefinition,
@@ -194,11 +194,7 @@ export function defineType<
     NoInfer<TAlias>,
     NoInfer<TStrict>
   > &
-    MaybeEnsureNoUnknownProps<
-      TSchemaDefinition,
-      DefineTypeDefinition<TType, TName, TSelect, TPrepareValue, NoInfer<TAlias>, NoInfer<TStrict>>,
-      NoInfer<TStrict>
-    >,
+    InferSchemaDefinition<TSchemaDefinition>,
 
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): TSchemaDefinition {
@@ -256,18 +252,7 @@ export function defineField<
     NoInfer<TAlias>,
     NoInfer<TStrict>
   > &
-    MaybeEnsureNoUnknownProps<
-      TSchemaDefinition,
-      DefineFieldDefinition<
-        TType,
-        TName,
-        TSelect,
-        TPrepareValue,
-        NoInfer<TAlias>,
-        NoInfer<TStrict>
-      >,
-      NoInfer<TStrict>
-    >,
+    InferSchemaDefinition<TSchemaDefinition>,
 
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): TSchemaDefinition &
@@ -330,18 +315,7 @@ export function defineArrayMember<
     NoInfer<TAlias>,
     NoInfer<TStrict>
   > &
-    MaybeEnsureNoUnknownProps<
-      TSchemaDefinition,
-      DefineArrayMemberDefinition<
-        TType,
-        TName,
-        TSelect,
-        TPrepareValue,
-        NoInfer<TAlias>,
-        NoInfer<TStrict>
-      >,
-      NoInfer<TStrict>
-    >,
+    InferSchemaDefinition<TSchemaDefinition>,
 
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): TSchemaDefinition &

@@ -55,7 +55,7 @@ describe('Extract schema test', () => {
               options: {
                 list: ['a', 'b', 'c'],
               },
-              validation: (Rule: any) => Rule.required(),
+              validation: (Rule) => Rule.required(),
             },
             {
               title: 'Number',

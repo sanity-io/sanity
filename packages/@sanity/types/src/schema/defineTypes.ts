@@ -72,37 +72,22 @@ export type MaybeAllowUnknownProps<TStrict extends StrictDefinition> = TStrict e
     }
   : unknown
 
-/** @beta */
-export type NoExtraProperties<TActual, TExpected> = TActual &
-  Record<Exclude<keyof TActual, keyof TExpected>, never> &
-  NoExtraOptions<TActual, TExpected>
-
-/** @beta */
-export type NoExtraOptions<TActual, TExpected> = 'options' extends keyof TActual
-  ? {} extends Pick<TActual, 'options'>
-    ? unknown
-    : 'options' extends keyof TExpected
-      ? {options: NoExtraObjectProperties<TActual['options'], NonNullable<TExpected['options']>>}
-      : unknown
+/**
+ * An inference-only intersection slot for the define helpers.
+ *
+ * TypeScript infers the exact type of the supplied schema definition into `TSchemaDefinition`
+ * (inference descends into the deferred conditional's branches), but once inference completes the
+ * conditional always resolves to `unknown`, which vanishes from the intersection. The argument is
+ * therefore checked against the declared definition type alone — contextual typing (eg for
+ * `validation` callbacks on unwrapped fields), excess property checks and deprecated-property
+ * detection all keep resolving against the declared types — while the helpers can still return
+ * the precise type that was supplied.
+ *
+ * @beta
+ */
+export type InferSchemaDefinition<TSchemaDefinition> = [TSchemaDefinition] extends [never]
+  ? TSchemaDefinition
   : unknown
-
-/** @beta */
-export type NoExtraObjectProperties<TActual, TExpected> = keyof TExpected extends never
-  ? TActual
-  : unknown extends TExpected
-    ? TActual
-    : TActual extends object
-      ? TExpected extends object
-        ? TActual & Record<Exclude<keyof TActual, keyof TExpected>, never>
-        : TActual
-      : TActual
-
-/** @beta */
-export type MaybeEnsureNoUnknownProps<
-  TActual,
-  TExpected,
-  TStrict extends StrictDefinition,
-> = TStrict extends false ? TActual : NoExtraProperties<TActual, TExpected>
 
 /** @beta */
 export type MaybePreview<

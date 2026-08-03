@@ -7,34 +7,6 @@ import {
   defineType,
 } from 'sanity'
 
-// Declared outside of defineArrayMember so spreading the defaults doesn't get
-// inferred as a variadic tuple type via defineArrayMember's return-type precision.
-const decorators = [
-  ...DEFAULT_DECORATORS,
-  {
-    title: 'Highlight',
-    value: 'highlight',
-    icon: HighlightIcon,
-  },
-]
-
-const annotations = [
-  ...DEFAULT_ANNOTATIONS,
-  defineField({
-    type: 'object',
-    name: 'internalLink',
-    title: 'Internal Link',
-    fields: [
-      defineField({
-        type: 'reference',
-        name: 'reference',
-        title: 'Reference',
-        to: [{type: 'book'}],
-      }),
-    ],
-  }),
-]
-
 /**
  * Example schema demonstrating how to extend Portable Text with custom
  * annotations and decorators while preserving the built-in defaults.
@@ -61,11 +33,33 @@ export const ptCustomWithDefaultsType = defineType({
         defineArrayMember({
           type: 'block',
           marks: {
-            // Default decorators (strong, em, code, underline, strike-through)
-            // plus a custom "highlight" decorator
-            decorators,
-            // Default annotations (link) plus a custom "internalLink" annotation
-            annotations,
+            // Spread default decorators (strong, em, code, underline, strike-through)
+            // and add a custom "highlight" decorator
+            decorators: [
+              ...DEFAULT_DECORATORS,
+              {
+                title: 'Highlight',
+                value: 'highlight',
+                icon: HighlightIcon,
+              },
+            ],
+            // Spread default annotations (link) and add a custom "internalLink" annotation
+            annotations: [
+              ...DEFAULT_ANNOTATIONS,
+              defineField({
+                type: 'object',
+                name: 'internalLink',
+                title: 'Internal Link',
+                fields: [
+                  defineField({
+                    type: 'reference',
+                    name: 'reference',
+                    title: 'Reference',
+                    to: [{type: 'book'}],
+                  }),
+                ],
+              }),
+            ],
           },
         }),
       ],

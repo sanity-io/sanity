@@ -71,7 +71,7 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
               options: {
                 list: ['a', 'b', 'c'],
               },
-              validation: (Rule: any) => Rule.required(),
+              validation: (Rule) => Rule.required(),
             },
             {
               title: 'Number',
