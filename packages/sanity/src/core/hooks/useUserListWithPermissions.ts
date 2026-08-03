@@ -1,8 +1,19 @@
 import {type SanityDocument} from '@sanity/client'
 import {type User} from '@sanity/types'
 import sortBy from 'lodash-es/sortBy.js'
-import {useEffect, useMemo, useState} from 'react'
-import {concat, forkJoin, map, mergeMap, type Observable, of, shareReplay, switchMap} from 'rxjs'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {
+  catchError,
+  concat,
+  forkJoin,
+  map,
+  mergeMap,
+  type Observable,
+  of,
+  shareReplay,
+  switchMap,
+} from 'rxjs'
 
 import {useProjectStore, useUserStore} from '../store/datastores'
 import {grantsPermissionOn} from '../store/grants/grantsStore'
@@ -91,8 +102,6 @@ export function useUserListWithPermissions(
   const userStore = useUserStore()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  const [state, setState] = useState<UserListWithPermissionsHookValue>(INITIAL_STATE)
-
   const [users$, systemGroup$] = useMemo(() => {
     // 1. Get the project members and filter out the robot users
     const members$: Observable<ProjectData['members']> = projectStore
@@ -121,7 +130,7 @@ export function useUserListWithPermissions(
     return [_users$, _systemGroup$]
   }, [client.observable, projectStore, userStore])
 
-  const list$ = useMemo(() => {
+  const state$ = useMemo(() => {
     // 4. Check if the user has read permission on the document and set the `granted` property
     const grants$: Observable<UserWithPermission[]> = forkJoin([users$, systemGroup$]).pipe(
       mergeMap(async ([users, groups]) => {
@@ -153,33 +162,18 @@ export function useUserListWithPermissions(
     )
 
     // 5. Sort the users alphabetically
-    const $alphabetical: Observable<Loadable<UserWithPermission[]>> = grants$.pipe(
-      map((res) => ({
-        error: null,
-        loading: false,
-        data: sortBy(res, 'displayName'),
-      })),
+    return concat(
+      of(INITIAL_STATE),
+      grants$.pipe(
+        map((res) => ({
+          error: null,
+          loading: false,
+          data: sortBy(res, 'displayName'),
+        })),
+        catchError((error: Error) => of({data: [] as UserWithPermission[], error, loading: false})),
+      ),
     )
-
-    return $alphabetical
   }, [documentValue, permission, users$, systemGroup$])
 
-  // @TODO refactor to useObservable
-  useEffect(() => {
-    const initial$ = of(INITIAL_STATE)
-    const state$ = concat(initial$, list$)
-
-    const sub = state$.subscribe({
-      next: setState,
-      error: (error) => {
-        setState({data: [], error, loading: false})
-      },
-    })
-
-    return () => {
-      sub.unsubscribe()
-    }
-  }, [list$])
-
-  return state
+  return useObservable(state$, INITIAL_STATE)
 }

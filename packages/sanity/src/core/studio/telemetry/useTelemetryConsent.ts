@@ -1,4 +1,6 @@
-import {useEffect, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, of} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
 import {type ConsentStatus, getTelemetryConsent$} from './telemetryConsent'
@@ -12,15 +14,11 @@ import {type ConsentStatus, getTelemetryConsent$} from './telemetryConsent'
  */
 export function useTelemetryConsent(): ConsentStatus {
   const client = useClient({apiVersion: '2023-12-18'})
-  const [status, setStatus] = useState<ConsentStatus>('loading')
 
-  useEffect(() => {
-    const sub = getTelemetryConsent$(client).subscribe({
-      next: setStatus,
-      error: () => setStatus('denied'),
-    })
-    return () => sub.unsubscribe()
-  }, [client])
+  const consent$ = useMemo(
+    () => getTelemetryConsent$(client).pipe(catchError(() => of('denied' as const))),
+    [client],
+  )
 
-  return status
+  return useObservable(consent$, 'loading')
 }

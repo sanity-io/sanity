@@ -1,5 +1,5 @@
 import {Card, Container, Flex, Text} from '@sanity/ui'
-import {useEffect, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 interface Document {
@@ -10,11 +10,7 @@ interface Document {
 export const PerspectiveExample = (props: {options: {doc$: Observable<Document>}}) => {
   const {options} = props
   const doc$ = options.doc$
-  const [doc, setDoc] = useState<Document | null>(null)
-  useEffect(() => {
-    const subscription = doc$.subscribe((docs: Document) => setDoc(docs))
-    return () => subscription.unsubscribe()
-  }, [doc$])
+  const doc = useObservable(doc$, null)
 
   return (
     <Container padding={4}>
