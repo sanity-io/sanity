@@ -73,6 +73,7 @@ exports[`exports snapshot 1`] = `
     "DateInput": "function",
     "DateTimeInput": "function",
     "DefaultPreview": "function",
+    "Delay": "function",
     "DetailPreview": "function",
     "DiffCard": "object",
     "DiffErrorBoundary": "function",

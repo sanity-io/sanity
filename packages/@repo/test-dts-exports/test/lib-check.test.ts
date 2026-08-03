@@ -72,6 +72,12 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
+  // Workaround for @sanity-labs/ui-poc’s stylesheet, which TypeScript reports as a TS2882 under
+  // skipLibCheck: false in this suite.
+  if (code === 2882 && d.messageText.toString().includes('@sanity-labs/ui-poc/styles.css')) {
+    return false
+  }
+
   return true
 })
 

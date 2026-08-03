@@ -1,3 +1,4 @@
+import '@sanity-labs/ui-poc/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
 
@@ -99,6 +100,7 @@ export {
   type CommandListRenderItemCallback,
 } from '../core/components/commandList/types'
 export {ContextMenuButton} from '../core/components/contextMenuButton/ContextMenuButton'
+export {Delay} from '../core/components/Delay'
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
 export {ErrorActions, type ErrorActionsProps} from '../core/components/errorActions/ErrorActions'

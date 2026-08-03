@@ -1,4 +1,3 @@
-// oxlint-disable-next-line no-unassigned-import -- imported for its side effects
 import '@portabletext/plugin-table/ui/styles.css'
 
 import {type Container, type ContainerRenderProps} from '@portabletext/editor'

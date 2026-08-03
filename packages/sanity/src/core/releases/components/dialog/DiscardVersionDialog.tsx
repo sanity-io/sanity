@@ -23,22 +23,22 @@ import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromRele
  */
 export function DiscardVersionDialog(props: {
   onClose: () => void
-  documentId: string
+  versionId: string
   documentType: string
   fromPerspective: string | TargetPerspective
   isGoingToUnpublish: boolean
 }): React.JSX.Element {
-  const {onClose, documentId, documentType, fromPerspective, isGoingToUnpublish} = props
+  const {onClose, versionId, documentType, fromPerspective, isGoingToUnpublish} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: coreT} = useTranslation()
-  const targetDocumentState = useTargetDocumentState(getPublishedId(documentId))
+  const targetDocumentState = useTargetDocumentState(getPublishedId(versionId))
   // The scope of the document targeted by the selected perspective, so that discarding a draft
   // targets the variant-scoped version when a variant is selected (undefined when the target is
   // still resolving or the draft/published pair applies). While resolving, confirming is
   // disabled below instead of silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
   const {discardChanges} = useDocumentOperation(
-    getPublishedId(documentId),
+    getPublishedId(versionId),
     documentType,
     getPairTarget(targetDocumentState),
   )
@@ -47,10 +47,10 @@ export function DiscardVersionDialog(props: {
   const schema = useSchema()
   const toast = useToast()
   const [isDiscarding, setIsDiscarding] = useState(false)
-  const discardType = isDraftId(documentId) ? 'draft' : 'release'
+  const discardType = isDraftId(versionId) ? 'draft' : 'release'
   const rawReleaseName =
     typeof fromPerspective === 'string' ? fromPerspective : fromPerspective.metadata.title
-  const currentRelease = getVersionNameFromId(documentId as VersionId)
+  const currentRelease = getVersionNameFromId(versionId as VersionId)
   const releaseName = rawReleaseName || coreT('release.placeholder-untitled-release')
 
   const schemaType = schema.get(documentType)
@@ -58,13 +58,13 @@ export function DiscardVersionDialog(props: {
   const handleDiscardVersion = useCallback(async () => {
     setIsDiscarding(true)
 
-    if (isVersionId(documentId)) {
+    if (isVersionId(versionId)) {
       // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
       const run = async () => {
         await discardVersion(
-          getVersionFromId(documentId) ||
+          getVersionFromId(versionId) ||
             getReleaseIdFromReleaseDocumentId((selectedPerspective as ReleaseDocument)._id),
-          documentId,
+          versionId,
         )
       }
       try {
@@ -85,7 +85,7 @@ export function DiscardVersionDialog(props: {
     setIsDiscarding(false)
 
     onClose()
-  }, [documentId, onClose, discardVersion, selectedPerspective, toast, coreT, discardChanges])
+  }, [versionId, onClose, discardVersion, selectedPerspective, toast, coreT, discardChanges])
 
   return (
     <Dialog
@@ -115,7 +115,7 @@ export function DiscardVersionDialog(props: {
       <Stack space={3} paddingX={3} marginBottom={2}>
         {schemaType ? (
           <Preview
-            value={{_id: isGoingToUnpublish ? getPublishedId(documentId) : documentId}}
+            value={{_id: isGoingToUnpublish ? getPublishedId(versionId) : versionId}}
             schemaType={schemaType}
             // Resolve the preview under the perspective of what's being discarded:
             // the published doc when unpublishing, the drafts perspective when

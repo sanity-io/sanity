@@ -57,12 +57,12 @@ const config = defineConfig({
   },
 })
 
-async function renderDialog(props: {documentId: string; isGoingToUnpublish?: boolean}) {
+async function renderDialog(props: {versionId: string; isGoingToUnpublish?: boolean}) {
   const wrapper = await createTestProvider({config})
   render(
     <DiscardVersionDialog
       onClose={vi.fn()}
-      documentId={props.documentId}
+      versionId={props.versionId}
       documentType="testDoc"
       fromPerspective="drafts"
       isGoingToUnpublish={props.isGoingToUnpublish ?? false}
@@ -78,21 +78,21 @@ describe('DiscardVersionDialog preview perspective', () => {
   })
 
   it('previews a discarded draft under the drafts perspective', async () => {
-    await renderDialog({documentId: 'drafts.my-doc'})
+    await renderDialog({versionId: 'drafts.my-doc'})
     expect(previewSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({perspectiveStack: ['drafts']}),
     )
   })
 
   it('previews a discarded release version under its release perspective', async () => {
-    await renderDialog({documentId: 'versions.rSummer.my-doc'})
+    await renderDialog({versionId: 'versions.rSummer.my-doc'})
     expect(previewSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({perspectiveStack: ['rSummer']}),
     )
   })
 
   it('previews the published document (empty perspective) when unpublishing', async () => {
-    await renderDialog({documentId: 'drafts.my-doc', isGoingToUnpublish: true})
+    await renderDialog({versionId: 'drafts.my-doc', isGoingToUnpublish: true})
     expect(previewSpy).toHaveBeenLastCalledWith(expect.objectContaining({perspectiveStack: []}))
   })
 })

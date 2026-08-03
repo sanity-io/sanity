@@ -1,4 +1,3 @@
-// oxlint-disable-next-line no-unassigned-import -- style import is effectful
 import './styles.css'
 
 /* disabling for now because the imports trigger side effects causing test snapshots to update */

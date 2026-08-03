@@ -534,6 +534,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** The label given to a document group's base variant */
   'document-group.base-variant': 'All users (Default)',
+  /** The header label for the variant creation flow before a variant definition has been selected */
+  'document-group.create-variant': 'Create variant',
+  /** The header label for the variant creation flow once a variant definition has been selected */
+  'document-group.create-variant.for-target': 'Create variant for {{variantDefinitionName}}',
+  /** The heading for the option to create a variant as a draft */
+  'document-group.create-variant.target-drafts': 'As a draft',
+  /** The label for the list of releases a variant can be created in */
+  'document-group.create-variant.target-releases': 'Into a release',
+  /** The label for the list of existing variants that can be viewed instead of creating a new one */
+  'document-group.create-variant.view-existing-variants': 'Or view existing variants',
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
   'document-group.delete.cancel-button.text': 'Cancel',
   /** Used in `document-group.delete.cdr-summary.title` */

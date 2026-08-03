@@ -338,6 +338,17 @@ export default defineConfig([
   defaultWorkspace,
   {
     ...defaultWorkspace,
+    title: 'Test Studio (variants disabled)',
+    name: 'test-studio-variants-disabled',
+    basePath: '/test-studio-variants-disabled',
+    beta: {
+      variants: {
+        enabled: false,
+      },
+    },
+  },
+  {
+    ...defaultWorkspace,
     projectId: 'nonexistent',
     name: 'nonexistent-project',
     title: 'Nonexistent project',

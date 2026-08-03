@@ -31,7 +31,7 @@ pnpm test
 # Update snapshots if tests fail due to expected changes
 pnpm test -- -u
 
-# Lint + type check (oxlint typeAware + typeCheck; no separate tsc/tsgo step)
+# Lint + type check (oxlint typeAware + typeCheck; no separate tsc step)
 pnpm check:oxlint
 ```
 
@@ -254,7 +254,7 @@ pnpm test:e2e --ui          # Interactive mode
 
 ## Coding Standards
 
-Coding standards are enforced by **oxlint** (native Rust rules, type-aware rules via tsgolint, TypeScript type checking via `options.typeCheck`, and a few ESLint plugins loaded through oxlint's `jsPlugins`). TypeScript type checking is included in `pnpm lint` / `pnpm check:oxlint` — no separate `tsc`/`tsgo` step. Check your code with:
+Coding standards are enforced by **oxlint** (native Rust rules, type-aware rules via tsgolint, TypeScript type checking via `options.typeCheck`, and a few ESLint plugins loaded through oxlint's `jsPlugins`). TypeScript type checking is included in `pnpm lint` / `pnpm check:oxlint` — no separate `tsc` step. Check your code with:
 
 ```bash
 pnpm lint              # Check for issues (oxlint, includes type checking)
@@ -471,7 +471,7 @@ See `turbo.json` for full list of environment variables that affect builds.
 
 These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The startup update script already runs `pnpm install`.
 
-- **`pnpm test` needs `tsc` at the repo root for vitest `*.test-d.*` type tests.** Vitest is configured with `typecheck.enabled: true` (see `vitest.config.mts` and `packages/sanity/vitest.config.mts`), which spawns the real `tsc` binary for those type tests (in the `sanity` and `@sanity/types` projects). CI type checking of application code is owned by oxlint (`options.typeCheck`); `@typescript/native-preview` (`tsgo`) remains a root dependency for the VS Code tsgo language server. The repo does not declare `typescript` directly, so pnpm only hoists `typescript` into the virtual store (`node_modules/.pnpm/node_modules/typescript`) and never creates a root `node_modules/.bin/tsc`. Without `tsc` on the path, `pnpm test` still passes every test but exits non-zero with `Spawning typechecker failed - is typescript installed?`. The startup update script fixes this by symlinking the hoisted `typescript` to the root (`node_modules/typescript` + `node_modules/.bin/tsc`). If you ever run a manual `pnpm install` that wipes these symlinks and then see that error, re-create them (or re-run the update script). Running a single project (e.g. `pnpm vitest run --project=sanity`) also triggers this.
+- **Root `typescript` is TypeScript 7.** Catalog `typescript` (^7) is a normal root dependency and provides the native `tsc` binary for vitest typecheck (`*.test-d.*`) and for tsdown `dts: {tsgo: true}` (packages also declare catalog `typescript`). CI type checking of application code is owned by oxlint (`options.typeCheck`). Tools that still need the TypeScript 6 compiler API keep that isolated: `@repo/typedoc` (typedoc) and `@repo/test-dts-exports` (ts-morph) depend on `typescript` aliased to `@typescript/typescript6`. The old symlink workaround for a missing root `tsc` is no longer needed.
 - **Dev studio auth for cloud agents — use the `STUDIO_AUTH_TOKEN` secret, not interactive login.** `pnpm dev` runs `sanity dev --no-auto-updates` (non-interactive, no upgrade prompt) and serves the app at `http://localhost:3333`. The test studio connects to Sanity Cloud (project `ppsg7ml5`); its default workspace is `/test`. Without auth the workspaces show "Signed out" / "Choose login provider". To authenticate, put the injected `STUDIO_AUTH_TOKEN` in the URL hash — Sanity consumes it on load and strips it from the address bar:
   - Build the URL: `node -e "console.log('http://localhost:3333/test#token=' + encodeURIComponent(process.env.STUDIO_AUTH_TOKEN))"` (any workspace basePath works, e.g. `/test`).
   - Because the Read tool redacts the token, you cannot paste the URL into browser instructions directly. A reliable trick is a tiny local HTTP server that reads `STUDIO_AUTH_TOKEN` from env and serves an HTML page doing `location.replace(<studio-url-with-token>)`, then point the browser at that server (keeps the secret out of prompts/screenshots). After load you land authenticated in the workspace and can create/publish documents (e.g. an `Author`).

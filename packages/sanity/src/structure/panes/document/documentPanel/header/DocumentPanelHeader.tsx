@@ -47,7 +47,7 @@ import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {useDocumentPane} from '../../useDocumentPane'
-import {FocusDocumentPaneClicked, FocusDocumentPaneCollapsed} from './__telemetry__/focus.telemetry'
+import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focus.telemetry'
 import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
@@ -186,9 +186,9 @@ export const DocumentPanelHeader = memo(
       onSetMaximizedPane?.()
 
       if (isMaximizedPane) {
-        telemetry.log(FocusDocumentPaneCollapsed)
+        telemetry.log(DocumentPaneCollapsed)
       } else {
-        telemetry.log(FocusDocumentPaneClicked)
+        telemetry.log(DocumentPaneMaximized)
       }
     }, [onSetMaximizedPane, isMaximizedPane, telemetry])
 
