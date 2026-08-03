@@ -22,6 +22,7 @@ import {
   type DocumentFieldAction,
   type EditStateFor,
   EMPTY_ARRAY,
+  getCreatableVariantTarget,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
@@ -36,6 +37,7 @@ import {
   selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
+  useCreatableVariantInitialValue,
   useDocumentDivergences,
   useDocumentForm,
   useDocumentIdStack,
@@ -158,12 +160,23 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   const diffViewRouter = useDiffViewRouter()
 
-  const initialValue = useDocumentPaneInitialValue({
+  // Resolution state of the document targeted by the selected perspective and variant — the
+  // single source for in-pane consumers (initial value, read-only derivation, banners, footer,
+  // actions).
+  const targetDocumentState = useTargetDocumentState(documentId)
+
+  const templateInitialValue = useDocumentPaneInitialValue({
     paneOptions,
     documentId,
     documentType,
     params,
   })
+
+  // For a creatable missing draft variant, the initial value is the published sibling
+  // (re-identified as the draft target, `_system` rewritten for the draft): the form displays it
+  // until the document exists, and the first keystroke creates the draft variant seeded from it.
+  // Every other state passes the template-resolved initial value through.
+  const initialValue = useCreatableVariantInitialValue(targetDocumentState, templateInitialValue)
 
   const isInitialValueLoading = initialValue.loading
   const {
@@ -218,16 +231,16 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
-  // Resolution state of the document targeted by the selected perspective and variant — the
-  // single source for in-pane consumers (read-only derivation, banners, footer, actions).
-  const targetDocumentState = useTargetDocumentState(documentId)
-
   // When a variant is requested, the form is editable only once the variant target has resolved:
   // `variant-missing` shows the not-in-variant banner offering to create it,
   // `variant-definition-document-not-found` is an invalid selection, and `resolving` covers
   // target transitions while the pane is mounted (initial mounts are gated in DocumentPane).
+  // Exception: a creatable missing draft variant (server-advertised id) is editable — typing
+  // creates the document seeded from the published sibling.
   const isVariantTargetReadOnly =
-    Boolean(perspective.selectedVariantName) && targetDocumentState.status !== 'ready'
+    Boolean(perspective.selectedVariantName) &&
+    targetDocumentState.status !== 'ready' &&
+    !getCreatableVariantTarget(targetDocumentState)
 
   const getIsReadOnly = useCallback(
     (editState: EditStateFor): boolean => {

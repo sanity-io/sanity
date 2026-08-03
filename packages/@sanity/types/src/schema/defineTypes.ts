@@ -1,4 +1,5 @@
 import {
+  type FieldDefinitionBase,
   type IntrinsicDefinitions,
   type IntrinsicTypeName,
   type TypeAliasDefinition,
@@ -71,6 +72,23 @@ export type MaybeAllowUnknownProps<TStrict extends StrictDefinition> = TStrict e
     }
   : unknown
 
+/**
+ * An inference-only intersection slot for the define helpers.
+ *
+ * TypeScript infers the exact type of the supplied schema definition into `TSchemaDefinition`
+ * (inference descends into the deferred conditional's branches), but once inference completes the
+ * conditional always resolves to `unknown`, which vanishes from the intersection. The argument is
+ * therefore checked against the declared definition type alone — contextual typing (eg for
+ * `validation` callbacks on unwrapped fields), excess property checks and deprecated-property
+ * detection all keep resolving against the declared types — while the helpers can still return
+ * the precise type that was supplied.
+ *
+ * @beta
+ */
+export type InferSchemaDefinition<TSchemaDefinition> = [TSchemaDefinition] extends [never]
+  ? TSchemaDefinition
+  : unknown
+
 /** @beta */
 export type MaybePreview<
   Select extends Record<string, string> | undefined,
@@ -96,12 +114,68 @@ export type NarrowPreview<
     : unknown
 
 /** @beta */
+export type DefineTypeDefinition<
+  TType extends string,
+  TName extends string,
+  TSelect extends Record<string, string> | undefined,
+  TPrepareValue extends Record<keyof TSelect, any> | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+> = {
+  type: TType
+  name: TName
+} & DefineSchemaBase<TType, TAlias> &
+  NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
+  MaybeAllowUnknownProps<TStrict>
+
+/** @beta */
+export type DefineFieldDefinition<
+  TType extends string,
+  TName extends string,
+  TSelect extends Record<string, string> | undefined,
+  TPrepareValue extends Record<keyof TSelect, any> | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+> = DefineTypeDefinition<TType, TName, TSelect, TPrepareValue, TAlias, TStrict> &
+  FieldDefinitionBase
+
+/** @beta */
+export type DefineArrayMemberDefinition<
+  TType extends string,
+  TName extends string,
+  TSelect extends Record<string, string> | undefined,
+  TPrepareValue extends Record<keyof TSelect, any> | undefined,
+  TAlias extends IntrinsicTypeName | undefined,
+  TStrict extends StrictDefinition,
+> = {
+  type: TType
+  /**
+   * When provided, `name` is used as `_type` for the array item when stored.
+   *
+   * Necessary when an array contains multiple entries with the same `type`, each with
+   * different configuration (title and initialValue for instance).
+   */
+  name?: TName
+} & DefineArrayMemberBase<TType, TAlias> &
+  NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
+  MaybeAllowUnknownProps<TStrict>
+
+/** @beta */
 // Must type-widen some fields on the way out of the define functions to be compatible with FieldDefinition and ArrayDefinition
 export interface WidenValidation {
   validation?: SchemaValidationValue
 }
 
 /** @beta */
+export type MaybeWidenValidation<TSchemaDefinition> = 'validation' extends keyof TSchemaDefinition
+  ? WidenValidation
+  : unknown
+
+/** @beta */
 export interface WidenInitialValue {
   initialValue?: InitialValueProperty<any, any>
 }
+
+/** @beta */
+export type MaybeWidenInitialValue<TSchemaDefinition> =
+  'initialValue' extends keyof TSchemaDefinition ? WidenInitialValue : unknown

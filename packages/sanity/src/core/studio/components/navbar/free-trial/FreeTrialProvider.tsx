@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {BehaviorSubject, catchError, distinctUntilChanged, EMPTY, map, switchMap} from 'rxjs'
 import {FreeTrialContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
@@ -60,7 +60,7 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
 
   // Each response is tagged with the fetch key it answers, so auto-show can
   // tell a kept-while-refetching response from one matching the current params.
-  const trial = useObservable(
+  const trial = useSyncObservable(
     useMemo(
       () =>
         params$.pipe(

@@ -40,6 +40,9 @@ export function useDocumentPreviewValues(options: PreviewHookOptions): PreviewHo
       perspectiveStackFromOptions ?? perspectiveStack,
     )
   }, [documentId, documentPreviewStore, schemaType, perspectiveStackFromOptions, perspectiveStack])
+  // Deferred: react-rx v5's deferral is identity-coherent, so on a document
+  // id change the live snapshot wins and the previous document's title/media
+  // never pairs with the new identity.
   const previewState = useObservable(previewStateObservable)
 
   const isLoading = previewState?.isLoading ?? true

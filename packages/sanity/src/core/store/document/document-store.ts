@@ -252,6 +252,7 @@ export function createDocumentStore({
           ctx,
           getIdPairFromPublished(publishedId, getPairTargetScopeId(target)),
           type,
+          target,
         )
       },
       editState(publishedId, type, version) {

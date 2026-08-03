@@ -3,7 +3,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {type SanityDocument} from '@sanity/types'
 import {fromString, get} from '@sanity/util/paths'
 import {useContext, useEffect, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {
   type Observable,
   EMPTY,
@@ -159,8 +159,11 @@ export function useDivergenceController(
       }),
     )
 
-  const upstreamBase = useObservable(readUpstreamBase, {isLoading: true})
-  const upstreamHead = useObservable(readUpstreamHead, {isLoading: true})
+  // Kept synchronous: `markResolved` / `takeUpstreamValue` build and execute
+  // patches from `upstreamHead.value.document` (and gate on `isLoading`), so a
+  // deferred snapshot could act against a stale upstream document head.
+  const upstreamBase = useSyncObservable(readUpstreamBase, {isLoading: true})
+  const upstreamHead = useSyncObservable(readUpstreamHead, {isLoading: true})
 
   const isLoading = upstreamBase.isLoading || upstreamHead.isLoading
   const isReadOnly = contextReadOnly || isLoading || isActionPending

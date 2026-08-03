@@ -43,6 +43,10 @@ export function useNotificationTarget(
     const perspectiveStack = documentVersionId ? [documentVersionId, 'drafts'] : ['drafts']
     return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspectiveStack)
   }, [documentId, documentPreviewStore, schemaType, documentVersionId])
+  // Deferred (per review): `documentTitle` is only used in the notification
+  // email body, where a briefly stale title is harmless (it can go stale
+  // after send anyway). react-rx v5's identity-coherent deferral still falls
+  // back to the live value when the previewed document id changes.
   const previewState = useObservable(previewStateObservable)
 
   const {snapshot, original} = previewState || {}
