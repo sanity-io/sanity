@@ -3,7 +3,7 @@ import {renderHook} from '@testing-library/react'
 import {type ReactNode, useContext} from 'react'
 import {describe, expect, it} from 'vitest'
 
-import {type Workspace} from '../config'
+import {type Workspace} from '../config/types'
 import {useWorkspace, WorkspaceProvider} from './workspace'
 
 const mockWorkspace = {
