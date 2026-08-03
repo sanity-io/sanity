@@ -357,7 +357,7 @@ pnpm test:e2e --ui          # Interactive mode
 Lefthook runs on commit (see `lefthook.yml`), which:
 
 1. Runs oxfmt on staged files
-2. Runs oxlint `--fix` on staged `.js/.ts/.tsx` files
+2. Runs oxlint `--fix` on staged `.js/.ts/.tsx` files (with `--no-error-on-unmatched-pattern` so packages in oxlint `ignorePatterns`, e.g. `@repo/test-dts-exports`, can still be committed)
 
 If the hook fails, run `pnpm lint:fix` to fix issues.
 
