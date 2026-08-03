@@ -128,12 +128,10 @@ export function RequestAccessScreen() {
         tag: 'request-access',
       })
       .pipe(
-        map(
-          (requests): AccessRequestStatus => ({
-            error: false,
-            ...deriveAccessRequestStatus(requests, projectId),
-          }),
-        ),
+        map((requests): AccessRequestStatus => ({
+          error: false,
+          ...deriveAccessRequestStatus(requests, projectId),
+        })),
         // A failing Access API is not fatal: fall back to the plain not-authorized screen
         // rather than throwing to an error boundary.
         catchError((err) => {
