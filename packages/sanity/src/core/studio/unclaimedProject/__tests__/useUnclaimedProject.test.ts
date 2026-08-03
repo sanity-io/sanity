@@ -443,7 +443,7 @@ describe('useUnclaimedProject', () => {
     }
   })
 
-  it('polls project status after a claim attempt and stops once claimed', async () => {
+  it('polls project status after a claim attempt and tears down safely once claimed', async () => {
     vi.useFakeTimers()
     try {
       mockRequest
@@ -452,7 +452,7 @@ describe('useUnclaimedProject', () => {
         .mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
 
       const initialProps: {claimAttemptedAt: number | undefined} = {claimAttemptedAt: undefined}
-      const {result, rerender} = renderHook(
+      const {result, rerender, unmount} = renderHook(
         ({claimAttemptedAt}: {claimAttemptedAt: number | undefined}) =>
           useUnclaimedProject({claimAttemptedAt}),
         {initialProps},
@@ -470,6 +470,7 @@ describe('useUnclaimedProject', () => {
 
       await act(() => vi.advanceTimersByTimeAsync(30_000))
       expect(mockRequest).toHaveBeenCalledTimes(3)
+      expect(() => unmount()).not.toThrow()
     } finally {
       vi.useRealTimers()
     }
