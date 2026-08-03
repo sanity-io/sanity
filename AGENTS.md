@@ -284,10 +284,9 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
 returns first-render values when the calling component is wrapped in `forwardRef` or `memo`
 ([facebook/react#34818](https://github.com/facebook/react/issues/34818), fixed in 19.3 canaries).
-`eslint/no-restricted-imports` in `.oxlintrc.json` enforces this. The same bug applies to any
-dependency that wraps the native hook — e.g. `react-rx@5` swapped `useObservableEvent` over to it,
-which is safe only because that hook invokes its effect event once, in the same commit as the render
-it captures. Re-check that assumption when bumping `react-rx` past v4.
+`eslint/no-restricted-imports` in `.oxlintrc.json` enforces this. The bug reaches any dependency that
+wraps the native hook, so check the implementation before trusting one — `react-rx` is safe on both
+v4 and v5 because `useObservableEvent` builds on the same `use-effect-event` ponyfill.
 
 ## Testing
 
