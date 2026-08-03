@@ -3,7 +3,7 @@ import {
   Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
-  // Button with specific styling, user avatar .
+  // Button with specific styling, user avatar.
   Card,
   Flex,
   Stack,
