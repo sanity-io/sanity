@@ -1,4 +1,5 @@
-import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
+import {type ComponentType, type ReactNode, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {combineLatest, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
@@ -19,28 +20,27 @@ interface WorkspaceLoaderProps {
   LoadingComponent: ComponentType
 }
 
+type WorkspaceResult = {type: 'value'; value: Workspace | null} | {type: 'error'; error: unknown}
+
+const INITIAL_WORKSPACE_RESULT: WorkspaceResult = {type: 'value', value: null}
+
 /**
  * @internal
  */
 export function useWorkspaceLoader(activeWorkspace: WorkspaceSummary) {
-  const [error, handleError] = useState<unknown>(null)
-  if (error) throw error
-
-  const [workspace, setWorkspace] = useState<Workspace | null>(null)
-
-  useEffect(() => {
-    const subscription = combineLatest(
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      activeWorkspace.__internal.sources.map(({source}) =>
-        source.pipe(
-          catchError((err) => {
-            if (err instanceof ConfigResolutionError) return of(err)
-            throw err
-          }),
+  const workspace$ = useMemo(
+    () =>
+      combineLatest(
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        activeWorkspace.__internal.sources.map(({source}) =>
+          source.pipe(
+            catchError((err) => {
+              if (err instanceof ConfigResolutionError) return of(err)
+              throw err
+            }),
+          ),
         ),
-      ),
-    )
-      .pipe(
+      ).pipe(
         map((results): Source[] => {
           const errors = results.filter((result) => result instanceof ConfigResolutionError)
           if (errors.length) {
@@ -62,16 +62,16 @@ export function useWorkspaceLoader(activeWorkspace: WorkspaceSummary) {
             type: 'workspace',
           }
         }),
-      )
-      .subscribe({
-        next: setWorkspace,
-        error: handleError,
-      })
+        map((workspace): WorkspaceResult => ({type: 'value', value: workspace})),
+        catchError((error: unknown) => of<WorkspaceResult>({type: 'error', error})),
+      ),
+    [activeWorkspace],
+  )
 
-    return () => subscription.unsubscribe()
-  }, [activeWorkspace])
+  const result = useObservable(workspace$, INITIAL_WORKSPACE_RESULT)
+  if (result.type === 'error') throw result.error
 
-  return workspace
+  return result.value
 }
 
 function WorkspaceLoader({
