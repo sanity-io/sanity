@@ -258,20 +258,16 @@ function DocumentJsonDialog(props: {documentId: string; label: string; onClose: 
   const documentState$ = useMemo(
     () =>
       observeFullDocument(documentPreviewStore, documentId).pipe(
-        map(
-          (result): DocumentJsonState => ({
-            document: result ?? null,
+        map((result): DocumentJsonState => ({
+          document: result ?? null,
+          loading: false,
+        })),
+        catchError((observeError: unknown): Observable<DocumentJsonState> =>
+          of({
+            document: undefined,
             loading: false,
+            error: observeError instanceof Error ? observeError.message : 'Failed to load document',
           }),
-        ),
-        catchError(
-          (observeError: unknown): Observable<DocumentJsonState> =>
-            of({
-              document: undefined,
-              loading: false,
-              error:
-                observeError instanceof Error ? observeError.message : 'Failed to load document',
-            }),
         ),
       ),
     [documentId, documentPreviewStore],

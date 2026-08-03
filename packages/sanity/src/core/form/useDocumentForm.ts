@@ -32,6 +32,7 @@ import {useEditState} from '../hooks/useEditState'
 import {useReconnectingToast} from '../hooks/useReconnectingToast'
 import {useSchema} from '../hooks/useSchema'
 import {
+  getCreatableVariantTarget,
   getPairTarget,
   getTargetScopeId,
   useTargetDocumentState,
@@ -176,6 +177,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   })
   const {selectedVariantName, bundle} = usePerspective()
   const targetDocumentState = useTargetDocumentState(documentId)
+  const creatableVariantTarget = getCreatableVariantTarget(targetDocumentState)
+  const canCreateVariantDraft = Boolean(creatableVariantTarget && initialValue?.value)
   const isVariantTarget =
     targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
 
@@ -256,7 +259,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
     // When a variant-scoped version was resolved, the editable document is always the version
     // document, regardless of which bundle (published/drafts/release) the variant belongs to.
-    if (isVariantTarget) {
+    if (isVariantTarget || creatableVariantTarget) {
       return editState.version || baseValue
     }
     // Only treat releaseId as an actual release/anonymous bundle if it's not a system bundle ('published' or 'drafts')
@@ -288,6 +291,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return editState?.draft || editState?.published || baseValue
   }, [
     isVariantTarget,
+    creatableVariantTarget,
     documentId,
     documentType,
     editState.draft,
@@ -381,6 +385,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     if (targetDocumentState.status === 'ready' && targetDocumentState.targetDocument) {
       return targetDocumentState.targetDocument._id
     }
+    // A creatable missing draft variant: the document doesn't exist yet, but its id is
+    // server-advertised — permissions must be checked against it, not a bundle-derived base id.
+    if (creatableVariantTarget) {
+      return creatableVariantTarget.id
+    }
     if (bundle === 'published') {
       return getPublishedId(documentId)
     }
@@ -393,7 +402,14 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       return getDraftId(documentId)
     }
     return getVersionId(getPublishedId(documentId), bundle)
-  }, [targetDocumentState, bundle, documentId, liveEdit, editState.draft?._id])
+  }, [
+    targetDocumentState,
+    creatableVariantTarget,
+    bundle,
+    documentId,
+    liveEdit,
+    editState.draft?._id,
+  ])
 
   const docPermissionsInput = useMemo(() => {
     return {
@@ -442,15 +458,22 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     // When a variant is requested but its target has not resolved (still resolving, missing, or
     // an invalid selection), editing must be blocked so patches can never fall back to the base
     // draft/published pair. The document pane additionally gates mounting on resolution, but this
-    // hook is also used outside the gated pane (e.g. DiffViewPane).
-    if (selectedVariantName && targetDocumentState.status !== 'ready') {
+    // hook is also used outside the gated pane (e.g. DiffViewPane). Exception: a creatable
+    // missing draft variant with a caller-supplied seed — the pair is checked out at the
+    // server-advertised id and typing creates the document there, so the regular read-only rules
+    // below apply instead.
+    if (selectedVariantName && targetDocumentState.status !== 'ready' && !canCreateVariantDraft) {
       return true
     }
 
     // When editing a resolved variant-scoped version, the document id intentionally doesn't match
     // the selected bundle/perspective (variant docs live under `versions.<scopeId>.<publishedId>`),
-    // so the perspective/bundle-mismatch guards below must be skipped.
-    if (!isVariantTarget) {
+    // so the perspective/bundle-mismatch guards below must be skipped. The creatable missing
+    // draft variant shares that property before its target resolves: the first keystroke's
+    // optimistic create puts a version at the opaque draft scope while the state is still
+    // `variant-missing`, and without the exemption the `onlyHasVersions` guard would flip the
+    // form read-only mid-typing on groups with no base draft/published.
+    if (!isVariantTarget && !canCreateVariantDraft) {
       // in cases where the document has no draft or published, but has a version,
       // and that version doesn't match current pinned version
       // we disable editing
@@ -518,8 +541,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     liveEdit,
     releaseId,
     selectedVariantName,
-    targetDocumentState.status,
+    targetDocumentState,
     isVariantTarget,
+    canCreateVariantDraft,
     ready,
     isReleaseLocked,
     readOnlyProp,

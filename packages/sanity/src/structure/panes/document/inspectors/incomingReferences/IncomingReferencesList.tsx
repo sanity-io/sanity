@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {Suspense, use, useCallback, useMemo} from 'react'
+import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {map} from 'rxjs'
 import {
   CommandList,
@@ -91,6 +91,19 @@ function TypeSection<T>({
   )
 }
 
+function groupByType<Doc>(documents: Doc[], getType: (doc: Doc) => string) {
+  // Group with a Map rather than a plain object: type names are user-defined,
+  // so keys like "__proto__" must not collide with object prototype members.
+  const documentsByType = new Map<string, Doc[]>()
+  for (const doc of documents) {
+    const type = getType(doc)
+    const group = documentsByType.get(type)
+    if (group) group.push(doc)
+    else documentsByType.set(type, [doc])
+  }
+  return Array.from(documentsByType, ([type, docs]) => ({type, documents: docs}))
+}
+
 export function IncomingReferencesList() {
   const {documentId} = useDocumentPaneInfo()
   const {t} = useTranslation(structureLocaleNamespace)
@@ -105,54 +118,50 @@ export function IncomingReferencesList() {
         documentId,
         documentPreviewStore,
         getClient,
-      }).pipe(
-        map(({documents, loading}) => {
-          const documentsByType = documents.reduce(
-            (acc, doc) => {
-              const type = doc._type
-              // If the type exists add the document to it.
-              if (acc[type]) acc[type].push(doc)
-              // else, create the type with the document.
-              else acc[type] = [doc]
-              return acc
-            },
-            {} as Record<string, SanityDocument[]>,
-          )
-          return {
-            list: Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs})),
-            loading,
-          }
-        }),
-      ),
+      }).pipe(map((documents) => groupByType(documents, (doc) => doc._type))),
     [documentId, documentPreviewStore, getClient],
   )
-  const references = useObservable(references$, null)
+  const referencesPromise = useObservablePromise(references$)
 
   const crossDatasetIncomingRefs$ = useMemo(
     () =>
       getCrossDatasetIncomingReferences({documentId, client, documentPreviewStore}).pipe(
-        map(({documents, loading}) => {
-          const documentsByType = documents.reduce(
-            (acc, doc) => {
-              const type = doc.type
-              // If the type exists add the document to it.
-              if (acc[type]) acc[type].push(doc)
-              // else, create the type with the document.
-              else acc[type] = [doc]
-              return acc
-            },
-            {} as Record<string, CrossDatasetIncomingReferenceDocument[]>,
-          )
-          return {
-            list: Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs})),
-            loading,
-          }
-        }),
+        map((documents) => groupByType(documents, (doc) => doc.type)),
       ),
     [client, documentId, documentPreviewStore],
   )
+  const crossDatasetRefsPromise = useObservablePromise(crossDatasetIncomingRefs$)
 
-  const crossDatasetRefs = useObservable(crossDatasetIncomingRefs$, null)
+  return (
+    <Suspense
+      fallback={<LoadingBlock showText title={t('incoming-references-input.types-loading')} />}
+    >
+      <LoadedIncomingReferencesList
+        crossDatasetRefsPromise={crossDatasetRefsPromise}
+        documentId={documentId}
+        referencesPromise={referencesPromise}
+      />
+    </Suspense>
+  )
+}
+
+function LoadedIncomingReferencesList({
+  documentId,
+  referencesPromise,
+  crossDatasetRefsPromise,
+}: {
+  documentId: string
+  referencesPromise: ObservablePromise<Array<{type: string; documents: SanityDocument[]}>>
+  crossDatasetRefsPromise: ObservablePromise<
+    Array<{type: string; documents: CrossDatasetIncomingReferenceDocument[]}>
+  >
+}) {
+  // Both requests run in parallel — they start when the parent creates the
+  // promises, and this component waits for the slower of the two.
+  const references = use(referencesPromise)
+  const crossDatasetRefs = use(crossDatasetRefsPromise)
+
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const renderSameDatasetItem = useCallback<CommandListRenderItemCallback<SanityDocument>>(
     (document) => <IncomingReferenceDocument document={document} referenceToId={documentId} />,
@@ -165,11 +174,7 @@ export function IncomingReferencesList() {
 
   const emptyMessage = t('incoming-references-pane.no-references-found')
 
-  const showEmptyState =
-    !references?.loading &&
-    references?.list.length === 0 &&
-    !crossDatasetRefs?.loading &&
-    crossDatasetRefs?.list.length === 0
+  const showEmptyState = references.length === 0 && crossDatasetRefs.length === 0
 
   return (
     <>
@@ -182,34 +187,26 @@ export function IncomingReferencesList() {
           </Box>
         </Card>
       )}
-      {references?.loading ? (
-        <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
-      ) : (
-        references?.list.map(({type, documents}) => (
-          <TypeSection
-            key={type}
-            type={type}
-            documents={documents}
-            renderItem={renderSameDatasetItem}
-            getItemKey={(index) => documents[index]._id}
-            emptyMessage={emptyMessage}
-          />
-        ))
-      )}
-      {crossDatasetRefs?.loading ? (
-        <LoadingBlock showText title={t('incoming-references-input.types-loading-cross-dataset')} />
-      ) : (
-        crossDatasetRefs?.list.map(({type, documents}) => (
-          <TypeSection
-            key={type}
-            type={type}
-            documents={documents}
-            renderItem={renderCrossDatasetItem}
-            getItemKey={(index) => documents[index].id}
-            emptyMessage={emptyMessage}
-          />
-        ))
-      )}
+      {references.map(({type, documents}) => (
+        <TypeSection
+          key={type}
+          type={type}
+          documents={documents}
+          renderItem={renderSameDatasetItem}
+          getItemKey={(index) => documents[index]._id}
+          emptyMessage={emptyMessage}
+        />
+      ))}
+      {crossDatasetRefs.map(({type, documents}) => (
+        <TypeSection
+          key={type}
+          type={type}
+          documents={documents}
+          renderItem={renderCrossDatasetItem}
+          getItemKey={(index) => documents[index].id}
+          emptyMessage={emptyMessage}
+        />
+      ))}
     </>
   )
 }

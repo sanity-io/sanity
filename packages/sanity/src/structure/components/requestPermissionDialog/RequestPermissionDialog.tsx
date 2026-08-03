@@ -2,7 +2,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, DialogProvider, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useId, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {type Role, useClient, useProjectId, useTranslation, useZIndex} from 'sanity'
 import {styled} from 'styled-components'
@@ -76,7 +76,10 @@ export function RequestPermissionDialog({
       )
   }, [projectId, client])
 
-  const requestedRole = useObservable(requestedRole$)
+  // Kept synchronous: `onSubmit` reads this value into the request body, so a
+  // deferred snapshot could submit the stale startWith('administrator') role
+  // after the observable has already resolved to 'editor'.
+  const requestedRole = useSyncObservable(requestedRole$)
 
   const onSubmit = () => {
     setIsSubmitting(true)

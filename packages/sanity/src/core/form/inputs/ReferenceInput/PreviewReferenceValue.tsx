@@ -27,7 +27,9 @@ export function PreviewReferenceValue(props: {
   const {layout = 'default', referenceInfo, renderPreview, type, value, showTypeLabel} = props
   const {t} = useTranslation()
 
-  if (referenceInfo.isLoading || referenceInfo.error) {
+  // Treat missing result as loading — EMPTY_STATE and deferred lag can yield
+  // isLoading:false with result:undefined while value._ref is already set.
+  if (referenceInfo.isLoading || referenceInfo.error || !referenceInfo.result) {
     return <SanityDefaultPreview isPlaceholder layout={layout} />
   }
 

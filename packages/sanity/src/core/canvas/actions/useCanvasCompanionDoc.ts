@@ -16,6 +16,11 @@ export const useCanvasCompanionDoc = (documentId: string) => {
     () => companionDocsStore.getCompanionDocs(publishedId),
     [publishedId, companionDocsStore],
   )
+  // Deferred (per review): the companion docs stream is keyed on the stable
+  // published id, and the `<DocumentPaneProvider>` remount on navigation
+  // resets this state, so there's no cross-document tear. react-rx v5's
+  // identity-coherent deferral additionally falls back to the live value if
+  // the observable identity ever changes.
   const companionDocs = useObservable(companionDocs$)
 
   const companionDoc = useMemo(

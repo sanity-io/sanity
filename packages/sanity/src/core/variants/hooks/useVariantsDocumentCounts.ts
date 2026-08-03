@@ -96,18 +96,16 @@ function listenVariantsDocumentCounts(
     // using the raw perspective.
     {tag: 'variants-doc-counts.listen', perspective: 'raw'},
   ).pipe(
-    map(
-      (response: Record<string, number>): VariantsDocumentCountsState => ({
-        data: Object.fromEntries(
-          variantDocumentIds.map((variantDocumentId) => [
-            variantDocumentId,
-            response?.[variantDocumentId] ?? 0,
-          ]),
-        ),
-        loading: false,
-        error: null,
-      }),
-    ),
+    map((response: Record<string, number>): VariantsDocumentCountsState => ({
+      data: Object.fromEntries(
+        variantDocumentIds.map((variantDocumentId) => [
+          variantDocumentId,
+          response?.[variantDocumentId] ?? 0,
+        ]),
+      ),
+      loading: false,
+      error: null,
+    })),
     startWith(INITIAL_STATE),
     // catchError stays on this inner observable so the outer stream in
     // `getVariantsDocumentCounts` keeps reacting to variant list changes after a failure.

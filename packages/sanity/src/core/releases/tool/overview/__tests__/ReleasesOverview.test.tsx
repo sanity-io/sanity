@@ -379,6 +379,7 @@ describe('ReleasesOverview', () => {
         data: releases,
         error: undefined,
         loading: false,
+        map: new Map(releases.map((release) => [release._id, release])),
       })
       mockUseArchivedReleases.mockReturnValue({
         ...useArchivedReleasesMockReturn,

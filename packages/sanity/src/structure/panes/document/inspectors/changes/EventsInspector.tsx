@@ -2,7 +2,7 @@ import {diffInput, wrap} from '@sanity/diff'
 import {BoundaryElementProvider, Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type ReactElement, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {
   ChangeFieldWrapper,
   ChangeList,
@@ -143,11 +143,15 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
 
   const isComparingCurrent = !revision?.revisionId
   const changesList$ = useMemo(() => getChangesList(), [getChangesList])
+  // Kept synchronous: the diff must stay coherent with the synchronous
+  // `events` / `revision` / `sinceRevision` values it is derived from, and it
+  // feeds `undoChange` revert patches — a stale deferred diff could build
+  // revert writes against outdated document state.
   const {
     diff,
     loading: diffLoading,
     error: diffError,
-  } = useObservable(changesList$, DIFF_INITIAL_VALUE)
+  } = useSyncObservable(changesList$, DIFF_INITIAL_VALUE)
 
   const {t} = useTranslation('studio')
 

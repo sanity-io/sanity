@@ -278,6 +278,7 @@ import type {
   CorsCheckResult,
   CorsOriginErrorScreen,
   CorsProbeOutcome,
+  CreatableTargetDocument,
   createAuthStore,
   CreateAuthStoreOptions,
   createBufferedDocument,
@@ -686,6 +687,7 @@ import type {
   getApiErrorCode,
   getCalendarLabels,
   getConfigContextFromSource,
+  getCreatableVariantTarget,
   getDiffAtPath,
   getDocumentIdForCanvasLink,
   getDocumentIsInPerspective,
@@ -1583,6 +1585,7 @@ import type {
   useConnectionStatusStore,
   useCopyErrorDetails,
   useCopyPaste,
+  useCreatableVariantInitialValue,
   useCurrentLocale,
   useCurrentUser,
   useDataset,
@@ -2637,6 +2640,9 @@ describe('sanity', () => {
   })
   test('CorsProbeOutcome', () => {
     expectTypeOf<CorsProbeOutcome>().not.toBeNever()
+  })
+  test('CreatableTargetDocument', () => {
+    expectTypeOf<CreatableTargetDocument>().toBeObject()
   })
   test('createAuthStore', () => {
     expectTypeOf<typeof createAuthStore>().not.toBeNever()
@@ -3870,6 +3876,9 @@ describe('sanity', () => {
   })
   test('getConfigContextFromSource', () => {
     expectTypeOf<typeof getConfigContextFromSource>().toBeFunction()
+  })
+  test('getCreatableVariantTarget', () => {
+    expectTypeOf<typeof getCreatableVariantTarget>().toBeFunction()
   })
   test('getDiffAtPath', () => {
     expectTypeOf<typeof getDiffAtPath>().toBeFunction()
@@ -6574,6 +6583,9 @@ describe('sanity', () => {
   })
   test('useCopyPaste', () => {
     expectTypeOf<typeof useCopyPaste>().not.toBeNever()
+  })
+  test('useCreatableVariantInitialValue', () => {
+    expectTypeOf<typeof useCreatableVariantInitialValue>().toBeFunction()
   })
   test('useCurrentLocale', () => {
     expectTypeOf<typeof useCurrentLocale>().toBeFunction()

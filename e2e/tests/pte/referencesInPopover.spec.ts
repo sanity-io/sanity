@@ -50,7 +50,7 @@ test.describe('In PTE - references in popover', () => {
     await page.locator('[data-testid^="create-new-document-select-text"]').click()
 
     // A new document should open to the side and be untitled
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('New Book')
 
     // While the popover is open, we should be able to change the fields of the new document
     await expect(page.getByTestId('string-input').nth(1)).toBeVisible()

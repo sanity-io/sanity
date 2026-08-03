@@ -25,6 +25,7 @@ describe('useMemoizedDocumentPairTarget', () => {
     const targets: DocumentPairTarget[] = [
       {kind: 'version', scopeId: 'rSummer'},
       {kind: 'variant', scopeId: 'varscope', variantId: '_.variants.french'},
+      {kind: 'variant', scopeId: 'varscope', variantId: '_.variants.french', allowCreate: true},
       {kind: 'target-missing', variantId: '_.variants.french'},
       {kind: 'target-missing'},
       {kind: 'unresolved'},
@@ -32,9 +33,30 @@ describe('useMemoizedDocumentPairTarget', () => {
 
     for (const target of targets) {
       const {result} = renderTarget(target)
-      // Strict equality: no `variantId: undefined` key may appear when none was given.
+      // Strict equality: no `variantId: undefined`/`allowCreate: undefined` key may appear when
+      // none was given.
       expect(result.current).toStrictEqual(target)
     }
+  })
+
+  it('returns a new value when allowCreate changes (creatable target becomes a regular one)', () => {
+    const {result, rerender} = renderTarget({
+      kind: 'variant',
+      scopeId: 'varscope',
+      variantId: '_.variants.french',
+      allowCreate: true,
+    })
+    const first = result.current
+
+    // The draft variant was created: the resolved target drops the allowCreate declaration.
+    rerender({version: {kind: 'variant', scopeId: 'varscope', variantId: '_.variants.french'}})
+
+    expect(result.current).not.toBe(first)
+    expect(result.current).toStrictEqual({
+      kind: 'variant',
+      scopeId: 'varscope',
+      variantId: '_.variants.french',
+    })
   })
 
   it('keeps the same reference when a fresh but equal target is passed on re-render', () => {

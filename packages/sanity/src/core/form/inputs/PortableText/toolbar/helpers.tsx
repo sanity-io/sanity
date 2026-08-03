@@ -188,25 +188,21 @@ export function getInsertMenuItems(
   onInsertBlock: (type: ObjectSchemaType) => void,
   onInsertInline: (type: ObjectSchemaType) => void,
 ): BlockItem[] {
-  const blockItems = types.blockObjects.map(
-    (type, index): BlockItem => ({
-      handle: () => onInsertBlock(type),
-      icon: getInsertMenuIcon(type, BlockElementIcon),
-      inline: false,
-      key: `block-${index}`,
-      type,
-    }),
-  )
+  const blockItems = types.blockObjects.map((type, index): BlockItem => ({
+    handle: () => onInsertBlock(type),
+    icon: getInsertMenuIcon(type, BlockElementIcon),
+    inline: false,
+    key: `block-${index}`,
+    type,
+  }))
 
-  const inlineItems = types.inlineObjects.map(
-    (type, index): BlockItem => ({
-      handle: () => onInsertInline(type),
-      icon: getInsertMenuIcon(type, InlineElementIcon),
-      inline: true,
-      key: `inline-${index}`,
-      type,
-    }),
-  )
+  const inlineItems = types.inlineObjects.map((type, index): BlockItem => ({
+    handle: () => onInsertInline(type),
+    icon: getInsertMenuIcon(type, InlineElementIcon),
+    inline: true,
+    key: `inline-${index}`,
+    type,
+  }))
 
   // Do not include items that are supposed to be hidden
   const filteredBlockItems = blockItems.concat(inlineItems).filter((item) => !item.type?.hidden)

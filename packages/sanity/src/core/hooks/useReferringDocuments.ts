@@ -52,12 +52,10 @@ export function useReferringDocuments<DocumentType extends SanityDocument>(
         {tag: 'use-referring-documents'},
       )
       .pipe(
-        map(
-          (docs: DocumentType[]): ReferringDocumentsState<DocumentType> => ({
-            referringDocuments: docs,
-            isLoading: false,
-          }),
-        ),
+        map((docs: DocumentType[]): ReferringDocumentsState<DocumentType> => ({
+          referringDocuments: docs,
+          isLoading: false,
+        })),
         startWith(INITIAL_STATE),
       )
   }, [documentStore, id, projection])

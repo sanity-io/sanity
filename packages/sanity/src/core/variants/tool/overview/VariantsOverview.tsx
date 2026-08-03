@@ -58,12 +58,10 @@ export function VariantsOverview() {
 
   const filteredVariants = useMemo(
     () =>
-      filterVariantsForSearch(variantsList, searchQuery).map(
-        (variant): TableVariant => ({
-          ...variant,
-          documentCount: documentCounts?.[variant._id] ?? (documentCountsError ? null : undefined),
-        }),
-      ),
+      filterVariantsForSearch(variantsList, searchQuery).map((variant): TableVariant => ({
+        ...variant,
+        documentCount: documentCounts?.[variant._id] ?? (documentCountsError ? null : undefined),
+      })),
     [variantsList, searchQuery, documentCounts, documentCountsError],
   )
 

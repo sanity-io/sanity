@@ -39,7 +39,8 @@ vi.mock('../../store/events/getDocumentAtRevision', () => ({
 }))
 
 vi.mock('react-rx', () => ({
-  useObservable: (_observable: unknown, initial: unknown) => upstreamSnapshotRef.current ?? initial,
+  useSyncObservable: (_observable: unknown, initial: unknown) =>
+    upstreamSnapshotRef.current ?? initial,
 }))
 
 const emptySnapshots = {

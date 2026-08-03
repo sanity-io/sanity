@@ -630,13 +630,11 @@ export function _createAuthStore({
                 getRequestFailureDiagnostics?.(),
               ),
             ).pipe(
-              map(
-                (currentUser): AuthState => ({
-                  client,
-                  authenticated: Boolean(currentUser?.id),
-                  currentUser: currentUser || null,
-                }),
-              ),
+              map((currentUser): AuthState => ({
+                client,
+                authenticated: Boolean(currentUser?.id),
+                currentUser: currentUser || null,
+              })),
             )
           }),
         )

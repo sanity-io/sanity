@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
 import {useClient} from '../hooks/useClient'
 import {useSchema} from '../hooks/useSchema'
@@ -446,7 +446,11 @@ export function useRenderingContextStore(): RenderingContextStore {
 export function useComlinkStore(): ComlinkStore {
   const resourceCache = useResourceCache()
   const renderingContext = useRenderingContextStore()
-  const capabilities = useObservable(renderingContext.capabilities, {})
+  // Kept synchronous: `createComlinkStore` starts the comlink node when
+  // `capabilities.comlink` flips true, so a deferred snapshot would delay
+  // comlink initialization. Capabilities emit once at boot; there is nothing
+  // to gain from deferring them.
+  const capabilities = useSyncObservable(renderingContext.capabilities, {})
 
   return useMemo(() => {
     const comlinkStore =

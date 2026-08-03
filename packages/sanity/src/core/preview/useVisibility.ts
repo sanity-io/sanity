@@ -27,7 +27,7 @@ export function useVisibility(props: Props): boolean {
 
     // Seed with the element's current visibility so the first paint is
     // correct — every code path here emits synchronously on subscribe, so
-    // useObservable's fallback initial value is never read.
+    // useSyncObservable's fallback initial value is never read.
     const seed = 'checkVisibility' in element ? element.checkVisibility() : false
 
     const isDocumentVisible$ = concat(

@@ -270,12 +270,10 @@ async function runAbTest(test: EfpsTest) {
     await Promise.all([referenceBrowser.close(), experimentBrowser.close()])
   }
 
-  return experimentResults.map(
-    (experimentResult, index): EfpsAbResult => ({
-      experiment: experimentResult,
-      reference: referenceResults[index],
-    }),
-  )
+  return experimentResults.map((experimentResult, index): EfpsAbResult => ({
+    experiment: experimentResult,
+    reference: referenceResults[index],
+  }))
 }
 
 for (let i = 0; i < selectedTests.length; i++) {

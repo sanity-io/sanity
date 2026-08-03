@@ -150,7 +150,10 @@ describe('Portable Text Input', () => {
         expect(menuPopover).not.toBeNull()
       })
 
-      it('on a full screen multi nested PTE', async () => {
+      // Takes ~25s against the default 30s timeout on a healthy CI runner
+      // (firefox), so any runner slowdown pushed it over the limit. Give it
+      // explicit headroom instead.
+      it('on a full screen multi nested PTE', {timeout: 90_000}, async () => {
         const {getFocusedPortableTextInput} = testHelpers()
         void render(<ToolbarStory />)
         const $portableTextInput = await getFocusedPortableTextInput('field-body')
