@@ -251,17 +251,24 @@ export function useVersionContextMenu(
             selectedPerspective: perspective,
           })
         } else {
+          // Skip navigation here — the hook navigates once after creation so we
+          // don't double-navigate (and clear an active variant sticky param).
           await createVersion(
             getReleaseIdFromReleaseDocumentId(targetRelease),
             documentVersionInfoStub._id,
+            {navigate: false},
           )
         }
       }
 
       try {
         await runCreateVersion()
-        // Navigates to the new created version
-        setVariant({variantId: variantRef, perspective})
+        // Navigate to the newly created version in a single router update.
+        if (variantRef) {
+          setVariant({variantId: variantRef, perspective})
+        } else {
+          setPerspective(perspective)
+        }
       } catch (err) {
         toast.push({
           closable: true,
@@ -277,6 +284,7 @@ export function useVersionContextMenu(
       closeContextMenu,
       createVersion,
       documentGroupId,
+      setPerspective,
       setVariant,
       variantRef,
       t,
