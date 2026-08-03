@@ -1305,8 +1305,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       get-it:
-        specifier: ^8.8.0
-        version: 8.8.0
+        specifier: ^8.8.1
+        version: 8.8.2
       groq-js:
         specifier: ^2.0.0
         version: 2.0.0
@@ -9681,6 +9681,10 @@ packages:
 
   get-it@8.8.0:
     resolution: {integrity: sha512-vRyooMBzoIdEbARGT3JcvWqMD67YzC5SKlMqofyfck1ebLh2zzlpD4hVQ3xiuuiADk4jNs0rTezVlxCMqOlZfA==}
+    engines: {node: '>=14.0.0'}
+
+  get-it@8.8.2:
+    resolution: {integrity: sha512-TwmJRNodzreuB0fG5OIe1yD6iXrD6J3X7mLveVZqU8Iofl0IiryiqZ4DJAP/pUBZiODlYmJOHmhTpZCuGyOomw==}
     engines: {node: '>=14.0.0'}
 
   get-latest-version@6.0.1:
@@ -21892,6 +21896,13 @@ snapshots:
       math-intrinsics: 1.1.0
 
   get-it@8.8.0:
+    dependencies:
+      decompress-response: 7.0.0
+      is-retry-allowed: 2.2.0
+      through2: 4.0.2
+      tunnel-agent: 0.6.0
+
+  get-it@8.8.2:
     dependencies:
       decompress-response: 7.0.0
       is-retry-allowed: 2.2.0
