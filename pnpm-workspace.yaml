@@ -24,7 +24,7 @@ allowBuilds:
 catalog:
   '@optique/core': ^1.1.1
   '@optique/run': ^1.1.1
-  '@playwright/test': 1.62.0
+  '@playwright/test': 1.62.1
   '@rolldown/plugin-babel': ^0.2.3
   '@sanity/client': ^7.26.0
   '@sanity/migrate': ^8.0.1
@@ -42,7 +42,7 @@ catalog:
   '@vitest/browser-playwright': ^4.1.10
   babel-plugin-react-compiler: ^1.0.0
   jsdom: ^29.1.1
-  playwright: 1.62.0
+  playwright: 1.62.1
   react: ^19.2.8
   react-dom: ^19.2.8
   react-is: ^19.2.8
