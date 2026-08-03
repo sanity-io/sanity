@@ -10,17 +10,28 @@ import {
   UnclaimedProjectNudge,
 } from '../UnclaimedProjectNudge'
 
-const {mockEnvironment, mockUseUnclaimedProject, mockUseWorkspace} = vi.hoisted(() => ({
+const {
+  mockClearUnclaimedProjectRecord,
+  mockEnvironment,
+  mockUseUnclaimedProject,
+  mockUseWorkspace,
+} = vi.hoisted(() => ({
+  mockClearUnclaimedProjectRecord: vi.fn(),
   mockEnvironment: {isDev: true},
   mockUseUnclaimedProject: vi.fn(),
   mockUseWorkspace: vi.fn(),
 }))
 
+vi.mock('../../../store/authStore/unclaimedProjectStorage', async (importOriginal) => ({
+  ...(await importOriginal()),
+  clearUnclaimedProjectRecord: mockClearUnclaimedProjectRecord,
+}))
 vi.mock('../../../environment', () => mockEnvironment)
 vi.mock('../../workspace', () => ({useWorkspace: mockUseWorkspace}))
 vi.mock('../useUnclaimedProject', () => ({useUnclaimedProject: mockUseUnclaimedProject}))
 
 const theme = buildTheme()
+const PROJECT_ID = 'test-project'
 
 const wrapper = ({children}: {children: ReactNode}) => (
   <ThemeProvider theme={theme}>{children}</ThemeProvider>
@@ -41,11 +52,24 @@ describe('UnclaimedProjectNudge', () => {
     expect(mockUseUnclaimedProject).not.toHaveBeenCalled()
   })
 
-  it('does not run the project state check for non-robot users', () => {
-    mockUseWorkspace.mockReturnValue({currentUser: {provider: 'google'}})
+  it('clears a stale claim record without running the project state check for human users', () => {
+    mockUseWorkspace.mockReturnValue({
+      currentUser: {provider: 'google'},
+      projectId: PROJECT_ID,
+    })
 
     render(<UnclaimedProjectNudge />, {wrapper})
 
+    expect(mockClearUnclaimedProjectRecord).toHaveBeenCalledExactlyOnceWith(PROJECT_ID)
+    expect(mockUseUnclaimedProject).not.toHaveBeenCalled()
+  })
+
+  it('does not clear claim records while the current user is unresolved', () => {
+    mockUseWorkspace.mockReturnValue({currentUser: undefined, projectId: PROJECT_ID})
+
+    render(<UnclaimedProjectNudge />, {wrapper})
+
+    expect(mockClearUnclaimedProjectRecord).not.toHaveBeenCalled()
     expect(mockUseUnclaimedProject).not.toHaveBeenCalled()
   })
 })

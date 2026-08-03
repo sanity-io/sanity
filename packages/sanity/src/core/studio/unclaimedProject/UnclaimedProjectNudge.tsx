@@ -9,6 +9,7 @@ import {useConditionalToast} from '../../hooks/useConditionalToast'
 import {useDateTimeFormat} from '../../hooks/useDateTimeFormat'
 import {useRelativeTime} from '../../hooks/useRelativeTime'
 import {
+  clearUnclaimedProjectRecord,
   readUnclaimedProjectSnoozedAt,
   writeUnclaimedProjectSnoozedAt,
 } from '../../store/authStore/unclaimedProjectStorage'
@@ -35,9 +36,14 @@ export function UnclaimedProjectNudge() {
 }
 
 function UnclaimedProjectNudgeAuthCheck() {
-  const {currentUser} = useWorkspace()
+  const {currentUser, projectId} = useWorkspace()
+  const provider = currentUser?.provider
 
-  if (currentUser?.provider !== 'sanity-token') return null
+  useEffect(() => {
+    if (provider && provider !== 'sanity-token') clearUnclaimedProjectRecord(projectId)
+  }, [projectId, provider])
+
+  if (provider !== 'sanity-token') return null
 
   return <UnclaimedProjectNudgeStateCheck />
 }
