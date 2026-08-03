@@ -23,6 +23,7 @@ export interface ConditionalPropertyProps {
  */
 export const useConditionalProperty = (props: ConditionalPropertyProps): boolean => {
   const {checkProperty = false, checkPropertyKey, document, parent, value: valueProp, path} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const value = useUnique(valueProp)
   const currentUser = useCurrentUser()
 

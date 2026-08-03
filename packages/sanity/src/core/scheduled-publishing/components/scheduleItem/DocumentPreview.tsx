@@ -22,6 +22,7 @@ const DocumentPreview = (props: Props) => {
     schedule,
     timeZoneScope,
   )
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {onComplete} = useDocumentActionProps()
   const publishedId = useMemo(() => getScheduledDocumentId(schedule), [schedule])
 

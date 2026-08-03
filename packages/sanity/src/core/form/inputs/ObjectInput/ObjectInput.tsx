@@ -129,7 +129,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
 
   return (
     <RootStack
-      space={6}
+      gap={6}
       tabIndex={isFocusable ? 0 : undefined}
       onFocus={handleFocus}
       ref={wrapperRef}
@@ -153,7 +153,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         key={selectedGroup?.name}
       >
         {columns ? (
-          <AlignedBottomGrid columns={columns} gap={4} marginTop={1}>
+          <AlignedBottomGrid gridTemplateColumns={columns} gap={4} marginTop={1}>
             {renderObjectMembers()}
           </AlignedBottomGrid>
         ) : (

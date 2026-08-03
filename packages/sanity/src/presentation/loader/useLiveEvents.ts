@@ -1,10 +1,18 @@
 import {type LiveEvent, type LiveEventMessage} from '@sanity/client'
-import {useDeferredValue, useEffect, useReducer, useState} from 'react'
+import {useDeferredValue, useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, scan, throwError} from 'rxjs'
 import {type SanityClient} from 'sanity'
+
+/**
+ * Upper bound on retained messages. Only the most recent sync tags are useful for refetching,
+ * and the list would otherwise grow for the lifetime of the connection.
+ */
+const MAX_BUFFERED_MESSAGES = 100
 
 type State = {
   /**
-   * Growing list over live events with Sync Tags,
+   * List over the most recent live events with Sync Tags, capped at `MAX_BUFFERED_MESSAGES`,
    * that can be used to refetch with Sanity Client, using the id as the lastLiveEventId parameter
    */
   messages: LiveEventMessage[]
@@ -20,7 +28,7 @@ export function reducer(state: State, event: LiveEvent): State {
     case 'message':
       return {
         ...state,
-        messages: [...state.messages, event],
+        messages: [...state.messages, event].slice(-MAX_BUFFERED_MESSAGES),
       }
     case 'reconnect':
     case 'restart':
@@ -49,27 +57,24 @@ export const initialState: State = {
 }
 
 export function useLiveEvents(client: SanityClient): State {
-  const [state, dispatch] = useReducer(reducer, initialState)
-  const [error, setError] = useState<unknown>(null)
-  if (error !== null) {
-    // Push error to nearest error boundary
-    throw error
-  }
-
-  useEffect(() => {
-    const subscription = client.live
-      .events({includeDrafts: true, tag: 'presentation-loader'})
-      .subscribe({
-        next: dispatch,
-        error: (err) =>
-          setError(
+  const state$ = useMemo(
+    () =>
+      client.live.events({includeDrafts: true, tag: 'presentation-loader'}).pipe(
+        scan(reducer, initialState),
+        // Normalize non-Error failures so the error boundary always receives
+        // an Error with the original throwable as `cause`.
+        catchError((err) =>
+          throwError(() =>
             err instanceof Error
               ? err
               : new Error('Unexpected error in useLiveEvents', {cause: err}),
           ),
-      })
-    return () => subscription.unsubscribe()
-  }, [client.live])
+        ),
+      ),
+    [client.live],
+  )
 
-  return useDeferredValue(state)
+  // Stream errors are re-thrown by `useObservable` during render, so they reach the nearest
+  // error boundary without any explicit handling here.
+  return useDeferredValue(useObservable(state$, initialState))
 }

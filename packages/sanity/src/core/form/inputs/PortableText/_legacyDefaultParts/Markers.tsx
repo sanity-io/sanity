@@ -9,8 +9,10 @@ import {type PortableTextMarker, type RenderCustomMarkers} from '../../../types/
 import {useFormBuilder} from '../../../useFormBuilder'
 
 export interface MarkersProps {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   markers: PortableTextMarker[]
   validation: FormNodeValidation[]
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
 }
 
@@ -26,24 +28,26 @@ const getIcon = (level: 'error' | 'warning' | 'info') => {
   return <InfoOutlineIcon />
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const IconText = styled(Text)(({theme}: {theme: Theme}) => {
   return css`
     &[data-info] {
-      color: ${theme.sanity.color.muted.primary.enabled.fg};
+      color: ${theme.sanity.color.muted.primary.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     }
 
     &[data-warning] {
-      color: ${theme.sanity.color.muted.caution.enabled.fg};
+      color: ${theme.sanity.color.muted.caution.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     }
 
     &[data-error] {
-      color: ${theme.sanity.color.muted.critical.enabled.fg};
+      color: ${theme.sanity.color.muted.critical.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     }
   `
 })
 
 export function DefaultMarkers(props: MarkersProps) {
   const {markers, validation, renderCustomMarkers} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {CustomMarkers} = useFormBuilder().__internal.components
 
   if (markers.length === 0 && validation.length === 0) {
@@ -51,7 +55,7 @@ export function DefaultMarkers(props: MarkersProps) {
   }
 
   return (
-    <Stack space={1}>
+    <Stack gap={1}>
       {validation.length > 0 &&
         validation.map(({message, level}, index) => (
           <Flex key={`validationItem-${index}`}>

@@ -20,10 +20,14 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
   const {theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {focusRing, input, radius} = theme.sanity
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const color = theme.sanity.color.input
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const space = rem(theme.sanity.space[1])
 
   return {
@@ -80,11 +84,16 @@ const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
   }
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const Input = styled.input((props: {theme: Theme}): CSSObject => {
   const {theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const font = theme.sanity.fonts.text
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const color = theme.sanity.color.input
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const p = theme.sanity.space[2]
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const size = theme.sanity.fonts.text.sizes[2]
 
   return {
@@ -119,8 +128,10 @@ const Input = styled.input((props: {theme: Theme}): CSSObject => {
   }
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const Placeholder = styled(Box)((props: {theme: Theme}) => {
   const {theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const color = theme.sanity.color.input
 
   return css`

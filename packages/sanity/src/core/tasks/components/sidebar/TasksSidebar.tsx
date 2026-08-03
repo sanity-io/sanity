@@ -87,7 +87,7 @@ function TasksStudioSidebarInner() {
       initial={{opacity: 0}}
       animate={{opacity: 1, transition: {duration: 0.2}}}
     >
-      <HeaderStack space={3} padding={3} sizing="border">
+      <HeaderStack gap={3} padding={3} sizing="border">
         <TasksSidebarHeader items={filteredList} />
         {viewMode === 'list' && !isLoading && (
           <TasksListTabs activeTabId={activeTabId} onChange={setActiveTab} />

@@ -1,5 +1,7 @@
-import {useEffect, useMemo, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {isObservable, map, of} from 'rxjs'
+import {startWith} from 'rxjs/operators'
 import {
   type ObjectSchemaType,
   type PreviewableType,
@@ -17,6 +19,11 @@ import {usePresentationPerspectiveStack} from './usePresentationPerspectiveStack
 
 const INITIAL_STATE: DocumentLocationsState = {locations: []}
 
+type DocumentLocationsResult = {
+  state: DocumentLocationsState
+  status: DocumentLocationsStatus
+}
+
 export function useDocumentLocations(props: {
   id: string
   version: string | undefined
@@ -31,12 +38,15 @@ export function useDocumentLocations(props: {
   const documentPreviewStore = useDocumentPreviewStore()
 
   const perspectiveStack = usePresentationPerspectiveStack()
-  const [locationsState, setLocationsState] = useState<DocumentLocationsState>(INITIAL_STATE)
 
   const resolver = resolvers && (typeof resolvers === 'function' ? resolvers : resolvers[type.name])
 
-  const [locationsStatus, setLocationsStatus] = useState<DocumentLocationsStatus>(
-    resolver ? 'resolving' : 'empty',
+  const initialResult = useMemo(
+    (): DocumentLocationsResult => ({
+      state: INITIAL_STATE,
+      status: resolver ? 'resolving' : 'empty',
+    }),
+    [resolver],
   )
 
   const result = useMemo(() => {
@@ -66,17 +76,24 @@ export function useDocumentLocations(props: {
     return of(resolver)
   }, [documentStore, documentPreviewStore, id, resolver, type, version, perspectiveStack])
 
-  useEffect(() => {
-    const sub = result?.subscribe((state) => {
-      setLocationsState(state || INITIAL_STATE)
-      setLocationsStatus(state ? 'resolved' : 'empty')
-    })
+  const locationsResult$ = useMemo(() => {
+    if (!result) return of(initialResult)
 
-    return () => sub?.unsubscribe()
-  }, [result])
+    return result.pipe(
+      map(
+        (state): DocumentLocationsResult => ({
+          state: state || INITIAL_STATE,
+          status: state ? 'resolved' : 'empty',
+        }),
+      ),
+      startWith(initialResult),
+    )
+  }, [result, initialResult])
+
+  const {state, status} = useObservable(locationsResult$, initialResult)
 
   return {
-    state: locationsState,
-    status: locationsStatus,
+    state,
+    status,
   }
 }

@@ -68,7 +68,9 @@ function insertText(element: HTMLInputElement | HTMLTextAreaElement, text: strin
   // browser's undo stack, and it is still supported by all major browsers.
   try {
     if (
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       typeof document.execCommand === 'function' &&
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       document.execCommand('insertText', false, text)
     ) {
       return

@@ -121,7 +121,7 @@ export const MenuItem = forwardRef(function MenuItem(
           </Box>
         )}
         {text && (
-          <Stack flex={1} space={__unstable_subtitle ? 1 : 2}>
+          <Stack flex={1} gap={__unstable_subtitle ? 1 : 2}>
             <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
               {text}
             </Text>

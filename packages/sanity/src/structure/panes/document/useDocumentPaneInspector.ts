@@ -18,6 +18,7 @@ export function useDocumentPaneInspector({
   setParams: (params: Record<string, string | undefined>) => void
 }) {
   const {features} = useStructureTool()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const inspectorsResolver = source.document.inspectors
 

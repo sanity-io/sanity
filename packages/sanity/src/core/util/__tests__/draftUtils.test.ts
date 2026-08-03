@@ -142,12 +142,12 @@ describe('getIdPair', () => {
     expect(getIdPair(id, options)).toEqual(result)
   })
   it("should return error if version is 'drafts'", () => {
-    expect(() => getIdPair('foo', {version: 'drafts'})).toThrowError(
+    expect(() => getIdPair('foo', {version: 'drafts'})).toThrow(
       'Version can not be "published" or "drafts"',
     )
   })
   it("should return error if version is 'published'", () => {
-    expect(() => getIdPair('foo', {version: 'published'})).toThrowError(
+    expect(() => getIdPair('foo', {version: 'published'})).toThrow(
       'Version can not be "published" or "drafts"',
     )
   })

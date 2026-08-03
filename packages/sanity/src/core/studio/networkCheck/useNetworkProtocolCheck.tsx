@@ -1,7 +1,8 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Flex, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {Flex, Stack, Text} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -21,12 +22,9 @@ const SNOOZE_DURATION_HOURS = 24
  * @internal
  */
 export function useNetworkProtocolCheck(): undefined {
-  const {push: pushToast} = useToast()
   const {t} = useTranslation()
   const client = useClient({apiVersion: '2025-03-01'})
   const title = t('network-check.slow-protocol-warning.title')
-
-  const [isOnLegacyHttp, setIsOnLegacyHttp] = useState<boolean | undefined>()
 
   const [warningSnoozedAtRaw, setWarningSnoozedAt] = useSessionStorageState(
     'sanity-studio.network.check.snooze',
@@ -44,11 +42,11 @@ export function useNetworkProtocolCheck(): undefined {
     [warningDismissedAt],
   )
 
-  useEffect(() => {
-    const observable = isWarningSnoozed ? of(undefined) : isUsingLegacyHttp(client)
-    const sub = observable.subscribe((result) => setIsOnLegacyHttp(result))
-    return () => sub.unsubscribe()
-  }, [client, isWarningSnoozed, pushToast, title, warningDismissedAt])
+  const isOnLegacyHttp$ = useMemo(
+    () => (isWarningSnoozed ? of(undefined) : isUsingLegacyHttp(client)),
+    [client, isWarningSnoozed],
+  )
+  const isOnLegacyHttp = useObservable(isOnLegacyHttp$)
 
   const handleSnooze = useCallback(
     () => setWarningSnoozedAt(new Date().toISOString()),
@@ -58,10 +56,10 @@ export function useNetworkProtocolCheck(): undefined {
   useConditionalToast({
     id: 'network-protocol-check',
     status: 'warning',
-    enabled: isOnLegacyHttp && !isWarningSnoozed,
+    enabled: Boolean(isOnLegacyHttp && !isWarningSnoozed),
     title,
     description: (
-      <Stack space={4} paddingY={1}>
+      <Stack gap={4} paddingY={1}>
         <Flex>
           <Text size={1}>{t('network-check.slow-protocol-warning.description')} </Text>
         </Flex>

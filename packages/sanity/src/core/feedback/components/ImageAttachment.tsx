@@ -54,7 +54,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
 
   if (imageFile) {
     return (
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text size={1} weight="medium">
           {t('feedback.attachment.label')}
         </Text>
@@ -76,7 +76,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
   }
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Text size={1} weight="medium">
         {t('feedback.attachment.label')}
       </Text>

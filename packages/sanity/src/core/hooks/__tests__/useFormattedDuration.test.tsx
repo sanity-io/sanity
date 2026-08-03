@@ -17,6 +17,7 @@ describe('useFormattedDuration', () => {
   })
 
   const wrapper = ({children}: {children: React.ReactNode}) => (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider theme={studioTheme}>
       <LocaleProviderBase
         locales={[usEnglishLocale]}

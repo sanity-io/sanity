@@ -43,6 +43,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
     appendTitle,
   } = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const paneRect = useElementRect(paneElement || null)
 
   const layoutStyle = useMemo(

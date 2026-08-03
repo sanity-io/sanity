@@ -27,6 +27,7 @@ export function useResolveCommentsEnabled(
   // Check if the projects plan has the feature enabled
   const {enabled: featureEnabled, isLoading, error} = useFeatureEnabled(FEATURES.studioComments)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled} = useSource().document.comments
   // Check if the feature is enabled for the current document in the config
   const enabledFromConfig = useMemo(

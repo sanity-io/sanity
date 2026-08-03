@@ -21,20 +21,26 @@ import {type BlockStyleItem, type PTEToolbarAction, type PTEToolbarActionGroup} 
 import {useApplicableSchema} from './useApplicableSchema'
 
 export function useFocusBlock(): PortableTextBlock | undefined {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
 
   return useMemo(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     () => (selection ? PortableTextEditor.focusBlock(editor) : undefined),
     [editor, selection],
   )
 }
 
 function useFocusChild(): PortableTextChild | undefined {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
 
   return useMemo(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     () => (selection ? PortableTextEditor.focusChild(editor) : undefined),
     [editor, selection],
   )
@@ -51,6 +57,7 @@ export function useActionGroups({
   resolveInitialValue: (type: ObjectSchemaType) => FIXME
   disabled: boolean
 }): PTEToolbarActionGroup[] {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const applicable = useApplicableSchema()
@@ -59,8 +66,11 @@ export function useActionGroups({
   const handleInsertAnnotation = useCallback(
     async (schemaType: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(schemaType)
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const paths = PortableTextEditor.addAnnotation(editor, schemaType, initialValue)
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (paths && paths.markDefPath) {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         onMemberOpen(paths.markDefPath)
       }
     },
@@ -88,22 +98,28 @@ export function useActiveActionKeys({
 }: {
   actions: Array<PTEToolbarAction & {firstInGroup?: true}>
 }): string[] {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return useUnique(
     useMemo(() => {
       return selection
         ? actions
             .filter((a) => {
               if (a.type === 'annotation') {
+                // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                 return PortableTextEditor.isAnnotationActive(editor, a.key)
               }
 
               if (a.type === 'listStyle') {
+                // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                 return PortableTextEditor.hasListStyle(editor, a.key)
               }
 
+              // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
               return PortableTextEditor.isMarkActive(editor, a.key)
             })
             .map((a) => a.key)
@@ -113,15 +129,19 @@ export function useActiveActionKeys({
 }
 
 export function useActiveStyleKeys({items}: {items: BlockStyleItem[]}): string[] {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const focusBlock = useFocusBlock()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return useUnique(
     useMemo(
       () =>
         focusBlock && selection
           ? items
+              // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
               .filter((i) => PortableTextEditor.hasBlockStyle(editor, i.style))
               .map((i) => i.style)
           : [],

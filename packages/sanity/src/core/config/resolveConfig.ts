@@ -25,6 +25,7 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
 
   return combineLatest(
     workspaces.flatMap((workspaceSummary) =>
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       combineLatest(workspaceSummary.__internal.sources.map(({source}) => source)).pipe(
         map((sources): Workspace => {
           const {releases: _releases, ...workspaceMetadata} = workspaceSummary

@@ -251,6 +251,7 @@ export interface PreviewUrlResolverOptions {
 export type DeprecatedPreviewUrlResolver = PreviewUrlResolver<SanityClient>
 
 /** @public */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export type PreviewUrlOption = string | DeprecatedPreviewUrlResolver | PreviewUrlResolverOptions
 
 /**

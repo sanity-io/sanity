@@ -108,6 +108,7 @@ export function PrimitiveField(props: {
         localValue,
       ),
       'readOnly': Boolean(member.field.readOnly),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       'placeholder': member.field.schemaType.placeholder,
       // Disable native browser autocomplete/autofill on content-editing fields
       'autoComplete': 'off',

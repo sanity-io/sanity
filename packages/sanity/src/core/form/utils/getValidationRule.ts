@@ -27,6 +27,7 @@ export function getValidationRule<RuleFlag extends RuleSpec['flag']>(
   ruleName: RuleFlag,
 ): Extract<RuleSpec, {flag: RuleFlag}> | null {
   for (const rule of normalizeRules(type?.validation, type)) {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     for (const ruleSpec of rule._rules) {
       if (ruleSpec.flag === ruleName) {
         return ruleSpec as Extract<RuleSpec, {flag: RuleFlag}>

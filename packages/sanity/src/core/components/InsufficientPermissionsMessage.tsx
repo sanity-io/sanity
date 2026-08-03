@@ -59,7 +59,7 @@ export function InsufficientPermissionsMessage({
 
   return (
     <Box>
-      <Inline space={2}>
+      <Inline gap={2}>
         <Text size={0}>
           <AccessDeniedIcon />
         </Text>

@@ -60,7 +60,9 @@ export function CustomContentInput(inputProps: PortableTextInputProps) {
   }, [])
 
   // Extract markers from content
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const markers: PortableTextMarker[] = useMemo(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const ret: PortableTextMarker[] = []
 
     if (!value) return ret
@@ -87,8 +89,11 @@ export function CustomContentInput(inputProps: PortableTextInputProps) {
       {...inputProps}
       // @ts-expect-error -- pre-existing, fix later
       onPaste={handlePaste}
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       markers={markers}
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       renderBlockActions={renderBlockActions}
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       renderCustomMarkers={renderCustomMarkers}
     />
   )

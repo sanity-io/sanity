@@ -177,8 +177,8 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
   return (
     <Popover
       content={
-        <Stack space={1}>
-          <TabList space={0.5}>
+        <Stack gap={1}>
+          <TabList gap={0.5}>
             <Tab
               aria-controls="release-timing-asap"
               id="release-timing-asap-tab"

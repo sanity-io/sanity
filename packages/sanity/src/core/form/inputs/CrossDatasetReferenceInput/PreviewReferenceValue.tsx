@@ -21,7 +21,7 @@ export function PreviewReferenceValue(props: {
 
   if (referenceInfo.isLoading || referenceInfo.error) {
     return (
-      <Stack space={2} padding={1}>
+      <Stack gap={2} padding={1}>
         <TextSkeleton style={{maxWidth: 320}} radius={1} animated={!referenceInfo.error} />
         <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated={!referenceInfo.error} />
       </Stack>
@@ -34,7 +34,7 @@ export function PreviewReferenceValue(props: {
 
   if (referenceInfo.result.availability?.available && !refType) {
     return (
-      <Stack space={2} padding={2}>
+      <Stack gap={2} padding={2}>
         <Text as="p">
           <Translate
             t={t}

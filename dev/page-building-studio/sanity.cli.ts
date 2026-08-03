@@ -10,7 +10,9 @@ export default defineCliConfig({
   vite(viteConfig: UserConfig): UserConfig {
     return {
       ...viteConfig,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       esbuild: {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         ...viteConfig.esbuild,
         minifyIdentifiers: false,
       },

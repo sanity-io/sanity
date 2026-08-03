@@ -48,6 +48,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
       state: {fullscreen},
     } = useSearchState()
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {file, image} = useSource().form
     const {t} = useTranslation()
 
@@ -118,7 +119,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
 
     return (
       <ContainerBox>
-        <Stack space={3}>
+        <Stack gap={3}>
           {/* Asset source component */}
           {selectedAssetSource && AssetSourceComponent && (
             <Portal>

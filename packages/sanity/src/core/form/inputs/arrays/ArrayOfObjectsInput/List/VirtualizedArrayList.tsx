@@ -72,6 +72,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
     tone,
   } = props
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = useTheme().sanity
   const {scrollElement, containerElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)

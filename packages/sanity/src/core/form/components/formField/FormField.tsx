@@ -27,6 +27,7 @@ export interface FormFieldProps {
    */
   __unstable_presence?: FormNodePresence[]
   /** @internal @deprecated DO NOT USE */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
   __internal_slot?: ReactNode
@@ -56,7 +57,9 @@ export const FormField = memo(function FormField(
   const {
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_slot: slot = null,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_comments: comments,
     children,
     description,
@@ -79,7 +82,7 @@ export const FormField = memo(function FormField(
           data-level={level}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          space={2}
+          gap={2}
         >
           {/*
         NOTE: It’s not ideal to hide validation, presence and description when there's no `title`.

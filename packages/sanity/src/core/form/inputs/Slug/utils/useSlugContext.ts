@@ -16,6 +16,7 @@ export type SlugContext = Omit<SlugSourceContext, 'parent' | 'parentPath'>
  * @internal
  */
 export function useSlugContext(): SlugContext {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient} = useSource()
   const schema = useSchema()
   const currentUser = useCurrentUser()

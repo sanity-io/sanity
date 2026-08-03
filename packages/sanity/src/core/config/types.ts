@@ -89,6 +89,7 @@ export interface SanityFormConfig {
    * @beta
    */
   unstable?: {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     CustomMarkers?: FormBuilderCustomMarkersComponent
     Markers?: FormBuilderMarkersComponent
   }
@@ -638,6 +639,7 @@ export interface WorkspaceOptions extends SourceOptions {
    * @hidden
    * @beta
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme?: StudioTheme
 
   /**
@@ -973,6 +975,7 @@ export interface Source {
      * @beta
      */
     unstable?: {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       CustomMarkers?: FormBuilderCustomMarkersComponent
       Markers?: FormBuilderMarkersComponent
     }
@@ -1111,6 +1114,7 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
    * @internal
    */
   apiHost?: string
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: StudioTheme
   schema: Schema
   i18n: LocaleSource

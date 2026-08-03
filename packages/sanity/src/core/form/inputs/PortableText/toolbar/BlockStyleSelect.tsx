@@ -76,6 +76,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 ): React.JSX.Element {
   const {disabled, items: itemsProp, boundaryElement} = props
   const applicable = useApplicableSchema()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const focusBlock = useFocusBlock()
@@ -121,7 +122,9 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
   const handleChange = useCallback(
     (item: BlockStyleItem): void => {
       if (focusBlock && item.style !== focusBlock.style) {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.toggleBlockStyle(editor, item.style)
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.focus(editor)
       }
     },

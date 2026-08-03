@@ -25,7 +25,7 @@ export function CreateDraft() {
   }, [client, documentId, documentType, value])
 
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       <Button
         loading={creatingDraft}
         onClick={createDraft}

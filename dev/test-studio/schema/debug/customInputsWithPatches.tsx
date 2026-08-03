@@ -99,7 +99,7 @@ export function CustomComponent(props: ObjectInputProps) {
 
   return (
     <>
-      <Grid columns={[2]} gap={2}>
+      <Grid gridTemplateColumns={[2]} gap={2}>
         <Button onClick={() => setRandomValue(['a'])} text="Set random value for A" />
         <Button onClick={() => clearValue(['a'])} text="Clear A" tone="critical" />
       </Grid>

@@ -89,6 +89,7 @@ export async function createTestProvider({
 
   const TestProvider: ComponentType<PropsWithChildren> = ({children}) => (
     <RouterProvider router={router} state={routerState} onNavigate={noop}>
+      {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
       <ThemeProvider theme={studioTheme}>
         <LocaleProviderBase locales={locales} i18next={i18next} projectId="test" sourceId="test">
           <ResourceCacheProvider>

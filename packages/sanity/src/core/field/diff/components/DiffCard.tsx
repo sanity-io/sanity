@@ -23,8 +23,8 @@ interface StyledCardProps {
 }
 
 const StyledCard = styled(Card)<StyledCardProps>`
-  --diff-card-radius: ${({theme}) => rem(theme.sanity.radius[2])};
-  --diff-card-bg-color: ${({theme}) => theme.sanity.color.card.enabled.bg};
+  --diff-card-radius: ${({theme}) => rem(theme.sanity.radius[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
+  --diff-card-bg-color: ${({theme}) => theme.sanity.color.card.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
 
   max-width: 100%;
   position: relative;

@@ -32,11 +32,11 @@ export function DebugOverlay({data}: DebugScoreProps) {
     <>
       <Tooltip
         content={
-          <Stack space={2}>
+          <Stack gap={2}>
             {matchingStories.length ? (
               <>
                 {matchingStories.map((story) => (
-                  <Inline key={story.path} space={3}>
+                  <Inline key={story.path} gap={3}>
                     <Code size={0} weight="medium">
                       {story.path}
                     </Code>

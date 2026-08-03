@@ -30,6 +30,7 @@ export function ArrayOfObjectsFunctions<
   const [popoverToggleElement, setPopoverToggleElement] = useState<HTMLButtonElement | null>(null)
 
   const telemetry = useTelemetry()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   const insertItem = useCallback(

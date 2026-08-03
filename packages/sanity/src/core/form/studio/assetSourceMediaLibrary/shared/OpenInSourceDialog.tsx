@@ -37,6 +37,7 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
   } = props
   const theme = useTheme()
   const {t} = useTranslation()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dark} = theme.sanity.color
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
   const appHost = mediaLibraryConfig.__internal.hosts.app

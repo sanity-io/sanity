@@ -15,6 +15,7 @@ import {createUnsetCallback} from './callbacks/unsetCallback'
 interface BlockActionsProps {
   block: PortableTextBlock
   onChange: (patches: PatchEvent) => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderBlockActions?: RenderBlockActionsCallback
 }
 
@@ -24,12 +25,15 @@ const Root = styled.div`
 `
 
 export function BlockActions(props: BlockActionsProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const {block, onChange, renderBlockActions} = props
   const blockActions = useMemo(() => {
     if (renderBlockActions) {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const blockActionProps: RenderBlockActionsProps = {
         block,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         value: PortableTextEditor.getValue(editor),
         set: createSetCallback({block, onChange}),
         unset: createUnsetCallback({block, onChange}),

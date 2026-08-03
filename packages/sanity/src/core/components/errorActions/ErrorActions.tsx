@@ -31,7 +31,7 @@ export const ErrorActions: ComponentType<ErrorActionsProps> = ({
   const copyErrorDetails = useCopyErrorDetails(error, eventId)
 
   return (
-    <Inline space={3}>
+    <Inline gap={3}>
       {onRetry && (
         <Button
           disabled={isRetrying}

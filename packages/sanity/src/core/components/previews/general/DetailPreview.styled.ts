@@ -32,6 +32,7 @@ export const DescriptionSkeleton = styled(TextSkeleton).attrs({animated: true, r
 `
 
 export const DescriptionText = styled(Text)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {fonts} = theme.sanity
   const textSize1 = fonts.text.sizes[1]
   const maxLines = 2
