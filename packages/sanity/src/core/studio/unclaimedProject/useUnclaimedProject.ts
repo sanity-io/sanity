@@ -311,9 +311,10 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
 
       try {
         await performCheck()
-      } finally {
-        checkInFlight = false
+      } catch {
+        // Lifecycle checks are best-effort. Keep the nudge quiet and allow a later trigger to retry.
       }
+      checkInFlight = false
     }
 
     const remainingClaimPollingDuration = getRemainingClaimPollingDuration()
