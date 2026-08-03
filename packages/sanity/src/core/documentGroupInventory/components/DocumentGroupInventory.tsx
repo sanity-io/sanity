@@ -4,7 +4,7 @@ import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type SanityDocumentLike} from '@sanity/types'
-import {Card, Flex, PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
+import {Flex, PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ComponentType,
@@ -72,6 +72,7 @@ import {CreateVariant} from './CreateVariant/CreateVariant'
 import {Footer} from './Footer'
 import {Header} from './Header'
 import {TextButton} from './TextButton'
+import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {StatusBadge} from './VariantSet/StatusBadge'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 import {VariantSet} from './VariantSet/VariantSet'
@@ -551,9 +552,15 @@ const Variant: ComponentType<{
   const selectedIds = useSelector(machine, ({context}) => context.selectedIds)
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
 
-  const {filteredReleases, clearScheduledDraftPerspective} = perspectiveList
+  const {clearScheduledDraftPerspective} = perspectiveList
 
   const release = releaseRef ? releases.get(releaseRef) : undefined
+
+  const pendingReleases = useVariantPendingReleases({
+    documentId: documentGroupId,
+    variantRef: document._system.variant?._ref,
+  })
+
   const {
     contextMenu,
     handleContextMenu,
@@ -571,12 +578,9 @@ const Variant: ComponentType<{
     sourceReleasePerspective,
   } = useVersionContextMenu({
     documentGroupId,
-    versionId,
+    documentVersionInfoStub: document,
     documentType,
-    bundleId,
-    isVersion,
     disabled: isReadOnly,
-    release,
     onCopyToDraftsComplete: clearScheduledDraftPerspective,
   })
 
@@ -660,7 +664,7 @@ const Variant: ComponentType<{
           documentGroupId={documentGroupId}
           documentType={documentType}
           bundleId={bundleId}
-          releases={filteredReleases.notCurrentReleases}
+          releases={pendingReleases}
           releasesLoading={releasesLoading}
           versionId={versionId}
           onDiscard={openDiscardDialog}
