@@ -11,7 +11,8 @@ import {
 } from '../../../store/authStore/unclaimedProjectStorage'
 import {useUnclaimedProject} from '../useUnclaimedProject'
 
-const {mockRequest, mockUseWorkspace} = vi.hoisted(() => ({
+const {mockLogout, mockRequest, mockUseWorkspace} = vi.hoisted(() => ({
+  mockLogout: vi.fn(),
   mockRequest: vi.fn(),
   mockUseWorkspace: vi.fn(),
 }))
@@ -44,7 +45,12 @@ function lookupResponse(status: number, body?: unknown): Response {
 describe('useUnclaimedProject', () => {
   beforeEach(() => {
     localStorage.clear()
-    mockUseWorkspace.mockReturnValue({currentUser: ROBOT_USER, projectId: PROJECT_ID})
+    mockLogout.mockResolvedValue(undefined)
+    mockUseWorkspace.mockReturnValue({
+      auth: {logout: mockLogout},
+      currentUser: ROBOT_USER,
+      projectId: PROJECT_ID,
+    })
     mockRequest.mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oSystemUnclaimed'})
     vi.stubGlobal('fetch', mockFetch)
     mockFetch.mockResolvedValue(lookupResponse(429))
@@ -174,7 +180,7 @@ describe('useUnclaimedProject', () => {
     expect(result.current).toBeUndefined()
   })
 
-  it('reports expired and clears record and token when the project is gone', async () => {
+  it('reports expired and logs out when the project is gone', async () => {
     mockRequest.mockRejectedValue({statusCode: 404})
     writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
     localStorage.setItem(getAuthTokenStorageKey(PROJECT_ID), JSON.stringify({token: 'sk-dead'}))
@@ -184,6 +190,7 @@ describe('useUnclaimedProject', () => {
     await waitFor(() => expect(result.current).toEqual({status: 'expired'}))
     expect(readUnclaimedProjectRecord(PROJECT_ID)).toBeUndefined()
     expect(localStorage.getItem(getAuthTokenStorageKey(PROJECT_ID))).toBeNull()
+    expect(mockLogout).toHaveBeenCalledOnce()
   })
 
   it('does not expire a regular robot-token session with no mint provenance', async () => {

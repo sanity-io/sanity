@@ -94,7 +94,7 @@ function getStatusCode(error: unknown): number | undefined {
 export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptions = {}):
   | UnclaimedProjectState
   | undefined {
-  const {currentUser, projectId} = useWorkspace()
+  const {auth, currentUser, projectId} = useWorkspace()
   const client = useClient({apiVersion: PROJECTS_API_VERSION})
   const isRobot = currentUser?.provider === ROBOT_PROVIDER
   const sessionKey = `${projectId}:${isRobot}`
@@ -191,6 +191,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
         }
       }
       update({status: 'expired'})
+      void auth.logout?.()
     }
 
     const dropClaimRecord = () => {
@@ -366,7 +367,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
       checkSubscription.unsubscribe()
       hashSubscription.unsubscribe()
     }
-  }, [claimAttemptedAt, client, isRobot, projectId, sessionKey])
+  }, [auth, claimAttemptedAt, client, isRobot, projectId, sessionKey])
 
   return state
 }
