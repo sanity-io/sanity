@@ -40,9 +40,6 @@ const COPY: UnclaimedProjectCopy = {
     identityText: 'Log in as {{identity}}.',
     signInButtonText: 'Log in',
   },
-  expired: {
-    toastTitle: 'This project expired.',
-  },
   noClaimUrl: {
     text: 'Open the claim link printed in your terminal.',
   },
@@ -79,6 +76,12 @@ describe('parseUnclaimedProjectCopy', () => {
     expect(parseUnclaimedProjectCopy(COPY)).toEqual(COPY)
   })
 
+  it('ignores legacy expired toast copy', () => {
+    expect(
+      parseUnclaimedProjectCopy({...COPY, expired: {toastTitle: 'This project expired.'}}),
+    ).toEqual(COPY)
+  })
+
   it.each([
     undefined,
     null,
@@ -89,7 +92,6 @@ describe('parseUnclaimedProjectCopy', () => {
     {...COPY, toast: {...COPY.toast, description: 42}},
     {...COPY, claimed: undefined},
     {...COPY, claimed: {...COPY.claimed, identityText: undefined}},
-    {...COPY, expired: {}},
     {...COPY, noClaimUrl: {text: null}},
   ])('rejects an incomplete or malformed contract', (value) => {
     expect(parseUnclaimedProjectCopy(value)).toBeUndefined()

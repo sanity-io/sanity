@@ -31,9 +31,6 @@ export interface UnclaimedProjectCopy {
     identityText: string
     signInButtonText: string
   }
-  expired: {
-    toastTitle: string
-  }
   noClaimUrl: {
     text: string
   }
@@ -90,7 +87,6 @@ export function parseUnclaimedProjectCopy(value: unknown): UnclaimedProjectCopy 
       'snoozeButtonText',
     ]) ||
     !hasStringProperties(value.claimed, ['text', 'identityText', 'signInButtonText']) ||
-    !hasStringProperties(value.expired, ['toastTitle']) ||
     !hasStringProperties(value.noClaimUrl, ['text'])
   ) {
     return undefined
@@ -115,9 +111,6 @@ export function parseUnclaimedProjectCopy(value: unknown): UnclaimedProjectCopy 
       text: value.claimed.text,
       identityText: value.claimed.identityText,
       signInButtonText: value.claimed.signInButtonText,
-    },
-    expired: {
-      toastTitle: value.expired.toastTitle,
     },
     noClaimUrl: {
       text: value.noClaimUrl.text,

@@ -1,6 +1,6 @@
 import {ClockIcon} from '@sanity/icons/Clock'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {startTransition, useCallback, useEffect, useState} from 'react'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -160,22 +160,6 @@ function UnclaimedProjectNudgeInner({
       </Stack>
     ),
   })
-
-  // One final farewell, pushed once so dismissing it sticks — unlike useConditionalToast,
-  // which re-pushes for as long as its condition holds.
-  const toast = useToast()
-  const expired = state?.status === 'expired'
-  const expiredToastTitle = copy?.expired.toastTitle
-  useEffect(() => {
-    if (!expired || !expiredToastTitle) return
-    toast.push({
-      id: 'unclaimed-project-expired',
-      status: 'warning',
-      closable: true,
-      duration: Infinity,
-      title: expiredToastTitle,
-    })
-  }, [expired, expiredToastTitle, toast])
 
   if (!copy) return null
 
