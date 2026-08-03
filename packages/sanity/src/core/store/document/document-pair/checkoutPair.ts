@@ -437,21 +437,20 @@ export function checkoutPair(
     mergeMap((commitRequest) => {
       const apiRequestSentAt = Date.now()
       return submitCommitRequest(client, idPair, commitRequest).pipe(
-        map(
-          (attemptResult): CommitAttemptResult =>
-            attemptResult.type === 'success'
-              ? {
-                  ...attemptResult,
-                  result: {
-                    ...attemptResult.result,
-                    _perfTimings: {
-                      firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
-                      apiRequestSentAt,
-                      apiResponseReceivedAt: Date.now(),
-                    },
+        map((attemptResult): CommitAttemptResult =>
+          attemptResult.type === 'success'
+            ? {
+                ...attemptResult,
+                result: {
+                  ...attemptResult.result,
+                  _perfTimings: {
+                    firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
+                    apiRequestSentAt,
+                    apiResponseReceivedAt: Date.now(),
                   },
-                }
-              : attemptResult,
+                },
+              }
+            : attemptResult,
         ),
       )
     }),
@@ -617,26 +616,22 @@ function reportLatency(options: {
   }
 
   const submittedMutations = commits$.pipe(
-    map(
-      (ev): LatencyTrackingEntry => ({
-        type: 'submit' as const,
-        transactionId: ev.transactionId,
-        timestamp: new Date(),
-        perfTimings: ev._perfTimings,
-      }),
-    ),
+    map((ev): LatencyTrackingEntry => ({
+      type: 'submit' as const,
+      transactionId: ev.transactionId,
+      timestamp: new Date(),
+      perfTimings: ev._perfTimings,
+    })),
     share(),
   )
 
   const receivedMutations = listenerEvents$.pipe(
     filter((ev) => ev.type === 'mutation'),
-    map(
-      (ev): LatencyTrackingEntry => ({
-        type: 'receive' as const,
-        transactionId: ev.transactionId,
-        timestamp: new Date(),
-      }),
-    ),
+    map((ev): LatencyTrackingEntry => ({
+      type: 'receive' as const,
+      transactionId: ev.transactionId,
+      timestamp: new Date(),
+    })),
     share(),
   )
 

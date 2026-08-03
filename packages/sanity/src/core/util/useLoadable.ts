@@ -60,8 +60,8 @@ export function asLoadable<T>(): OperatorFunction<T, LoadableState<T>> {
   return (value$: Observable<T>) =>
     value$.pipe(
       map((value) => ({isLoading: false, value, error: null}) as const),
-      catchError(
-        (error): Observable<ErrorState> => of({isLoading: false, value: undefined, error}),
+      catchError((error): Observable<ErrorState> =>
+        of({isLoading: false, value: undefined, error}),
       ),
     )
 }

@@ -14,8 +14,8 @@ import {
 } from '../useCreatableVariantInitialValue'
 
 const documentPreviewStoreMock = vi.hoisted(() => ({
-  unstable_observeDocument: vi.fn(
-    (_id: string): Observable<SanityDocument | undefined> => of(undefined),
+  unstable_observeDocument: vi.fn((_id: string): Observable<SanityDocument | undefined> =>
+    of(undefined),
   ),
 }))
 
