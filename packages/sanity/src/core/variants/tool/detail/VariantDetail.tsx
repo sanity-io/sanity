@@ -54,7 +54,7 @@ export function VariantDetail() {
         </Card>
         <Box padding={4}>
           <Card border padding={4} radius={3}>
-            <Stack space={3}>
+            <Stack gap={3}>
               <Text size={2} weight="semibold">
                 {t('detail.not-found.title')}
               </Text>
@@ -81,7 +81,7 @@ export function VariantDetail() {
           <Flex direction="column" paddingX={3}>
             <Card paddingY={5}>
               <Flex align="flex-start" gap={4} justify="space-between">
-                <Stack space={3}>
+                <Stack gap={3}>
                   <Flex align="center" gap={1}>
                     <VariantPinButton variant={variant} />
                     <Text as="h1" size={4} weight="bold">
@@ -95,7 +95,7 @@ export function VariantDetail() {
               </Flex>
 
               <Box paddingTop={4}>
-                <Stack space={2}>
+                <Stack gap={2}>
                   <Text size={1} weight="medium">
                     {t('dialog.create.conditions.title')}
                   </Text>

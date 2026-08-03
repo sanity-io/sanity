@@ -237,6 +237,7 @@ function commitMutations(
   mutationParams: Mutation['params'],
 ): Promise<MutationResult> {
   const {resultRev, ...mutation} = mutationParams
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return operationsApiClient(client, idPair).dataRequest('mutate', mutation, {
     visibility: 'async',
     returnDocuments: false,

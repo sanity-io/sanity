@@ -19,7 +19,7 @@ export function InvalidImageWarning({onClearValue}: Props) {
             <WarningOutlineIcon />
           </Text>
         </Box>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text size={1} weight="medium">
             {t('inputs.image.invalid-image-warning.title')}
           </Text>

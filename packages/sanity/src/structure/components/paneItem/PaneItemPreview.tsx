@@ -43,6 +43,7 @@ export interface PaneItemPreviewProps {
 export function PaneItemPreview(props: PaneItemPreviewProps) {
   const {icon, layout, presence, schemaType, sortOrder, value} = props
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const versionsInfo = useDocumentVersionInfo(value._id)
 
   const {perspectiveStack} = usePerspective()

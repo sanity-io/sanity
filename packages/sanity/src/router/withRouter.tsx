@@ -80,4 +80,5 @@ export interface WithRouterProps {
  * }
  * ```
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const WithRouter = withRouter((props: WithRouterProps) => props.children(props.router))

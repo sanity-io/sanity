@@ -639,6 +639,7 @@ const Variant: ComponentType<{
           )}
           <Text size={1}>
             {agentBundleName ? (
+              // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
               <ReleaseAvatarIcon tone="suggest" />
             ) : (
               <ReleaseAvatarIcon

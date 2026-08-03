@@ -28,7 +28,7 @@ export const useTestModalDialogAction: DocumentActionComponent = () => {
           </Text>
         ),
         footer: (
-          <Grid columns={1} gap={2}>
+          <Grid gridTemplateColumns={1} gap={2}>
             <Button onClick={handleClose} text="Close" />
           </Grid>
         ),

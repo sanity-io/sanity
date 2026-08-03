@@ -90,6 +90,7 @@ export function FormProvider(props: FormProviderProps) {
     validation,
   } = props
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {file, image} = useSource().form
 
   // These hooks may be stored in context as an perf optimization

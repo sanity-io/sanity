@@ -83,6 +83,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
   const telemetry = useTelemetry()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {__internal} = useFormBuilder()
   const isInspectOpen = Boolean(__internal.inspectOpen)
   const {absolutePath, path} = (children as React.ReactElement)?.props as {

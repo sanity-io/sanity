@@ -18,9 +18,12 @@ const Root = styled.legend`
   display: table;
 `
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})((props: {theme: Theme}) => {
   const {theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {focusRing, radius} = theme.sanity
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {base} = theme.sanity.color
 
   return css`

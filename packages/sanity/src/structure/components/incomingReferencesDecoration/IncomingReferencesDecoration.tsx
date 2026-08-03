@@ -27,9 +27,9 @@ export function IncomingReferencesDecoration(
   } = props
 
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       <Box paddingY={2}>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Flex align="center" paddingY={1}>
             <Text as="label" weight="medium" size={1}>
               {title || startCase(name)}

@@ -30,6 +30,7 @@ export function DocumentDiff({
 }) {
   const schema = useSchema()
   const schemaType = schema.get(document._type) as ObjectSchemaType
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {currentUser} = useSource()
 
   const rootDiff = useMemo(() => {

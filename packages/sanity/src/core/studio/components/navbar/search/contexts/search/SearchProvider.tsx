@@ -58,6 +58,7 @@ export function SearchProvider({
   const currentUser = useCurrentUser()
   const {
     search: {operators, filters, strategy},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
   const telemetry = useTelemetry()
 

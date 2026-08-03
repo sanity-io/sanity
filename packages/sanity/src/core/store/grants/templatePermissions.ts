@@ -136,6 +136,7 @@ export function getTemplatePermissions({
               title: item.title || template.title,
               subtitle:
                 schemaType.title === (item.title || template.title) ? undefined : schemaType.title,
+              // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
               description: item.description || template.description,
               icon: item.icon || template.icon,
             }),

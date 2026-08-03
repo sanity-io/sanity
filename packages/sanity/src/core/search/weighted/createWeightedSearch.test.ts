@@ -34,6 +34,7 @@ const searchHits = defer(() =>
 
 const {
   result: {current: client},
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 } = renderHook(() => useClient())
 const search = createWeightedSearch(getSearchableTypes(mockSchema), client, {unique: true})
 

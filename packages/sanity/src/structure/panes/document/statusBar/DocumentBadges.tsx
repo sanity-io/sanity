@@ -22,7 +22,7 @@ const DocumentBadgesInner = memo(function DocumentBadgesInner({states}: Document
     return null
   }
   return (
-    <Inline space={1}>
+    <Inline gap={1}>
       {states.map((badge, index) => (
         <Tooltip
           key={`${badge.label}-${index}`}
@@ -33,7 +33,6 @@ const DocumentBadgesInner = memo(function DocumentBadgesInner({states}: Document
         >
           <Badge
             fontSize={1}
-            mode="outline"
             paddingX={2}
             paddingY={1}
             radius={4}

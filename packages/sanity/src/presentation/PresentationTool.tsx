@@ -126,6 +126,7 @@ export default function PresentationTool(props: {
   const {navigate: routerNavigate, state: routerState} = useRouter() as RouterContextValue & {
     state: PresentationStateParams
   }
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
 
   const canSharePreviewAccess = useSelector(
@@ -507,6 +508,7 @@ export default function PresentationTool(props: {
         refreshRef.current = window.setTimeout(fallback, 300)
         visualEditingComlink.post('presentation/refresh', {
           source: 'manual',
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           livePreviewEnabled:
             previewKitConnection === 'connected' || loadersConnection === 'connected',
         })

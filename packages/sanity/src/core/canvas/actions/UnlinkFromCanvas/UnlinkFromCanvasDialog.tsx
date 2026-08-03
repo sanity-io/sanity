@@ -61,8 +61,8 @@ export const UnlinkFromCanvasDialog = ({
         },
       }}
     >
-      <Stack space={3}>
-        <Stack space={3}>
+      <Stack gap={3}>
+        <Stack gap={3}>
           <Box paddingBottom={2}>
             <Text size={1} muted>
               <Translate

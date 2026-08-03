@@ -225,7 +225,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         />
       )}
 
-      <Stack space={5}>
+      <Stack gap={5}>
         <Flex align="center">
           <Box flex={1}>
             <Text size={2} weight="semibold">
@@ -258,7 +258,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
               )}
 
               {currentUser && (
-                <Stack space={4} marginTop={1}>
+                <Stack gap={4} marginTop={1}>
                   {activity.map((item) => {
                     if (item._type === 'activity') {
                       return <EditedAt key={item.timestamp} activity={item.payload} />

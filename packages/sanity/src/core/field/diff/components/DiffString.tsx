@@ -6,7 +6,7 @@ import {type StringDiff, type StringDiffSegment} from '../../types'
 import {DiffCard} from './DiffCard'
 
 const RoundedCard = styled.span`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
+  border-radius: ${({theme}) => rem(theme.sanity.radius[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
 `
 
 const ChangeSegment = styled(Text)`

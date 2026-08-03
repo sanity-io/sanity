@@ -16,6 +16,7 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
       id: 'user1',
       name: 'Test User',
       email: 'test@test.com',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       role: 'administrator',
       roles: [{name: 'administrator', title: 'Administrator'}],
       profileImage: '',

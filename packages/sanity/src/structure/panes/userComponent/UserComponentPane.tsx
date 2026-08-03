@@ -28,6 +28,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
   } | null>(null)
   const {title = ''} = useI18nText(pane)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {key, ...componentProps} = {...restProps, ...restPane}
 
   return (

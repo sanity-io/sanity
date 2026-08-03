@@ -61,6 +61,7 @@ export const presentationTool = definePlugin<PresentationPluginOptions>((options
     console.warn('Presentation’s `locate` option is deprecated. Use `resolve.locations` instead.')
   }
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const hasLocationsResolver = !!(options.resolve?.locations || options.locate)
 
   function PresentationDocumentInput(props: InputProps) {

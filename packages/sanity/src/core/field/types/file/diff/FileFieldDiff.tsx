@@ -17,8 +17,8 @@ import {type File, type FileAsset} from './types'
 
 const SizeDiff = styled.div`
   ${({theme}) => `
-    --size-diff-positive: ${theme.sanity.color.solid.positive.enabled.bg};
-    --size-diff-negative: ${theme.sanity.color.solid.critical.enabled.bg};
+    --size-diff-positive: ${theme.sanity.color.solid.positive.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
+    --size-diff-negative: ${theme.sanity.color.solid.critical.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   `}
   &:not([hidden]) {
     display: inline-block;

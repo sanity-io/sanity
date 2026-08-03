@@ -9,6 +9,7 @@ import {useColorSchemeOptions} from '../../../colorScheme'
 export function AppearanceMenu({
   setScheme,
 }: {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   setScheme: (nextScheme: StudioThemeColorSchemeKey) => void
 }) {
   const {t} = useTranslation()

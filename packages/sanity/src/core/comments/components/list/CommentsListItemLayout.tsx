@@ -51,6 +51,7 @@ const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
 const EMPTY_ARRAY: [] = []
 
 const TimeText = styled(Text)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const isDark = theme.sanity.color.dark
   const fg = hues.gray[isDark ? 200 : 800].hex
 
@@ -70,6 +71,7 @@ const HeaderFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
 })
 
 const IntentText = styled(Text)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const isDark = theme.sanity.color.dark
   const fg = hues.gray[isDark ? 200 : 800].hex
 
@@ -104,6 +106,7 @@ const RetryCardButton = styled(Card)`
 `
 
 const RootStack = styled(Stack)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = theme.sanity
 
   return css`
@@ -339,9 +342,9 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       data-testid="comments-list-item-layout"
       onKeyDown={handleRootKeyDown}
       ref={rootElementRef}
-      space={4}
+      gap={4}
     >
-      <InnerStack space={1} data-muted={displayError}>
+      <InnerStack gap={1} data-muted={displayError}>
         <HeaderFlex align="center" gap={FLEX_GAP} flex={1} $size={avatarSize}>
           {withAvatar && <CommentsAvatar user={user} size={avatarSize} />}
 

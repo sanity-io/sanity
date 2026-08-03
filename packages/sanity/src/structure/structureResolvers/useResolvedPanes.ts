@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
-import {ReplaySubject} from 'rxjs'
-import {map} from 'rxjs/operators'
+import {useObservable} from 'react-rx'
+import {map, ReplaySubject} from 'rxjs'
 import {type RouterState, useRouter} from 'sanity/router'
 
 import {LOADING_PANE} from '../constants'
@@ -51,82 +51,76 @@ function useRouterPanesStream() {
 }
 type ResolvedPanesData = Omit<Panes, 'maximizedPane' | 'setMaximizedPane'>
 
+const INITIAL_DATA: ResolvedPanesData = {
+  paneDataItems: [],
+  resolvedPanes: [],
+  routerPanes: [],
+}
+
 export function useResolvedPanes(): Panes {
-  // used to propagate errors from async effect. throwing inside of the render
-  // will bubble the error to react where it can be picked up by standard error
-  // boundaries
-  const [error, setError] = useState<unknown>()
   const [maximizedPane, setMaximizedPane] = useState<PaneData | null>(null)
-  if (error) throw error
 
   const {structureContext, rootPaneNode} = useStructureTool()
   const {navigate} = useRouter()
 
-  const [data, setData] = useState<ResolvedPanesData>({
-    paneDataItems: [],
-    resolvedPanes: [],
-    routerPanes: [],
-  })
-
   const routerPanesStream = useRouterPanesStream()
 
-  useEffect(() => {
-    const resolvedPanes$ = createResolvedPaneNodeStream({
-      rootPaneNode,
-      routerPanesStream,
-      structureContext,
-    }).pipe(
-      map((resolvedPanes) => {
-        const routerPanes = resolvedPanes.reduce<RouterPanes>((acc, next) => {
-          const currentGroup = acc[next.groupIndex] || []
-          currentGroup[next.siblingIndex] = next.routerPaneSibling
-          acc[next.groupIndex] = currentGroup
-          return acc
-        }, [])
+  const data$ = useMemo(
+    () =>
+      createResolvedPaneNodeStream({
+        rootPaneNode,
+        routerPanesStream,
+        structureContext,
+      }).pipe(
+        map((resolvedPanes) => {
+          const routerPanes = resolvedPanes.reduce<RouterPanes>((acc, next) => {
+            const currentGroup = acc[next.groupIndex] || []
+            currentGroup[next.siblingIndex] = next.routerPaneSibling
+            acc[next.groupIndex] = currentGroup
+            return acc
+          }, [])
 
-        const groupsLen = routerPanes.length
+          const groupsLen = routerPanes.length
 
-        const paneDataItems = resolvedPanes.map((pane) => {
-          const {groupIndex, flatIndex, siblingIndex, routerPaneSibling, path} = pane
-          const itemId = routerPaneSibling.id
-          const nextGroup = routerPanes[groupIndex + 1] as RouterPaneGroup | undefined
+          const paneDataItems = resolvedPanes.map((pane) => {
+            const {groupIndex, flatIndex, siblingIndex, routerPaneSibling, path} = pane
+            const itemId = routerPaneSibling.id
+            const nextGroup = routerPanes[groupIndex + 1] as RouterPaneGroup | undefined
 
-          const paneDataItem: PaneData = {
-            active: groupIndex === groupsLen - 2,
-            childItemId: nextGroup?.[0].id ?? null,
-            index: flatIndex,
-            itemId: routerPaneSibling.id,
-            groupIndex,
-            key: `${
-              pane.type === 'loading' ? 'unknown' : pane.paneNode.id
-            }-${itemId}-${siblingIndex}`,
-            pane: pane.type === 'loading' ? LOADING_PANE : pane.paneNode,
-            params: routerPaneSibling.params || {},
-            path: path.join(';'),
-            payload: routerPaneSibling.payload,
-            selected: flatIndex === resolvedPanes.length - 1,
-            siblingIndex,
-            maximized: false,
+            const paneDataItem: PaneData = {
+              active: groupIndex === groupsLen - 2,
+              childItemId: nextGroup?.[0].id ?? null,
+              index: flatIndex,
+              itemId: routerPaneSibling.id,
+              groupIndex,
+              key: `${
+                pane.type === 'loading' ? 'unknown' : pane.paneNode.id
+              }-${itemId}-${siblingIndex}`,
+              pane: pane.type === 'loading' ? LOADING_PANE : pane.paneNode,
+              params: routerPaneSibling.params || {},
+              path: path.join(';'),
+              payload: routerPaneSibling.payload,
+              selected: flatIndex === resolvedPanes.length - 1,
+              siblingIndex,
+              maximized: false,
+            }
+
+            return paneDataItem
+          })
+
+          return {
+            paneDataItems,
+            routerPanes,
+            resolvedPanes: paneDataItems.map((pane) => pane.pane),
           }
+        }),
+      ),
+    [rootPaneNode, routerPanesStream, structureContext],
+  )
 
-          return paneDataItem
-        })
-
-        return {
-          paneDataItems,
-          routerPanes,
-          resolvedPanes: paneDataItems.map((pane) => pane.pane),
-        }
-      }),
-    )
-
-    const subscription = resolvedPanes$.subscribe({
-      next: (result) => setData(result),
-      error: (e) => setError(e),
-    })
-
-    return () => subscription.unsubscribe()
-  }, [rootPaneNode, routerPanesStream, structureContext])
+  // Stream errors are re-thrown by `useObservable` during render, so they bubble to the
+  // nearest error boundary without any explicit handling here.
+  const data = useObservable(data$, INITIAL_DATA)
 
   useEffect(
     function maybeOpenDefaultPanes() {

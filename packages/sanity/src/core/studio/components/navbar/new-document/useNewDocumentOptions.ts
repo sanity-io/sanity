@@ -16,6 +16,7 @@ interface NewDocumentOptionsValue {
 export function useNewDocumentOptions(): NewDocumentOptionsValue {
   const {
     __internal: {staticInitialValueTemplateItems},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
 
   const [permissions, loading] = useTemplatePermissions({

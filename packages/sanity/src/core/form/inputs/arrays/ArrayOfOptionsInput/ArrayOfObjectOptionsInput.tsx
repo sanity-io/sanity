@@ -109,7 +109,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
       <Grid
         gap={2}
-        columns={isGrid ? Math.min(options.length, 4) : 1}
+        gridTemplateColumns={isGrid ? Math.min(options.length, 4) : 1}
         tabIndex={0}
         {...elementProps}
       >

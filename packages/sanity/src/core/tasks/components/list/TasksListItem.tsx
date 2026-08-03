@@ -95,7 +95,7 @@ export function TasksListItem(props: TasksListItemProps) {
   const targetDocument = useMemo(() => getTargetDocumentMeta(target), [target])
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Flex align="center" gap={1}>
         <Box>
           <TasksStatus documentId={documentId} status={status} />

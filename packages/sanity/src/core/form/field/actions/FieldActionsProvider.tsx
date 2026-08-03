@@ -18,6 +18,7 @@ import {useHoveredField} from '../useHoveredField'
 type FieldActionsProviderProps = PropsWithChildren<{
   actions: DocumentFieldActionNode[]
   /** @internal @deprecated DO NOT USE */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   __internal_comments?: FieldCommentsProps
   __internal_slot?: ReactNode
   focused?: boolean
@@ -29,6 +30,7 @@ export const FieldActionsProvider = memo(function FieldActionsProvider(
   props: FieldActionsProviderProps,
 ) {
   // by passing the comments and slot here, we can wrap this functionality around any custom field without needing to confirm the title and description
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {actions, children, path, focused, __internal_comments, __internal_slot} = props
   const {
     onMouseEnter: onFieldMouseEnter,

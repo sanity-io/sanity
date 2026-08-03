@@ -56,6 +56,7 @@ function createDefaultProps(schemaType: ArraySchemaType) {
 }
 
 function Wrapper({children}: {children: ReactNode}) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
 }
 

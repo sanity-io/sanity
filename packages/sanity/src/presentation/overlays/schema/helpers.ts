@@ -43,6 +43,7 @@ export function isFieldRequired(field: ObjectField): boolean {
     }
 
     if (typeof rule === 'object' && rule !== null && '_required' in rule) {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (rule._required === 'required') {
         return true
       }

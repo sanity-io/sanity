@@ -22,6 +22,7 @@ vi.mock('../../hooks/useClient', () => ({
   useClient: vi.fn(),
 }))
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const useClientMock = useClient as ReturnType<typeof vi.fn>
 const mockObservableRequest = vi.fn((schedules) => of({schedules}))
 const scheduleResponse = [

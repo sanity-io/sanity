@@ -24,6 +24,7 @@ export type FileInputProps = Omit<
 export function StudioFileInput(props: FileInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {file: fileConfig} = useFormBuilder().__internal
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 

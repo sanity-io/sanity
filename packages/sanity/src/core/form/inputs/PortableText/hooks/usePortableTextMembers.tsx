@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {isEqual, pathFor} from '@sanity/util/paths'
-import {type MutableRefObject, type ReactNode, useContext, useMemo, useRef} from 'react'
+import {type ReactNode, type RefObject, useContext, useMemo, useRef} from 'react'
 import {PortableTextMemberItemsContext} from 'sanity/_singletons'
 
 import {pathToString} from '../../../../field/paths/helpers'
@@ -54,7 +54,7 @@ export function usePortableTextMemberItemsFromProps(
     onPathFocus,
   } = props
 
-  const portableTextMemberItemsRef: MutableRefObject<PortableTextMemberItem[]> = useRef([])
+  const portableTextMemberItemsRef: RefObject<PortableTextMemberItem[]> = useRef([])
   return useMemo(() => {
     const result: {
       kind: PortableTextMemberItem['kind']

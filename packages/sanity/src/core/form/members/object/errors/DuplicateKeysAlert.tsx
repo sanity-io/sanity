@@ -62,7 +62,7 @@ export function DuplicateKeysAlert(props: Props) {
           open={isDev}
           title={t('form.error.duplicate-keys-alert.details.title')}
         >
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text as="p" muted size={1}>
               <Translate t={t} i18nKey="form.error.duplicate-keys-alert.details.description" />
             </Text>

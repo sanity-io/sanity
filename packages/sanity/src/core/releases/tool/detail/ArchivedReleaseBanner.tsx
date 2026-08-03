@@ -34,7 +34,7 @@ export function ArchivedReleaseBanner({release}: {release: ReleaseDocument}) {
         <Text size={1}>
           <InfoOutlineIcon />
         </Text>
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text size={1} weight="semibold">
             {state === 'archived' ? tRelease('archive-info.title') : tRelease('publish-info.title')}
           </Text>

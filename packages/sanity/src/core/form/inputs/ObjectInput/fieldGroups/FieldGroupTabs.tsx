@@ -50,7 +50,7 @@ const GroupTabs = ({
 }) => {
   const {t} = useTranslation()
   return (
-    <TabList space={2} data-testid="field-group-tabs">
+    <TabList gap={2} data-testid="field-group-tabs">
       {groups.map((group) => {
         const title = group.i18n?.title
           ? t(group.i18n.title.key, {ns: group.i18n.title.ns})

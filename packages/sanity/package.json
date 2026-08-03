@@ -147,7 +147,7 @@
     "@portabletext/to-html": "^5.0.2",
     "@portabletext/toolkit": "^5.0.2",
     "@rexxars/react-json-inspector": "^9.0.1",
-    "@sanity-labs/ui-poc": "0.0.1-alpha.22",
+    "@sanity-labs/ui-poc": "0.0.1-alpha.25",
     "@sanity/asset-utils": "^2.3.0",
     "@sanity/bifur-client": "^1.0.0",
     "@sanity/cli": "^7.15.1",

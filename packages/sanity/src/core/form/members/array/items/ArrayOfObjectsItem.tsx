@@ -90,6 +90,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const getFormValue = useGetFormValue()
   const {onCopy} = useCopyPaste()
   const telemetry = useTelemetry()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {

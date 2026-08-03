@@ -389,12 +389,14 @@ test.describe('Variants create flow', () => {
 
     const secondKeyInput = getConditionKeyInputs(dialog).nth(1)
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     await secondKeyInput.type('new')
     await expect(secondKeyInput).toHaveValue('new')
     await expect(dialog.getByTestId('variant-form-condition-key-error')).toHaveText(
       'Condition keys must be unique',
     )
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     await secondKeyInput.type('ton')
     await expect(secondKeyInput).toHaveValue('newton')
     await expect(dialog.getByTestId('variant-form-condition-key-error')).toBeHidden()

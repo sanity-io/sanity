@@ -84,7 +84,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
               </Box>
             )}
             {mergedValidation.length > 0 && (
-              <Stack space={2}>
+              <Stack gap={2}>
                 {mergedValidation.map((marker, i) => (
                   <ValidationCard
                     // oxlint-disable-next-line no-array-index-key
@@ -155,7 +155,7 @@ function ValidationCard(props: {
               </Text>
             </Box>
 
-            <Stack flex={1} space={2}>
+            <Stack flex={1} gap={2}>
               <DocumentNodePathBreadcrumbs
                 path={marker.path}
                 schemaType={schemaType}
