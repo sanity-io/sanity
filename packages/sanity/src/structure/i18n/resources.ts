@@ -466,6 +466,14 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-inspector.dialog.title': 'Inspecting <DocumentTitle/>',
   /** The title shown in the dialog header, when the document being inspected is not created yet/has no value */
   'document-inspector.dialog.title-no-value': 'No value',
+  /** Accessibility label for the close button shown when an inspector panel failed to render */
+  'document-inspector.error.close-button.aria-label': 'Close panel',
+  /** Text explaining that the inspector panel failed to render */
+  'document-inspector.error.description': 'An error occurred while rendering this panel.',
+  /** Label for the button that attempts to render the inspector panel again */
+  'document-inspector.error.retry-button.text': 'Retry',
+  /** The title shown in the inspector panel header when the panel failed to render */
+  'document-inspector.error.title': 'Something went wrong',
   /** Title shown for menu item that opens the "Inspect" dialog */
   'document-inspector.menu-item.title': 'Inspect',
   /** the placeholder text for the search input on the inspect dialog */

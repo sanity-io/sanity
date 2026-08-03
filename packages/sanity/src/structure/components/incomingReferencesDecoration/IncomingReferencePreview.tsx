@@ -14,7 +14,12 @@ import {usePaneRouter} from '../paneRouter/usePaneRouter'
 interface IncomingReferencePreviewProps {
   type: SchemaType
   value: SanityDocument
-  path: Path
+  /**
+   * Path of the field holding the reference, used to deep link to that field. It is not always
+   * possible to resolve: the referencing document we have at hand may not contain the reference
+   * yet, for instance when the listener is lagging behind a recently created reference.
+   */
+  path?: Path
 }
 
 export function IncomingReferencePreview(props: IncomingReferencePreviewProps) {
@@ -28,13 +33,17 @@ export function IncomingReferencePreview(props: IncomingReferencePreviewProps) {
     function LinkComponent(linkProps: {children: ReactNode}) {
       return (
         <ChildLink
-          childId={getPublishedId(value?._id)}
-          childParameters={{type: type.name, path: pathToString(path)}}
+          childId={publishedId}
+          childParameters={{
+            type: type.name,
+            // Without a path, link to the document rather than to a specific field
+            ...(Array.isArray(path) && path.length > 0 ? {path: pathToString(path)} : {}),
+          }}
           {...linkProps}
         />
       )
     },
-    [ChildLink, type.name, value?._id, path],
+    [ChildLink, publishedId, type.name, path],
   )
 
   return (
