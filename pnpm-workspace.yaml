@@ -100,10 +100,6 @@ minimumReleaseAgeExclude:
   - 'react-hook-form'
   - 'react-is'
   - 'react-rx'
-  # @sanity/ui next pulls motion ^12.43.0; those packages often ship inside the age gate
-  - 'framer-motion'
-  - 'motion'
-  - 'motion-dom'
   # tsdown and its rolldown/rolldown-plugin-dts/yuku toolchain release frequently and in
   # lockstep, so new releases are often younger than minimumReleaseAge
   - 'rolldown'
