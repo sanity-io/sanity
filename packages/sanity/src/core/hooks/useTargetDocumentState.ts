@@ -5,9 +5,24 @@ import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../releases/store/types'
 import {type DocumentPairTarget} from '../store/document/types'
+import {getVersionFromId} from '../util/draftUtils'
 import {getTargetDocument, getVariantPublishedSibling} from '../util/getTargetDocument'
 import {useAllVariants} from '../variants/store/useAllVariants'
 import {type SystemVariant} from '../variants/types'
+
+/**
+ * The id and scope of a missing draft variant that can be created by typing: the id is known
+ * ahead of creation because the variant-of-published sibling advertises it (`_system.draft`).
+ *
+ * @internal
+ * @beta
+ */
+export interface CreatableTargetDocument {
+  /** The full version id (`versions.<scopeId>.<groupId>`) the draft variant will occupy. */
+  id: string
+  /** The bundle segment of {@link CreatableTargetDocument.id}, for pair checkout. */
+  scopeId: string
+}
 
 /**
  * The resolution state of the document targeted by the selected perspective (bundle) and variant.
@@ -23,8 +38,10 @@ import {type SystemVariant} from '../variants/types'
  *   (release id for release stubs, opaque scope hash for variant stubs, `undefined` for the
  *   base pair).
  * - `variant-missing` — a variant is selected but the document has no variant-scoped version
- *   for the current bundle. Consumers must treat the document as read-only and offer creation;
- *   never fall back to the base pair.
+ *   for the current bundle. When `creatableTarget` is set (drafts bundle, published variant
+ *   advertising its draft sibling id), the document is editable: typing creates the draft
+ *   variant at the advertised id, seeded from the published sibling. Otherwise consumers must
+ *   treat the document as read-only and offer creation. Never fall back to the base pair.
  * - `variant-definition-document-not-found` — the requested variant name matches no
  *   `system.variant` definition. An error state, never silently treated as "no variant".
  *
@@ -57,21 +74,80 @@ export type TargetDocumentState =
        * this bundle".
        */
       publishedSibling: VersionInfoDocumentStub | undefined
+      /**
+       * Present when the missing variant document can be created by typing: the drafts-bundle
+       * variant of a published variant whose `_system.draft` weak ref advertises the (stable,
+       * server-generated) id the draft will occupy. The pair is checked out at this id with
+       * `allowCreate` declared to the store, and the display falls back to `publishedSibling`
+       * until the document exists.
+       */
+      creatableTarget?: CreatableTargetDocument
     }
   | {status: 'variant-definition-document-not-found'; requestedVariantName: string}
 
 const RESOLVING: TargetDocumentState = {status: 'resolving'}
 
 /**
+ * Resolves the creatable draft variant for a missing target: only the drafts bundle qualifies
+ * (release-scoped variants have no advertised draft refs yet, and the published bundle's missing
+ * target *is* the sibling), and only when the variant-of-published sibling advertises
+ * `_system.draft`. The id is server-advertised, never computed — this is what keeps the "never
+ * guess a variant scope id client-side" invariant intact.
+ */
+function getCreatableTarget(
+  bundle: PerspectiveBundle,
+  publishedSibling: VersionInfoDocumentStub | undefined,
+): CreatableTargetDocument | undefined {
+  if (bundle !== 'drafts' || !publishedSibling) {
+    return undefined
+  }
+  const draftId = publishedSibling._system.draft?._ref
+  if (!draftId) {
+    return undefined
+  }
+  const scopeId = getVersionFromId(draftId)
+  if (!scopeId) {
+    return undefined
+  }
+  return {id: draftId, scopeId}
+}
+
+/**
  * Returns the scope id to thread into version-aware hooks (`useEditState`,
  * `useDocumentOperation`, etc.) for a resolved target, or `undefined` when the target is not
  * ready or the base draft/published pair applies.
+ *
+ * A `variant-missing` state with a {@link CreatableTargetDocument} yields the creatable draft's
+ * scope id: the pair is checked out at the advertised id from the beginning, so typing (and every
+ * version-aware read: edit state, sync state, connection) addresses the document being created —
+ * never the base pair, and never the published sibling.
  *
  * @internal
  * @beta
  */
 export function getTargetScopeId(state: TargetDocumentState): string | undefined {
-  return state.status === 'ready' ? state.scopeId : undefined
+  if (state.status === 'ready') {
+    return state.scopeId
+  }
+  if (state.status === 'variant-missing') {
+    return state.creatableTarget?.scopeId
+  }
+  return undefined
+}
+
+/**
+ * The creatable draft variant of a `variant-missing` state, or `undefined` for every other
+ * state. Present when the missing target can be created by typing at a server-advertised id
+ * (see {@link CreatableTargetDocument}); consumers use it to exempt the state from the
+ * read-only/banner/footer gating that otherwise applies to unresolved variant targets.
+ *
+ * @internal
+ * @beta
+ */
+export function getCreatableVariantTarget(
+  state: TargetDocumentState,
+): CreatableTargetDocument | undefined {
+  return state.status === 'variant-missing' ? state.creatableTarget : undefined
 }
 
 /**
@@ -81,6 +157,10 @@ export function getTargetScopeId(state: TargetDocumentState): string | undefined
  * yield `target-missing` (operations disabled with `TARGET_NOT_FOUND`). Both throw if executed,
  * so operations can never silently fall back to the base draft/published pair.
  *
+ * A `variant-missing` state with a {@link CreatableTargetDocument} yields a `variant` target with
+ * `allowCreate`: the store keeps `patch`/`commit` enabled so typing creates the draft variant at
+ * the advertised id, while publish/unpublish/discard stay disabled until the document exists.
+ *
  * @internal
  * @beta
  */
@@ -89,6 +169,14 @@ export function getPairTarget(state: TargetDocumentState): DocumentPairTarget | 
     case 'resolving':
       return {kind: 'unresolved'}
     case 'variant-missing':
+      if (state.creatableTarget) {
+        return {
+          kind: 'variant',
+          scopeId: state.creatableTarget.scopeId,
+          variantId: state.variant._id,
+          allowCreate: true,
+        }
+      }
       return {kind: 'target-missing', variantId: state.variant._id}
     case 'variant-definition-document-not-found':
       return {kind: 'target-missing'}
@@ -167,7 +255,13 @@ export function getTargetDocumentState(options: {
   })
 
   if (!targetDocument) {
-    return {status: 'variant-missing', variant: selectedVariant, bundle, publishedSibling}
+    return {
+      status: 'variant-missing',
+      variant: selectedVariant,
+      bundle,
+      publishedSibling,
+      creatableTarget: getCreatableTarget(bundle, publishedSibling),
+    }
   }
 
   return {

@@ -4,6 +4,7 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import {memo, useMemo} from 'react'
 import {
   CopyPasteProvider,
+  getCreatableVariantTarget,
   getPublishedId,
   ReferenceInputOptionsProvider,
   SourceProvider,
@@ -155,11 +156,16 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   // variant document created/discarded while open), so transitions pass back through the gate
   // above instead of a mounted tree silently falling back to the base pair. Also prevents form
   // state from being reused across variants. Inert when no variant is requested.
+  //
+  // A creatable missing draft variant is keyed by its advertised id — the same id the created
+  // stub arrives under — so the first keystroke's `variant-missing → ready` transition keeps the
+  // key stable and typing is not interrupted by a remount.
+  const creatableVariantTarget = getCreatableVariantTarget(targetDocumentState)
   const variantTargetKey = selectedVariantName
     ? `-${selectedVariantName}-${
         targetDocumentState.status === 'ready'
           ? (targetDocumentState.targetDocument?._id ?? 'none')
-          : targetDocumentState.status
+          : (creatableVariantTarget?.id ?? targetDocumentState.status)
       }`
     : ''
 

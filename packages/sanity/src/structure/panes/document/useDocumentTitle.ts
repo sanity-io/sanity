@@ -1,11 +1,5 @@
 import {useMemo} from 'react'
-import {
-  isPublishedPerspective,
-  prepareForPreview,
-  usePerspective,
-  useTranslation,
-  useValuePreview,
-} from 'sanity'
+import {prepareForPreview, useTranslation, useValuePreview, isGoingToUnpublish} from 'sanity'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
@@ -30,21 +24,21 @@ export interface UseDocumentTitle {
  * @returns The document title or error. See {@link UseDocumentTitle}
  */
 export function useDocumentTitle(): UseDocumentTitle {
-  const {connectionState, schemaType, editState, isDeleted, lastRevisionDocument} =
-    useDocumentPane()
-  const {selectedPerspectiveName} = usePerspective()
+  const {
+    connectionState,
+    schemaType,
+    isDeleted,
+    lastRevisionDocument,
+    value: documentPaneValue,
+    editState,
+  } = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
+
   // follows the same logic as the StructureTitle component
   const documentValue = useMemo(() => {
-    if (isDeleted) {
-      return lastRevisionDocument
-    }
-    // When viewing published perspective, prioritize published document
-    if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
-      return editState?.published
-    }
-    return editState?.version || editState?.draft || editState?.published
-  }, [isDeleted, lastRevisionDocument, editState, selectedPerspectiveName])
+    if (isDeleted) return lastRevisionDocument
+    return documentPaneValue
+  }, [isDeleted, lastRevisionDocument, documentPaneValue])
   const subscribed = Boolean(documentValue)
 
   // For deleted documents, we need to handle the preview differently since useValuePreview
@@ -68,6 +62,8 @@ export function useDocumentTitle(): UseDocumentTitle {
     enabled: subscribed && !isDeleted,
     schemaType,
     value: documentValue,
+    // Documents that are going to be unpublished need to be handled specially
+    perspectiveStack: editState?.version && isGoingToUnpublish(editState?.version) ? [] : undefined,
   })
 
   if (connectionState === 'connecting' && !subscribed) {

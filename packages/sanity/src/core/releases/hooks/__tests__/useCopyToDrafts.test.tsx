@@ -87,6 +87,19 @@ const variantVersion: VersionInfoDocumentStub = {
   },
 }
 
+const variantDraftVersion: VersionInfoDocumentStub = {
+  _id: 'opaque-variant-draft-doc-id',
+  _rev: 'variant-draft-rev',
+  _createdAt: '2024-01-01T00:00:00Z',
+  _updatedAt: '2024-01-07T00:00:00Z',
+  _system: {
+    bundleId: 'drafts',
+    variant: {_ref: '_.variants.test', _weak: true},
+    group: {_ref: publishedId, _weak: true},
+    scopeId: 'opaque-variant-draft-scope',
+  },
+}
+
 describe('useCopyToDrafts', () => {
   const mockAction = vi.fn()
   const mockClient = {
@@ -112,13 +125,13 @@ describe('useCopyToDrafts', () => {
     })
   })
 
-  async function renderCopyToDrafts(fromRelease: string) {
+  async function renderCopyToDrafts(documentVersionInfoStub: VersionInfoDocumentStub | undefined) {
     const wrapper = await createTestProvider()
     return renderHook(
       () =>
         useCopyToDrafts({
-          documentId: publishedId,
-          fromRelease,
+          documentGroupId: publishedId,
+          documentVersionInfoStub,
           onNavigate,
           onConfirmationRequest,
         }),
@@ -127,7 +140,7 @@ describe('useCopyToDrafts', () => {
   }
 
   it('copies a published document to drafts without discarding', async () => {
-    const {result} = await renderCopyToDrafts('published')
+    const {result} = await renderCopyToDrafts(publishedVersion)
 
     await act(async () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
@@ -149,8 +162,8 @@ describe('useCopyToDrafts', () => {
     expect(onNavigate).toHaveBeenCalledTimes(1)
   })
 
-  it('copies a release version to drafts by matching scopeId', async () => {
-    const {result} = await renderCopyToDrafts('release1')
+  it('copies a release version to drafts using the provided stub', async () => {
+    const {result} = await renderCopyToDrafts(releaseVersion)
 
     await act(async () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
@@ -171,8 +184,8 @@ describe('useCopyToDrafts', () => {
     expect(onNavigate).toHaveBeenCalledTimes(1)
   })
 
-  it('copies an opaque agent version to drafts by matching scopeId', async () => {
-    const {result} = await renderCopyToDrafts('opaque-scope-abc')
+  it('copies an opaque agent version using the provided stub', async () => {
+    const {result} = await renderCopyToDrafts(opaqueAgentVersion)
 
     await act(async () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
@@ -201,7 +214,7 @@ describe('useCopyToDrafts', () => {
       loading: false,
     })
 
-    const {result} = await renderCopyToDrafts('release1')
+    const {result} = await renderCopyToDrafts(releaseVersion)
 
     await act(async () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
@@ -220,7 +233,7 @@ describe('useCopyToDrafts', () => {
       loading: false,
     })
 
-    const {result} = await renderCopyToDrafts('release1')
+    const {result} = await renderCopyToDrafts(releaseVersion)
 
     await act(async () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: false})
@@ -246,8 +259,8 @@ describe('useCopyToDrafts', () => {
     expect(onNavigate).toHaveBeenCalledTimes(1)
   })
 
-  it('shows an error toast when the source version is not found', async () => {
-    const {result} = await renderCopyToDrafts('missing-scope')
+  it('shows an error toast when the document version stub is missing', async () => {
+    const {result} = await renderCopyToDrafts(undefined)
 
     await act(async () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
@@ -258,40 +271,109 @@ describe('useCopyToDrafts', () => {
     expect(toastMock.push).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'error',
-        description: `Source document with id: ${publishedId} and release: missing-scope not found`,
+        description: `Document version info stub is required, not found for document group id: ${publishedId}`,
       }),
     )
   })
 
-  it('shows an error toast when copying a variant document', async () => {
+  it('copies a variant version to the variant draft, ignoring the base draft', async () => {
     mockUseDocumentVersions.mockReturnValue({
       data: [],
-      versions: [publishedVersion, variantVersion],
+      versions: [publishedVersion, draftVersion, releaseVersion, variantVersion],
       error: null,
       loading: false,
     })
 
-    const {result} = await renderCopyToDrafts('opaque-variant-scope')
+    const {result} = await renderCopyToDrafts(variantVersion)
 
     await act(async () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
     })
 
-    expect(mockAction).not.toHaveBeenCalled()
-    expect(onNavigate).not.toHaveBeenCalled()
-    expect(toastMock.push).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: 'error',
-        description: 'Copying variant documents to drafts is not supported yet',
-      }),
+    expect(onConfirmationRequest).not.toHaveBeenCalled()
+    expect(mockAction).toHaveBeenCalledWith(
+      [
+        {
+          actionType: 'sanity.action.document.variant.create',
+          bundleId: 'drafts',
+          publishedId,
+          variantId: 'test',
+          baseId: variantVersion._id,
+          ifBaseRevisionId: 'variant-rev',
+        },
+      ],
+      {tag: 'document.copy-to-drafts'},
     )
+    expect(onNavigate).toHaveBeenCalledTimes(1)
   })
 
-  it('shows an error toast when fromRelease is draft', async () => {
-    const {result} = await renderCopyToDrafts('draft')
+  it('requests confirmation when the variant draft exists', async () => {
+    mockUseDocumentVersions.mockReturnValue({
+      data: [],
+      versions: [publishedVersion, variantVersion, variantDraftVersion],
+      error: null,
+      loading: false,
+    })
+
+    const {result} = await renderCopyToDrafts(variantVersion)
 
     await act(async () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
+    })
+
+    expect(onConfirmationRequest).toHaveBeenCalledTimes(1)
+    expect(mockAction).not.toHaveBeenCalled()
+    expect(onNavigate).not.toHaveBeenCalled()
+  })
+
+  it('deletes the existing variant draft then copies when shouldConfirmDraftDiscard is false', async () => {
+    mockUseDocumentVersions.mockReturnValue({
+      data: [],
+      versions: [publishedVersion, variantVersion, variantDraftVersion],
+      error: null,
+      loading: false,
+    })
+
+    const {result} = await renderCopyToDrafts(variantVersion)
+
+    await act(async () => {
+      await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: false})
+    })
+
+    expect(mockAction).toHaveBeenCalledWith(
+      [
+        {
+          actionType: 'sanity.action.document.variant.delete',
+          bundleId: 'drafts',
+          publishedId,
+          variantId: 'test',
+        },
+        {
+          actionType: 'sanity.action.document.variant.create',
+          bundleId: 'drafts',
+          publishedId,
+          variantId: 'test',
+          baseId: variantVersion._id,
+          ifBaseRevisionId: 'variant-rev',
+        },
+      ],
+      {tag: 'document.copy-to-drafts'},
+    )
+    expect(onNavigate).toHaveBeenCalledTimes(1)
+  })
+
+  it('refuses to copy drafts onto themselves', async () => {
+    mockUseDocumentVersions.mockReturnValue({
+      data: [],
+      versions: [publishedVersion, draftVersion],
+      error: null,
+      loading: false,
+    })
+
+    const {result} = await renderCopyToDrafts(draftVersion)
+
+    await act(async () => {
+      await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: false})
     })
 
     expect(mockAction).not.toHaveBeenCalled()
@@ -299,7 +381,7 @@ describe('useCopyToDrafts', () => {
     expect(toastMock.push).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'error',
-        description: `Source document with id: ${publishedId} and release: draft not found`,
+        description: 'Cannot copy a draft onto itself',
       }),
     )
   })
@@ -307,7 +389,7 @@ describe('useCopyToDrafts', () => {
   it('shows an error toast when the client action fails', async () => {
     mockAction.mockRejectedValue(new Error('action failed'))
 
-    const {result} = await renderCopyToDrafts('published')
+    const {result} = await renderCopyToDrafts(publishedVersion)
 
     await act(async () => {
       await result.current.handleCopyToDrafts({shouldConfirmDraftDiscard: true})
