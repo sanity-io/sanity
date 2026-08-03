@@ -1,12 +1,13 @@
 import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {StrictMode} from 'react'
+import {StrictMode, useCallback, useState} from 'react'
 import {afterAll, afterEach, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {ChangeFieldWrapper} from '../ChangeFieldWrapper'
 import {ChangeIndicator} from '../ChangeIndicator'
 import {scrollIntoView} from '../helpers/scrollIntoView'
+import {useChangeIndicatorsReporter} from '../tracker'
 import {ChangeConnectorRoot} from './ChangeConnectorRoot'
 
 vi.mock('../helpers/scrollIntoView', () => ({scrollIntoView: vi.fn()}))
@@ -76,8 +77,8 @@ afterEach(() => {
   vi.mocked(scrollIntoView).mockClear()
 })
 
-function Harness(props: {isReviewChangesOpen: boolean; trackedElementsKey?: string}) {
-  const {isReviewChangesOpen, trackedElementsKey = 'default'} = props
+function Harness(props: {isReviewChangesOpen: boolean}) {
+  const {isReviewChangesOpen} = props
 
   return (
     <ChangeConnectorRoot
@@ -86,23 +87,59 @@ function Harness(props: {isReviewChangesOpen: boolean; trackedElementsKey?: stri
       onSetFocus={() => {}}
     >
       {/* The form side of the connector */}
-      <ChangeIndicator
-        key={`field-${trackedElementsKey}`}
-        data-testid="tracked-field"
-        hasFocus
-        isChanged
-        path={['title']}
-      >
+      <ChangeIndicator hasFocus isChanged path={['title']}>
         <div>field</div>
       </ChangeIndicator>
       {/* The review changes panel side of the connector */}
-      <ChangeFieldWrapper
-        key={`change-${trackedElementsKey}`}
-        hasRevertHover={false}
-        path={['title']}
-      >
-        <div data-testid="tracked-change-content">change</div>
+      <ChangeFieldWrapper hasRevertHover={false} path={['title']}>
+        <div>change</div>
       </ChangeFieldWrapper>
+    </ChangeConnectorRoot>
+  )
+}
+
+function TrackedNode(props: {
+  id: 'field-title' | 'change-title'
+  nodeKey: string
+  testId: string
+  hasFocus: boolean
+}) {
+  const {hasFocus, id, nodeKey, testId} = props
+  const [element, setElement] = useState<HTMLDivElement | null>(null)
+  const getSnapshot = useCallback(
+    () => ({
+      element,
+      path: ['title'],
+      isChanged: true,
+      hasFocus,
+      hasHover: false,
+      hasRevertHover: false,
+      zIndex: 1,
+    }),
+    [element, hasFocus],
+  )
+  useChangeIndicatorsReporter(id, getSnapshot)
+
+  return <div key={nodeKey} ref={setElement} data-testid={testId} />
+}
+
+function RemountHarness(props: {trackedElementsKey: string}) {
+  const {trackedElementsKey} = props
+
+  return (
+    <ChangeConnectorRoot isReviewChangesOpen onOpenReviewChanges={() => {}} onSetFocus={() => {}}>
+      <TrackedNode
+        id="field-title"
+        nodeKey={`field-${trackedElementsKey}`}
+        testId="tracked-field"
+        hasFocus
+      />
+      <TrackedNode
+        id="change-title"
+        nodeKey={`change-${trackedElementsKey}`}
+        testId="tracked-change"
+        hasFocus={false}
+      />
     </ChangeConnectorRoot>
   )
 }
@@ -221,7 +258,7 @@ describe('ConnectorsOverlay', () => {
   it('uses remounted tracked elements when the connector geometry is unchanged', async () => {
     const TestProvider = await createTestProvider()
 
-    const {rerender} = render(<Harness isReviewChangesOpen trackedElementsKey="initial" />, {
+    const {rerender} = render(<RemountHarness trackedElementsKey="initial" />, {
       wrapper: TestProvider,
     })
 
@@ -229,15 +266,13 @@ describe('ConnectorsOverlay', () => {
     await waitForOverlayToSettle()
 
     const initialField = screen.getByTestId('tracked-field')
-    const initialChange = screen.getByTestId('tracked-change-content').parentElement
-    if (!initialChange) throw new Error('Expected a tracked change element')
+    const initialChange = screen.getByTestId('tracked-change')
 
-    rerender(<Harness isReviewChangesOpen trackedElementsKey="remounted" />)
+    rerender(<RemountHarness trackedElementsKey="remounted" />)
     await waitForOverlayToSettle()
 
     const remountedField = screen.getByTestId('tracked-field')
-    const remountedChange = screen.getByTestId('tracked-change-content').parentElement
-    if (!remountedChange) throw new Error('Expected a remounted tracked change element')
+    const remountedChange = screen.getByTestId('tracked-change')
     expect(remountedField).not.toBe(initialField)
     expect(remountedChange).not.toBe(initialChange)
     expect(remountedField.offsetTop).toBe(initialField.offsetTop)
