@@ -1,6 +1,7 @@
+import {type SchemaType} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {Suspense, use, useCallback, useMemo} from 'react'
+import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {
   CommandList,
   type CommandListRenderItemCallback,
@@ -13,7 +14,6 @@ import {
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../../../i18n'
-import {INITIAL_STATE} from '../getIncomingReferences'
 import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from '../shared'
 import {type CrossDatasetIncomingReference} from '../types'
 import {CrossDatasetIncomingReferenceDocumentPreview} from './CrossDatasetIncomingReferenceDocumentPreview'
@@ -45,11 +45,43 @@ export function CrossDatasetIncomingReferenceType({
     [client, type, referenced.id, documentPreviewStore],
   )
 
-  const {documents, loading} = useObservable(references$, INITIAL_STATE)
+  const referencesPromise = useObservablePromise(references$)
 
   const schema = useSchema()
   const {t} = useTranslation(structureLocaleNamespace)
   const schemaType = schema.get(type.type)
+
+  if (!schemaType) return null
+  return (
+    <Suspense
+      fallback={
+        <LoadingBlock showText title={t('incoming-references-input.types-loading-cross-dataset')} />
+      }
+    >
+      <CrossDatasetIncomingReferenceTypeList
+        referencesPromise={referencesPromise}
+        schemaType={schemaType}
+        shouldRenderTitle={shouldRenderTitle}
+        type={type}
+      />
+    </Suspense>
+  )
+}
+
+function CrossDatasetIncomingReferenceTypeList({
+  type,
+  shouldRenderTitle,
+  referencesPromise,
+  schemaType,
+}: {
+  shouldRenderTitle: boolean
+  type: CrossDatasetIncomingReference
+  referencesPromise: ObservablePromise<CrossDatasetIncomingReferenceDocument[]>
+  schemaType: SchemaType
+}) {
+  const documents = use(referencesPromise)
+
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const renderItem = useCallback<
     CommandListRenderItemCallback<CrossDatasetIncomingReferenceDocument>
@@ -58,10 +90,6 @@ export function CrossDatasetIncomingReferenceType({
     [type],
   )
 
-  if (!schemaType) return null
-  if (loading) {
-    return <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
-  }
   return (
     <Stack gap={2} marginBottom={2}>
       {shouldRenderTitle && (

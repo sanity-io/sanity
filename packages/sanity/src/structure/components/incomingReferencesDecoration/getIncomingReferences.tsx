@@ -1,13 +1,4 @@
-import {
-  catchError,
-  distinctUntilChanged,
-  filter,
-  map,
-  type Observable,
-  of,
-  startWith,
-  switchMap,
-} from 'rxjs'
+import {catchError, distinctUntilChanged, filter, map, type Observable, of, switchMap} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
   type DocumentPreviewStore,
@@ -17,11 +8,6 @@ import {
 } from 'sanity'
 
 import {type IncomingReferencesFilterResolver, type IncomingReferencesOptions} from './types'
-
-export const INITIAL_STATE = {
-  documents: [],
-  loading: true,
-}
 
 async function resolveRawFilterCallback(
   filterResolver: IncomingReferencesFilterResolver,
@@ -55,6 +41,11 @@ interface InspectorIncomingReferencesOptions {
   filterParams?: undefined
 }
 
+/**
+ * Emits the documents referencing `documentId`. The observable does not emit
+ * until the first list has loaded — consumers read it through
+ * `useObservablePromise`, so the pending window renders as a Suspense fallback.
+ */
 export function getIncomingReferences({
   documentId,
   documentPreviewStore,
@@ -62,10 +53,9 @@ export function getIncomingReferences({
   filter: filterQueryRaw,
   filterParams: filterParamsRaw,
   getClient,
-}: InspectorIncomingReferencesOptions | InputIncomingReferencesOptions): Observable<{
-  documents: SanityDocument[]
-  loading: boolean
-}> {
+}: InspectorIncomingReferencesOptions | InputIncomingReferencesOptions): Observable<
+  SanityDocument[]
+> {
   const publishedId = getPublishedId(documentId)
   const filterResolver: Observable<{
     filter: string | undefined
@@ -117,18 +107,16 @@ export function getIncomingReferences({
               return true
             })
           }),
-
-          map((documents) => ({documents, loading: false})),
-          startWith(INITIAL_STATE),
           // Catch inside the `switchMap` so a failure of this inner stream
           // degrades to an empty list without completing the outer observable.
-          // Consumers render this via `useObservable`, which rethrows stream
-          // errors during render and would crash the document pane. Keeping the
-          // outer stream alive means a later `filterResolver` emission can
-          // re-subscribe and recover from a transient error.
+          // Consumers read this via `useObservablePromise`, so an uncaught
+          // error would reject the promise and crash the document pane at the
+          // nearest error boundary. Keeping the outer stream alive means a
+          // later `filterResolver` emission can re-subscribe and recover from
+          // a transient error.
           catchError((err) => {
             console.error(new Error('Failed to load incoming references', {cause: err}))
-            return of({documents: [], loading: false})
+            return of<SanityDocument[]>([])
           }),
         )
     }),
