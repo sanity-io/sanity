@@ -1,4 +1,4 @@
-import {act, render, screen} from '@testing-library/react'
+import {act, fireEvent, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {StrictMode, useCallback, useState} from 'react'
 import {afterAll, afterEach, beforeAll, describe, expect, it, vi} from 'vitest'
@@ -258,38 +258,85 @@ describe('ConnectorsOverlay', () => {
   it('uses remounted tracked elements when the connector geometry is unchanged', async () => {
     const TestProvider = await createTestProvider()
 
-    const {rerender} = render(<RemountHarness trackedElementsKey="initial" />, {
-      wrapper: TestProvider,
-    })
+    vi.useFakeTimers()
+    const pendingFrames = new Map<number, FrameRequestCallback>()
+    let nextFrameId = 1
+    const requestAnimationFrameSpy = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        const frameId = nextFrameId
+        nextFrameId += 1
+        pendingFrames.set(frameId, callback)
+        return frameId
+      })
+    const cancelAnimationFrameSpy = vi
+      .spyOn(window, 'cancelAnimationFrame')
+      .mockImplementation((frameId) => {
+        pendingFrames.delete(frameId)
+      })
+    // Flush exactly one debounced tracker publish and its scheduled overlay measurement. This
+    // keeps the initial connector and remount update in separate, deterministic render cycles.
+    const flushTrackerAndOverlay = () => {
+      act(() => {
+        vi.advanceTimersByTime(10)
+      })
+      act(() => {
+        const callbacks = Array.from(pendingFrames.values())
+        pendingFrames.clear()
+        for (const callback of callbacks) callback(performance.now())
+      })
+    }
 
-    const overlay = screen.getByTestId('change-connectors-overlay')
-    await waitForOverlayToSettle()
+    let unmount: (() => void) | undefined
+    try {
+      const view = render(<RemountHarness trackedElementsKey="initial" />, {
+        wrapper: TestProvider,
+      })
+      unmount = view.unmount
 
-    const initialField = screen.getByTestId('tracked-field')
-    const initialChange = screen.getByTestId('tracked-change')
+      const overlay = screen.getByTestId('change-connectors-overlay')
+      flushTrackerAndOverlay()
 
-    rerender(<RemountHarness trackedElementsKey="remounted" />)
-    await waitForOverlayToSettle()
+      const initialField = screen.getByTestId('tracked-field')
+      const initialChange = screen.getByTestId('tracked-change')
+      const initialConnectorGroup = overlay.querySelector('g')
+      if (!initialConnectorGroup) throw new Error('Expected an initial connector group')
+      // Dispatch only click so pointer events cannot schedule another measurement.
+      // oxlint-disable-next-line testing-library/prefer-user-event
+      fireEvent.click(initialConnectorGroup)
+      expect(scrollIntoView).toHaveBeenCalledTimes(2)
+      expect(vi.mocked(scrollIntoView).mock.calls[0][0].element).toBe(initialField)
+      expect(vi.mocked(scrollIntoView).mock.calls[1][0].element).toBe(initialChange)
+      vi.mocked(scrollIntoView).mockClear()
 
-    const remountedField = screen.getByTestId('tracked-field')
-    const remountedChange = screen.getByTestId('tracked-change')
-    expect(remountedField).not.toBe(initialField)
-    expect(remountedChange).not.toBe(initialChange)
-    expect(remountedField.offsetTop).toBe(initialField.offsetTop)
-    expect(remountedChange.offsetTop).toBe(initialChange.offsetTop)
+      view.rerender(<RemountHarness trackedElementsKey="remounted" />)
+      flushTrackerAndOverlay()
 
-    const connectorGroup = overlay.querySelector('g')
-    if (!connectorGroup) throw new Error('Expected a connector group')
-    await userEvent.click(connectorGroup)
+      const remountedField = screen.getByTestId('tracked-field')
+      const remountedChange = screen.getByTestId('tracked-change')
+      expect(initialField.isConnected).toBe(false)
+      expect(initialChange.isConnected).toBe(false)
+      expect(remountedField).not.toBe(initialField)
+      expect(remountedChange).not.toBe(initialChange)
+      expect(remountedField.offsetTop).toBe(initialField.offsetTop)
+      expect(remountedChange.offsetTop).toBe(initialChange.offsetTop)
 
-    expect(scrollIntoView).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({element: remountedField}),
-    )
-    expect(scrollIntoView).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({element: remountedChange}),
-    )
+      const remountedConnectorGroup = overlay.querySelector('g')
+      if (!remountedConnectorGroup) throw new Error('Expected a remounted connector group')
+      // oxlint-disable-next-line testing-library/prefer-user-event
+      fireEvent.click(remountedConnectorGroup)
+
+      expect(scrollIntoView).toHaveBeenCalledTimes(2)
+      // Call-argument matchers deeply compare DOM nodes, so structurally identical detached and
+      // connected elements appear equal. Object.is identity is the behavior under test.
+      expect(vi.mocked(scrollIntoView).mock.calls[0][0].element).toBe(remountedField)
+      expect(vi.mocked(scrollIntoView).mock.calls[1][0].element).toBe(remountedChange)
+    } finally {
+      unmount?.()
+      requestAnimationFrameSpy.mockRestore()
+      cancelAnimationFrameSpy.mockRestore()
+      vi.useRealTimers()
+    }
   })
 
   it('still draws the connector after a StrictMode mount/unmount/mount', async () => {
