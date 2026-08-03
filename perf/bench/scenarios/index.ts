@@ -1,5 +1,6 @@
 import {arrayI18n} from './arrayI18n'
 import {article} from './article'
+import {firstEditPublished} from './firstEditPublished'
 import {recipe} from './recipe'
 import {singleString} from './singleString'
 import {synthetic, syntheticLarge} from './synthetic'
@@ -7,6 +8,7 @@ import {type BenchScenario} from './types'
 
 export const SCENARIOS: BenchScenario[] = [
   singleString,
+  firstEditPublished,
   arrayI18n,
   article,
   recipe,
