@@ -13,7 +13,7 @@ import {
 } from '../../store/authStore/unclaimedProjectStorage'
 import {interpolateTemplate} from '../../util/interpolateTemplate'
 import {useWorkspace} from '../workspace'
-import {useUnclaimedProject} from './useUnclaimedProject'
+import {type UnclaimedProjectState, useUnclaimedProject} from './useUnclaimedProject'
 import {
   getClaimedIdentityText,
   getClaimedIdentityTextParts,
@@ -28,12 +28,38 @@ import {
  * @internal
  */
 export function UnclaimedProjectNudge() {
-  const {auth, projectId} = useWorkspace()
+  const {currentUser} = useWorkspace()
+
+  if (currentUser?.provider !== 'sanity-token') return null
+
+  return <UnclaimedProjectNudgeStateCheck />
+}
+
+function UnclaimedProjectNudgeStateCheck() {
+  const {projectId} = useWorkspace()
   const [claimAttempt, setClaimAttempt] = useState<{projectId: string; startedAt: number}>()
   const claimAttemptedAt =
     claimAttempt?.projectId === projectId ? claimAttempt.startedAt : undefined
   const state = useUnclaimedProject({claimAttemptedAt})
-  const copy = useUnclaimedProjectCopy(Boolean(state))
+  const handleClaim = useCallback(
+    () => setClaimAttempt({projectId, startedAt: Date.now()}),
+    [projectId],
+  )
+
+  if (!state) return null
+
+  return <UnclaimedProjectNudgeInner onClaim={handleClaim} state={state} />
+}
+
+function UnclaimedProjectNudgeInner({
+  onClaim,
+  state,
+}: {
+  onClaim: () => void
+  state: UnclaimedProjectState
+}) {
+  const {auth, projectId} = useWorkspace()
+  const copy = useUnclaimedProjectCopy(true)
 
   const unclaimed = state?.status === 'unclaimed' ? state : undefined
   const now = useMinuteTick(Boolean(unclaimed))
@@ -55,10 +81,6 @@ export function UnclaimedProjectNudge() {
     writeUnclaimedProjectSnoozedAt(projectId, at)
     setSnoozeState({projectId, snoozedAt: at})
   }, [projectId])
-  const handleClaim = useCallback(
-    () => setClaimAttempt({projectId, startedAt: Date.now()}),
-    [projectId],
-  )
   const snoozeDurationMs = (copy?.snoozeMinutes ?? 0) * 60_000
   const isSnoozed = Boolean(
     snoozedAt && snoozeDurationMs && now - new Date(snoozedAt).getTime() < snoozeDurationMs,
@@ -109,7 +131,7 @@ export function UnclaimedProjectNudge() {
               size="default"
               iconRight={LaunchIcon}
               text={copy.toast.claimButtonText}
-              onClick={handleClaim}
+              onClick={onClaim}
             />
           )}
           <Button
@@ -218,7 +240,7 @@ export function UnclaimedProjectNudge() {
             size="default"
             iconRight={LaunchIcon}
             text={copy.banner.claimButtonText}
-            onClick={handleClaim}
+            onClick={onClaim}
           />
         ) : unclaimed.claimLinkSpent ? null : (
           <Text size={1}>{copy.noClaimUrl.text}</Text>

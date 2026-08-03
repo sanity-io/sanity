@@ -3,11 +3,37 @@ import {act, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {formatCountdown, UnclaimedProjectCountdown} from '../UnclaimedProjectNudge'
+import {
+  formatCountdown,
+  UnclaimedProjectCountdown,
+  UnclaimedProjectNudge,
+} from '../UnclaimedProjectNudge'
+
+const {mockUseUnclaimedProject, mockUseWorkspace} = vi.hoisted(() => ({
+  mockUseUnclaimedProject: vi.fn(),
+  mockUseWorkspace: vi.fn(),
+}))
+
+vi.mock('../../workspace', () => ({useWorkspace: mockUseWorkspace}))
+vi.mock('../useUnclaimedProject', () => ({useUnclaimedProject: mockUseUnclaimedProject}))
 
 const wrapper = ({children}: {children: ReactNode}) => (
   <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
 )
+
+describe('UnclaimedProjectNudge', () => {
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('does not run the project state check for non-robot users', () => {
+    mockUseWorkspace.mockReturnValue({currentUser: {provider: 'google'}})
+
+    render(<UnclaimedProjectNudge />, {wrapper})
+
+    expect(mockUseUnclaimedProject).not.toHaveBeenCalled()
+  })
+})
 
 describe('UnclaimedProjectCountdown', () => {
   beforeEach(() => {
