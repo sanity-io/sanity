@@ -47,9 +47,10 @@ function rectsAreEqual(current: Rect, next: Rect): boolean {
   )
 }
 
-// Compare only the fields the render reads (id, zIndex, rect, bounds). hasHover/hasFocus/
-// hasRevertHover are computed upstream but never drawn, so a change to them alone must not
-// redraw. id derives from the field path, so id equality identifies the pair.
+// Compare only the fields the rendered connector and click handler read (id, element, zIndex,
+// rect, bounds). hasHover/hasFocus/hasRevertHover are computed upstream but never drawn, so a
+// change to them alone must not redraw. id derives from the field path, so id equality identifies
+// the pair.
 function connectorsAreEqual(current: ConnectorPair[], next: ConnectorPair[]): boolean {
   if (current.length !== next.length) {
     return false
@@ -59,6 +60,8 @@ function connectorsAreEqual(current: ConnectorPair[], next: ConnectorPair[]): bo
     const nextPair = next[index]
     return (
       currentPair.field.id === nextPair.field.id &&
+      currentPair.field.element === nextPair.field.element &&
+      currentPair.change.element === nextPair.change.element &&
       currentPair.field.zIndex === nextPair.field.zIndex &&
       currentPair.change.zIndex === nextPair.change.zIndex &&
       rectsAreEqual(currentPair.field.rect, nextPair.field.rect) &&
