@@ -1,4 +1,5 @@
 import {useEffect, useRef, useState} from 'react'
+import {exhaustMap, filter, fromEvent, merge, of, Subject, takeUntil, tap, timer} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
 import {getAuthTokenStorageKey} from '../../store/authStore/constants'
@@ -116,8 +117,11 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
       // An unclaimed project has no human members, so a human session means any stored claim
       // record is stale — storage never outlives the state that justified it.
       clearUnclaimedProjectRecord(projectId)
-      return undefined
     }
+  }, [isRobot, projectId, sessionKey])
+
+  useEffect(() => {
+    if (!isRobot) return undefined
 
     let disposed = false
     let terminal = false
@@ -125,15 +129,11 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
     let lookupSawNotFound = false
     let claimLinkSpent = false
     let checkInFlight = false
-    let pendingCheck: ReturnType<typeof setTimeout> | undefined
-    let claimPollInterval: ReturnType<typeof setInterval> | undefined
-    let claimPollTimeout: ReturnType<typeof setTimeout> | undefined
+    const claimPollingStopped$ = new Subject<void>()
 
     const stopClaimPolling = () => {
-      if (claimPollInterval) clearInterval(claimPollInterval)
-      if (claimPollTimeout) clearTimeout(claimPollTimeout)
-      claimPollInterval = undefined
-      claimPollTimeout = undefined
+      claimPollingStopped$.next()
+      claimPollingStopped$.complete()
     }
 
     const getRemainingClaimPollingDuration = () => {
@@ -316,34 +316,25 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
       }
     }
 
-    void check()
-
-    if (isClaimPollingActive()) {
-      claimPollInterval = setInterval(() => void check(), CLAIM_STATUS_POLL_INTERVAL_MS)
-      claimPollTimeout = setTimeout(stopClaimPolling, getRemainingClaimPollingDuration())
-    }
-
-    const onFocus = () => {
-      if (isClaimPollingActive()) {
-        void check()
-        return
-      }
-      const wait = PROJECT_CHECK_INTERVAL_MS - (Date.now() - lastCheckedAt)
-      if (wait <= 0) {
-        void check()
-      } else if (!pendingCheck) {
-        pendingCheck = setTimeout(() => {
-          pendingCheck = undefined
-          void check()
-        }, wait)
-      }
-    }
-    window.addEventListener('focus', onFocus)
-
-    const onVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && isClaimPollingActive()) void check()
-    }
-    document.addEventListener('visibilitychange', onVisibilityChange)
+    const remainingClaimPollingDuration = getRemainingClaimPollingDuration()
+    const initialAndPolling$ = remainingClaimPollingDuration
+      ? timer(0, CLAIM_STATUS_POLL_INTERVAL_MS).pipe(
+          takeUntil(timer(remainingClaimPollingDuration)),
+          takeUntil(claimPollingStopped$),
+        )
+      : of(0)
+    const focus$ = fromEvent(window, 'focus').pipe(
+      exhaustMap(() => {
+        if (isClaimPollingActive()) return of(0)
+        return timer(Math.max(0, PROJECT_CHECK_INTERVAL_MS - (Date.now() - lastCheckedAt)))
+      }),
+    )
+    const visibleDuringClaim$ = fromEvent(document, 'visibilitychange').pipe(
+      filter(() => document.visibilityState === 'visible' && isClaimPollingActive()),
+    )
+    const checkSubscription = merge(initialAndPolling$, focus$, visibleDuringClaim$)
+      .pipe(tap(() => void check()))
+      .subscribe()
 
     // The auth store consumes a `#claim=` fragment pasted into the open tab and writes the
     // record (see hashClaim.ts); pick it up here without waiting for the next check.
@@ -366,15 +357,13 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
           : prev
       })
     }
-    window.addEventListener('hashchange', onHashChange)
+    const hashSubscription = fromEvent(window, 'hashchange').pipe(tap(onHashChange)).subscribe()
 
     return () => {
       disposed = true
-      if (pendingCheck) clearTimeout(pendingCheck)
       stopClaimPolling()
-      window.removeEventListener('focus', onFocus)
-      document.removeEventListener('visibilitychange', onVisibilityChange)
-      window.removeEventListener('hashchange', onHashChange)
+      checkSubscription.unsubscribe()
+      hashSubscription.unsubscribe()
     }
   }, [claimAttemptedAt, client, isRobot, projectId, sessionKey])
 
