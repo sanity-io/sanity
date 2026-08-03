@@ -58,7 +58,7 @@ Consequences that shape everything below:
 
 - `editState.draft` / `editState.published` keep describing the **base** pair; `editState.version` is what the user is editing. Identical to release editing.
 - Because scope ids are opaque, target resolution is **asynchronous** — a lookup must finish before the pair can be checked out. Releases never had this problem (release version ids are derivable via `getVersionId(id, releaseId)`).
-- A missing variant document has no derivable id, so the release-style "create the version locally on first keystroke" flow is **impossible** for variants. Creation goes through a backend action (§8).
+- A missing variant document has no _derivable_ id, so create-on-first-keystroke is impossible in general; creation goes through a backend action (§8). **Exception**: the variant-of-published sibling advertises the (stable, server-generated) id its drafts-bundle sibling occupies via `_system.draft`. That makes the missing draft variant _creatable by typing_ (§8), because the id is server-advertised — still never computed client-side.
 - The bundle segment of a variant id is a hash, **not** a release id. Any code that runs `getVersionFromId(id)` and matches the result against releases must fail soft for variants.
 
 ## 3. Selecting a variant
@@ -83,19 +83,21 @@ The stub matching is pure (`core/util/getTargetDocument.ts`): a stub matches whe
 
 Output — a discriminated union, shaped by what consumers must _do_, not just what was observed:
 
-| Status                                  | Meaning                                                                                                       | Consumer obligation                                         |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `resolving`                             | A lookup (definitions or stubs) is in flight                                                                  | Never fall back to the base pair; treat as not ready        |
-| `ready`                                 | Resolution finished. Carries `targetDocument` (stub or `undefined`), `scopeId`, `variant`, `publishedSibling` | Base pair applies only when `variant` is `undefined`        |
-| `variant-missing`                       | Variant selected, no variant document in this bundle. Carries `publishedSibling`                              | Read-only; offer creation; never fall back to the base pair |
-| `variant-definition-document-not-found` | The sticky param names no definition                                                                          | Error banner; never treated as "no variant"                 |
+| Status                                  | Meaning                                                                                                                                                                     | Consumer obligation                                                                                                                                                          |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `resolving`                             | A lookup (definitions or stubs) is in flight                                                                                                                                | Never fall back to the base pair; treat as not ready                                                                                                                         |
+| `ready`                                 | Resolution finished. Carries `targetDocument` (stub or `undefined`), `scopeId`, `variant`, `publishedSibling`                                                               | Base pair applies only when `variant` is `undefined`                                                                                                                         |
+| `variant-missing`                       | Variant selected, no variant document in this bundle. Carries `publishedSibling` and, on the drafts bundle when the sibling advertises `_system.draft`, a `creatableTarget` | With `creatableTarget`: editable — typing creates the draft variant, display falls back to the sibling. Without: read-only; offer creation. Never fall back to the base pair |
+| `variant-definition-document-not-found` | The sticky param names no definition                                                                                                                                        | Error banner; never treated as "no variant"                                                                                                                                  |
 
 `publishedSibling` is the variant-of-published stub for the selected variant regardless of the current bundle, found by `getVariantPublishedSibling`. It answers "is this _variant_ published?" — the base `published` document says nothing about that. It rides on `variant-missing` too, so consumers can distinguish "exists published, missing here" from "never existed".
 
+`creatableTarget` (`{id, scopeId}`, read via `getCreatableVariantTarget(state)`) is the server-advertised id the missing draft variant will occupy — taken from the sibling's `_system.draft._ref` (a weak reference populated only on variants-of-published). It is stable across publish/re-edit cycles, so the pair checkout and the pane key can use it before the document exists.
+
 Two mapping helpers convert the state for downstream layers:
 
-- `getTargetScopeId(state)` — the scope id to thread into version-aware hooks (`useEditState`, `useSyncState`, permissions); `undefined` unless `ready`.
-- `getPairTarget(state)` — the `DocumentPairTarget` for `useDocumentOperation` (§6): `resolving → {kind: 'unresolved'}`, missing/invalid → `{kind: 'target-missing'}`, resolved variant → `{kind: 'variant', scopeId, variantId}`, plain release → the release id string.
+- `getTargetScopeId(state)` — the scope id to thread into version-aware hooks (`useEditState`, `useSyncState`, permissions); `undefined` unless `ready` — or `variant-missing` with a `creatableTarget`, which yields the advertised draft scope so every read addresses the document being created.
+- `getPairTarget(state)` — the `DocumentPairTarget` for `useDocumentOperation` (§6): `resolving → {kind: 'unresolved'}`, missing/invalid → `{kind: 'target-missing'}`, resolved variant → `{kind: 'variant', scopeId, variantId}`, creatable missing variant → `{kind: 'variant', scopeId, variantId, allowCreate: true}`, plain release → the release id string.
 
 ```mermaid
 flowchart TD
@@ -120,9 +122,13 @@ The `DocumentPaneProviderWrapper` key includes the resolved target identity (var
 
 `DocumentPaneProvider` resolves `targetDocumentState` once and puts it on the pane context; in-pane consumers read it from `useDocumentPane()`. Out-of-pane consumers (`DocumentEventsPane`, dialogs, diff components) call the hook directly — it is cheap because the underlying stores are shared.
 
-`readOnly` is derived centrally: `variant-missing`, `variant-definition-document-not-found`, and `resolving`-with-a-variant-requested all force read-only. Two banners cover the non-ready variant states: `DocumentNotInVariantBanner` (with the "Add to variant" create CTA) and `VariantDefinitionNotFoundBanner`.
+`readOnly` is derived centrally: `variant-missing`, `variant-definition-document-not-found`, and `resolving`-with-a-variant-requested all force read-only — **except** `variant-missing` with a `creatableTarget`, which is editable (typing creates the draft variant) and falls through to the regular read-only rules (permissions, connection, sync). Two banners cover the non-ready variant states: `DocumentNotInVariantBanner` (with the "Add to variant" create CTA; suppressed for the creatable state) and `VariantDefinitionNotFoundBanner`. The footer (`DocumentStatusBar`) is hidden for non-ready variant states, except the creatable state, which renders it like the base published-with-no-draft experience.
+
+The `DocumentPaneProviderWrapper` key uses the creatable target's advertised id for the creatable state — the same id the created stub arrives under — so the first keystroke's `variant-missing → ready` transition keeps the key stable and typing is not interrupted by a remount.
 
 `useDocumentForm` threads `getTargetScopeId(...)` into `useEditState`/`useConnectionState`/`useDocumentSyncState`, passes `getPairTarget(...)` to `useDocumentOperation`, keys its variant-only value branches off `isVariantTarget` (not a truthy scope id, so release targets keep release code paths), and computes `targetDocumentId` from the resolved stub — falling back to bundle-derived ids only for documents that don't exist yet (which for variants can only mean the base flows, since variant ids are opaque).
+
+The creatable state rides the form's regular `initialValue` channel instead of bespoke branches: `DocumentPaneProvider` wraps its template-resolved initial value with `useCreatableVariantInitialValue`, which observes the full published sibling and serves it re-identified as the draft target with `_system` rewritten to `{variant, bundleId: 'drafts', scopeId, group}` (see `buildCreatableVariantInitialValue`). That one value is the display fallback until the document exists (the form's `baseValue`), the seed for the create issued by the first keystroke (`patch.execute(patches, initialValue.value)`), and the loading gate (`initialValue.loading` stays true until the sibling arrives, so no empty-document flash). Because the seed comes from the caller, `useDocumentForm` treats the creatable state as editable **only when an `initialValue` is supplied** — callers without one (e.g. `DiffViewPane`) stay read-only, since an unseeded keystroke would create an empty draft variant.
 
 ## 6. Store layer: honest edit state and guarded operations
 
@@ -133,15 +139,15 @@ The `DocumentPaneProviderWrapper` key includes the resolved target identity (var
 **`DocumentPairTarget`** is how callers declare intent to the store, because the store cannot detect a missing variant on its own (it only ever receives a resolved scope id, which is absent exactly when the target is missing):
 
 ```ts
-{kind: 'version'; name: string}                         // plain release target
-{kind: 'variant'; scopeId: string; variantId: string}   // resolved variant target
-{kind: 'target-missing'; variantId?: string}            // declared target has no document
-{kind: 'unresolved'}                                    // resolution still in flight
+{kind: 'version'; name: string}                                                // plain release target
+{kind: 'variant'; scopeId: string; variantId: string; allowCreate?: boolean}   // resolved variant target (allowCreate: creatable at a server-advertised id)
+{kind: 'target-missing'; variantId?: string}                                   // declared target has no document
+{kind: 'unresolved'}                                                           // resolution still in flight
 ```
 
-`pair.editOperations` / `useDocumentOperation` accept `string | DocumentPairTarget`. `document-store.ts` branches **before** pair checkout: `unresolved` → `GUARDED` (all operations disabled `NOT_READY`), `target-missing` → `TARGET_NOT_FOUND_OPERATIONS` (all disabled `TARGET_NOT_FOUND`); both throw if executed anyway. Read paths (`editState`, `documentEvents`, sync/connection) intentionally keep accepting plain strings — for a missing variant they must keep serving the base pair read-only (the banner forks from the base value).
+`pair.editOperations` / `useDocumentOperation` accept `string | DocumentPairTarget`. `document-store.ts` branches **before** pair checkout: `unresolved` → `GUARDED` (all operations disabled `NOT_READY`), `target-missing` → `TARGET_NOT_FOUND_OPERATIONS` (all disabled `TARGET_NOT_FOUND`); both throw if executed anyway. Non-guarded targets are forwarded into the pair's `editOperations` (and onto `OperationArgs.target`) so the operations layer can honor the declared intent; `allowCreate` participates in the memoization key. Read paths (`editState`, `documentEvents`, sync/connection) intentionally keep accepting plain strings — for a missing variant they must keep serving the base pair read-only (the banner forks from the base value).
 
-Independently, `createOperationsAPI` self-derives a guard from its own snapshots: if `idPair.versionId` is set but the version snapshot is `null`, the mutating operations (`patch`, `commit`, `publish`, `unpublish`, `discardChanges`) are disabled with `TARGET_NOT_FOUND` — including for brand-new documents, since versions are never created by patching them into existence. This codifies at store level what previously lived only in `useDocumentForm`. `restore` and the group-level `delete`/`duplicate` are deliberately excluded. Note this guard **only applies when a version is requested** — base drafts are still created as you type.
+Independently, `createOperationsAPI` self-derives a guard from its own snapshots: if `idPair.versionId` is set but the version snapshot is `null`, the mutating operations (`patch`, `commit`, `publish`, `unpublish`, `discardChanges`) are disabled with `TARGET_NOT_FOUND` — versions are not created by patching them into existence. This codifies at store level what previously lived only in `useDocumentForm`. `restore` and the group-level `delete`/`duplicate` are deliberately excluded. Note this guard **only applies when a version is requested** — base drafts are still created as you type. **Carve-out**: a declared creatable variant target (`{kind: 'variant', allowCreate: true}`) keeps `patch` and `commit` enabled — typing must create the draft variant at the server-advertised id, seeded from the published sibling, exactly like the base pair creates the draft from published. `publish`/`unpublish`/`discardChanges` stay disabled until the document exists.
 
 `useDocumentForm` treats `patch.disabled` like `readOnly` in the `patchRef` assignment and throws if a patch is attempted anyway — disabling alone isn't enough because `patch.execute` was historically called without checking `disabled`.
 
@@ -173,6 +179,8 @@ Because ids are opaque, creation is a backend action, not a local mutation:
 - The target bundle follows the selected perspective: `undefined` (published), `'drafts'`, or a release id.
 - After the action resolves, the new stub must arrive through `useDocumentVersions` before editing can start; the pane's remount keying handles the transition, and a delayed toast covers the propagation window.
 
+**Exception — recreating the draft of a published variant (type-to-edit).** When the variant is published and its sibling advertises `_system.draft`, the missing drafts-bundle variant is created **by typing**, not through the action: the pair is checked out at the advertised id with `allowCreate` declared (§6), the published sibling is displayed (served through the form's `initialValue` by `useCreatableVariantInitialValue` — see §5), and the first keystroke runs the version branch of `serverOperations/patch.ts` — `version.create({...initialValue.value})` (the buffered document forces the correct `_id`) followed by the patch, committed as `sanity.action.document.variant.create` (addressed by `{publishedId, variantId, bundleId}` and carrying the seeded `document`) + `sanity.action.document.edit`. (`toActions` routes the create off the payload's `_system.variant`: `sanity.action.document.create` only creates the _first_ document of a group and rejects with `documentAlreadyExistsError` here, since the published sibling — and usually the base pair — already exist. The brand-new-document-under-release flow keeps `document.create`.) The seed's `_system` is written client-side (`{variant, bundleId: 'drafts', scopeId, group}`) so snapshot-based routing and the tripwires stay honest during the optimistic window. The action-based flow remains for variants that never existed, the published bundle, and release bundles (no advertised sibling ids there yet).
+
 ## 9. Publish-state UI, diffs, and history from the sibling
 
 The pair holds only the variant document for the _current_ bundle. Everything that asks "is this variant published, and what does the published variant look like?" needs the **variant-of-published sibling**, which is in no pair slot. It is plumbed from `targetDocumentState.publishedSibling` (a live stub — `_rev`/`_updatedAt`/`scopeId` — so gating needs no second pair listener):
@@ -190,7 +198,7 @@ The pair holds only the variant document for the _current_ bundle. Everything th
 
 These are the rules that keep the system correct. Violating any of them reintroduces a failure mode that was deliberately engineered away:
 
-1. **Never compute or guess a variant scope id client-side.** They are server-generated hashes. Discovery is only via `useDocumentVersions` stubs.
+1. **Never compute or guess a variant scope id client-side.** They are server-generated hashes. Discovery is only via `useDocumentVersions` stubs — including the creatable draft target, whose id is _advertised_ by the server on the sibling's `_system.draft`, never derived.
 2. **Never fall back to the base pair while a variant is unresolved.** `selectedVariant === undefined` is ambiguous (loading vs none selected); gate on `selectedVariantName` + the explicit `resolving` status. A patch issued during a fallback window writes to the base draft.
 3. **Never treat a version id's bundle segment as a release id without failing soft.** For variants it is an opaque hash. `editState.release` is already classified honestly; new code doing `getVersionFromId(...)` must tolerate hashes.
 4. **Route operations off the snapshot's `_system`, not the perspective.** `getVariantVersionInfo` is the single discriminator.
