@@ -20,25 +20,16 @@ import {
   useState,
 } from 'react'
 import deepEquals from 'react-fast-compare'
+import {useObservable} from 'react-rx'
+import {distinctUntilChanged} from 'rxjs/operators'
 
-import {
-  type FormState,
-  getExpandOperations,
-  type NodeChronologyProps,
-  type OnPathFocusPayload,
-  type PatchEvent,
-  setAtPath,
-  type StateTree,
-  toMutationPatches,
-  useFormState,
-} from '.'
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
-import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {type DocumentSyncState, useDocumentSyncState} from '../hooks/useDocumentSyncState'
 import {useEditState} from '../hooks/useEditState'
+import {useReconnectingToast} from '../hooks/useReconnectingToast'
 import {useSchema} from '../hooks/useSchema'
 import {
   getPairTarget,
@@ -57,27 +48,32 @@ import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {isPublishedPerspective, isReleaseScheduledOrScheduling} from '../releases/util/util'
-import {
-  type DocumentPresence,
-  type EditStateFor,
-  type InitialValueState,
-  type PermissionCheckResult,
-  selectUpstreamVersion,
-  useDocumentValuePermissions,
-  usePresenceStore,
-} from '../store'
+import {usePresenceStore} from '../store/datastores'
+import {type EditStateFor} from '../store/document/document-pair/editState'
+import {type InitialValueState} from '../store/document/initialValue/types'
 import {isNewDocument} from '../store/document/isNewDocument'
+import {selectUpstreamVersion} from '../store/document/selectUpstreamVersion'
+import {useDocumentValuePermissions} from '../store/grants/documentValuePermissions'
+import {type PermissionCheckResult} from '../store/grants/types'
 import {
-  EMPTY_ARRAY,
   getDraftId,
   getPublishedId,
   getVersionFromId,
   getVersionId,
   isSystemBundle,
-  useUnique,
-} from '../util'
+} from '../util/draftUtils'
+import {EMPTY_ARRAY} from '../util/empty'
+import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
+import {type PatchEvent} from './patch/PatchEvent'
+import {setAtPath} from './store/stateTreeHelper'
+import {type NodeChronologyProps} from './store/types/nodes'
+import {type StateTree} from './store/types/state'
+import {type FormState, useFormState} from './store/useFormState'
+import {getExpandOperations} from './store/utils/getExpandOperations'
+import {type OnPathFocusPayload} from './types/inputProps'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
+import {toMutationPatches} from './utils/mutationPatch'
 
 interface DocumentFormOptions {
   documentType: string
@@ -314,6 +310,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   // Validation is computed against the live editable document (draft/published/
   // version). When viewing a historical revision those markers don't describe
   // what's on screen, so don't surface them on the read-only revision.
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const validation = useUnique(
     isOlderRevision ? (EMPTY_ARRAY as ValidationMarker[]) : validationRaw,
   )
@@ -341,30 +338,25 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return comparisonValueRaw
   }, [comparisonValueRaw, upstreamEditState])
 
-  const [presence, setPresence] = useState<DocumentPresence[]>([])
-  useEffect(() => {
-    const subscription = presenceStore
-      .documentPresence(value._id, {excludeVersions: true})
-      .subscribe((nextPresence) => {
-        setPresence((prev) => {
-          if (
-            prev.length === nextPresence.length &&
-            prev.every(
-              (p, i) =>
-                p.sessionId === nextPresence[i].sessionId &&
-                p.lastActiveAt === nextPresence[i].lastActiveAt &&
-                p.path === nextPresence[i].path,
-            )
-          ) {
-            return prev
-          }
-          return nextPresence
-        })
-      })
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [presenceStore, value._id])
+  const presence$ = useMemo(
+    () =>
+      presenceStore
+        .documentPresence(value._id, {excludeVersions: true})
+        .pipe(
+          distinctUntilChanged(
+            (prev, next) =>
+              prev.length === next.length &&
+              prev.every(
+                (p, i) =>
+                  p.sessionId === next[i].sessionId &&
+                  p.lastActiveAt === next[i].lastActiveAt &&
+                  p.path === next[i].path,
+              ),
+          ),
+        ),
+    [presenceStore, value._id],
+  )
+  const presence = useObservable(presence$, [])
 
   const [openPath, onSetOpenPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()

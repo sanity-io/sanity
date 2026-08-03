@@ -1,1 +1,1 @@
-export type {FileInfo} from './fileTarget'
+export type {FileInfo} from './fileTarget/fileTarget'

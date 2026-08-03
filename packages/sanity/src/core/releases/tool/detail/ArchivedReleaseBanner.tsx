@@ -7,7 +7,8 @@ import {useMemo} from 'react'
 
 import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {useTimeZone} from '../../../hooks/useTimeZone'
-import {Translate, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {releasesLocaleNamespace} from '../../i18n'
 
@@ -33,7 +34,7 @@ export function ArchivedReleaseBanner({release}: {release: ReleaseDocument}) {
         <Text size={1}>
           <InfoOutlineIcon />
         </Text>
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text size={1} weight="semibold">
             {state === 'archived' ? tRelease('archive-info.title') : tRelease('publish-info.title')}
           </Text>

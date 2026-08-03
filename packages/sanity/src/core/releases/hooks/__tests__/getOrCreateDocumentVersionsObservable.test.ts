@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {BehaviorSubject, firstValueFrom, of, toArray} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type DocumentPreviewStore} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {
   type DocumentPerspectiveState,
   getOrCreateDocumentVersionsObservable,

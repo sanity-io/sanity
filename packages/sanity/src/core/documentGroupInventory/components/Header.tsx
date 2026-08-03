@@ -5,6 +5,7 @@ export const Header = styled.div(({theme}) => {
   const {space} = getThemeV2(theme)
 
   return css`
+    min-inline-size: 0;
     padding-inline: ${space[4]}px;
     padding-block-start: ${space[4]}px;
     padding-block-end: calc(${space[5]}px * 0.5);

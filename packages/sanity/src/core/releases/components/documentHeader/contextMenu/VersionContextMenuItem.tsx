@@ -3,7 +3,7 @@ import {LockIcon} from '@sanity/icons/Lock'
 import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useFormatRelativeLocalePublishDate} from '../../../hooks/useFormatRelativeLocalePublishDate'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
@@ -20,7 +20,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
   return (
     <Flex gap={3} justify="center" align="center">
       <ReleaseAvatar padding={2} release={release} />
-      <Stack flex={1} space={2}>
+      <Stack flex={1} gap={2}>
         <ReleaseTitle
           title={release.metadata?.title}
           fallback={t('release.placeholder-untitled-release')}

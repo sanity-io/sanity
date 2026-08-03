@@ -3,8 +3,8 @@ import {useStateLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {focusRingStyle} from '../../../../form/components/withFocusRing/helpers'
-import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
-import {WorkspacePreviewIcon} from '../workspace'
+import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
+import {WorkspacePreviewIcon} from '../workspace/WorkspacePreview'
 
 const LOGO_MARK_SIZE = 25 // width and height, px
 const RADIUS = 2
@@ -18,14 +18,16 @@ const LogoMarkContainer = styled(Card).attrs({
 `
 
 const StyledCard = styled(Card)`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[RADIUS])};
+  border-radius: ${({theme}) => rem(theme.sanity.radius[RADIUS]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   display: flex;
   outline: none;
   text-decoration: none;
   &:focus-visible {
     box-shadow: ${({theme}) =>
       focusRingStyle({
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         base: theme.sanity.color.base,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         focusRing: {...theme.sanity.focusRing, offset: 1},
       })};
   }

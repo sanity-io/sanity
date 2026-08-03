@@ -6,6 +6,7 @@ import {defineLocalesResources} from 'sanity'
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const structureLocaleStrings = defineLocalesResources('structure', {
   /** Label for the "Copy document ID" menu item */
   'action.copy-document-id.label': 'Copy document ID',
@@ -226,6 +227,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when a document is not part of any release
    * @deprecated – no longer in use
    * */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'banners.release.navigate-to-edit-description-none': 'This document is not part of any release',
   /** The text for the banner that appears when a document only has one version but is in a draft or published pinned release */
   'banners.release.navigate-to-edit-description-single':
@@ -261,7 +263,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.variant.error.title': 'Error adding document to variant',
   /** The text for the banner that appears when a document is not in the selected variant */
   'banners.variant.not-in-variant':
-    'No variant document exists for <VariantBadge>{{title}}</VariantBadge>.',
+    'No <PerspectiveTitle>{{perspectiveTitle}}</PerspectiveTitle> variant document exists for <VariantBadge>{{variantTitle}}</VariantBadge>.',
   /** Description of toast that will appear while the document is added to the variant */
   'banners.variant.waiting.description':
     'Please hold tight while the document is added to the variant. It should not take longer than a few seconds.',

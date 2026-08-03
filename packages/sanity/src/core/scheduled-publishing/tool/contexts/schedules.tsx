@@ -7,6 +7,11 @@ import {type Schedule, type ScheduleSort, type ScheduleState} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {sortByExecuteDate} from '../../utils/sortByExecuteDate'
 
+// re-exported here so the public entry can surface the context without
+// depending on sanity/_singletons directly (boundaries policy)
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+export {SchedulesContext}
+
 const EMPTY_SCHEDULE: Schedule[] = []
 
 function SchedulesProvider({
@@ -125,10 +130,12 @@ function SchedulesProvider({
     ],
   )
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return <SchedulesContext.Provider value={context}>{children}</SchedulesContext.Provider>
 }
 
 function useSchedules() {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const context = useContext(SchedulesContext)
   if (context === undefined) {
     throw new Error('useSchedules must be used within a SchedulesProvider')

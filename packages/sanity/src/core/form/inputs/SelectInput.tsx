@@ -12,11 +12,12 @@ import {
   useMemo,
 } from 'react'
 
-import {Button} from '../../../ui-components'
-import {ChangeIndicator} from '../../changeIndicators'
-import {useTranslation} from '../../i18n'
-import {PatchEvent, set, unset} from '../patch'
-import {type StringInputProps} from '../types'
+import {Button} from '../../../ui-components/button/Button'
+import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {set, unset} from '../patch/patch'
+import {PatchEvent} from '../patch/PatchEvent'
+import {type StringInputProps} from '../types/inputProps'
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number,
@@ -161,7 +162,7 @@ const RadioSelect = forwardRef(function RadioSelect(
   return (
     <Card border paddingY={2} paddingX={3} radius={2} tone={tone}>
       <Flex align={isHorizontal ? 'center' : 'flex-end'} gap={3} justify="space-between">
-        <Layout space={3} role="group" paddingY={1}>
+        <Layout gap={3} role="group" paddingY={1}>
           {items.map((item, index) => (
             <RadioSelectItem
               // oxlint-disable-next-line no-array-index-key

@@ -10,7 +10,7 @@ import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {Details} from '../../../form/components/Details'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {useWorkspace} from '../../../studio/workspace'
@@ -154,7 +154,7 @@ export function ReleaseDashboardDetails({
               <Text size={1}>
                 <ErrorOutlineIcon />
               </Text>
-              <Stack space={4}>
+              <Stack gap={4}>
                 <Text size={1} weight="semibold">
                   {isAtTimeRelease
                     ? tRelease('failed-schedule-title')
@@ -176,7 +176,7 @@ export function ReleaseDashboardDetails({
               <Text size={1}>
                 <WarningOutlineIcon />
               </Text>
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text size={1}>{tRelease('permission-missing-title')}</Text>
                 <Text size={1} muted>
                   {tRelease('permission-missing-description')}

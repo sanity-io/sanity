@@ -3,12 +3,13 @@ import {renderHook} from '@testing-library/react'
 import {defer, lastValueFrom, of} from 'rxjs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
-import {useClient} from '../../hooks'
-import {getSearchableTypes, type SearchTerms} from '../common'
+import {useClient} from '../../hooks/useClient'
+import {getSearchableTypes} from '../common/getSearchableTypes'
+import {type SearchTerms} from '../common/types'
 import {createWeightedSearch} from './createWeightedSearch'
 
 // Mock client
-vi.mock('../../hooks', () => ({
+vi.mock('../../hooks/useClient', () => ({
   useClient: () => ({
     observable: {
       fetch: vi.fn(),
@@ -33,6 +34,7 @@ const searchHits = defer(() =>
 
 const {
   result: {current: client},
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 } = renderHook(() => useClient())
 const search = createWeightedSearch(getSearchableTypes(mockSchema), client, {unique: true})
 

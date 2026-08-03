@@ -4,10 +4,12 @@ import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {Button, Tooltip} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {PREVIEW_SIZES} from '../../../../components/previews/constants'
 import {TitleSkeleton} from '../../../../components/previews/general/DetailPreview.styled'
-import {Translate, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {useWorkspace} from '../../../../studio/workspace'
@@ -105,7 +107,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
               <Box flex="none">
                 <ReleaseAvatar release={release} />
               </Box>
-              <Stack flex={1} space={2}>
+              <Stack flex={1} gap={2}>
                 <Flex align="center" gap={2} style={{minWidth: 0}}>
                   <ReleaseTitle
                     title={release.metadata.title}

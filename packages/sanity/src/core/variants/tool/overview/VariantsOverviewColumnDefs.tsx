@@ -2,7 +2,7 @@ import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps, useMemo} from 'react'
 import {StateLink} from 'sanity/router'
 
-import {type UseTranslationResponse, useTranslation} from '../../../i18n'
+import {useTranslation, type UseTranslationResponse} from '../../../i18n/hooks/useTranslation'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
 import {variantsLocaleNamespace} from '../../i18n'
@@ -61,7 +61,7 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
   if (variant.isLoading) {
     return (
       <Box {...cellProps} flex={1} paddingLeft={3} paddingRight={2} paddingY={2} sizing="border">
-        <Stack space={2}>
+        <Stack gap={2}>
           <Text size={1} weight="medium">
             <Skeleton animated radius={1} style={{width: '16ch'}} />
           </Text>
@@ -81,7 +81,7 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
         <VariantPinButton variant={variant} />
         <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
           <Flex align="center" gap={3}>
-            <Stack flex={1} space={2}>
+            <Stack flex={1} gap={2}>
               <Text size={1} weight="medium">
                 {getVariantTitle(variant)}
               </Text>

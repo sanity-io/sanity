@@ -3,16 +3,19 @@ import {type PortableTextBlock} from '@sanity/types'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {type PatchEvent} from '../../patch'
+import {type PatchEvent} from '../../patch/PatchEvent'
 import {
   type RenderBlockActionsCallback,
   type RenderBlockActionsProps,
 } from '../../types/_transitional'
-import {createInsertCallback, createSetCallback, createUnsetCallback} from './callbacks'
+import {createInsertCallback} from './callbacks/insertCallback'
+import {createSetCallback} from './callbacks/setCallback'
+import {createUnsetCallback} from './callbacks/unsetCallback'
 
 interface BlockActionsProps {
   block: PortableTextBlock
   onChange: (patches: PatchEvent) => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderBlockActions?: RenderBlockActionsCallback
 }
 
@@ -22,12 +25,15 @@ const Root = styled.div`
 `
 
 export function BlockActions(props: BlockActionsProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const {block, onChange, renderBlockActions} = props
   const blockActions = useMemo(() => {
     if (renderBlockActions) {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const blockActionProps: RenderBlockActionsProps = {
         block,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         value: PortableTextEditor.getValue(editor),
         set: createSetCallback({block, onChange}),
         unset: createUnsetCallback({block, onChange}),

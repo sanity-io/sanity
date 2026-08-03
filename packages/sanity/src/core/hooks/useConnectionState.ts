@@ -3,7 +3,8 @@ import {useObservable} from 'react-rx'
 import {type Observable, of, timer} from 'rxjs'
 import {distinctUntilChanged, map, mapTo, startWith, switchMap} from 'rxjs/operators'
 
-import {type DocumentStore, useDocumentStore} from '../store'
+import {useDocumentStore} from '../store/datastores'
+import {type DocumentStore} from '../store/document/document-store'
 
 /** @internal */
 export type ConnectionState = 'connecting' | 'reconnecting' | 'connected'
@@ -28,6 +29,7 @@ export function connectionState(
     map((eventType) => eventType !== 'reconnect'),
     switchMap(
       (isConnected): Observable<ConnectionState> =>
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         isConnected ? of('connected') : timer(200).pipe(mapTo('reconnecting')),
     ),
     startWith(INITIAL),

@@ -21,7 +21,8 @@ import {
   WorkspacesContext,
 } from 'sanity/_singletons'
 
-import {type Config, prepareConfig} from '../../config'
+import {prepareConfig} from '../../config/prepareConfig'
+import {type Config} from '../../config/types'
 import {getApiErrorCode, isInvalidSessionError} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {
@@ -165,6 +166,7 @@ export function WorkspacesProvider({
   // Everything else — network errors, 5xx, 429 — propagates to the caller
   // unchanged. Callers that cannot recover locally delegate explicitly via
   // `useStudioErrorHandler()`; the studio never decides on their behalf.
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const requestHandler: RequestHandler = useCallback(
     (requestOptions, originalRequest, client) => {
       return defer(() => originalRequest(requestOptions)).pipe(

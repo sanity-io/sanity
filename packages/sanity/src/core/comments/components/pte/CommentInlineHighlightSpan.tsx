@@ -5,6 +5,7 @@ import {css, styled} from 'styled-components'
 
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
   const isDark = theme.sanity.v2?.color._dark
 

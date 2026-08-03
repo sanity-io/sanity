@@ -9,7 +9,7 @@ import {forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
-import {Tooltip} from '../../../ui-components/tooltip'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
 import {usePerspective} from '../../perspective/usePerspective'
@@ -168,7 +168,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             flex={1}
             paddingY={2}
             paddingRight={2}
-            space={2}
+            gap={2}
             style={{
               opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
               maxWidth: '200px',

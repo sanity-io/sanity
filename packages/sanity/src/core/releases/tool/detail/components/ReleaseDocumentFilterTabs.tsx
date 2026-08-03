@@ -2,8 +2,8 @@ import {type ReleaseState} from '@sanity/client'
 import {Box, Container, Flex, Skeleton, TabList} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {Tab} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Tab} from '../../../../../ui-components/tab/Tab'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {
   countDocumentsByAction,
@@ -107,7 +107,7 @@ function ReleaseDocumentFilterTabsInner({
   return (
     <Container width={3}>
       <Box padding={3}>
-        <TabList space={1}>
+        <TabList gap={1}>
           {FILTER_TAB_CONFIGS.map((config) => {
             const isSelected = activeFilter === config.key
 

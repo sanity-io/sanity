@@ -16,8 +16,8 @@ const DecoratorWrapper = styled.span<{decoration: string}>`
         return 'text-decoration: line-through;'
       case 'code':
         return `
-          font-family: ${theme.sanity.fonts.code.family};
-          background: ${theme.sanity.color.muted.default.enabled.bg};
+          font-family: ${theme.sanity.fonts.code.family /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
+          background: ${theme.sanity.color.muted.default.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
         `
       default:
         return ''

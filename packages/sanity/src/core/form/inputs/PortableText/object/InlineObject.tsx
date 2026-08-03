@@ -8,21 +8,21 @@ import {
 import {isEqual} from '@sanity/util/paths'
 import {useCallback, useMemo, useState} from 'react'
 
-import {Tooltip} from '../../../../../ui-components'
-import {pathToString} from '../../../../field/paths'
-import {useTranslation} from '../../../../i18n'
-import {EMPTY_ARRAY} from '../../../../util'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {pathToString} from '../../../../field/paths/helpers'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {EMPTY_ARRAY} from '../../../../util/empty'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import {type RenderCustomMarkers} from '../../../types/_transitional'
+import {type BlockProps} from '../../../types/blockProps'
 import {
-  type BlockProps,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
-  type RenderCustomMarkers,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
@@ -45,6 +45,7 @@ interface InlineObjectProps {
   relativePath: Path
   renderAnnotation?: RenderAnnotationCallback
   renderBlock?: RenderBlockCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
   renderField: RenderFieldCallback
   renderInlineBlock?: RenderBlockCallback
@@ -81,7 +82,9 @@ export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
     setElementRef,
     value,
   } = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {Markers} = useFormBuilder().__internal.components
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const markers = usePortableTextMarkers(path)
@@ -99,13 +102,16 @@ export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
   )
 
   const onRemove = useCallback(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.delete(editor, selfSelection, {mode: 'children'})
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [selfSelection, editor])
 
   const onOpen = useCallback(() => {
     if (memberItem) {
       // Take focus away from the editor so that it doesn't propagate a new focusPath and interfere here.
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       PortableTextEditor.blur(editor)
       onItemOpen(memberItem.node.path)
     }
@@ -113,7 +119,9 @@ export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
 
   const onClose = useCallback(() => {
     onItemClose()
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.select(editor, selfSelection)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [onItemClose, editor, selfSelection])
 
@@ -246,6 +254,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
     __unstable_referenceElement: referenceElement,
     children,
     focused,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     markers,
     onClose,
     onOpen,

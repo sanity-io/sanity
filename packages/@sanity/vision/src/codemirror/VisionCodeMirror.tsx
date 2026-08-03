@@ -23,8 +23,11 @@ function EditorRoot({children}: {children: ReactNode}) {
     <div
       className={editorRoot}
       style={assignInlineVars({
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         [linePaddingLeftVar]: `${rem(sanity.space[3])}`,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         [contentBorderRightWidthVar]: `${rem(sanity.space[4])}`,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         [contentPaddingTopVar]: `${rem(sanity.space[5])}`,
       })}
     >

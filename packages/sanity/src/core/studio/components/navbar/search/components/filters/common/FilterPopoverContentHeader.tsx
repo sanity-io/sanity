@@ -3,7 +3,7 @@ import {Box, Flex} from '@sanity/ui'
 import {type ChangeEvent, forwardRef} from 'react'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../../../../../i18n'
+import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {CustomTextInput} from '../../common/CustomTextInput'
 
@@ -15,7 +15,8 @@ interface FilterPopoverContentHeaderProps {
 }
 
 const SearchHeaderBox = styled(Box)`
-  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
+  border-bottom: 1px solid
+    ${({theme}) => theme.sanity.color.base.border /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   flex-shrink: 0;
 `
 

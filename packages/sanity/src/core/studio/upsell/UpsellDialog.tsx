@@ -5,9 +5,13 @@ import {Box, Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
 
-import {Button, Dialog} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type UpsellData} from './types'
-import {type InterpolationProp, UpsellDescriptionSerializer} from './upsellDescriptionSerializer'
+import {
+  type InterpolationProp,
+  UpsellDescriptionSerializer,
+} from './upsellDescriptionSerializer/UpsellDescriptionSerializer'
 
 /**
  * Absolute positioned button to close the dialog.
@@ -102,7 +106,7 @@ export function UpsellDialog(props: UpsellDialogProps) {
       />
       {data.image && <Image src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
       <Box padding={3} marginTop={2}>
-        <Stack space={4} paddingBottom={2}>
+        <Stack gap={4} paddingBottom={2}>
           <UpsellDescriptionSerializer
             blocks={data.descriptionText}
             interpolation={interpolation}

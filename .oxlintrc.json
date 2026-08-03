@@ -161,6 +161,7 @@
     ],
     "typescript/ban-ts-comment": "error",
     "typescript/prefer-ts-expect-error": "error",
+    "typescript/no-deprecated": "error",
     "react/jsx-key": "error",
     "unicorn/no-abusive-eslint-disable": "error",
     // Not relevant as we use the modern jsx-runtime transform
@@ -198,6 +199,8 @@
     "import/newline-after-import": "error",
     "import/no-duplicates": ["error", {"prefer-inline": true}],
     "import/consistent-type-specifier-style": ["error", "prefer-inline"],
+    // Side-effect CSS imports are intentional (bundler injects styles)
+    "import/no-unassigned-import": ["error", {"allow": ["**/*.css"]}],
     "import/extensions": [
       "error",
       {
@@ -225,6 +228,9 @@
     "eslint/no-underscore-dangle": "off",
     // We no longer allow commonjs as we ship ESM only
     "import/no-commonjs": "error",
+    // Ban `export *` barrel files that pull in large module graphs; import
+    // directly from the module that defines a symbol instead
+    "oxc/no-barrel-file": "error",
     "no-restricted-globals": [
       "error",
       {

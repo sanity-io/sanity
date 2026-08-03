@@ -8,7 +8,7 @@ import {
 } from '../utils/assertNotVariantVersion'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {operationsApiClient} from '../utils/operationsApiClient'
-import {type OperationImpl} from './index'
+import {type OperationImpl, type PublishOptions} from './types'
 
 function strengthenOnPublish<T>(obj: T): T {
   if (isReference(obj)) {
@@ -33,7 +33,7 @@ type DisabledReason =
   | 'NO_CHANGES'
   | VariantVersionDisabledReason
 
-export const publish: OperationImpl<[], DisabledReason> = {
+export const publish: OperationImpl<[options?: PublishOptions], DisabledReason> = {
   disabled: ({schema, typeName, snapshots}) => {
     // Legacy transaction publish. Variant-scoped versions are disabled here — use
     // `serverOperations/publish.ts` instead.

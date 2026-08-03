@@ -17,8 +17,8 @@ import {
 } from '@sanity/types'
 import {type ReactNode} from 'react'
 
-import {type PortableTextMarker} from '../..'
-import {type FormNodePresence} from '../../presence'
+import {type FormNodePresence} from '../../presence/types'
+import {type PortableTextMarker} from './_transitional'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
@@ -228,6 +228,7 @@ export interface BlockAnnotationProps {
    * Markers (meta data) connected to this annotation.
    * @deprecated - use `renderBlock` and `renderInlineBlock` interfaces instead
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   markers: PortableTextMarker[]
   /**
    * Closes the editing form connected to this annotation.
@@ -354,6 +355,7 @@ export interface BlockProps {
    * Markers (meta data) connected to this annotation.
    * @deprecated - use `renderBlock` and `renderInlineBlock` interfaces instead
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   markers: PortableTextMarker[]
   /**
    * Closes the editing form connected to this block.

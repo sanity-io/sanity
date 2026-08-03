@@ -32,7 +32,7 @@ import {css, styled} from 'styled-components'
 
 import {applyAll} from '../../src/core/form/patch/applyPatch'
 import {PresenceProvider} from '../../src/core/form/studio/contexts/Presence'
-import {type FormDocumentValue} from '../../src/core/form/types'
+import {type FormDocumentValue} from '../../src/core/form/types/formDocumentValue'
 import {createMockSanityClient} from './createMockSanityClient'
 
 const NOOP = () => null
@@ -144,6 +144,7 @@ export function TestForm(props: TestFormProps) {
   const schemaType = workspace.schema.get('test')
   const {
     document: {unstable_fieldActions: fieldActionsResolver},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
 
   if (!schemaType) {
@@ -345,6 +346,7 @@ async function validateStaticDocument(
   const result = await validateDocument({
     document,
     workspace,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     getClient,
     getDocumentExists: () => Promise.resolve(true),
   })

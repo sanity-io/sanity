@@ -11,7 +11,7 @@ import {
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {CopyReleaseActions} from './CopyReleaseActions'
@@ -78,7 +78,7 @@ export function ReleaseDashboardHeader(props: {
           onClick={handleActivityClick}
           padding={2}
           selected={inspector === 'activity'}
-          space={2}
+          gap={2}
           text={t('dashboard.details.activity')}
         />
       </Flex>

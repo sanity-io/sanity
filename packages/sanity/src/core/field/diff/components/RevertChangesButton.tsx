@@ -2,8 +2,8 @@ import {RevertIcon} from '@sanity/icons/Revert'
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, type ButtonProps} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button, type ButtonProps} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 const Root = styled(Button)`
   [data-ui='Text'] {
@@ -16,7 +16,7 @@ const Root = styled(Button)`
 
   &:not([data-disabled='true']):hover,
   &:not([data-disabled='true']):focus {
-    --card-fg-color: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
+    --card-fg-color: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     --card-bg-color: transparent;
     --card-border-color: transparent;
 

@@ -17,7 +17,9 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
+import {Pane} from '../../../components/pane/Pane'
+import {usePaneLayout} from '../../../components/pane/usePaneLayout'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {DocumentActionsProvider} from '../../../DocumentActionsProvider'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
@@ -28,9 +30,9 @@ import {
 } from '../constants'
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {DocumentOperationResults} from '../DocumentOperationResults'
-import {DocumentPanel} from '../documentPanel'
-import {DocumentPanelHeader} from '../documentPanel/header'
-import {DocumentActionShortcuts} from '../keyboardShortcuts'
+import {DocumentPanel} from '../documentPanel/DocumentPanel'
+import {DocumentPanelHeader} from '../documentPanel/header/DocumentPanelHeader'
+import {DocumentActionShortcuts} from '../keyboardShortcuts/DocumentActionShortcuts'
 import {getMenuItems} from '../menuItems'
 import {useDocumentPane} from '../useDocumentPane'
 import {changeConnectorRoot} from './DocumentLayout.css'
@@ -102,7 +104,9 @@ export function DocumentLayout() {
   const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const footerRect = useElementRect(footerElement)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const headerRect = useElementRect(headerElement)
   const footerHeight = footerRect?.height
   const headerHeight = headerRect?.height

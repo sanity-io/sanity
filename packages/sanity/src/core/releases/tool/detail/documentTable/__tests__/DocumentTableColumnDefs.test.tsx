@@ -2,12 +2,10 @@ import {type Schema} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {useSchema} from '../../../../../hooks'
+import {useSchema} from '../../../../../hooks/useSchema'
 import {DocumentType} from '../DocumentTableColumnDefs'
 
-vi.mock('../../../../../hooks', () => ({
-  useSchema: vi.fn(),
-}))
+vi.mock('../../../../../hooks/useSchema', () => ({useSchema: vi.fn()}))
 
 vi.mock('@sanity/ui', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -17,7 +15,7 @@ vi.mock('@sanity/ui', async (importOriginal) => ({
 }))
 
 // Stub Tooltip so we can assert its presence without a portal/full DOM tree.
-vi.mock('../../../../../../ui-components/tooltip', () => ({
+vi.mock('../../../../../../ui-components/tooltip/Tooltip', () => ({
   Tooltip: ({children, content}: {children: React.ReactNode; content: React.ReactNode}) => (
     <div data-testid="tooltip-wrapper">
       <div data-testid="tooltip-content">{content}</div>

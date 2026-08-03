@@ -14,7 +14,9 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button, Tab, Tooltip} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Tab} from '../../../../../ui-components/tab/Tab'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
@@ -37,6 +39,7 @@ const isValidTab = (tab: string | undefined): tab is (typeof TABS)[number] =>
 
 export function ChangesTabs(props: DocumentInspectorProps) {
   const {params, setParams} = usePaneRouter()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -66,7 +69,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
     >
       <Card paddingBottom={1}>
         <Flex align="center" padding={3} gap={2}>
-          <TabList space={1} flex={1}>
+          <TabList gap={1} flex={1}>
             <Tab
               aria-controls="history-panel"
               id="history-tab"

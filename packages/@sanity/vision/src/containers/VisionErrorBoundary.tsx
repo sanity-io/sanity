@@ -61,7 +61,7 @@ export class VisionErrorBoundary extends Component<
         tone="critical"
       >
         <Container width={3}>
-          <Stack space={4}>
+          <Stack gap={4}>
             <div>
               <Button
                 onClick={withCacheClear ? this.handleRetryWithCacheClear : this.handleRetryRender}
@@ -73,7 +73,7 @@ export class VisionErrorBoundary extends Component<
             <Heading>An error occurred</Heading>
 
             <Card border radius={2} overflow="auto" padding={4} tone="inherit">
-              <Stack space={4}>
+              <Stack gap={4}>
                 {message && (
                   <Code size={1}>
                     <strong>Error: {message}</strong>

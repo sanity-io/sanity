@@ -3,8 +3,9 @@ import {applyPatches} from '@sanity/mutate/_unstable_apply'
 import {Box, Card, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
 
-import {Button, Dialog} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type EditableSystemVariant} from '../../types'
 import {getIsVariantInvalid} from '../../util/getIsVariantInvalid'
@@ -51,6 +52,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
   }, [])
 
   const handleSubmit = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
 

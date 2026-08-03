@@ -5,15 +5,19 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
-import {Translate, useTranslation} from '../../../../i18n'
+import {type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {useWorkspace} from '../../../../studio/workspace'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
-import {isReleaseDocument} from '../../../index'
+import {isReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
@@ -187,7 +191,7 @@ export const ReleasePublishAllButton = ({
           },
         }}
       >
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text muted size={1}>
             {
               <Translate
@@ -202,7 +206,7 @@ export const ReleasePublishAllButton = ({
             }
           </Text>
           {showUpdateDraftsOption && (
-            <Stack space={3}>
+            <Stack gap={3}>
               <Flex align="center" gap={3} as="label">
                 <Checkbox
                   checked={shouldUpdateDrafts}

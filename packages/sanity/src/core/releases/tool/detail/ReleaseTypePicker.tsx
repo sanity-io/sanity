@@ -6,7 +6,9 @@ import {startOfMinute} from 'date-fns/startOfMinute'
 import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
-import {Button, Popover, Tab} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
+import {Popover} from '../../../../ui-components/popover/Popover'
+import {Tab} from '../../../../ui-components/tab/Tab'
 import {MONTH_PICKER_VARIANT} from '../../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 import {DatePicker} from '../../../components/inputs/DateInputs/DatePicker'
@@ -175,8 +177,8 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
   return (
     <Popover
       content={
-        <Stack space={1}>
-          <TabList space={0.5}>
+        <Stack gap={1}>
+          <TabList gap={0.5}>
             <Tab
               aria-controls="release-timing-asap"
               id="release-timing-asap-tab"

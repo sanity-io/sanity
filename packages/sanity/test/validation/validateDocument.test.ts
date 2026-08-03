@@ -10,8 +10,9 @@ import {
 } from '@sanity/types'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {createSchema, type Workspace} from '../../src/core'
+import {type Workspace} from '../../src/core/config/types'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
+import {createSchema} from '../../src/core/schema/createSchema'
 import {convertToValidationMarker} from '../../src/core/validation/util/convertToValidationMarker'
 import {
   resolveTypeForArrayItem,
@@ -125,6 +126,7 @@ describe('validateDocument', () => {
     }
 
     const result = await validateDocument({
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       getClient,
       document,
       workspace: {schema} as Workspace,

@@ -4,7 +4,7 @@ import assert from 'node:assert'
 import {describe, expect, it} from 'vitest'
 
 import {type AuthState} from '../../../store/authStore/types'
-import {type WorkspaceLike} from '../../workspaces'
+import {type WorkspaceLike} from '../../workspaces/types'
 import {createCommonBasePathRegex} from '../createCommonBasePathRegex'
 import {matchWorkspace as actualMatchWorkspace} from '../matchWorkspace'
 import {normalizedWorkspaces} from '../useNormalizedWorkspaces'
@@ -16,6 +16,7 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
       id: 'user1',
       name: 'Test User',
       email: 'test@test.com',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       role: 'administrator',
       roles: [{name: 'administrator', title: 'Administrator'}],
       profileImage: '',

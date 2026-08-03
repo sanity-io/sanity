@@ -8,7 +8,7 @@ import {LOADING_PANE} from '../../../../constants'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {type Panes} from '../../../../structureResolvers/useResolvedPanes'
 import {type RouterPanes} from '../../../../types'
-import {FocusDocumentPaneNavigated} from './__telemetry__/focus.telemetry'
+import {DocumentPaneNavigated} from './__telemetry__/focus.telemetry'
 
 export function DocumentHeaderBreadcrumbItem({
   paneData,
@@ -47,7 +47,7 @@ export function DocumentHeaderBreadcrumbItem({
   }, [documentId, previewValue, staticTitle, t, isLoading])
 
   const handleClick = useCallback(() => {
-    telemetry.log(FocusDocumentPaneNavigated)
+    telemetry.log(DocumentPaneNavigated, {path: 'breadcrumb'})
     router.navigate({panes: routerPanes.slice(0, paneData.groupIndex)})
   }, [telemetry, router, routerPanes, paneData.groupIndex])
 

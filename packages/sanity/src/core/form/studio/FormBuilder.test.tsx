@@ -6,13 +6,13 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
-import {useWorkspace} from '../../studio'
-import {EMPTY_ARRAY} from '../../util'
-import {createPatchChannel} from '../patch'
+import {useWorkspace} from '../../studio/workspace'
+import {EMPTY_ARRAY} from '../../util/empty'
+import {createPatchChannel} from '../patch/PatchChannel'
 import {useFormState} from '../store/useFormState'
-import {type FormDocumentValue} from '../types'
+import {type FormDocumentValue} from '../types/formDocumentValue'
 import {FormBuilder, type FormBuilderProps} from './FormBuilder'
-import {useEnhancedObjectDialog} from './tree-editing'
+import {useEnhancedObjectDialog} from './tree-editing/context/enabled/useEnhancedObjectDialog'
 
 const schemaTypes = [
   defineType({
@@ -32,6 +32,7 @@ const schemaTypes = [
 vi.mock('./tree-editing/context/enabled/useEnhancedObjectDialog')
 
 describe('FormBuilder', () => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const mockedUseEnhancedObjectDialog = useEnhancedObjectDialog as Mock
 
   beforeEach(() => {

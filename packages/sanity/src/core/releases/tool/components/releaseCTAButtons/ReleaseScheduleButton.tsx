@@ -11,8 +11,11 @@ import {startOfMinute} from 'date-fns/startOfMinute'
 import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
+import {type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
 import {MONTH_PICKER_VARIANT} from '../../../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../components/inputs/DateInputs/DateTimeInput'
@@ -20,13 +23,14 @@ import {TimeZoneButton} from '../../../../components/timeZone/timeZoneButton/Tim
 import TimeZoneButtonElementQuery from '../../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
 import {useTimeZone} from '../../../../hooks/useTimeZone'
-import {Translate, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../../studio/constants'
 import {ScheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
-import {isReleaseScheduledOrScheduling} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {type DocumentInRelease} from '../../detail/types'
 
 interface ReleaseScheduleButtonProps {
@@ -236,13 +240,13 @@ export const ReleaseScheduleButton = ({
           },
         }}
       >
-        <Stack space={3}>
+        <Stack gap={3}>
           {_isScheduledDateInPast && (
             <Card marginBottom={1} padding={2} radius={2} shadow={1} tone="critical">
               <Text size={1}>{tCore('release.schedule-dialog.publish-date-in-past-warning')}</Text>
             </Card>
           )}
-          <Stack space={3}>
+          <Stack gap={3}>
             <Flex align="center" justify="space-between" gap={2}>
               <label>
                 <Text size={1} weight="semibold">

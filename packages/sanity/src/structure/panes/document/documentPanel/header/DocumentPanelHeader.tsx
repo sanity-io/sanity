@@ -27,17 +27,18 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {PaneContextMenuButton} from '../../../../components/pane/PaneContextMenuButton'
+import {PaneHeader} from '../../../../components/pane/PaneHeader'
+import {PaneHeaderActionButton} from '../../../../components/pane/PaneHeaderActionButton'
+import {type _PaneMenuNode} from '../../../../components/pane/types'
+import {usePane} from '../../../../components/pane/usePane'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {
-  PaneContextMenuButton,
-  PaneHeader,
-  PaneHeaderActionButton,
   RenderActionCollectionState,
   type ResolvedAction,
-  usePane,
-  usePaneRouter,
-} from '../../../../components'
-import {type _PaneMenuNode} from '../../../../components/pane/types'
+} from '../../../../components/RenderActionCollectionState'
 import {useHistoryRestoreAction} from '../../../../documentActions/HistoryRestoreAction'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
@@ -46,7 +47,7 @@ import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {useDocumentPane} from '../../useDocumentPane'
-import {FocusDocumentPaneClicked, FocusDocumentPaneCollapsed} from './__telemetry__/focus.telemetry'
+import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focus.telemetry'
 import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
@@ -73,21 +74,23 @@ const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
       }
     }
 
-    ${props.$showGradient &&
-    css`
-      &::after {
-        content: '';
-        display: block;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        width: 150px;
-        background: linear-gradient(to right, ${rgba(theme.color.bg, 0)}, var(--card-bg-color));
-        transition: 'opacity 300ms ease-out';
-        pointer-events: none;
-      }
-    `}
+    ${
+      props.$showGradient &&
+      css`
+        &::after {
+          content: '';
+          display: block;
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 150px;
+          background: linear-gradient(to right, ${rgba(theme.color.bg, 0)}, var(--card-bg-color));
+          transition: 'opacity 300ms ease-out';
+          pointer-events: none;
+        }
+      `
+    }
   `
 })
 
@@ -183,9 +186,9 @@ export const DocumentPanelHeader = memo(
       onSetMaximizedPane?.()
 
       if (isMaximizedPane) {
-        telemetry.log(FocusDocumentPaneCollapsed)
+        telemetry.log(DocumentPaneCollapsed)
       } else {
-        telemetry.log(FocusDocumentPaneClicked)
+        telemetry.log(DocumentPaneMaximized)
       }
     }, [onSetMaximizedPane, isMaximizedPane, telemetry])
 

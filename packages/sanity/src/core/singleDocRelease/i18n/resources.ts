@@ -1,10 +1,11 @@
-import {defineLocalesResources} from '../../i18n'
+import {defineLocalesResources} from '../../i18n/helpers'
 
 /**
  * Defined locale strings for the single doc release tool, in US English.
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const singleDocReleaseLocaleStrings = defineLocalesResources('singleDocRelease', {
   /** Action text for scheduling publish of a draft document */
   'action.schedule-publish': 'Schedule publish',

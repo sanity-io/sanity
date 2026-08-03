@@ -41,7 +41,7 @@ describe('disabledForVariantVersion', () => {
 
 describe('assertNotVariantVersion', () => {
   it('throws for a variant-scoped version snapshot', () => {
-    expect(() => assertNotVariantVersion(variantVersionDoc(), 'publish')).toThrowError(
+    expect(() => assertNotVariantVersion(variantVersionDoc(), 'publish')).toThrow(
       /variant-scoped version/,
     )
   })

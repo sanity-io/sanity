@@ -1,17 +1,15 @@
 import {useEffect, useMemo} from 'react'
 
-import {LoadingBlock} from '../../../../components'
-import {type Config, prepareConfig} from '../../../../config'
-import {useClient} from '../../../../hooks'
-import {ResourceCacheProvider} from '../../../../store'
-import {
-  SourceProvider,
-  useAddonDataset,
-  useSource,
-  useWorkspaceLoader,
-  WorkspaceProvider,
-} from '../../../../studio'
-import {API_VERSION} from '../../../constants'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {prepareConfig} from '../../../../config/prepareConfig'
+import {type Config} from '../../../../config/types'
+import {useClient} from '../../../../hooks/useClient'
+import {ResourceCacheProvider} from '../../../../store/ResourceCacheProvider'
+import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
+import {SourceProvider, useSource} from '../../../../studio/source'
+import {WorkspaceProvider} from '../../../../studio/workspace'
+import {useWorkspaceLoader} from '../../../../studio/workspaceLoader/WorkspaceLoader'
+import {API_VERSION} from '../../../constants/API_VERSION'
 import {type FormMode} from '../../../types'
 import {taskSchema} from './taskSchema'
 
@@ -30,6 +28,7 @@ function TasksAddonWorkspaceProviderInner({
   const basePath = ''
 
   // Parent workspace source, we want to use the same project id
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const addonDatasetConfig: Config = useMemo(
     () => ({

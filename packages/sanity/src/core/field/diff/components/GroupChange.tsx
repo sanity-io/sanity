@@ -11,19 +11,19 @@ import {
 } from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
-import {useDocumentOperation} from '../../../hooks'
+import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {
   getPairTarget,
   getTargetScopeId,
   useTargetDocumentState,
 } from '../../../hooks/useTargetDocumentState'
-import {useDocumentPairPermissions} from '../../../store'
-import {pathsAreEqual} from '../../paths'
+import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
+import {pathsAreEqual} from '../../paths/helpers'
 import {type GroupChangeNode} from '../../types'
-import {isPTSchemaType} from '../../types/portableText/diff'
+import {isPTSchemaType} from '../../types/portableText/diff/helpers'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
-import {useDocumentChange} from '../hooks'
+import {useDocumentChange} from '../hooks/useDocumentChange'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 import {ChangeListWrapper, GroupChangeContainer} from './GroupChange.styled'
@@ -103,13 +103,13 @@ export function GroupChange(
       hidden ? null : (
         <>
           <Stack
-            space={1}
+            gap={1}
             as={GroupChangeContainer}
             data-ui="group-change-content"
             data-revert-group-hover={isRevertButtonHovered ? '' : undefined}
             data-portable-text={isPortableText ? '' : undefined}
           >
-            <Stack as={ChangeListWrapper} space={5} data-ui="group-change-list">
+            <Stack as={ChangeListWrapper} gap={5} data-ui="group-change-list">
               {changes.map((change) => (
                 <ChangeResolver
                   key={change.key}
@@ -171,7 +171,7 @@ export function GroupChange(
     group.schemaType.of.some((ofType) => ofType.name === 'block')
 
   return hidden ? null : (
-    <Stack space={1} {...restProps}>
+    <Stack gap={1} {...restProps}>
       <ChangeBreadcrumb titlePath={titlePath} />
       {isNestedInDiff || isPortableTextGroupArray ? (
         content

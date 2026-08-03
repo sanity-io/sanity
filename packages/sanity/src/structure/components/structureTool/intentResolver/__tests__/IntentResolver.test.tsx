@@ -6,7 +6,7 @@ import {createRequestErrorChannel, type DocumentStore} from 'sanity'
 import {StudioErrorHandlerContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {PaneResolutionError} from '../../../../structureResolvers'
+import {PaneResolutionError} from '../../../../structureResolvers/PaneResolutionError'
 import * as USE_STRUCTURE_TOOL from '../../../../useStructureTool'
 import {IntentResolver} from '../IntentResolver'
 
@@ -32,7 +32,7 @@ vi.mock('sanity/router', async (importOriginal) => ({
     selector(mockRouterState.current),
 }))
 
-vi.mock('../../../../structureResolvers', async (importOriginal) => ({
+vi.mock('../../../../structureResolvers/resolveIntent', async (importOriginal) => ({
   ...(await importOriginal()),
   resolveIntent: mockResolveIntent,
 }))

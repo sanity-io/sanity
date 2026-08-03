@@ -39,7 +39,8 @@ import {
 import {flushSync} from 'react-dom'
 import {Translate, useTranslation} from 'sanity'
 
-import {Button, TooltipDelayGroupProvider} from '../../ui-components'
+import {Button} from '../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {ErrorCard} from '../components/ErrorCard'
 import {MAX_TIME_TO_OVERLAYS_CONNECTION} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
@@ -566,7 +567,7 @@ export const Preview = memo(
                         <>
                           {overlaysConnection !== 'connected' && (
                             <Card padding={3} radius={2} tone="critical">
-                              <Stack space={3}>
+                              <Stack gap={3}>
                                 <Label muted size={0}>
                                   {t('preview-frame.overlay.connection-status.label')}
                                 </Label>
@@ -579,7 +580,7 @@ export const Preview = memo(
 
                           {loadersConnection !== 'connected' && (
                             <Card padding={3} radius={2} tone="critical">
-                              <Stack space={3}>
+                              <Stack gap={3}>
                                 <Label muted size={0}>
                                   {t('preview-frame.loader.connection-status.label')}
                                 </Label>

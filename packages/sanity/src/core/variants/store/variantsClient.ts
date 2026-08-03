@@ -63,7 +63,7 @@ interface VariantDocumentCreateActionBase {
 }
 
 export interface VariantDocumentCreateFromDocumentAction extends VariantDocumentCreateActionBase {
-  document: SanityDocumentLike
+  document: Omit<SanityDocumentLike, '_id'> & Partial<Pick<SanityDocumentLike, '_id'>>
 }
 
 export interface VariantDocumentCreateFromBaseAction extends VariantDocumentCreateActionBase {
@@ -92,9 +92,9 @@ export interface VariantDocumentPublishAction {
   ifSourceRevisionId?: string
   /**
    * Optimistic lock on the variant-of-published target's revision.
-   * Note: specced but not accepted by the deployed action yet.
+   * Sourced from `publishedSibling._rev` (not the base published document).
    */
-  ifPublishedRevisionId?: string
+  ifPublishedVariantRevisionId?: string
 }
 
 /**

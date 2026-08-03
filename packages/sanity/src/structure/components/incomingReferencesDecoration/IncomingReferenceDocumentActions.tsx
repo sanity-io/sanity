@@ -77,6 +77,7 @@ export const IncomingReferenceDocumentActions = (props: {
   setIsExecutingAction: Dispatch<SetStateAction<boolean>>
 }) => {
   const {document, actions, setIsExecutingAction, isExecutingAction} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient} = useSource()
 
   const renderActions = useCallback<

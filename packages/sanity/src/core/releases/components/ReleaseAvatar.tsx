@@ -43,6 +43,7 @@ type ReleaseAvatarIconProps =
       releaseType?: never
     }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const ReleaseAvatarIcon = ({tone, release, releaseType}: ReleaseAvatarIconProps) => {
   const resolvedTone =
     tone ??

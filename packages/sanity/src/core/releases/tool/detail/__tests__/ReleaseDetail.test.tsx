@@ -50,8 +50,8 @@ vi.mock('../../../store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
-vi.mock('../../../index', () => ({
-  useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
+vi.mock('../../../util/util', async (importOriginal) => ({
+  ...(await importOriginal()),
   isReleaseScheduledOrScheduling: vi.fn(),
 }))
 

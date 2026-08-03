@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type DocumentInspector, useSource} from 'sanity'
 
-import {type PaneRouterContextValue} from '../../components'
+import {type PaneRouterContextValue} from '../../components/paneRouter/types'
 import {type PaneMenuItem} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 import {HISTORY_INSPECTOR_NAME, INSPECT_ACTION_PREFIX} from './constants'
@@ -18,6 +18,7 @@ export function useDocumentPaneInspector({
   setParams: (params: Record<string, string | undefined>) => void
 }) {
   const {features} = useStructureTool()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const inspectorsResolver = source.document.inspectors
 

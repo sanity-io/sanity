@@ -18,7 +18,7 @@ export function CustomNavigator(): React.JSX.Element {
   return (
     <Card flex={1} height="fill">
       <Flex height="fill" direction="column" justify="space-between" flex={1}>
-        <Stack padding={2} space={1}>
+        <Stack padding={2} gap={1}>
           <Card
             as="button"
             onClick={() => navigate('https://preview-kit-next-app-router.sanity.dev/')}
@@ -26,7 +26,7 @@ export function CustomNavigator(): React.JSX.Element {
             pressed={preview?.startsWith('https://preview-kit-next-app-router')}
             radius={2}
           >
-            <Stack space={2}>
+            <Stack gap={2}>
               <Text size={0} muted>
                 Next.js
               </Text>
@@ -40,7 +40,7 @@ export function CustomNavigator(): React.JSX.Element {
             pressed={preview?.startsWith('https://preview-kit-next-pages-router')}
             radius={2}
           >
-            <Stack space={2}>
+            <Stack gap={2}>
               <Text size={0} muted>
                 Next.js
               </Text>
@@ -86,7 +86,7 @@ export function CustomNavigator(): React.JSX.Element {
             <Text>Recursion test</Text>
           </Card>
         </Stack>
-        <Stack padding={2} space={1}>
+        <Stack padding={2} gap={1}>
           <Button
             icon={AddDocumentIcon}
             text="New Page"

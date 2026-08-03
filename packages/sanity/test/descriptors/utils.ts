@@ -11,7 +11,7 @@ import cloneDeep from 'lodash-es/cloneDeep.js'
 import startCase from 'lodash-es/startCase.js'
 import {expect} from 'vitest'
 
-import {DESCRIPTOR_CONVERTER} from '../../src/core/schema'
+import {DESCRIPTOR_CONVERTER} from '../../src/core/schema/descriptors'
 
 export async function expectManifestSchemaConversion(
   schema: Schema,

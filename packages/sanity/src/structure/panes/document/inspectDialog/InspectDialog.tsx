@@ -4,8 +4,9 @@ import {Card, Code, Flex, TabList, TabPanel} from '@sanity/ui'
 import {useCallback} from 'react'
 import {Translate, useTranslation} from 'sanity'
 
-import {Dialog, Tab} from '../../../../ui-components'
-import {DocTitle} from '../../../components'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {Tab} from '../../../../ui-components/tab/Tab'
+import {DocTitle} from '../../../components/DocTitle'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureToolSetting} from '../../../useStructureToolSetting'
 import {useDocumentPane} from '../useDocumentPane'
@@ -78,7 +79,7 @@ export function InspectDialog(props: InspectDialogProps) {
           shadow={1}
           style={{position: 'sticky', bottom: 0, zIndex: 3}}
         >
-          <TabList space={1}>
+          <TabList gap={1}>
             <Tab
               aria-controls={`${dialogIdPrefix}tabpanel`}
               id={`${dialogIdPrefix}tab-${VIEW_MODE_PARSED.id}`}

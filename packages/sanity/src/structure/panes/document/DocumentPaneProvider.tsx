@@ -50,12 +50,15 @@ import {
 import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
-import {usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentTitle} from '../../components/structureTool/StructureTitle'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDeletedDocumentLastRevision} from '../../hooks/useDeletedDocumentLastRevision'
 import {type PaneMenuItem} from '../../types'
-import {InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
+import {
+  InlineChangesSwitchedOff,
+  InlineChangesSwitchedOn,
+} from './__telemetry__/documentPanes.telemetry'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {
   type DocumentPaneContextValue,
@@ -86,6 +89,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     onFocusPath,
     onSetMaximizedPane,
     maximized = false,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     forcedVersion,
     historyStore,
   } = props
@@ -111,6 +115,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       unstable_languageFilter: languageFilterResolver,
       drafts: {enabled: draftsEnabled},
     },
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
   const telemetry = useTelemetry()
   const router = useRouter()
@@ -122,10 +127,12 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     title = null,
     views: viewsProp = [],
   } = pane
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const paneOptions = useUnique(options)
   const documentIdRaw = paneOptions.id
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
   const perspective = usePerspective()
 
@@ -376,6 +383,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     [documentId, documentType, languageFilterResolver],
   )
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const views = useUnique(viewsProp)
 
   const activeViewId = params.view || (views[0] && views[0].id) || null
@@ -584,6 +592,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         timelineStore,
         title,
         value,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         selectedReleaseId,
         views,
         formState,

@@ -2,12 +2,12 @@ import {type ReleaseDocument} from '@sanity/client'
 import {EMPTY} from 'rxjs'
 import {and, assign, fromObservable, sendParent, setup, stateIn} from 'xstate'
 
-import {type VersionInfoDocumentStub} from '../../releases'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
 
 export interface Variant {
   id: string
   name: string
-  document?: VersionInfoDocumentStub
+  document: VersionInfoDocumentStub
   releaseDocument?: ReleaseDocument
 }
 

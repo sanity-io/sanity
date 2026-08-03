@@ -38,6 +38,7 @@ function TestComponent(props: TestComponentProps) {
   }, [])
 
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider theme={studioTheme}>
       <div style={{height: '400px', position: 'relative'}}>
         <CommandList

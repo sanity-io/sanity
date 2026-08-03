@@ -3,7 +3,7 @@ import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {LiveUserApplicationContext} from 'sanity/_singletons'
 
 import {type UserApplication, useUserApplicationCache} from '../../store/userApplications'
-import {useWorkspaces} from '../workspaces'
+import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {findUserApplication} from './liveUserApplication'
 
 const debug = debugit('studio:live-user-application')

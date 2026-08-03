@@ -14,8 +14,11 @@ const possibleTints = ['300', '400', '500', '600', '700'] as const
 
 function DefaultIcon({title, subtitle}: {title: string; subtitle: string}): React.JSX.Element {
   const theme = useTheme()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const fontFamily = theme.sanity.fonts.text.family
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const fontWeight = theme.sanity.fonts.text.weights.medium
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const fontSize = `${theme.sanity.fonts.text.sizes[1].fontSize}px`
 
   const [rng1] = useState(() => pseudoRandomNumber(`${title} ${subtitle}`))

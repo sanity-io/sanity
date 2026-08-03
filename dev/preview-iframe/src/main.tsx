@@ -28,10 +28,11 @@ function Main() {
     'simple' | 'nested' | 'markdown' | 'longlist' | 'initialvalues' | 'intl-array'
   >('simple')
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider theme={studioTheme}>
       <Flex direction={'column'}>
         <Box padding={4}>
-          <TabList space={2}>
+          <TabList gap={2}>
             <Tab
               aria-controls="simple-panel"
               id="simple-tab"
@@ -139,7 +140,7 @@ function VisualEditing() {
       style={{bottom: 16, maxWidth: 420, position: 'fixed', right: 16, zIndex: 1000}}
       tone="transparent"
     >
-      <Stack space={2}>
+      <Stack gap={2}>
         <Text muted size={1}>
           perspective: {JSON.stringify(perspective)}
         </Text>

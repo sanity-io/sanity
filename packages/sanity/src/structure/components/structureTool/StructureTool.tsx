@@ -2,15 +2,17 @@ import {PortalProvider, useTheme, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {Fragment, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {_isCustomDocumentTypeDefinition, useSchema} from 'sanity'
+import {ResolvedPanesProvider} from 'sanity/_singletons'
 import {useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LOADING_PANE} from '../../constants'
-import {LoadingPane, StructureToolPane} from '../../panes'
-import {ResolvedPanesProvider, useResolvedPanes} from '../../structureResolvers'
+import {LoadingPane} from '../../panes/loading/LoadingPane'
+import {StructureToolPane} from '../../panes/StructureToolPane'
+import {useResolvedPanes} from '../../structureResolvers/useResolvedPanes'
 import {type PaneNode, type RouterPanes} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
-import {PaneLayout} from '../pane'
+import {PaneLayout} from '../pane/PaneLayout'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 import {StructureTitle} from './StructureTitle'
 
@@ -43,6 +45,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
     useCallback((state) => typeof state.intent === 'string', []),
   )
   const {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     sanity: {media},
   } = useTheme()
 

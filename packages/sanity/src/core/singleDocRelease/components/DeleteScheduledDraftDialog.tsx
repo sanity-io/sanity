@@ -3,15 +3,17 @@ import {type PreviewValue} from '@sanity/types'
 import {Box, Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {type ChangeEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
 
-import {Dialog} from '../../../ui-components'
-import {LoadingBlock} from '../../components'
-import {useSchema} from '../../hooks'
-import {Translate, useTranslation} from '../../i18n'
-import {Preview} from '../../preview'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {useSchema} from '../../hooks/useSchema'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {Translate} from '../../i18n/Translate'
+import {Preview} from '../../preview/components/Preview'
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {getDocumentVersionInfoFromVersions} from '../../releases/util/getDocumentVersionInfoFromVersions'
-import {getErrorMessage, getPublishedId} from '../../util'
+import {getPublishedId} from '../../util/draftUtils'
+import {getErrorMessage} from '../../util/getErrorMessage'
 import {useScheduledDraftDocument} from '../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../hooks/useScheduleDraftOperations'
 
@@ -167,7 +169,7 @@ function DeleteScheduledDraftDialogContent({
         },
       }}
     >
-      <Stack space={3} paddingX={3} marginBottom={2}>
+      <Stack gap={3} paddingX={3} marginBottom={2}>
         {children}
       </Stack>
     </Dialog>

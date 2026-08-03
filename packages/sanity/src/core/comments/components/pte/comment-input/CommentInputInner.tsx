@@ -5,12 +5,14 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {useUser} from '../../../../store'
+import {Button} from '../../../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useUser} from '../../../../store/user/hooks'
 import {commentsLocaleNamespace} from '../../../i18n'
-import {CommentsAvatar} from '../../avatars'
-import {MentionIcon, SendIcon} from '../../icons'
+import {CommentsAvatar} from '../../avatars/CommentsAvatar'
+import {MentionIcon} from '../../icons/MentionIcon'
+import {SendIcon} from '../../icons/SendIcon'
 import {Editable} from './Editable'
 import {useCommentInput} from './useCommentInput'
 
@@ -103,7 +105,9 @@ interface CommentInputInnerProps {
   avatarSize?: AvatarSize
   currentUser: CurrentUser
   focusLock?: boolean
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
   onKeyDown?: (e: React.KeyboardEvent) => void
   onSubmit?: () => void

@@ -6,7 +6,7 @@ import {
   type Groq2024SearchResults,
   type SearchStrategyFactory,
   type WeightedSearchResults,
-} from './common'
+} from './common/types'
 import {createGroq2024Search} from './groq2024'
 import {createWeightedSearch} from './weighted'
 

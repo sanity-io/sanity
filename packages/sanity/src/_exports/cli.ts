@@ -1,5 +1,6 @@
 export type {CliClientOptions, CliConfig} from '@sanity/cli'
 export {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   createCliConfig,
   type DefineAppInput,
   defineCliConfig,

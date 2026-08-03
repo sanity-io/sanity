@@ -9,7 +9,7 @@ import max from 'lodash-es/max.js'
 import sum from 'lodash-es/sum.js'
 
 import {isDev} from '../../environment'
-import {DESCRIPTOR_CONVERTER} from '../../schema'
+import {DESCRIPTOR_CONVERTER} from '../../schema/descriptors'
 
 const debug = debugit('sanity:manifest')
 

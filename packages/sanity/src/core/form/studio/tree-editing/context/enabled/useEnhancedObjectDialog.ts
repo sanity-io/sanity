@@ -20,5 +20,6 @@ export interface EnhancedObjectDialogContextValue {
  * @deprecated This hook is no longer used and will be removed in a future release as we make the enhanced object dialog the default.
  */
 export function useEnhancedObjectDialog(): EnhancedObjectDialogContextValue {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return useContext(EnhancedObjectDialogContext)
 }

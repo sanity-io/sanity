@@ -161,7 +161,7 @@ The server operations (`store/document/document-pair/serverOperations/`) branch 
 | `delete`         | Intentionally unrouted — the group delete/version-discard actions accept variant version ids                                                                                                                                                                                                        |                                                                                                                                               |
 | `duplicate`      | Kept as-is (product decision): duplicating under a variant target copies the variant content into a new **base** draft                                                                                                                                                                              |                                                                                                                                               |
 
-Action typings live in [`store/variantsClient.ts`](./store/variantsClient.ts) (temporary until `@sanity/client` exports them); the operations use `variantActionsApiClient` for the correct API version. No optimistic locks are sent yet — the deployed actions reject `ifSourceRevisionId`/`ifPublishedRevisionId` (TODO in `serverOperations/publish.ts`).
+Action typings live in [`store/variantsClient.ts`](./store/variantsClient.ts) (temporary until `@sanity/client` exports them); the operations use `variantActionsApiClient` for the correct API version. Variant publish sends `ifPublishedVariantRevisionId` from `publishedSibling._rev` (via `PublishOptions.publishedRevisionId` on `publish.execute`) when the sibling exists. Base draft publish omits the option and keeps using the published snapshot. `ifSourceRevisionId` is still omitted — the deployed action rejects it (`json: unknown field`).
 
 **Tripwires (defense-in-depth):** `assertNotVariantVersion` throws before the base publish/unpublish actions can execute against a variant-scoped version, and every legacy transaction-based operation in `operations/*.ts` is disabled with `VARIANT_VERSION` via `disabledForVariantVersion`. Normal routing makes these unreachable; they exist because the failure mode of a silent fallthrough is corruption.
 
@@ -177,7 +177,7 @@ Because ids are opaque, creation is a backend action, not a local mutation:
 
 The pair holds only the variant document for the _current_ bundle. Everything that asks "is this variant published, and what does the published variant look like?" needs the **variant-of-published sibling**, which is in no pair slot. It is plumbed from `targetDocumentState.publishedSibling` (a live stub — `_rev`/`_updatedAt`/`scopeId` — so gating needs no second pair listener):
 
-- **`PublishAction`** — already-published tooltip timestamps and publish-completion tracking read the sibling. (Completion is detected by the published `_rev` changing; the base `_rev` never changes on a variant publish, so without this every successful variant publish reported failure.) The base "already published" shortcut is skipped whenever a variant is selected.
+- **`PublishAction`** — already-published tooltip timestamps and publish-completion tracking read the sibling. (Completion is detected by the published `_rev` changing; the base `_rev` never changes on a variant publish, so without this every successful variant publish reported failure.) For variant targets the sibling `_rev` is passed to `publish.execute` as `publishedRevisionId` (mapped to `ifPublishedVariantRevisionId`); base draft publish does not pass the option. The base "already published" shortcut is skipped whenever a variant is selected.
 - **`UnpublishAction` / `UnpublishVersionAction`** — "is there anything published to unpublish" comes from sibling existence, not `editState.published`.
 - **`DiscardChangesAction`** — the confirm-dialog copy ("revert to published" vs "delete document") switches on the sibling.
 - **`CompareWithPublishedView`** (review changes) — diffs the displayed variant against the variant-of-published _document_, checked out via the sibling's scope id through `useEditState` (the one place a second pair listener is justified); hidden when the variant has never been published.
@@ -203,7 +203,7 @@ These are the rules that keep the system correct. Violating any of them reintrod
 
 - **Permissions**: `documentPairPermissions` does not yet accept a target kind; variant grants are still checked against base-derived ids. The grants-engine match on `versions.<hash>.*` paths needs early manual verification.
 - **Peripheral subsystems**: comments scoping, presence scoping (group-level vs variant), UI truthfulness gates keyed on `!draft && !published`, Presentation/scheduled-publishing guards.
-- **Optimistic locks**: blocked on the deployed variant actions accepting `ifSourceRevisionId`/`ifPublishedRevisionId`.
+- **Optimistic locks**: `ifPublishedVariantRevisionId` is wired from `publishedSibling._rev` via `PublishOptions.publishedRevisionId` on `publish.execute`. `ifSourceRevisionId` remains blocked on the deployed action accepting that field.
 
 ## 12. Map of key files
 

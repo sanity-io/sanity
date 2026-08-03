@@ -3,9 +3,9 @@ import {Stack, Text, useToast} from '@sanity/ui'
 import {isPast} from 'date-fns/isPast'
 import {useCallback, useMemo, useState} from 'react'
 
-import {Dialog} from '../../../../ui-components'
-import {useClient} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {useClient} from '../../../hooks/useClient'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
@@ -93,7 +93,7 @@ export function ConfirmScheduledDraftsDialog({
         },
       }}
     >
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text size={1} muted>
           {t('confirm-active-scheduled-drafts-dialog.description')}
         </Text>

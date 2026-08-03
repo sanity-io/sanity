@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {AddonDatasetContext} from 'sanity/_singletons'
 
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {useWorkspace} from '../workspace'
 import {type AddonDatasetContextValue} from './types'

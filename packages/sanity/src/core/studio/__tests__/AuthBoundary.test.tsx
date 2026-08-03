@@ -10,18 +10,20 @@ vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
 }))
 
-vi.mock('../activeWorkspaceMatcher', () => ({
-  useActiveWorkspace: vi.fn(),
-}))
+vi.mock('../activeWorkspaceMatcher/useActiveWorkspace', () => ({useActiveWorkspace: vi.fn()}))
 
 // Minimal stubs for the screen components so we don't pull in heavy deps.
-vi.mock('../screens', () => ({
+vi.mock('../screens/AuthenticateScreen', () => ({
   AuthenticateScreen: () => <div data-testid="authenticate-screen" />,
+}))
+vi.mock('../screens/NotAuthenticatedScreen', () => ({
   NotAuthenticatedScreen: () => <div data-testid="not-authenticated-screen" />,
+}))
+vi.mock('../screens/RequestAccessScreen', () => ({
   RequestAccessScreen: () => <div data-testid="request-access-screen" />,
 }))
 
-vi.mock('../../components/loadingBlock', () => ({
+vi.mock('../../components/loadingBlock/LoadingBlock', () => ({
   LoadingBlock: () => <div data-testid="loading-block" />,
 }))
 
@@ -52,7 +54,7 @@ describe('AuthBoundary login flash gate', () => {
   })
 
   async function mockWorkspaceAuth(auth: Record<string, unknown>) {
-    const {useActiveWorkspace} = await import('../activeWorkspaceMatcher')
+    const {useActiveWorkspace} = await import('../activeWorkspaceMatcher/useActiveWorkspace')
     ;(useActiveWorkspace as ReturnType<typeof vi.fn>).mockReturnValue({
       activeWorkspace: {auth: {state: authState$, ...auth}},
     })
@@ -150,7 +152,7 @@ describe('AuthBoundary login flash gate', () => {
     // The gate tracks WHICH store's callback settled, not a boolean: after a
     // workspace switch, the old store's exchange settling late must not open
     // the gate for the new workspace — only the new store's own callback may.
-    const {useActiveWorkspace} = await import('../activeWorkspaceMatcher')
+    const {useActiveWorkspace} = await import('../activeWorkspaceMatcher/useActiveWorkspace')
 
     const callbackA = promiseWithResolvers<unknown>()
     const callbackB = promiseWithResolvers<unknown>()
@@ -202,7 +204,7 @@ describe('AuthBoundary login flash gate', () => {
     // Reverse settle order of the test above: B (active) settles first and
     // the login screen shows; A's stale exchange settling later must not
     // overwrite the settled marker and strand B on the loading screen.
-    const {useActiveWorkspace} = await import('../activeWorkspaceMatcher')
+    const {useActiveWorkspace} = await import('../activeWorkspaceMatcher/useActiveWorkspace')
 
     const callbackA = promiseWithResolvers<unknown>()
     const callbackB = promiseWithResolvers<unknown>()
@@ -275,7 +277,7 @@ describe('AuthBoundary telemetry', () => {
       log: telemetryLog,
     })
 
-    const {useActiveWorkspace} = await import('../activeWorkspaceMatcher')
+    const {useActiveWorkspace} = await import('../activeWorkspaceMatcher/useActiveWorkspace')
     ;(useActiveWorkspace as ReturnType<typeof vi.fn>).mockReturnValue({
       activeWorkspace: {
         auth: {

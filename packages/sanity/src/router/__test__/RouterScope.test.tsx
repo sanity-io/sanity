@@ -163,7 +163,7 @@ describe('RouteScope', () => {
             stickyParams: {invalidParam: 'invalidValue'},
           })
         })
-      }).toThrowError('One or more parameters are not sticky')
+      }).toThrow('One or more parameters are not sticky')
     })
 
     it('should merge new sticky params with existing ones', () => {

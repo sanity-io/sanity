@@ -3,7 +3,7 @@ import {useObservable} from 'react-rx'
 import {combineLatest, type Observable, of, timer} from 'rxjs'
 import {distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators'
 
-import {useDocumentStore} from '../store'
+import {useDocumentStore} from '../store/datastores'
 import {type ConnectionState, connectionState} from './useConnectionState'
 
 /**

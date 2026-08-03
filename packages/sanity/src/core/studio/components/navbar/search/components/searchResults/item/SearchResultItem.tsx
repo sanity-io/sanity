@@ -1,19 +1,19 @@
 import {type StackablePerspective} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
 import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
-import {type MouseEvent, useCallback, useEffect, useMemo, useState} from 'react'
+import {type MouseEvent, useCallback, useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {of} from 'rxjs'
 import {useIntentLink} from 'sanity/router'
 
-import {Tooltip} from '../../../../../../../../ui-components'
-import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
-import {useSchema} from '../../../../../../../hooks'
+import {Tooltip} from '../../../../../../../../ui-components/tooltip/Tooltip'
+import {PreviewCard} from '../../../../../../../components/previewCard/PreviewCard'
+import {type GeneralPreviewLayoutKey} from '../../../../../../../components/previews/types'
+import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useValuePreview} from '../../../../../../../preview/useValuePreview'
-import {
-  type PermissionCheckResult,
-  useDocumentPresence,
-  useGrantsStore,
-} from '../../../../../../../store'
+import {useGrantsStore} from '../../../../../../../store/datastores'
+import {useDocumentPresence} from '../../../../../../../store/presence/useDocumentPresence'
 import {getPublishedId} from '../../../../../../../util/draftUtils'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {SearchResultItemPreview} from './SearchResultItemPreview'
@@ -55,18 +55,16 @@ export function SearchResultItem({
   const {state} = useSearchState()
   const {t} = useTranslation()
   const grantsStore = useGrantsStore()
-  const [createPermission, setCreatePermission] = useState<PermissionCheckResult | null>(null)
-  const hasCreatePermission = createPermission?.granted
 
-  useEffect(() => {
-    if (state.canDisableAction) {
-      const subscription = grantsStore
-        .checkDocumentPermission('create', {_id: documentId, _type: documentType})
-        .subscribe(setCreatePermission)
-      return () => subscription.unsubscribe()
-    }
-    return undefined
-  }, [documentId, documentType, grantsStore, state.canDisableAction])
+  const createPermission$ = useMemo(
+    () =>
+      state.canDisableAction
+        ? grantsStore.checkDocumentPermission('create', {_id: documentId, _type: documentType})
+        : of(null),
+    [documentId, documentType, grantsStore, state.canDisableAction],
+  )
+  const createPermission = useObservable(createPermission$, null)
+  const hasCreatePermission = createPermission?.granted
 
   // the current search result exists in the release provided by the search provider
   const existsInRelease = state.disabledDocumentIds?.some((id) =>

@@ -11,11 +11,11 @@ import {combineLatest, from, type Observable, of} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {catchError, delay, filter, finalize, map, shareReplay, switchMap} from 'rxjs/operators'
 
-import {useSchema} from '../../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
 import {type LocaleSource} from '../../../i18n/types'
-import {type DocumentPreviewStore} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../../store/datastores'
-import {useSource} from '../../../studio'
+import {useSource} from '../../../studio/source'
 import {schedulerYield} from '../../../util/schedulerYield'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
@@ -56,6 +56,7 @@ interface BundleDocumentsObservableOptions {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
   i18n: LocaleSource
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   getClient: ReturnType<typeof useSource>['getClient']
   currentUser?: Omit<CurrentUser, 'role'> | null
   /**
@@ -262,6 +263,7 @@ export function useBundleDocuments(options: {
 } {
   const {groqFilter, params, cacheKey, skipValidation, enabled = true} = options
   const documentPreviewStore = useDocumentPreviewStore()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
 

@@ -5,7 +5,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Table, type TableProps} from '../../../releases/tool/components/Table/Table'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
 import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
@@ -102,7 +102,7 @@ export function VariantsOverview() {
         <Flex direction="column" paddingX={3}>
           <Card flex="none" paddingY={5}>
             <Flex align="flex-start" gap={4} justify="space-between">
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text as="h1" size={4} weight="bold">
                   {t('overview.title')}
                 </Text>

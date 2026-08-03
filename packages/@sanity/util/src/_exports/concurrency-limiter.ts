@@ -1,1 +1,1 @@
-export * from '../concurrency-limiter'
+export {ConcurrencyLimiter} from '../concurrency-limiter'

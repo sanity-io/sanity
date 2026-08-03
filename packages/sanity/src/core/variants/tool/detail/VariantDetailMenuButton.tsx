@@ -1,9 +1,10 @@
 import {Menu} from '@sanity/ui'
 import {useRouter} from 'sanity/router'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
-import {useTranslation} from '../../../i18n'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DeleteVariantDialog} from '../../components/dialog/DeleteVariantDialog'
 import {useVariantDeleteAction} from '../../hooks/useVariantDeleteAction'
 import {variantsLocaleNamespace} from '../../i18n'

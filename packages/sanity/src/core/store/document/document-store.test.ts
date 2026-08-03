@@ -3,11 +3,11 @@ import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getFallbackLocaleSource} from '../../i18n/fallback'
-import {type DocumentPreviewStore} from '../../preview'
-import {createSchema} from '../../schema'
-import {type HistoryStore} from '../history'
+import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
+import {createSchema} from '../../schema/createSchema'
+import {type HistoryStore} from '../history/createHistoryStore'
 import {editOperations} from './document-pair/editOperations'
-import {type OperationsAPI} from './document-pair/operations'
+import {type OperationsAPI} from './document-pair/operations/types'
 import {createDocumentStore} from './document-store'
 import {type DocumentPairTarget} from './types'
 
@@ -80,7 +80,7 @@ describe('documentStore.pair.editOperations target handling', () => {
     const operations = collectFirst(store, {kind: 'unresolved'})
 
     expect(operations.patch.disabled).toBe('NOT_READY')
-    expect(() => (operations.patch.execute as () => void)()).toThrowError(/before it was ready/)
+    expect(() => (operations.patch.execute as () => void)()).toThrow(/before it was ready/)
     expect(mockEditOperations).not.toHaveBeenCalled()
   })
 
@@ -91,7 +91,7 @@ describe('documentStore.pair.editOperations target handling', () => {
 
     expect(operations.patch.disabled).toBe('TARGET_NOT_FOUND')
     expect(operations.publish.disabled).toBe('TARGET_NOT_FOUND')
-    expect(() => (operations.publish.execute as () => void)()).toThrowError(
+    expect(() => (operations.publish.execute as () => void)()).toThrow(
       /does not contain this document/,
     )
     expect(mockEditOperations).not.toHaveBeenCalled()

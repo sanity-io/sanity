@@ -3,7 +3,7 @@ import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type Source, type WorkspaceSummary} from '../../../config/types'
-import {type AuthStore} from '../../../store'
+import {type AuthStore} from '../../../store/authStore/types'
 import {type UserApplication} from '../../../store/userApplications'
 import {fetchCanDeployStudio} from '../canDeployStudio'
 import {registerStudioManifest} from '../registerLiveStudioManifest'
@@ -276,6 +276,7 @@ describe('registerStudioManifest', () => {
     it('should handle workspace with no sources', async () => {
       const workspace = createMockWorkspace()
       // Override to have empty sources
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       workspace.__internal.sources = []
 
       await registerStudioManifest(mockUserApplication, [workspace], mockTheme)

@@ -1,8 +1,10 @@
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {map, startWith} from 'rxjs/operators'
+import {useCallback, useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {merge, Subject} from 'rxjs'
+import {map, startWith, tap} from 'rxjs/operators'
 
-import {useClient} from '../../../../../hooks'
-import {useKeyValueStore} from '../../../../../store'
+import {useClient} from '../../../../../hooks/useClient'
+import {useKeyValueStore} from '../../../../../store/datastores'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 
 export const RECENT_SEARCH_VERSION = 3
@@ -25,43 +27,47 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
 
   const keyValueStoreKey = useMemo(() => `${STORED_SEARCHES_NAMESPACE}.${dataset}`, [dataset])
 
-  const [value, setValue] = useState<StoredSearch>(defaultValue)
+  // Local echo of writes: the store's change events are not delivered to
+  // subscribers while getKey's initial fetch is in flight, so without this
+  // the UI would wait for the server round-trip (or miss the write entirely)
+  // instead of updating immediately.
+  const optimisticWrites$ = useMemo(() => new Subject<StoredSearch>(), [])
 
-  const settings = useMemo(() => {
-    return keyValueStore.getKey(keyValueStoreKey)
-  }, [keyValueStore, keyValueStoreKey])
+  const value$ = useMemo(
+    () =>
+      merge(
+        keyValueStore.getKey(keyValueStoreKey).pipe(
+          // Reset outdated stored versions (per original verifySearchVersionNumber
+          // logic) — side effect kept in `tap` so the `map` below stays pure.
+          tap((raw) => {
+            const data = raw as StoredSearch | null
+            if (data && data.version !== RECENT_SEARCH_VERSION) {
+              void keyValueStore.setKey(keyValueStoreKey, defaultValue as any)
+            }
+          }),
+          map((raw): StoredSearch => {
+            const data = raw as StoredSearch | null
+            // Fall back to the default when nothing is stored or the stored
+            // version is outdated
+            if (!data || data.version !== RECENT_SEARCH_VERSION) {
+              return defaultValue
+            }
+            return data
+          }),
+        ),
+        optimisticWrites$,
+      ).pipe(startWith(defaultValue)),
+    [keyValueStore, keyValueStoreKey, optimisticWrites$],
+  )
 
-  useEffect(() => {
-    const sub = settings
-      .pipe(
-        startWith(defaultValue as any),
-        map((data: StoredSearch) => {
-          if (!data) {
-            return defaultValue
-          }
-          // Check if the version matches RECENT_SEARCH_VERSION
-          if (data?.version !== RECENT_SEARCH_VERSION) {
-            // If not, return the default object and mutate the store (per original verifySearchVersionNumber logic)
-            void keyValueStore.setKey(keyValueStoreKey, defaultValue as any)
-            return defaultValue
-          }
-          // Otherwise, return the data as is
-          return data
-        }),
-      )
-      .subscribe({
-        next: setValue,
-      })
-
-    return () => sub?.unsubscribe()
-  }, [settings, keyValueStore, keyValueStoreKey])
+  const value = useObservable(value$, defaultValue)
 
   const set = useCallback(
     (newValue: StoredSearch) => {
-      setValue(newValue)
+      optimisticWrites$.next(newValue)
       void keyValueStore.setKey(keyValueStoreKey, newValue as any)
     },
-    [keyValueStore, keyValueStoreKey],
+    [keyValueStore, keyValueStoreKey, optimisticWrites$],
   )
 
   return useMemo(() => [value, set], [set, value])

@@ -25,7 +25,10 @@ import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button, MenuButton, MenuItem, Tooltip} from '../../ui-components'
+import {Button} from '../../ui-components/button/Button'
+import {MenuButton} from '../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../ui-components/menuItem/MenuItem'
+import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {API_VERSION} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
@@ -218,8 +221,8 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
             <>
               <label style={{cursor: 'pointer'}}>
                 <Grid
-                  columns={2}
-                  rows={2}
+                  gridTemplateColumns={2}
+                  gridTemplateRows={2}
                   gapX={3}
                   gapY={1}
                   style={{
@@ -267,7 +270,7 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
                 </Grid>
               </label>
               <Box padding={3} paddingTop={2}>
-                <Stack space={3}>
+                <Stack gap={3}>
                   <Card
                     tone={busy || !url ? 'transparent' : undefined}
                     style={{

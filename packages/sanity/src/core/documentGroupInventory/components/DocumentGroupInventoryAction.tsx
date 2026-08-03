@@ -9,12 +9,13 @@ import {styled} from 'styled-components'
 import {Button as BaseButton} from '../../../ui-components/button/Button'
 import {Popover} from '../../../ui-components/popover/Popover'
 import {useVersionRelease} from '../../hooks/useVersionRelease'
-import {type TFunction, useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {type TFunction} from '../../i18n/types'
 import {type TargetPerspective} from '../../perspective/types'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
-import {isAgentBundleName} from '../../store'
+import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 
 export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{
@@ -123,6 +124,7 @@ const VariantIcon: ComponentType<{perspective: TargetPerspective | undefined}> =
   perspective,
 }) => {
   if (typeof perspective === 'undefined') {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return <ReleaseAvatarIcon tone="neutral" />
   }
 

@@ -3,7 +3,7 @@ import {type Dispatch} from 'react'
 import {catchError, concatWith, merge, type Observable, of, scan, shareReplay, Subject} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
-import {listenQuery} from '../../store'
+import {listenQuery} from '../../store/document/listenQuery'
 import {VARIANT_DOCUMENTS_PATH, VARIANT_DOCUMENT_TYPE} from './constants'
 import {variantStoreReducer, type VariantStoreAction, type VariantStoreState} from './reducer'
 

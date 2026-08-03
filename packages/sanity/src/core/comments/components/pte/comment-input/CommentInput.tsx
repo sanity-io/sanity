@@ -26,9 +26,9 @@ import {
   useState,
 } from 'react'
 
-import {type UserListWithPermissionsHookValue} from '../../../../hooks'
+import {type UserListWithPermissionsHookValue} from '../../../../hooks/useUserListWithPermissions'
 import {editorSchemaType} from '../config'
-import {renderBlock as defaultRenderBlock} from '../render'
+import {renderBlock as defaultRenderBlock} from '../render/renderBlock'
 import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
 import {CommentInputInner} from './CommentInputInner'
 import {CommentInputProvider} from './CommentInputProvider'
@@ -63,10 +63,12 @@ export interface CommentInputProps {
   focusLock?: boolean
   focusOnMount?: boolean
   mentionOptions: UserListWithPermissionsHookValue
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onBlur?: (e: FormEvent<HTMLDivElement>) => void
   onChange: (value: PortableTextBlock[]) => void
   onDiscardCancel?: () => void
   onDiscardConfirm: () => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onFocus?: (e: FormEvent<HTMLDivElement>) => void
   onKeyDown?: (e: KeyboardEvent) => void
   onMentionMenuOpenChange?: (open: boolean) => void
@@ -147,20 +149,24 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     const handleEvent = useCallback(
       (event: EditorEmittedEvent) => {
         // Focus the editor when ready if focusOnMount is true
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         if (event.type === 'ready') {
           if (focusOnMount) {
             requestFocus()
           }
         }
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         if (event.type === 'focused') {
           setFocused(true)
         }
 
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         if (event.type === 'blurred') {
           setFocused(false)
         }
 
         // Update the comment value whenever the comment is edited by the user.
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         if (event.type === 'mutation') {
           onChange(event.value || EMPTY_ARRAY)
         }

@@ -4,7 +4,7 @@ import {of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
-import {createSchema} from '../../../schema'
+import {createSchema} from '../../../schema/createSchema'
 import {type PendingMutationsEvent} from '../types'
 import {editState, type EditStateFor} from './editState'
 import {snapshotPair} from './snapshotPair'

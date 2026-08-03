@@ -2,8 +2,8 @@ import {ResetIcon} from '@sanity/icons/Reset'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 
-import {useTranslation} from '../../../core/i18n'
-import {Button} from '../../../ui-components/button'
+import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
+import {Button} from '../../../ui-components/button/Button'
 import {mediaLibraryLocaleNamespace} from '../i18n'
 
 type Props = {
@@ -20,7 +20,7 @@ export function InvalidVideoWarning({onClearValue}: Props) {
             <WarningOutlineIcon />
           </Text>
         </Box>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text size={1} weight="medium">
             {t('invalid-video-warning.title')}
           </Text>

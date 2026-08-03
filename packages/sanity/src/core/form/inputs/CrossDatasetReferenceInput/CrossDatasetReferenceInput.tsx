@@ -16,18 +16,19 @@ import {useObservableEvent} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
-import {ChangeIndicator} from '../../../changeIndicators'
-import {PreviewCard, ReferenceInputPreviewCard} from '../../../components'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
+import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import {PreviewCard, ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
 import {type FIXME} from '../../../FIXME'
-import {useFeatureEnabled} from '../../../hooks'
-import {FEATURES} from '../../../hooks/useFeatureEnabled'
-import {useTranslation} from '../../../i18n'
-import {getPublishedId, isNonNullable} from '../../../util'
+import {useFeatureEnabled, FEATURES} from '../../../hooks/useFeatureEnabled'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {getPublishedId} from '../../../util/draftUtils'
+import {isNonNullable} from '../../../util/isNonNullable'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {set, unset} from '../../patch'
-import {type ObjectInputProps} from '../../types'
+import {set, unset} from '../../patch/patch'
+import {type ObjectInputProps} from '../../types/inputProps'
 import {useArrayItemRootElementRef} from '../arrays/common/useArrayItemRootElementRef'
 import {ReferenceMetadataLoadErrorAlertStrip} from '../ReferenceInput/ReferenceMetadataLoadFailure'
 import {ReferenceStrengthMismatchAlertStrip} from '../ReferenceInput/ReferenceStrengthMismatchAlertStrip'
@@ -289,9 +290,9 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         <DisabledFeatureWarning value={value} onClearValue={handleClear} />
       )}
       {(featureInfo.isLoading || featureInfo.enabled) && (
-        <Stack space={1}>
+        <Stack gap={1}>
           {isEditing ? (
-            <Stack space={2} ref={clickOutsideBoundaryRef}>
+            <Stack gap={2} ref={clickOutsideBoundaryRef}>
               <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
                 <div ref={setAutocompletePopoverReferenceElement}>
                   <ReferenceAutocomplete

@@ -1,13 +1,20 @@
 import {type InitialValueResolverContext, type SanityDocumentLike} from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {useEffect, useMemo, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {map, startWith, tap} from 'rxjs/operators'
 
-import {useDataset, useProjectId, useSchema} from '../../hooks'
-import {useTranslation} from '../../i18n'
-import {classifyRequestError, useSource, useStudioErrorHandler} from '../../studio'
-import {getVersionId, useUnique} from '../../util'
+import {useDataset} from '../../hooks/useDataset'
+import {useProjectId} from '../../hooks/useProjectId'
+import {useSchema} from '../../hooks/useSchema'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {classifyRequestError} from '../../studio/requestErrors/classify'
+import {useStudioErrorHandler} from '../../studio/requestErrors/useStudioErrorHandler'
+import {useSource} from '../../studio/source'
+import {getVersionId} from '../../util/draftUtils'
+import {useUnique} from '../../util/useUnique'
 import {useDocumentStore} from '../datastores'
-import {useCurrentUser} from '../user'
+import {useCurrentUser} from '../user/hooks'
 import {type InitialValueState} from './initialValue/types'
 
 /**
@@ -21,6 +28,7 @@ export function useInitialValue(props: {
   version?: string
 }): InitialValueState {
   const {documentId, documentType, templateName, templateParams: templateParamsRaw, version} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const templateParams = useUnique(templateParamsRaw)
   const documentStore = useDocumentStore()
   const context = useInitialValueResolverContext()
@@ -36,30 +44,23 @@ export function useInitialValue(props: {
     [documentId, documentType, version],
   )
 
-  const [state, setState] = useState<InitialValueState>({
-    loading: false,
-    error: null,
-    value: defaultValue,
-  })
+  const loadingState: InitialValueState = useMemo(
+    () => ({loading: true, error: null, value: defaultValue}),
+    [defaultValue],
+  )
 
-  useEffect(() => {
+  const idleState: InitialValueState = useMemo(
+    () => ({loading: false, error: null, value: defaultValue}),
+    [defaultValue],
+  )
+
+  const state$ = useMemo(() => {
     const initialValueOptions = {documentId, documentType, templateName, templateParams}
 
-    const initialValueMsg$ = documentStore.initialValue(initialValueOptions, context)
-    const sub = initialValueMsg$.subscribe((msg) => {
-      if (msg.type === 'loading') {
-        setState({loading: true, error: null, value: defaultValue})
-      }
+    return documentStore.initialValue(initialValueOptions, context).pipe(
+      tap((msg) => {
+        if (msg.type !== 'error') return
 
-      if (msg.type === 'success') {
-        setState({
-          loading: false,
-          error: null,
-          value: msg.value ? {...defaultValue, ...msg.value} : defaultValue,
-        })
-      }
-
-      if (msg.type === 'error') {
         const pushErrorToast = () =>
           toast.push({
             id: `initial-value-error-${documentId}`,
@@ -86,14 +87,28 @@ export function useInitialValue(props: {
         } else {
           pushErrorToast()
         }
-        setState({loading: false, error: msg.error, value: defaultValue})
-      }
-    })
+      }),
+      map((msg): InitialValueState => {
+        if (msg.type === 'loading') {
+          return loadingState
+        }
 
-    // oxlint-disable-next-line react/react-compiler
-    setState({loading: true, error: null, value: defaultValue})
+        if (msg.type === 'success') {
+          return {
+            loading: false,
+            error: null,
+            value: msg.value ? {...defaultValue, ...msg.value} : defaultValue,
+          }
+        }
 
-    return () => sub.unsubscribe()
+        if (msg.type === 'error') {
+          return {loading: false, error: msg.error, value: defaultValue}
+        }
+
+        return idleState
+      }),
+      startWith(loadingState),
+    )
   }, [
     defaultValue,
     documentId,
@@ -105,15 +120,20 @@ export function useInitialValue(props: {
     errorHandler,
     toast,
     t,
+    loadingState,
+    idleState,
   ])
 
-  return state
+  // Seeded with loadingState to match the stream's synchronous
+  // startWith(loadingState) first emission.
+  return useObservable(state$, loadingState)
 }
 
 /**
  * @internal
  */
 export function useInitialValueResolverContext(): InitialValueResolverContext {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const schema = useSchema()
   const currentUser = useCurrentUser()

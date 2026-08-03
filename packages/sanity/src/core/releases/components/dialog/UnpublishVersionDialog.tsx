@@ -7,8 +7,8 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
-import {useValuePreview} from '../../../preview'
 import {Preview} from '../../../preview/components/Preview'
+import {useValuePreview} from '../../../preview/useValuePreview'
 import {getVersionFromId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -101,7 +101,7 @@ export function UnpublishVersionDialog(props: {
         },
       }}
     >
-      <Stack space={4} paddingX={4} paddingBottom={4}>
+      <Stack gap={4} paddingX={4} paddingBottom={4}>
         {schemaType ? (
           <Preview value={{_id: documentVersionId}} schemaType={schemaType} />
         ) : (

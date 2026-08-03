@@ -79,7 +79,7 @@ const BlockQuoteRoot = styled.blockquote`
   position: relative;
   display: block;
   margin: 0;
-  padding-left: ${({theme}) => theme.sanity.space[3]}px;
+  padding-left: ${({theme}) => theme.sanity.space[3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
 
   &::before {
     content: '';

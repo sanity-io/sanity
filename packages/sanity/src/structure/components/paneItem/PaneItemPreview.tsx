@@ -21,7 +21,7 @@ import {
   usePerspective,
 } from 'sanity'
 
-import {TooltipDelayGroupProvider} from '../../../ui-components'
+import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -43,6 +43,7 @@ export interface PaneItemPreviewProps {
 export function PaneItemPreview(props: PaneItemPreviewProps) {
   const {icon, layout, presence, schemaType, sortOrder, value} = props
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const versionsInfo = useDocumentVersionInfo(value._id)
 
   const {perspectiveStack} = usePerspective()

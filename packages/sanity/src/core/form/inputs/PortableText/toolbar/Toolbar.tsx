@@ -11,10 +11,10 @@ import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components'
-import {useRovingFocus} from '../../../../components'
-import {useTranslation} from '../../../../i18n'
-import {useResolveInitialValueForType} from '../../../../store'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useResolveInitialValueForType} from '../../../../store/document/useResolveInitialValueForType'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
@@ -85,6 +85,7 @@ const InnerToolbar = memo(function InnerToolbar({
   const showActionMenu = actionsLen > 0
   const showInsertMenu = insertMenuItems.length > 0
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const rootElementRect = useElementRect(rootElement)
 
   const collapsed = collapsible && rootElementRect ? rootElementRect?.width < 400 : false
@@ -165,8 +166,10 @@ const InnerToolbar = memo(function InnerToolbar({
 
 export function Toolbar(props: ToolbarProps) {
   const {collapsible, hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
   const resolveInitialValueForType = useResolveInitialValueForType()
   const disabled = readOnly || !selection
@@ -216,6 +219,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertBlock = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const path = PortableTextEditor.insertBlock(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)
@@ -227,6 +231,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertInline = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const path = PortableTextEditor.insertChild(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)

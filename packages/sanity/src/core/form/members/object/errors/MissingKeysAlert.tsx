@@ -3,13 +3,15 @@ import {Stack, Text} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {useCallback} from 'react'
 
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {isDev} from '../../../../environment'
-import {Translate, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
-import {FormField} from '../../../components/formField'
-import {PatchEvent, setIfMissing} from '../../../patch'
+import {FormField} from '../../../components/formField/FormField'
+import {setIfMissing} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {type MissingKeysError} from '../../../store/types/memberErrors'
 
 interface Props {
@@ -56,7 +58,7 @@ export function MissingKeysAlert(props: Props) {
           open={isDev}
           title={t('form.error.missing-keys-alert.details.title')}
         >
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text as="p" muted size={1}>
               <Translate t={t} i18nKey="form.error.missing-keys-alert.details.description" />
             </Text>

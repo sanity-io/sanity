@@ -4,8 +4,9 @@ import {type CrossDatasetReferenceValue} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {Button} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 
 type Props = {
   value?: CrossDatasetReferenceValue
@@ -48,12 +49,12 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
             <WarningOutlineIcon />
           </Text>
         </Box>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text as="h2" size={1} weight="medium">
             {t('inputs.reference.cross-dataset.feature-unavailable-title')}
           </Text>
           {hasRef && (
-            <Stack space={3}>
+            <Stack gap={3}>
               <Text as="p" size={1}>
                 {description}
               </Text>

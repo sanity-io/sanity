@@ -31,7 +31,8 @@ const config = {
   auth: createMockAuthStore({client, currentUser: null}),
 }
 
-vi.mock('./components/navbar/new-document')
+vi.mock('./components/navbar/new-document/NewDocumentButton')
+vi.mock('./components/navbar/new-document/useNewDocumentOptions')
 vi.mock('./components/navbar/presence/PresenceMenu')
 
 describe('Studio', () => {

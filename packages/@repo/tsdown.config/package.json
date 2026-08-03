@@ -1,6 +1,6 @@
 {
   "name": "@repo/tsdown.config",
-  "version": "6.6.0",
+  "version": "6.8.0",
   "private": true,
   "description": "Shared tsdown configuration",
   "type": "module",
@@ -11,6 +11,7 @@
     "@repo/tsconfig": "workspace:*",
     "@sanity/tsdown-config": "catalog:",
     "@types/node": "catalog:",
-    "tsdown": "catalog:"
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
   }
 }

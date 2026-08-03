@@ -2,7 +2,7 @@
 import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {ErrorActions} from '../../components'
+import {ErrorActions} from '../../components/errorActions/ErrorActions'
 import {isDev, isProd} from '../../environment'
 import {isClientRequestError} from '../requestErrors/classify'
 
@@ -45,8 +45,8 @@ export function FallbackErrorScreen(props: {
     >
       <View display="flex" height="fill">
         <Container width={3}>
-          <Stack space={6}>
-            <Stack space={4}>
+          <Stack gap={6}>
+            <Stack gap={4}>
               <Heading>{heading}</Heading>
               <Text>An error occurred that Sanity Studio was unable to recover from.</Text>
               {isProd && (
@@ -57,7 +57,7 @@ export function FallbackErrorScreen(props: {
               )}
               {isDev && (
                 <Card border radius={2} overflow="auto" padding={4} tone="critical">
-                  <Stack space={4}>
+                  <Stack gap={4}>
                     {message && (
                       <Code weight={'bold'} size={1}>
                         {message}
@@ -70,7 +70,7 @@ export function FallbackErrorScreen(props: {
               )}
               {showRequestErrorTip && (
                 <Card border radius={2} padding={4} tone="caution">
-                  <Stack space={3}>
+                  <Stack gap={3}>
                     <Text size={1} weight="medium">
                       Developer tip
                     </Text>

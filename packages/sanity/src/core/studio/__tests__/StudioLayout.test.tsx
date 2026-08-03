@@ -9,6 +9,7 @@ import {type StudioLayoutComponent as StudioLayoutComponentType} from '../Studio
 // StudioLayout renders `@sanity/ui` components that require a `ThemeProvider`
 // via context. Wrap every render in a minimal studio theme.
 const wrapper = ({children}: {children: ReactNode}) => (
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
 )
 
@@ -24,7 +25,7 @@ vi.mock('../networkCheck/useNetworkProtocolCheck', () => ({
   useNetworkProtocolCheck: vi.fn(),
 }))
 
-vi.mock('../studio-components-hooks', () => ({
+vi.mock('../studio-components-hooks/componentHooks', () => ({
   useLayoutComponent: vi.fn(),
   useNavbarComponent: () => () => <div data-testid="navbar" />,
   useActiveToolLayoutComponent:
@@ -62,7 +63,7 @@ vi.mock('../screens/ToolNotFoundScreen', () => ({
   ToolNotFoundScreen: () => <div data-testid="tool-not-found" />,
 }))
 
-vi.mock('../../components/loadingBlock', () => ({
+vi.mock('../../components/loadingBlock/LoadingBlock', () => ({
   LoadingBlock: () => <div data-testid="loading-block" />,
 }))
 

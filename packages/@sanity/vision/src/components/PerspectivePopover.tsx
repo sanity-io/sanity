@@ -49,8 +49,8 @@ export function PerspectivePopover() {
     <Popover
       content={
         <PerspectivePopoverContent>
-          <Stack space={4}>
-            <Inline space={2}>
+          <Stack gap={4}>
+            <Inline gap={2}>
               <Text weight="medium">{t('settings.perspectives.title')}</Text>
             </Inline>
 
@@ -58,7 +58,7 @@ export function PerspectivePopover() {
               <Text muted>{t('settings.perspectives.description')}</Text>
             </Card>
             <Card>
-              <Stack space={2}>
+              <Stack gap={2}>
                 <Box>
                   <Badge tone="primary">{t('label.new')}</Badge>
                 </Box>

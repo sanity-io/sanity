@@ -557,8 +557,11 @@ describe('useResolvedPanes', () => {
       // Unmount should trigger cleanup (unsubscribe)
       unmount()
 
-      // After unmount, the subject should no longer have observers
-      expect(getSubjectObserved()).toBe(false)
+      // react-rx shares the observable and resets on refCount zero via
+      // asapScheduler, so source teardown is deferred by a tick
+      await waitFor(() => {
+        expect(getSubjectObserved()).toBe(false)
+      })
     })
   })
 })

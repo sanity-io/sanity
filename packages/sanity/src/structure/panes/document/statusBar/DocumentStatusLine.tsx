@@ -24,10 +24,10 @@ import {
 } from 'sanity'
 
 import {HISTORY_INSPECTOR_NAME} from '../constants'
-import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline'
+import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline/timelineI18n'
 import {useDocumentPane} from '../useDocumentPane'
 import {useDocumentPaneInfo} from '../useDocumentPaneInfo'
-import {DocumentStatusPulse} from './DocumentStatusPulse'
+import {DocumentStatusPulse} from './DocumentStatusPulse/DocumentStatusPulse'
 
 const RELATIVE_TIME_OPTIONS = {
   minimal: true,
@@ -190,6 +190,7 @@ export function DocumentStatusLine() {
   const {value, targetDocumentState} = useDocumentPane()
   const {documentId, documentType} = useDocumentPaneInfo()
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const eventsEnabled = source.beta?.eventsAPI?.documents
 

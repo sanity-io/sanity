@@ -11,6 +11,7 @@ import {
 import {tap} from 'rxjs/operators'
 import {
   createPatchChannel,
+  Delay,
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
   FormBuilder,
@@ -28,7 +29,6 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {Delay} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
@@ -39,6 +39,7 @@ interface FormViewProps {
   margins: [number, number, number, number]
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const preventDefault = (ev: FormEvent) => ev.preventDefault()
 
 export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function FormView(props, ref) {

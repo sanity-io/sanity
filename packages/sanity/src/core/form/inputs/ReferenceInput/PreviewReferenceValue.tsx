@@ -4,12 +4,14 @@ import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {type ComponentType, Fragment, type ReactNode} from 'react'
 
-import {Tooltip} from '../../../../ui-components'
-import {type PreviewLayoutKey, TextWithTone} from '../../../components'
-import {useListFormat} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
-import {SanityDefaultPreview} from '../../../preview'
-import {type RenderPreviewCallback} from '../../types'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {type PreviewLayoutKey} from '../../../components/previews/types'
+import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
+import {useListFormat} from '../../../hooks/useListFormat'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
+import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
+import {type RenderPreviewCallback} from '../../types/renderCallback'
 import {ReferencePreview} from './ReferencePreview'
 import {type ReferenceInfo} from './types'
 import {type Loadable} from './useReferenceInfo'
@@ -65,9 +67,7 @@ export function PreviewReferenceValue(props: {
           })}
         </Box>
         <Box>
-          <Inline space={4}>
-            {showTypeLabel && <Badge mode="outline">{refType.title}</Badge>}
-          </Inline>
+          <Inline gap={4}>{showTypeLabel && <Badge>{refType.title}</Badge>}</Inline>
         </Box>
       </Flex>
     )
@@ -79,7 +79,7 @@ export function PreviewReferenceValue(props: {
   const insufficientPermissions = availability.reason === 'PERMISSION_DENIED'
   if (insufficientPermissions || notFound) {
     return (
-      <Inline space={2}>
+      <Inline gap={2}>
         <Box padding={1}>
           <Flex align="center">
             <Box flex={1} paddingY={2}>
@@ -196,7 +196,7 @@ function InvalidType({
         <Tooltip
           portal
           content={
-            <Stack space={3}>
+            <Stack gap={3}>
               <Text size={1}>
                 <Translate
                   t={t}

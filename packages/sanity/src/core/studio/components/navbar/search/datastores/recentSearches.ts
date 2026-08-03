@@ -3,8 +3,8 @@ import isEqual from 'lodash-es/isEqual.js'
 import omit from 'lodash-es/omit.js'
 import {useMemo} from 'react'
 
-import {useSchema} from '../../../../../hooks'
-import {type SearchTerms} from '../../../../../search'
+import {useSchema} from '../../../../../hooks/useSchema'
+import {type SearchTerms} from '../../../../../search/common/types'
 import {useSource} from '../../../../source'
 import {
   createFieldDefinitionDictionary,
@@ -68,6 +68,7 @@ export function useRecentSearchesStore(): RecentSearchesStore {
   const schema = useSchema()
   const {
     search: {operators, filters},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
 
   // Create field, filter and operator dictionaries

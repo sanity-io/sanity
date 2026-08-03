@@ -28,12 +28,14 @@ import {isInvalidSessionError} from '../../../util/apiErrors'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 import {
   type BufferedDocumentEvent,
-  type CommitRequest,
   createBufferedDocument,
+} from '../buffered-doc/createBufferedDocument'
+import {type CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
+import {
   type DocumentRebaseEvent,
   type MutationPayload,
   type RemoteSnapshotEvent,
-} from '../buffered-doc'
+} from '../buffered-doc/types'
 import {
   type DocumentStoreExtraOptions,
   getPairListener,
@@ -235,6 +237,7 @@ function commitMutations(
   mutationParams: Mutation['params'],
 ): Promise<MutationResult> {
   const {resultRev, ...mutation} = mutationParams
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return operationsApiClient(client, idPair).dataRequest('mutate', mutation, {
     visibility: 'async',
     returnDocuments: false,

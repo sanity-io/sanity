@@ -4,10 +4,11 @@ import {Box, Menu, MenuDivider, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
-import {StatusButton} from '../../../../components'
-import {useTranslation} from '../../../../i18n'
-import {useGlobalPresence} from '../../../../store'
+import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {StatusButton} from '../../../../components/StatusButton'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useGlobalPresence} from '../../../../store/presence/useGlobalPresence'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
@@ -105,7 +106,7 @@ export function PresenceMenu() {
 
           {!hasPresence && (
             <Box padding={3}>
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text weight="medium" size={1}>
                   {t('presence.no-one-else-title')}
                 </Text>
@@ -118,7 +119,7 @@ export function PresenceMenu() {
           )}
 
           {canInviteMembers && (
-            <FooterStack space={1}>
+            <FooterStack gap={1}>
               <MenuDivider />
 
               <MenuItem

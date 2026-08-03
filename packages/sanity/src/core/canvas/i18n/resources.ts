@@ -1,10 +1,11 @@
-import {defineLocalesResources} from '../../i18n'
+import {defineLocalesResources} from '../../i18n/helpers'
 
 /**
  * Defined locale strings for the Canvas integration feature, in US English.
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const canvasLocaleStrings = defineLocalesResources('canvas', {
   /** The text for the "Link to Canvas" action. */
   'action.link-document': 'Link to Canvas',

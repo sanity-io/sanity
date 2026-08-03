@@ -68,7 +68,9 @@ describe('createHookFromObservableFactory', () => {
       [undefined, true],
       [{value: 'hello, world'}, false],
     ])
-    expect(observableFactory).toHaveBeenCalledTimes(2)
+    // One factory call per distinct arg — react-rx@4.2.5 fixed a useObservable cache
+    // leak that previously caused duplicate subscriptions (and thus double calls).
+    expect(observableFactory).toHaveBeenCalledTimes(1)
 
     rerender(<TestComponent value="hooks" />)
     await waitFor(() => expect(renderTimeline.length).toBe(4))
@@ -80,7 +82,7 @@ describe('createHookFromObservableFactory', () => {
       [{value: 'hello, hooks'}, false],
     ])
 
-    expect(observableFactory).toHaveBeenCalledTimes(4)
+    expect(observableFactory).toHaveBeenCalledTimes(2)
   })
 
   // createHookFromObservableFactory uses useSyncExternalStore to trigger re-renders in React if state changes
@@ -123,7 +125,8 @@ describe('createHookFromObservableFactory', () => {
 
     await waitFor(() => expect(syncRenders).toBe(3))
     await waitFor(() => expect(deferRenders).toBe(2))
-    expect(observableFactory).toHaveBeenCalledTimes(3)
+    // One factory call per distinct arg (see react-rx@4.2.5 cache-leak fix note above).
+    expect(observableFactory).toHaveBeenCalledTimes(1)
     expect(phasesTimeline).toEqual([
       ['defer', 'mount'],
       ['sync', 'mount'],
@@ -137,7 +140,7 @@ describe('createHookFromObservableFactory', () => {
     await waitFor(() => expect(syncRenders).toBe(7))
     await waitFor(() => expect(deferRenders).toBe(5))
 
-    expect(observableFactory).toHaveBeenCalledTimes(7)
+    expect(observableFactory).toHaveBeenCalledTimes(3)
     expect(phasesTimeline).toEqual([
       ['defer', 'mount'],
       ['sync', 'mount'],
@@ -179,7 +182,8 @@ describe('createHookFromObservableFactory', () => {
       ['factory initial', true],
       ['hello, world', false],
     ])
-    expect(observableFactory).toHaveBeenCalledTimes(2)
+    // Still a single subscription for the same arg after the value arrives.
+    expect(observableFactory).toHaveBeenCalledTimes(1)
   })
 
   it('bubbles errors throws in the observable factory', async () => {

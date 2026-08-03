@@ -23,23 +23,18 @@ import {
   useState,
 } from 'react'
 
-import {
-  type EditorChange,
-  type PortableTextInputProps,
-  useFieldActions,
-  useFormValue,
-} from '../../../../form'
-import {useCurrentUser} from '../../../../store'
+import {useFormValue} from '../../../../form/contexts/FormValue'
+import {useFieldActions} from '../../../../form/field/actions/useFieldActions'
+import {type EditorChange, type PortableTextInputProps} from '../../../../form/types/inputProps'
+import {useCurrentUser} from '../../../../store/user/hooks'
 import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
-import {CommentInlineHighlightSpan} from '../../../components'
+import {CommentInlineHighlightSpan} from '../../../components/pte/CommentInlineHighlightSpan'
 import {isTextSelectionComment, parseCommentFieldPath} from '../../../helpers'
-import {
-  useComments,
-  useCommentsEnabled,
-  useCommentsScroll,
-  useCommentsSelectedPath,
-  useCommentsUpsell,
-} from '../../../hooks'
+import {useComments} from '../../../hooks/useComments'
+import {useCommentsEnabled} from '../../../hooks/useCommentsEnabled'
+import {useCommentsScroll} from '../../../hooks/useCommentsScroll'
+import {useCommentsSelectedPath} from '../../../hooks/useCommentsSelectedPath'
+import {useCommentsUpsell} from '../../../hooks/useCommentsUpsell'
 import {
   type CommentDocument,
   type CommentMessage,
@@ -47,12 +42,12 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../../types'
+import {buildCommentRangeDecorations} from '../../../utils/inline-comments/buildCommentRangeDecorations'
+import {buildRangeDecorationSelectionsFromComments} from '../../../utils/inline-comments/buildRangeDecorationSelectionsFromComments'
 import {
-  buildCommentRangeDecorations,
-  buildRangeDecorationSelectionsFromComments,
   buildTextSelectionFromFragment,
   getCommentFieldPath,
-} from '../../../utils'
+} from '../../../utils/inline-comments/buildTextSelectionFromFragment'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
@@ -99,6 +94,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const {handleOpenDialog} = useCommentsUpsell()
   const [mousePressed, setMousePressed] = useState<boolean>(false)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editorRef = useRef<PortableTextEditor | null>(null)
 
   // Read through a ref because `useFormValue([])` changes identity on every
@@ -135,6 +131,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
   const getFragment = useCallback(() => {
     if (!editorRef.current) return EMPTY_ARRAY
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return PortableTextEditor.getFragment(editorRef.current)
   }, [])
 
@@ -358,6 +355,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
       // The below code will update the comment object to reflect the new selection
       if (!editorRef.current) return
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
       const [updatedDecoration] = buildRangeDecorationSelectionsFromComments({
@@ -423,6 +421,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const handleBuildRangeDecorations = useCallback(
     (commentsToDecorate: CommentDocument[]) => {
       if (!editorRef.current) return EMPTY_ARRAY
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
       return buildCommentRangeDecorations({
@@ -497,12 +496,14 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         return addedCommentsDecorations.some((d) => {
           if (!editorRef.current) return false
 
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           const testA = PortableTextEditor.isSelectionsOverlapping(
             editorRef.current,
             currentSelection,
             d.selection,
           )
 
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           const testB = PortableTextEditor.isSelectionsOverlapping(
             editorRef.current,
             d.selection,

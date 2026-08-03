@@ -13,6 +13,7 @@ import {styled} from 'styled-components'
 // calculates its width based on the content width.
 const StyledContainer = styled(Container)<ResponsiveWidthStyleProps>((props) => {
   const {theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {container, media} = theme.sanity
 
   return _responsive(media, props.$width, (val) => ({

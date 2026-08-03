@@ -2,8 +2,8 @@ import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Box, Flex, Inline, rem, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {Tooltip} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 
 export const ChevronWrapper = styled(Box)`
@@ -30,16 +30,16 @@ export const Table = styled.table`
   inline-size: 100%;
   text-align: start;
   padding-block: 0;
-  padding-inline: ${({theme}) => rem(theme.sanity.space[2])};
+  padding-inline: ${({theme}) => rem(theme.sanity.space[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   border-collapse: collapse;
 
   th {
-    padding: ${({theme}) => rem(theme.sanity.space[1])};
+    padding: ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   }
 
   td {
     padding-block: 0;
-    padding-inline: ${({theme}) => rem(theme.sanity.space[1])};
+    padding-inline: ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   }
 
   tr > *:last-child {
@@ -61,7 +61,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
 
   return (
     <Box padding={2}>
-      <Inline space={2}>
+      <Inline gap={2}>
         <Text size={1} muted>
           {t('document-group.delete.other-reference-count.title', {count: difference})}
         </Text>

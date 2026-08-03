@@ -1,8 +1,7 @@
 import {type ComponentProps} from 'react'
 
-import {PaneContainer} from './PaneContainer'
+import {type PaneContainer} from './PaneContainer'
 
-export {PaneContainer as DocumentListPane}
 /**
  * @internal
  */

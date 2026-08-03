@@ -108,6 +108,7 @@ const PostMessageDocuments: FunctionComponent<PostMessageDocumentsProps> = (prop
 
   useEffect(() => {
     return comlink.on('visual-editing/mutate', async (data) => {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       return client.dataRequest('mutate', data, {
         visibility: 'async',
         returnDocuments: true,
