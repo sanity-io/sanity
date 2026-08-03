@@ -27,6 +27,12 @@ interface SearchResultItemPreviewProps {
   showBadge?: boolean
 }
 
+const INITIAL_PREVIEW_STATE = {
+  snapshot: null,
+  isLoading: true,
+  original: null,
+}
+
 /**
  * Temporary workaround: force all nested boxes on iOS to use `background-attachment: scroll`
  * to allow <Skeleton> components to render correctly within virtual lists.
@@ -62,11 +68,10 @@ export function SearchResultItemPreview({
     [documentId, documentType],
   )
 
-  const {isLoading, snapshot, original} = useObservable(observable, {
-    snapshot: null,
-    isLoading: true,
-    original: null,
-  })
+  // Deferred: react-rx v5's deferral is identity-coherent, so on a document
+  // id change the live snapshot wins and the previous document's title/media
+  // never renders next to the new document's version badges.
+  const {isLoading, snapshot, original} = useObservable(observable, INITIAL_PREVIEW_STATE)
 
   const {versions} = useDocumentVersions({documentId})
   const versionsInfo = useMemo(() => getDocumentVersionInfoFromVersions(versions), [versions])

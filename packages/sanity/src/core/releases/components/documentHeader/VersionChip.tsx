@@ -29,6 +29,11 @@ const useVersionIsLinked = (documentId: string, fromRelease: string) => {
     () => companionDocsStore.getCompanionDocs(documentId),
     [documentId, companionDocsStore],
   )
+  // Deferred (per review): navigating to another document remounts the
+  // document pane (its `_key` changes), resetting this state, so a deferred
+  // read can't report linkage for a previous document. react-rx v5's
+  // identity-coherent deferral also falls back to the live value if the
+  // observable identity changes without a remount.
   const companionDocs = useObservable(companionDocs$)
   return companionDocs?.data.some((companion) => companion?.studioDocumentId === versionId)
 }

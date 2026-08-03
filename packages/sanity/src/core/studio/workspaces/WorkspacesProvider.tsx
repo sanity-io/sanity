@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {defer, firstValueFrom, from, NEVER, Subject, type Observable} from 'rxjs'
 import {catchError, mergeMap, take, tap} from 'rxjs/operators'
 import {
@@ -249,8 +249,10 @@ export function WorkspacesProvider({
 
   // `null` initial value (rather than undefined) so react-rx provides a
   // server snapshot — SSR renders without a dialog instead of warning
-  // about a missing getServerSnapshot.
-  const claim = useObservable(requestErrorChannel.claim$, null) ?? undefined
+  // about a missing getServerSnapshot. Kept synchronous: the `unauthorized`
+  // claim drives forced logout, and session teardown shouldn't wait for a
+  // deferred re-render.
+  const claim = useSyncObservable(requestErrorChannel.claim$, null) ?? undefined
 
   // Why we logged the user out, consumed by the login screen to surface a
   // toast. Derived from the live `unauthorized` claim, so it's present exactly

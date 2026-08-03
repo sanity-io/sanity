@@ -5,7 +5,7 @@ import {type KeyedSegment, type Reference} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
 import {memo, useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {debounceTime, map} from 'rxjs/operators'
 import {
@@ -114,7 +114,10 @@ export const ReferenceChangedBanner = memo(() => {
         ),
     )
   }, [selectedPerspectiveName, documentPreviewStore, parentId, parentRefPath])
-  const referenceInfo = useObservable(referenceInfoObservable, {loading: true})
+  // Kept synchronous: `handleReloadReference` navigates to `refValue` from
+  // this snapshot, so a deferred value could point the reload action at a
+  // stale parent reference.
+  const referenceInfo = useSyncObservable(referenceInfoObservable, {loading: true})
 
   const handleReloadReference = useCallback(() => {
     if (referenceInfo.loading) return

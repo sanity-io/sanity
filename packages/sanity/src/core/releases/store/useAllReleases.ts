@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
 import {sortReleases} from '../hooks/utils'
 import {useReleasesStore} from './useReleasesStore'
@@ -16,7 +16,12 @@ export function useAllReleases(): {
   map: Map<string, ReleaseDocument>
 } {
   const {state$} = useReleasesStore()
-  const {releases, error, state} = useObservable(state$)!
+  // Kept synchronous: release lists feed perspective/version identity
+  // resolution alongside live perspective state, so a deferred snapshot could
+  // pair a stale release list with the current selection — or disagree with
+  // the synchronous `useActiveReleases` read of the same store. Executable
+  // proof: perspective/__tests__/deferralSafety.test.tsx.
+  const {releases, error, state} = useSyncObservable(state$)!
 
   return useMemo(
     () => ({

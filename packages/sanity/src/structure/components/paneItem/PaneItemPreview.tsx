@@ -33,6 +33,12 @@ export interface PaneItemPreviewProps {
   value: SanityDocument | {_id: string; _type: string}
 }
 
+const INITIAL_PREVIEW_STATE = {
+  snapshot: null,
+  isLoading: true,
+  original: null,
+}
+
 /**
  * Preview component for _documents_ rendered in structure panes.
  *
@@ -67,15 +73,15 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     )
   }, [props.documentPreviewStore, schemaType, value._id, perspectiveStack, viewOptions])
 
+  // Deferred: react-rx v5's deferral is identity-coherent, so when a
+  // (recycled) list item switches to a new document id the live snapshot for
+  // the new id wins and the previous document's title/media never renders
+  // next to the new document's version badges.
   const {
     snapshot,
     original,
     isLoading: previewIsLoading,
-  } = useObservable(previewStateObservable, {
-    snapshot: null,
-    isLoading: true,
-    original: null,
-  })
+  } = useObservable(previewStateObservable, INITIAL_PREVIEW_STATE)
 
   const isLoading = previewIsLoading
 

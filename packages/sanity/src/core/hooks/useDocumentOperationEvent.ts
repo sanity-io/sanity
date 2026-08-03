@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
 import {useDocumentStore} from '../store/datastores'
 
@@ -11,5 +11,8 @@ export function useDocumentOperationEvent(publishedDocId: string, docTypeName: s
     () => documentStore.pair.operationEvents(publishedDocId, docTypeName),
     [docTypeName, documentStore.pair, publishedDocId],
   )
-  return useObservable(observable)
+  // Kept synchronous: this is an event stream driving effects (toasts,
+  // pane-close). Deferring could coalesce a quick success/error sequence into
+  // one render and drop an event consumers must react to.
+  return useSyncObservable(observable)
 }

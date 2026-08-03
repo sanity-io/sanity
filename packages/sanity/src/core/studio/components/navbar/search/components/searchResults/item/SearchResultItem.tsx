@@ -2,7 +2,7 @@ import {type StackablePerspective} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
 import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
 import {type MouseEvent, useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {useIntentLink} from 'sanity/router'
 
@@ -63,7 +63,11 @@ export function SearchResultItem({
         : of(null),
     [documentId, documentType, grantsStore, state.canDisableAction],
   )
-  const createPermission = useObservable(createPermission$, null)
+  // Kept synchronous: this gates `disabledAction` together with the live
+  // `documentId` release-membership check, so a deferred snapshot on a
+  // recycled row could leave the new document actionable with the previous
+  // row's granted permission.
+  const createPermission = useSyncObservable(createPermission$, null)
   const hasCreatePermission = createPermission?.granted
 
   // the current search result exists in the release provided by the search provider
