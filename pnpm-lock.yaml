@@ -20,7 +20,7 @@ catalogs:
       specifier: ^0.2.3
       version: 0.2.3
     '@sanity/client':
-      specifier: ^7.25.0
+      specifier: ^7.26.0
       version: 7.26.0
     '@sanity/migrate':
       specifier: ^8.0.1
