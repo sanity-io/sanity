@@ -36,7 +36,6 @@ export function IncomingReferencePreview(props: IncomingReferencePreviewProps) {
           childId={publishedId}
           childParameters={{
             type: type.name,
-            // Without a path, link to the document rather than to a specific field
             ...(Array.isArray(path) && path.length > 0 ? {path: pathToString(path)} : {}),
           }}
           {...linkProps}
