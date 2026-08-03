@@ -32,7 +32,7 @@ export const IncomingReferenceDocument = (props: {
     <Card radius={2} tone="default">
       <FadeInFlex initial={{opacity: 0}} animate={{opacity: 1}} gap={1} align="center">
         <Box flex={1}>
-          {/* The document may not hold a reference to this document yet – eg. when the listener
+          {/* The document may not hold a reference to this document yet – e.g. when the listener
               is behind after a reference was just created – in which case there is no path to
               deep link to, and the preview links to the document itself */}
           <IncomingReferencePreview type={schemaType} value={document} path={referencePaths[0]} />
