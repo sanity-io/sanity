@@ -152,16 +152,17 @@ function UnclaimedProjectNudgeInner({
   // which re-pushes for as long as its condition holds.
   const toast = useToast()
   const expired = state?.status === 'expired'
+  const expiredToastTitle = copy?.expired.toastTitle
   useEffect(() => {
-    if (!expired || !copy) return
+    if (!expired || !expiredToastTitle) return
     toast.push({
       id: 'unclaimed-project-expired',
       status: 'warning',
       closable: true,
       duration: Infinity,
-      title: copy.expired.toastTitle,
+      title: expiredToastTitle,
     })
-  }, [copy, expired, toast])
+  }, [expired, expiredToastTitle, toast])
 
   if (!copy) return null
 
