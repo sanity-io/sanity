@@ -1,12 +1,15 @@
 import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {StrictMode} from 'react'
-import {afterAll, afterEach, beforeAll, describe, expect, it} from 'vitest'
+import {afterAll, afterEach, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {ChangeFieldWrapper} from '../ChangeFieldWrapper'
 import {ChangeIndicator} from '../ChangeIndicator'
+import {scrollIntoView} from '../helpers/scrollIntoView'
 import {ChangeConnectorRoot} from './ChangeConnectorRoot'
+
+vi.mock('../helpers/scrollIntoView', () => ({scrollIntoView: vi.fn()}))
 
 const sleep = () => act(() => new Promise((resolve) => setTimeout(resolve, 30)))
 
@@ -70,10 +73,11 @@ afterAll(() => {
 
 afterEach(() => {
   trackedOffsetTop = DEFAULT_TRACKED_OFFSET_TOP
+  vi.mocked(scrollIntoView).mockClear()
 })
 
-function Harness(props: {isReviewChangesOpen: boolean}) {
-  const {isReviewChangesOpen} = props
+function Harness(props: {isReviewChangesOpen: boolean; trackedElementsKey?: string}) {
+  const {isReviewChangesOpen, trackedElementsKey = 'default'} = props
 
   return (
     <ChangeConnectorRoot
@@ -82,12 +86,22 @@ function Harness(props: {isReviewChangesOpen: boolean}) {
       onSetFocus={() => {}}
     >
       {/* The form side of the connector */}
-      <ChangeIndicator hasFocus isChanged path={['title']}>
+      <ChangeIndicator
+        key={`field-${trackedElementsKey}`}
+        data-testid="tracked-field"
+        hasFocus
+        isChanged
+        path={['title']}
+      >
         <div>field</div>
       </ChangeIndicator>
       {/* The review changes panel side of the connector */}
-      <ChangeFieldWrapper hasRevertHover={false} path={['title']}>
-        <div>change</div>
+      <ChangeFieldWrapper
+        key={`change-${trackedElementsKey}`}
+        hasRevertHover={false}
+        path={['title']}
+      >
+        <div data-testid="tracked-change-content">change</div>
       </ChangeFieldWrapper>
     </ChangeConnectorRoot>
   )
@@ -202,6 +216,45 @@ describe('ConnectorsOverlay', () => {
 
     await waitForOverlayToSettle()
     expect(overlay.querySelector('path')?.getAttribute('d')).toBe(initialPath)
+  })
+
+  it('uses remounted tracked elements when the connector geometry is unchanged', async () => {
+    const TestProvider = await createTestProvider()
+
+    const {rerender} = render(<Harness isReviewChangesOpen trackedElementsKey="initial" />, {
+      wrapper: TestProvider,
+    })
+
+    const overlay = screen.getByTestId('change-connectors-overlay')
+    await waitForOverlayToSettle()
+
+    const initialField = screen.getByTestId('tracked-field')
+    const initialChange = screen.getByTestId('tracked-change-content').parentElement
+    if (!initialChange) throw new Error('Expected a tracked change element')
+
+    rerender(<Harness isReviewChangesOpen trackedElementsKey="remounted" />)
+    await waitForOverlayToSettle()
+
+    const remountedField = screen.getByTestId('tracked-field')
+    const remountedChange = screen.getByTestId('tracked-change-content').parentElement
+    if (!remountedChange) throw new Error('Expected a remounted tracked change element')
+    expect(remountedField).not.toBe(initialField)
+    expect(remountedChange).not.toBe(initialChange)
+    expect(remountedField.offsetTop).toBe(initialField.offsetTop)
+    expect(remountedChange.offsetTop).toBe(initialChange.offsetTop)
+
+    const connectorGroup = overlay.querySelector('g')
+    if (!connectorGroup) throw new Error('Expected a connector group')
+    await userEvent.click(connectorGroup)
+
+    expect(scrollIntoView).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({element: remountedField}),
+    )
+    expect(scrollIntoView).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({element: remountedChange}),
+    )
   })
 
   it('still draws the connector after a StrictMode mount/unmount/mount', async () => {
