@@ -113,7 +113,7 @@ function UnclaimedProjectNudgeInner({
       ''
     ),
     description: unclaimed && copy && (
-      <Stack space={4} paddingY={2}>
+      <Stack gap={4} paddingY={2}>
         <Text size={1} weight="regular">
           {unclaimed.claimUrl || unclaimed.claimLinkSpent
             ? copy.toast.description
@@ -170,7 +170,7 @@ function UnclaimedProjectNudgeInner({
     return (
       <Card data-testid="unclaimed-project-banner" tone="positive" padding={3} borderBottom>
         <Box display={['block', 'block', 'none']}>
-          <Stack space={3}>
+          <Stack gap={3}>
             <Flex align="center" gap={3} justify="space-between">
               <Text size={1} weight="medium" style={{flex: 1, minWidth: 0}}>
                 {copy.claimed.text}
@@ -285,7 +285,6 @@ export function UnclaimedProjectCountdown({
       aria-hidden="true"
       data-testid="unclaimed-project-countdown"
       fontSize={1}
-      mode="outline"
       padding={2}
       radius={2}
       tone={critical ? 'critical' : 'caution'}

@@ -1,4 +1,5 @@
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
 import {act, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -17,8 +18,10 @@ const {mockUseUnclaimedProject, mockUseWorkspace} = vi.hoisted(() => ({
 vi.mock('../../workspace', () => ({useWorkspace: mockUseWorkspace}))
 vi.mock('../useUnclaimedProject', () => ({useUnclaimedProject: mockUseUnclaimedProject}))
 
+const theme = buildTheme()
+
 const wrapper = ({children}: {children: ReactNode}) => (
-  <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
+  <ThemeProvider theme={theme}>{children}</ThemeProvider>
 )
 
 describe('UnclaimedProjectNudge', () => {
