@@ -2,7 +2,6 @@ import {generateHelpUrl} from '@sanity/generate-help-url'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -10,6 +9,7 @@ import {useClient} from '../../hooks/useClient'
 import {useConditionalToast} from '../../hooks/useConditionalToast'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {isUsingLegacyHttp} from '../../network/isUsingLegacyHttp'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 
 const HTTP_HELP_URL = generateHelpUrl('http1-performance-issues')
 
@@ -46,7 +46,7 @@ export function useNetworkProtocolCheck(): undefined {
     () => (isWarningSnoozed ? of(undefined) : isUsingLegacyHttp(client)),
     [client, isWarningSnoozed],
   )
-  const isOnLegacyHttp = useObservable(isOnLegacyHttp$)
+  const isOnLegacyHttp = useDeferredObservableValue(isOnLegacyHttp$)
 
   const handleSnooze = useCallback(
     () => setWarningSnoozedAt(new Date().toISOString()),

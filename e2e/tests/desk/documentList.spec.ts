@@ -57,15 +57,22 @@ test(`navigating document creates only one listener connection`, async ({page, b
     document.querySelector('[data-testid="pane-content"] > *:first-of-type')?.scrollBy(0, 250)
   })
 
+  // NOTE: clicks are intentionally not `force: true`: a forced click dispatches
+  // at the resolved coordinates without hit-testing, so it can silently land on
+  // an overlay (and never navigate) while the panes are still settling. The
+  // regular click waits for the item to actually receive pointer events.
+  // Request waiters get explicit generous timeouts: their clock starts at
+  // creation (which must precede the triggering click), and the default 10s
+  // has proven too tight when the staging API is slow.
   const authorRequest = page.waitForRequest(
     (request) => request.url().includes('data/listen') && request.url().includes('author'),
+    {timeout: 30000},
   )
-  const bookRequest = page.waitForRequest(
-    (request) => request.url().includes('data/listen') && request.url().includes('book'),
-  )
-  const keyValueRequest = page.waitForResponse((response) => response.url().includes('keyvalue'))
+  const keyValueRequest = page.waitForResponse((response) => response.url().includes('keyvalue'), {
+    timeout: 30000,
+  })
 
-  await page.getByTestId('pane-item-Author').click({force: true})
+  await page.getByTestId('pane-item-Author').click()
   await expect(page.locator('#author-author-0')).toBeVisible()
   await expect(page.getByTestId('document-list-pane')).toBeVisible()
   await authorRequest
@@ -77,21 +84,25 @@ test(`navigating document creates only one listener connection`, async ({page, b
   await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
   await keyValueRequest
 
-  await page.getByTestId('pane-item-Book').click({force: true})
+  const bookRequest = page.waitForRequest(
+    (request) => request.url().includes('data/listen') && request.url().includes('book'),
+    {timeout: 30000},
+  )
+  await page.getByTestId('pane-item-Book').click()
   await expect(page.locator('#book-book-0')).toBeVisible()
   await expect(page.getByTestId('document-list-pane')).toBeVisible()
   expect(authorListenersCount).toBe(0)
   expect(bookListenersCount).toBe(1)
   await bookRequest
 
-  await page.getByTestId('pane-item-Author').click({force: true})
+  await page.getByTestId('pane-item-Author').click()
   await expect(page.locator('#author-author-0')).toBeVisible()
   await expect(page.getByTestId('document-list-pane')).toBeVisible()
   expect(bookListenersCount).toBe(0)
   expect(authorListenersCount).toBe(1)
   await authorRequest
 
-  await page.getByTestId('pane-item-Book').click({force: true})
+  await page.getByTestId('pane-item-Book').click()
   await expect(page.locator('#book-book-0')).toBeVisible()
   await expect(page.getByTestId('document-list-pane')).toBeVisible()
   expect(authorListenersCount).toBe(0)

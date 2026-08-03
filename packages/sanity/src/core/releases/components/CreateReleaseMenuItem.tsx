@@ -1,11 +1,11 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {type ComponentProps, type ComponentType, useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {from} from 'rxjs'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../studio/workspace'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {useCreateReleaseMetadata} from '../hooks/useCreateReleaseMetadata'
 import {useActiveReleases} from '../store/useActiveReleases'
 import {useReleaseOperations} from '../store/useReleaseOperations'
@@ -22,7 +22,7 @@ export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) =
   const {checkWithPermissionGuard} = useReleasePermissions()
   const createReleaseMetadata = useCreateReleaseMetadata()
 
-  const hasCreatePermission = useObservable(
+  const hasCreatePermission = useDeferredObservableValue(
     useMemo(
       () =>
         from(checkWithPermissionGuard(createRelease, createReleaseMetadata(getReleaseDefaults()))),

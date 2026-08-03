@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ComponentType, type ReactNode, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
@@ -96,7 +96,10 @@ export function AuthBoundary({
     [activeWorkspace],
   )
 
-  const authResult = useObservable(authStatus$, INITIAL_AUTH_RESULT)
+  // Kept synchronous: this gates authenticated children and is compared with
+  // the live `callbackSettled` state — a deferred snapshot could keep children
+  // mounted after logout or pair stale `loggedIn` with fresh settlement state.
+  const authResult = useSyncObservable(authStatus$, INITIAL_AUTH_RESULT)
   if (authResult.type === 'error') throw authResult.error
 
   const {loggedIn, loginProvider} = authResult.status

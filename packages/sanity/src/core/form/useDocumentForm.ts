@@ -20,7 +20,6 @@ import {
   useState,
 } from 'react'
 import deepEquals from 'react-fast-compare'
-import {useObservable} from 'react-rx'
 import {distinctUntilChanged} from 'rxjs/operators'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
@@ -64,6 +63,7 @@ import {
   isSystemBundle,
 } from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
+import {useDeferredObservableValue} from '../util/useDeferredObservableValue'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {type PatchEvent} from './patch/PatchEvent'
@@ -360,7 +360,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         ),
     [presenceStore, value._id],
   )
-  const presence = useObservable(presence$, [])
+  const presence = useDeferredObservableValue(presence$, [])
 
   const [openPath, onSetOpenPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()

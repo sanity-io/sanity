@@ -1,7 +1,8 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {type Observable, of, type OperatorFunction} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
+
+import {useDeferredObservableValue} from './useDeferredObservableValue'
 
 /** @internal */
 export type LoadableState<T> = LoadingState | LoadedState<T> | ErrorState
@@ -48,7 +49,7 @@ export function useLoadable<T>(
       : {isLoading: false, value: initialValue, error: null}
 
   const loadableObservable = useMemo(() => value$.pipe(asLoadable()), [value$])
-  return useObservable(loadableObservable, initial)
+  return useDeferredObservableValue(loadableObservable, initial)
 }
 
 /** @internal */

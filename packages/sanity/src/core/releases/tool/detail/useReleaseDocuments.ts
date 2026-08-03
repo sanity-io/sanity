@@ -1,6 +1,5 @@
 import {type CurrentUser, type Schema} from '@sanity/types'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {distinctUntilChanged, filter, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
 import {useSchema} from '../../../hooks/useSchema'
@@ -8,6 +7,7 @@ import {type LocaleSource} from '../../../i18n/types'
 import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../../store/datastores'
 import {useSource} from '../../../studio/source'
+import {useDeferredObservableValue} from '../../../util/useDeferredObservableValue'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
@@ -114,7 +114,7 @@ export function useReleaseDocuments(releaseId: string): {
     [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$, currentUser],
   )
 
-  return useObservable(releaseDocumentsObservable, {
+  return useDeferredObservableValue(releaseDocumentsObservable, {
     loading: true,
     results: [],
     error: null,

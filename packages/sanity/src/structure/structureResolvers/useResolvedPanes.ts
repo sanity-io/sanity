@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {map, ReplaySubject} from 'rxjs'
 import {type RouterState, useRouter} from 'sanity/router'
 
@@ -118,9 +118,14 @@ export function useResolvedPanes(): Panes {
     [rootPaneNode, routerPanesStream, structureContext],
   )
 
-  // Stream errors are re-thrown by `useObservable` during render, so they bubble to the
+  // Stream errors are re-thrown by `useSyncObservable` during render, so they bubble to the
   // nearest error boundary without any explicit handling here.
-  const data = useObservable(data$, INITIAL_DATA)
+  // NOTE: the pane data is intentionally not deferred (`useDeferredValue`): the
+  // structural pane tree only changes on navigation and must always commit.
+  // Deferring it lets continuous urgent updates (presence, sync, validation)
+  // starve the catch-up render indefinitely, leaving a stale pane tree on
+  // screen (seen as a livelock on slower browsers).
+  const data = useSyncObservable(data$, INITIAL_DATA)
 
   useEffect(
     function maybeOpenDefaultPanes() {

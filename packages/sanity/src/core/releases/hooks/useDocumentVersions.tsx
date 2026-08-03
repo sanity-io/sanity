@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {getVersionFromId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {
   catchError,
   combineLatest,
@@ -75,7 +75,11 @@ const TEARDOWN_GRACE_PERIOD = 1_000
  */
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const observable = useDocumentVersionsObservable(props)
-  return useObservable(observable, INITIAL_VALUE)
+  // Kept synchronous: `useTargetDocumentState` / `useDocumentForm` derive the
+  // pair-checkout scope and the form's ready gate from this state, so a
+  // deferred snapshot could bind the form to the wrong version scope after
+  // navigation or a version change.
+  return useSyncObservable(observable, INITIAL_VALUE)
 }
 
 /**

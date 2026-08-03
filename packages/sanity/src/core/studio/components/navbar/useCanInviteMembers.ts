@@ -1,7 +1,7 @@
-import {useObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 
 import {useProjectStore} from '../../../store/datastores'
+import {useDeferredObservableValue} from '../../../util/useDeferredObservableValue'
 
 const PERMISSION_NAME = 'sanity.project.members'
 const GRANT_NAME = 'invite'
@@ -35,5 +35,5 @@ export function useCanInviteProjectMembers(opts?: UseCanInviteProjectMembersOpti
   // If the hook is disabled, don't subscribe to the observable
   const canInvite$ = enabled ? result$ : of(false)
 
-  return useObservable(canInvite$, false)
+  return useDeferredObservableValue(canInvite$, false)
 }

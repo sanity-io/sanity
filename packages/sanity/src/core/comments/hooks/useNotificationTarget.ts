@@ -1,11 +1,11 @@
 import {useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useSchema} from '../../hooks/useSchema'
 import {getPreviewStateObservable} from '../../preview/utils/getPreviewStateObservable'
 import {useDocumentPreviewStore} from '../../store/datastores'
 import {useWorkspace} from '../../studio/workspace'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {type CommentContext} from '../types'
 
 interface NotificationTargetHookOptions {
@@ -43,7 +43,11 @@ export function useNotificationTarget(
     const perspectiveStack = documentVersionId ? [documentVersionId, 'drafts'] : ['drafts']
     return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspectiveStack)
   }, [documentId, documentPreviewStore, schemaType, documentVersionId])
-  const previewState = useObservable(previewStateObservable)
+  // Deferred (per review): `documentTitle` is only used in the notification
+  // email body, where a briefly stale title is harmless (it can go stale
+  // after send anyway). The identity-coherent deferral still falls back to
+  // the live value when the previewed document id changes.
+  const previewState = useDeferredObservableValue(previewStateObservable)
 
   const {snapshot, original} = previewState || {}
   const documentTitle = (snapshot?.title || original?.title || 'Sanity document') as string

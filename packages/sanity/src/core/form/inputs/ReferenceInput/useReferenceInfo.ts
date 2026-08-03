@@ -1,6 +1,6 @@
 import {observableCallback} from 'observable-callback'
 import {useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, concatMap, map, startWith} from 'rxjs/operators'
 
@@ -71,5 +71,7 @@ export function useReferenceInfo(
       ),
     [getReferenceInfo, id, onRetry, onRetry$],
   )
-  return useObservable(referenceInfoObservable, INITIAL_LOADING_STATE)
+  // Do not defer: EMPTY_STATE (isLoading:false, result:undefined) is unsafe to show after
+  // id becomes set — PreviewReferenceValue assumes non-loading implies result is defined.
+  return useSyncObservable(referenceInfoObservable, INITIAL_LOADING_STATE)
 }

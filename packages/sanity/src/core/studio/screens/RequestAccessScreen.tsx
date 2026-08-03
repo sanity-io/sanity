@@ -4,13 +4,14 @@ import {addWeeks} from 'date-fns/addWeeks'
 import {isAfter} from 'date-fns/isAfter'
 import {isBefore} from 'date-fns/isBefore'
 import {useCallback, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {catchError, map, of, startWith} from 'rxjs'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {getProviderTitle} from '../../store/authStore/providerTitle'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 import {NotAuthenticatedScreen} from './NotAuthenticatedScreen'
 
@@ -123,8 +124,10 @@ export function RequestAccessScreen() {
   }, [activeWorkspace])
 
   // The client, projectId and user come from the workspace because this screen
-  // renders outside the SourceContext.
-  const auth = useObservable(activeWorkspace.auth.state, null)
+  // renders outside the SourceContext. Kept synchronous: `client`/`projectId`
+  // derived from this are read into the access-request POST, so a deferred
+  // snapshot could submit against a stale workspace identity.
+  const auth = useSyncObservable(activeWorkspace.auth.state, null)
   const currentUser = auth?.currentUser
   const projectId = auth?.client.config().projectId
   const client = useMemo(() => auth?.client.withConfig({apiVersion: '2024-07-01'}), [auth?.client])
@@ -161,7 +164,7 @@ export function RequestAccessScreen() {
       )
   }, [client, projectId])
 
-  const {loading, error, hasExpiredPendingRequest, ...fetched} = useObservable(
+  const {loading, error, hasExpiredPendingRequest, ...fetched} = useDeferredObservableValue(
     accessRequests$,
     INITIAL_ACCESS_REQUEST_STATUS,
   )

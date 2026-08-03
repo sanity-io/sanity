@@ -1,6 +1,5 @@
 import {_raf2, type CardTone, Flex} from '@sanity/ui'
 import {memo, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
 import {isObservable, type Observable, of} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {Delay, LoadingBlock, useTranslation} from 'sanity'
@@ -9,6 +8,7 @@ import {styled} from 'styled-components'
 import {Pane} from '../../components/pane/Pane'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {structureLocaleNamespace} from '../../i18n'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {getWaitMessages, type WaitMessage} from './getWaitMessages'
 
 interface LoadingPaneProps {
@@ -79,7 +79,7 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
     )
   }, [resolvedMessage, t, defaultMessage])
 
-  const currentMessage = useObservable(message$, defaultMessage)
+  const currentMessage = useDeferredObservableValue(message$, defaultMessage)
 
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
   const [mounted, setMounted] = useState(false)

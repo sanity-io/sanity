@@ -6,7 +6,6 @@ import {
 } from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {combineLatest, from, type Observable, of} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {catchError, delay, filter, finalize, map, shareReplay, switchMap} from 'rxjs/operators'
@@ -17,6 +16,7 @@ import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../../store/datastores'
 import {useSource} from '../../../studio/source'
 import {schedulerYield} from '../../../util/schedulerYield'
+import {useDeferredObservableValue} from '../../../util/useDeferredObservableValue'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
 
@@ -296,7 +296,7 @@ export function useBundleDocuments(options: {
     ],
   )
 
-  return useObservable(
+  return useDeferredObservableValue(
     bundleDocumentsObservable,
     enabled ? BUNDLE_DOCUMENTS_LOADING : BUNDLE_DOCUMENTS_EMPTY,
   )

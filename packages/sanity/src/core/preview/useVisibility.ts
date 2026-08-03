@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {concat, of} from 'rxjs'
 import {delay, distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators'
 
+import {useDeferredObservableValue} from '../util/useDeferredObservableValue'
 import {intersectionObservableFor} from './streams/intersectionObservableFor'
 import {visibilityChange$} from './streams/visibilityChange'
 
@@ -27,7 +27,7 @@ export function useVisibility(props: Props): boolean {
 
     // Seed with the element's current visibility so the first paint is
     // correct — every code path here emits synchronously on subscribe, so
-    // useObservable's fallback initial value is never read.
+    // useSyncObservable's fallback initial value is never read.
     const seed = 'checkVisibility' in element ? element.checkVisibility() : false
 
     const isDocumentVisible$ = concat(
@@ -49,7 +49,7 @@ export function useVisibility(props: Props): boolean {
     )
   }, [element, hideDelay, disabled])
 
-  const visible = useObservable(visible$, false)
+  const visible = useDeferredObservableValue(visible$, false)
 
   return disabled ? false : visible
 }

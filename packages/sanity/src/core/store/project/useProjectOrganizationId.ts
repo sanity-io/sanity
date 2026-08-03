@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {map, startWith} from 'rxjs'
 
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 import {useProjectStore} from '../datastores'
 
 const INITIAL_STATE = {value: null, loading: true}
@@ -24,5 +24,5 @@ export function useProjectOrganizationId(): {value: string | null; loading: bool
     [projectStore],
   )
 
-  return useObservable(obs$, INITIAL_STATE)
+  return useDeferredObservableValue(obs$, INITIAL_STATE)
 }

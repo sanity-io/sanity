@@ -6,7 +6,6 @@ import {
 } from '@sanity/types'
 import {Flex} from '@sanity/ui'
 import {type ComponentType, useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {
   type DocumentPresence,
   DocumentPreviewPresence,
@@ -22,6 +21,7 @@ import {
 } from 'sanity'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -31,6 +31,12 @@ export interface PaneItemPreviewProps {
   schemaType: SchemaType
   sortOrder?: Pick<SortOrdering, 'by'>
   value: SanityDocument | {_id: string; _type: string}
+}
+
+const INITIAL_PREVIEW_STATE = {
+  snapshot: null,
+  isLoading: true,
+  original: null,
 }
 
 /**
@@ -67,15 +73,14 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     )
   }, [props.documentPreviewStore, schemaType, value._id, perspectiveStack, viewOptions])
 
+  // Identity-coherent deferral: when a (recycled) list item switches to a new
+  // document id the live (loading) snapshot wins, so the previous document's
+  // title/media never renders next to the new document's version badges.
   const {
     snapshot,
     original,
     isLoading: previewIsLoading,
-  } = useObservable(previewStateObservable, {
-    snapshot: null,
-    isLoading: true,
-    original: null,
-  })
+  } = useDeferredObservableValue(previewStateObservable, INITIAL_PREVIEW_STATE)
 
   const isLoading = previewIsLoading
 

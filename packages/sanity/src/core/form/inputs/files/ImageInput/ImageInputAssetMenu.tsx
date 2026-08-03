@@ -4,7 +4,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
 import get from 'lodash-es/get.js'
 import {memo, type ReactNode, type RefObject, useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -190,7 +190,10 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
 
   const documentId = reference?._ref
   const observable = useMemo(() => observeAsset(documentId), [documentId, observeAsset])
-  const asset = useObservable(observable)
+  // Kept synchronous: a deferred snapshot could pair the previous asset with a
+  // newly selected reference, pointing menu actions (e.g. open in source) at
+  // the wrong asset.
+  const asset = useSyncObservable(observable)
   const assetSourcesWithUpload = getAssetSourcesWithUpload(assetSources)
 
   // Find the first asset source that can handle opening this asset in source

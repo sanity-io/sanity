@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {type Observable, of, timer} from 'rxjs'
 import {distinctUntilChanged, map, mapTo, startWith, switchMap} from 'rxjs/operators'
 
@@ -49,5 +49,8 @@ export function useConnectionState(
     () => connectionState(documentStore, publishedDocId, docTypeName, version),
     [docTypeName, documentStore, publishedDocId, version],
   )
-  return useObservable(observable, INITIAL)
+  // Kept synchronous: `useDocumentForm` gates the form's `ready` / `readOnly`
+  // state on this (a `reconnecting` connection makes the editor read-only), so
+  // a deferred value could leave the editor writable while reconnecting.
+  return useSyncObservable(observable, INITIAL)
 }

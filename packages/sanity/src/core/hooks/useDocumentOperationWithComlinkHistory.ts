@@ -1,5 +1,5 @@
 import {useCallback, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 
 import {useRenderingContextStore} from '../store/datastores'
 import {type OperationsAPI} from '../store/document/document-pair/operations/types'
@@ -38,7 +38,10 @@ export function useDocumentOperationWithComlinkHistory({
   })
 
   const renderingContextStore = useRenderingContextStore()
-  const capabilities = useObservable(renderingContextStore.capabilities)
+  // Kept synchronous: capabilities emit once at boot and gate whether
+  // operations are decorated with comlink history capture; deferring only
+  // delays the decoration.
+  const capabilities = useSyncObservable(renderingContextStore.capabilities)
 
   // Used to prevent redundant `edited` events being recorded.
   const [hasRecordedEdit, setHasRecordedEdit] = useState<boolean>(false)

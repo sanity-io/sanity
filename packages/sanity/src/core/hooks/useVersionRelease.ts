@@ -1,4 +1,4 @@
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 import {type TargetPerspective} from '../perspective/types'
@@ -21,7 +21,7 @@ type Result = Pick<ReleasesReducerState, 'error' | 'state'> & {
 export function useVersionRelease(documentId: string | undefined): Result {
   const {state$: readReleasesState} = useReleasesStore()
 
-  const releasesState = useObservable<Observable<ReleasesReducerState>>(readReleasesState, {
+  const releasesState = useSyncObservable<Observable<ReleasesReducerState>>(readReleasesState, {
     releases: new Map(),
     state: 'initialising',
   })

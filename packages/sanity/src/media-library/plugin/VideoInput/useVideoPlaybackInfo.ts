@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type Reference, type SanityDocument} from '@sanity/types'
 import {useCallback, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable as useSyncObservable} from 'react-rx'
 import {defer, from, type Observable, of, Subject, timer} from 'rxjs'
 import {
   catchError,
@@ -205,5 +205,8 @@ export function useVideoPlaybackInfo(
     return [loadingState, obs$]
   }, [params, client, retrySubject, retry])
 
-  return useObservable(playbackInfoObservable, initialState)
+  // Kept synchronous: the playback info is keyed to the live asset ref, so a
+  // deferred snapshot could keep serving the previous asset's playbackId and
+  // tokens after the selection changes.
+  return useSyncObservable(playbackInfoObservable, initialState)
 }

@@ -39,4 +39,25 @@ describe('getSelectedVariant', () => {
       }),
     ).toBeUndefined()
   })
+
+  // Documents why `useAllVariants` must stay synchronous rather than be
+  // deferred: `getSelectedVariant` pairs the live `selectedVariantName` with
+  // the `variantsById` map. A deferred read would let the map lag behind the
+  // selected name — resolving the variant identity to `undefined` even for a
+  // valid selection until the deferred value catches up.
+  it('resolves only when byId is coherent with the selected name (deferral would tear this)', () => {
+    // Lagging map (what a deferred useAllVariants yields right after selecting
+    // the variant): identity is undefined.
+    expect(
+      getSelectedVariant({selectedVariantName: 'alpha-audience', variantsById: new Map()}),
+    ).toBeUndefined()
+
+    // Coherent (synchronous) map: identity resolves.
+    expect(
+      getSelectedVariant({
+        selectedVariantName: 'alpha-audience',
+        variantsById: new Map([[variantAlphaAudience._id, variantAlphaAudience]]),
+      }),
+    ).toBe(variantAlphaAudience)
+  })
 })

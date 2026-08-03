@@ -1,9 +1,10 @@
 import {type SanityDocument} from '@sanity/types'
 import {useEffect, useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {BehaviorSubject, from, of} from 'rxjs'
 import {catchError, debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators'
 import {isRecord, useSource} from 'sanity'
+
+import {useDeferredObservableValue} from '../../util/useDeferredObservableValue'
 
 const isSanityDocument = (value: unknown): value is SanityDocument =>
   isRecord(value) && typeof value._id === 'string' && typeof value._type === 'string'
@@ -37,5 +38,5 @@ export function usePreviewUrl(value: Partial<SanityDocument> | undefined): strin
     )
   }, [resolveProductionUrl, subject])
 
-  return useObservable(resolvedUrlObservable)
+  return useDeferredObservableValue(resolvedUrlObservable)
 }
