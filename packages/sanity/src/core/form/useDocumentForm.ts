@@ -471,8 +471,12 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
     // When editing a resolved variant-scoped version, the document id intentionally doesn't match
     // the selected bundle/perspective (variant docs live under `versions.<scopeId>.<publishedId>`),
-    // so the perspective/bundle-mismatch guards below must be skipped.
-    if (!isVariantTarget) {
+    // so the perspective/bundle-mismatch guards below must be skipped. The creatable missing
+    // draft variant shares that property before its target resolves: the first keystroke's
+    // optimistic create puts a version at the opaque draft scope while the state is still
+    // `variant-missing`, and without the exemption the `onlyHasVersions` guard would flip the
+    // form read-only mid-typing on groups with no base draft/published.
+    if (!isVariantTarget && !canCreateVariantDraft) {
       // in cases where the document has no draft or published, but has a version,
       // and that version doesn't match current pinned version
       // we disable editing
