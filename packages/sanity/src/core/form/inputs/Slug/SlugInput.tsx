@@ -106,6 +106,7 @@ export function SlugInput(props: SlugInputProps) {
   const isUpdating = generateState?.status === 'pending'
 
   const handleChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (event: FormEvent<HTMLInputElement>) => updateSlug(event.currentTarget.value),
     [updateSlug],
   )

@@ -107,6 +107,7 @@ export function createLoginComponent({
 }: CreateLoginComponentOptions) {
   function LoginComponent({projectId, ...props}: LoginComponentProps) {
     const {t} = useTranslation()
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const redirectPath = props.redirectPath || props.basePath || '/'
 
     const [providerData, setProviderData] = useState<{

@@ -11,6 +11,7 @@ import {useCustomReleaseActions} from '../useCustomReleaseActions'
 
 vi.mock('../../../studio/source', () => ({useSource: vi.fn()}))
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const mockedUseSource = vi.mocked(useSource)
 
 function createMockSource(releases?: Partial<NonNullable<Source['releases']>>): Source {

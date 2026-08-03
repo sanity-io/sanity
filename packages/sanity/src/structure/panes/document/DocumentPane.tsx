@@ -35,6 +35,7 @@ type DocumentPaneOptions = DocumentPaneNode['options']
  * @internal
  */
 export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {name: parentSourceName} = useSource()
 
   return (
@@ -48,6 +49,7 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 
 function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {resolveNewDocumentOptions} = useSource().document
   const {selectedPerspectiveName, selectedVariantName} = usePerspective()
   const paneRouter = usePaneRouter()
@@ -165,6 +167,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
     <DocumentPaneProviderWrapper
       // this needs to be here to avoid formState from being re-used across (incompatible) document types
       // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       key={`${documentType}-${options.id}-${selectedPerspectiveName || ''}${variantTargetKey}`}
       {...providerProps}
     >

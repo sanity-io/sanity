@@ -14,24 +14,27 @@ export interface DialogTimeZoneProps {
   timeZoneScope: TimeZoneScope
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const TimeZoneCitySpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
-    color: ${theme.sanity.color.base.fg};
+    color: ${theme.sanity.color.base.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     font-weight: 500;
     margin-left: 1em;
   `
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const TimeZoneOffsetSpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
-    color: ${theme.sanity.color.muted.default.enabled.fg};
+    color: ${theme.sanity.color.muted.default.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     font-weight: 500;
   `
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
-    color: ${theme.sanity.color.input.default.readOnly.fg};
+    color: ${theme.sanity.color.input.default.readOnly.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     float: right;
   `
 })

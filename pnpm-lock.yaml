@@ -1656,8 +1656,8 @@ importers:
         specifier: ^9.0.1
         version: 9.0.1(react@19.2.8)
       '@sanity-labs/ui-poc':
-        specifier: 0.0.1-alpha.22
-        version: 0.0.1-alpha.22(react-dom@19.2.8)(react@19.2.8)
+        specifier: 0.0.1-alpha.25
+        version: 0.0.1-alpha.25(react-dom@19.2.8)(react@19.2.8)
       '@sanity/asset-utils':
         specifier: ^2.3.0
         version: 2.3.0
@@ -6093,9 +6093,10 @@ packages:
     resolution: {integrity: sha512-+i7GXix4Akt34VDWgSM1Lpq8Hxf8SH8022uNsDRXSNuAqQMjKVGWLItAyc2TyfWVwWZLhsCF3lj5tdW7cecDxQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@sanity-labs/ui-poc@0.0.1-alpha.22':
-    resolution: {integrity: sha512-tCqeNli37iywzAJMBItf5psypwi3GHleAwWWr3d2jfByzymlpDwinElYS2sCofsXKEFuCWOIu43YuQgob/EJPA==}
+  '@sanity-labs/ui-poc@0.0.1-alpha.25':
+    resolution: {integrity: sha512-TaH3RSCRmceGCFMIrHBk0erSvmbYZxrlp9gnL5gXn8Yk7StK/M6qI7iB+gBdxmKcfGiwSbw82AbnXYf7KmpzCw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
+    hasBin: true
     peerDependencies:
       react: ^19.2
       react-dom: ^19.2
@@ -8039,6 +8040,9 @@ packages:
   array-ify@1.0.0:
     resolution: {integrity: sha512-c5AMf34bKdvPhQ7tBGhqkgKNUzMr4WUs+WDtC2ZUGOUncbxKMTvqxYctiseW3+L4bA8ec+GcZ6/A/FW4m8ukng==}
 
+  array-timsort@1.0.3:
+    resolution: {integrity: sha512-/+3GRL7dDAGEfM6TseQk/U+mi18TU2Ms9I3UlLdUMhz2hbvGNTKdj9xniwXfUqgYhHxRx0+8UnKkvlNwVU+cWQ==}
+
   array-treeify@0.1.5:
     resolution: {integrity: sha512-Ag85dlQyM0wahhm62ZvsLDLU0TcGNXjonRWpEUvlmmaFBuJNuzoc19Gi51uMs9HXoT2zwSewk6JzxUUw8b412g==}
 
@@ -8530,6 +8534,10 @@ packages:
 
   commander@5.1.0:
     resolution: {integrity: sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==}
+    engines: {node: '>= 6'}
+
+  comment-json@5.0.0:
+    resolution: {integrity: sha512-uiqLcOiVDJtBP8WGkZHEP+FZIhTzP1dxvn59EfoYUi9gqupjrBWVQkO2atDrbnKPwLeotFYDsuNb26uBMqB+hw==}
     engines: {node: '>= 6'}
 
   commondir@1.0.1:
@@ -17756,11 +17764,12 @@ snapshots:
 
   '@sanity-labs/design-tokens@0.0.2-alpha.4': {}
 
-  '@sanity-labs/ui-poc@0.0.1-alpha.22(react-dom@19.2.8)(react@19.2.8)':
+  '@sanity-labs/ui-poc@0.0.1-alpha.25(react-dom@19.2.8)(react@19.2.8)':
     dependencies:
       '@sanity-labs/design-tokens': 0.0.2-alpha.4
       '@sanity/icons': 3.8.0(react@19.2.8)
       clsx: 2.1.1
+      comment-json: 5.0.0
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       react-refractor: 4.0.0(react@19.2.8)
@@ -20271,6 +20280,8 @@ snapshots:
 
   array-ify@1.0.0: {}
 
+  array-timsort@1.0.3: {}
+
   array-treeify@0.1.5: {}
 
   array-union@2.1.0: {}
@@ -20752,6 +20763,11 @@ snapshots:
   commander@14.0.3: {}
 
   commander@5.1.0: {}
+
+  comment-json@5.0.0:
+    dependencies:
+      array-timsort: 1.0.3
+      esprima: 4.0.1
 
   commondir@1.0.1: {}
 

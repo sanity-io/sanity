@@ -12,7 +12,7 @@ import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {stegaClean} from '@sanity/client/stega'
 import {type Path} from '@sanity/types'
 import {Card, useRootTheme} from '@sanity/ui'
-import {type MutableRefObject, useCallback, useEffect, useState} from 'react'
+import {type RefObject, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {set, unset} from '../../../patch/patch'
@@ -90,11 +90,13 @@ export function StringInputPortableText(props: StringInputProps) {
 
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (event.type === 'focused') {
         onFocus(event.event)
         return
       }
 
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (event.type === 'blurred') {
         onBlur(event.event)
         return
@@ -106,6 +108,7 @@ export function StringInputPortableText(props: StringInputProps) {
       // On patch, set the optimistic value used to create an optimistic diff that can be rendered
       // immediately to reflect the user's input that has not yet been committed.
       if (
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         event.type === 'patch' &&
         event.patch.type === 'diffMatchPatch' &&
         event.patch.origin === 'local'
@@ -118,6 +121,7 @@ export function StringInputPortableText(props: StringInputProps) {
       // can be used to perform actions that are lower priority than rendering the user's input.
       //
       // On mutation, execute the relevant patches to commit the user's input.
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (event.type === 'mutation') {
         const value = unpackageValue(event.value)
         const valueRemainsUndefined = typeof definitiveValue === 'undefined' && value === ''
@@ -230,7 +234,7 @@ function UpdateValuePlugin(props: {value: string | undefined}) {
  * (e.g. during programmatic focus). Without this bridge, the ref remains unset and the
  * PTE-backed string input never receives focus.
  */
-function FocusBridgePlugin(props: {focusRef: MutableRefObject<{focus: () => void} | undefined>}) {
+function FocusBridgePlugin(props: {focusRef: RefObject<{focus: () => void} | undefined>}) {
   const editor = useEditor()
   const {focusRef} = props
 

@@ -30,16 +30,16 @@ export const Table = styled.table`
   inline-size: 100%;
   text-align: start;
   padding-block: 0;
-  padding-inline: ${({theme}) => rem(theme.sanity.space[2])};
+  padding-inline: ${({theme}) => rem(theme.sanity.space[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   border-collapse: collapse;
 
   th {
-    padding: ${({theme}) => rem(theme.sanity.space[1])};
+    padding: ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   }
 
   td {
     padding-block: 0;
-    padding-inline: ${({theme}) => rem(theme.sanity.space[1])};
+    padding-inline: ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   }
 
   tr > *:last-child {

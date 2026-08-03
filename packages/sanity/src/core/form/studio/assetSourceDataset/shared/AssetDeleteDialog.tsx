@@ -25,6 +25,7 @@ export function AssetDeleteDialog({
   onClose,
   onDelete,
 }: UsageDialogProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {isLoading, referringDocuments} = useLegacyReferringDocuments(asset._id)
 
   const publishedDocuments = useMemo(() => {

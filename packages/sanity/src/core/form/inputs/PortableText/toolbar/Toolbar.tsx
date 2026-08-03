@@ -166,8 +166,10 @@ const InnerToolbar = memo(function InnerToolbar({
 
 export function Toolbar(props: ToolbarProps) {
   const {collapsible, hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
   const resolveInitialValueForType = useResolveInitialValueForType()
   const disabled = readOnly || !selection
@@ -217,6 +219,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertBlock = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const path = PortableTextEditor.insertBlock(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)
@@ -228,6 +231,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertInline = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const path = PortableTextEditor.insertChild(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)

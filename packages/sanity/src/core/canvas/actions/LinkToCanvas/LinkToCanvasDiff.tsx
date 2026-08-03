@@ -29,6 +29,7 @@ const VersionChip = ({id, showSparkles}: {id: string; showSparkles?: boolean}) =
     <ChipCard tone={badgeTone} padding={2} paddingRight={3} radius={'full'}>
       <Flex gap={2} align="center">
         <Text size={1}>
+          {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
           <ReleaseAvatarIcon tone={documentVariantType === 'published' ? 'positive' : 'caution'} />
         </Text>
         <Text size={1} weight="medium">

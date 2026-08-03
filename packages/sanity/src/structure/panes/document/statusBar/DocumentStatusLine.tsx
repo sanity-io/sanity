@@ -190,6 +190,7 @@ export function DocumentStatusLine() {
   const {value, targetDocumentState} = useDocumentPane()
   const {documentId, documentType} = useDocumentPaneInfo()
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const eventsEnabled = source.beta?.eventsAPI?.documents
 

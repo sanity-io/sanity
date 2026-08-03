@@ -63,6 +63,7 @@ const INITIAL_DOCUMENT_JSON_STATE: DocumentJsonState = {
   loading: true,
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function buildDocumentQueryUrl(client: ReturnType<typeof useClient>, documentId: string): string {
   const searchParams = new URLSearchParams()
   searchParams.set('query', DOCUMENT_QUERY)

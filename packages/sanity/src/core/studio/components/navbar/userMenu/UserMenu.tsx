@@ -32,8 +32,8 @@ const StyledMenu = styled(Menu)`
 
 const AvatarBox = styled(Box)`
   position: relative;
-  min-width: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
-  min-height: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
+  min-width: ${({theme}) => theme.sanity.avatar.sizes[2].size /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
+  min-height: ${({theme}) => theme.sanity.avatar.sizes[2].size /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
 `
 
 export function UserMenu() {

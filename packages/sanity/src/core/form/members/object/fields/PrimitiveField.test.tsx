@@ -321,7 +321,7 @@ describe('PrimitiveField', () => {
       await userEvent.paste(input!, (Number.MAX_SAFE_INTEGER + 1).toString())
 
       // Then
-      expect(formCallbacks.onChange).toBeCalledTimes(0)
+      expect(formCallbacks.onChange).toHaveBeenCalledTimes(0)
     })
   })
 })

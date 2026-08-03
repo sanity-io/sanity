@@ -845,7 +845,6 @@ export function TrendsTool() {
                               <Badge
                                 tone="caution"
                                 fontSize={0}
-
                                 aria-label={`${count} metric${count === 1 ? '' : 's'} to review`}
                               >
                                 {count}

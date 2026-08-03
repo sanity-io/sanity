@@ -155,6 +155,7 @@ export default function Tool() {
             <ScheduledDraftsBanner />
             <TimeZoneButtonElementQuery
               style={{
+                // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                 background: theme.color.card.enabled.bg,
                 position: 'sticky',
                 top: 0,

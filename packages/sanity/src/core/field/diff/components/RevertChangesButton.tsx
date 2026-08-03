@@ -16,7 +16,7 @@ const Root = styled(Button)`
 
   &:not([data-disabled='true']):hover,
   &:not([data-disabled='true']):focus {
-    --card-fg-color: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
+    --card-fg-color: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     --card-bg-color: transparent;
     --card-border-color: transparent;
 

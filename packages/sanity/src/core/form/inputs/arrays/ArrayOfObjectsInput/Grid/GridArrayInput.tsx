@@ -66,6 +66,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
             {members?.length === 0 && (
               <Card padding={3} border radius={2} tone={errorTone}>
                 <Text align="center" muted size={1}>
+                  {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
                   {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
                 </Text>
               </Card>

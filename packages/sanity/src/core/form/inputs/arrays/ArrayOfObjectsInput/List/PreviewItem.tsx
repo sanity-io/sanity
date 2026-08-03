@@ -78,6 +78,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const maxReached = arrayValidation?.maxReached
   const maxReachedReason = arrayValidation?.maxReachedReason
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   // The edit portal should open if the item is open and:
@@ -307,6 +308,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
 
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <EnhancedObjectDialogProvider>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         <Box paddingX={1}>{item}</Box>

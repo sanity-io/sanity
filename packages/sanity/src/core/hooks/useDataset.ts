@@ -14,5 +14,6 @@ import {useSource} from '../studio/source'
  * ```
  */
 export function useDataset(): string {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return useSource().dataset
 }

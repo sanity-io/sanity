@@ -19,6 +19,7 @@ export const useDocumentPaneInitialValue = ({
 }) => {
   const templates = useTemplates()
   const paneRouter = usePaneRouter()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const panePayload = useUnique(paneRouter.payload)
 
   const {templateName, templateParams} = useMemo(
@@ -41,6 +42,7 @@ export const useDocumentPaneInitialValue = ({
     version: params.version,
   })
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const initialValue = useUnique(initialValueRaw)
   return initialValue
 }

@@ -34,6 +34,7 @@ const buildPublishedArchivedReleaseDocumentsObservable = ({
   getClient,
   release,
 }: {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   getClient: ReturnType<typeof useSource>['getClient']
   release: ReleaseDocument
 }): BundleDocumentsObservableResult => {
@@ -104,6 +105,7 @@ export const getPublishedArchivedReleaseDocumentsObservable = ({
   getClient,
   release,
 }: {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   getClient: ReturnType<typeof useSource>['getClient']
   release: ReleaseDocument
 }): BundleDocumentsObservableResult => {

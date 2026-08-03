@@ -42,6 +42,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const {releasePromise} = useGuardWithReleaseLimitUpsell()
 
   const handleOnSubmit = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
 

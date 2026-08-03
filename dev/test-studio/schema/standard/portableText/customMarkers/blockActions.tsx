@@ -5,6 +5,7 @@ import {Popover} from '@sanity/ui/popover'
 import {type ChangeEvent, useCallback, useState} from 'react'
 import {type RenderBlockActionsCallback} from 'sanity'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const renderBlockActions: RenderBlockActionsCallback = (props) => {
   const {block, set} = props
 

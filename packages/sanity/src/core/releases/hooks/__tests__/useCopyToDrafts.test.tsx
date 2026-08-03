@@ -93,6 +93,7 @@ describe('useCopyToDrafts', () => {
     action: mockAction,
   } as unknown as SanityClient
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const mockUseClient = useClient as unknown as Mock<typeof useClient>
   const mockUseDocumentVersions = useDocumentVersions as Mock<typeof useDocumentVersions>
 

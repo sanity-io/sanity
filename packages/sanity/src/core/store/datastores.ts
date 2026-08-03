@@ -62,6 +62,7 @@ const slowCommitCooldown = {lastToastAt: 0}
  * @hidden
  * @beta */
 export function useUserStore(): UserStore {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, currentUser} = useSource()
   const resourceCache = useResourceCache()
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -87,6 +88,7 @@ export function useUserStore(): UserStore {
  * @hidden
  * @beta */
 export function useGrantsStore(): GrantsStore {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient} = useSource()
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const currentUser = useCurrentUser()
@@ -162,6 +164,7 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
  * @hidden
  * @beta */
 export function useDocumentStore(): DocumentStore {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
   const templates = useTemplates()
@@ -304,6 +307,7 @@ export function useDocumentStore(): DocumentStore {
 
 /** @internal */
 export function useConnectionStatusStore(): ConnectionStatusStore {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {bifur} = useSource().__internal
   const resourceCache = useResourceCache()
 
@@ -330,6 +334,7 @@ export function useConnectionStatusStore(): ConnectionStatusStore {
 export function usePresenceStore(): PresenceStore {
   const {
     __internal: {bifur},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
   const resourceCache = useResourceCache()
   const userStore = useUserStore()

@@ -33,23 +33,23 @@ const TitleContainer = styled(Stack)`
       container-type: inline-size;
 
       [data-heading] {
-        font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize}px;
-        line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight}px;
+        font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
+        line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
         overflow-wrap: break-word;
         text-wrap: pretty;
       }
 
       @container (max-width: 560px) {
         [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[3].lineHeight}px;
+          font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
+          line-height: ${theme.sanity.fonts.heading.sizes[3].lineHeight /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
         }
       }
 
       @container (max-width: 420px) {
         [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[2].fontSize}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[2].lineHeight}px;
+          font-size: ${theme.sanity.fonts.heading.sizes[2].fontSize /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
+          line-height: ${theme.sanity.fonts.heading.sizes[2].lineHeight /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
         }
       }
     `

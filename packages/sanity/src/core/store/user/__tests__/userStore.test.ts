@@ -83,6 +83,7 @@ describe('userStore', () => {
         id: 'pl0l3sp3n',
         name: 'Espen',
         email: 'e5p3n@sanity.io',
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         role: 'admin',
         roles: [{name: 'admin', title: 'Administrator'}],
       }

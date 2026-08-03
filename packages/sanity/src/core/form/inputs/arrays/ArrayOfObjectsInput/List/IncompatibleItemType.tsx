@@ -11,7 +11,7 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../../i18n/Translate'
 
 const PopoverCard = styled(Card)`
-  max-width: ${({theme}: {theme: Theme}) => theme.sanity.container[1]}px;
+  max-width: ${({theme}: {theme: Theme}) => theme.sanity.container[1] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
 `
 
 interface Props {

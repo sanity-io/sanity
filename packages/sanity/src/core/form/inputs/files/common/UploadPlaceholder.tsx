@@ -55,6 +55,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
   const collapsed = rect?.border && rect.border.width < 440
   const {t} = useTranslation()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const disableNew = schemaType.options?.disableNew === true
 

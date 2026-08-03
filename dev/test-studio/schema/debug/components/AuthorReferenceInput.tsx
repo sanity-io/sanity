@@ -1,14 +1,9 @@
 import {createImageUrlBuilder} from '@sanity/image-url'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import {Button, Spinner} from '@sanity/ui'
-import {
-  type ForwardedRef,
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react'
+import {type ForwardedRef, forwardRef, useImperativeHandle, useMemo, useRef} from 'react'
+import {useObservable} from 'react-rx'
+import {map, startWith} from 'rxjs/operators'
 import {type ObjectInputProps, set, setIfMissing, unset, useClient} from 'sanity'
 
 import styles from './AuthorReferenceInput.module.css'
@@ -20,6 +15,8 @@ interface AuthorReference {
   image: any
   name: string
 }
+
+const INITIAL_STATE = {loading: true, authors: [] as AuthorReference[]}
 
 export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   props: ObjectInputProps<Reference, ReferenceSchemaType>,
@@ -34,25 +31,21 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
 
   const inputRef = useRef<HTMLButtonElement | null>(null)
 
-  const [state, setState] = useState<{
-    loading: boolean
-    authors: AuthorReference[]
-  }>({loading: true, authors: []})
+  const state$ = useMemo(
+    () =>
+      client.observable
+        .fetch(
+          // Select authors, with a defined image, which are published
+          '*[_type == "author" && defined(image) && _id in path("*")][0...10] {_id, image, name}',
+        )
+        .pipe(
+          map((authors: AuthorReference[]) => ({loading: false, authors})),
+          startWith(INITIAL_STATE),
+        ),
+    [client],
+  )
 
-  const {loading, authors} = state
-
-  useEffect(() => {
-    const sub = client.observable
-      .fetch(
-        // Select authors, with a defined image, which are published
-        '*[_type == "author" && defined(image) && _id in path("*")][0...10] {_id, image, name}',
-      )
-      .subscribe((_authors: AuthorReference[]) => setState({authors: _authors, loading: false}))
-
-    return () => {
-      sub.unsubscribe()
-    }
-  }, [client])
+  const {loading, authors} = useObservable(state$, INITIAL_STATE)
 
   const handleChange = (item: AuthorReference) => {
     // Are we selecting the same value as previously selected?

@@ -119,6 +119,7 @@ export function AddIncomingReference({
   const schema = useSchema()
   const schemaType = schema.get(type)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const {strategy: searchStrategy} = source.search
   const documentPreviewStore = useDocumentPreviewStore()

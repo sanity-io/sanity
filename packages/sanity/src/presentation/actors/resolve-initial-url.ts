@@ -62,6 +62,7 @@ export function defineResolveInitialUrlActor({
         return new URL(previewUrlOption.initial, origin)
       }
 
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       return new URL(previewUrlOption.preview || '/', previewUrlOption.origin || origin)
     },
   )

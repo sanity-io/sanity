@@ -28,6 +28,7 @@ function Main() {
     'simple' | 'nested' | 'markdown' | 'longlist' | 'initialvalues' | 'intl-array'
   >('simple')
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider theme={studioTheme}>
       <Flex direction={'column'}>
         <Box padding={4}>

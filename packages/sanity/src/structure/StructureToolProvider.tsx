@@ -24,6 +24,7 @@ export function StructureToolProvider({
   children,
 }: StructureToolProviderProps): React.JSX.Element {
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const configContext = useConfigContextFromSource(source)
   const documentStore = useDocumentStore()

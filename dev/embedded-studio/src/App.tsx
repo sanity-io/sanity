@@ -9,6 +9,7 @@ export function App() {
   const [variant, setVariant] = useState<'layout' | 'studio'>('layout')
 
   const initialScheme = prefersDark ? 'dark' : 'light'
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const [scheme, setScheme] = useState<StudioThemeColorSchemeKey>(initialScheme)
 
   const _scheme = useMemo(
@@ -16,6 +17,7 @@ export function App() {
     [initialScheme, scheme],
   )
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const handleSchemeChange = useCallback((nextScheme: StudioThemeColorSchemeKey) => {
     setScheme(nextScheme)
   }, [])
@@ -29,6 +31,7 @@ export function App() {
   }, [])
 
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider scheme={_scheme} theme={studioTheme}>
       <Flex direction="column" height="fill" overflow="hidden">
         <Card>

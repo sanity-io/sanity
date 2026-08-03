@@ -14,6 +14,7 @@ export function RouterDebug() {
     },
   })
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const client = useClient()
 
   return (

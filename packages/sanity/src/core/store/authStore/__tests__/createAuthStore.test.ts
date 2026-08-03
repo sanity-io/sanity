@@ -24,6 +24,7 @@ const MOCK_USER: CurrentUser = {
   email: 'test@example.com',
   profileImage: '',
   provider: 'google',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   role: '',
   roles: [{name: 'administrator', title: 'Administrator'}],
   attributes: [
@@ -804,6 +805,7 @@ describe('createAuthStore: cross-tab sync', () => {
       // prepareConfig installs `_requestHandler` on every studio client; emulate
       // that so the probe client carries the parking middleware by default.
       const factory = (options: SanityClientConfig): SanityClient =>
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         makeClient({...options, _requestHandler: (() => {}) as never})
 
       const store = _createAuthStore({
@@ -881,6 +883,7 @@ describe('createAuthStore: cross-tab sync', () => {
       // prepareConfig installs `_requestHandler` on every studio client; emulate
       // that so the logout clients carry the parking middleware by default.
       const factory = (options: SanityClientConfig): SanityClient =>
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         makeClient({...options, _requestHandler: (() => {}) as never})
 
       const store = _createAuthStore({
@@ -949,6 +952,7 @@ describe('createAuthStore: cross-tab sync', () => {
 
       // prepareConfig installs `_requestHandler` on every studio client.
       const factory = (options: SanityClientConfig): SanityClient =>
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         makeClient({...options, _requestHandler: (() => {}) as never})
 
       let sessionIdConsumed = false

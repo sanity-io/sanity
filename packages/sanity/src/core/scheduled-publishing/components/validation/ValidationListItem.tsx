@@ -41,6 +41,7 @@ export function ValidationListItem(props: ValidationListItemProps) {
   }, [marker.path, onClick])
 
   const menuItemTone = MENU_ITEM_TONES[marker?.level] || undefined
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const message = marker.message ?? marker.item?.message
   const children = (
     <Flex>

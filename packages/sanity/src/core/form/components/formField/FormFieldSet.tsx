@@ -48,6 +48,7 @@ export interface FormFieldSetProps {
    */
   __unstable_presence?: FormNodePresence[]
   /** @internal @deprecated DO NOT USE */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
   __internal_slot?: ReactNode
@@ -98,10 +99,13 @@ const Content = styled(Box)<{
    */
   $borderLeft: boolean
   $focused?: boolean
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: Theme
 }>((props) => {
   const {$borderLeft, $focused, theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {focusRing} = theme.sanity
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {base} = theme.sanity.color
 
   return css`
@@ -144,7 +148,9 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_comments: comments,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_slot: slot = null,
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,

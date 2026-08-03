@@ -53,6 +53,7 @@ export function IncomingReferencesType({
 }) {
   const documentPreviewStore = useDocumentPreviewStore()
   const {displayed} = useDocumentPane()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient} = useSource()
   const displayedId = displayed?._id as string
   /**

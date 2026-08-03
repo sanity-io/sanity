@@ -24,7 +24,9 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
   const rangeRef = useRef<Range | null>(null)
   const {sanity} = useTheme()
   const {t} = useTranslation()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
   const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 
@@ -40,6 +42,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
 
   // Close popover and return focus to editor
   const handleClosePopover = useCallback(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
     setPopoverOpen(false)
   }, [editor])

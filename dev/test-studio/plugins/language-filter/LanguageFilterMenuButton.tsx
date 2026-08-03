@@ -28,6 +28,7 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleAll = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (event: FormEvent<HTMLInputElement>) => {
       const checked = event.currentTarget.checked
 

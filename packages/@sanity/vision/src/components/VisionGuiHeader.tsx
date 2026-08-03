@@ -87,6 +87,7 @@ export function VisionGuiHeader({
 
     try {
       el.select()
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       document.execCommand('copy')
     } catch {
       console.error('Unable to copy to clipboard :(')

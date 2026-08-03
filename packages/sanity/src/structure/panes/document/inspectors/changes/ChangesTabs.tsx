@@ -39,6 +39,7 @@ const isValidTab = (tab: string | undefined): tab is (typeof TABS)[number] =>
 
 export function ChangesTabs(props: DocumentInspectorProps) {
   const {params, setParams} = usePaneRouter()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
   const {t} = useTranslation(structureLocaleNamespace)

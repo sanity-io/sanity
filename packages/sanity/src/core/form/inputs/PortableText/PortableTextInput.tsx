@@ -72,7 +72,9 @@ function keyGenerator() {
  * care of imperatively forwarding the legacy `PortableTextEditor` instance,
  * the public `editorRef` prop's contract.
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const LegacyEditorRefPlugin = forwardRef<PortableTextEditor | null>((_, ref) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const portableTextEditor = usePortableTextEditor()
 
   useImperativeHandle(ref, () => portableTextEditor, [portableTextEditor])
@@ -122,6 +124,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     hotkeys,
     initialActive,
     initialFullscreen,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     markers = EMPTY_ARRAY,
     onChange,
     onCopy,
@@ -134,7 +137,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     path,
     readOnly,
     rangeDecorations: rangeDecorationsProp,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     renderBlockActions,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     renderCustomMarkers,
     schemaType,
     value,
@@ -142,6 +147,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   } = props
 
   const {onBlur, ref: elementRef} = elementProps
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const defaultLegacyEditorRef = useRef<PortableTextEditor | null>(null)
   const editorRef = useRef<Editor | null>(null)
   const legacyEditorRef = editorRefProp || defaultLegacyEditorRef
@@ -378,6 +384,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     if (!isActive) {
       setIsActive(true)
       if (legacyEditorRef.current) {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.focus(legacyEditorRef.current)
       }
     }
@@ -471,6 +478,7 @@ function EditorChangePlugin(
 ) {
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       switch (event.type) {
         case 'blurred':
           props.onChange({

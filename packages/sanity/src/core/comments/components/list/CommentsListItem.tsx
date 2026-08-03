@@ -74,6 +74,7 @@ const StyledThreadCard = styled(ThreadCard)(() => {
 })
 
 const ExpandButton = styled(Button)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {medium} = theme.sanity.fonts.text.weights
 
   return css`

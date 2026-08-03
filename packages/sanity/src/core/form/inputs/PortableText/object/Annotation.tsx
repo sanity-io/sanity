@@ -43,6 +43,7 @@ interface AnnotationProps {
   referenceBoundary: HTMLElement | null
   renderAnnotation?: RenderAnnotationCallback
   renderBlock?: RenderBlockCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
   renderField: RenderFieldCallback
   renderInlineBlock?: RenderBlockCallback
@@ -80,7 +81,9 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
     setElementRef,
     value,
   } = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const markDefPath: Path = useMemo(
@@ -98,6 +101,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
     if (memberItem) {
       // Take focus away from the editor so it doesn't accidentally propagate a new focusPath
       // for the text node that the annotation is attached to.
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       PortableTextEditor.blur(editor)
       // Open the annotation item (markDef object)
       onItemOpen(memberItem.node.path)
@@ -107,13 +111,17 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
   const onClose = useCallback(() => {
     onItemClose()
     if (isEmptyItem(value)) {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       PortableTextEditor.removeAnnotation(editor, schemaType)
     }
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [editor, onItemClose, schemaType, value])
 
   const onRemove = useCallback(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.removeAnnotation(editor, schemaType)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [editor, schemaType])
 
@@ -158,6 +166,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
       __unstable_textElementFocus: editorNodeFocused, // Is there focus on the related text element for this object?
       children: input,
       focused,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       markers,
       onClose,
       onOpen,
@@ -249,6 +258,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
     __unstable_referenceBoundary: referenceBoundary,
     __unstable_referenceElement: referenceElement,
     children,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     markers,
     onOpen,
     onRemove,

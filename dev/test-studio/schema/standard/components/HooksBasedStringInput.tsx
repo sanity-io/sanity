@@ -12,6 +12,7 @@ export const HooksBasedStringInput = forwardRef<any, StringInputProps>((props, r
         <input
           type="text"
           ref={ref}
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           placeholder={schemaType.placeholder}
           onChange={(event) => onChange(set(event.target.value))}
           value={value}

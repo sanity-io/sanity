@@ -17,6 +17,7 @@ import {
  * field (e.g. onBlur) and the input value at this time is different from the given `value` prop
  */
 export const LazyTextInput = forwardRef(function LazyTextInput(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   {onChange, onBlur, onKeyPress, value, ...rest}: TextInputProps & HTMLProps<HTMLInputElement>,
   forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
@@ -68,6 +69,7 @@ export const LazyTextInput = forwardRef(function LazyTextInput(
       value={inputValue === undefined ? value : inputValue}
       onChange={handleChange}
       onBlur={handleBlur}
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       onKeyPress={handleKeyPress}
     />
   )

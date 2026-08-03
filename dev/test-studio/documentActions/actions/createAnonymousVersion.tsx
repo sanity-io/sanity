@@ -20,6 +20,7 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
   const {displayed} = useDocumentPane()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 

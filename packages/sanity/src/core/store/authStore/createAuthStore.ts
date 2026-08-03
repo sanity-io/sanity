@@ -165,7 +165,8 @@ const getCurrentUser = async (
   // `withConfig` — those don't carry the middleware anyway.
   const probeClient =
     typeof client.withConfig === 'function'
-      ? client.withConfig({_requestHandler: undefined})
+      ? // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        client.withConfig({_requestHandler: undefined})
       : client
   const fetchUser = () =>
     probeClient
@@ -246,7 +247,8 @@ const probeCurrentUser = (client: SanityClient): Promise<AuthProbeResult> => {
   // `withConfig` (those don't carry the middleware anyway).
   const probeClient =
     typeof client.withConfig === 'function'
-      ? client.withConfig({_requestHandler: undefined})
+      ? // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        client.withConfig({_requestHandler: undefined})
       : client
   return probeClient
     .request<{id: string; expiry: number}>({
@@ -960,6 +962,7 @@ export function _createAuthStore({
     // Both clients are hit: even with loginMethod=token an auth cookie may
     // be set on the project api domain, so both must be destroyed.
     const stripMiddleware = (c: SanityClient) =>
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       typeof c.withConfig === 'function' ? c.withConfig({_requestHandler: undefined}) : c
     await Promise.allSettled([
       stripMiddleware(tokenClient).request({uri: '/auth/logout', method: 'POST'}),

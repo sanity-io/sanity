@@ -14,6 +14,7 @@ vi.mock('../../../../i18n/hooks/useTranslation', () => ({
 function renderDragHandle(props: Partial<React.ComponentProps<typeof DragHandle>> = {}) {
   const id = 'item-1'
   return render(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider theme={studioTheme}>
       <DndContext>
         <SortableContext items={[id]}>

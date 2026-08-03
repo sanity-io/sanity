@@ -46,6 +46,7 @@ function ReferenceInputTester(
 
   return (
     <RouterProvider router={route.intents('/intents')} state={{}} onNavigate={noop}>
+      {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
       <ThemeProvider scheme="light" theme={studioTheme}>
         <ToastProvider>
           <LayerProvider>

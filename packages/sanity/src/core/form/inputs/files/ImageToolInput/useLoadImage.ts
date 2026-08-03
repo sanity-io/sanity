@@ -1,5 +1,6 @@
-import {useEffect, useState} from 'react'
-import {Observable} from 'rxjs'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, map, Observable, of, startWith} from 'rxjs'
 
 // http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever
 const PROBABLY_THE_TINIEST_GIF_EVER = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
@@ -46,28 +47,18 @@ type ImageLoadState = {
   error?: Error
 }
 
-const INITIAL_STATE = {isLoading: true}
+const INITIAL_STATE: ImageLoadState = {isLoading: true}
 
 export function useLoadImage(url: string): ImageLoadState {
-  const [state, setState] = useState<ImageLoadState>(INITIAL_STATE)
+  const state$ = useMemo(
+    () =>
+      loadImage(url).pipe(
+        map((image): ImageLoadState => ({image, isLoading: false})),
+        catchError((error: Error) => of({isLoading: false, error})),
+        startWith(INITIAL_STATE),
+      ),
+    [url],
+  )
 
-  useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
-    setState(INITIAL_STATE)
-    const subscription = loadImage(url)
-      // .pipe(delay(2000))
-      .subscribe({
-        error: (err) => {
-          setState({isLoading: false, error: err})
-        },
-        next: (image) => {
-          setState({image, isLoading: false})
-        },
-      })
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [url])
-
-  return state
+  return useObservable(state$, INITIAL_STATE)
 }

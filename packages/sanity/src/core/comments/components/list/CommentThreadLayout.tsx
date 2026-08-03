@@ -28,6 +28,7 @@ const HeaderFlex = styled(Flex)`
 `
 
 const BreadcrumbsButton = styled(Button)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const fg = theme.sanity.color.base.fg
   return css`
     --card-fg-color: ${fg};

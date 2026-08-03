@@ -23,4 +23,5 @@ export const ImperativeToast = forwardRef((_, ref) => {
   return null
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 ImperativeToast.displayName = 'ForwardRef(ImperativeToast)'

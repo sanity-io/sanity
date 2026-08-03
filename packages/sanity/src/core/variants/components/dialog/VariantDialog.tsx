@@ -53,6 +53,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
   }, [])
 
   const handleSubmit = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
 

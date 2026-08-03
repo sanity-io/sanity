@@ -19,6 +19,7 @@ function Probe({onRootRef}: {onRootRef: (ref: ObservedRef) => void}) {
 }
 
 function renderWithTheme(children: ReactNode) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return render(<ThemeProvider theme={studioTheme}>{children}</ThemeProvider>)
 }
 

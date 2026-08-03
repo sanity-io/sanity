@@ -14,6 +14,7 @@ export interface UsageDialogProps {
 }
 
 export function AssetUsageDialog({asset, assetType, onClose}: UsageDialogProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {isLoading, referringDocuments} = useLegacyReferringDocuments(asset._id)
 
   const publishedDocuments = useMemo(() => {

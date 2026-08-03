@@ -212,6 +212,7 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
         tabIndex={0}
         data-id={_id}
         mode="ghost"
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         onKeyPress={onKeyPress}
         padding={0}
         style={{padding: 2}}

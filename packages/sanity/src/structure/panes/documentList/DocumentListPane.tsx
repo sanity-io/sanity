@@ -121,6 +121,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
       ? applyOrderingFunctions(sortOrderRaw, schema.get(typeName) as any)
       : sortOrderRaw
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const sortOrder = useUnique(sortWithOrderingFn)
 
   // The sentinel ordering has no server-side meaning, so the fetch falls back to
@@ -145,6 +146,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     ? undefined
     : searchOrderings.find((ordering) => getSearchOrderingId(ordering) === searchOrderingId)
   const searchSchemaType = typeName ? schema.get(typeName) : undefined
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const effectiveSortOrder = useUnique(
     selectedSearchOrdering?.params?.by
       ? // Run the chosen ordering through `applyOrderingFunctions` so it picks up

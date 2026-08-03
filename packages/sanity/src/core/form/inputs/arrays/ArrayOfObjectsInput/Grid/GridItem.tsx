@@ -95,6 +95,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   const maxReached = arrayValidation?.maxReached
   const maxReachedReason = arrayValidation?.maxReachedReason
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined
@@ -318,6 +319,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <EnhancedObjectDialogProvider>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         {item}

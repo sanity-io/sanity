@@ -14,6 +14,7 @@ export function useCustomReleaseActions(
   release: ReleaseDocument,
   documents: DocumentInRelease[] = [],
 ): ReleaseActionComponent[] {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
 
   const customReleaseActions = useMemo(() => {

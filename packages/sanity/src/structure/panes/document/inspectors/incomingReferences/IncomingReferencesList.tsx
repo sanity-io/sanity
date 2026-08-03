@@ -94,6 +94,7 @@ function TypeSection<T>({
 export function IncomingReferencesList() {
   const {documentId} = useDocumentPaneInfo()
   const {t} = useTranslation(structureLocaleNamespace)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)

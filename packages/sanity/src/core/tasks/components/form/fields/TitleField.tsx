@@ -100,5 +100,6 @@ export function TitleField(props: StringFieldProps) {
   const {value, inputProps} = props
   const {onChange, schemaType} = inputProps
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return <Title value={value} onChange={onChange} placeholder={schemaType.placeholder} />
 }

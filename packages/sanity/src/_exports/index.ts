@@ -193,6 +193,7 @@ export {type ScrollContextValue, type ScrollEventHandler} from '../core/componen
 export {StatusButton, type StatusButtonProps} from '../core/components/StatusButton'
 export {TextWithTone, type TextWithToneProps} from '../core/components/textWithTone/TextWithTone'
 export {TooltipOfDisabled} from '../core/components/TooltipOfDisabled'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {ImperativeToast, type ToastParams} from '../core/components/transitional/ImperativeToast'
 export {
   LegacyLayerProvider,
@@ -203,6 +204,7 @@ export {
   UserAvatar,
   type UserAvatarProps,
 } from '../core/components/userAvatar/UserAvatar'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {WithReferringDocuments} from '../core/components/WithReferringDocuments'
 export {type ZIndexContextValue} from '../core/components/zOffsets/types'
 export {useZIndex} from '../core/components/zOffsets/useZIndex'
@@ -223,7 +225,9 @@ export {
   type ConfigResolutionErrorOptions,
 } from '../core/config/ConfigResolutionError'
 export {createDefaultIcon} from '../core/config/createDefaultIcon'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {createConfig, defineConfig} from '../core/config/defineConfig'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {createPlugin, definePlugin, type PluginFactory} from '../core/config/definePlugin'
 export {
   type DocumentActionComponent,
@@ -613,6 +617,7 @@ export {
 } from '../core/form/members/object/ObjectInputMember'
 export {
   ObjectInputMembers,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ObjectMembers,
   type ObjectMembersProps,
 } from '../core/form/members/object/ObjectInputMembers'
@@ -760,6 +765,7 @@ export {
   StudioImageInput as ImageInput,
   type ImageInputProps,
 } from '../core/form/studio/inputs/StudioImageInput'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useEnhancedObjectDialog} from '../core/form/studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 export {
   type AssetSourcesResolver,
@@ -773,13 +779,18 @@ export {
 } from '../core/form/studio/uploads/types'
 export {
   type ArrayInputFunctionsProps,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type FormBuilderCustomMarkersComponent,
   type FormBuilderFilterFieldFn,
   type FormBuilderInputComponentMap,
   type FormBuilderMarkersComponent,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type PortableTextMarker,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type RenderBlockActionsCallback,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type RenderBlockActionsProps,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type RenderCustomMarkers,
 } from '../core/form/types/_transitional'
 export {
@@ -812,6 +823,7 @@ export {
   type ArrayOfPrimitivesFieldProps,
   type BaseFieldProps,
   type BooleanFieldProps,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type FieldCommentsProps,
   type FieldProps,
   type NumberFieldProps,
@@ -867,6 +879,7 @@ export {
 } from '../core/form/utils/mutationPatch'
 export {decodePath, encodePath} from '../core/form/utils/path'
 export {TransformPatches} from '../core/form/utils/TransformPatches'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useClient} from '../core/hooks/useClient'
 export {useConditionalToast} from '../core/hooks/useConditionalToast'
 export {
@@ -915,6 +928,7 @@ export {
   useTargetDocumentState,
 } from '../core/hooks/useTargetDocumentState'
 export {useTemplates} from '../core/hooks/useTemplates'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type TimeAgoOpts, useTimeAgo} from '../core/hooks/useTimeAgo'
 export {useTools} from '../core/hooks/useTools'
 export {
@@ -938,6 +952,7 @@ export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/Locale
 export {
   defineLocale,
   defineLocaleResourceBundle,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   defineLocalesResources,
   removeUndefinedLocaleResources,
 } from '../core/i18n/helpers'
@@ -981,6 +996,7 @@ export {
   type PerspectiveStack,
   type ReleaseId,
   type ReleasesNavMenuItemPropsGetter,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type SelectedPerspective,
   type TargetPerspective,
 } from '../core/perspective/types'
@@ -998,6 +1014,7 @@ export {
   FieldPresenceInner,
   type FieldPresenceInnerProps,
   type FieldPresenceProps,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   FieldPresenceWithOverlay,
 } from '../core/presence/FieldPresence'
 export {PresenceOverlay, type PresenceOverlayProps} from '../core/presence/overlay/PresenceOverlay'
@@ -1046,9 +1063,11 @@ export {
   type Selection,
 } from '../core/preview/types'
 export {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   unstable_useObserveDocument,
   useUnstableObserveDocument,
 } from '../core/preview/useObserveDocument'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {unstable_useValuePreview, useValuePreview} from '../core/preview/useValuePreview'
 export {getPreviewPaths} from '../core/preview/utils/getPreviewPaths'
 export {getPreviewStateObservable} from '../core/preview/utils/getPreviewStateObservable'
@@ -1073,6 +1092,7 @@ export {RELEASES_INTENT} from '../core/releases/plugin'
 export {isReleaseDocument, type VersionInfoDocumentStub} from '../core/releases/store/types'
 export {useActiveReleases} from '../core/releases/store/useActiveReleases'
 export {useArchivedReleases} from '../core/releases/store/useArchivedReleases'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useDocumentVersionInfo} from '../core/releases/store/useDocumentVersionInfo'
 export {useReleasesIds} from '../core/releases/store/useReleasesIds'
 export {LATEST, PUBLISHED} from '../core/releases/util/const'
@@ -1090,18 +1110,19 @@ export {
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
 } from '../core/releases/util/util'
-// oxlint-disable-next-line eslint/no-restricted-imports -- deprecated scheduled-publishing API stays public until it is removed
+// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {EditScheduleForm} from '../core/scheduled-publishing/components/editScheduleForm/EditScheduleForm'
-// oxlint-disable-next-line eslint/no-restricted-imports -- deprecated scheduled-publishing API stays public until it is removed
+// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/plugin/documentActions/schedule/ScheduleAction'
-// oxlint-disable-next-line eslint/no-restricted-imports -- deprecated scheduled-publishing API stays public until it is removed
+// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
-// oxlint-disable-next-line eslint/no-restricted-imports -- deprecated scheduled-publishing API stays public until it is removed
+// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {SchedulesContext} from '../core/scheduled-publishing/tool/contexts/schedules'
 export {createSchema} from '../core/schema/createSchema'
 export {getSchemaTypeTitle} from '../core/schema/helpers'
 export {compileFieldPath} from '../core/search/common/compileFieldPath'
 export {getSearchableTypes} from '../core/search/common/getSearchableTypes'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {isPerspectiveRaw} from '../core/search/common/isPerspectiveRaw'
 export {
   type SearchFactoryOptions,
@@ -1356,6 +1377,7 @@ export {useTimelineSelector} from '../core/store/history/useTimelineSelector'
 export {
   type TimelineState,
   type TimelineStore,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
@@ -1413,6 +1435,7 @@ export {
   ColorSchemeLocalStorageProvider,
   ColorSchemeProvider,
   type ColorSchemeProviderProps,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useColorScheme,
   useColorSchemeInternalValue,
   useColorSchemeOptions,
@@ -1484,6 +1507,7 @@ export {
   type StudioWorkspaceManifest,
 } from '../core/studio/manifest/types'
 export {uploadSchema} from '../core/studio/manifest/uploadSchema'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {renderStudio} from '../core/studio/renderStudio'
 export {
   classifyConfigError,
@@ -1510,6 +1534,7 @@ export {
   type StudioErrorHandler,
 } from '../core/studio/requestErrors/types'
 export {useStudioErrorHandler} from '../core/studio/requestErrors/useStudioErrorHandler'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {SourceProvider, type SourceProviderProps, useSource} from '../core/studio/source'
 export {Studio, type StudioProps} from '../core/studio/Studio'
 export {StudioAnnouncementsCard} from '../core/studio/studioAnnouncements/StudioAnnouncementsCard'
@@ -1599,9 +1624,13 @@ export {
   type TemplateReferenceTarget,
   type TypeTarget,
 } from '../core/templates/types'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {defaultTheme} from '../core/theme'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {buildLegacyTheme} from '../core/theme/_legacy/theme'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type LegacyThemeProps, type LegacyThemeTints} from '../core/theme/_legacy/types'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type StudioTheme, type StudioThemeColorSchemeKey} from '../core/theme/types'
 export {useUserColor, useUserColorManager} from '../core/user-color/hooks'
 export {createUserColorManager, type UserColorManagerOptions} from '../core/user-color/manager'
@@ -1690,6 +1719,7 @@ export {
 } from '../core/util/useLoadable'
 export {userHasRole} from '../core/util/userHasRole'
 export {useThrottledCallback} from '../core/util/useThrottledCallback'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useUnique} from '../core/util/useUnique'
 export {
   isDraftVersion,

@@ -50,6 +50,7 @@ export interface SelectAssetsDialogProps {
 export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const theme = useTheme()
   const {t} = useTranslation()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dark} = theme.sanity.color
   const mediaLibraryIds = useMediaLibraryIds()
 

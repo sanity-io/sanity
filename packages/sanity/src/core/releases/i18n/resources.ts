@@ -5,6 +5,7 @@ import {defineLocalesResources} from '../../i18n/helpers'
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Action text for adding a document to release */
   'action.add-document': 'Add document',

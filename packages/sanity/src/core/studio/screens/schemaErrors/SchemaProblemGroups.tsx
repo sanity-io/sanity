@@ -12,6 +12,7 @@ import {styled} from 'styled-components'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getTypeInfo} from './getTypeInfo'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
   error: 'critical',
   warning: 'caution',

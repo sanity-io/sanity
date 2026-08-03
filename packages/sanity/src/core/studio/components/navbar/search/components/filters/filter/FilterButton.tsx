@@ -26,6 +26,7 @@ interface FilterButtonProps {
 
 const CloseButton = styled(Button)`
   border-radius: ${({theme}) =>
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     `0 ${rem(theme.sanity.radius[2])} ${rem(theme.sanity.radius[2])} 0`};
 `
 

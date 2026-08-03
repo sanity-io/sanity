@@ -34,6 +34,7 @@ export const operationArgs = memoize(
               ...ctx,
               idPair,
               typeName,
+              // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
               serverActionsEnabled: true,
               snapshots: {
                 published,
@@ -55,7 +56,9 @@ export const operationArgs = memoize(
           ),
         ),
       ),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       publishReplay(1),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       refCount(),
     )
   },
