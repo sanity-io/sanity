@@ -1,5 +1,6 @@
-import {useEffect, useState} from 'react'
-import {catchError, defer, map, of, tap} from 'rxjs'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, defer, map, of} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -155,15 +156,10 @@ export function useUnclaimedProjectCopy(enabled: boolean): UnclaimedProjectCopy 
     isDev: import.meta.env?.DEV ?? false,
     value: LOCAL_COPY_URL,
   })
-  const [copyState, setCopyState] = useState<{
-    client: typeof client
-    copy: UnclaimedProjectCopy | undefined
-  }>()
+  const copy$ = useMemo(() => {
+    if (!enabled) return of(undefined)
 
-  useEffect(() => {
-    if (!enabled) return undefined
-
-    const copy$ = localCopyUrl
+    const request$ = localCopyUrl
       ? defer(async () => {
           const response = await fetch(localCopyUrl, {credentials: 'omit'})
           if (!response.ok) throw new Error(`Journey copy request failed: ${response.status}`)
@@ -171,16 +167,11 @@ export function useUnclaimedProjectCopy(enabled: boolean): UnclaimedProjectCopy 
         })
       : client.observable.request<unknown>({uri: UNCLAIMED_PROJECT_COPY_URI})
 
-    const subscription = copy$
-      .pipe(
-        map(parseUnclaimedProjectCopy),
-        catchError(() => of(undefined)),
-        tap((copy) => setCopyState({client, copy})),
-      )
-      .subscribe()
-
-    return () => subscription.unsubscribe()
+    return request$.pipe(
+      map(parseUnclaimedProjectCopy),
+      catchError(() => of(undefined)),
+    )
   }, [client, enabled, localCopyUrl])
 
-  return enabled && copyState?.client === client ? copyState.copy : undefined
+  return useObservable(copy$)
 }
