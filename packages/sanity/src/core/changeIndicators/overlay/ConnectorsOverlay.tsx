@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {useCallback, useContext, useEffect, useEffectEvent, useMemo, useRef, useState} from 'react'
+import {use, useCallback, useEffect, useEffectEvent, useMemo, useRef, useState} from 'react'
 import {ScrollContext} from 'sanity/_singletons'
 
 import {type Reported} from '../../components/react-track-elements/types'
@@ -188,7 +188,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
     return () => observer.disconnect()
   }, [rootElement])
 
-  const scrollContext = useContext(ScrollContext)
+  const scrollContext = use(ScrollContext)
   useEffect(() => {
     return scrollContext?.subscribe(() => scheduleUpdate())
   }, [scrollContext])
