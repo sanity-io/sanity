@@ -133,7 +133,10 @@ describe('useUnclaimedProjectCopy', () => {
     const {result} = renderHook(() => useUnclaimedProjectCopy(true))
 
     await waitFor(() => expect(result.current).toEqual(COPY))
-    expect(mockRequest).toHaveBeenCalledExactlyOnceWith({uri: '/journey/unclaimed-project'})
+    expect(mockRequest).toHaveBeenCalledExactlyOnceWith({
+      uri: '/journey/unclaimed-project',
+      tag: 'unclaimed-project-copy',
+    })
   })
 
   it('stays quiet when the optional Journey request fails', async () => {
@@ -142,7 +145,10 @@ describe('useUnclaimedProjectCopy', () => {
     const {result} = renderHook(() => useUnclaimedProjectCopy(true))
 
     await waitFor(() =>
-      expect(mockRequest).toHaveBeenCalledExactlyOnceWith({uri: '/journey/unclaimed-project'}),
+      expect(mockRequest).toHaveBeenCalledExactlyOnceWith({
+        uri: '/journey/unclaimed-project',
+        tag: 'unclaimed-project-copy',
+      }),
     )
     expect(result.current).toBeUndefined()
   })
