@@ -32,6 +32,7 @@ export function ObjectEditModal(props: {
   const schemaModalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
   const modalType = schemaModalOption?.type || defaultType
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: nestedObjectNavigationEnabled} = useEnhancedObjectDialog()
 
   const schemaTypeTitle = schemaType.i18nTitleKey

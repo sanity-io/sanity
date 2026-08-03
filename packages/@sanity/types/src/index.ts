@@ -404,6 +404,7 @@ export {
   type UriValidationOptions,
   type ValidationContext,
   type ValidationError,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type ValidationErrorClass,
   type ValidationErrorOptions,
   type Validator,

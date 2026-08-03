@@ -74,6 +74,7 @@ const StyledThreadCard = styled(ThreadCard)(() => {
 })
 
 const ExpandButton = styled(Button)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {medium} = theme.sanity.fonts.text.weights
 
   return css`
@@ -266,7 +267,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
         // Add some extra padding to the bottom if there is no reply input.
         // This is to make the UI look more balanced.
         paddingBottom={canReply ? undefined : 1}
-        space={4}
+        gap={4}
       >
         <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
           <CommentsListItemLayout

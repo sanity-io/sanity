@@ -92,6 +92,7 @@ const createTaskMock = ({
 describe('TasksFooterOpenTasks', () => {
   const wrapper = ({children}: {children?: React.ReactNode}) => {
     return (
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>
         <LayerProvider>
           <TasksEnabledProvider>

@@ -21,6 +21,7 @@ export function LocaleProvider(props: PropsWithChildren) {
 
     i18n: {locales},
     __internal: {i18next},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
 
   return (

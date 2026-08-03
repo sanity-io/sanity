@@ -30,7 +30,7 @@ export interface RecentSearchesProps extends ResponsiveMarginProps, ResponsivePa
 const DEFAULT_COMBINED_TYPE_COUNT = 40
 
 const RecentSearchItemButton = styled(Button)`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
+  border-radius: ${({theme}) => rem(theme.sanity.radius[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   cursor: default;
   width: 100%;
 `

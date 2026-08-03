@@ -104,7 +104,9 @@ export function DocumentLayout() {
   const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const footerRect = useElementRect(footerElement)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const headerRect = useElementRect(headerElement)
   const footerHeight = footerRect?.height
   const headerHeight = headerRect?.height

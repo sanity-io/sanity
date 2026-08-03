@@ -67,6 +67,7 @@ function getInvalidUserDefinedPerspectives(
  * @beta
  */
 export function StudioReferenceInput(props: StudioReferenceInputProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const searchClient = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {perspectiveStack} = usePerspective()

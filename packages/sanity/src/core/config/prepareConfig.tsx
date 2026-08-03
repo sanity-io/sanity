@@ -271,6 +271,7 @@ export function prepareConfig(
   config: Config | MissingConfigFile,
   options?: {
     basePath?: string
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     requestHandler?: RequestHandler
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
@@ -413,10 +414,12 @@ export function prepareConfig(
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
       projectId: rootSource.projectId,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       theme: rootSource.theme || studioTheme,
       title,
       subtitle: rootSource.subtitle,
       hidden: rootSource.hidden,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       __internal: {
         sources: resolvedSources,
       },
@@ -436,6 +439,7 @@ function getAuthStore(
     requestErrorChannel,
     requestFailureDiagnostics,
   }: {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     requestHandler?: RequestHandler
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
@@ -452,6 +456,7 @@ function getAuthStore(
     apiHost,
     ...source.auth,
     clientFactory: (config) => {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       return _clientFactory({...config, _requestHandler: requestHandler})
     },
     // Passed as getters so this unhashable runtime wiring stays out of the
@@ -475,6 +480,7 @@ interface ResolveSourceOptions {
 
 function getBifurClient(client: SanityClient, auth: AuthStore) {
   const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dataset, url: baseUrl, requestTagPrefix = 'sanity.studio'} = bifurVersionedClient.config()
   const url = `${baseUrl.replace(/\/+$/, '')}/socket/${dataset}`.replace(/^http/, 'ws')
   const urlWithTag = `${url}?tag=${requestTagPrefix}`
@@ -604,6 +610,7 @@ function resolveSource({
     .map(
       (template): TemplateItem => ({
         templateId: template.id,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         description: template.description,
         icon: template.icon,
         title: template.title,
@@ -669,7 +676,9 @@ function resolveSource({
             type: 'initialValueTemplateItem',
             title,
             i18n: response.i18n || template.i18n,
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             subtitle: response.subtitle || defaultSubtitle,
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             description: response.description || template.description,
             icon: response.icon || template.icon || schemaType?.icon,
             initialDocumentId: response.initialDocumentId,
@@ -804,6 +813,7 @@ function resolveSource({
           reducer: documentLanguageFilterReducer,
         }),
       /** @todo this is deprecated so it will eventually be removed */
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       unstable_comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({

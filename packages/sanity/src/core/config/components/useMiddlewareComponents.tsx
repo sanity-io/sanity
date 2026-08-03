@@ -65,6 +65,7 @@ export function useMiddlewareComponents<T extends {}>(props: {
   pick: (plugin: PluginOptions) => ComponentType<T>
   defaultComponent: ComponentType<T>
 }): ComponentType<T> {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {options} = useSource().__internal
   const {defaultComponent, pick} = props
 

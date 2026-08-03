@@ -191,7 +191,7 @@ export const ReleasePublishAllButton = ({
           },
         }}
       >
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text muted size={1}>
             {
               <Translate
@@ -206,7 +206,7 @@ export const ReleasePublishAllButton = ({
             }
           </Text>
           {showUpdateDraftsOption && (
-            <Stack space={3}>
+            <Stack gap={3}>
               <Flex align="center" gap={3} as="label">
                 <Checkbox
                   checked={shouldUpdateDrafts}

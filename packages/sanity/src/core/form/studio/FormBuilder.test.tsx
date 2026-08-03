@@ -32,6 +32,7 @@ const schemaTypes = [
 vi.mock('./tree-editing/context/enabled/useEnhancedObjectDialog')
 
 describe('FormBuilder', () => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const mockedUseEnhancedObjectDialog = useEnhancedObjectDialog as Mock
 
   beforeEach(() => {

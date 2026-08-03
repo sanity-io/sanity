@@ -9,7 +9,7 @@ export function DebugDocumentTypesNarrowed() {
 
   return (
     <Card borderTop padding={4} tone="transparent">
-      <Stack space={3}>
+      <Stack gap={3}>
         <Code size={1} weight="medium">
           Document types (narrowed)
         </Code>

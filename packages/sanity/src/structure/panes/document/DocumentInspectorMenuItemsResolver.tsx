@@ -90,6 +90,7 @@ function defineInspectorMenuItemComponent({
       documentId,
       documentType,
     })
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const node = useUnique(menuItem)
 
     useEffect(() => {

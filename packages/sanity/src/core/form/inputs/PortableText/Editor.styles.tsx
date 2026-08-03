@@ -100,22 +100,23 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
 
     & > .pt-list-item-bullet + .pt-list-item-number,
     & > .pt-list-item-number + .pt-list-item-bullet {
-      margin-top: ${({theme}) => theme.sanity.space[3]}px;
+      margin-top: ${({theme}) => theme.sanity.space[3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
     }
 
     & > :not(.pt-list-item) + .pt-list-item {
-      margin-top: ${({theme}) => theme.sanity.space[2]}px;
+      margin-top: ${({theme}) => theme.sanity.space[2] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
     }
 
     & > .pt-list-item + :not(.pt-list-item) {
-      margin-top: ${({theme}) => theme.sanity.space[3]}px;
+      margin-top: ${({theme}) => theme.sanity.space[3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
     }
 
     & > :first-child {
-      padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
+      padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
     }
 
     padding-bottom: ${({$isFullscreen, $isOneLine, theme}) =>
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       $isOneLine ? '0' : theme.sanity.space[$isFullscreen ? 9 : 5]}px;
 
     & > [data-pt-block] {
@@ -133,11 +134,12 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
      * minus the gutter on both sides instead, centred by the margin auto above. */
     & > [data-pt-block='container'] {
       width: calc(
-        100% - ${({$isFullscreen, theme}) => 2 * theme.sanity.space[$isFullscreen ? 5 : 3]}px
+        100% -
+          ${({$isFullscreen, theme}) => 2 * theme.sanity.space[$isFullscreen ? 5 : 3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px
       );
       max-width: calc(
         ${(props) => getTheme_v2(props.theme).container[1]}px -
-          ${({$isFullscreen, theme}) => 2 * theme.sanity.space[$isFullscreen ? 5 : 3]}px
+          ${({$isFullscreen, theme}) => 2 * theme.sanity.space[$isFullscreen ? 5 : 3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px
       );
     }
 
@@ -149,17 +151,20 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
       margin-top: -3px;
       left: calc(
         ${({$isFullscreen, theme}) =>
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
           1px
       );
       right: calc(
         ${({$isFullscreen, theme}) =>
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
           1px
       );
       width: calc(
         100% -
           ${({$isFullscreen, theme}) =>
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} +
           2px
       ) !important;

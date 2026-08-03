@@ -6,8 +6,11 @@ import {MenuItem} from '../../../../../../ui-components/menuItem/MenuItem'
 import {focusRingStyle} from '../../../../components/withFocusRing/helpers'
 
 export const FileButton = styled(Button).attrs({forwardedAs: 'label'})(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ({theme}: {theme: Theme}) => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {focusRing} = theme.sanity
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const base = theme.sanity.color.base
     const border = {width: 1, color: 'var(--card-border-color)'}
 
@@ -42,8 +45,11 @@ export const FileButton = styled(Button).attrs({forwardedAs: 'label'})(
   },
 )
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const FileMenuItem = styled(MenuItem).attrs({forwardedAs: 'label'})(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {focusRing} = theme.sanity
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const base = theme.sanity.color.base
   const border = {width: 1, color: 'var(--card-border-color)'}
 

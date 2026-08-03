@@ -567,7 +567,7 @@ export const Preview = memo(
                         <>
                           {overlaysConnection !== 'connected' && (
                             <Card padding={3} radius={2} tone="critical">
-                              <Stack space={3}>
+                              <Stack gap={3}>
                                 <Label muted size={0}>
                                   {t('preview-frame.overlay.connection-status.label')}
                                 </Label>
@@ -580,7 +580,7 @@ export const Preview = memo(
 
                           {loadersConnection !== 'connected' && (
                             <Card padding={3} radius={2} tone="critical">
-                              <Stack space={3}>
+                              <Stack gap={3}>
                                 <Label muted size={0}>
                                   {t('preview-frame.loader.connection-status.label')}
                                 </Label>

@@ -35,6 +35,7 @@ const PlaceholderWrapper = styled.span((props) => {
 })
 
 const StyledPopover = styled(Popover)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space, radius} = theme.sanity
 
   return css`
@@ -60,7 +61,9 @@ const StyledPopover = styled(Popover)(({theme}) => {
 
 interface EditableProps {
   focusLock?: boolean
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
   onKeyDown?: (e: React.KeyboardEvent) => void
   onSubmit?: () => void
@@ -88,6 +91,7 @@ export function Editable(props: EditableProps) {
   const [inputElement, setInputElement] = useState<HTMLDivElement | null>(null)
   const mentionsMenuRef = useRef<MentionsMenuHandle | null>(null)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
 
   const {

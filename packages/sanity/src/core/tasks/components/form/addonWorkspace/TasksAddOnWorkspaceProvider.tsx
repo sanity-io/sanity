@@ -28,6 +28,7 @@ function TasksAddonWorkspaceProviderInner({
   const basePath = ''
 
   // Parent workspace source, we want to use the same project id
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const addonDatasetConfig: Config = useMemo(
     () => ({

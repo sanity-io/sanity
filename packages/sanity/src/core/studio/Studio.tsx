@@ -46,6 +46,7 @@ export interface StudioProps {
    * @hidden
    * @beta
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onSchemeChange?: (nextScheme: StudioThemeColorSchemeKey) => void
   /**
    * By default the Studio handles the color scheme itself, but you can provide a color scheme to use.
@@ -75,6 +76,7 @@ export interface StudioProps {
    * @hidden
    * @beta
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   scheme?: StudioThemeColorSchemeKey
   /**
    * @hidden

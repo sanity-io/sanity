@@ -121,7 +121,9 @@ describe('LoginComponent redirectOnSingle', () => {
     })
 
     render(
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>
+        {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
         <LoginComponent projectId="p" basePath="/" />
       </ThemeProvider>,
     )
@@ -177,7 +179,9 @@ describe('LoginComponent with no providers', () => {
     const LoginComponent = createEmptyProviderLogin()
 
     render(
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>
+        {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
         <LoginComponent projectId="p" basePath="/" />
       </ThemeProvider>,
     )
@@ -197,6 +201,7 @@ describe('LoginComponent with no providers', () => {
       <TestProvider>
         <LoginComponent
           projectId="p"
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           basePath="/"
           onChooseAnotherWorkspace={onChooseAnotherWorkspace}
         />
@@ -213,7 +218,9 @@ describe('LoginComponent with no providers', () => {
     const LoginComponent = createEmptyProviderLogin()
 
     render(
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>
+        {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
         <LoginComponent projectId="p" basePath="/" />
       </ThemeProvider>,
     )

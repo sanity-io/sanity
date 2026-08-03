@@ -119,6 +119,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       markers.map((m) => ({
         level: m.level,
         path: m.path,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         message: m.message ?? m.item?.message,
       })),
     [markers],

@@ -53,7 +53,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   return (
     <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
-      <Stack space={2}>
+      <Stack gap={2}>
         <UploadTargetCard
           {...elementProps}
           isReadOnly={readOnly}
@@ -62,10 +62,11 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           tabIndex={0}
           types={schemaType.of}
         >
-          <Stack data-ui="ArrayInput__content" space={2}>
+          <Stack data-ui="ArrayInput__content" gap={2}>
             {members?.length === 0 && (
               <Card padding={3} border radius={2} tone={errorTone}>
                 <Text align="center" muted size={1}>
+                  {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
                   {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
                 </Text>
               </Card>
@@ -73,7 +74,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
             {members?.length > 0 && (
               <Card border radius={1} tone={errorTone}>
                 <List
-                  columns={[2, 3, 4]}
+                  gridTemplateColumns={[2, 3, 4]}
                   gap={3}
                   padding={1}
                   margin={1}

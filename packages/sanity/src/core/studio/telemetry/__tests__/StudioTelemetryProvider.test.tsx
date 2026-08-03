@@ -126,6 +126,7 @@ describe('StudioTelemetryProvider', () => {
 
     // Setup default mocks
     vi.mocked(createSessionId).mockReturnValue('test-session-id' as SessionId)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     vi.mocked(useClient).mockReturnValue(mockClient as never)
     vi.mocked(useWorkspace).mockReturnValue(mockWorkspace as never)
     vi.mocked(useWorkspaces).mockReturnValue(mockWorkspaces as never)

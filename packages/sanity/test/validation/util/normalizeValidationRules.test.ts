@@ -18,6 +18,7 @@ describe('normalizeValidationRules', () => {
     const [rule] = rules
 
     expect(rule).toBeInstanceOf(RuleClass)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(rule._rules).toMatchObject([
       {
         constraint: 'Number',
@@ -43,6 +44,7 @@ describe('normalizeValidationRules', () => {
 
     // type chain is applied from inner to outer so the resulting type should be
     // date instead of string
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(rule._rules).toMatchObject([
       {
         constraint: 'Date',
@@ -63,6 +65,7 @@ describe('normalizeValidationRules', () => {
     const [rule] = rules
 
     expect(rule).toBeInstanceOf(RuleClass)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(rule._rules).toMatchObject([
       {
         constraint: 'String',
@@ -96,6 +99,7 @@ describe('normalizeValidationRules', () => {
     const [rule] = rules
 
     expect(rule).toBeInstanceOf(RuleClass)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(rule._rules).toMatchObject([
       {
         constraint: 'String',
@@ -122,6 +126,7 @@ describe('normalizeValidationRules', () => {
     const [rule] = rules
 
     expect(rule).toBeInstanceOf(RuleClass)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(rule._rules).toMatchObject([
       {
         constraint: 'String',
@@ -146,6 +151,7 @@ describe('normalizeValidationRules', () => {
     const [first, second] = rules
 
     expect(first).toBeInstanceOf(RuleClass)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(first._rules).toMatchObject([
       {
         constraint: 'Number',
@@ -158,6 +164,7 @@ describe('normalizeValidationRules', () => {
     ])
 
     expect(second).toBeInstanceOf(RuleClass)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(second._rules).toMatchObject([
       {
         constraint: 'Number',
@@ -175,30 +182,42 @@ describe('Rule.skip()', () => {
   it('clears all validation rules', () => {
     const rule = RuleClass.string().required().min(5).max(100)
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(rule._rules.length).toBeGreaterThan(1)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(rule._required).toBe('required')
 
     const skipped = rule.skip()
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(skipped._rules).toEqual([])
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(skipped._required).toBe('optional')
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(skipped._message).toBeUndefined()
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(skipped._level).toBe('error')
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(skipped._fieldRules).toBeUndefined()
   })
 
   it('returns a new Rule instance (does not mutate original)', () => {
     const original = RuleClass.number().required().greaterThan(0)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const originalRulesLength = original._rules.length
 
     const skipped = original.skip()
 
     // Original should be unchanged
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(original._rules.length).toBe(originalRulesLength)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(original._required).toBe('required')
 
     // Skipped should be cleared
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(skipped._rules).toEqual([])
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(skipped._required).toBe('optional')
     expect(skipped).not.toBe(original)
   })
@@ -217,7 +236,9 @@ describe('Rule.skip()', () => {
     expect(rules).toHaveLength(1)
     const [rule] = rules
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(rule._rules).toEqual([])
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     expect(rule._required).toBe('optional')
   })
 })

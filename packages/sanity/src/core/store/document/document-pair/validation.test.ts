@@ -90,9 +90,11 @@ function createSubscription(
     {publishedId: documentId, draftId: `drafts.${documentId}`},
     typeName,
     'draft',
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ).pipe(publish())
 
   // Publish and connect this for the tests
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ;(stream as ConnectableObservable<unknown>).connect()
 
   // Create a subject we can use to notify via `done.next()`
@@ -130,9 +132,11 @@ function createVersionSubscription(
     {publishedId: 'example-id', draftId: 'drafts.example-id', versionId},
     'movie',
     'version',
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ).pipe(publish())
 
   // Publish and connect this for the tests
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ;(stream as ConnectableObservable<unknown>).connect()
 
   // Create a subject we can use to notify via `done.next()`

@@ -162,6 +162,7 @@ export function createMockAssetSourceWithMediaLibraryUploader(
 
   return {
     name,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     title,
     component: MockUploadComponent,
     Uploader: uploadMode === 'picker' ? MediaLibraryUploader : undefined,

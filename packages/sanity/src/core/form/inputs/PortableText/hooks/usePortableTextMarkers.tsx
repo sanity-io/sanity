@@ -5,6 +5,7 @@ import {PortableTextMarkersContext} from 'sanity/_singletons'
 
 import {type PortableTextMarker} from '../../../types/_transitional'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function usePortableTextMarkers(path: Path): PortableTextMarker[] {
   const ctx = useContext(PortableTextMarkersContext)
   if (!ctx) {

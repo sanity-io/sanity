@@ -78,6 +78,7 @@ export function StudioGlobalDocumentReferenceInput(
   props: StudioGlobalDocumentReferenceInputProps,
 ): React.JSX.Element {
   const {path, schemaType} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const client = source.getClient({
     apiVersion: '2025-02-19',
@@ -109,6 +110,7 @@ export function StudioGlobalDocumentReferenceInput(
           if (schemaType.options?.filter && isQueryError) {
             err.message = `Invalid reference filter, please check the custom "filter" option`
           }
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           return throwError(err)
         }),
       ),

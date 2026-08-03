@@ -41,6 +41,7 @@ describe('file types', () => {
         options: {
           storeOriginalFilename: true,
           accept: 'application/msword',
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           sources: [{name: 'source', title: 'Source', icon: () => null, component: () => null}],
         },
         fields: [{type: 'string', name: 'string'}],

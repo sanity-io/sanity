@@ -166,6 +166,7 @@ export function WorkspacesProvider({
   // Everything else — network errors, 5xx, 429 — propagates to the caller
   // unchanged. Callers that cannot recover locally delegate explicitly via
   // `useStudioErrorHandler()`; the studio never decides on their behalf.
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const requestHandler: RequestHandler = useCallback(
     (requestOptions, originalRequest, client) => {
       return defer(() => originalRequest(requestOptions)).pipe(

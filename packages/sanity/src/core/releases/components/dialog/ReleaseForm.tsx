@@ -123,8 +123,8 @@ export function ReleaseForm(props: {
   const [menuButton, setMenuButton] = useState<HTMLElement | null>(null)
 
   return (
-    <Stack space={5}>
-      <Stack space={4}>
+    <Stack gap={5}>
+      <Stack gap={4}>
         <Flex gap={2} align="center">
           <Text as="label" htmlFor={menuButtonId}>
             {t('release.dialog.tooltip.title')}
@@ -132,7 +132,7 @@ export function ReleaseForm(props: {
           <Text muted size={1}>
             <Tooltip
               content={
-                <Stack space={3} style={{maxWidth: 320 - 16}}>
+                <Stack gap={3} style={{maxWidth: 320 - 16}}>
                   <Text size={1}>{t('release.dialog.tooltip.description')}</Text>
                   <Text muted size={1}>
                     {t('release.dialog.tooltip.note')}
@@ -147,7 +147,7 @@ export function ReleaseForm(props: {
             </Tooltip>
           </Text>
         </Flex>
-        <Stack space={3}>
+        <Stack gap={3}>
           <MenuButton
             id={menuButtonId}
             ref={setMenuButton}
@@ -167,6 +167,7 @@ export function ReleaseForm(props: {
             popover={{
               placement: 'bottom',
               matchReferenceWidth: true,
+              // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
               boundaryElement: menuButton,
             }}
             menu={

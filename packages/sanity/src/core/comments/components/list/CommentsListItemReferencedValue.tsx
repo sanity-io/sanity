@@ -19,6 +19,7 @@ function truncate(str: string, length = 250) {
 
 interface BlockQuoteStackProps {
   $hasReferencedValue: boolean
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: Theme
 }
 

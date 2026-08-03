@@ -49,6 +49,7 @@ const AccentSpan = styled.span`
 `
 
 const SemiboldSpan = styled.span(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {weights} = theme.sanity.fonts.text
 
   return css`

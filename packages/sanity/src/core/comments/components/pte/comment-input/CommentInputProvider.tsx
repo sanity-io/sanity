@@ -11,6 +11,7 @@ import {type CommentMessage} from '../../../types'
 export interface CommentInputContextValue {
   canSubmit?: boolean
   closeMentions: () => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   editor: PortableTextEditor
   expandOnFocus?: boolean
   focused: boolean
@@ -51,6 +52,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
     readOnly,
   } = props
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
 
   const [mentionsMenuOpen, setMentionsMenuOpen] = useState<boolean>(false)
@@ -63,6 +65,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
 
   const focusEditor = useCallback(() => {
     if (readOnly) return
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [editor, readOnly])
 
@@ -79,6 +82,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
     setMentionsMenuOpen(true)
     setMentionsSearchTerm('')
     setMentionsMenuOpen(true)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     setSelectionAtMentionInsert(PortableTextEditor.getSelection(editor))
   }, [editor, mentionOptions?.disabled])
 
@@ -89,8 +93,10 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
       if (mentionOptions?.disabled) {
         return
       }
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const selection = PortableTextEditor.getSelection(editor)
       const cursorOffset = selection ? selection.focus.offset : 0
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const focusChild = PortableTextEditor.focusChild(editor)
       const focusSpan = (isPortableTextSpan(focusChild) && focusChild) || undefined
 
@@ -146,8 +152,11 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
 
   const insertAtChar = useCallback(() => {
     setMentionsMenuOpen(true)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.insertChild(editor, editor.schemaTypes.span, {text: '@'})
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     setSelectionAtMentionInsert(PortableTextEditor.getSelection(editor))
   }, [editor])
 
@@ -160,12 +169,16 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
 
       const [span, spanPath] =
         (selectionAtMentionInsert &&
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           PortableTextEditor.findByPath(editor, selectionAtMentionInsert.focus.path)) ||
         []
       if (span && isPortableTextSpan(span) && spanPath && mentionSchemaType) {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.focus(editor)
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         const offset = PortableTextEditor.getSelection(editor)?.focus.offset
         if (typeof offset !== 'undefined') {
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           PortableTextEditor.delete(
             editor,
             {
@@ -174,9 +187,11 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
             },
             {mode: 'selected'},
           )
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           PortableTextEditor.insertChild(editor, mentionSchemaType, {
             userId: userId,
           })
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           PortableTextEditor.insertChild(editor, editor.schemaTypes.span, {text: ' '})
         }
       }

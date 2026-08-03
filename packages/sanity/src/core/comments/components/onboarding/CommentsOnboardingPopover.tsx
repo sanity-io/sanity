@@ -38,7 +38,7 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
     <StyledPopover
       content={
         <Root padding={4}>
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text weight="medium" size={1}>
               {t('onboarding.header')}
             </Text>

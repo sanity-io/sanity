@@ -32,6 +32,7 @@ async function getWrapper(bundles: LocaleResourceBundle[]) {
 
   return function wrapper({children}: {children: ReactNode}) {
     return (
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>
         <LocaleProviderBase
           locales={[

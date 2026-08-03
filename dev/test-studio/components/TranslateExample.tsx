@@ -7,7 +7,7 @@ export const TranslateExample = forwardRef(function TranslateExample() {
   const {t} = useTranslation('testStudio')
   return (
     <Card padding={4}>
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text>{t('use-translation.with-html')}</Text>
         <Text>
           {t('use-translation.interpolation-example', {

@@ -205,6 +205,7 @@ export const operationEvents = memoize(
       }),
     )
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY)))
   },
   (ctx) => {

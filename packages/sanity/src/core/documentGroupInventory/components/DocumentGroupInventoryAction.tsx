@@ -124,6 +124,7 @@ const VariantIcon: ComponentType<{perspective: TargetPerspective | undefined}> =
   perspective,
 }) => {
   if (typeof perspective === 'undefined') {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return <ReleaseAvatarIcon tone="neutral" />
   }
 

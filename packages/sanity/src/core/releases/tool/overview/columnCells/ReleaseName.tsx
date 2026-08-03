@@ -107,7 +107,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
               <Box flex="none">
                 <ReleaseAvatar release={release} />
               </Box>
-              <Stack flex={1} space={2}>
+              <Stack flex={1} gap={2}>
                 <Flex align="center" gap={2} style={{minWidth: 0}}>
                   <ReleaseTitle
                     title={release.metadata.title}

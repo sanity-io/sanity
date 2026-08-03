@@ -14,14 +14,19 @@ interface StudioThemeProviderProps {
 // It won't work for locally imported themes from themer, as they won't be updated with a new api call.
 // oxlint-disable-next-line ban-ts-comment
 // @ts-expect-error
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const isThemerTheme = (theme: StudioTheme): boolean => theme.__themer === true
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function getThemeValues(theme: StudioTheme): RootTheme {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const defaultTheme = getDefaultTheme()
   return {
     ...defaultTheme,
     v2: theme.v2,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     fonts: isThemerTheme(theme) ? defaultTheme.fonts : (theme.fonts ?? defaultTheme.fonts),
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     color: theme.color ?? defaultTheme.color,
   }
 }

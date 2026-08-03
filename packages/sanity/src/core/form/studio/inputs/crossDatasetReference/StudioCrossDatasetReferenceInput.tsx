@@ -79,6 +79,7 @@ type SearchError = {
  */
 export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetReferenceInputProps) {
   const {path, schemaType, readOnly} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const client = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentPreviewStore = useDocumentPreviewStore()
@@ -121,6 +122,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
           if (schemaType.options?.filter && isQueryError) {
             err.message = `Invalid reference filter, please check the custom "filter" option`
           }
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           return throwError(err)
         }),
       ),

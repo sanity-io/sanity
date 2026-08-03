@@ -102,7 +102,7 @@ export function VariantsOverview() {
         <Flex direction="column" paddingX={3}>
           <Card flex="none" paddingY={5}>
             <Flex align="flex-start" gap={4} justify="space-between">
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text as="h1" size={4} weight="bold">
                   {t('overview.title')}
                 </Text>
