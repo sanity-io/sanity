@@ -80,12 +80,10 @@ export function useDocumentLocations(props: {
     if (!result) return of(initialResult)
 
     return result.pipe(
-      map(
-        (state): DocumentLocationsResult => ({
-          state: state || INITIAL_STATE,
-          status: state ? 'resolved' : 'empty',
-        }),
-      ),
+      map((state): DocumentLocationsResult => ({
+        state: state || INITIAL_STATE,
+        status: state ? 'resolved' : 'empty',
+      })),
       startWith(initialResult),
     )
   }, [result, initialResult])
