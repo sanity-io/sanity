@@ -28,6 +28,7 @@ export function useInitialValue(props: {
   version?: string
 }): InitialValueState {
   const {documentId, documentType, templateName, templateParams: templateParamsRaw, version} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const templateParams = useUnique(templateParamsRaw)
   const documentStore = useDocumentStore()
   const context = useInitialValueResolverContext()
@@ -132,6 +133,7 @@ export function useInitialValue(props: {
  * @internal
  */
 export function useInitialValueResolverContext(): InitialValueResolverContext {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const schema = useSchema()
   const currentUser = useCurrentUser()

@@ -7,6 +7,7 @@ import {TestForm} from '../../../../../../test/browser/TestForm'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
 interface InputStoryProps {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   editorRef?: React.Ref<PortableTextEditor | null>
   ptInputProps?: Partial<PortableTextInputProps>
 }

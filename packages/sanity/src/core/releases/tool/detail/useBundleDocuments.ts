@@ -56,6 +56,7 @@ interface BundleDocumentsObservableOptions {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
   i18n: LocaleSource
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   getClient: ReturnType<typeof useSource>['getClient']
   currentUser?: Omit<CurrentUser, 'role'> | null
   /**
@@ -262,6 +263,7 @@ export function useBundleDocuments(options: {
 } {
   const {groqFilter, params, cacheKey, skipValidation, enabled = true} = options
   const documentPreviewStore = useDocumentPreviewStore()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
 

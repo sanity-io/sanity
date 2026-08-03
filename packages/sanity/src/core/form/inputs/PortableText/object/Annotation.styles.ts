@@ -2,31 +2,35 @@ import {hues} from '@sanity/color'
 import {Box, type Theme, type ThemeColorToneKey} from '@sanity/ui'
 import {css, styled} from 'styled-components'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const Root = styled.span<{$toneKey?: Exclude<ThemeColorToneKey, 'transparent'>}>(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   (props: {$toneKey?: Exclude<ThemeColorToneKey, 'transparent'>; theme: Theme}) => {
     const {$toneKey = 'default', theme} = props
 
     return css`
       text-decoration: none;
       display: inline;
-      background-color: ${theme.sanity.color.selectable?.[$toneKey].enabled.bg};
-      border-bottom: 1px dashed ${theme.sanity.color.selectable?.[$toneKey].enabled.fg};
-      color: ${theme.sanity.color.selectable?.[$toneKey].enabled.fg};
+      background-color: ${theme.sanity.color.selectable?.[$toneKey].enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
+      border-bottom: 1px dashed
+        ${theme.sanity.color.selectable?.[$toneKey].enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
+      color: ${theme.sanity.color.selectable?.[$toneKey].enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
 
       &[data-link] {
-        border-bottom: 1px solid ${theme.sanity.color.selectable?.[$toneKey].enabled.fg};
+        border-bottom: 1px solid
+          ${theme.sanity.color.selectable?.[$toneKey].enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
       }
 
       &[data-custom-markers] {
-        background-color: ${theme.sanity.color.dark ? hues.purple[950].hex : hues.purple[50].hex};
+        background-color: ${theme.sanity.color.dark ? hues.purple[950].hex : hues.purple[50].hex /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
       }
 
       &[data-warning] {
-        background-color: ${theme.sanity.color.muted.caution.hovered.bg};
+        background-color: ${theme.sanity.color.muted.caution.hovered.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
       }
 
       &[data-error] {
-        background-color: ${theme.sanity.color.muted.critical.hovered.bg};
+        background-color: ${theme.sanity.color.muted.critical.hovered.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
       }
     `
   },

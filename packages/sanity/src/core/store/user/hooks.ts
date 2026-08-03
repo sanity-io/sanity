@@ -45,6 +45,7 @@ export function useUser(userId: string): LoadingTuple<User | null | undefined> {
  * ```
  */
 export function useCurrentUser(): CurrentUser | null {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {currentUser} = useSource()
   return currentUser
 }

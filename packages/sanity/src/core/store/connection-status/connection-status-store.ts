@@ -83,6 +83,7 @@ export function createConnectionStatusStore({
 }: ConnectionStatusStoreOptions): ConnectionStatusStore {
   const connectionStatus$: Observable<ConnectionStatus> = merge(
     bifur.heartbeats,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     onOffline$.pipe(mergeMapTo(throwError(new Error('The browser went offline')))),
   ).pipe(
     map((ts): ConnectionStatus => ({type: 'connected', lastHeartbeat: ts})),

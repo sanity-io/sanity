@@ -19,6 +19,7 @@ export type VideoInputProps = Omit<
 export function StudioVideoInput(props: VideoInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {file: fileConfig} = useFormBuilder().__internal
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 

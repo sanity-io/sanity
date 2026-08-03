@@ -11,6 +11,7 @@ const FULLSCREEN_MEDIA_INDEX = 1
 const POSITION_ABSOLUTE_MEDIA_INDEX = 3
 
 const RootFlex = styled(Flex)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const media = theme.sanity.media
 
   return css`
@@ -22,6 +23,7 @@ const RootFlex = styled(Flex)(({theme}) => {
   `
 })
 const SidebarMotionLayer = styled(Layer)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const media = theme.sanity.media
 
   return css`

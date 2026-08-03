@@ -1,11 +1,11 @@
 import {act, renderHook} from '@testing-library/react'
-import {type MutableRefObject} from 'react'
+import {type RefObject} from 'react'
 import {describe, expect, it} from 'vitest'
 
 import {type FrameState} from '../types'
 import {type DocumentOnPage, useDocumentsOnPage} from '../useDocumentsOnPage'
 
-function createFrameStateRef(url: string): MutableRefObject<FrameState> {
+function createFrameStateRef(url: string): RefObject<FrameState> {
   return {current: {url} as FrameState}
 }
 

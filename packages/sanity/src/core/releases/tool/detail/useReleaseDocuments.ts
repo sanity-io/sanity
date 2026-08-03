@@ -29,6 +29,7 @@ const getReleaseDocumentsObservable = ({
 }: {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   getClient: ReturnType<typeof useSource>['getClient']
   releaseId: string
   i18n: LocaleSource
@@ -94,6 +95,7 @@ export function useReleaseDocuments(releaseId: string): {
   error: null | Error
 } {
   const documentPreviewStore = useDocumentPreviewStore()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
   const {state$: releasesState$} = useReleasesStore()

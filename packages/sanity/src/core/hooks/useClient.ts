@@ -45,6 +45,7 @@ export function useClient(): SanityClient
  */
 export function useClient(clientOptions: SourceClientOptions): SanityClient
 export function useClient(clientOptions?: SourceClientOptions): SanityClient {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   if (!clientOptions) {
     console.warn(

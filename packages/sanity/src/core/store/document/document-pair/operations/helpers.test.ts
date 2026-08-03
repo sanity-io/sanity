@@ -39,6 +39,7 @@ function createArgs(options: {
     snapshots: options.snapshots,
     draft: {} as OperationArgs['draft'],
     published: {} as OperationArgs['published'],
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     serverActionsEnabled: true,
   }
 }
@@ -62,7 +63,7 @@ describe('TARGET_NOT_FOUND_OPERATIONS', () => {
       const operation = TARGET_NOT_FOUND_OPERATIONS[opName]
       const execute = operation.execute as () => void
       expect(operation.disabled).toBe('TARGET_NOT_FOUND')
-      expect(() => execute()).toThrowError(/does not contain this document/)
+      expect(() => execute()).toThrow(/does not contain this document/)
     }
   })
 })
@@ -79,7 +80,7 @@ describe('createOperationsAPI — self-derived target guard', () => {
     for (const opName of GUARDED_OPS) {
       const execute = operations[opName].execute as () => void
       expect(operations[opName].disabled, opName).toBe('TARGET_NOT_FOUND')
-      expect(() => execute(), opName).toThrowError(/does not contain this document/)
+      expect(() => execute(), opName).toThrow(/does not contain this document/)
     }
 
     // Non-mutating / group-level operations stay functional.

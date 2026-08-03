@@ -185,7 +185,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         style={FULL_HEIGHT_STYLE}
         data-testid="cardinality-one-empty-state"
       >
-        <Stack space={3} style={{textAlign: 'center', maxWidth: '300px'}}>
+        <Stack gap={3} style={{textAlign: 'center', maxWidth: '300px'}}>
           <Text size={1} weight="semibold">
             {t('summary.no-documents-cardinality-one.title')}
           </Text>

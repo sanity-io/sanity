@@ -348,7 +348,9 @@ export function ArrayOfObjectsField(props: {
 
   const formBuilder = useFormBuilder()
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const supportsImageUploads = formBuilder.__internal.image.directUploads
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const supportsFileUploads = formBuilder.__internal.file.directUploads
 
   const resolveUploader = useCallback(

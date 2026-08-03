@@ -40,6 +40,7 @@ function setup() {
   vi.mocked(useUserStore).mockReturnValue({
     getUsers: vi.fn().mockResolvedValue(users),
   } as unknown as UserStore)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   vi.mocked(useClient).mockReturnValue({observable: {}} as SanityClient)
   vi.mocked(grantsPermissionOn).mockImplementation(async (_userId, grants) => {
     if (grants.some((grant) => grant.filter.includes('user::attributes()'))) {

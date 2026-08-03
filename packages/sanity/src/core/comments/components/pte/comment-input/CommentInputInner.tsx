@@ -105,7 +105,9 @@ interface CommentInputInnerProps {
   avatarSize?: AvatarSize
   currentUser: CurrentUser
   focusLock?: boolean
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
   onKeyDown?: (e: React.KeyboardEvent) => void
   onSubmit?: () => void

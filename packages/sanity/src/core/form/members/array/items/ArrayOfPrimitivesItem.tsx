@@ -124,6 +124,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       'onPaste': stripStegaFromPasteEvent,
       'value': resolveNativeInputValue(member.item.schemaType, member.item.value, localValue),
       'readOnly': Boolean(member.item.readOnly),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       'placeholder': member.item.schemaType.placeholder,
       // Disable native browser autocomplete/autofill on content-editing fields
       'autoComplete': 'off',

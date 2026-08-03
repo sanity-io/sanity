@@ -59,7 +59,7 @@ export function useNetworkProtocolCheck(): undefined {
     enabled: Boolean(isOnLegacyHttp && !isWarningSnoozed),
     title,
     description: (
-      <Stack space={4} paddingY={1}>
+      <Stack gap={4} paddingY={1}>
         <Flex>
           <Text size={1}>{t('network-check.slow-protocol-warning.description')} </Text>
         </Flex>

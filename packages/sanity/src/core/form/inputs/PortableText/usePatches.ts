@@ -29,6 +29,7 @@ export function usePatches(props: {path: Path}): {
   subscribe: (subscriber: PatchesSubscriber) => () => void
 } {
   const {path} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {patchChannel} = useFormBuilder().__internal
 
   const subscribe = useCallback(

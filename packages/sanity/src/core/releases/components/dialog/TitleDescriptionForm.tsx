@@ -165,7 +165,7 @@ export function TitleDescriptionForm({
   const shouldShowDescription = isReleaseOpen || localData.description
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <TitleTextArea
         ref={titleRef}
         onChange={handleTitleChange}

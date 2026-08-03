@@ -32,7 +32,8 @@ export const FromTo = forwardRef<HTMLDivElement, FromToProps>(function FromTo(pr
       ...style,
       ...(layout === 'inline'
         ? {maxWidth: '100%', display: 'inline-flex'}
-        : {gridTemplateColumns: `minmax(0, 1fr) ${rem(theme.sanity.space[5])} minmax(0, 1fr)`}),
+        : // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+          {gridTemplateColumns: `minmax(0, 1fr) ${rem(theme.sanity.space[5])} minmax(0, 1fr)`}),
     }),
     [layout, style, theme],
   )

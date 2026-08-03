@@ -344,6 +344,7 @@ export const documentCommentsEnabledReducer = (opts: {
   // The last plugin 'wins'.
   const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
     const resolver =
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       innerConfig.document?.comments?.enabled ?? innerConfig.document?.unstable_comments?.enabled
 
     if (!resolver && typeof resolver !== 'boolean') return acc

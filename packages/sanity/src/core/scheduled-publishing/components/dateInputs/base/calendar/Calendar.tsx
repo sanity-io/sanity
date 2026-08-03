@@ -89,6 +89,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleFocusedMonthChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (e: FormEvent<HTMLSelectElement>) => setFocusedDateMonth(Number(e.currentTarget.value)),
     [setFocusedDateMonth],
   )
@@ -115,6 +116,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleMinutesChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (event: FormEvent<HTMLSelectElement>) => {
       const m = Number(event.currentTarget.value)
       onSelect(zoneDateToUtc(setMinutes(selectedDate, m)))
@@ -123,6 +125,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleHoursChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (event: FormEvent<HTMLSelectElement>) => {
       const m = Number(event.currentTarget.value)
       onSelect(zoneDateToUtc(setHours(selectedDate, m)))
@@ -322,6 +325,7 @@ function CalendarTimePresetButton(props: {
 
 function CalendarMonthSelect(props: {
   moveFocusedDate: (by: number) => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onChange: (e: FormEvent<HTMLSelectElement>) => void
   value?: number
 }) {

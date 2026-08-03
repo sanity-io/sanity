@@ -29,6 +29,7 @@ export function connectionState(
     map((eventType) => eventType !== 'reconnect'),
     switchMap(
       (isConnected): Observable<ConnectionState> =>
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         isConnected ? of('connected') : timer(200).pipe(mapTo('reconnecting')),
     ),
     startWith(INITIAL),

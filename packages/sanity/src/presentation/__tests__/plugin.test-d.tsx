@@ -160,6 +160,7 @@ describe('presentationTool()', () => {
       test('can pass object with draftMode', () => {
         assertType<PreviewUrlOption>({
           draftMode: {
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             enable: '/api/draft-mode/enable',
           },
         })

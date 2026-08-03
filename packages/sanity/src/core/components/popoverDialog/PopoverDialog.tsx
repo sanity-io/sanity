@@ -27,7 +27,9 @@ const StyledPopover = styled(Popover)(() => {
 })
 
 // This layer is sticky so that the header is always visible when scrolling
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const StickyLayer = styled(Layer)((props: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const radii = props.theme.sanity.radius[3]
 
   return css`

@@ -14,9 +14,9 @@ export function ModalObjectInput(props: InputProps) {
   const hasValue = value !== undefined && value !== null
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Card padding={3} radius={2} shadow={1} tone="transparent">
-        <Stack space={3}>
+        <Stack gap={3}>
           <Box>
             {hasValue && (
               <Text size={1} muted>

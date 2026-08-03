@@ -346,7 +346,7 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
           }}
         >
           <Card radius={2} shadow={2} padding={2}>
-            <Stack space={2}>
+            <Stack gap={2}>
               {hovered.map((entry) => (
                 <Flex key={entry.branch} align="center" gap={2}>
                   {lines.length > 1 && (

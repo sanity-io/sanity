@@ -20,6 +20,7 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
   const {displayed} = useDocumentPane()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
@@ -69,8 +70,8 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
         >
           <Card padding={5}>
             <form onSubmit={handleSubmit}>
-              <Stack space={3}>
-                <Stack space={4}>
+              <Stack gap={3}>
+                <Stack gap={4}>
                   <Text size={1}>
                     Create an anonymous version of the document. This will create a new document
                     with the same content as the original document, but with a new ID.

@@ -63,7 +63,7 @@ export function MediaLibraryProvider({
           <Text size={1}>
             <ErrorOutlineIcon />
           </Text>
-          <Stack space={4} data-testid="MEDIA_LIBRARY_ERROR_UNEXPECTED">
+          <Stack gap={4} data-testid="MEDIA_LIBRARY_ERROR_UNEXPECTED">
             <Text size={1} weight="semibold">
               {unexpectedError.message ||
                 t('asset-sources.media-library.error.library-could-not-be-resolved')}

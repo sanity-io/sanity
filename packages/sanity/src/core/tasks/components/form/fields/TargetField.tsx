@@ -202,7 +202,7 @@ export function TargetField(
         <LayerProvider zOffset={100}>
           <CurrentWorkspaceProvider>
             <SearchProvider>
-              <Stack space={2}>
+              <Stack gap={2}>
                 {mode === 'create' && (
                   <Box data-ui="fieldHeaderContentBox">
                     <FormFieldHeaderText

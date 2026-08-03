@@ -276,6 +276,7 @@ describe('uploadTarget - drag and drop', () => {
     // Browse-only source (no Uploader, no uploadMode: 'component') should not appear in picker
     const browseOnlySource: AssetSource = {
       name: 'browse-only',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       title: 'Browse Only',
       component: () => null,
     }
@@ -309,6 +310,7 @@ describe('uploadTarget - drag and drop', () => {
   it('does not show browse-only asset sources in upload destination picker (image)', async () => {
     const browseOnlySource: AssetSource = {
       name: 'browse-only',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       title: 'Browse Only',
       component: () => null,
     }

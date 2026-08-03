@@ -29,6 +29,7 @@ export interface FormBuilderContextValue {
    */
   __internal: {
     components: {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       CustomMarkers: FormBuilderCustomMarkersComponent
       Markers: FormBuilderMarkersComponent
     }

@@ -32,7 +32,7 @@ export function InitialValues(): React.JSX.Element {
   }
 
   return (
-    <Stack padding={4} space={4}>
+    <Stack padding={4} gap={4}>
       <Box>
         <Heading as="h1" size={1}>
           Books: Add an author
@@ -41,7 +41,7 @@ export function InitialValues(): React.JSX.Element {
       {data.map((item, i) => (
         <Card key={item._id} padding={4} shadow={2} radius={2}>
           <Flex align="flex-start" justify="space-between" gap={3}>
-            <Stack space={2}>
+            <Stack gap={2}>
               <Heading as="h1" size={1}>
                 {item.title}
               </Heading>

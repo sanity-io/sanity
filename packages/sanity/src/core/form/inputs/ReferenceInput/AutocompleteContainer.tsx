@@ -32,6 +32,7 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
     [forwardedRef],
   )
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const inputWrapperRect = useElementRect(rootElement)
 
   return (

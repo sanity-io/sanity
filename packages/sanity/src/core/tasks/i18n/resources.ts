@@ -6,6 +6,7 @@ import {defineLocalesResources} from '../../i18n/helpers'
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const tasksLocaleStrings = defineLocalesResources('tasks', {
   /** The label for the create task action */
   'actions.create.text': 'Create new task',

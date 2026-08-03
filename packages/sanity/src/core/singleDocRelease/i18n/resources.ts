@@ -5,6 +5,7 @@ import {defineLocalesResources} from '../../i18n/helpers'
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const singleDocReleaseLocaleStrings = defineLocalesResources('singleDocRelease', {
   /** Action text for scheduling publish of a draft document */
   'action.schedule-publish': 'Schedule publish',

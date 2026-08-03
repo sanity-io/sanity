@@ -310,6 +310,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   // Validation is computed against the live editable document (draft/published/
   // version). When viewing a historical revision those markers don't describe
   // what's on screen, so don't surface them on the read-only revision.
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const validation = useUnique(
     isOlderRevision ? (EMPTY_ARRAY as ValidationMarker[]) : validationRaw,
   )

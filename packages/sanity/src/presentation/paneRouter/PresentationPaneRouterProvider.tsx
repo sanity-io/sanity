@@ -83,6 +83,7 @@ export function PresentationPaneRouterProvider(
 
   const {state: routerState, resolvePathFromState} = useRouter()
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
 
   const createPathWithParams: PaneRouterContextValue['createPathWithParams'] = useCallback(

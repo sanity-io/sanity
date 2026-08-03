@@ -17,6 +17,7 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
       id: 'user-123',
       name: 'Test User',
       email: 'test@example.com',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       role: '',
       roles: [],
     },
@@ -51,6 +52,7 @@ describe('useVisibleWorkspaces', () => {
             id: 'user-456',
             name: 'Regular User',
             email: 'regular@example.com',
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             role: '',
             roles: [{name: 'viewer', title: 'Viewer'}],
           },
@@ -67,6 +69,7 @@ describe('useVisibleWorkspaces', () => {
             id: 'admin-123',
             name: 'Admin User',
             email: 'admin@example.com',
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             role: 'administrator',
             roles: [{name: 'administrator', title: 'Administrator'}],
           },
@@ -171,6 +174,7 @@ describe('useVisibleWorkspaces', () => {
             id: 'editor',
             name: 'Editor',
             email: 'editor@example.com',
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             role: 'editor',
             roles: [{name: 'editor', title: 'Editor'}],
           },
@@ -186,6 +190,7 @@ describe('useVisibleWorkspaces', () => {
             id: 'admin',
             name: 'Admin',
             email: 'admin@example.com',
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             role: 'administrator',
             roles: [{name: 'administrator', title: 'Administrator'}],
           },

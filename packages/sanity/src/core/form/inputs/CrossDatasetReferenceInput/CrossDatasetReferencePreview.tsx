@@ -101,10 +101,8 @@ export function CrossDatasetReferencePreview(props: {
       )}
 
       <Box paddingLeft={3}>
-        <Inline space={4} paddingRight={1}>
-          {refType && showTypeLabel && (
-            <Badge mode="outline">{refType.title || refType.type}</Badge>
-          )}
+        <Inline gap={4} paddingRight={1}>
+          {refType && showTypeLabel && <Badge>{refType.title || refType.type}</Badge>}
 
           {(insufficientPermissions || notFound) && (
             <Box>

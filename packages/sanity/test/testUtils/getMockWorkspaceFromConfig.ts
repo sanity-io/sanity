@@ -14,6 +14,7 @@ const defaultMockUser: CurrentUser = {
   id: 'doug',
   name: 'Doug',
   email: 'doug@sanity.io',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   role: 'admin',
   roles: [{name: 'administrator', title: 'Administrator'}],
 }

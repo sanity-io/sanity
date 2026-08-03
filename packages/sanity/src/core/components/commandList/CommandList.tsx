@@ -43,7 +43,7 @@ const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
 const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
   return css`
     bottom: ${-offset}px;
-    border-radius: ${rem(theme.sanity.radius[1])};
+    border-radius: ${rem(theme.sanity.radius[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     left: ${-offset}px;
     pointer-events: none;
     position: absolute;
@@ -53,7 +53,9 @@ const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
 
     ${VirtualListBox}:focus-visible & {
       box-shadow: ${focusRingStyle({
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         base: theme.sanity.color.base,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         focusRing: theme.sanity.focusRing,
       })};
     }

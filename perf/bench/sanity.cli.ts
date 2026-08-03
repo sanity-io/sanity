@@ -7,5 +7,6 @@ export default defineCliConfig({
     projectId: apiConfig.projectId,
     dataset: apiConfig.dataset,
   },
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   autoUpdates: false,
 })

@@ -94,16 +94,20 @@ function omitLeakedDefaultUri(rules: Rule[], typeDef: SchemaType): Rule[] {
   const isUrlType = getTypeChain(typeDef).some((type) => type.name === 'url')
   if (!isUrlType) return rules
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const defaultUri = new RuleClass(typeDef).uri()._rules.find(isUriSpec)?.constraint
   const isDefaultUri = (spec: RuleSpec) => isUriSpec(spec) && isEqual(spec.constraint, defaultUri)
   const isCustomUri = (spec: RuleSpec) => isUriSpec(spec) && !isEqual(spec.constraint, defaultUri)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const someElementSetsScheme = rules.some((rule) => rule._rules.some(isCustomUri))
   if (!someElementSetsScheme) return rules
 
   return rules.map((rule) => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     if (!rule._rules.some(isDefaultUri)) return rule
     const cleaned = rule.clone()
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     cleaned._rules = rule._rules.filter((spec) => !isDefaultUri(spec))
     return cleaned
   })

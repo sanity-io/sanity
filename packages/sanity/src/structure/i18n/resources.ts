@@ -6,6 +6,7 @@ import {defineLocalesResources} from 'sanity'
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const structureLocaleStrings = defineLocalesResources('structure', {
   /** Label for the "Copy document ID" menu item */
   'action.copy-document-id.label': 'Copy document ID',
@@ -226,6 +227,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when a document is not part of any release
    * @deprecated – no longer in use
    * */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'banners.release.navigate-to-edit-description-none': 'This document is not part of any release',
   /** The text for the banner that appears when a document only has one version but is in a draft or published pinned release */
   'banners.release.navigate-to-edit-description-single':
