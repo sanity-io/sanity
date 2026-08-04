@@ -1,13 +1,5 @@
 import {Box, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
-import {
-  type FormEvent,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useEffectEvent,
-  useMemo,
-  useState,
-} from 'react'
+import {type FormEvent, forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
 import {tap} from 'rxjs/operators'
 import {
   createPatchChannel,
@@ -28,6 +20,7 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'

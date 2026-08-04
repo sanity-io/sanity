@@ -123,6 +123,11 @@
             "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
           },
           {
+            "name": "react",
+            "importNames": ["useEffectEvent"],
+            "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+          },
+          {
             "name": "react/jsx-runtime",
             "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
           },
@@ -191,6 +196,8 @@
     // Handy rules that are disabled by default
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
+    // Prefer function components; allow class-based error boundaries (no hook equivalent yet)
+    "react/prefer-function-component": ["error", {"allowErrorBoundary": true}],
     // React Compiler rules, native nursery rule (replaces eslint-plugin-react-hooks compiler rules).
     // Pre-existing violations are grandfathered with inline `oxlint-disable-next-line` suppressions.
     "react/react-compiler": "error",
@@ -470,6 +477,11 @@
                 "name": "react",
                 "importNames": ["createRef"],
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
+              },
+              {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
               },
               {
                 "name": "react/jsx-runtime",
@@ -779,6 +791,11 @@
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
               },
               {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+              },
+              {
                 "name": "react/jsx-runtime",
                 "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
               },
@@ -905,6 +922,11 @@
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
               },
               {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+              },
+              {
                 "name": "react/jsx-runtime",
                 "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
               },
@@ -1022,6 +1044,11 @@
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
               },
               {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+              },
+              {
                 "name": "react/jsx-runtime",
                 "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
               },
@@ -1133,6 +1160,11 @@
                 "name": "react",
                 "importNames": ["createRef"],
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
+              },
+              {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
               },
               {
                 "name": "react/jsx-runtime",

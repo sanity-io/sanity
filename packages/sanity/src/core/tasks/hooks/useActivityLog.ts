@@ -1,4 +1,5 @@
-import {useCallback, useEffect, useEffectEvent, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {useClient} from '../../hooks/useClient'
 import {getTransactionsLogs} from '../../store/translog/getTransactionsLogs'
@@ -52,7 +53,6 @@ export function useActivityLog(task: TaskDocument): {
   const handleFetchAndParse = useEffectEvent((_rev: string) => fetchAndParse(task))
   useEffect(() => {
     // Task is updated on every change, wait until the revision changes to update the activity log.
-    // oxlint-disable-next-line react/react-compiler
     void handleFetchAndParse(task._rev)
   }, [task._rev])
   return {changes}

@@ -13,7 +13,6 @@ import {
   type RefObject,
   useCallback,
   useEffect,
-  useEffectEvent,
   useInsertionEffect,
   useMemo,
   useRef,
@@ -22,6 +21,7 @@ import {
 import deepEquals from 'react-fast-compare'
 import {useObservable} from 'react-rx'
 import {distinctUntilChanged} from 'rxjs/operators'
+import {useEffectEvent} from 'use-effect-event'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
