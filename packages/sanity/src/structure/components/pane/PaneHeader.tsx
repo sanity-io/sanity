@@ -1,4 +1,4 @@
-import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
+import {Box, Card, Flex, LayerProvider, useElementSize} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 
@@ -43,14 +43,13 @@ export const PaneHeader = forwardRef(function PaneHeader(
     appendTitle,
   } = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const paneRect = useElementRect(paneElement || null)
+  const paneSize = useElementSize(paneElement || null)
 
   const layoutStyle = useMemo(
     () => ({
-      width: collapsed ? paneRect?.height || window.innerHeight : undefined,
+      width: collapsed ? paneSize?.border.height || window.innerHeight : undefined,
     }),
-    [collapsed, paneRect],
+    [collapsed, paneSize],
   )
 
   const handleTitleClick = useCallback(() => {
