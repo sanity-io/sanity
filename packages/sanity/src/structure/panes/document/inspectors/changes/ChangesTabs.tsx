@@ -19,7 +19,11 @@ import {Tab} from '../../../../../ui-components/tab/Tab'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {HISTORY_INSPECTOR_NAME} from '../../constants'
+import {
+  type ChangesInspectorTab,
+  HISTORY_INSPECTOR_NAME,
+  resolveChangesInspectorTab,
+} from '../../constants'
 import {ChangesInspector} from './ChangesInspector'
 import {EventsInspector} from './EventsInspector'
 import {EventsSelector} from './EventsSelector'
@@ -32,11 +36,6 @@ const FadeInFlex = styled(Flex)`
     opacity: 1;
   }
 `
-const TABS = ['history', 'review'] as const
-const isValidTab = (tab: string | undefined): tab is (typeof TABS)[number] =>
-  // @ts-expect-error TS doesn't understand the type guard
-  tab && TABS.includes(tab)
-
 export function ChangesTabs(props: DocumentInspectorProps) {
   const {params, setParams} = usePaneRouter()
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -47,11 +46,9 @@ export function ChangesTabs(props: DocumentInspectorProps) {
   const isReady = params?.inspect === HISTORY_INSPECTOR_NAME
   const {selectedPerspective} = usePerspective()
 
-  const paneRouterTab = isValidTab(params?.changesInspectorTab)
-    ? params.changesInspectorTab
-    : TABS[0]
+  const paneRouterTab = resolveChangesInspectorTab(params?.changesInspectorTab)
 
-  const setPaneRouterTab = (tab: (typeof TABS)[number]) =>
+  const setPaneRouterTab = (tab: ChangesInspectorTab) =>
     setParams({
       ...params,
       changesInspectorTab: tab,

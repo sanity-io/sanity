@@ -20,3 +20,16 @@ export const INCOMING_REFERENCES_INSPECTOR_NAME = 'sanity/structure/incoming-ref
 
 // timeline
 export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
+
+// history / review changes inspector tabs
+const CHANGES_INSPECTOR_TABS = ['history', 'review'] as const
+
+export type ChangesInspectorTab = (typeof CHANGES_INSPECTOR_TABS)[number]
+
+function isValidChangesInspectorTab(tab: string | undefined): tab is ChangesInspectorTab {
+  return typeof tab === 'string' && (CHANGES_INSPECTOR_TABS as readonly string[]).includes(tab)
+}
+
+export function resolveChangesInspectorTab(tab: string | undefined): ChangesInspectorTab {
+  return isValidChangesInspectorTab(tab) ? tab : CHANGES_INSPECTOR_TABS[0]
+}

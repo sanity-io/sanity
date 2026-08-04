@@ -171,6 +171,12 @@ export function DocumentLayout() {
     [onPathOpen, onFocus],
   )
 
+  // Wrapped so the change-bar's onClick MouseEvent isn't passed through as the telemetry path.
+  const handleOpenReviewChanges = useCallback(
+    () => onHistoryOpen('change_indicator'),
+    [onHistoryOpen],
+  )
+
   if (!schemaType) {
     return (
       <DocumentLayoutError
@@ -224,7 +230,7 @@ export function DocumentLayout() {
                 <StyledChangeConnectorRoot
                   data-testid="change-connector-root"
                   isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
-                  onOpenReviewChanges={onHistoryOpen}
+                  onOpenReviewChanges={handleOpenReviewChanges}
                   onSetFocus={onConnectorSetFocus}
                 >
                   <DocumentPanel
