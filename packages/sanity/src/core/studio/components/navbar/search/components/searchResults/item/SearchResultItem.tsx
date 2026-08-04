@@ -90,6 +90,8 @@ export function SearchResultItem({
     enabled: true,
     schemaType: type,
     value: documentStub,
+    perspectiveStack: previewPerspective,
+    variant: previewVariant,
   })
 
   const handleClick = useCallback(

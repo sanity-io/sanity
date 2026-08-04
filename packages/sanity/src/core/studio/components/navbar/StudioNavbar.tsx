@@ -259,6 +259,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                             onClose={handleCloseSearchFullscreen}
                             onOpen={handleOpenSearchFullscreen}
                             open={searchFullscreenOpen}
+                            previewPerspective={perspectiveStack}
+                            previewVariant={selectedVariantName}
                           />
                         </PortalProvider>
                       ) : (
