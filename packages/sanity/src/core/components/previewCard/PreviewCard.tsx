@@ -37,7 +37,7 @@ export function usePreviewCard(): PreviewCardContextValue {
 /** @internal */
 export function PreviewCard(
   props: CardProps<ElementType> &
-    Omit<HTMLProps<HTMLDivElement>, 'height'> &
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'> &
     RefAttributes<HTMLDivElement>,
 ) {
   const {ref, children, selected, as, ...restProps} = props
