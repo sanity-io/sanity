@@ -1,6 +1,7 @@
 import {type TransactionLogEventWithEffects} from '@sanity/types'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo} from 'react'
 
+import {useAsyncData} from '../../../../hooks/useAsyncData'
 import {useClient} from '../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../store/translog/getTransactionsLogs'
 import {getVersionId} from '../../../../util/draftUtils'
@@ -44,54 +45,27 @@ export function useReleaseHistory(
   loading: boolean
 } {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
-  const [history, setHistory] = useState<TransactionLogEventWithEffects[] | null>(null)
 
   const versionId = useMemo(() => {
     if (!releaseDocumentId || !releaseId) return ''
     return getVersionId(releaseDocumentId, releaseId)
   }, [releaseDocumentId, releaseId])
 
-  // Reset to the loading state during render when the (versionId, documentRevision) identity
-  // changes, before the new fetch settles — React's recommended "adjusting state when a prop
-  // changes" pattern (setState during render bails out and re-renders immediately, without the
-  // extra commit an effect-based reset would cause). Keying on documentRevision too (not just
-  // versionId) matches the sibling useDocumentLastEditedBy hook's full cache key: without it, a
-  // revision change on the same version would keep showing the previous history with
-  // `loading: false` while the new fetch runs — the same false-settled flash, just triggered by an
-  // edit instead of a version switch. A cache hit or the `!versionId` short-circuit in
-  // `fetchAndParse` still settles synchronously within the same effect tick, so there's no visible
-  // flicker for those.
-  const resetKey = `${versionId}-${documentRevision ?? ''}`
-  const [prevResetKey, setPrevResetKey] = useState(resetKey)
-  if (resetKey !== prevResetKey) {
-    setPrevResetKey(resetKey)
-    setHistory(null)
-  }
+  const cacheKey = `${releaseDocumentId}-${documentRevision}`
 
-  const cancelledRef = useRef(false)
-
-  const fetchAndParse = useCallback(async (): Promise<void> => {
-    if (!versionId) {
-      // No document to fetch history for (e.g. a pending / just-added placeholder row passes an
-      // undefined id). Settle to an empty history so `loading` reports false instead of hanging
-      // true — otherwise the Edited / Edited-by cells keep an endless skeleton on rows that will
-      // never resolve a history.
-      setHistory([])
-      return
-    }
-
-    const cacheKey = `${releaseDocumentId}-${documentRevision}`
+  const fetcher = useCallback((): Promise<TransactionLogEventWithEffects[]> => {
+    // No document to fetch history for (e.g. a pending / just-added placeholder row passes an
+    // undefined id). Resolve to an empty history so loading settles to false rather than hanging.
+    if (!versionId) return Promise.resolve([])
 
     const cached = historyCache[cacheKey]
-    if (cached) {
-      setHistory(cached.transactions)
-      return
-    }
+    if (cached) return Promise.resolve(cached.transactions)
 
-    await acquireHistorySlot()
-    // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
-    const run = async () => {
-      const transactions = await getTransactionsLogs(client, versionId, {
+    // .then().finally() (not try/finally) for React Compiler compatibility. The concurrency slot is
+    // released whether the fetch resolves or throws; a throw propagates so useAsyncData reports the
+    // error state (which the cells read as settled-with-no-editor, never a permanent skeleton).
+    return acquireHistorySlot().then(() =>
+      getTransactionsLogs(client, versionId, {
         tag: 'sanity.studio.releases.documents.history',
         effectFormat: 'mendoza',
         excludeContent: true,
@@ -99,43 +73,31 @@ export function useReleaseHistory(
         limit: 1,
         reverse: true,
       })
+        .then((transactions) => {
+          historyCache[cacheKey] = {transactions}
+          return transactions
+        })
+        .finally(() => releaseHistorySlot()),
+    )
+  }, [versionId, cacheKey, client])
 
-      if (!cancelledRef.current) {
-        setHistory(transactions)
-
-        historyCache[cacheKey] = {
-          transactions,
-        }
-      }
-    }
-    await run()
-      .catch((error) => {
-        console.error('Failed to fetch or parse document history:', error)
-        if (!cancelledRef.current) setHistory([])
-      })
-      .finally(() => {
-        releaseHistorySlot()
-      })
-  }, [versionId, releaseDocumentId, documentRevision, client])
-
-  useEffect(() => {
-    cancelledRef.current = false
-    // oxlint-disable-next-line react/react-compiler
-    void fetchAndParse()
-    return () => {
-      cancelledRef.current = true
-    }
-  }, [fetchAndParse])
+  // `resetKey` (not just the fetcher's own identity) forces the loading state to reset on a genuine
+  // identity change — same reasoning as the sibling useDocumentLastEditedBy hook's full cache key.
+  // Without it, switching to a different version, or a revision change on the same version, would
+  // keep useAsyncData's default stale-while-revalidate behavior: the PREVIOUS version's history
+  // stays visible with `loading: false` while the new fetch runs — a false-settled flash, not a
+  // smooth refetch, since it's showing a different document's data under the new identity.
+  const {data: history, loading} = useAsyncData(fetcher, {resetKey: cacheKey})
 
   return useMemo(() => {
     const collaborators: string[] = []
-    // `null` = not yet fetched → genuinely loading. `[]` = settled with no history (a legitimately
-    // empty log, or a failed fetch that set `[]` on line 93) → NOT loading, just nothing to show.
-    // Keying `loading` off length would leave those rows on a permanent skeleton.
-    if (history === null) {
+    // `loading` (from useAsyncData) is the single source of truth for "not yet settled". Once
+    // settled, an empty OR errored fetch yields no history → render nothing, never a permanent
+    // skeleton. Keying off array length alone would leave those rows on an endless skeleton.
+    if (loading) {
       return {documentHistory: undefined, collaborators, loading: true}
     }
-    if (history.length === 0) {
+    if (!history || history.length === 0) {
       return {documentHistory: undefined, collaborators, loading: false}
     }
 
@@ -164,5 +126,5 @@ export function useReleaseHistory(
     })
 
     return {documentHistory: aggregated, collaborators, loading: false}
-  }, [history])
+  }, [history, loading])
 }

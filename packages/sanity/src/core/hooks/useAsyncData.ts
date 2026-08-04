@@ -9,6 +9,8 @@ export type AsyncData<T> =
   | {status: 'success'; data: T; error: undefined}
   | {status: 'error'; data: undefined; error: unknown}
 
+const LOADING_STATE = {status: 'loading', data: undefined, error: undefined} as const
+
 /**
  * Runs `fetcher` and models the result as three distinct states — loading, success, error — so a
  * settled-but-empty result never reads as "still loading". `loading` is true ONLY until the first
@@ -23,14 +25,26 @@ export type AsyncData<T> =
  * re-run the previous state is kept until the new fetch resolves (stale-while-revalidate), avoiding
  * a skeleton flash on refetch.
  *
+ * Pass `resetKey` when a re-run means "this is now a genuinely different entity" rather than "the
+ * same entity, refetching" — e.g. a document/version id, not a cache-busting counter. Stale-while-
+ * revalidate is the wrong default there: showing entity A's data under entity B's identity is a
+ * false-settled flash, not a smooth refetch. When `resetKey` changes, state resets to loading during
+ * render (before the new fetch settles) instead of holding the previous entity's data.
+ *
  * @internal
  */
-export function useAsyncData<T>(fetcher: () => Promise<T>): AsyncData<T> & {loading: boolean} {
-  const [state, setState] = useState<AsyncData<T>>({
-    status: 'loading',
-    data: undefined,
-    error: undefined,
-  })
+export function useAsyncData<T>(
+  fetcher: () => Promise<T>,
+  options?: {resetKey?: string},
+): AsyncData<T> & {loading: boolean} {
+  const [state, setState] = useState<AsyncData<T>>(LOADING_STATE)
+
+  const resetKey = options?.resetKey
+  const [prevResetKey, setPrevResetKey] = useState(resetKey)
+  if (resetKey !== undefined && resetKey !== prevResetKey) {
+    setPrevResetKey(resetKey)
+    setState(LOADING_STATE)
+  }
 
   useEffect(() => {
     let cancelled = false

@@ -1,9 +1,10 @@
 import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
 import {Card, Flex, Stack, Text, TextArea, TextInput, useToast} from '@sanity/ui'
-import {type ChangeEvent, useCallback, useId, useRef, useState} from 'react'
+import {type ChangeEvent, useCallback, useId, useState} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {useAsyncAction} from '../../../hooks/useAsyncAction'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 
@@ -32,35 +33,29 @@ export function EditReleaseDialog({
 
   const [title, setTitle] = useState(release.metadata.title ?? '')
   const [description, setDescription] = useState(release.metadata.description ?? '')
-  const [isSaving, setIsSaving] = useState(false)
-  // Synchronous re-entry guard. `loading={isSaving}` only disables the button after a re-render, so
-  // two clicks in the same tick would both reach updateRelease. This ref blocks the second call
-  // immediately.
-  const isSavingRef = useRef(false)
 
-  const handleSave = useCallback(async () => {
-    if (isSavingRef.current) return
-    isSavingRef.current = true
-    setIsSaving(true)
-    try {
+  // useAsyncAction owns the re-entry guard + isSaving lifecycle (a fast double-click can otherwise
+  // fire updateRelease twice, since `loading={isSaving}` only disables the button after a re-render).
+  const {run: handleSave, isRunning: isSaving} = useAsyncAction(
+    async () => {
       const next: EditableReleaseDocument = {
         ...release,
         metadata: {...release.metadata, title, description},
       }
       await updateRelease(next)
       onClose()
-    } catch (err) {
-      console.error(err)
-      toast.push({
-        closable: true,
-        status: 'error',
-        title: t('release.toast.edit-release-error.title'),
-      })
-    } finally {
-      isSavingRef.current = false
-      setIsSaving(false)
-    }
-  }, [description, onClose, release, t, title, toast, updateRelease])
+    },
+    {
+      onError: (err) => {
+        console.error(err)
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('release.toast.edit-release-error.title'),
+        })
+      },
+    },
+  )
 
   // Ignore click-outside / Escape / close while a save is in flight: dismissing mid-mutation would
   // unmount the dialog while updateRelease continues, letting the user reopen and edit against a
