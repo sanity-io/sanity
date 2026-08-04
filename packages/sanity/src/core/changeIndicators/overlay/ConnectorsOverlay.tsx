@@ -1,6 +1,7 @@
 import {type Path} from '@sanity/types'
-import {use, useCallback, useEffect, useEffectEvent, useMemo, useRef, useState} from 'react'
+import {use, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {ScrollContext} from 'sanity/_singletons'
+import {useEffectEvent} from 'use-effect-event'
 
 import {type Reported} from '../../components/react-track-elements/types'
 import {useReviewChanges} from '../../hooks/useReviewChanges'

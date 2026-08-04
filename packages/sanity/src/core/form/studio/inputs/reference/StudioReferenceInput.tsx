@@ -7,16 +7,10 @@ import {
   type ReferenceSchemaType,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {
-  type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
-  useCallback,
-  useEffectEvent,
-  useMemo,
-} from 'react'
+import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import {combineLatest, from, of, throwError} from 'rxjs'
 import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
+import {useEffectEvent} from 'use-effect-event'
 
 import {useSchema} from '../../../../hooks/useSchema'
 import {usePerspective} from '../../../../perspective/usePerspective'
