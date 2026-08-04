@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
+
+### Features
+
+* **core:** query documents in the selected variant alongside the perspective stack ([#13791](https://github.com/sanity-io/sanity/issues/13791)) ([8989fe7](https://github.com/sanity-io/sanity/commit/8989fe72ebe5c0b4173fa7f356235fa403639711))
+* **core:** unclaimed project claim intake and nudge ([#13705](https://github.com/sanity-io/sanity/issues/13705)) ([41dd4bf](https://github.com/sanity-io/sanity/commit/41dd4bfaf1049146e38938e39f008f7fa5f1c95b))
+* **workbench:** export AssetSource types from sanity/workbench ([#13827](https://github.com/sanity-io/sanity/issues/13827)) ([458ca4a](https://github.com/sanity-io/sanity/commit/458ca4a6cb0863db236a695d15b295974c2162a2))
+
+### Bug Fixes
+
+* **core:** allow creating draft variants from published variant sibling ([#13741](https://github.com/sanity-io/sanity/issues/13741)) ([cf5a7da](https://github.com/sanity-io/sanity/commit/cf5a7da78f0f4d42a7c21106749b439a007efdf3))
+* **core:** avoid native useEffectEvent in forwardRef and memo ([#13821](https://github.com/sanity-io/sanity/issues/13821)) ([8f84cf4](https://github.com/sanity-io/sanity/commit/8f84cf4b0628e3b9bc8c4752f67ec793153aaaf6))
+* **core:** stop permission loading-flag churn on every document change ([#13771](https://github.com/sanity-io/sanity/issues/13771)) ([96f5819](https://github.com/sanity-io/sanity/commit/96f5819eba54f1723adf6e29f9491ada56543643))
+* **core:** update copying variants to different releases from context menu. ([#13800](https://github.com/sanity-io/sanity/issues/13800)) ([3086936](https://github.com/sanity-io/sanity/commit/3086936c9a450730e9ea2cd59ce86c007ccd4578))
+* **deps:** update dependency @sanity/cli to ^7.16.0 ([#13858](https://github.com/sanity-io/sanity/issues/13858)) ([1c690fd](https://github.com/sanity-io/sanity/commit/1c690fd165eadff4b187d4247059bf450cb4fec9))
+* **deps:** update dependency motion to ^12.43.0 ([#13849](https://github.com/sanity-io/sanity/issues/13849)) ([64f1aa1](https://github.com/sanity-io/sanity/commit/64f1aa177218ad125c33567630c2d30dcde0910f))
+* **deps:** update portabletext ([#13842](https://github.com/sanity-io/sanity/issues/13842)) ([9320439](https://github.com/sanity-io/sanity/commit/9320439714fefd700256787b4529798411eb19e6))
+* **structure:** incoming references shouldn't self refer ([#13851](https://github.com/sanity-io/sanity/issues/13851)) ([367be3f](https://github.com/sanity-io/sanity/commit/367be3f9a4fc0bb999278f77944209b3aa2bc48f))
+* **structure:** keep inspector crashes inside the inspector panel ([#13845](https://github.com/sanity-io/sanity/issues/13845)) ([cba5181](https://github.com/sanity-io/sanity/commit/cba51818c90f87311031fdc9ae03bb071ca30f77))
+* **types:** preserve supplied schema helper properties ([#13237](https://github.com/sanity-io/sanity/issues/13237)) ([38002e4](https://github.com/sanity-io/sanity/commit/38002e4432aff0f917eee7461897c23bba35886e))
+
+### Performance Improvements
+
+* **sanity:** batch connector geometry updates with rAF and bail on unchanged connectors ([#13763](https://github.com/sanity-io/sanity/issues/13763)) ([24a033e](https://github.com/sanity-io/sanity/commit/24a033eacb13ce373f844ec77cfc6e0209741118))
+* **sanity:** defer non-controlled useObservable subscriptions ([#13799](https://github.com/sanity-io/sanity/issues/13799)) ([2958d75](https://github.com/sanity-io/sanity/commit/2958d75de93601e987f640b0ff02f3827db3d4ec))
 ## [6.8.0](https://github.com/sanity-io/sanity/compare/v6.7.0...v6.8.0) (2026-07-30)
 
 ### Features
