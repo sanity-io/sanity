@@ -1,13 +1,12 @@
 import {type AssetSourceComponentProps} from '@sanity/types'
-import {type ForwardedRef, forwardRef, memo} from 'react'
+import {memo, type RefAttributes} from 'react'
 
 import {SelectAssetsDialog} from './SelectAssetsDialog'
 
 const DatasetAssetSourceComponent = function DatasetAssetSourceComponent(
-  props: AssetSourceComponentProps,
-  ref: ForwardedRef<HTMLDivElement>,
+  props: AssetSourceComponentProps & RefAttributes<HTMLDivElement>,
 ) {
-  const {action = 'select'} = props
+  const {ref, action = 'select'} = props
 
   if (action === 'select') {
     return <SelectAssetsDialog {...props} ref={ref} />
@@ -15,4 +14,4 @@ const DatasetAssetSourceComponent = function DatasetAssetSourceComponent(
   return null
 }
 
-export const DatasetAssetSource = memo(forwardRef(DatasetAssetSourceComponent))
+export const DatasetAssetSource = memo(DatasetAssetSourceComponent)

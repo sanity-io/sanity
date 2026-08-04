@@ -10,7 +10,7 @@
  */
 import {BoundaryElementProvider} from '@sanity/ui'
 import {render, waitFor} from '@testing-library/react'
-import {forwardRef, useLayoutEffect} from 'react'
+import {useLayoutEffect, type RefAttributes} from 'react'
 import {EditDialogOuterBoundaryContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
@@ -29,12 +29,13 @@ vi.mock('../../../../i18n/hooks/useTranslation', () => ({
 
 vi.mock('../../../../../ui-components/popover/Popover', async (importOriginal) => {
   const mod = (await importOriginal()) as Record<string, unknown>
-  const Forward = forwardRef<HTMLDivElement, UIPopoverProps>(function PopoverCapture(props, ref) {
+  const Forward = function PopoverCapture(props: UIPopoverProps & RefAttributes<HTMLDivElement>) {
+    const {ref, floatingBoundary} = props
     useLayoutEffect(() => {
-      lastPopoverProps = {floatingBoundary: props.floatingBoundary}
-    }, [props.floatingBoundary])
+      lastPopoverProps = {floatingBoundary}
+    }, [floatingBoundary])
     return <div ref={ref} data-testid="popover-capture" />
-  })
+  }
   return {...mod, Popover: Forward}
 })
 

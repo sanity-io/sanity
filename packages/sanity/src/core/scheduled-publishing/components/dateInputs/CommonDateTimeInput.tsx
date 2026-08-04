@@ -1,8 +1,6 @@
 import {TextInput} from '@sanity/ui'
 import {
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   useCallback,
   useEffect,
   useId,
@@ -10,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 
 import {FormField} from '../../../form/components/formField/FormField'
@@ -32,11 +31,9 @@ type Props = CommonProps & {
   timeZoneScope: TimeZoneScope
 }
 
-export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
-  props: Props,
-  forwardedRef: ForwardedRef<HTMLInputElement>,
-) {
+export function CommonDateTimeInput(props: Props & RefAttributes<HTMLInputElement>) {
   const {
+    ref: forwardedRef,
     value,
     markers,
     title,
@@ -166,4 +163,4 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       )}
     </FormField>
   )
-})
+}

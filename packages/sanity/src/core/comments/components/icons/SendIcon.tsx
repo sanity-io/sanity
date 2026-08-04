@@ -1,9 +1,9 @@
-import {forwardRef, type Ref, type SVGProps} from 'react'
+import {type Ref, type SVGProps, type RefAttributes} from 'react'
 
-export const SendIcon = forwardRef(function Icon(
-  props: SVGProps<SVGSVGElement>,
-  ref: Ref<SVGSVGElement>,
+export const SendIcon = function Icon(
+  props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>,
 ) {
+  const {ref, ...rest} = props
   return (
     <svg
       data-sanity-icon="send"
@@ -13,7 +13,7 @@ export const SendIcon = forwardRef(function Icon(
       viewBox="0 0 25 25"
       width="1em"
       xmlns="http://www.w3.org/2000/svg"
-      {...props}
+      {...rest}
     >
       <path
         clipRule="evenodd"
@@ -24,4 +24,4 @@ export const SendIcon = forwardRef(function Icon(
       />
     </svg>
   )
-})
+}

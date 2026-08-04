@@ -1,6 +1,6 @@
 import {hues} from '@sanity/color'
 import {type Theme} from '@sanity/ui'
-import {forwardRef} from 'react'
+import {type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
 
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
@@ -70,11 +70,12 @@ interface CommentInlineHighlightSpanProps {
 /**
  * @internal
  */
-export const CommentInlineHighlightSpan = forwardRef(function CommentInlineHighlightSpan(
-  props: CommentInlineHighlightSpanProps & React.HTMLProps<HTMLSpanElement>,
-  ref: React.Ref<HTMLSpanElement>,
+export function CommentInlineHighlightSpan(
+  props: CommentInlineHighlightSpanProps &
+    React.HTMLProps<HTMLSpanElement> &
+    RefAttributes<HTMLSpanElement>,
 ) {
-  const {children, isAdded, isAuthoring, isHovered, isNested, ...rest} = props
+  const {ref, children, isAdded, isAuthoring, isHovered, isNested, ...rest} = props
 
   const state = isAdded ? 'added' : isAuthoring ? 'authoring' : undefined
 
@@ -89,4 +90,4 @@ export const CommentInlineHighlightSpan = forwardRef(function CommentInlineHighl
       {children}
     </HighlightSpan>
   )
-})
+}

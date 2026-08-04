@@ -1,10 +1,10 @@
-import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
+import {type ComponentProps, useCallback, useMemo, type RefAttributes} from 'react'
 
 import {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {Calendar, type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 
-export const DatePicker = forwardRef(function DatePicker(
+export function DatePicker(
   props: Omit<ComponentProps<'div'>, 'onChange'> & {
     value?: Date
     onChange: (nextDate: Date) => void
@@ -17,10 +17,10 @@ export const DatePicker = forwardRef(function DatePicker(
     isPastDisabled?: boolean
     timeZoneScope: TimeZoneScope
     onTimeZoneOpen?: () => void
-  },
-  ref: ForwardedRef<HTMLDivElement>,
+  } & RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref,
     value: _value,
     onChange,
     calendarLabels,
@@ -59,4 +59,4 @@ export const DatePicker = forwardRef(function DatePicker(
       onTimeZoneOpen={onTimeZoneOpen}
     />
   )
-})
+}

@@ -8,7 +8,7 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   type TooltipProps as UITooltipProps,
 } from '@sanity/ui'
-import {type ForwardedRef, forwardRef} from 'react'
+import {type RefAttributes} from 'react'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
 import {TOOLTIP_DELAY_PROPS} from './constants'
@@ -39,11 +39,8 @@ const TOOLTIP_SHARED_PROPS: UITooltipProps = {
  *
  * @internal
  */
-export const Tooltip = forwardRef(function Tooltip(
-  props: TooltipProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
-  const {content, hotkeys, ...rest} = props
+export function Tooltip(props: TooltipProps & RefAttributes<HTMLDivElement>) {
+  const {ref, content, hotkeys, ...rest} = props
 
   if (typeof content === 'string') {
     return (
@@ -71,4 +68,4 @@ export const Tooltip = forwardRef(function Tooltip(
   }
 
   return <UITooltip {...TOOLTIP_SHARED_PROPS} content={content} ref={ref} {...rest} />
-})
+}

@@ -1,6 +1,6 @@
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {forwardRef, type HTMLProps} from 'react'
+import {type HTMLProps} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
@@ -37,18 +37,15 @@ vi.mock('sanity/router', async (importOriginal) => ({
       return '/'
     }),
   })),
-  IntentLink: forwardRef(function MockIntentLink(
-    {
-      intent,
-      params,
-      ...rest
-    }: {intent?: string; params?: {id?: string}} & HTMLProps<HTMLAnchorElement>,
+  IntentLink: function MockIntentLink({
     ref,
-  ) {
+    intent,
+    params,
+    ...rest
+  }: {intent?: string; params?: {id?: string}} & HTMLProps<HTMLAnchorElement>) {
     const href = intent === VARIANTS_INTENT && params?.id ? `/variants/${params.id}` : '/'
-    // @ts-expect-error -- pre-existing, fix later
     return <a {...rest} ref={ref} href={href} />
-  }),
+  },
 }))
 
 vi.mock('../../../store/useAllVariants', () => ({

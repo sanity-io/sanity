@@ -3,14 +3,13 @@ import difference from 'lodash-es/difference.js'
 import {
   Children,
   cloneElement,
-  type ForwardedRef,
-  forwardRef,
   Fragment,
   memo,
   type ReactNode,
   useCallback,
   useMemo,
   useState,
+  type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
 
@@ -86,12 +85,16 @@ interface IntersectionEntry {
 type ElementIntersections = Record<string, IntersectionEntry>
 
 /** @internal */
-export const CollapseMenu = forwardRef(function CollapseMenu(
-  props: CollapseMenuProps,
-  ref: ForwardedRef<any>,
-) {
-  const {children, collapsed, disableRestoreFocusOnClose, onMenuClose, menuButtonProps, ...rest} =
-    props
+export function CollapseMenu(props: CollapseMenuProps & RefAttributes<any>) {
+  const {
+    ref,
+    children,
+    collapsed,
+    disableRestoreFocusOnClose,
+    onMenuClose,
+    menuButtonProps,
+    ...rest
+  } = props
 
   const menuOptions = useMemo(() => Children.toArray(children).filter(_isReactElement), [children])
   const menuButton = useMemo(
@@ -122,14 +125,16 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
       onMenuClose={onMenuClose}
     />
   )
-})
+}
 
 /** @internal */
-export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
-  props: Omit<CollapseMenuProps, 'children' | 'collapsed'> & {menuOptions: React.JSX.Element[]},
-  ref: ForwardedRef<HTMLDivElement>,
+export function AutoCollapseMenu(
+  props: Omit<CollapseMenuProps, 'children' | 'collapsed'> & {
+    menuOptions: React.JSX.Element[]
+  } & RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref,
     collapseText = true,
     disableRestoreFocusOnClose,
     gap,
@@ -332,7 +337,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
       )}
     </OuterFlex>
   )
-})
+}
 
 const RenderHidden = memo(function RenderHidden(props: {
   elements: React.JSX.Element[]

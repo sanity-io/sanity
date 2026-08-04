@@ -19,13 +19,12 @@ import range from 'lodash-es/range.js'
 import {
   type ComponentProps,
   type FormEvent,
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
+  type RefAttributes,
 } from 'react'
 
 import {type TimeZoneScope, useTimeZone} from '../../../../../hooks/useTimeZone'
@@ -61,12 +60,10 @@ const PRESERVE_FOCUS_ELEMENT = (
   />
 )
 
-export const Calendar = forwardRef(function Calendar(
-  props: CalendarProps,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
+export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
   const {getCurrentZoneDate, zoneDateToUtc} = useTimeZone(props.timeZoneScope)
   const {
+    ref: forwardedRef,
     selectTime,
     onFocusedDateChange,
     selectedDate = getCurrentZoneDate(),
@@ -297,7 +294,7 @@ export const Calendar = forwardRef(function Calendar(
       )}
     </Box>
   )
-})
+}
 
 function CalendarTimePresetButton(props: {
   hours: number

@@ -1,4 +1,4 @@
-import {type ComponentProps, type ForwardedRef, forwardRef, type ReactNode, useMemo} from 'react'
+import {type ComponentProps, type ReactNode, type Ref, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {Button, type ButtonProps} from '../../ui-components/button/Button'
@@ -6,37 +6,36 @@ import {type PaneMenuItem} from '../types'
 
 type RouterIntent = NonNullable<PaneMenuItem['intent']>
 
-export const IntentButton = forwardRef(function IntentButton(
+export function IntentButton(
   props: {
     intent: RouterIntent
+    ref?: Ref<HTMLButtonElement>
   } & ButtonProps &
     Omit<ComponentProps<typeof Button>, 'as' | 'href' | 'type'>,
-  ref: ForwardedRef<HTMLAnchorElement>,
 ) {
-  const {intent, ...restProps} = props
+  const {intent, ref, ...restProps} = props
 
-  const Link = useMemo(
-    () =>
-      forwardRef(function Link(
-        linkProps: {children: ReactNode},
-        linkRef: ForwardedRef<HTMLAnchorElement>,
-      ) {
-        return (
-          <IntentLink
-            {...linkProps}
-            intent={intent.type}
-            params={intent.params}
-            ref={linkRef}
-            searchParams={intent.searchParams}
-          />
-        )
-      }),
-    [intent],
-  )
+  const Link = useMemo(() => {
+    function LinkComponent(linkProps: {children?: ReactNode; ref?: Ref<HTMLAnchorElement>}) {
+      const {ref: linkRef, ...rest} = linkProps
+      return (
+        <IntentLink
+          {...rest}
+          intent={intent.type}
+          params={intent.params}
+          ref={linkRef}
+          searchParams={intent.searchParams}
+        />
+      )
+    }
+    // oxlint-disable-next-line react/react-compiler -- displayName assignment on render-local component
+    LinkComponent.displayName = 'Link'
+    return LinkComponent
+  }, [intent])
 
   return props.disabled ? (
     <Button {...restProps} as="a" role="link" aria-disabled="true" />
   ) : (
-    <Button {...restProps} as={Link} data-as="a" ref={ref as ForwardedRef<HTMLButtonElement>} />
+    <Button {...restProps} as={Link} data-as="a" ref={ref} />
   )
-})
+}

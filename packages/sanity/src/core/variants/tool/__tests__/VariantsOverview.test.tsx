@@ -1,6 +1,6 @@
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type Ref, forwardRef, type HTMLProps} from 'react'
+import {type Ref, type HTMLProps} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
@@ -58,10 +58,11 @@ vi.mock('sanity/router', async (importOriginal) => ({
       variantId ? `/variants/${variantId}` : '/variants',
     ),
   })),
-  StateLink: forwardRef(function MockStateLink(
-    {state, ...rest}: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>,
+  StateLink: function MockStateLink({
     ref,
-  ) {
+    state,
+    ...rest
+  }: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>) {
     return (
       // oxlint-disable-next-line jsx_a11y/anchor-has-content
       <a
@@ -74,7 +75,7 @@ vi.mock('sanity/router', async (importOriginal) => ({
         }}
       />
     )
-  }),
+  },
 }))
 
 vi.mock('../../store/useAllVariants', () => ({

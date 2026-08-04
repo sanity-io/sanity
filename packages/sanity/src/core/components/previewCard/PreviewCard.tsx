@@ -1,12 +1,5 @@
 import {Card, type CardProps} from '@sanity/ui'
-import {
-  type ElementType,
-  type ForwardedRef,
-  forwardRef,
-  type HTMLProps,
-  useContext,
-  useMemo,
-} from 'react'
+import {type ElementType, type HTMLProps, useContext, useMemo, type RefAttributes} from 'react'
 import {PreviewCardContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
@@ -42,11 +35,12 @@ export function usePreviewCard(): PreviewCardContextValue {
 }
 
 /** @internal */
-export const PreviewCard = forwardRef(function PreviewCard(
-  props: CardProps<ElementType> & Omit<HTMLProps<HTMLDivElement>, 'height'>,
-  ref: ForwardedRef<HTMLDivElement>,
+export function PreviewCard(
+  props: CardProps<ElementType> &
+    Omit<HTMLProps<HTMLDivElement>, 'height'> &
+    RefAttributes<HTMLDivElement>,
 ) {
-  const {children, selected, as, ...restProps} = props
+  const {ref, children, selected, as, ...restProps} = props
 
   const value = useMemo(() => ({selected}), [selected])
 
@@ -55,7 +49,7 @@ export const PreviewCard = forwardRef(function PreviewCard(
       <PreviewCardContext.Provider value={value}>{children}</PreviewCardContext.Provider>
     </StyledCard>
   )
-})
+}
 
 /**
  *  This is a workaround for a circular import issue.

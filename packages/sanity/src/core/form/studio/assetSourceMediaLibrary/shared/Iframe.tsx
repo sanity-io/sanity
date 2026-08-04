@@ -1,5 +1,5 @@
 import {Card} from '@sanity/ui'
-import {type CSSProperties, forwardRef, type Ref} from 'react'
+import {type CSSProperties, type Ref, type RefAttributes} from 'react'
 
 export interface IframeProps {
   src: string
@@ -18,11 +18,8 @@ const hiddenStyle: CSSProperties = {
   display: 'none',
 }
 
-export const Iframe = forwardRef(function Iframe(
-  props: IframeProps,
-  forwardedRef: Ref<HTMLIFrameElement>,
-) {
-  const {src, hidden} = props
+export function Iframe(props: IframeProps & RefAttributes<HTMLIFrameElement>) {
+  const {ref: forwardedRef, src, hidden} = props
   return (
     <Card style={hidden ? hiddenStyle : defaultStyle}>
       <iframe
@@ -40,4 +37,4 @@ export const Iframe = forwardRef(function Iframe(
       />
     </Card>
   )
-})
+}

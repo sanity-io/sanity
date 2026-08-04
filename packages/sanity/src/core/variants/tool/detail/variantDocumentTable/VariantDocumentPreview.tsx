@@ -1,5 +1,5 @@
 import {Card} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useMemo} from 'react'
+import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {type PreviewLayoutKey} from '../../../../components/previews/types'
@@ -23,10 +23,13 @@ interface VariantDocumentPreviewLinkProps extends React.ComponentPropsWithoutRef
   searchParams: Array<[string, string]> | undefined
 }
 
-const VariantDocumentPreviewLink = forwardRef(function VariantDocumentPreviewLink(
-  {publishedId, documentType, searchParams, ...linkProps}: VariantDocumentPreviewLinkProps,
-  ref: ForwardedRef<HTMLAnchorElement>,
-) {
+function VariantDocumentPreviewLink({
+  ref,
+  publishedId,
+  documentType,
+  searchParams,
+  ...linkProps
+}: VariantDocumentPreviewLinkProps & RefAttributes<HTMLAnchorElement>) {
   return (
     <IntentLink
       {...linkProps}
@@ -39,7 +42,7 @@ const VariantDocumentPreviewLink = forwardRef(function VariantDocumentPreviewLin
       ref={ref}
     />
   )
-})
+}
 
 function getVersionPerspectiveNavigation(
   bundleId: DocumentInVariantGroup['version']['bundleId'],

@@ -5,7 +5,7 @@ import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LockIcon} from '@sanity/icons/Lock'
 // oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
-import {forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
+import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
@@ -81,15 +81,14 @@ export function getRangePosition(range: LayerRange, index: number): rangePositio
   return undefined
 }
 
-export const GlobalPerspectiveMenuItem = forwardRef<
-  HTMLDivElement,
-  {
+export const GlobalPerspectiveMenuItem = (
+  props: {
     release: ReleaseDocument | 'published' | typeof LATEST
     rangePosition: rangePosition
     menuItemProps?: ReleasesNavMenuItemPropsGetter
-  }
->((props, ref) => {
-  const {release, rangePosition} = props
+  } & RefAttributes<HTMLDivElement>,
+) => {
+  const {ref, release, rangePosition} = props
 
   const {
     document: {
@@ -231,6 +230,6 @@ export const GlobalPerspectiveMenuItem = forwardRef<
       </MenuItem>
     </GlobalPerspectiveMenuItemIndicator>
   )
-})
+}
 
 GlobalPerspectiveMenuItem.displayName = 'GlobalPerspectiveMenuItem'

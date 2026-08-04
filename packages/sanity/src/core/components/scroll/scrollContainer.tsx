@@ -1,8 +1,6 @@
 import createPubSub from 'nano-pubsub'
 import {
   type ElementType,
-  type ForwardedRef,
-  forwardRef,
   type HTMLProps,
   memo,
   useContext,
@@ -10,6 +8,7 @@ import {
   useImperativeHandle,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {ScrollContext} from 'sanity/_singletons'
 
@@ -22,10 +21,10 @@ export interface ScrollContainerProps<T extends ElementType> extends Omit<
   onScroll?: (event: Event) => () => void
 }
 
-const ScrollContainerComponent = forwardRef(function ScrollContainerComponent<
-  T extends ElementType = 'div',
->(props: ScrollContainerProps<T>, forwardedRef: ForwardedRef<HTMLDivElement>) {
-  const {as: As = 'div', onScroll, ...rest} = props
+function ScrollContainerComponent<T extends ElementType = 'div'>(
+  props: ScrollContainerProps<T> & RefAttributes<HTMLDivElement>,
+) {
+  const {ref: forwardedRef, as: As = 'div', onScroll, ...rest} = props
   const ref = useRef<HTMLDivElement | null>(null)
 
   useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(forwardedRef, () => ref.current)
@@ -71,7 +70,7 @@ const ScrollContainerComponent = forwardRef(function ScrollContainerComponent<
       <As data-testid="scroll-container" {...rest} ref={ref} />
     </ScrollContext.Provider>
   )
-})
+}
 
 /**
  * This provides a utility function for use within Sanity Studios to create scrollable containers

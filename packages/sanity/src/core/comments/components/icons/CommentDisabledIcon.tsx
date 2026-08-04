@@ -1,12 +1,12 @@
-import {forwardRef, type Ref, type SVGProps} from 'react'
+import {type Ref, type SVGProps, type RefAttributes} from 'react'
 
 /**
  * @internal
  */
-export const CommentDisabledIcon = forwardRef(function Icon(
-  props: SVGProps<SVGSVGElement>,
-  ref: Ref<SVGSVGElement>,
+export const CommentDisabledIcon = function Icon(
+  props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>,
 ) {
+  const {ref, ...rest} = props
   return (
     <svg
       data-sanity-icon="comment-disabled"
@@ -16,7 +16,7 @@ export const CommentDisabledIcon = forwardRef(function Icon(
       viewBox="0 0 25 25"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...props}
+      {...rest}
     >
       <path
         d="M5.92627 14.5381H7.92627V18.5381L11.9263 14.5381H15.9263C17.0308 14.5381 17.9263 13.6427 17.9263 12.5381V6.53809C17.9263 5.43352 17.0308 4.53809 15.9263 4.53809H5.92627C4.8217 4.53809 3.92627 5.43352 3.92627 6.53809V12.5381C3.92627 13.6427 4.8217 14.5381 5.92627 14.5381Z"
@@ -31,4 +31,4 @@ export const CommentDisabledIcon = forwardRef(function Icon(
       />
     </svg>
   )
-})
+}

@@ -1,9 +1,9 @@
-import {forwardRef, type Ref, type SVGProps} from 'react'
+import {type Ref, type SVGProps, type RefAttributes} from 'react'
 
-export const ReactionIcon = forwardRef(function Icon(
-  props: SVGProps<SVGSVGElement>,
-  ref: Ref<SVGSVGElement>,
+export const ReactionIcon = function Icon(
+  props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>,
 ) {
+  const {ref, ...rest} = props
   return (
     <svg
       data-sanity-icon="add-reaction"
@@ -13,7 +13,7 @@ export const ReactionIcon = forwardRef(function Icon(
       viewBox="0 0 25 25"
       width="1em"
       xmlns="http://www.w3.org/2000/svg"
-      {...props}
+      {...rest}
     >
       <path
         d="M10.1044 10.4011L10.1044 10.9972"
@@ -46,4 +46,4 @@ export const ReactionIcon = forwardRef(function Icon(
       />
     </svg>
   )
-})
+}
