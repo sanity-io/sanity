@@ -272,6 +272,78 @@ export const directUploadsReducer = (opts: {
   return result
 }
 
+/**
+ * @internal
+ */
+export interface CollapseArrayItemsConfig {
+  enabled: boolean
+  limit: number
+}
+
+/**
+ * @internal
+ */
+export const initialCollapseArrayItems: CollapseArrayItemsConfig = {
+  enabled: true,
+  limit: 4,
+}
+
+/**
+ * @internal
+ */
+export const collapseArrayItemsReducer = (opts: {
+  config: PluginOptions
+  initialValue: CollapseArrayItemsConfig
+}): CollapseArrayItemsConfig => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const collapseItems = innerConfig.form?.arrays?.collapseItems
+
+    if (typeof collapseItems === 'undefined') return acc
+
+    if (!isRecord(collapseItems)) {
+      throw new Error(
+        `Expected \`form.arrays.collapseItems\` to be an object, but received ${getPrintableType(
+          collapseItems,
+        )}`,
+      )
+    }
+
+    const {enabled, limit} = collapseItems
+
+    if (typeof enabled !== 'undefined' && typeof enabled !== 'boolean') {
+      throw new Error(
+        `Expected \`form.arrays.collapseItems.enabled\` to be a boolean, but received ${getPrintableType(
+          enabled,
+        )}`,
+      )
+    }
+
+    if (typeof limit !== 'undefined') {
+      if (typeof limit !== 'number') {
+        throw new Error(
+          `Expected \`form.arrays.collapseItems.limit\` to be a number, but received ${getPrintableType(
+            limit,
+          )}`,
+        )
+      }
+
+      if (!Number.isInteger(limit) || limit < 1) {
+        throw new Error(
+          `Expected \`form.arrays.collapseItems.limit\` to be a positive integer, but received ${limit}`,
+        )
+      }
+    }
+
+    return {
+      enabled: enabled ?? acc.enabled,
+      limit: limit ?? acc.limit,
+    }
+  }, initialValue)
+}
+
 export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], ConfigContext> = (
   prev,
   {form},
