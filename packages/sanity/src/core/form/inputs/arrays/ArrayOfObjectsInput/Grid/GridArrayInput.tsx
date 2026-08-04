@@ -6,7 +6,7 @@ import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjects
 import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
-import {ArrayItemsToggle, COLLAPSED_ITEMS_MASK} from '../../common/ArrayItemsToggle'
+import {ArrayItemsToggle} from '../../common/ArrayItemsToggle'
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
 import {Item, List} from '../../common/list'
 import {getFocusedMemberKey, useCollapsibleArrayItems} from '../../common/useCollapsibleArrayItems'
@@ -84,12 +84,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
               </Card>
             )}
             {members?.length > 0 && (
-              <Card
-                border
-                radius={1}
-                tone={errorTone}
-                style={collapsible && !expanded ? COLLAPSED_ITEMS_MASK : undefined}
-              >
+              <Card border radius={1} tone={errorTone}>
                 <List
                   gridTemplateColumns={[2, 3, 4]}
                   gap={3}

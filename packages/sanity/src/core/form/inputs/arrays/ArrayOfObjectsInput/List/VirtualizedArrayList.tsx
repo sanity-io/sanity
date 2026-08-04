@@ -12,7 +12,6 @@ import {useCallback, useLayoutEffect, useRef, useState} from 'react'
 import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
 import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
 import {type ObjectItem} from '../../../../types/itemProps'
-import {COLLAPSED_ITEMS_MASK} from '../../common/ArrayItemsToggle'
 import {Item, List} from '../../common/list'
 import {ErrorItem} from './ErrorItem'
 import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'
@@ -39,8 +38,6 @@ interface VirtualizedArrayListProps<Item extends ObjectItem> {
   paddingY: number
   radius: number
   tone?: CardTone
-  /** Fades out the last rendered row to signal that the array continues past it. */
-  fadeBottom?: boolean
 }
 
 /**
@@ -72,7 +69,6 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
     paddingY,
     radius,
     tone,
-    fadeBottom,
   } = props
 
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -231,7 +227,6 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
         }px`,
         width: '100%',
         position: 'relative',
-        ...(fadeBottom ? COLLAPSED_ITEMS_MASK : null),
       }}
     >
       <List
