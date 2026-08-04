@@ -46,6 +46,20 @@ export function useDocumentLastEditedBy(
   const [loading, setLoading] = useState<boolean>(
     Boolean(documentId) && !(cacheKey in lastEditedByCache),
   )
+
+  // Reset during render when (documentId, revision) changes to a new cacheKey, before the new
+  // fetch settles — the sibling useReleaseHistory hook fixes the same false-settled flash this
+  // way. Without this, `lastEditedBy`/`loading` hold the PREVIOUS key's values (or a stale
+  // "loading: false" once the previous fetch already settled) until the effect re-runs. Resetting
+  // from the cache — rather than unconditionally to `undefined`/`true` — means a key that's
+  // already cached settles immediately instead of flashing a loading skeleton.
+  const [prevCacheKey, setPrevCacheKey] = useState(cacheKey)
+  if (cacheKey !== prevCacheKey) {
+    setPrevCacheKey(cacheKey)
+    setLastEditedBy(cacheKey ? lastEditedByCache[cacheKey] : undefined)
+    setLoading(Boolean(documentId) && !(cacheKey in lastEditedByCache))
+  }
+
   const cancelledRef = useRef(false)
 
   const fetchLastEditor = useCallback(async (): Promise<void> => {
