@@ -51,16 +51,20 @@ export function useReleaseHistory(
     return getVersionId(releaseDocumentId, releaseId)
   }, [releaseDocumentId, releaseId])
 
-  // Reset to the loading state during render when `versionId` changes, before the new fetch
-  // settles — React's recommended "adjusting state when a prop changes" pattern (setState during
-  // render bails out and re-renders immediately, without the extra commit an effect-based reset
-  // would cause). Without this, a stale `[]` (or a previous version's transactions) from before
-  // the change renders as "loaded, no history" for the duration of the new fetch — the
-  // false-settled flash. A cache hit or the `!versionId` short-circuit in `fetchAndParse` still
-  // settles synchronously within the same effect tick, so there's no visible flicker for those.
-  const [prevVersionId, setPrevVersionId] = useState(versionId)
-  if (versionId !== prevVersionId) {
-    setPrevVersionId(versionId)
+  // Reset to the loading state during render when the (versionId, documentRevision) identity
+  // changes, before the new fetch settles — React's recommended "adjusting state when a prop
+  // changes" pattern (setState during render bails out and re-renders immediately, without the
+  // extra commit an effect-based reset would cause). Keying on documentRevision too (not just
+  // versionId) matches the sibling useDocumentLastEditedBy hook's full cache key: without it, a
+  // revision change on the same version would keep showing the previous history with
+  // `loading: false` while the new fetch runs — the same false-settled flash, just triggered by an
+  // edit instead of a version switch. A cache hit or the `!versionId` short-circuit in
+  // `fetchAndParse` still settles synchronously within the same effect tick, so there's no visible
+  // flicker for those.
+  const resetKey = `${versionId}-${documentRevision ?? ''}`
+  const [prevResetKey, setPrevResetKey] = useState(resetKey)
+  if (resetKey !== prevResetKey) {
+    setPrevResetKey(resetKey)
     setHistory(null)
   }
 
