@@ -41,7 +41,7 @@ export interface StructureBuilderOptions {
   source: Source
   defaultDocumentNode?: DefaultDocumentNodeResolver
   perspectiveStack: PerspectiveStack
-  selectedVariantName: string | undefined
+  selectedVariantName?: string
 }
 
 function hasIcon(schemaType?: SchemaType | string): boolean {

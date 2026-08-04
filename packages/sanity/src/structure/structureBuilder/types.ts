@@ -103,7 +103,7 @@ export interface StructureContext extends Source {
    * It can be used as the variant param in the client, alongside `perspectiveStack`, to get the
    * view of the documents as seen through that variant.
    */
-  selectedVariantName: string | undefined
+  selectedVariantName?: string
 }
 
 /**
