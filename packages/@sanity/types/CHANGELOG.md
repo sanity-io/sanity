@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
+
+### Bug Fixes
+
+* **core:** allow creating draft variants from published variant sibling ([#13741](https://github.com/sanity-io/sanity/issues/13741)) ([cf5a7da](https://github.com/sanity-io/sanity/commit/cf5a7da78f0f4d42a7c21106749b439a007efdf3))
+* **types:** preserve supplied schema helper properties ([#13237](https://github.com/sanity-io/sanity/issues/13237)) ([38002e4](https://github.com/sanity-io/sanity/commit/38002e4432aff0f917eee7461897c23bba35886e))
 ## [6.6.0](https://github.com/sanity-io/sanity/compare/v6.5.0...v6.6.0) (2026-07-22)
 
 ### Features

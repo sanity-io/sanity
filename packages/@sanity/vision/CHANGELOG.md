@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
+
+### Bug Fixes
+
+* **core:** avoid native useEffectEvent in forwardRef and memo ([#13821](https://github.com/sanity-io/sanity/issues/13821)) ([8f84cf4](https://github.com/sanity-io/sanity/commit/8f84cf4b0628e3b9bc8c4752f67ec793153aaaf6))
+
+### Performance Improvements
+
+* **sanity:** defer non-controlled useObservable subscriptions ([#13799](https://github.com/sanity-io/sanity/issues/13799)) ([2958d75](https://github.com/sanity-io/sanity/commit/2958d75de93601e987f640b0ff02f3827db3d4ec))
 ## [6.8.0](https://github.com/sanity-io/sanity/compare/v6.7.0...v6.8.0) (2026-07-30)
 
 ### Bug Fixes
