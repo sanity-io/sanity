@@ -1,4 +1,4 @@
-import {Flex, Grid, rem, useTheme} from '@sanity/ui'
+import {Flex, Grid, type GridProps, rem, useTheme} from '@sanity/ui'
 import {forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
 
 import {FromToArrow} from './FromToArrow'
@@ -26,7 +26,6 @@ export const FromTo = forwardRef<HTMLDivElement, FromToProps>(function FromTo(pr
   const {align = 'top', layout = 'inline', from, to, style, ...restProps} = props
   const theme = useTheme()
 
-  const Layout = layout === 'inline' ? Flex : Grid
   const layoutStyles = useMemo(
     () => ({
       ...style,
@@ -40,8 +39,8 @@ export const FromTo = forwardRef<HTMLDivElement, FromToProps>(function FromTo(pr
 
   const columnStyles = layout === 'inline' ? INLINE_COLUMN_STYLES : BLOCK_COLUMN_STYLES
 
-  return (
-    <Layout {...restProps} ref={ref} style={layoutStyles} data-from-to-layout>
+  const children = (
+    <>
       {from && (
         <>
           <Flex align={FLEX_ALIGN[align]} style={columnStyles}>
@@ -55,6 +54,22 @@ export const FromTo = forwardRef<HTMLDivElement, FromToProps>(function FromTo(pr
       <Flex align={FLEX_ALIGN[align]} style={columnStyles}>
         {to}
       </Flex>
-    </Layout>
+    </>
+  )
+
+  if (layout === 'inline') {
+    return (
+      <Flex {...restProps} ref={ref} style={layoutStyles} data-from-to-layout>
+        {children}
+      </Flex>
+    )
+  }
+
+  // Cast: HTMLProps is not assignable to GridProps because Grid marks legacy
+  // `columns`/`rows` as `never` under @sanity/ui v4.
+  return (
+    <Grid {...(restProps as GridProps)} ref={ref} style={layoutStyles} data-from-to-layout>
+      {children}
+    </Grid>
   )
 })

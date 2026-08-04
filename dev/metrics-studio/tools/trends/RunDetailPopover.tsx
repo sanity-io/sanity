@@ -5,12 +5,12 @@ import {
   Box,
   Button,
   Flex,
-  Popover,
   Stack,
   Text,
   useClickOutsideEvent,
   useGlobalKeyDown,
 } from '@sanity/ui'
+import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
 

@@ -1,4 +1,4 @@
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
@@ -51,8 +51,8 @@ const mockOperations = {
 // Mock toast push function
 const mockToastPush = vi.fn()
 
-vi.mock('@sanity/ui', async () => {
-  const actual = await vi.importActual('@sanity/ui')
+vi.mock('@sanity/ui/toast', async () => {
+  const actual = await vi.importActual('@sanity/ui/toast')
   return {
     ...actual,
     useToast: () => ({

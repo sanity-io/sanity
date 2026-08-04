@@ -1,4 +1,4 @@
-import {MenuDivider} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui/menu'
 
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 import {FieldActionMenuGroup} from './FieldActionMenuGroup'

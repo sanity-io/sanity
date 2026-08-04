@@ -1,4 +1,5 @@
-import {BoundaryElementProvider, Card, Flex, useToast} from '@sanity/ui'
+import {BoundaryElementProvider, Card, Flex} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
 import {
   type Chunk,

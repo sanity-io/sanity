@@ -1,11 +1,9 @@
+import {Flex, Text, usePortal} from '@sanity/ui'
 import {
-  Flex,
   Menu,
   // oxlint-disable-next-line no-restricted-imports
   MenuItem,
-  Text,
-  usePortal,
-} from '@sanity/ui'
+} from '@sanity/ui/menu'
 import {useCallback} from 'react'
 import {
   ContextMenuButton,

@@ -6,11 +6,11 @@ import {
   Card,
   type CardTone,
   Inline,
-  Popover,
   Stack,
   Text,
   useClickOutsideEvent,
 } from '@sanity/ui'
+import {Popover} from '@sanity/ui/popover'
 import {type ComponentProps, useCallback, useRef, useState} from 'react'
 import {Translate, useTranslation} from 'sanity'
 

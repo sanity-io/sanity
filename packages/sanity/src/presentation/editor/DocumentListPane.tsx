@@ -1,4 +1,5 @@
-import {Card, Code, Flex, Label, Stack} from '@sanity/ui'
+import {Card, Flex, Label, Stack} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, useCallback, useEffect, useMemo, useState} from 'react'
 import {getPublishedId, useTranslation} from 'sanity'
 import {

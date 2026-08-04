@@ -45,7 +45,7 @@ const toastMock = vi.hoisted(() => ({
   push: vi.fn(),
 }))
 
-vi.mock('@sanity/ui', async (importOriginal) => ({
+vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   ...(await importOriginal()),
   useToast: vi.fn(() => toastMock),
 }))

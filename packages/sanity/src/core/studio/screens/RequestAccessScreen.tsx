@@ -1,7 +1,8 @@
 /* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {addWeeks} from 'date-fns/addWeeks'
 import {isAfter} from 'date-fns/isAfter'
 import {isBefore} from 'date-fns/isBefore'

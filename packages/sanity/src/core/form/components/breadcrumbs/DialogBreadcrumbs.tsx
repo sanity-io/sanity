@@ -1,7 +1,9 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, isObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 // oxlint-disable-next-line no-restricted-imports
-import {Badge, Box, Button, Flex, Inline, Menu, MenuItem, Text, useElementSize} from '@sanity/ui'
+import {Badge, Box, Button, Flex, Inline, Text, useElementSize} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports
+import {Menu, MenuItem} from '@sanity/ui/menu'
 import {
   type ForwardedRef,
   forwardRef,

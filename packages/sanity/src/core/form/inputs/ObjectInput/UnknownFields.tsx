@@ -5,7 +5,8 @@ import {
   isReference,
   isReferenceSchemaType,
 } from '@sanity/types'
-import {Box, Card, Code, Stack, Text} from '@sanity/ui'
+import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'

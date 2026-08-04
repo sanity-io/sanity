@@ -14,7 +14,7 @@
  * `useFormBuilder` mocked with a `focusPath` that matches the `path` passed in props so the
  * component can mount.
  */
-import {type Autocomplete, type AutocompleteProps} from '@sanity/ui'
+import {type Autocomplete, type AutocompleteProps} from '@sanity/ui/autocomplete'
 import {render, waitFor} from '@testing-library/react'
 import {
   type ForwardedRef,
@@ -57,7 +57,7 @@ vi.mock('../../useFormBuilder', () => ({
   }),
 }))
 
-vi.mock('@sanity/ui', async (importOriginal) => {
+vi.mock('@sanity/ui/autocomplete', async (importOriginal) => {
   const mod = (await importOriginal()) as Record<string, unknown>
 
   /**
@@ -106,14 +106,17 @@ vi.mock('@sanity/ui', async (importOriginal) => {
     )
   })
 
-  // Mock `useBoundaryElement` so we can drive the hook under test without rendering a real
-  // `BoundaryElementProvider` (which would require importing from the mocked module and trips
-  // hoisting inside `importOriginal`).
-  const useBoundaryElement = () => ({version: 0.0, element: mockBoundaryElement})
-
   // @ts-expect-error -- pre-existing, fix later
-  return {...mod, Autocomplete: AutocompleteStub as Autocomplete, useBoundaryElement}
+  return {...mod, Autocomplete: AutocompleteStub as Autocomplete}
 })
+
+// Mock `useBoundaryElement` so we can drive the hook under test without rendering a real
+// `BoundaryElementProvider` (which would require importing from the mocked module and trips
+// hoisting inside `importOriginal`).
+vi.mock('@sanity/ui', async (importOriginal) => ({
+  ...((await importOriginal()) as Record<string, unknown>),
+  useBoundaryElement: () => ({version: 0.0, element: mockBoundaryElement}),
+}))
 
 vi.mock('../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),

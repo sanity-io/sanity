@@ -1,4 +1,5 @@
-import {Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
 import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {useObservableEvent} from 'react-rx'

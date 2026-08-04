@@ -1,5 +1,6 @@
-import {ThemeProvider, ToastProvider} from '@sanity/ui'
+import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
+import {ToastProvider} from '@sanity/ui/toast'
 import {act, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {Subject} from 'rxjs'

@@ -5,8 +5,8 @@ import {
   PortalProvider,
   useClickOutsideEvent,
   useGlobalKeyDown,
-  useToast,
 } from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentGroupEvent,

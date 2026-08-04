@@ -29,12 +29,18 @@ describe('Portable Text Input', () => {
 
         await $contextMenuButton.click()
 
-        // Assertion: Overflowing block link should appear in the "Add" menu button
+        // Assertion: Overflowing block link should appear in the "Add" menu button.
+        // Menus keep their items mounted while closed, so read the one that is open.
         await expect
-          .poll(
-            () =>
-              document.querySelector('[data-ui="MenuButton__popover"] [data-ui="Menu"]')
-                ?.textContent ?? '',
+          .poll(() =>
+            Array.from(
+              document.querySelectorAll<HTMLElement>(
+                '[data-ui="MenuButton__popover"] [data-ui="Menu"]',
+              ),
+            )
+              .filter((menu) => menu.checkVisibility())
+              .map((menu) => menu.textContent)
+              .join(''),
           )
           .toContain('Inline Object')
       })

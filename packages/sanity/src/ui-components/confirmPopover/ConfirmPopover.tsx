@@ -4,13 +4,12 @@ import {
   Button as UIButton,
   Flex,
   Grid,
-  Popover as UIPopover,
-  type PopoverProps as UIPopoverProps,
   Text,
   useClickOutsideEvent,
   useGlobalKeyDown,
   useLayer,
 } from '@sanity/ui'
+import {Popover as UIPopover, type PopoverProps as UIPopoverProps} from '@sanity/ui/popover'
 import {type ComponentType, type ReactNode, useCallback, useRef} from 'react'
 import {useTranslation} from 'react-i18next'
 

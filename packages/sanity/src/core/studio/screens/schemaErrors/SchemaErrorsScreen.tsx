@@ -1,5 +1,6 @@
 import {type Schema} from '@sanity/types'
-import {Card, Container, Flex, Heading, Stack, useToast} from '@sanity/ui'
+import {Card, Container, Flex, Heading, Stack} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useEffect} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'

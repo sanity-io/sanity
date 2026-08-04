@@ -2,7 +2,7 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CircleIcon} from '@sanity/icons/Circle'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path, type TitledListValue} from '@sanity/types'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {type ForwardedRef, forwardRef, useCallback} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'

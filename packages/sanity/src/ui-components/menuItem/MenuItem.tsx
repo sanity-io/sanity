@@ -1,13 +1,6 @@
 /* oxlint-disable no-restricted-imports */
-import {
-  Badge,
-  Box,
-  Flex,
-  MenuItem as UIMenuItem,
-  type MenuItemProps as UIMenuItemProps,
-  Stack,
-  Text,
-} from '@sanity/ui'
+import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
+import {MenuItem as UIMenuItem, type MenuItemProps as UIMenuItemProps} from '@sanity/ui/menu'
 import {
   type ElementType,
   forwardRef,

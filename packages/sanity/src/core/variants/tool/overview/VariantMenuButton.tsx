@@ -1,4 +1,4 @@
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'

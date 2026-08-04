@@ -1,7 +1,7 @@
 import {RevertIcon} from '@sanity/icons/Revert'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
 
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'

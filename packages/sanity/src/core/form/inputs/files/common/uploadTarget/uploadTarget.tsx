@@ -1,5 +1,6 @@
 import {type AssetSource, type SchemaType} from '@sanity/types'
-import {Box, type CardTone, Flex, Text, useToast} from '@sanity/ui'
+import {Box, type CardTone, Flex, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import uniqBy from 'lodash-es/uniqBy.js'
 import {
   type ComponentType,

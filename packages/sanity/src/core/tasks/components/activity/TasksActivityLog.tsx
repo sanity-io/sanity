@@ -247,7 +247,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
         <AnimatePresence>
           {!loading && (
-            <MotionStack animate="visible" initial="hidden" space={4} variants={VARIANTS}>
+            <MotionStack animate="visible" initial="hidden" gap={4} variants={VARIANTS}>
               {value.createdByUser && (
                 <Stack paddingBottom={1}>
                   <TasksActivityCreatedAt

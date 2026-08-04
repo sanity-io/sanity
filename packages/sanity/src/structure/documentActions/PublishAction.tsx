@@ -1,7 +1,8 @@
 import {PublishIcon} from '@sanity/icons/Publish'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
-import {Text, useToast} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,

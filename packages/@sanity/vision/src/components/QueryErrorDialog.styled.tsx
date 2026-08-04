@@ -1,4 +1,4 @@
-import {Code} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {type ComponentProps} from 'react'
 
 import {errorCode} from './QueryErrorDialog.css'

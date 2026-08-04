@@ -1,5 +1,6 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Box, Button, Card, Flex, Grid, Inline, Select, Stack, TextInput, Tooltip} from '@sanity/ui'
+import {Box, Button, Card, Flex, Grid, Inline, Select, Stack, TextInput} from '@sanity/ui'
+import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type ChangeEvent,
   type ComponentType,

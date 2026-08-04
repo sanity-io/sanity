@@ -1,5 +1,5 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {
   type InitialValueTemplateItem,
