@@ -1,6 +1,6 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type ElementType, type ReactNode} from 'react'
+import {type ElementType} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -31,28 +31,10 @@ const ClampedDescription = styled.div((props) => {
   `
 })
 
-// An optional action beside the title reveals on hover (or keyboard focus, for a11y), so at rest
-// the pane reads as plain content. Callers that pass no `titleAction` get a clean display surface.
-// (Title/panel top-edge alignment is handled on the panel side — it drops to meet the title's
-// cap-height — rather than lifting the title with a negative margin, which would clip its caps
-// under an overflow-hidden header.)
-const Identity = styled(Stack)`
-  [data-ui='detail-identity-action'] {
-    opacity: 0;
-    transition: opacity 150ms;
-  }
-
-  &:hover [data-ui='detail-identity-action'],
-  &:focus-within [data-ui='detail-identity-action'] {
-    opacity: 1;
-  }
-`
-
 /**
  * The identity block (title + description) of an entity detail page, as a read-only **display**
- * surface. Title renders bold; description clamps to four lines with the full text on hover. An
- * optional `titleAction` (revealed on hover/focus) can sit beside the title. Shared by the Releases
- * and Variant-definition detail pages so both read as one family.
+ * surface. Title renders bold; description clamps to four lines with the full text on hover.
+ * Shared by the Releases and Variant-definition detail pages so both read as one family.
  *
  * @internal
  */
@@ -60,24 +42,15 @@ export function DetailIdentity(props: {
   title: string | undefined
   titlePlaceholder: string
   description?: string
-  titleAction?: ReactNode
   /** Element the title renders as — pass `"h1"` to make it the page heading. Defaults to a span. */
   titleAs?: ElementType
   titleTestId?: string
   descriptionTestId?: string
 }): React.JSX.Element {
-  const {
-    title,
-    titlePlaceholder,
-    description,
-    titleAction,
-    titleAs,
-    titleTestId,
-    descriptionTestId,
-  } = props
+  const {title, titlePlaceholder, description, titleAs, titleTestId, descriptionTestId} = props
 
   return (
-    <Identity space={3}>
+    <Stack gap={3}>
       <Flex align="center" gap={2}>
         {/* Box flex={1} + min-width:0 lets the title shrink and truncate instead of overflowing its
             zone; the full title is available on hover. */}
@@ -94,11 +67,6 @@ export function DetailIdentity(props: {
             {title || titlePlaceholder}
           </Text>
         </Box>
-        {titleAction && (
-          <Box flex="none" data-ui="detail-identity-action">
-            {titleAction}
-          </Box>
-        )}
       </Flex>
 
       {description && (
@@ -115,6 +83,6 @@ export function DetailIdentity(props: {
           <ClampedDescription data-testid={descriptionTestId}>{description}</ClampedDescription>
         </Tooltip>
       )}
-    </Identity>
+    </Stack>
   )
 }

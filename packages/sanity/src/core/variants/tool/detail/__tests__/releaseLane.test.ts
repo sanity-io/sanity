@@ -9,7 +9,6 @@ import {
   RELEASE_LANE_ALL,
   resolveVersionBundle,
   rowMatchesLane,
-  UNRESOLVED_RELEASE_ID,
 } from '../releaseLane'
 import {type DocumentInVariantGroup, type VariantDocumentVersion} from '../types'
 
@@ -90,16 +89,18 @@ describe('resolveVersionBundle', () => {
     })
   })
 
-  it('falls back to UNRESOLVED_RELEASE_ID when there is no ref or bundle', () => {
-    const nothing: VariantDocumentVersion = {
+  it('resolves a release bundle with no releaseRef via its bundle-derived document id', () => {
+    const noRef: VariantDocumentVersion = {
       documentId: 'x',
       bundleId: 'someRelease',
       releaseRef: null,
       updatedAt: '2025-06-02T00:00:00Z',
     }
-    // A release bundle with no ref resolves to its bundle-derived document id, not the fallback.
-    expect(resolveVersionBundle(nothing, releasesById).kind).toBe('release')
-    expect(resolveVersionBundle(nothing, releasesById).id).not.toBe(UNRESOLVED_RELEASE_ID)
+    expect(resolveVersionBundle(noRef, releasesById)).toEqual({
+      id: '_.releases.someRelease',
+      kind: 'release',
+      release: undefined,
+    })
   })
 })
 

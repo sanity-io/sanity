@@ -91,7 +91,6 @@ export function DocumentTable<Row extends object>({
   commandLaneActions,
   selection,
   rowActions,
-  footer,
   emptyState,
   defaultSort,
   id,
@@ -130,7 +129,6 @@ export function DocumentTable<Row extends object>({
   commandLaneActions?: ReactNode
   selection?: DocumentTableSelection<Row>
   rowActions?: (props: {datum: unknown}) => ReactNode
-  footer?: ReactNode
   emptyState: (() => React.JSX.Element) | string
   defaultSort?: TableSort
   /** id + data-testid for the scroll container (the filter-tab `aria-controls` target). */
@@ -319,7 +317,6 @@ export function DocumentTable<Row extends object>({
           scrollContainerRef={scrollContainerRef}
         />
       </Card>
-      {footer}
     </Flex>
   )
 }

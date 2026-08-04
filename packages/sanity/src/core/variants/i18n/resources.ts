@@ -46,63 +46,6 @@ const variantsLocaleStrings = {
   'overview.error': 'Unable to load variant definitions',
   /** Placeholder for the Variants overview search field. */
   'overview.search.placeholder': 'Search variant definitions…',
-  /** Accessible label for the overview select-all checkbox. */
-  'overview.bulk.select-all': 'Select all variant definitions',
-  /** Accessible label for a per-row selection checkbox in the overview. */
-  'overview.bulk.select-row': 'Select variant definition',
-  /** Count of selected variant definitions in the bulk-action bar (singular). */
-  'overview.bulk.selected_one': '{{count}} selected',
-  /** Count of selected variant definitions in the bulk-action bar (plural). */
-  'overview.bulk.selected_other': '{{count}} selected',
-  /** Clears the current overview selection. */
-  'overview.bulk.clear': 'Clear selection',
-  /** Bulk toolbar action that deletes the selected variant definitions. */
-  'overview.bulk.delete': 'Delete',
-  /** Header for the bulk delete confirmation dialog. */
-  'overview.bulk.delete-dialog.header': 'Delete variant definitions',
-  /** Confirm button for the bulk delete dialog. */
-  'overview.bulk.delete-dialog.confirm': 'Delete',
-  /** Bulk delete dialog body when definitions will be deleted (singular). */
-  'overview.bulk.delete-dialog.description_one':
-    'You are about to delete {{count}} variant definition. This cannot be undone.',
-  /** Bulk delete dialog body when definitions will be deleted (plural). */
-  'overview.bulk.delete-dialog.description_other':
-    'You are about to delete {{count}} variant definitions. This cannot be undone.',
-  /** Note about selected definitions kept because they contain documents (singular). */
-  'overview.bulk.delete-dialog.kept_one':
-    '{{count}} selected definition contains documents and will be kept.',
-  /** Note about selected definitions kept because they contain documents (plural). */
-  'overview.bulk.delete-dialog.kept_other':
-    '{{count}} selected definitions contain documents and will be kept.',
-  /** Note about selected definitions kept while document count is loading or failed (singular). */
-  'overview.bulk.delete-dialog.kept-unresolved_one':
-    '{{count}} selected definition has an unknown document count and will be kept.',
-  /** Note about selected definitions kept while document count is loading or failed (plural). */
-  'overview.bulk.delete-dialog.kept-unresolved_other':
-    '{{count}} selected definitions have unknown document counts and will be kept.',
-  /** Bulk delete dialog body when nothing can be deleted (all selected hold documents). */
-  'overview.bulk.delete-dialog.none':
-    'All selected definitions contain documents, so none can be deleted. Remove their documents first.',
-  /** Bulk delete dialog body when nothing can be deleted (document counts unknown). */
-  'overview.bulk.delete-dialog.none-unresolved':
-    'Document counts are still loading or unavailable for the selected definitions, so none can be deleted yet.',
-  /** Bulk delete dialog body when nothing can be deleted (mix of documents and unknown counts). */
-  'overview.bulk.delete-dialog.none-mixed':
-    'None of the selected definitions can be deleted. Remove documents first or wait for document counts to load.',
-  /** Toast shown after a successful bulk delete (singular). */
-  'overview.bulk.delete-toast.success_one': 'Deleted {{count}} variant definition',
-  /** Toast shown after a successful bulk delete (plural). */
-  'overview.bulk.delete-toast.success_other': 'Deleted {{count}} variant definitions',
-  /** Toast shown when some variant definitions could not be bulk deleted. */
-  'overview.bulk.delete-toast.error': 'Some variant definitions could not be deleted',
-  /** Toast when a re-check at confirm found definitions that gained documents (singular). */
-  'overview.bulk.delete-toast.recount-dropped_one':
-    '{{count}} definition now contains documents and was not deleted.',
-  /** Toast when a re-check at confirm found definitions that gained documents (plural). */
-  'overview.bulk.delete-toast.recount-dropped_other':
-    '{{count}} definitions now contain documents and were not deleted.',
-  /** Clears the selected values for a single condition filter dropdown. */
-  'overview.filter.clear': 'Clear',
   /** Clears every active condition filter across all dimensions. */
   'overview.filter.clear-all': 'Clear filters',
   /** Accessible label / tooltip for removing a single active filter value chip. */
@@ -111,8 +54,6 @@ const variantsLocaleStrings = {
   'overview.filter.add': 'Add filter',
   /** Placeholder for the searchable dimension list in the add-filter menu. */
   'overview.filter.find-dimension': 'Find a dimension…',
-  /** Back action returning from a dimension's values to the dimension list. */
-  'overview.filter.back': 'All dimensions',
   /** Shown in the add-filter menu when a search matches no dimension. */
   'overview.filter.no-dimensions': 'No dimensions',
   /** Hint in the add-filter menu's value pane before a dimension is chosen. */
@@ -127,16 +68,10 @@ const variantsLocaleStrings = {
   'overview.table.no-conditions': 'No conditions',
   /** Title for the Variants overview. */
   'overview.title': 'Variant definitions',
-  /** Edit action on the Variant detail page. */
-  'detail.action.edit-variant': 'Edit variant definition',
   /** Primary action label on the Variant detail action rail. */
   'detail.action.edit-definition': 'Edit definition',
   /** Accessible label / tooltip for the Variant detail overflow menu button. */
   'detail.menu.label': 'Actions',
-  /** Tooltip for pinning a variant to the studio. */
-  'detail.pin-variant': 'Pin variant definition to studio',
-  /** Tooltip for unpinning a variant from the studio. */
-  'detail.unpin-variant': 'Unpin variant definition from studio',
   /** Back action on the Variant detail page (the arrow already conveys "back to"). */
   'detail.back': 'All variant definitions',
   /** Title of the "variant definition" properties panel (its targeting conditions). */
@@ -183,26 +118,6 @@ const variantsLocaleStrings = {
   'detail.documents.table.validation.valid': 'No validation errors',
   /** Validation status tooltip while validation is still in progress. */
   'detail.documents.table.validation.validating': 'Validating',
-  /** Accessible label for the command-lane select-all checkbox. */
-  'detail.documents.bulk.select-all': 'Select all documents',
-  /** Accessible label for a per-row selection checkbox. */
-  'detail.documents.bulk.select-row': 'Select document',
-  /** Count of selected documents in the bulk-action bar (singular). */
-  'detail.documents.bulk.selected_one': '{{count}} selected',
-  /** Count of selected documents in the bulk-action bar (plural). */
-  'detail.documents.bulk.selected_other': '{{count}} selected',
-  /** Clears the current document selection (grouped with the selected count). */
-  'detail.documents.bulk.clear': 'Clear selection',
-  /** Primary bulk action: publish the selected documents. */
-  'detail.documents.bulk.publish': 'Publish',
-  /** Primary bulk action: delete the selected documents. */
-  'detail.documents.bulk.delete': 'Delete',
-  /** Overflow menu of secondary bulk actions. */
-  'detail.documents.bulk.more': 'More bulk actions',
-  /** Secondary bulk action: unpublish the selected documents. */
-  'detail.documents.bulk.unpublish': 'Unpublish',
-  /** Secondary bulk action: add the selected documents to a release. */
-  'detail.documents.bulk.add-to-release': 'Add to release',
   /** Error message when variant documents fail to load. */
   'detail.documents.error': 'Unable to load documents for this variant definition',
   /** Description for the missing Variant detail page. */

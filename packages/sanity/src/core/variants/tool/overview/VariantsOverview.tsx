@@ -68,15 +68,12 @@ export function VariantsOverview(): React.JSX.Element {
   // on top of that via searchPredicate.
   const rows = useMemo(
     () =>
-variantsList
+      variantsList
         .filter((variant) => variantMatchesConditionFilters(variant, conditionFilters))
-        .map(
-          (variant): TableVariant => ({
-            ...variant,
-            documentCount:
-              documentCounts?.[variant._id] ?? (documentCountsError ? null : undefined),
-          }),
-        ),
+        .map((variant): TableVariant => ({
+          ...variant,
+          documentCount: documentCounts?.[variant._id] ?? (documentCountsError ? null : undefined),
+        })),
     [variantsList, conditionFilters, documentCounts, documentCountsError],
   )
 

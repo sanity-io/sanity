@@ -113,7 +113,7 @@ function ReleaseDocumentFilterTabsInner({
   }
 
   const tabList = (
-    <TabList space={1}>
+    <TabList gap={1}>
       {FILTER_TAB_CONFIGS.map((config) => {
         const isSelected = activeFilter === config.key
 

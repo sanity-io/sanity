@@ -64,7 +64,7 @@ export function ReleaseDashboardHeader(props: {
               testId="back-to-releases-button"
             />
           ) : (
-<>
+            <>
               <Flex flex="none">
                 <Button
                   mode="bleed"
@@ -110,7 +110,7 @@ export function ReleaseDashboardHeader(props: {
               onClick={handleActivityClick}
               padding={2}
               selected={inspector === 'activity'}
-              space={2}
+              gap={2}
               text={t('dashboard.details.activity')}
             />
             <ReleaseActionRail release={release} documents={documents} />
@@ -124,7 +124,7 @@ export function ReleaseDashboardHeader(props: {
               onClick={handleActivityClick}
               padding={2}
               selected={inspector === 'activity'}
-              space={2}
+              gap={2}
               text={t('dashboard.details.activity')}
             />
           </Flex>

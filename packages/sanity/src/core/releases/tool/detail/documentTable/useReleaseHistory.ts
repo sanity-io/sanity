@@ -51,6 +51,19 @@ export function useReleaseHistory(
     return getVersionId(releaseDocumentId, releaseId)
   }, [releaseDocumentId, releaseId])
 
+  // Reset to the loading state during render when `versionId` changes, before the new fetch
+  // settles — React's recommended "adjusting state when a prop changes" pattern (setState during
+  // render bails out and re-renders immediately, without the extra commit an effect-based reset
+  // would cause). Without this, a stale `[]` (or a previous version's transactions) from before
+  // the change renders as "loaded, no history" for the duration of the new fetch — the
+  // false-settled flash. A cache hit or the `!versionId` short-circuit in `fetchAndParse` still
+  // settles synchronously within the same effect tick, so there's no visible flicker for those.
+  const [prevVersionId, setPrevVersionId] = useState(versionId)
+  if (versionId !== prevVersionId) {
+    setPrevVersionId(versionId)
+    setHistory(null)
+  }
+
   const cancelledRef = useRef(false)
 
   const fetchAndParse = useCallback(async (): Promise<void> => {

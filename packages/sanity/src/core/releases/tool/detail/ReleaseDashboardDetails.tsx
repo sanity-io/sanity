@@ -131,7 +131,7 @@ function ReleaseDashboardDetailsProduction({
               <Text size={1}>
                 <ErrorOutlineIcon />
               </Text>
-              <Stack space={4}>
+              <Stack gap={4}>
                 <Text size={1} weight="semibold">
                   {isAtTimeRelease
                     ? tRelease('failed-schedule-title')
@@ -153,7 +153,7 @@ function ReleaseDashboardDetailsProduction({
               <Text size={1}>
                 <WarningOutlineIcon />
               </Text>
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text size={1}>{tRelease('permission-missing-title')}</Text>
                 <Text size={1} muted>
                   {tRelease('permission-missing-description')}
@@ -263,7 +263,7 @@ export function ReleaseDashboardDetails({
     <Container width={3}>
       {/* Tight top padding: the header above already pads its bottom, so the title sits close under
           the breadcrumb instead of floating in a doubled gap. */}
-      <Stack paddingX={3} paddingBottom={3} paddingTop={1} space={4}>
+      <Stack paddingX={3} paddingBottom={3} paddingTop={1} gap={4}>
         {/* Clear zones: identity (title + description) on the left; a label -> value metadata panel
             on the right. Wraps to a single column on narrow widths (metadata stacks under the
             description). The pin control was removed (it's a global-perspective mode that belongs in

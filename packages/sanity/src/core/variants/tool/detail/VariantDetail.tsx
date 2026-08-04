@@ -216,7 +216,7 @@ export function VariantDetail() {
           {/* paddingX={2} (8px) matches the table's first-column content inset so the back button and
               actions line up with the row content below. */}
           <Box paddingX={2}>
-            <Stack space={4}>
+            <Stack gap={4}>
               <Flex align="center" gap={3}>
                 <Flex align="center" flex={1} style={{minWidth: 0}}>
                   <DetailBackButton

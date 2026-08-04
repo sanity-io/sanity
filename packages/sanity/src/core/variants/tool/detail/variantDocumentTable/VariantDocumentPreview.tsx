@@ -38,12 +38,15 @@ function PrimaryBundleIcon({
     <Box flex="none">
       <Text size={1}>
         {primary.kind === 'published' ? (
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           <ReleaseAvatarIcon tone="positive" />
         ) : primary.kind === 'drafts' ? (
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           <ReleaseAvatarIcon tone="caution" />
         ) : primary.release ? (
           <ReleaseAvatarIcon release={primary.release} />
         ) : (
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           <ReleaseAvatarIcon tone="default" />
         )}
       </Text>

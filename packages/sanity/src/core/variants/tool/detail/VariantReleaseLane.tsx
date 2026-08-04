@@ -42,7 +42,7 @@ export function VariantReleaseLane({
     <Flex align="center" wrap="nowrap" data-testid="variant-release-lane">
       {/* No leading icon/label: the tabs (All, Published, Drafts, release names) are self-evidently
           bundle filters. A filter icon here read as a clickable control that wasn't one. */}
-      <TabList space={1}>
+      <TabList gap={1}>
         {[
           <Tab
             key="all"

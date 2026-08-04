@@ -165,6 +165,9 @@ export function ReleaseDashboardActivityPanel({
               <TrapFocus
                 returnFocus={{preventScroll: true}}
                 autoFocus
+                // react-focus-lock's own docs use focusOptions={{preventScroll: true}} as the
+                // canonical pattern for this exact case; no non-deprecated alternative exists.
+                // oxlint-disable-next-line no-deprecated -- see comment above
                 focusOptions={{preventScroll: true}}
               >
                 <Resizable

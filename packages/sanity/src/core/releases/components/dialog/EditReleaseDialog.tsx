@@ -80,8 +80,8 @@ export function EditReleaseDialog({
       width={1}
     >
       <Card padding={4} borderTop>
-        <Stack space={5}>
-          <Stack space={3}>
+        <Stack gap={5}>
+          <Stack gap={3}>
             <Text as="label" htmlFor={titleId} size={1} weight="medium">
               {t('release.dialog.edit.title-label')}
             </Text>
@@ -94,7 +94,7 @@ export function EditReleaseDialog({
               value={title}
             />
           </Stack>
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text as="label" htmlFor={descriptionId} size={1} weight="medium">
               {t('release.dialog.edit.description-label')}
             </Text>

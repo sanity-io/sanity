@@ -21,6 +21,15 @@ import {getDocumentPreviewTitle} from './getDocumentPreviewTitle'
 import {VariantDocumentBundleChips} from './VariantDocumentBundleChips'
 import {VariantDocumentPreview} from './VariantDocumentPreview'
 
+// `memoKey` only identifies the row's representative document snapshot — it doesn't change when a
+// *sibling* version is added to or removed from `row.versions`, even though that's exactly what the
+// preview's primary-bundle badge and its navigation target (both derived from `row.versions` via
+// `getPrimaryBundle`) depend on. Without this fingerprint the comparator reports "unchanged" and the
+// badge/nav target go stale while the unmemoized "Appears in" chips (rendered outside this memo)
+// update correctly — the disagreement the surrounding code comments are meant to prevent.
+const versionsFingerprint = (row: DocumentInVariantGroup): string =>
+  row.versions.map((v) => `${v.documentId}:${v.bundleId ?? ''}:${v.releaseRef ?? ''}`).join('|')
+
 const MemoVariantDocumentPreview = memo(
   function MemoVariantDocumentPreview({
     row,
@@ -36,7 +45,8 @@ const MemoVariantDocumentPreview = memo(
   (prev, next) =>
     prev.row.memoKey === next.row.memoKey &&
     prev.variantId === next.variantId &&
-    prev.releasesById === next.releasesById,
+    prev.releasesById === next.releasesById &&
+    versionsFingerprint(prev.row) === versionsFingerprint(next.row),
 )
 
 const MemoDocumentType = memo(

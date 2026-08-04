@@ -20,14 +20,6 @@ export type ReleaseLaneKind = 'published' | 'drafts' | 'release'
 export const RELEASE_LANE_ALL = 'all'
 
 /**
- * Stable filter key used when a version points at a release that could not be resolved
- * from the active releases store (e.g. an archived release).
- *
- * @internal
- */
-export const UNRESOLVED_RELEASE_ID = 'unresolved-release'
-
-/**
  * A resolved bundle descriptor for a single version: a stable id used both as the lane
  * filter key and the chip key, the kind, and the release document when applicable.
  *
@@ -70,7 +62,9 @@ export function resolveVersionBundle(
     return {id: release?._id ?? releaseDocumentId, kind: 'release', release}
   }
 
-  return {id: UNRESOLVED_RELEASE_ID, kind: 'release'}
+  // Every constructed version sets either a valid bundleId or a releaseRef, so this is
+  // unreachable in practice; kept only to keep the function total over its declared input type.
+  return {id: 'unresolved-release', kind: 'release'}
 }
 
 /**

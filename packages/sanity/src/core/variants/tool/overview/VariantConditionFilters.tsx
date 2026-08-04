@@ -60,7 +60,7 @@ function AddFilterMenu({
   // Master-detail: dimensions on the left, the selected dimension's values on the right — both panes
   // visible at once, so choosing a dimension and toggling its values needs no back-and-forth.
   const content = (
-    <Stack space={0} style={{width: 520}}>
+    <Stack gap={0} style={{width: 520}}>
       <Box padding={2} style={{borderBottom: '1px solid var(--card-border-color)'}}>
         <TextInput
           fontSize={1}
@@ -75,7 +75,7 @@ function AddFilterMenu({
         {/* Left: dimensions — icon + label grouped left (flex-start); the highlighted row and the
             live value pane convey the drill, so no trailing chevron is needed. */}
         <Box style={{width: 240, borderRight: '1px solid var(--card-border-color)'}}>
-          <Stack padding={2} space={1}>
+          <Stack padding={2} gap={1}>
             {matchingFacets.length === 0 ? (
               <Box padding={3}>
                 <Text muted size={1}>
@@ -105,7 +105,7 @@ function AddFilterMenu({
             values (text left, selected checkmark pinned right via space-between). */}
         <Box style={{flex: 1}}>
           {activeFacet ? (
-            <Stack padding={2} space={1}>
+            <Stack padding={2} gap={1}>
               <Box paddingBottom={1} paddingTop={1} paddingX={2}>
                 <Text muted size={0} weight="medium">
                   {facetLabel(activeFacet.key)}

@@ -43,9 +43,12 @@ function getChipTone(kind: ReleaseLaneKind): 'positive' | 'primary' | 'default' 
 // overflow list — the visible chips lean on their badge tone, and the document preview already
 // carries this icon per row, so repeating it on the chip would be redundant.
 function ChipIcon({chip}: {chip: ResolvedChip}) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   if (chip.kind === 'published') return <ReleaseAvatarIcon tone="positive" />
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   if (chip.kind === 'drafts') return <ReleaseAvatarIcon tone="caution" />
   if (chip.release) return <ReleaseAvatarIcon release={chip.release} />
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return <ReleaseAvatarIcon tone="default" />
 }
 
@@ -125,11 +128,11 @@ export function VariantDocumentBundleChips({
       {overflow.length > 0 && (
         <Tooltip
           content={
-            <Stack space={3} padding={1}>
+            <Stack gap={3} padding={1}>
               <Text muted size={0} weight="medium">
                 {t('detail.documents.appears-in.also-in')}
               </Text>
-              <Stack space={2}>
+              <Stack gap={2}>
                 {overflow.map((chip) => (
                   <Flex align="center" gap={2} key={chip.key}>
                     <Text size={0}>
@@ -144,12 +147,7 @@ export function VariantDocumentBundleChips({
           placement="bottom-start"
           portal
         >
-          <Badge
-            data-testid="variant-bundle-chips-overflow"
-            mode="outline"
-            radius={2}
-            tone="default"
-          >
+          <Badge data-testid="variant-bundle-chips-overflow" radius={2} tone="default">
             {`+${overflow.length}`}
           </Badge>
         </Tooltip>
