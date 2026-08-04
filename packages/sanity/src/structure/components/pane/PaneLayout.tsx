@@ -31,7 +31,7 @@ export function PaneLayout(
   const [controller] = useState(() => createPaneLayoutController())
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const rootSize = useElementSize(rootElement)
-  const width = rootSize?.border.width || 0
+  const width = rootSize?.border.width
   const collapsed = width === undefined || !minWidth ? undefined : width < minWidth
   const [state, setState] = useState<PaneLayoutState>({
     expandedElement: null,
@@ -43,7 +43,7 @@ export function PaneLayout(
   useEffect(() => controller.setRootElement(rootElement), [controller, rootElement])
 
   // Set root size
-  useEffect(() => controller.setRootWidth(width), [controller, width])
+  useEffect(() => controller.setRootWidth(width || 0), [controller, width])
 
   // Subscribe to state changes
   useEffect(() => controller.subscribe(setState), [controller])
