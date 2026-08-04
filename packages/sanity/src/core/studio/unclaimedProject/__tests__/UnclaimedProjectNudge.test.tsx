@@ -28,7 +28,10 @@ vi.mock('../../../store/authStore/unclaimedProjectStorage', async (importOrigina
 }))
 vi.mock('../../../environment', () => mockEnvironment)
 vi.mock('../../workspace', () => ({useWorkspace: mockUseWorkspace}))
-vi.mock('../useUnclaimedProject', () => ({useUnclaimedProject: mockUseUnclaimedProject}))
+vi.mock('../useUnclaimedProject', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useUnclaimedProject: mockUseUnclaimedProject,
+}))
 
 const theme = buildTheme()
 const PROJECT_ID = 'test-project'

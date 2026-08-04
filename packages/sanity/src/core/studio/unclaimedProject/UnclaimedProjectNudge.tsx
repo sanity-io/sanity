@@ -15,7 +15,11 @@ import {
 } from '../../store/authStore/unclaimedProjectStorage'
 import {interpolateTemplate} from '../../util/interpolateTemplate'
 import {useWorkspace} from '../workspace'
-import {type UnclaimedProjectState, useUnclaimedProject} from './useUnclaimedProject'
+import {
+  ROBOT_PROVIDER,
+  type UnclaimedProjectState,
+  useUnclaimedProject,
+} from './useUnclaimedProject'
 import {
   getClaimedIdentityText,
   getClaimedIdentityTextParts,
@@ -40,10 +44,10 @@ function UnclaimedProjectNudgeAuthCheck() {
   const provider = currentUser?.provider
 
   useEffect(() => {
-    if (provider && provider !== 'sanity-token') clearUnclaimedProjectRecord(projectId)
+    if (provider && provider !== ROBOT_PROVIDER) clearUnclaimedProjectRecord(projectId)
   }, [projectId, provider])
 
-  if (provider !== 'sanity-token') return null
+  if (provider !== ROBOT_PROVIDER) return null
 
   return <UnclaimedProjectNudgeStateCheck />
 }

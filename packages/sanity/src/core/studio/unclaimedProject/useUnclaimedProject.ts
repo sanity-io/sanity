@@ -31,8 +31,8 @@ const CLAIM_STATUS_POLL_DURATION_MS = 10 * 60_000
 /** The unauthenticated provision lookup shares a ~20/hour per-IP budget with the CLI. */
 const CLAIM_LOOKUP_INTERVAL_MS = 30 * 60_000
 
-/** Identity provider of the pre-claim robot token. */
-const ROBOT_PROVIDER = 'sanity-token'
+/** Identity provider of the pre-claim robot token. @internal */
+export const ROBOT_PROVIDER = 'sanity-token'
 
 /** Holding organization that owns every minted-but-unclaimed project. */
 const UNCLAIMED_ORGANIZATION_ID = 'oSystemUnclaimed'
