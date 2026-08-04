@@ -112,6 +112,48 @@ describe('validation column cell', () => {
   })
 })
 
+describe('flag-off column parity', () => {
+  // These defs also drive the non-beta releases-detail table and scheduled drafts, so the
+  // flag-off (production) column set must exactly match what production shipped before this
+  // redesign — no variant column, no split "Last edited" / "Edited by" pair, and the original
+  // (wider) type-column width. This was previously only verified manually, column by column.
+  const t = ((key: string) => key) as TFunction<'releases'>
+
+  it('matches the exact production column set and order when variantsEnabled is omitted', () => {
+    const columns = getDocumentTableColumnDefs(releaseDocumentId, 'active', t)
+
+    expect(columns.map((column) => column.id)).toEqual([
+      'action',
+      'document._type',
+      'search',
+      'document._updatedAt',
+      'validation',
+    ])
+  })
+
+  it('keeps the pre-redesign type-column width (150, not the beta 120)', () => {
+    const columns = getDocumentTableColumnDefs(releaseDocumentId, 'active', t)
+    const typeColumn = columns.find((column) => column.id === 'document._type')
+
+    expect(typeColumn?.width).toBe(150)
+  })
+
+  it('keeps a single combined "Edited" column instead of the beta split pair', () => {
+    const columns = getDocumentTableColumnDefs(releaseDocumentId, 'active', t)
+
+    expect(columns.filter((column) => column.id === 'document._updatedAt')).toHaveLength(1)
+    expect(columns.find((column) => column.id === 'editedBy')).toBeUndefined()
+  })
+
+  it('omits the action column for archived and published releases, same as beta', () => {
+    const archivedColumns = getDocumentTableColumnDefs(releaseDocumentId, 'archived', t)
+    const publishedColumns = getDocumentTableColumnDefs(releaseDocumentId, 'published', t)
+
+    expect(archivedColumns.find((column) => column.id === 'action')).toBeUndefined()
+    expect(publishedColumns.find((column) => column.id === 'action')).toBeUndefined()
+  })
+})
+
 describe('DocumentType', () => {
   beforeEach(() => {
     vi.clearAllMocks()

@@ -28,15 +28,10 @@ export function VariantReleaseLane({
   totalCount: number
   activeLane: string
   onSelectLane: (laneId: string) => void
-}): React.JSX.Element | null {
+}): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   // Bundle labels live in the core namespace (shared with the per-row bundle chips).
   const {t: tCore} = useTranslation()
-
-  // Nothing to filter by unless the documents span more than one bundle.
-  if (segments.length < 2) {
-    return null
-  }
 
   return (
     <Flex align="center" wrap="nowrap" data-testid="variant-release-lane">

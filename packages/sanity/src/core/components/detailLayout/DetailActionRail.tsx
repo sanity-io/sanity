@@ -16,9 +16,8 @@ export function DetailActionRail(props: {
   secondary?: ReactNode
   primary?: ReactNode
   menu?: ReactNode
-}): React.JSX.Element | null {
+}): React.JSX.Element {
   const {secondary, primary, menu} = props
-  if (!secondary && !primary && !menu) return null
   return (
     <Flex flex="none" gap={2} align="center" data-ui="detail-action-rail">
       {secondary}

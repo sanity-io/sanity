@@ -83,7 +83,6 @@ export function DocumentTable<Row extends object>({
   searchPredicate,
   searchPlaceholder,
   searchTestId,
-  searchWidth,
   filterTabs,
   filterTabsScroll = true,
   commandLaneMinHeight = DEFAULT_COMMAND_LANE_MIN_HEIGHT,
@@ -103,8 +102,6 @@ export function DocumentTable<Row extends object>({
   searchPredicate: (row: Row, searchTerm: string) => boolean
   searchPlaceholder: string
   searchTestId?: string
-  /** Fixed width of the search input; defaults to 280. Set it to match a right-hand rail. */
-  searchWidth?: number
   filterTabs?: ReactNode
   /**
    * When true (default), the filter-tabs slot scrolls horizontally with a right-edge fade — right for
@@ -277,13 +274,7 @@ export function DocumentTable<Row extends object>({
                         wide empty gutter — e.g. the variants overview, which has no filter tabs. */}
                     <Box
                       flex={filterTabs ? 'none' : 1}
-                      style={
-                        filterTabs
-                          ? searchWidth
-                            ? {maxWidth: searchWidth}
-                            : SEARCH_INPUT_STYLE
-                          : undefined
-                      }
+                      style={filterTabs ? SEARCH_INPUT_STYLE : undefined}
                     >
                       <TextInput
                         aria-label={searchPlaceholder}

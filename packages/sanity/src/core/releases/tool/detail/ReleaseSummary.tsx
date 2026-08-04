@@ -294,7 +294,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           searchPlaceholder={t('search-documents-placeholder')}
           searchPredicate={(row, searchTerm) => searchDocumentRelease(row.document, searchTerm)}
           searchTestId="release-documents-search"
-          searchWidth={260}
         />
       ) : (
         <>

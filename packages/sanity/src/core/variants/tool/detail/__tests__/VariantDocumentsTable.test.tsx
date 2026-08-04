@@ -258,6 +258,16 @@ describe('VariantDocumentsTable', () => {
     })
   })
 
+  it('hides the release lane when all documents share a single bundle', async () => {
+    // Only the second fixture row (drafts-only) — nothing to filter by with just one bundle.
+    await renderTable([mockRows[1]!])
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+    expect(screen.queryByTestId('variant-release-lane')).not.toBeInTheDocument()
+  })
+
   it('sorts rows by document group id on first load', async () => {
     const rows: DocumentInVariantGroup[] = [
       {

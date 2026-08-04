@@ -64,9 +64,8 @@ describe('VariantReleaseLane', () => {
     )
   })
 
-  it('renders nothing when there is only one bundle to filter by', async () => {
-    await renderLane({segments: [segments[0]!]})
-
-    expect(screen.queryByTestId('variant-release-lane')).not.toBeInTheDocument()
-  })
+  // The <2-segments guard moved to the caller (VariantDocumentsTable's `hasReleaseControls`,
+  // which also gates on loading/empty rows) — this component now always renders its segments.
+  // See VariantDocumentsTable.test.tsx's "hides the release lane when all documents share a
+  // single bundle" for that behavior's coverage.
 })
