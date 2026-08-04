@@ -114,7 +114,6 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
               <VirtualizedArrayList
                 key={mountKey}
                 members={visibleMembers}
-                fadeBottom={collapsible && !expanded}
                 tone={errorTone}
                 memberKeys={memberKeys}
                 activeDragItemIndex={activeDragItemIndex}
