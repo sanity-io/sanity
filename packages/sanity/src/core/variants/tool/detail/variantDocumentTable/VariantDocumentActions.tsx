@@ -10,6 +10,8 @@ import {memo, useCallback} from 'react'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type DocumentInVariantGroup} from '../types'
 import {type VariantBulkAction} from '../variantBulkActions'
 
@@ -25,7 +27,7 @@ import {type VariantBulkAction} from '../variantBulkActions'
  *
  * @internal
  */
-export const VariantDocumentActions = memo(function VariantDocumentActions({
+const VariantDocumentActionsInner = memo(function VariantDocumentActionsInner({
   row,
   t,
   onAction,
@@ -71,4 +73,34 @@ export const VariantDocumentActions = memo(function VariantDocumentActions({
       popover={{placement: 'bottom-end', portal: true}}
     />
   )
+})
+
+/**
+ * Guards {@link VariantDocumentActionsInner} against an unregistered schema type — the menu's
+ * actions assume a resolvable type (e.g. the confirm dialog's row preview reads `schemaType.icon`/
+ * `.title`); a document whose type isn't in the current schema gets a disabled button with an
+ * explanatory tooltip instead, mirroring the releases document table's `GuardedDocumentActions`.
+ *
+ * @internal
+ */
+export const VariantDocumentActions = memo(function VariantDocumentActions(props: {
+  row: DocumentInVariantGroup
+  t: TFunction<'variants'>
+  onAction: (action: VariantBulkAction, row: DocumentInVariantGroup) => void
+}) {
+  const schema = useSchema()
+  const type = schema.get(props.row.document._type)
+  const {t: coreT} = useTranslation()
+  if (!type) {
+    return (
+      <ContextMenuButton
+        disabled
+        tooltipProps={{
+          content: coreT('document.type.not-found', {type: props.row.document._type}),
+        }}
+      />
+    )
+  }
+
+  return <VariantDocumentActionsInner {...props} />
 })
