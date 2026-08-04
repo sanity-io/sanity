@@ -6,8 +6,10 @@ import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjects
 import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
+import {ArrayItemsToggle, COLLAPSED_ITEMS_MASK} from '../../common/ArrayItemsToggle'
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
 import {Item, List} from '../../common/list'
+import {getFocusedMemberKey, useCollapsibleArrayItems} from '../../common/useCollapsibleArrayItems'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {ErrorItem} from './ErrorItem'
@@ -19,6 +21,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const {
     arrayFunctions: ArrayFunctions = ArrayOfObjectsFunctions,
     elementProps,
+    focusPath,
     members,
     onChange,
     onItemPrepend,
@@ -49,7 +52,16 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     return <GridItem {...itemProps} />
   }, [])
 
-  const memberKeys = useMemo(() => members.map((member) => member.key), [members])
+  const focusPathKey = useMemo(() => getFocusedMemberKey(focusPath), [focusPath])
+
+  const {collapsible, expanded, onToggle, visibleMembers} = useCollapsibleArrayItems({
+    members,
+    schemaType,
+    layout: 'grid',
+    focusedKey: focusPathKey,
+  })
+
+  const memberKeys = useMemo(() => visibleMembers.map((member) => member.key), [visibleMembers])
 
   return (
     <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
@@ -72,7 +84,12 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
               </Card>
             )}
             {members?.length > 0 && (
-              <Card border radius={1} tone={errorTone}>
+              <Card
+                border
+                radius={1}
+                tone={errorTone}
+                style={collapsible && !expanded ? COLLAPSED_ITEMS_MASK : undefined}
+              >
                 <List
                   gridTemplateColumns={[2, 3, 4]}
                   gap={3}
@@ -82,7 +99,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                   onItemMove={onItemMove}
                   sortable={sortable}
                 >
-                  {members.map((member) => (
+                  {visibleMembers.map((member) => (
                     <Item key={member.key} sortable={sortable} id={member.key} flex={1}>
                       {member.kind === 'item' && (
                         <ArrayOfObjectsItem
@@ -103,6 +120,13 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                   ))}
                 </List>
               </Card>
+            )}
+            {collapsible && (
+              <ArrayItemsToggle
+                expanded={expanded}
+                onToggle={onToggle}
+                totalCount={members.length}
+              />
             )}
           </Stack>
         </UploadTargetCard>

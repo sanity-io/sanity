@@ -822,6 +822,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.action.remove': 'Remove',
   /** Label for removing action when an array item has an error  */
   'inputs.array.action.remove-invalid-item': 'Remove',
+  /** Label for expanding a collapsed array to show every item */
+  'inputs.array.action.show-all-items_one': 'Show 1 item',
+  /** Label for expanding a collapsed array to show every item */
+  'inputs.array.action.show-all-items_other': 'Show all {{count}} items',
+  /** Label for collapsing an expanded array back to a limited number of items */
+  'inputs.array.action.show-fewer-items': 'Show fewer items',
   /** Label for viewing the item of a specific type, eg "View Person" */
   'inputs.array.action.view': 'View {{itemTypeTitle}}',
   /** Error description for the array item tooltip that explains that the current item can still be moved or deleted but not edited since the schema definition is not found */
