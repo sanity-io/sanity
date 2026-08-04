@@ -1,10 +1,20 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type DocumentInspector, useSource} from 'sanity'
 
 import {type PaneRouterContextValue} from '../../components/paneRouter/types'
 import {type PaneMenuItem} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
-import {HISTORY_INSPECTOR_NAME, INSPECT_ACTION_PREFIX} from './constants'
+import {
+  DocumentHistoryInspectorOpened,
+  type DocumentHistoryOpenPath,
+} from './__telemetry__/documentPanes.telemetry'
+import {
+  type ChangesInspectorTab,
+  HISTORY_INSPECTOR_NAME,
+  INSPECT_ACTION_PREFIX,
+  resolveChangesInspectorTab,
+} from './constants'
 
 export function useDocumentPaneInspector({
   documentId,
@@ -18,9 +28,11 @@ export function useDocumentPaneInspector({
   setParams: (params: Record<string, string | undefined>) => void
 }) {
   const {features} = useStructureTool()
+  const telemetry = useTelemetry()
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const inspectorsResolver = source.document.inspectors
+  const eventsApiEnabled = Boolean(source.beta?.eventsAPI?.documents)
 
   const inspectors: DocumentInspector[] = useMemo(
     () => inspectorsResolver({documentId, documentType}),
@@ -48,6 +60,30 @@ export function useDocumentPaneInspector({
   )
 
   const changesOpen = currentInspector?.name === HISTORY_INSPECTOR_NAME
+
+  // Open handlers stash attribution here before flipping the inspector; the effect below reads it on
+  // the open transition, then clears it. An empty ref means no handler ran (the URL / deep-link case).
+  // The tab is carried in the ref rather than read from pane-router params, which round-trip async.
+  const openIntentRef = useRef<{path: DocumentHistoryOpenPath; tab: ChangesInspectorTab} | null>(
+    null,
+  )
+  const wasChangesOpenRef = useRef(false)
+
+  useEffect(() => {
+    if (changesOpen && !wasChangesOpenRef.current) {
+      const intent = openIntentRef.current
+      const tab = intent?.tab ?? resolveChangesInspectorTab(params.changesInspectorTab)
+
+      telemetry.log(DocumentHistoryInspectorOpened, {
+        tab,
+        path: intent?.path ?? 'url',
+        eventsApi: eventsApiEnabled,
+      })
+    }
+
+    openIntentRef.current = null
+    wasChangesOpenRef.current = changesOpen
+  }, [changesOpen, params.changesInspectorTab, eventsApiEnabled, telemetry])
 
   const closeInspector = useCallback(
     (closeInspectorName?: string) => {
@@ -125,15 +161,19 @@ export function useDocumentPaneInspector({
     }
   }, [closeInspector, historyInspector])
 
-  const handleHistoryOpen = useCallback(() => {
-    if (!features.reviewChanges) {
-      return
-    }
+  const handleHistoryOpen = useCallback(
+    (openPath: DocumentHistoryOpenPath = 'status_line') => {
+      if (!features.reviewChanges) {
+        return
+      }
 
-    if (historyInspector) {
-      openInspector(historyInspector.name, {changesInspectorTab: 'review'})
-    }
-  }, [features.reviewChanges, openInspector, historyInspector])
+      if (historyInspector) {
+        openIntentRef.current = {path: openPath, tab: 'review'}
+        openInspector(historyInspector.name, {changesInspectorTab: 'review'})
+      }
+    },
+    [features.reviewChanges, openInspector, historyInspector],
+  )
 
   const inspectOpen = params.inspect === 'on'
 
@@ -168,13 +208,26 @@ export function useDocumentPaneInspector({
         if (nextInspector.name === inspectorName) {
           closeInspector(nextInspector.name)
         } else {
+          if (nextInspector.name === HISTORY_INSPECTOR_NAME) {
+            openIntentRef.current = {
+              path: 'pane_menu',
+              tab: resolveChangesInspectorTab(params.changesInspectorTab),
+            }
+          }
           openInspector(nextInspector.name)
         }
         return true
       }
       return false
     },
-    [closeInspector, inspectorName, inspectors, openInspector, toggleLegacyInspect],
+    [
+      closeInspector,
+      inspectorName,
+      inspectors,
+      openInspector,
+      params.changesInspectorTab,
+      toggleLegacyInspect,
+    ],
   )
 
   return {

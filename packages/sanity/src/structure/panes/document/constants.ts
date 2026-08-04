@@ -17,3 +17,16 @@ export const DEFAULT_MENU_ITEM_GROUPS: PaneMenuItemGroup[] = [{id: 'inspectors'}
 export const HISTORY_INSPECTOR_NAME = 'sanity/structure/history'
 export const VALIDATION_INSPECTOR_NAME = 'sanity/structure/validation'
 export const INCOMING_REFERENCES_INSPECTOR_NAME = 'sanity/structure/incoming-references'
+
+// history / review changes inspector tabs
+export const CHANGES_INSPECTOR_TABS = ['history', 'review'] as const
+
+export type ChangesInspectorTab = (typeof CHANGES_INSPECTOR_TABS)[number]
+
+export function isValidChangesInspectorTab(tab: string | undefined): tab is ChangesInspectorTab {
+  return typeof tab === 'string' && (CHANGES_INSPECTOR_TABS as readonly string[]).includes(tab)
+}
+
+export function resolveChangesInspectorTab(tab: string | undefined): ChangesInspectorTab {
+  return isValidChangesInspectorTab(tab) ? tab : CHANGES_INSPECTOR_TABS[0]
+}

@@ -121,11 +121,15 @@ Where in a collection an object was created or edited. Pairs with
 
 How a navigation or open interaction was triggered.
 
-| Value               | Description               |
-| ------------------- | ------------------------- |
-| `breadcrumb`        | Via a breadcrumb control  |
-| `close_button`      | Via a dialog close button |
-| `keyboard_shortcut` | Via a keyboard shortcut   |
+| Value               | Description                                                        |
+| ------------------- | ------------------------------------------------------------------ |
+| `breadcrumb`        | Via a breadcrumb control                                           |
+| `close_button`      | Via a dialog close button                                          |
+| `keyboard_shortcut` | Via a keyboard shortcut                                            |
+| `status_line`       | Via the document footer status button                              |
+| `change_indicator`  | Via the change bar beside an edited field                          |
+| `pane_menu`         | Via a document pane menu item                                      |
+| `url`               | Via a deep link, reload, or history navigation (no in-app control) |
 
 ## How Events Are Sent
 
@@ -273,6 +277,18 @@ Tracked automatically via `web-vitals/attribution` library:
 | `Document Published`                                  | Publish action completes                            |
 | `Publish Button Clicked`                              | Publish operation stages (started/completed/failed) |
 | `Publish Button Becomes Disabled - Started/Completed` | Publish button state transitions                    |
+
+### Document History and Changes
+
+These events cover the history / review changes side pane. `Document History Inspector Opened` fires from an effect watching the inspector transition open, so it captures every entry point, including deep links and reloads that arrive with the pane already open (`path: 'url'`). Those `url` opens count as views but are not a deliberate-intent signal, so filter them out when measuring engagement. There is no matching close event, so dwell time is not derivable.
+
+| Event                                    | When                                            | Payload                                                       |
+| ---------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------- |
+| `Document History Inspector Opened`      | The pane transitions open                       | `{ tab: 'history' \| 'review', path, eventsApi: boolean }`    |
+| `Document History Inspector Tab Changed` | A different tab is selected within the pane     | `{ tab, previousTab }`                                        |
+| `Document Changes Reverted`              | A revert is confirmed in the review changes tab | `{ scope: 'all' \| 'group' \| 'field', changeCount: number }` |
+
+`path` uses the shared [`path`](#path) vocabulary (`status_line`, `change_indicator`, `pane_menu`, `url`). `eventsApi` records whether the pane rendered the events-API implementation or the legacy one, since the two are distinct code paths mid-rollout. `Document Changes Reverted` counts confirmed reverts, not clicks on the revert button that open the confirmation dialog.
 
 ### Releases
 

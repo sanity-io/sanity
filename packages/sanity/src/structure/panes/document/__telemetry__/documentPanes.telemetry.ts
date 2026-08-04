@@ -1,5 +1,51 @@
 import {defineEvent} from '@sanity/telemetry'
 
+import {type ChangesInspectorTab} from '../constants'
+
+/**
+ * How an open of the history / review changes inspector was triggered. Values belong to the shared
+ * `path` vocabulary documented in `docs/TELEMETRY.md`.
+ *
+ * @internal
+ */
+export type DocumentHistoryOpenPath = 'status_line' | 'change_indicator' | 'pane_menu' | 'url'
+
+/**
+ * @internal
+ */
+export interface DocumentHistoryInspectorOpenedInfo {
+  tab: ChangesInspectorTab
+  path: DocumentHistoryOpenPath
+  eventsApi: boolean
+}
+
+/**
+ * @internal
+ */
+export const DocumentHistoryInspectorOpened = defineEvent<DocumentHistoryInspectorOpenedInfo>({
+  name: 'Document History Inspector Opened',
+  version: 1,
+  description: 'User opened the history and review changes inspector',
+})
+
+/**
+ * @internal
+ */
+export interface DocumentHistoryInspectorTabChangedInfo {
+  tab: ChangesInspectorTab
+  previousTab: ChangesInspectorTab
+}
+
+/**
+ * @internal
+ */
+export const DocumentHistoryInspectorTabChanged =
+  defineEvent<DocumentHistoryInspectorTabChangedInfo>({
+    name: 'Document History Inspector Tab Changed',
+    version: 1,
+    description: 'User changed the active tab in the history and review changes inspector',
+  })
+
 /**
  * @internal
  */

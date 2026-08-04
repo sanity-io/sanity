@@ -1,5 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex, TabList, TabPanel, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {
@@ -19,7 +20,12 @@ import {Tab} from '../../../../../ui-components/tab/Tab'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {HISTORY_INSPECTOR_NAME} from '../../constants'
+import {DocumentHistoryInspectorTabChanged} from '../../__telemetry__/documentPanes.telemetry'
+import {
+  type ChangesInspectorTab,
+  HISTORY_INSPECTOR_NAME,
+  resolveChangesInspectorTab,
+} from '../../constants'
 import {ChangesInspector} from './ChangesInspector'
 import {EventsInspector} from './EventsInspector'
 import {EventsSelector} from './EventsSelector'
@@ -32,13 +38,9 @@ const FadeInFlex = styled(Flex)`
     opacity: 1;
   }
 `
-const TABS = ['history', 'review'] as const
-const isValidTab = (tab: string | undefined): tab is (typeof TABS)[number] =>
-  // @ts-expect-error TS doesn't understand the type guard
-  tab && TABS.includes(tab)
-
 export function ChangesTabs(props: DocumentInspectorProps) {
   const {params, setParams} = usePaneRouter()
+  const telemetry = useTelemetry()
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
@@ -47,17 +49,21 @@ export function ChangesTabs(props: DocumentInspectorProps) {
   const isReady = params?.inspect === HISTORY_INSPECTOR_NAME
   const {selectedPerspective} = usePerspective()
 
-  const paneRouterTab = isValidTab(params?.changesInspectorTab)
-    ? params.changesInspectorTab
-    : TABS[0]
+  const paneRouterTab = resolveChangesInspectorTab(params?.changesInspectorTab)
 
-  const setPaneRouterTab = (tab: (typeof TABS)[number]) =>
+  const setPaneRouterTab = (tab: ChangesInspectorTab) => {
+    // The Tab buttons fire onClick even when already selected, so only log a real change.
+    if (tab !== paneRouterTab) {
+      telemetry.log(DocumentHistoryInspectorTabChanged, {tab, previousTab: paneRouterTab})
+    }
+
     setParams({
       ...params,
       changesInspectorTab: tab,
       // Reset the since when changing the tab, as it's not relevant for the history tab
       since: tab === 'history' ? undefined : params?.since,
     })
+  }
 
   return (
     <FadeInFlex
