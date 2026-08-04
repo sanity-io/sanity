@@ -3,7 +3,7 @@ source: stories/status/ChangeResolver.stories.tsx
 title: 'Internal notes'
 blocks: 1
 roundtrip: true
-sourceHash: 4ee75b4902a2289a
+sourceHash: ebf6d0061546685c
 ---
 
 <!-- @component -->

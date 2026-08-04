@@ -46,17 +46,17 @@ const meta: Meta = {
           'A selection model is a tiny grammar, and all its rules matter: click toggles one, ' +
             'shift-click extends a range from the last toggle, and the header well selects and ' +
             'clears all. An editor who cannot select three documents and delete them will not ' +
-            'believe your provenance ledger.',
+            'believe a provenance ledger.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Anchor | `Actions & Commands/CommandList`, Items with selection, which proves the engine’s `ariaMultiselectable` + `getItemSelected` machinery works today. This story is that machinery given the three things a selection model needs beyond toggling: range gestures, a select-all, and an action bar that spends the selection |',
+          '|          |                                                                                                                                                                                                                                                                                                                                                                                                            |',
+          '| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |',
+          '| Anchor   | `Actions & Commands/CommandList`, Items with selection, which proves the engine’s `ariaMultiselectable` + `getItemSelected` machinery works today. This story is that machinery given the three things a selection model needs beyond toggling: range gestures, a select-all, and an action bar that spends the selection                                                                                  |',
           '| Evidence | audit `bulk-actions` (ch8: primary lists have no multi-select/checkboxes/bulk ops, one of only five ch8 negatives); researcher’s brief §7, the named keystone of the floor: the sequencing logic is not fix small things first, it is credibility. The brief also notes the selection model was already the overhaul’s P1 keystone, now competitively confirmed by both competitors’ real selection models |',
-          '| Patterns | `bulk-actions` · `jakobs-law` |',
+          '| Patterns | `bulk-actions` · `jakobs-law`                                                                                                                                                                                                                                                                                                                                                                              |',
           '',
-          'Click toggles one; shift-click extends a range from the last toggle (the gesture every ' +
-            'neighbouring product has taught editors to expect, Jakob’s law working for us); ' +
-            '"Extend to next click" in the header arms the same range extension without a ' +
+          'Click toggles one; shift-click extends a range from the last toggle (the gesture ' +
+            'every neighbouring product has taught editors to expect, Jakob’s law working for ' +
+            'us); "Extend to next click" in the header arms the same range extension without a ' +
             'modifier key; the header well selects and clears all. The modifier-free path is not ' +
             'a fallback, shift-click is a mouse-with-keyboard gesture, and a real selection model ' +
             'must offer range selection to touch editors and assistive input too. The selection ' +

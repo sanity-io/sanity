@@ -22,15 +22,14 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'Comments turn the margins of a document into a place a team can talk, and this ' +
-            'composer, with live mentions, is the box that conversation happens in wherever ' +
-            'comments live in Studio.',
+          'CommentInput is the composer, with live mentions, that a comment conversation ' +
+            'happens in wherever comments live in Studio.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/core/comments/components/pte/comment-input/CommentInput.tsx`. Studio-only, no DS equivalent |',
-          '| Tier | SERVICE. The comments-specific Portable Text composer (a purpose-built PTE instance with a mentions plugin), reused across the inspector, field popovers and task descriptions |',
-          '| Audit | ⚪ not-audited individually. The composer itself was not a scored surface; its chapter-14 pattern (`collaborative-presence`) fails on the field-seam affordance and badges, which the Comments page reproduces. The mentions affordance in here worked as expected during the benchmark |',
+          '|        |                                                                                                                                                                                                                                                                                         |',
+          '| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |',
+          '| Source | `packages/sanity/src/core/comments/components/pte/comment-input/CommentInput.tsx`. Studio-only, no DS equivalent                                                                                                                                                                        |',
+          '| Tier   | SERVICE. The comments-specific Portable Text composer (a purpose-built PTE instance with a mentions plugin), reused across the inspector, field popovers and task descriptions                                                                                                          |',
+          '| Audit  | ⚪ not-audited individually. The composer itself was not a scored surface; its chapter-14 pattern (`collaborative-presence`) fails on the field-seam affordance and badges, which the Comments page reproduces. The mentions affordance in here worked as expected during the benchmark |',
           '',
           'It is a Portable Text editor built for one job: write a comment, drop an `@mention`. ' +
             'Studio reuses the same instance everywhere comments surface: the comments inspector, ' +
@@ -52,8 +51,8 @@ const meta: Meta = {
             'story canvas: in the compact docs preview the popover renders outside the reserved ' +
             'frame. These stories set an explicit height.',
           '',
-          'The page closes **in context**: the field-comment composer open on the **Title** of ' +
-            'the "Anna Karenina" draft, an editor typing a note in the margin, mention live.',
+          'The last story shows the composer in context: open on the **Title** of the "Anna ' +
+            'Karenina" draft, an editor typing a note in the margin, mention live.',
         ].join('\n'),
       },
     },

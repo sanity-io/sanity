@@ -18,13 +18,13 @@ const meta: Meta<typeof RedirectingScreen> = {
     docs: {
       description: {
         component: [
-          'This is the screen shown for the moment between deciding to send you somewhere and ' +
-            'getting you there.',
+          'RedirectingScreen is shown for the moment between deciding to send someone somewhere ' +
+            'and getting them there.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                                 |',
+          '| ------ | --------------------------------------------------------------- |',
           '| Source | `packages/sanity/src/core/studio/screens/RedirectingScreen.tsx` |',
-          '| Tier | CHROME |',
+          '| Tier   | CHROME                                                          |',
           '',
           'A primary-toned card, a double-chevron, and a line of text. Its whole job is to ' +
             'occupy a gap.',

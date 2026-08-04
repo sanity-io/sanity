@@ -172,11 +172,11 @@ const meta: Meta = {
             'most common way to get stuck. This is the map: every point at which a Sanity Studio ' +
             'can be reshaped, what each one controls, and which shape it has.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | every customisation seam in Studio, verified against `picks.ts` and the form/definition-extension types rather than recalled |',
-          '| Tier | SERVICE |',
-          '| Coverage | 19 seams across four shapes: renderDefault, description, whole surface, dead |',
+          '|          |                                                                                                                              |',
+          '| -------- | ---------------------------------------------------------------------------------------------------------------------------- |',
+          '| Source   | every customisation seam in Studio, verified against `picks.ts` and the form/definition-extension types rather than recalled |',
+          '| Tier     | SERVICE                                                                                                                      |',
+          '| Coverage | 19 seams across four shapes: renderDefault, description, whole surface, dead                                                 |',
           '',
           '`renderDefault` seams hand you the default component as a prop and ask for JSX back. ' +
             'You are not given an empty slot; you are given the thing Studio would have rendered. ' +
@@ -258,8 +258,8 @@ export const ByShape: Story = {
             'turn out to have no default to delegate to.',
           '',
           'Read `Customisation/The Middleware Chain` alongside this, because it qualifies the ' +
-            "whole group: `renderDefault` means *the next registrant down*, not *Sanity's " +
-            'component*, and on a studio with plugins installed those are different things.',
+            "whole group: `renderDefault` means _the next registrant down_, not _Sanity's " +
+            'component_, and on a studio with plugins installed those are different things.',
         ].join('\n'),
       },
     },

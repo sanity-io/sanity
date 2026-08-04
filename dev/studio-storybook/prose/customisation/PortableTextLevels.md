@@ -3,12 +3,12 @@ source: stories/customisation/PortableTextLevels.stories.tsx
 title: 'Customisation/Portable Text: Three Levels'
 blocks: 4
 roundtrip: true
-sourceHash: 4764846e68ac1c04
+sourceHash: 1c4f519bb5266845
 ---
 
 <!-- @component -->
 
-The question that produced this page was fair: Portable Text ships some default blocks, so what is the precedent for a user-created one? The answer has two halves, and the second half is the one to read before copying the nearest example in the codebase.
+This page inventories the precedent for a user-created Portable Text block: fourteen seams across three levels, config, schema, editor. Two of those levels look alike and are not, which is the half worth reading before copying the nearest example in the codebase.
 
 |          |                                                                    |
 | -------- | ------------------------------------------------------------------ |

@@ -3,12 +3,12 @@ source: stories/collab/TaskFields.stories.tsx
 title: 'To Do'
 blocks: 7
 roundtrip: true
-sourceHash: 8001bf01b4515294
+sourceHash: d09cb846a2f8c833
 ---
 
 <!-- @component -->
 
-A task form is built from individual inputs, and two of them are not really form inputs at all: the status control, the title field, and the confirmation for removing a task.
+TaskFields covers three inputs from a single task form that are not really form inputs at all: the status control, the title field, and the confirmation for removing a task.
 
 |        |                                                   |
 | ------ | ------------------------------------------------- |
@@ -19,7 +19,7 @@ The task list and sidebar are already storied under CMS Patterns/Tasks. These ar
 
 > **Why it matters:** every one of these emits a form patch rather than calling a save. The status control and the title field never touch a document, never know whether one exists, and never decide when to write. That is what lets the same components serve a task being created and a task being edited without a mode flag, and it is why they can be storied at all: hand them a value and an onChange, and they are complete.
 
-**And storying that turned up a bug.** `Title` intends to emit `unset` when you clear it, and instead emits `unset` immediately followed by `set("")`, because the `if (!inputValue)` branch is missing a `return`, so it falls through. The empty string wins. Filed as ledger #56; the story below shows both patches.
+**And storying that turned up a bug.** `Title` intends to emit `unset` when cleared, and instead emits `unset` immediately followed by `set("")`, because the `if (!inputValue)` branch is missing a `return`, so it falls through. The empty string wins. Filed as ledger #56; the story below shows both patches.
 
 <!-- @story Status -->
 

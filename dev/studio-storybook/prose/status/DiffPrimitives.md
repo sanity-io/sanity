@@ -3,7 +3,7 @@ source: stories/status/DiffPrimitives.stories.tsx
 title: 'The Garden of Forking Paths'
 blocks: 1
 roundtrip: true
-sourceHash: eae897cb9414147f
+sourceHash: 70cb4d9ae916109c
 ---
 
 <!-- @component -->

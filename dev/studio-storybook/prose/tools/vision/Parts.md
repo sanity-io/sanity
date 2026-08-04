@@ -3,7 +3,7 @@ source: stories/tools/vision/Parts.stories.tsx
 title: 'Lists & Data/Vision/Parts'
 blocks: 1
 roundtrip: true
-sourceHash: 6a591787304687b8
+sourceHash: e24df963cfafac2f
 ---
 
 <!-- @component -->

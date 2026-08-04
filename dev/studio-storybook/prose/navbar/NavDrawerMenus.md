@@ -3,12 +3,12 @@ source: stories/navbar/NavDrawerMenus.stories.tsx
 title: 'Acme Content'
 blocks: 1
 roundtrip: true
-sourceHash: 4e0d977d665333c1
+sourceHash: 233628b10b49a085
 ---
 
 <!-- @component -->
 
-A preference menu that lives inside the navbar drawer is the kind of small, always-there control the shell owns rather than any document. The appearance (color scheme) menu reads the current scheme from context and offers System, Light, and Dark, with a checkmark on the active choice.
+The appearance (color scheme) menu is a small, always-there preference control that lives inside the navbar drawer, owned by the shell rather than any document. It reads the current scheme from context and offers System, Light, and Dark, with a checkmark on the active choice.
 
 |        |                                          |
 | ------ | ---------------------------------------- |

@@ -3,7 +3,7 @@ source: stories/releases/VersionChips.stories.tsx
 title: 'Releases/Version Chips'
 blocks: 5
 roundtrip: true
-sourceHash: c11dffab5fb8627b
+sourceHash: 4fea85008c1e5c26
 ---
 
 <!-- @component -->
@@ -24,7 +24,7 @@ A literal that will catch you: the `bundleId` for the two system chips is `publi
 
 A behaviour easy to miss: the selected chip scrolls itself into view on mount. On a document in eight releases the row overflows, and without that the version you are editing can be scrolled off screen.
 
-> **Why it matters:** the interface would otherwise show you content while hiding which content it is. A control this small is carrying an unusual amount of state, and every one of its behaviours exists to keep that state legible rather than merely present.
+> **Why it matters:** the interface would otherwise show content while hiding which content it is. A control this small is carrying an unusual amount of state, and every one of its behaviours exists to keep that state legible rather than merely present.
 
 <!-- @story States -->
 

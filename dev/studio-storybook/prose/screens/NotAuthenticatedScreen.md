@@ -3,12 +3,12 @@ source: stories/screens/NotAuthenticatedScreen.stories.tsx
 title: 'Navbar & Shell/Screens/Not Authenticated'
 blocks: 4
 roundtrip: true
-sourceHash: 577bc4f7b04dfdfb
+sourceHash: b281d8e0399e2e8a
 ---
 
 <!-- @component -->
 
-This is the screen for someone who is signed in and still not allowed in. Not a login prompt: the authentication worked, the authorization did not.
+NotAuthenticatedScreen is the screen for someone who is signed in and still not allowed in. Not a login prompt: the authentication worked, the authorization did not.
 
 |        |                                                                      |
 | ------ | -------------------------------------------------------------------- |
@@ -21,7 +21,7 @@ It is the only screen in this family rendered as a `Dialog` rather than a card, 
 
 Note the ordering of the two paragraphs: what happened first, how to check it second. And the one action is Sign out rather than "Request access" - because the likely fix is to come back as someone else, not to escalate.
 
-**A thing to notice about the first render.** `currentUser` starts as `null` and is filled in when the auth observable emits, so for one frame the sentence reads "signed in as ( )" with an empty name, empty email and no provider. With a synchronous store you will not catch it; over a slow auth request you will. There is no skeleton or guard on that paragraph.
+**A thing to notice about the first render.** `currentUser` starts as `null` and is filled in when the auth observable emits, so for one frame the sentence reads "signed in as ( )" with an empty name, empty email and no provider. With a synchronous store this goes unnoticed; over a slow auth request it shows. There is no skeleton or guard on that paragraph.
 
 <!-- @story Default -->
 

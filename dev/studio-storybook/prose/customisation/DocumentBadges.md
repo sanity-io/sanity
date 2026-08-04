@@ -3,7 +3,7 @@ source: stories/customisation/DocumentBadges.stories.tsx
 title: 'This document has unpublished changes'
 blocks: 6
 roundtrip: true
-sourceHash: 25f1814eed7e00ef
+sourceHash: d0155caefba141aa
 ---
 
 <!-- @component -->

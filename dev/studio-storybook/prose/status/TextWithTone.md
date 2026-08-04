@@ -3,7 +3,7 @@ source: stories/status/TextWithTone.stories.tsx
 title: 'Document Status/Text With Tone'
 blocks: 1
 roundtrip: true
-sourceHash: 7e46dd1c6bd280d6
+sourceHash: e03dc895c3800fef
 ---
 
 <!-- @component -->
@@ -23,4 +23,4 @@ Its CSS defines exactly five tones (`default`, `primary`, `positive`, `caution`,
 
 > **Why it matters:** when this is used for status, pair the toned text with a leading icon that carries the same meaning by shape, so the message reads as an error before the pink is perceived.
 
-The page closes in context: the toned lines composed into a real validation summary for the book Anna Karenina.
+The last story shows it in context: the toned lines composed into a real validation summary for the book Anna Karenina.

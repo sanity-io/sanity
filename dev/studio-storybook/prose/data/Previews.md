@@ -3,12 +3,12 @@ source: stories/data/Previews.stories.tsx
 title: 'Lists & Data/Previews'
 blocks: 1
 roundtrip: true
-sourceHash: 2d9be5aca234497e
+sourceHash: b973cbfc1a8131f4
 ---
 
 <!-- @component -->
 
-On reload the list region paints chrome over a blank white pane with no skeleton, and a bare spinner flashes on the dark theme, even though the fix already ships inside these components as a built-in skeleton mode.
+Previews is the shared preview-rendering layer every list row, pane header, and reference card renders a resolved document through. On reload it currently paints chrome over a blank pane with no skeleton, and a bare spinner flashes on the dark theme, even though the fix already ships inside these components as a built-in skeleton mode.
 
 |          |                                                                                                                                                                                                                                                           |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -21,4 +21,4 @@ The general family has four layouts, `compact`, `default`, `media`, `detail`, ea
 
 Harness notes: these are pure presentational components, they take content as props and render no data of their own, so no `DocumentPreviewStore` or provider stack is needed (only the global i18n + theme decorators, for the "Untitled" fallback and theming). Sample content is borrowed from the shared fixture authors (`lib/mockDocumentPreviewStore.ts`); `media` is a gradient standing in for a resolved image asset, so no image-URL builder/client runs.
 
-> **Why it matters:** the fix needs no new component, only wiring up the skeleton mode these layouts already ship. Until then, a reload paints chrome over a blank pane and, on the dark theme, a bare spinner flashing with no shape to what is loading.
+> **Why it matters:** the fix needs no new component, only wiring up the skeleton mode these layouts already ship.

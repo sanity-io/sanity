@@ -28,14 +28,14 @@ const meta: Meta = {
             'corners of the studio, but they share a shape: both hand something to a system ' +
             'outside the studio and cannot fully control what happens next.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `core/canvas/actions/UnlinkFromCanvas/` and `core/feedback/components/` |',
-          '| Tier | SERVICE |',
-          '| Patterns | `error-messages` |',
+          '|          |                                                                         |',
+          '| -------- | ----------------------------------------------------------------------- |',
+          '| Source   | `core/canvas/actions/UnlinkFromCanvas/` and `core/feedback/components/` |',
+          '| Tier     | SERVICE                                                                 |',
+          '| Patterns | `error-messages`                                                        |',
           '',
           '`UnlinkFromCanvasDialog` is the more consequential. A document linked to Canvas is ' +
-            'authored *there*, and unlinking severs that connection: the Studio copy stops ' +
+            'authored _there_, and unlinking severs that connection: the Studio copy stops ' +
             'receiving updates. Reversible in principle, disorienting in practice. It confirms ' +
             'and reports rather than acting silently.',
           '',

@@ -1,9 +1,9 @@
 ---
 source: stories/releases/ReleaseDetail.stories.tsx
 title: 'The launch announcement'
-blocks: 25
+blocks: 18
 roundtrip: true
-sourceHash: 623079a40053e049
+sourceHash: 23a22303606c19f2
 ---
 
 <!-- @component -->
@@ -28,39 +28,17 @@ A titled, open release, activity panel closed. The back button always reads "Rel
 
 Two independent branches at once: no title set, so the placeholder text renders at half opacity instead of an empty header; and the activity button is `selected`, which is what the caller sets when the inspector panel below is showing.
 
-<!-- @story CopyActions -->
-
-The header's share menu: copy link, copy id, copy title. Open it to see all three; each pushes a toast and logs telemetry rather than doing anything to the release itself, so it is safe to leave enabled on every release state.
-
 <!-- @story DetailsActive -->
 
 An open, healthy release: the pin toggle, the type picker, the validation progress indicator, and the title/description editor. Nothing below is an error or a warning, so neither of those cards is present.
-
-<!-- @story DetailsPublishFailed -->
-
-The release carries an `error` (the asap-failed fixture), so `shouldDisplayError` is true: an inline summary line appears in the toolbar row and the full error card (with the raw message inside a collapsible `Details`) appears below the editor.
-
-**Not exercised:** the permission-missing sibling of this branch needs `useReleasePermissions().checkWithPermissionGuard` to resolve `false`, which means a second `WithStudioProviders({canPerformReleaseActions: false})` harness. Left as a documented gap rather than doubling this file's workspace compilation for one card.
 
 <!-- @story DetailsArchived -->
 
 An archived release. The pin toggle and type picker are gone (there is nothing left to pin or reschedule), and `ArchivedReleaseBanner` appears at the bottom explaining the retention policy in their place.
 
-<!-- @story DetailsEditorOpen -->
-
-An active release: the title and description fields are editable. Typing debounces 200ms before calling `updateRelease`, which this harness's mock client accepts silently.
-
-<!-- @story DetailsEditorReadOnly -->
-
-A published release. `getIsReleaseOpen` is false, so the mount effect never even asks whether the user has update permission: the fields are disabled unconditionally, because a published release's title is a record of what shipped, not something left open to edit.
-
 <!-- @story TypePickerStates -->
 
 The three open release types, each with its own icon and tone: asap (a bolt, caution), scheduled with a publish date (a clock, suggest), undecided (a dot, neutral). Click any of them to open the popover and see the same `TabList` plus, for scheduled, the date input and calendar.
-
-<!-- @story TypePickerLockedAndPublished -->
-
-Two states that stop being an editable control. Locked: the release is actually `state: 'scheduled'`, not merely typed that way, so the button is disabled with a tooltip explaining why. Published: the component renders no button at all, only a static pill, because a published release's timing is history rather than a setting.
 
 <!-- @story DateInputStates -->
 
@@ -88,10 +66,6 @@ Seven event types in one feed: created, a document added (with its preview card 
 
 `hasMore` is true, so a loader row is virtualised in below the last event. Scrolling to it is what triggers `loadMore` in the real component (the `useEffect` at lines 92-98); here it is a permanent fixture rather than a live pagination cursor.
 
-<!-- @story ActivityPanelOpen -->
-
-The resizable panel the header's activity button toggles, holding the same mixed-event feed as the list story above. Its width is draggable between 320 and 800px.
-
 <!-- @story ActivityPanelClosed -->
 
 `show={false}`. `AnimatePresence` has nothing to animate out because nothing was ever rendered in: the whole panel, including its own padding and border, is absent rather than collapsed to zero width. The dashed frame below is the story stage, not the component.
@@ -99,10 +73,6 @@ The resizable panel the header's activity button toggles, holding the same mixed
 <!-- @story ActivityPanelErrorAndLoading -->
 
 Two states that only appear before any event has arrived: an errored feed shows a caution card instead of a silent empty list, and a still-loading feed shows a loader instead of looking finished with nothing to show. Once even one event lands, both cards step aside for the list.
-
-<!-- @story DocumentActionsMenu -->
-
-The overflow menu each document-table row carries: discard the version, or unpublish once the release goes live. The type (`author`) is registered in this harness's schema, so `GuardedDocumentActions` hands off to the real menu.
 
 <!-- @story DocumentActionsUnknownType -->
 

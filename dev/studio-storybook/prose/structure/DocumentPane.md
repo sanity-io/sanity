@@ -3,7 +3,7 @@ source: stories/structure/DocumentPane.stories.tsx
 title: 'Book'
 blocks: 1
 roundtrip: true
-sourceHash: 266cb7f6856e5227
+sourceHash: b7f73f64ca817a77
 ---
 
 <!-- @component -->
@@ -17,7 +17,7 @@ Open any document in the product and this is the surface in front of everyone: t
 | Audit    | 🔴 needs-work (`draft-publish-lifecycle`, `similarity`)                                                |
 | Patterns | `draft-publish-lifecycle` · `schema-driven-forms`                                                      |
 
-This is where the actual work happens: the document editor itself, the whole right-hand surface a person lands in when they open one document, its header, the schema-driven form, the view tabs, and the publish and status bar along the bottom. If you want to understand how editing works in this product, you start here.
+This is where the actual work happens: the document editor itself, the whole right-hand surface a person lands in when they open one document, its header, the schema-driven form, the view tabs, and the publish and status bar along the bottom.
 
 The real editor is mounted here, not a header or status bar in isolation, over a real document store. The pair machinery runs for real, snapshots served from fixtures, a listener held open on a mock welcome event, grants come from a fixture access list, and edits type into the real local-first patch pipeline, nothing persists, mutations land in the mock client's own transaction log. The document header, context menu, view tabs, the form, and the status bar, publish button, action menu, status line, are all live.
 

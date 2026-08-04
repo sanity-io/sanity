@@ -3,12 +3,12 @@ source: stories/beta/DocumentBanners.stories.tsx
 title: 'Document Banners/In a live pane'
 blocks: 1
 roundtrip: true
-sourceHash: 9816490df2f3a0b2
+sourceHash: ee8feba04c080b76
 ---
 
 <!-- @component -->
 
-The most expensive editing mistakes come from acting on a document whose state a person misread. These banners are Studio’s answer: a single, calm strip that says, before you edit, here is the unusual thing about this document.
+These banners are Studio's answer to editing mistakes that come from acting on a document whose state was misread: a single, calm strip that says, before editing, here is the unusual thing about this document.
 
 |          |                                                                                                                                                                                                                     |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

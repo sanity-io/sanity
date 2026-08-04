@@ -16,11 +16,11 @@ const meta: Meta<typeof ConfigErrorsScreen> = {
           'A catalog that quietly skips a screen like this one is less useful than one that ' +
             'shows it.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                                  |',
+          '| ------ | ---------------------------------------------------------------- |',
           '| Source | `packages/sanity/src/core/studio/screens/ConfigErrorsScreen.tsx` |',
-          '| Tier | CHROME (nominally) |',
-          '| Status | dead code, filed in the upstream findings ledger |',
+          '| Tier   | CHROME (nominally)                                               |',
+          '| Status | dead code, filed in the upstream findings ledger                 |',
           '',
           'The component exists, is exported, and renders the string "TODO: implement config ' +
             'errors screen". The file is nine lines of live code and thirty of commented-out ' +

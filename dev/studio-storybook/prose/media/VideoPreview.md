@@ -3,12 +3,12 @@ source: stories/media/VideoPreview.stories.tsx
 title: 'Article'
 blocks: 1
 roundtrip: true
-sourceHash: 63591a9b1b4f0f89
+sourceHash: 4e02c903515d00c2
 ---
 
 <!-- @component -->
 
-An editor who sees the bare skeleton has no way to know whether to wait two seconds or two minutes, and an editor who sees the error card has no way to know whether Retry will work, is pointless, or needs someone else’s attention: three remedies, one screen.
+VideoPreview is the dispatcher every bound video field passes through before anything decides what to show: a skeleton, an error, or the resolved player chrome.
 
 |          |                                                                                                                                                                                                            |
 | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

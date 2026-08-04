@@ -32,21 +32,40 @@ const meta: Meta<typeof FallbackErrorScreen> = {
     docs: {
       description: {
         component: [
-          "This is the last screen. When an error reaches the studio's top-level boundary and " +
-            'nothing else has handled it, this is what replaces the entire interface.',
+          "FallbackErrorScreen is the last screen: when an error reaches the studio's top-level " +
+            'boundary and nothing else has handled it, this is what replaces the entire ' +
+            'interface.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                                   |',
+          '| ------ | ----------------------------------------------------------------- |',
           '| Source | `packages/sanity/src/core/studio/screens/FallbackErrorScreen.tsx` |',
-          '| Tier | SERVICE |',
+          '| Tier   | SERVICE                                                           |',
           '',
-          'Unlike every other screen in this family it does not know what went wrong. It has an `Error` object, possibly an error-reporting event id, and a reset callback, and it has to be useful with only that.',
+          'Unlike every other screen in this family it does not know what went wrong. It has an ' +
+            '`Error` object, possibly an error-reporting event id, and a reset callback, and it ' +
+            'has to be useful with only that.',
           '',
-          '> **Why it matters:** the screen shows two entirely different things to two audiences, chosen at build time. In development it prints the message and the full stack in a critical card, because the person reading it can fix it. In production it prints neither, and instead says: copy the error details and give them to your development team or Sanity Support. That is not the same screen with a detail hidden, it is a different design for a different reader, and it means the screen you debug against is never the screen your users saw. Worth holding onto when a bug report describes this page.',
+          '> **Why it matters:** the screen shows two entirely different things to two ' +
+            'audiences, chosen at build time. In development it prints the message and the full ' +
+            'stack in a critical card, because the person reading it can fix it. In production it ' +
+            'prints neither, and instead says: copy the error details and give them to your ' +
+            'development team or Sanity Support. That is not the same screen with a detail ' +
+            'hidden, it is a different design for a different reader, and it means the screen you ' +
+            'debug against is never the screen your users saw. Worth holding onto when a bug ' +
+            'report describes this page.',
           '',
-          '**The developer tip is the interesting part.** When the error is a client REQUEST error - a network failure, a 5xx, a 429, an expired session - the screen adds a dev-only card saying, in effect: this should not have got here. It then shows the `useStudioErrorHandler` snippet that would have handled it locally. A transient network blip should degrade a panel, not blank the studio, and rather than fix that centrally the screen teaches the pattern at the moment the mistake becomes visible. That is documentation placed where it is needed instead of where it is filed.',
+          '**The developer tip is the interesting part.** When the error is a client REQUEST ' +
+            'error - a network failure, a 5xx, a 429, an expired session - the screen adds a ' +
+            'dev-only card saying, in effect: this should not have got here. It then shows the ' +
+            '`useStudioErrorHandler` snippet that would have handled it locally. A transient ' +
+            'network blip should degrade a panel, not blank the studio, and rather than fix that ' +
+            'centrally the screen teaches the pattern at the moment the mistake becomes visible. ' +
+            'That is documentation placed where it is needed instead of where it is filed.',
           '',
-          '**Harness note:** `isDev` / `isProd` are resolved at build time from the bundler environment, so which branch you see depends on how this storybook was built - the dev server shows the developer view, a static build shows the production one. Both are described below so the page reads correctly either way.',
+          '**Harness note:** `isDev` / `isProd` are resolved at build time from the bundler ' +
+            'environment, so which branch you see depends on how this storybook was built - the ' +
+            'dev server shows the developer view, a static build shows the production one. Both ' +
+            'are described below so the page reads correctly either way.',
         ].join('\n'),
       },
     },

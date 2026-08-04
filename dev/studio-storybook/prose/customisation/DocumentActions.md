@@ -3,12 +3,12 @@ source: stories/customisation/DocumentActions.stories.tsx
 title: 'Move this document out of the active set'
 blocks: 4
 roundtrip: true
-sourceHash: 21191ed10b3c5b03
+sourceHash: fb05e98953ac87dd
 ---
 
 <!-- @component -->
 
-Every other customisation in this chapter hands you `renderDefault` and asks you to return JSX. Actions do not: a document action is a function that returns a description, and the studio decides how to render it. You never draw the button.
+A document action is a function that returns a description; the studio decides how to render it and the author never draws the button. That is different from every other customisation in this chapter, which hands over `renderDefault` and asks for JSX back.
 
 |          |                                                                                  |
 | -------- | -------------------------------------------------------------------------------- |

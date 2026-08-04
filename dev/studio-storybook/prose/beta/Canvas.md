@@ -3,12 +3,12 @@ source: stories/beta/Canvas.stories.tsx
 title: 'Book'
 blocks: 1
 roundtrip: true
-sourceHash: ca8b8cdceb1e0816
+sourceHash: 38cbfe0517b94ab8
 ---
 
 <!-- @component -->
 
-Moving a document out of Studio into another app is a trust moment for the author, and this flow earns that trust by never redirecting silently: it runs a preflight, and when the mapping into Canvas would alter content, it shows the diff and asks first.
+Linking a document to Canvas never redirects silently: this flow runs a preflight, and when the mapping into Canvas would alter content, it shows the diff and asks first.
 
 |          |                                                                                                                                                                                                                                                   |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

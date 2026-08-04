@@ -1,9 +1,9 @@
 ---
 source: stories/search/filters/ReferenceAssetInputs.stories.tsx
 title: 'Search/Filter Inputs/Reference and Asset'
-blocks: 10
+blocks: 9
 roundtrip: true
-sourceHash: b600c2fd82f04ab2
+sourceHash: e931c858e98149de
 ---
 
 <!-- @component -->
@@ -28,10 +28,6 @@ The resting state: no reference selected, so the component renders `ReferenceAut
 <!-- @story ReferenceFilled -->
 
 A bound reference to a real fixture author. The compact preview card and the "Clear" button are what replaces the autocomplete once a value exists - the two branches never render at once.
-
-<!-- @story ReferenceAutocompleteOpen -->
-
-Click-to-open state of the autocomplete, showing every author in the fixture dataset. The search is real: change `searchFixtures.ts`'s author list and this list changes with it.
 
 <!-- @story AssetFileEmpty -->
 

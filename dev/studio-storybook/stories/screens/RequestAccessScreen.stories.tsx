@@ -52,24 +52,39 @@ const meta: Meta<typeof RequestAccessScreen> = {
     docs: {
       description: {
         component: [
-          'This is the screen for someone who authenticated successfully, holds no roles on ' +
-            'this project, and can ask for some. Six distinct presentations, all decided by a ' +
-            'single HTTP response.',
+          'RequestAccessScreen is the screen for someone who authenticated successfully, holds ' +
+            'no roles on this project, and can ask for some: six distinct presentations, all ' +
+            'decided by a single HTTP response.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/core/studio/screens/RequestAccessScreen.tsx` |',
-          '| Tier | SERVICE |',
-          '| Real source | the Sanity Access API: `GET /access/requests/me` and `POST /access/project/:projectId/requests`. No other part of the studio calls either |',
-          '| Stubbed with | `lib/accessApiStub.ts`, a client whose only behaviour is those two endpoints, with request ages computed as offsets from render time |',
-          '| Mounted by | `packages/sanity/src/core/studio/AuthBoundary.tsx:137`, when `loggedIn === "unauthorized"` and `loginProvider` is set to anything other than `sanity` |',
-          '| Cannot show | whether the real endpoints return these shapes, the 409 already-denied submit path, the toast on a non-429 non-409 failure, or the real note round-trip |',
+          '|              |                                                                                                                                                         |',
+          '| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |',
+          '| Source       | `packages/sanity/src/core/studio/screens/RequestAccessScreen.tsx`                                                                                       |',
+          '| Tier         | SERVICE                                                                                                                                                 |',
+          '| Real source  | the Sanity Access API: `GET /access/requests/me` and `POST /access/project/:projectId/requests`. No other part of the studio calls either               |',
+          '| Stubbed with | `lib/accessApiStub.ts`, a client whose only behaviour is those two endpoints, with request ages computed as offsets from render time                    |',
+          '| Mounted by   | `packages/sanity/src/core/studio/AuthBoundary.tsx:137`, when `loggedIn === "unauthorized"` and `loginProvider` is set to anything other than `sanity`   |',
+          '| Cannot show  | whether the real endpoints return these shapes, the 409 already-denied submit path, the toast on a non-429 non-409 failure, or the real note round-trip |',
           '',
-          '> **Why it is stubbed rather than storied normally.** Reaching this screen for real means being signed in as a user with zero roles on the project you are opening, through a third-party identity provider. That is a property of the account, resolved server-side; no config, fixture or dataset produces it. Seeing all six states would mean maintaining a second Sanity account deliberately locked out of a project, and then getting the backend into four different request histories. The component is real and shipped. The endpoint under it is invented here.',
+          '> **Why it is stubbed rather than storied normally.** Reaching this screen for real ' +
+            'means being signed in as a user with zero roles on the project you are opening, ' +
+            'through a third-party identity provider. That is a property of the account, resolved ' +
+            'server-side; no config, fixture or dataset produces it. Seeing all six states would ' +
+            'mean maintaining a second Sanity account deliberately locked out of a project, and ' +
+            'then getting the backend into four different request histories. The component is ' +
+            'real and shipped. The endpoint under it is invented here.',
           '',
-          '**The precondition is narrower than it looks.** `AuthBoundary` sends a user here only when `currentUser.provider` is set and is not `sanity`. A `sanity`-provider user with the same empty `roles` array gets `NotAuthenticatedScreen` instead, a screen with no request affordance at all. So the same account state produces two different products depending on which button you originally signed in with.',
+          '**The precondition is narrower than it looks.** `AuthBoundary` sends a user here ' +
+            'only when `currentUser.provider` is set and is not `sanity`. A `sanity`-provider ' +
+            'user with the same empty `roles` array gets `NotAuthenticatedScreen` instead, a ' +
+            'screen with no request affordance at all. So the same account state produces two ' +
+            'different products depending on which button you originally signed in with.',
           '',
-          '**Every timestamp here is relative.** The screen sorts requests by age against a two-week window (`isAfter(addWeeks(createdAt, 2), new Date())`). A fixture with a literal date would render as pending the day it was written and silently become expired a fortnight later, same story, same name, different screen. `lib/accessApiStub.ts` exposes `daysAgo()` and nothing else, so that mistake is not available.',
+          '**Every timestamp here is relative.** The screen sorts requests by age against a ' +
+            'two-week window (`isAfter(addWeeks(createdAt, 2), new Date())`). A fixture with a ' +
+            'literal date would render as pending the day it was written and silently become ' +
+            'expired a fortnight later, same story, same name, different screen. ' +
+            '`lib/accessApiStub.ts` exposes `daysAgo()` and nothing else, so that mistake is not ' +
+            'available.',
         ].join('\n'),
       },
     },

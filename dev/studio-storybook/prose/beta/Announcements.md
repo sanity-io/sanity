@@ -3,12 +3,12 @@ source: stories/beta/Announcements.stories.tsx
 title: 'Content Releases are out of beta'
 blocks: 1
 roundtrip: true
-sourceHash: a782f1d251ec2bc2
+sourceHash: cba5245d8b96671b
 ---
 
 <!-- @component -->
 
-Something you build only helps editors if it reaches them, and this is how Studio does that without sending an email: a floating teaser, a full reader, and a Help-menu entry that surface a shipped feature to the people already at work.
+Announcements is how Studio reaches editors without sending an email: a floating teaser, a full reader, and a Help-menu entry that surface a shipped feature to the people already at work.
 
 |          |                                                                                                                                                                                                                     |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

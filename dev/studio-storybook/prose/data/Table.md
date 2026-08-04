@@ -3,12 +3,12 @@ source: stories/data/Table.stories.tsx
 title: 'Anna Karenina'
 blocks: 12
 roundtrip: true
-sourceHash: 7b70fd9e0ca6eb53
+sourceHash: 1c4332e8a8a5a9d8
 ---
 
 <!-- @component -->
 
-Despite living in the releases folder, this is a fully general table primitive with no release-specific code in it at all: self-contained for interaction, delegated for semantics.
+Table is a fully general primitive with no release-specific code in it, despite living in the releases folder: self-contained for interaction, delegated for semantics.
 
 |        |                                                                                                                                                                                            |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

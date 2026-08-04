@@ -1,9 +1,9 @@
 ---
 source: stories/releases/ReleaseDocumentMenus.stories.tsx
 title: 'Autumn campaign launch'
-blocks: 19
+blocks: 18
 roundtrip: true
-sourceHash: f1ff8d5db7975ee0
+sourceHash: 8a95776cef8ce695
 ---
 
 <!-- @component -->
@@ -72,10 +72,6 @@ No permission to create a release. The GROUP itself is disabled with a tooltip e
 <!-- @story CopyToDraftsNoExistingDraft -->
 
 `article-pricing` has no draft in the fixture universe, so `hasDraftVersion` resolves `false` for real. Clicking this row skips the confirmation dialog entirely and calls `handleCopyToDrafts()` directly - see the component doc for the race this creates while the version query is still loading.
-
-<!-- @story CopyToDraftsHiddenFromDraftPerspective -->
-
-`useHasCopyToDraftOption` refuses the draft and published perspectives outright - copying a draft to itself is not a menu item. The component returns `null`: the gap between the two markers below is the whole render, same convention as `PaneMenuButtonItem`'s empty-group story.
 
 <!-- @story RouterResolvesCanonical -->
 

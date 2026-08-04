@@ -137,15 +137,16 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'Every other customisation in this chapter hands you `renderDefault` and asks you to ' +
-            'return JSX. Actions do not: a document action is a function that returns a ' +
-            'description, and the studio decides how to render it. You never draw the button.',
+          'A document action is a function that returns a description; the studio decides how ' +
+            'to render it and the author never draws the button. That is different from every ' +
+            'other customisation in this chapter, which hands over `renderDefault` and asks for ' +
+            'JSX back.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Seam | `document.actions`, typed `DocumentActionComponent[] \\| DocumentActionsResolver` |',
-          '| Tier | SERVICE |',
-          '| Patterns | `actions` |',
+          '|          |                                                                                  |',
+          '| -------- | -------------------------------------------------------------------------------- |',
+          '| Seam     | `document.actions`, typed `DocumentActionComponent[] \\| DocumentActionsResolver` |',
+          '| Tier     | SERVICE                                                                          |',
+          '| Patterns | `actions`                                                                        |',
           '',
           'This is the seam for changing what an editor can do to a document, the Publish ' +
             'button and the menu beside it. The same action has to render as a primary button, as ' +

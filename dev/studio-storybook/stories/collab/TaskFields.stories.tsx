@@ -23,14 +23,14 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'A task form is built from individual inputs, and two of them are not really form ' +
+          'TaskFields covers three inputs from a single task form that are not really form ' +
             'inputs at all: the status control, the title field, and the confirmation for ' +
             'removing a task.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                   |',
+          '| ------ | ------------------------------------------------- |',
           '| Source | `packages/sanity/src/core/tasks/components/form/` |',
-          '| Tier | SERVICE |',
+          '| Tier   | SERVICE                                           |',
           '',
           'The task list and sidebar are already storied under CMS Patterns/Tasks. These are ' +
             'the fields inside a single task.',
@@ -42,10 +42,10 @@ const meta: Meta = {
             'and it is why they can be storied at all: hand them a value and an onChange, and ' +
             'they are complete.',
           '',
-          '**And storying that turned up a bug.** `Title` intends to emit `unset` when you ' +
-            'clear it, and instead emits `unset` immediately followed by `set("")`, because the ' +
-            '`if (!inputValue)` branch is missing a `return`, so it falls through. The empty ' +
-            'string wins. Filed as ledger #56; the story below shows both patches.',
+          '**And storying that turned up a bug.** `Title` intends to emit `unset` when cleared, ' +
+            'and instead emits `unset` immediately followed by `set("")`, because the `if ' +
+            '(!inputValue)` branch is missing a `return`, so it falls through. The empty string ' +
+            'wins. Filed as ledger #56; the story below shows both patches.',
         ].join('\n'),
       },
     },

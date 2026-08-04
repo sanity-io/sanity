@@ -110,10 +110,10 @@ const meta: Meta = {
             '`description` and a `layout`, already resolved. That makes it the odd one out among ' +
             'the seven form seams. Know why before writing one.',
           '',
-          '| | |',
-          '|---|---|',
+          '|      |                                                                |',
+          '| ---- | -------------------------------------------------------------- |',
           '| Seam | `form.components.preview`, typed `ComponentType<PreviewProps>` |',
-          '| Tier | SERVICE |',
+          '| Tier | SERVICE                                                        |',
           '',
           'This is how a document or object is summarised anywhere it appears as a reference to ' +
             'itself rather than as a form: array rows, reference fields, search results, document ' +

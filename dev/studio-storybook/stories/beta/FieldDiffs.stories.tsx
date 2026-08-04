@@ -40,11 +40,11 @@ const meta: Meta = {
             'computes the diff for real, field by field, and almost all of the behaviour here ' +
             'lives in how that diff is computed rather than how it is drawn.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/core/field/diff/components/` |',
-          '| Tier | SERVICE |',
-          '| Patterns | `draft-publish-lifecycle` |',
+          '|           |                                                                                                                                                                                                                     |',
+          '| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |',
+          '| Source    | `packages/sanity/src/core/field/diff/components/`                                                                                                                                                                   |',
+          '| Tier      | SERVICE                                                                                                                                                                                                             |',
+          '| Patterns  | `draft-publish-lifecycle`                                                                                                                                                                                           |',
           '| Mechanism | `ChangeList` walks a diff tree and dispatches each change to the renderer for its type: strings get segment-level highlighting, booleans get a from/to pair, nested objects get grouped, array items get matched up |',
           '',
           'There is no array diff renderer and no object diff renderer. `buildChangeList` ' +
@@ -259,8 +259,16 @@ export const NewDocumentWithoutFromValues: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'The same diff with `showFromValue: false`. Every field is still marked as added, but the empty from-side is dropped.\n\nCompare with the story above. When one thing was added among many unchanged fields, "nothing → value" is informative. When *everything* was added, a column of empty from-sides is a column of noise, and each row reads as though something was lost. Same data, and the right rendering depends on context the component cannot infer - hence a prop.',
+        story: [
+          'The same diff with `showFromValue: false`. Every field is still marked as added, ' +
+            'but the empty from-side is dropped.',
+          '',
+          'Compare with the story above. When one thing was added among many unchanged ' +
+            'fields, "nothing → value" is informative. When _everything_ was added, a column of ' +
+            'empty from-sides is a column of noise, and each row reads as though something was ' +
+            'lost. Same data, and the right rendering depends on context the component cannot ' +
+            'infer - hence a prop.',
+        ].join('\n'),
       },
     },
   },

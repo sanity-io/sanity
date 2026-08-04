@@ -47,10 +47,9 @@ const meta: Meta<typeof InsufficientPermissionsMessage> = {
     docs: {
       description: {
         component: [
-          'Permission walls are inevitable on a real content team, and the way they are worded ' +
-            'decides whether a blocked editor feels informed or stonewalled. This is the one ' +
-            'surface Studio reuses for every "no", and it currently tells you who you are without ' +
-            'ever telling you what would unblock you.',
+          'InsufficientPermissionsMessage is the one surface Studio reuses for every access ' +
+            'denial. It currently tells the reader who they are without telling them what would ' +
+            'unblock them.',
           '',
           '| | |',
           '|---|---|',
@@ -59,23 +58,23 @@ const meta: Meta<typeof InsufficientPermissionsMessage> = {
           '| Audit | 🔴 needs-work (`permission-legibility`). The message tells you that you are blocked and which roles you have, but never which permission is missing or how to get it |',
           '| Patterns | `permission-legibility` |',
           '',
-          'It pairs the access-denied icon with a localized explanation keyed to the action you ' +
-            'attempted, and lists the roles you *do* hold, so the denial at least reads ' +
-            'consistently wherever you hit it.',
+          'It pairs the access-denied icon with a localized explanation keyed to the attempted ' +
+            'action, and lists the roles the current user *does* hold, so the denial at least ' +
+            'reads consistently wherever it appears.',
           '',
           'The Current stories render the real component across several `context` values (the ' +
             'copy is the shipped i18n). Recommended is a mocked panel, the fix does not exist in ' +
             'the component yet, that names the specific missing grant and gives a next step, per ' +
             'org contract §4.',
           '',
-          '> **Why it matters:** the shipped message is legible about *you* and silent about ' +
-            'the *block*. It names your roles but never the one grant that is actually missing, ' +
-            'nor who could give it to you, so a blocked editor learns they are stuck without ' +
+          '> **Why it matters:** the shipped message is legible about the user and silent about ' +
+            'the block. It names their roles but never the one grant that is actually missing, ' +
+            'nor who could give it to them, so a blocked editor learns they are stuck without ' +
             'learning how to get unstuck. That gap is the permission-legibility finding, and what ' +
             'the Recommended panel closes.',
           '',
-          'The page closes *in context*: the "Anna Karenina" document footer, where an editor ' +
-            'opens Publish and meets this exact access-denied panel.',
+          'The last story shows the message in context: the "Anna Karenina" document footer, ' +
+            'where an editor opens Publish and meets this exact access-denied panel.',
         ].join('\n'),
       },
     },

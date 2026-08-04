@@ -3,7 +3,7 @@ source: stories/customisation/PortableTextBlocks.stories.tsx
 title: 'Stock ticker'
 blocks: 5
 roundtrip: true
-sourceHash: c85364a70ae5700b
+sourceHash: 006c0aec172a7ef6
 ---
 
 <!-- @component -->

@@ -1,9 +1,9 @@
 ---
 source: stories/search/SearchResults.stories.tsx
 title: 'Acme Content'
-blocks: 11
+blocks: 10
 roundtrip: true
-sourceHash: bf482e82662e83da
+sourceHash: fe27f14378fe7d71
 ---
 
 <!-- @component -->
@@ -21,10 +21,6 @@ The Search Popover and Search Dialog pages are the two frames this content sits 
 
 > **Why it matters:** a results list has more failure modes than a happy path, and this page pins each one separately rather than letting them blur into search working or not. No query, a query with zero hits, and a query that errors are three distinct states with three distinct messages, and conflating any two of them is a real support-ticket generator: someone reporting search is not finding anything when in fact nothing was ever typed. Recent searches carries its own smaller version of the same lesson: an editor's first-ever search and their tenth look identical in the popover shell, and only this list tells them apart.
 
-<!-- @story ResultsPopulated -->
-
-The default working state of the whole page: "release" runs as a real GROQ query against the fixture documents and comes back with three hits (`Announcing the summer release`, `Deprecated: the old release process`, `Release notes`), sorted by the strategy's relevance weighting. This is the virtualized `CommandList` from `../../../../components`, not a plain map over an array - the sort menu above it only appears once there is something to sort. `previewPerspective={['drafts']}` is passed through to every row for the same reason `ResultRow` below needs it - see `versionedFixtureDocuments`.
-
 <!-- @story ResultsNoHits -->
 
 The `NoResults` story below in isolation; this is the same message reached the real way, embedded inside `SearchResults` after a query that genuinely matches nothing. `hasNoSearchResults` requires both `!result.hits.length` and `result.loaded` - a query that has not finished yet does not flash this message on its way to a result.
@@ -37,13 +33,13 @@ The `NoResults` story below in isolation; this is the same message reached the r
 
 `SearchResultItem` rendered on its own, outside a `CommandList`. It is honestly standalone: the component only needs `documentId` and `documentType` as data, and reaches into context (`useSearchState`, `useSchema`, `useDocumentPresence`, `useGrantsStore`) for everything else, the same way it would as a virtualized row. The badge, status dot and title come from `SearchResultItemPreview`, which subscribes to the real preview store for `article-launch` - a published-only document, so the status dot reads "published" with no draft indicator. Compare against `DraftOnlyRow` below.
 
-<!-- @story DraftOnlyRow -->
-
-The same row for `drafts.article-migration` - a document with no published counterpart. `SearchResults` never passes a `drafts.` id to this component: the mock Content Lake resolves drafts server-side the same way the real one does (see `applyDraftPerspective` in `lib/mockContentLake.ts`), so a hit for this document already carries the published-shaped id `article-migration` with the draft content attached. What distinguishes the row from `ResultRow` above is not the id or the layout, it is `SearchResultItemPreview`'s status indicator: `useDocumentVersions` resolves a draft with no published sibling, so the dot renders in its draft-only tone rather than published. Getting this to render at all took a second, un-overlaid copy of the fixtures - see the `versionedFixtureDocuments` comment near the top of this file for why the default harness cannot show the distinction on its own.
-
 <!-- @story DebugScore -->
 
 Not reachable from a story-seeded state: `SearchResults` only renders `DebugOverlay` when `state.debug` is true, and that flag comes from `isDebugMode()` (a runtime check, not a reducer action), so there is no `SeedSearchState` prop that turns it on. `DebugOverlay` itself takes a `WeightedHit` as a plain prop, so this story hands it a fabricated one directly, stacked over the same result row it would sit on in production. Read it as: a tone-coded score chip in the corner, and on hover, the per-field breakdown that produced it - which paths matched, and how much each contributed.
+
+<!-- @story ResultsEmpty -->
+
+`NoResults` on its own. It carries no props - the two lines of copy are static translation strings - so what is worth pinning is simply that it exists as its own component rather than an inline conditional inside `SearchResults`, which is what lets `ResultsNoHits` above compose it in for real.
 
 <!-- @story ResultsFailed -->
 

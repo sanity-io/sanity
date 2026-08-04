@@ -34,26 +34,21 @@ const meta: Meta<typeof IntentButton> = {
     docs: {
       description: {
         component: [
-          'A great deal of what an editor does in Studio is go somewhere, and a button that ' +
-            'navigates through a click handler quietly takes the web away from them: no ' +
-            'right-click, no middle-click into a new tab, no address to copy. This component is ' +
-            'how Studio declines that trade.',
+          'IntentButton is how Studio avoids a navigation trap: a button that navigates through ' +
+            'a plain click handler quietly takes the web away from a person, no right-click, no ' +
+            'middle-click into a new tab, no address to copy.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/core/components/IntentButton.tsx`, Studio-only (no design-system equivalent) |',
-          '| Tier | CHROME. A navigation affordance: the ui-components `Button` bound to a router intent instead of an `onClick` |',
-          '| Enabled path | renders `as={IntentLink}`, a real anchor with an `href` the router resolved |',
-          '| Disabled path | renders `as="a" role="link" aria-disabled="true"` with no `href`. Inert, still announced |',
-          '| Audit | ⚪ not-audited as a unit, but it sits on `clear-entry-points` and deep-linking: the affordance the audit found missing at the pane-stack level |',
-          '| Patterns | `clear-entry-points` |',
+          '|               |                                                                                                                                                |',
+          '| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |',
+          '| Source        | `packages/sanity/src/core/components/IntentButton.tsx`, Studio-only (no design-system equivalent)                                              |',
+          '| Tier          | CHROME. A navigation affordance: the ui-components `Button` bound to a router intent instead of an `onClick`                                   |',
+          '| Enabled path  | renders `as={IntentLink}`, a real anchor with an `href` the router resolved                                                                    |',
+          '| Disabled path | renders `as="a" role="link" aria-disabled="true"` with no `href`. Inert, still announced                                                       |',
+          '| Audit         | ⚪ not-audited as a unit, but it sits on `clear-entry-points` and deep-linking: the affordance the audit found missing at the pane-stack level |',
+          '| Patterns      | `clear-entry-points`                                                                                                                           |',
           '',
-          'A great deal of what an editor does in Studio is *go somewhere*, and a button that ' +
-            'navigates by running a click handler quietly takes the web away from them: no ' +
-            'right-click, no middle-click into a new tab, no address to paste into Slack. ' +
-            '`IntentButton` is how Studio declines that trade. You describe the destination as an ' +
-            'intent, "edit this document" or "create this type", and the router turns it into a ' +
-            'genuine link.',
+          'The destination is described as an intent, "edit this document" or "create this ' +
+            'type", and the router turns it into a genuine link.',
           '',
           'Everything cosmetic passes straight through to `Button`: tone, mode, size, icon, ' +
             'text. So an intent button is indistinguishable from an action button until somebody ' +
@@ -66,8 +61,8 @@ const meta: Meta<typeof IntentButton> = {
             'nobody files a bug about it, because nothing looks broken. The loss is silent. The ' +
             'default has to be the link.',
           '',
-          'The page closes *in context*: an author reference row (Leo Tolstoy) whose *Open ' +
-            'author* button is a real, right-clickable, copyable intent link.',
+          'The last story shows it in context: an author reference row (Leo Tolstoy) whose ' +
+            '_Open author_ button is a real, right-clickable, copyable intent link.',
         ].join('\n'),
       },
     },

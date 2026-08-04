@@ -3,12 +3,12 @@ source: stories/scheduling/ScheduleItem.stories.tsx
 title: 'A field guide to content modelling'
 blocks: 1
 roundtrip: true
-sourceHash: 37d0138b8c763d41
+sourceHash: 6570ca04a8ed242f
 ---
 
 <!-- @component -->
 
-A document's place in the publish queue becomes something an editor can see and act on in a single row: the scheduled date, a live preview, a status indicator, and the actions available for that state.
+ScheduleItem renders a document's place in the publish queue as a single row an editor can see and act on: the scheduled date, a live preview, a status indicator, and the actions available for that state.
 
 |          |                                                                                                                                                                                                                                                                                                                                                                                                           |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

@@ -3,12 +3,12 @@ source: stories/actions/Hotkeys.stories.tsx
 title: 'Actions & Commands/Hotkeys'
 blocks: 1
 roundtrip: true
-sourceHash: 0cbb39b22bd49126
+sourceHash: ccb03e850b490a44
 ---
 
 <!-- @component -->
 
-A keyboard shortcut only helps the people who know it exists, which makes the way Studio shows a shortcut part of whether the shortcut works at all. This is the component that draws it, rendering an array of key names as the row of keycaps a reader recognises.
+Hotkeys renders an array of key names as the row of keycaps a reader recognises. A keyboard shortcut only helps people who know it exists, which makes how Studio shows a shortcut part of whether the shortcut works at all.
 
 |             |                                                                                                                                                                                                  |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -18,10 +18,10 @@ A keyboard shortcut only helps the people who know it exists, which makes the wa
 | Determinism | rewriting reads `navigator.platform`, so output depends on the machine viewing the page. Default arg pins `makePlatformAware={false}` to keep the sweeps stable                                  |
 | Patterns    | `keyboard-only`                                                                                                                                                                                  |
 
-A keyboard shortcut only helps the people who know it exists, which makes the way Studio _shows_ a shortcut part of whether the shortcut works at all. This is the component that draws one. Hand it `["Ctrl", "Alt", "K"]` and it renders the row of keycaps a reader recognises, whether that row sits beside a menu item, inside a tooltip, or down a discoverable shortcut legend.
+Hand it `["Ctrl", "Alt", "K"]` and it renders the row of keycaps a reader recognises, whether that row sits beside a menu item, inside a tooltip, or down a discoverable shortcut legend.
 
 The one piece of intelligence on top is that it relabels keys for whoever is looking. The same input renders `Option` on Apple hardware and `Alt` everywhere else, so one legend reads correctly on both without the author writing it twice. The `PlatformAware` story turns that on deliberately and labels the dependency; every other story pins it off.
 
-> **Why it matters:** with `makePlatformAware` on, the keys you pass are not the keys that render. Never snapshot or assert against platform-aware output, and never assume a reader sees the exact strings you passed.
+> **Why it matters:** with `makePlatformAware` on, the keys passed in are not the keys that render. Never snapshot or assert against platform-aware output, and never assume a reader sees the exact strings that were passed.
 
-The page closes _in context_: a keyboard-shortcut legend for the "Anna Karenina" document, each action paired with its platform-aware keycaps.
+The last story shows it in context: a keyboard-shortcut legend for the "Anna Karenina" document, each action paired with its platform-aware keycaps.

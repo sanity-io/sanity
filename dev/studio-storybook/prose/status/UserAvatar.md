@@ -3,7 +3,7 @@ source: stories/status/UserAvatar.stories.tsx
 title: 'Lists & Data/UserAvatar'
 blocks: 1
 roundtrip: true
-sourceHash: 88b43e1bdc45edec
+sourceHash: 756e881183738927
 ---
 
 <!-- @component -->
@@ -23,4 +23,4 @@ Passing a `User` object renders immediately; passing a `string` id routes throug
 
 > **Why it matters:** the avatar itself holds up, but its presence dot signals online, editing, or inactive by colour alone, the same `collaborative-presence` trait the audit flagged across presence surfaces. In grayscale the three states collapse to one dot in one corner and "who is actively editing" is lost. The Current/Recommended pair below pairs the dot with a label.
 
-The page closes **in context**: the presence roster in the editor header of Anna Karenina, co-edited live.
+The last story shows it in context: the presence roster in the editor header of Anna Karenina, co-edited live.

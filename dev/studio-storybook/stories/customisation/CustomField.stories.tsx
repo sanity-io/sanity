@@ -106,35 +106,36 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'A custom input that appears inside a box nobody wrote is the field: the layer between ' +
-            'the form and the input that carries the label, description, validation message, ' +
-            'presence avatars, change indicator, and collapse affordance around whatever renders ' +
-            'inside it.',
+          'CustomField is the layer between the form and the input: it carries the label, ' +
+            'description, validation message, presence avatars, change indicator, and collapse ' +
+            'affordance around whatever renders inside it. A custom input that appears inside a ' +
+            'box nobody wrote is the field.',
           '',
-          '| | |',
-          '|---|---|',
+          '|      |                                                            |',
+          '| ---- | ---------------------------------------------------------- |',
           '| Seam | `form.components.field`, typed `ComponentType<FieldProps>` |',
-          '| Tier | SERVICE |',
+          '| Tier | SERVICE                                                    |',
           '',
-          'The prop that tells you which layer you are on: `FieldProps.children` is the rendered ' +
-            'input. `InputProps` has no equivalent, because there is nothing below an input. If the ' +
-            'component you are writing receives `children` that already look like a form control, ' +
-            'you are writing a field.',
+          'The prop that tells you which layer you are on: `FieldProps.children` is the ' +
+            'rendered input. `InputProps` has no equivalent, because there is nothing below an ' +
+            'input. If the component you are writing receives `children` that already look like a ' +
+            'form control, you are writing a field.',
           '',
-          'And the giveaway that this layer owns more than decoration: `ObjectFieldProps` carries ' +
-            '`collapsed`, `collapsible`, `onCollapse` and `onExpand`. Collapsing an object is a field ' +
-            'behaviour, not an input one, so a replaced field on a collapsible object silently ' +
-            'removes the ability to collapse it. Story 3 shows that happening.',
+          'And the giveaway that this layer owns more than decoration: `ObjectFieldProps` ' +
+            'carries `collapsed`, `collapsible`, `onCollapse` and `onExpand`. Collapsing an ' +
+            'object is a field behaviour, not an input one, so a replaced field on a collapsible ' +
+            'object silently removes the ability to collapse it. Story 3 shows that happening.',
           '',
           'Same schema, same document, three registrations. This page is the sibling of ' +
             '`Customisation/Custom Input` and uses the same document on purpose.',
           '',
           '> **Why it matters:** read this page if you have ever wondered why a custom input ' +
             'appeared inside a box you did not write. That box is the field. Input and field are ' +
-            'two separate seams applied in sequence: the field renders the chrome and receives the ' +
-            'input as its children. Customise the input and the field still wraps it. Customise the ' +
-            'field and the input still renders inside whatever you return. Most confusion about ' +
-            'Sanity form customisation is one of these two being mistaken for the other.',
+            'two separate seams applied in sequence: the field renders the chrome and receives ' +
+            'the input as its children. Customise the input and the field still wraps it. ' +
+            'Customise the field and the input still renders inside whatever you return. Most ' +
+            'confusion about Sanity form customisation is one of these two being mistaken for the ' +
+            'other.',
         ].join('\n'),
       },
     },

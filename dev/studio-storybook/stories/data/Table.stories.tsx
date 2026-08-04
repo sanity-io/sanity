@@ -191,23 +191,38 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'Despite living in the releases folder, this is a fully general table primitive with no ' +
-            'release-specific code in it at all: self-contained for interaction, delegated for ' +
+          'Table is a fully general primitive with no release-specific code in it, despite ' +
+            'living in the releases folder: self-contained for interaction, delegated for ' +
             'semantics.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/core/releases/tool/components/Table/Table.tsx` |',
-          '| Tier | CORE. The virtualized, sortable, searchable table behind the Releases overview |',
-          '| Audit | 🔴 needs-work (ledger #52). A column whose value is a number never sorts, and fails silently: the header responds, the arrow rotates, no row moves. See the Current/Recommended pair below |',
+          '|        |                                                                                                                                                                                            |',
+          '| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |',
+          '| Source | `packages/sanity/src/core/releases/tool/components/Table/Table.tsx`                                                                                                                        |',
+          '| Tier   | CORE. The virtualized, sortable, searchable table behind the Releases overview                                                                                                             |',
+          '| Audit  | 🔴 needs-work (ledger #52). A column whose value is a number never sorts, and fails silently: the header responds, the arrow rotates, no row moves. See the Current/Recommended pair below |',
           '',
-          'A caller supplies `data`, a `columnDefs` array, a `rowId` path, and a scroll container. It gives back a sticky header, client-side sorting and searching, `@tanstack/react-virtual` row windowing, a loading skeleton, and an empty state.',
+          'A caller supplies `data`, a `columnDefs` array, a `rowId` path, and a scroll ' +
+            'container. It gives back a sticky header, client-side sorting and searching, ' +
+            '`@tanstack/react-virtual` row windowing, a loading skeleton, and an empty state.',
           '',
-          'A second decision worth noticing: the loading state renders three real rows with `isLoading: true` passed down to every cell, rather than a spinner over the table. Each column draws its own skeleton at its own width, so the placeholder has the shape of the thing that is coming.',
+          'A second decision worth noticing: the loading state renders three real rows with ' +
+            '`isLoading: true` passed down to every cell, rather than a spinner over the table. ' +
+            'Each column draws its own skeleton at its own width, so the placeholder has the ' +
+            'shape of the thing that is coming.',
           '',
-          '**Two traps, both silent.** `scrollContainerRef` must be a state value, not a `useRef`: the virtualizer needs a render after the element exists, and a ref mutation gives it none, so the result is a header with no rows underneath and no error to explain it. And a numeric column will not sort unless it is also given a `sortTransform`, which is the defect the Current/Recommended pair below documents.',
+          '**Two traps, both silent.** `scrollContainerRef` must be a state value, not a ' +
+            '`useRef`: the virtualizer needs a render after the element exists, and a ref ' +
+            'mutation gives it none, so the result is a header with no rows underneath and no ' +
+            'error to explain it. And a numeric column will not sort unless it is also given a ' +
+            '`sortTransform`, which is the defect the Current/Recommended pair below documents.',
           '',
-          '> **Why it matters:** sorting and searching are held inside the table, so a column header can flip the sort without the parent knowing, but the data is filtered by a function the parent supplies, so the parent decides what "matching" means. The releases overview searches on title and description; another caller could search on anything, and neither has to reimplement the header or the sort toggle. The one thing the table refuses to own is scrolling, since the scroll boundary belongs to the surrounding pane.',
+          '> **Why it matters:** sorting and searching are held inside the table, so a column ' +
+            'header can flip the sort without the parent knowing, but the data is filtered by a ' +
+            'function the parent supplies, so the parent decides what "matching" means. The ' +
+            'releases overview searches on title and description; another caller could search on ' +
+            'anything, and neither has to reimplement the header or the sort toggle. The one ' +
+            'thing the table refuses to own is scrolling, since the scroll boundary belongs to ' +
+            'the surrounding pane.',
         ].join('\n'),
       },
     },
@@ -349,7 +364,7 @@ export const Searchable: Story = {
         story:
           'The title header is replaced by `Headers.TableHeaderSearch`, which writes into the ' +
           'same table context the sort reads from. Type "lem" or "dune": the filtering itself ' +
-          'is done by the `searchFilter` prop this story supplies, matching on title *or* ' +
+          'is done by the `searchFilter` prop this story supplies, matching on title _or_ ' +
           'author, so an author name finds rows whose titles do not contain it. Clear the field ' +
           'and everything returns - the source data is never mutated.',
       },

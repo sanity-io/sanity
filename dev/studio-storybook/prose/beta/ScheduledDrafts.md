@@ -3,12 +3,12 @@ source: stories/beta/ScheduledDrafts.stories.tsx
 title: 'Book'
 blocks: 1
 roundtrip: true
-sourceHash: 71f50c31f2ac93b5
+sourceHash: 97299cd551705c53
 ---
 
 <!-- @component -->
 
-Scheduling one document to publish itself is a small feature with a big trust requirement: the author is handing the publish button to a clock. These dialogs are where that hand-off is made honest.
+These dialogs make the scheduled-publish hand-off honest. Scheduling a document to publish itself is a small feature with a big trust requirement: the author is handing the publish button to a clock.
 
 |          |                                                                                                                                                                                                                                                                                   |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

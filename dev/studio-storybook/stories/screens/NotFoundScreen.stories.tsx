@@ -20,13 +20,13 @@ const meta: Meta<typeof NotFoundScreen> = {
     docs: {
       description: {
         component: [
-          'This is what the studio renders when the URL names a workspace that does not exist: ' +
-            'a caution-toned full screen with one heading and one way out.',
+          'NotFoundScreen is what the studio renders when the URL names a workspace that does ' +
+            'not exist: a caution-toned full screen with one heading and one way out.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                              |',
+          '| ------ | ------------------------------------------------------------ |',
           '| Source | `packages/sanity/src/core/studio/screens/NotFoundScreen.tsx` |',
-          '| Tier | CHROME |',
+          '| Tier   | CHROME                                                       |',
           '',
           'This is the studio equivalent of a 404, and it is one of a family of full-screen ' +
             'states nobody sees during normal work and everybody eventually hits: a stale ' +

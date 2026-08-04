@@ -3,12 +3,12 @@ source: stories/screens/RequestAccessScreen.stories.tsx
 title: 'Navbar & Shell/Screens/Request Access'
 blocks: 7
 roundtrip: true
-sourceHash: bc50800bcca55290
+sourceHash: 72d6b37b45e63216
 ---
 
 <!-- @component -->
 
-This is the screen for someone who authenticated successfully, holds no roles on this project, and can ask for some. Six distinct presentations, all decided by a single HTTP response.
+RequestAccessScreen is the screen for someone who authenticated successfully, holds no roles on this project, and can ask for some: six distinct presentations, all decided by a single HTTP response.
 
 |              |                                                                                                                                                         |
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |

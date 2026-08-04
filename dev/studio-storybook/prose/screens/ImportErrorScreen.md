@@ -3,12 +3,12 @@ source: stories/screens/ImportErrorScreen.stories.tsx
 title: 'Navbar & Shell/Screens/Import Error'
 blocks: 4
 roundtrip: true
-sourceHash: ff5d724d76164f94
+sourceHash: 96580699fbb74524
 ---
 
 <!-- @component -->
 
-This is the screen for a failed dynamic import: the studio tried to load a chunk and could not.
+ImportErrorScreen is the screen for a failed dynamic import: the studio tried to load a chunk and could not.
 
 |        |                                                                 |
 | ------ | --------------------------------------------------------------- |

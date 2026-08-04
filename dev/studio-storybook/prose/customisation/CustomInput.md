@@ -3,7 +3,7 @@ source: stories/customisation/CustomInput.stories.tsx
 title: 'Article'
 blocks: 3
 roundtrip: true
-sourceHash: 1118463c6c0d51c2
+sourceHash: 4462864e27d3c4d5
 ---
 
 <!-- @component -->

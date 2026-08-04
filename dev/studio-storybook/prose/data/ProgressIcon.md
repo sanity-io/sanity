@@ -3,12 +3,12 @@ source: stories/data/ProgressIcon.stories.tsx
 title: 'Lists & Data/ProgressIcon'
 blocks: 1
 roundtrip: true
-sourceHash: 67f277f4828cf08c
+sourceHash: 5512b64435e373f3
 ---
 
 <!-- @component -->
 
-A determinate progress indicator earns its place by being honest about what is known: when the total is known, a filling arc says exactly how much is done, not just that something is happening.
+ProgressIcon is a determinate progress indicator: when the total is known, a filling arc says exactly how much is done, not just that something is happening.
 
 |          |                                                                                                                                                                                                                                           |
 | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

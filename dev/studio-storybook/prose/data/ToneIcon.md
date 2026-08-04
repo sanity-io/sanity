@@ -3,7 +3,7 @@ source: stories/data/ToneIcon.stories.tsx
 title: 'Lists & Data/ToneIcon'
 blocks: 3
 roundtrip: true
-sourceHash: 8724ad64113b293f
+sourceHash: b7c0c52688541bbc
 ---
 
 <!-- @component -->
@@ -23,7 +23,7 @@ Addressed for `similarity` looks like the `Current` vs `Recommended` pair below:
 
 > **Why it matters:** ToneIcon writes a CSS custom property; a surrounding text element applies the colour. Drop it anywhere that is not inside that element and the tone is silently ignored: the icon renders in the inherited text colour, exactly as the wrap-gotcha story shows.
 
-The page closes **in context**: the validation summary for the "Anna Karenina" draft, each field issue led by a tone-coloured status glyph.
+The last story shows it in context: the validation summary for the "Anna Karenina" draft, each field issue led by a tone-coloured status glyph.
 
 <!-- @story Current -->
 

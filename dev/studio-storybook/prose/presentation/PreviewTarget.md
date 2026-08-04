@@ -3,12 +3,12 @@ source: stories/presentation/PreviewTarget.stories.tsx
 title: 'Overlays & Navigation/Preview Target'
 blocks: 3
 roundtrip: true
-sourceHash: c688f5ecc37ed839
+sourceHash: 161ce35e49e09b96
 ---
 
 <!-- @component -->
 
-Storying the Presentation tool's iframe needs something real to load into it, so rather than stand up a second server, this page serves itself: same origin, no extra process, ships with the static build for free.
+This page is the load target for Presentation's iframe stories. Rather than stand up a second server, it serves itself: same origin, no extra process, ships with the static build for free.
 
 |        |                                                                                                  |
 | ------ | ------------------------------------------------------------------------------------------------ |

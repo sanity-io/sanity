@@ -3,7 +3,7 @@ source: stories/overlays/Dialog.stories.tsx
 title: 'Overlays & Navigation/Dialog'
 blocks: 1
 roundtrip: true
-sourceHash: ea6aed0c318ca907
+sourceHash: bb0e512399519418
 ---
 
 <!-- @component -->
@@ -18,7 +18,7 @@ Dialog is what Studio throws up when it needs to stop an editor and ask somethin
 | Patterns    | `modal-panel` · `escape-hatch` · `spinners-loading` · `destructive-friction` · `readable-measure` · `cognitive-load`                                                                                                                        |
 | Width scale | `0` 320px/~44ch (primitive default) · `1` 640px/~94ch (what confirm dialogs pass) · `2` 960px/~144ch · `3` 1280px/~195ch · `4` 1600px/~245ch · `5` 1920px/~295ch · `auto` fits content                                                      |
 
-The shadow’s job is to make every one of those look and behave the same: it takes the `@sanity/ui` primitive, pins the footer to at most a cancel and a confirm button, fills in translated default labels, and toggles body padding, so you compose the header and body and the frame handles the rest.
+The shadow’s job is to make every one of those look and behave the same: it takes the `@sanity/ui` primitive, pins the footer to at most a cancel and a confirm button, fills in translated default labels, and toggles body padding, so the header and body are composed while the frame handles the rest.
 
 The Studio `Dialog` wraps `@sanity/ui` `Dialog` and adds: a fixed footer layout (`footer.cancelButton` / `footer.confirmButton` plus an optional `footer.description`), localized fallback labels pulled from `common.dialog.cancel-button.text` / `common.dialog.confirm-button.text`, a `padding` boolean that toggles the default body padding, `animate=true` by default, and `bodyHeight` / `zOffset` passthrough. Confirm defaults to `tone="critical"`; cancel defaults to `mode="bleed"`.
 

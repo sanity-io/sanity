@@ -3,12 +3,12 @@ source: stories/forms/NumberInput.stories.tsx
 title: 'Review'
 blocks: 1
 roundtrip: true
-sourceHash: 5a3028af071a4206
+sourceHash: 5f6d82b3a27a9b0f
 ---
 
 <!-- @component -->
 
-A `type="number"` input will happily change its value when you scroll over it, a classic way to corrupt data without noticing, and NumberInput exists precisely to close that gap while picking the right mobile keyboard along the way.
+NumberInput closes a real gap: a plain `type="number"` input will happily change its value on an accidental scroll, a classic way to corrupt data without noticing. It also picks the right mobile keyboard along the way.
 
 |           |                                                                                                                                                                                                                                                                                                                 |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

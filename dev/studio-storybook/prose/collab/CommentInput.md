@@ -3,12 +3,12 @@ source: stories/collab/CommentInput.stories.tsx
 title: 'Collaboration/Comment Input'
 blocks: 1
 roundtrip: true
-sourceHash: 81202f49d2d6d36e
+sourceHash: a1ac2ee2c260dbfa
 ---
 
 <!-- @component -->
 
-Comments turn the margins of a document into a place a team can talk, and this composer, with live mentions, is the box that conversation happens in wherever comments live in Studio.
+CommentInput is the composer, with live mentions, that a comment conversation happens in wherever comments live in Studio.
 
 |        |                                                                                                                                                                                                                                                                                         |
 | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -24,4 +24,4 @@ Harness notes: the current-user avatar and mention rows resolve through the real
 
 > **Why it matters:** the mentions popover portals out of the composer to the document body rather than nesting inside the card. Interact with it in the full story canvas: in the compact docs preview the popover renders outside the reserved frame. These stories set an explicit height.
 
-The page closes **in context**: the field-comment composer open on the **Title** of the "Anna Karenina" draft, an editor typing a note in the margin, mention live.
+The last story shows the composer in context: open on the **Title** of the "Anna Karenina" draft, an editor typing a note in the margin, mention live.

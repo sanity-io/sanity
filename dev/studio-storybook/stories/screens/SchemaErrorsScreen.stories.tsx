@@ -92,13 +92,13 @@ const meta: Meta<typeof SchemaErrorsScreen> = {
     docs: {
       description: {
         component: [
-          'This screen replaces the entire studio when the schema does not compile. Not a ' +
-            'warning banner over a working studio: the studio does not start.',
+          'SchemaErrorsScreen replaces the entire studio when the schema does not compile. Not ' +
+            'a warning banner over a working studio: the studio does not start.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                                               |',
+          '| ------ | ----------------------------------------------------------------------------- |',
           '| Source | `packages/sanity/src/core/studio/screens/schemaErrors/SchemaErrorsScreen.tsx` |',
-          '| Tier | SERVICE |',
+          '| Tier   | SERVICE                                                                       |',
           '',
           'It lists every problem group with an error in it, each as a bordered card carrying a ' +
             'breadcrumb to the offending path, the message, and a link to the relevant docs page ' +
@@ -108,8 +108,8 @@ const meta: Meta<typeof SchemaErrorsScreen> = {
             'squarely at a developer with the schema file open. That shows in two choices. The ' +
             'path is rendered as a breadcrumb of code segments rather than a dotted string, so a ' +
             'path like article, fields, author reads as a route into the file rather than a ' +
-            'symbol to decode. And a help ID becomes a real docs link, so a schema rule you have ' +
-            'never met is one click from its explanation instead of a phrase to paste into a ' +
+            'symbol to decode. And a help ID becomes a real docs link, so a schema rule nobody ' +
+            'has met before is one click from its explanation instead of a phrase to paste into a ' +
             'search engine.',
           '',
           '**The Copy to clipboard button is the quiet good idea.** It runs ' +

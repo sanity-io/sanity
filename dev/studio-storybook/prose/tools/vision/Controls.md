@@ -3,12 +3,12 @@ source: stories/tools/vision/Controls.stories.tsx
 title: 'Lists & Data/Vision/Controls'
 blocks: 1
 roundtrip: true
-sourceHash: ab68fdb952627df0
+sourceHash: a47030eda5650ea8
 ---
 
 <!-- @component -->
 
-Perspective is the quiet control that changes everything: raw, published, and drafts return different content for the same query, so a result that looks wrong is often just the wrong perspective selected.
+Controls is the strip across the top of Vision: the Dataset, API version, and Perspective selectors. Perspective is the one that changes what a query returns: raw, published, and drafts return different content for the same query, so a result that looks wrong is often just the wrong perspective selected.
 
 |        |                                                                                                                                                                                                        |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

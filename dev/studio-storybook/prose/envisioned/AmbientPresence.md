@@ -3,12 +3,12 @@ source: stories/envisioned/AmbientPresence.stories.tsx
 title: 'Envisioned/Ambient Presence'
 blocks: 1
 roundtrip: true
-sourceHash: 0a079070203fc9cc
+sourceHash: 6db2ba7f11b36be2
 ---
 
 <!-- @component -->
 
-Presence that lives in a panel is presence you consult after deciding to worry, which is to say, after the collision. Ambient presence inverts the order: the form itself wears the humans.
+Presence that lives in a panel is presence consulted after deciding to worry, which is to say, after the collision. Ambient presence inverts the order: the form itself wears the humans.
 
 |          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -18,4 +18,4 @@ Presence that lives in a panel is presence you consult after deciding to worry, 
 
 Each field row carries the real `UserAvatar` of whoever is working it right now, moving as they move; the document header carries the roster. And the payoff moment, the one the whole layer is priced against, is the collision warning: focus a field a colleague is mid-edit in, and the field says so before your first keystroke, naming the person, at the exact moment and place the information is worth something. No panel was opened; nobody asked in Slack.
 
-> **Why it matters:** the colleagues here are simulated on a timer precisely so you can watch the ambient layer keep itself true without any interaction from you. Click into whichever field Grace currently occupies and watch the warning arrive pre-keystroke; on the real realtime substrate this is the same wiring with the timer replaced by the presence stream Studio already ships.
+> **Why it matters:** the colleagues here are simulated on a timer precisely so the ambient layer can be watched keeping itself true with no interaction at all. Click into whichever field Grace currently occupies and watch the warning arrive pre-keystroke; on the real realtime substrate this is the same wiring with the timer replaced by the presence stream Studio already ships.

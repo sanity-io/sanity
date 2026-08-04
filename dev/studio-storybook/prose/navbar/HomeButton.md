@@ -3,12 +3,12 @@ source: stories/navbar/HomeButton.stories.tsx
 title: 'Acme Content'
 blocks: 1
 roundtrip: true
-sourceHash: fc1909ed6fae2e7f
+sourceHash: 9562147628a83aee
 ---
 
 <!-- @component -->
 
-The leftmost control in the Studio navbar is a quiet anchor: it shows the active workspace's icon, or its title initial, and links back to the workspace root. It is the one persistent "you are here, take me home" affordance in the shell.
+HomeButton is the leftmost control in the Studio navbar: a quiet anchor that shows the active workspace's icon, or its title initial, and links back to the workspace root. It is the one persistent "you are here, take me home" affordance in the shell.
 
 |         |                                                                                                                                                                                      |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

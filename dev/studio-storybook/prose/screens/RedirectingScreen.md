@@ -3,12 +3,12 @@ source: stories/screens/RedirectingScreen.stories.tsx
 title: 'Navbar & Shell/Screens/Redirecting'
 blocks: 4
 roundtrip: true
-sourceHash: 306f34479d2f3f64
+sourceHash: 630963f38dfd370f
 ---
 
 <!-- @component -->
 
-This is the screen shown for the moment between deciding to send you somewhere and getting you there.
+RedirectingScreen is shown for the moment between deciding to send someone somewhere and getting them there.
 
 |        |                                                                 |
 | ------ | --------------------------------------------------------------- |

@@ -3,7 +3,7 @@ source: stories/status/ImageFieldDiff.stories.tsx
 title: 'Article'
 blocks: 1
 roundtrip: true
-sourceHash: 48ac4bc09a60c5cc
+sourceHash: ea26338ef6f3485b
 ---
 
 <!-- @component -->

@@ -3,7 +3,7 @@ source: stories/overlays/Tooltip.stories.tsx
 title: 'Overlays & Navigation/Tooltip'
 blocks: 1
 roundtrip: true
-sourceHash: cad51e07b1b30f00
+sourceHash: 89d7d6e4a42beac9
 ---
 
 <!-- @component -->

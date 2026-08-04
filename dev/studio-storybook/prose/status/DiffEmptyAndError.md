@@ -3,12 +3,12 @@ source: stories/status/DiffEmptyAndError.stories.tsx
 title: 'Lists & Data/Diff Empty and Error States'
 blocks: 1
 roundtrip: true
-sourceHash: ad8fd8b004852064
+sourceHash: f25c32ae4d4be357
 ---
 
 <!-- @component -->
 
-The two states that mean nothing to show you are distinguished by a card tone alone, the same colour-only pattern this program keeps finding elsewhere. And the renderer meant to catch a field type with no diff renderer appears to be defensive code with no live caller.
+The two states meaning there is nothing to show are distinguished by a card tone alone, the same colour-only pattern this program keeps finding elsewhere. And the renderer meant to catch a field type with no diff renderer appears to be defensive code with no live caller.
 
 |          |                                                                                                                                                                                                                        |
 | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -42,4 +42,4 @@ Reading `resolveDiffComponent.ts`, `defaultComponents.ts`, and `@sanity/schema`'
 
 </details>
 
-> **Why it matters:** the two states that mean nothing to show you are distinguished by a card tone alone, the same colour-only pattern this program keeps finding elsewhere (a presence dot, a status tone). And the renderer meant to catch a field type with no diff renderer appears to be defensive code with no live caller: reassuring in one sense, since nothing is silently showing raw JSON to an editor, and a maintenance cost in another, since a whole component exists to guard a branch nothing can reach.
+> **Why it matters:** the two states meaning there is nothing to show are distinguished by a card tone alone, the same colour-only pattern this program keeps finding elsewhere (a presence dot, a status tone). And the renderer meant to catch a field type with no diff renderer appears to be defensive code with no live caller: reassuring in one sense, since nothing is silently showing raw JSON to an editor, and a maintenance cost in another, since a whole component exists to guard a branch nothing can reach.

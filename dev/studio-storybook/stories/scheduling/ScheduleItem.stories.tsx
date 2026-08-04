@@ -89,9 +89,9 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          "A document's place in the publish queue becomes something an editor can see and act " +
-            'on in a single row: the scheduled date, a live preview, a status indicator, and the ' +
-            'actions available for that state.',
+          "ScheduleItem renders a document's place in the publish queue as a single row an " +
+            'editor can see and act on: the scheduled date, a live preview, a status indicator, ' +
+            'and the actions available for that state.',
           '',
           '| | |',
           '|---|---|',

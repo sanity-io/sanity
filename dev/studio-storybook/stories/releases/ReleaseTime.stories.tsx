@@ -34,10 +34,10 @@ const meta: Meta<typeof ReleaseTime> = {
             'different ways, means opposite things depending on whether the release has been ' +
             'committed to.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                                     |',
+          '| ------ | ------------------------------------------------------------------- |',
           '| Source | `packages/sanity/src/core/releases/tool/components/ReleaseTime.tsx` |',
-          '| Tier | CHROME |',
+          '| Tier   | CHROME                                                              |',
           '',
           'This is the "when" column of the releases table. It answers one question, when will ' +
             'this go live, and the answer has four genuinely different shapes. For asap and ' +
@@ -53,8 +53,8 @@ const meta: Meta<typeof ReleaseTime> = {
             'of them.',
           '',
           'The undecided case is dimmed to 50% opacity, which is the component quietly ranking ' +
-            "its own output: a date you have not decided is worth less of the reader's attention " +
-            'than one you have.',
+            "its own output: a date nobody has committed to is worth less of the reader's " +
+            'attention than one that has been.',
           '',
           'The formatted time runs through `useTimeZone`, so these render in the viewing ' +
             "machine's timezone with an abbreviation appended when it differs from the release " +
@@ -62,9 +62,10 @@ const meta: Meta<typeof ReleaseTime> = {
             'is why a component this simple needs the full studio provider stack, see the comment ' +
             'in the story source.',
           '',
-          '> **Why it matters:** same field, same rendering mechanism, opposite meaning depending ' +
-            'on release state. A date is a promise about the future only once the release has ' +
-            'been committed to; before that, it is just intent, and the label has to say so.',
+          '> **Why it matters:** same field, same rendering mechanism, opposite meaning ' +
+            'depending on release state. A date is a promise about the future only once the ' +
+            'release has been committed to; before that, it is just intent, and the label has to ' +
+            'say so.',
         ].join('\n'),
       },
     },

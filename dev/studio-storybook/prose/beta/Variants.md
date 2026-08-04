@@ -3,7 +3,7 @@ source: stories/beta/Variants.stories.tsx
 title: 'Book'
 blocks: 1
 roundtrip: true
-sourceHash: f9f760bf522a1a14
+sourceHash: 49c6842f60d57752
 ---
 
 <!-- @component -->
@@ -18,7 +18,7 @@ One document, many audiences: Content Variants let a single piece carry per-audi
 | Audit    | 🔴 needs-work (`content-versioning`). The benchmark flagged Studio versioning surfaces as under-explained; Variants is the headline default-disabled bet and its in-product value narrative is still thin, these stories double as the missing walkthrough |
 | Patterns | `content-versioning`                                                                                                                                                                                                                                       |
 
-The idea is simple to say and deep to build: write once, define who each variant is for, and let the perspective router serve the matching copy. If you want to understand where Studio is heading on targeted content, start here.
+The idea is simple to say and deep to build: write once, define who each variant is for, and let the perspective router serve the matching copy.
 
 Content Variants let one document group carry per-audience/per-locale variant copies, targeted by `conditions` (audience, market, locale, plan, and so on) with a `priority` order. A variant _definition_ is a `system.variant` document at `_.variants.<id>`; the _content_ lives in ordinary version documents whose `_system.variant` points back at the definition. The surfaces here run the real store, hooks and table code against a fixture client (list and counts queries) and a fixture preview store (membership id-set); see `lib/variantsFixtures.ts`.
 

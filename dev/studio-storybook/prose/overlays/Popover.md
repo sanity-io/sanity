@@ -3,12 +3,12 @@ source: stories/overlays/Popover.stories.tsx
 title: 'Overlays & Navigation/Popover'
 blocks: 1
 roundtrip: true
-sourceHash: 8ee16089458aba12
+sourceHash: fb94ce69ef8307c4
 ---
 
 <!-- @component -->
 
-Almost every floating thing in Studio, a dropdown menu, a hover card, an inline colour picker, sits on this one component underneath, and the audit finding is what happens in the gap before its content is ready to paint.
+Popover is what almost every floating thing in Studio, a dropdown menu, a hover card, an inline colour picker, sits on underneath. The audit finding is what happens in the gap before its content is ready to paint.
 
 |          |                                                                                                                                                                                                          |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -17,7 +17,7 @@ Almost every floating thing in Studio, a dropdown menu, a hover card, an inline 
 | Audit    | 🔴 needs-work (`instant-gratification`). Popovers can flash empty for ~1s before their content paints; the related `hover-popup-tools` behaviour itself holds                                            |
 | Patterns | `hover-popup-tools` · `instant-gratification`                                                                                                                                                            |
 
-You get the full primitive surface and consistent motion for free. Because the shadow adds nothing but the `animate` default, its full prop surface is `@sanity/ui` `Popover`: `content`, `placement`, `fallbackPlacements`, `constrainSize`, `preventOverflow`, `portal`, and a child (or `referenceElement`) as the anchor.
+The full primitive surface and consistent motion come for free. Because the shadow adds nothing but the `animate` default, its full prop surface is `@sanity/ui` `Popover`: `content`, `placement`, `fallbackPlacements`, `constrainSize`, `preventOverflow`, `portal`, and a child (or `referenceElement`) as the anchor.
 
 Current reproduces the empty flash, an open popover with no content. Recommended paints skeleton structure immediately so the surface never reads as blank.
 

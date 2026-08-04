@@ -3,12 +3,12 @@ source: stories/overlays/PopoverDialog.stories.tsx
 title: 'Overlays & Navigation/PopoverDialog'
 blocks: 1
 roundtrip: true
-sourceHash: ec8072d403947ae4
+sourceHash: 0b25389740a059cd
 ---
 
 <!-- @component -->
 
-When an editor clicks to edit something in place, a reference's details, an inline object, this is the surface that opens beside it, and it makes one deliberate trade a person keeps discovering the hard way: there is no way to back out of it except its own close button.
+PopoverDialog is the surface that opens beside an inline edit, a reference's details, an inline object, and it makes one deliberate trade a person keeps discovering the hard way: there is no way to back out of it except its own close button.
 
 |             |                                                                                                                                                                                                                                                         |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -18,7 +18,7 @@ When an editor clicks to edit something in place, a reference's details, an inli
 | Patterns    | `modal-panel` · `escape-hatch` · `readable-measure`                                                                                                                                                                                                     |
 | Width scale | `0` 320px container, 280px text field (~44ch) · `1` 640px, 600px (~94ch, the stories’ default) · `2` 960px, 920px (~144ch)                                                                                                                              |
 
-PopoverDialog is the middle ground between a menu and a full modal: it portals, traps focus with `react-focus-lock`, and carries a sticky header with a close button, yet it still lets you click into sibling panes outside the portal (handy when its contents link out to a reference that opens to the right).
+It is the middle ground between a menu and a full modal: it portals, traps focus with `react-focus-lock`, and carries a sticky header with a close button, yet it still allows clicking into sibling panes outside the portal (handy when its contents link out to a reference that opens to the right).
 
 The stories anchor a live dialog to a trigger button. Open it in dark mode to confirm the portalled surface is themed (org contract §5 portal-theming check). The Recommended story wraps the same real component in an added `keydown` listener so Escape closes it, the fix the component declines to ship, illustrated without forking it.
 

@@ -3,12 +3,12 @@ source: stories/screens/CorsOriginErrorScreen.stories.tsx
 title: 'Navbar & Shell/Screens/CORS Origin Error'
 blocks: 6
 roundtrip: true
-sourceHash: ee40215b95222921
+sourceHash: 17f64f534600f8e1
 ---
 
 <!-- @component -->
 
-This is the screen an editor or developer hits when the studio can reach the Content Lake but the Content Lake will not talk back, because this origin is not on the project's CORS allowlist.
+CorsOriginErrorScreen is what an editor or developer hits when the studio can reach the Content Lake but the Content Lake will not talk back, because this origin is not on the project's CORS allowlist.
 
 |        |                                                                        |
 | ------ | ---------------------------------------------------------------------- |

@@ -3,12 +3,12 @@ source: stories/collab/Comments.stories.tsx
 title: 'Collaboration/Comments'
 blocks: 1
 roundtrip: true
-sourceHash: 856d921156d4cdb3
+sourceHash: 57c947d0b564abfe
 ---
 
 <!-- @component -->
 
-Comments turn a document from a thing one person edits into a conversation a team has, and this is the surface where that conversation lives: threads pinned to the fields they discuss, each one repliable, resolvable and reactable.
+Comments is the surface where document conversation lives: threads pinned to the fields they discuss, each one repliable, resolvable and reactable.
 
 |        |                                                                                                                                                                                                                                                                                                                                                                                                              |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

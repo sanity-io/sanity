@@ -3,12 +3,12 @@ source: stories/envisioned/BulkSelection.stories.tsx
 title: 'Anna Karenina'
 blocks: 1
 roundtrip: true
-sourceHash: 038e1ce3a8019c89
+sourceHash: 254f8cf5cc668239
 ---
 
 <!-- @component -->
 
-A selection model is a tiny grammar, and all its rules matter: click toggles one, shift-click extends a range from the last toggle, and the header well selects and clears all. An editor who cannot select three documents and delete them will not believe your provenance ledger.
+A selection model is a tiny grammar, and all its rules matter: click toggles one, shift-click extends a range from the last toggle, and the header well selects and clears all. An editor who cannot select three documents and delete them will not believe a provenance ledger.
 
 |          |                                                                                                                                                                                                                                                                                                                                                                                                            |
 | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

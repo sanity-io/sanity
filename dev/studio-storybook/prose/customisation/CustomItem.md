@@ -3,7 +3,7 @@ source: stories/customisation/CustomItem.stories.tsx
 title: 'Speaker'
 blocks: 3
 roundtrip: true
-sourceHash: fcae291d84b569da
+sourceHash: d975e80c899923ef
 ---
 
 <!-- @component -->

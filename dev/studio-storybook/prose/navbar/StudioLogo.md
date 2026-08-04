@@ -3,7 +3,7 @@ source: stories/navbar/StudioLogo.stories.tsx
 title: 'Acme Content'
 blocks: 4
 roundtrip: true
-sourceHash: 2b3ba56526bf1a11
+sourceHash: 1667931153f77a8d
 ---
 
 <!-- @component -->

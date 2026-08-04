@@ -159,16 +159,16 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'The question that produced this page was fair: Portable Text ships some default ' +
-            'blocks, so what is the precedent for a user-created one? The answer has two halves, ' +
-            'and the second half is the one to read before copying the nearest example in the ' +
-            'codebase.',
+          'This page inventories the precedent for a user-created Portable Text block: fourteen ' +
+            'seams across three levels, config, schema, editor. Two of those levels look alike ' +
+            'and are not, which is the half worth reading before copying the nearest example in ' +
+            'the codebase.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | the complete inventory of ways to change how Portable Text renders |',
-          '| Tier | SERVICE |',
-          '| Coverage | fourteen seams across three levels: config, schema, editor |',
+          '|          |                                                                    |',
+          '| -------- | ------------------------------------------------------------------ |',
+          '| Source   | the complete inventory of ways to change how Portable Text renders |',
+          '| Tier     | SERVICE                                                            |',
+          '| Coverage | fourteen seams across three levels: config, schema, editor         |',
           '',
           'Eleven of the fourteen are the documented customisation API and behave the way the ' +
             'rest of this chapter describes: they run through the form builder, they hand you ' +
@@ -195,14 +195,14 @@ const meta: Meta = {
           '',
           "It's the correct choice for what those surfaces are. A comment box is a Portable " +
             'Text editor with no document behind it: no form state, no validation, no presence, ' +
-            'no patch channel. The eleven schema and config seams are wired *through* the form ' +
+            'no patch channel. The eleven schema and config seams are wired _through_ the form ' +
             'builder, so a surface with no form cannot reach them. `renderChild` is wired through ' +
             'the editor.',
           '',
           'What it means for anyone reading the codebase for precedent: the nearest first-party ' +
             'example teaches an API you should not use for a document field, and the reason is ' +
             'invisible unless you notice that Comments never mounts a form. If you are adding a ' +
-            'custom block to a real document, story 2 of *Portable Text Blocks* is the pattern, ' +
+            'custom block to a real document, story 2 of _Portable Text Blocks_ is the pattern, ' +
             'not this one.',
           '',
           '---',

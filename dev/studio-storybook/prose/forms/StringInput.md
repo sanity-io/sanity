@@ -3,7 +3,7 @@ source: stories/forms/StringInput.stories.tsx
 title: 'Article'
 blocks: 1
 roundtrip: true
-sourceHash: 03f46621652674bf
+sourceHash: 22920afada0330f7
 ---
 
 <!-- @component -->
@@ -19,7 +19,7 @@ This is the canonical home of the form-legibility trio: requiredness unmarked, v
 
 The plain single-line text field, the everyday input behind titles, names and short labels, wrapped in Studio’s label, description and validation chrome.
 
-This is the workhorse, the field most documents are mostly made of. On its own a text box is trivial; what makes it a _field_ is everything wrapped around it: the label and description from your schema, patch emission back to the document, i18n, and the validation marker. StringInput binds `@sanity/ui`’s `TextInput` to all of that. Understand this page and you understand the shared chrome every other primitive input rides on.
+This is the workhorse, the field most documents are mostly made of. On its own a text box is trivial; what makes it a _field_ is everything wrapped around it: the label and description from the schema, patch emission back to the document, i18n, and the validation marker. StringInput binds `@sanity/ui`’s `TextInput` to all of that, and every other primitive input rides on the same chrome.
 
 These stories mount the **real** `StringInput` inside the **real** `FormField` chrome via `fieldTestHarness`, so the label/description/validation markers are exactly what a document form renders, not a mock. `FormField` computes nothing about requiredness (there is no marker code path), and hands the `validation` array to `FormFieldHeaderText`, which renders it as a hover-only `FormFieldValidationStatus` icon. Every finding below is reproduced by the shipped components, not simulated.
 

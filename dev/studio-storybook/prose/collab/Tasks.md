@@ -3,12 +3,12 @@ source: stories/collab/Tasks.stories.tsx
 title: 'September launch announcement'
 blocks: 1
 roundtrip: true
-sourceHash: a756f134f250d947
+sourceHash: d99167fb156054fb
 ---
 
 <!-- @component -->
 
-Content has no named stages between draft and published, and Tasks, the closest thing Studio has to workflow, is a binary To Do/Done checkbox: state a team can neither see nor enforce.
+Tasks is the closest thing Studio has to workflow, and it is a binary To Do/Done checkbox: state a team can neither see nor enforce. Content itself has no named stages between draft and published.
 
 |        |                                                                                                                                                                                                                        |
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

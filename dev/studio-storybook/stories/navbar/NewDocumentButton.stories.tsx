@@ -71,15 +71,15 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          "The navbar's create affordance, the plus that opens the list of document types an " +
-            'author can start, is deliberately presentational: the schema walk, the permission ' +
-            'checks, and the sort all happen upstream, and the button just renders the resulting ' +
-            'list and its empty, loading, and no-permission states.',
+          "NewDocumentButton is the navbar's create affordance, the plus that opens the list of " +
+            'document types an author can start. It is deliberately presentational: the schema ' +
+            'walk, the permission checks, and the sort all happen upstream, and the button just ' +
+            'renders the resulting list and its empty, loading, and no-permission states.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                                                        |',
+          '| ------ | -------------------------------------------------------------------------------------- |',
           '| Source | `packages/sanity/src/core/studio/components/navbar/new-document/NewDocumentButton.tsx` |',
-          '| Tier | CHROME, the entry point to creating, not the creation |',
+          '| Tier   | CHROME, the entry point to creating, not the creation                                  |',
           '',
           '> **Why it matters:** separating the button from the hook that computes its options ' +
             'is the pattern here. The story feeds it fixture options, so the states (has options, ' +

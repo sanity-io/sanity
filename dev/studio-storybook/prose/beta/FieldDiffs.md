@@ -3,7 +3,7 @@ source: stories/beta/FieldDiffs.stories.tsx
 title: 'The quiet rise of structured content'
 blocks: 12
 roundtrip: true
-sourceHash: 0b761fed62775f4a
+sourceHash: 674612f70b8f36d7
 ---
 
 <!-- @component -->

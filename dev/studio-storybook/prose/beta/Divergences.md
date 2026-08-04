@@ -3,12 +3,12 @@ source: stories/beta/Divergences.stories.tsx
 title: 'Book'
 blocks: 1
 roundtrip: true
-sourceHash: 6e43aed0a58f36a7
+sourceHash: 4bb38b1f3780e4e0
 ---
 
 <!-- @component -->
 
-Version control has a hard half: two people edit the same content down different paths, and eventually the paths have to meet. Divergences is how Studio makes that reconciliation legible instead of a merge conflict in the dark.
+Divergences is how Studio makes reconciling two people's diverging edits legible, instead of a merge conflict in the dark.
 
 |          |                                                                                                                                                                                                                                                                               |
 | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

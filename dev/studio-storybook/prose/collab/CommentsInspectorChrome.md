@@ -3,7 +3,7 @@ source: stories/collab/CommentsInspectorChrome.stories.tsx
 title: 'Collaboration/Comments Inspector Chrome'
 blocks: 6
 roundtrip: true
-sourceHash: baedc27213b2e2f0
+sourceHash: 41deb5261e085d38
 ---
 
 <!-- @component -->
@@ -33,7 +33,7 @@ Pinned to the resolved view. Worth having separately because it is the state a r
 
 On a plan without comments. The same header renders in `upsell` mode, dropping the controls it could not honour rather than showing them disabled.
 
-That is the opposite call from `CreateReleaseMenuItem`, which keeps its disabled row with a tooltip - and both are defensible for different reasons. A disabled control teaches you the feature exists and you cannot use it; removing it keeps a surface you are only browsing from looking broken. The inconsistency is worth noticing rather than assuming one of them is wrong.
+That is the opposite call from `CreateReleaseMenuItem`, which keeps its disabled row with a tooltip - and both are defensible for different reasons. A disabled control teaches a person the feature exists and is unavailable; removing it keeps a browsing-only surface from looking broken. The inconsistency is worth noticing rather than assuming one of them is wrong.
 
 <!-- @story Error_ -->
 

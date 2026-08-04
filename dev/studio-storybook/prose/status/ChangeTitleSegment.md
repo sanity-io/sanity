@@ -3,7 +3,7 @@ source: stories/status/ChangeTitleSegment.stories.tsx
 title: 'Lists & Data/ChangeTitleSegment'
 blocks: 1
 roundtrip: true
-sourceHash: 2357d250540eba25
+sourceHash: efe32f4dfdcc7b71
 ---
 
 <!-- @component -->

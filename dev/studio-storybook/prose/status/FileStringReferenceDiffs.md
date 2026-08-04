@@ -3,7 +3,7 @@ source: stories/status/FileStringReferenceDiffs.stories.tsx
 title: 'Author'
 blocks: 1
 roundtrip: true
-sourceHash: 331d477475c0f2a0
+sourceHash: 42dc39fdee0abd56
 ---
 
 <!-- @component -->

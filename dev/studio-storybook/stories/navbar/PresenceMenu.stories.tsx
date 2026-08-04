@@ -15,23 +15,23 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          "The navbar's global presence indicator, the stacked avatars of everyone currently " +
-            'in the studio, and a menu listing them with where they are, is the shell surfacing ' +
-            'collaboration at a glance, distinct from the per-document presence you see inside ' +
-            'the editor.',
+          "PresenceMenu is the navbar's global presence indicator: the stacked avatars of " +
+            'everyone currently in the studio, plus a menu listing them with where they are. It ' +
+            'is the shell surfacing collaboration at a glance, distinct from the per-document ' +
+            'presence shown inside the editor.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/core/studio/components/navbar/presence/PresenceMenu.tsx` |',
-          '| Tier | CHROME. It frames the collaborative session; the live editing presence is a SERVICE surface elsewhere |',
+          '|        |                                                                                                       |',
+          '| ------ | ----------------------------------------------------------------------------------------------------- |',
+          '| Source | `packages/sanity/src/core/studio/components/navbar/presence/PresenceMenu.tsx`                         |',
+          '| Tier   | CHROME. It frames the collaborative session; the live editing presence is a SERVICE surface elsewhere |',
           '',
           '> **Why it matters:** two things must be seeded for this story to be honest. ' +
             '`useGlobalPresence()` gets a fixture room of three collaborators, one per `status` ' +
             '(`editing`, `online`, `inactive`). And `useCanInviteProjectMembers()` gets a mock ' +
             'project store, because it fetches `/projects/:id/grants` only when the menu opens, ' +
             'so an unseeded story renders perfectly and then throws the instant someone clicks ' +
-            'it. That is exactly what this chapter shipped once, and the reason the storybook ' +
-            'now has an interaction gate alongside the render gate.',
+            'it. That is exactly what this chapter shipped once, and the reason the storybook now ' +
+            'has an interaction gate alongside the render gate.',
         ].join('\n'),
       },
     },

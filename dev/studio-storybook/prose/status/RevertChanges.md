@@ -3,7 +3,7 @@ source: stories/status/RevertChanges.stories.tsx
 title: 'Lists & Data/Revert Changes'
 blocks: 1
 roundtrip: true
-sourceHash: b6903dd80009b089
+sourceHash: c3ecc0baec0e4ac4
 ---
 
 <!-- @component -->

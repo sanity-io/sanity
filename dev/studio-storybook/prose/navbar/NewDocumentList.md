@@ -3,12 +3,12 @@ source: stories/navbar/NewDocumentList.stories.tsx
 title: 'Viewer'
 blocks: 1
 roundtrip: true
-sourceHash: e48de85b3e430cea
+sourceHash: b4d7018b05cedd32
 ---
 
 <!-- @component -->
 
-The list body inside the navbar's new-document button is deliberately dumb: no schema reading, no permission checking, just four branches over the props it is handed, and the branches turn out to matter, because a permission problem and a configuration problem could easily read as the same empty screen here and do not.
+NewDocumentList is the list body inside the navbar's new-document button, deliberately dumb: no schema reading, no permission checking, just four branches over the props it is handed. The branches matter because a permission problem and a configuration problem could easily read as the same empty screen here, and do not.
 
 |        |                                                                                                                                                                                                                                   |
 | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

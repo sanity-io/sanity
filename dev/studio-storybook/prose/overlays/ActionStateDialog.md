@@ -3,12 +3,12 @@ source: stories/overlays/ActionStateDialog.stories.tsx
 title: 'Overlays & Navigation/Action State Dialog'
 blocks: 1
 roundtrip: true
-sourceHash: 9d3f11d64417b0d4
+sourceHash: 611a3bff2acf603f
 ---
 
 <!-- @component -->
 
-Every document action dialog in Studio passes through one router, and the branch nobody declared is the one a person can get stuck inside. A confirm, a popover, a modal, or a fully custom surface, whichever kind an action requests, this component decides how it reaches the screen, and its defensive fallback is where the audit finding lives.
+ActionStateDialog is the one router every document action dialog in Studio passes through: a confirm, a popover, a modal, or a fully custom surface, whichever kind an action requests, this component decides how it reaches the screen. The branch nobody declared is the one a person can get stuck inside, and that defensive fallback is where the audit finding lives.
 
 |            |                                                                                                                                                                                                                                        |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

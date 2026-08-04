@@ -41,32 +41,32 @@ const meta: Meta = {
       description: {
         component: [
           "There are eighteen banners that can appear between a document's header and its form, " +
-            'and only some of them can be storied honestly without the real pane behind them: this ' +
-            'page is the half that can.',
+            'and only some of them can be storied honestly without the real pane behind them: ' +
+            'this page is the half that can.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/structure/panes/document/documentPanel/banners/` |',
-          '| Tier | SERVICE |',
-          '| Storied here (prop-driven) | `PausedScheduledDraftBanner` · `ScheduledReleaseBanner` · `DocumentNotInReleaseBanner` · `VariantDefinitionNotFoundBanner` · `ObsoleteDraftBanner` |',
+          '|                                     |                                                                                                                                                                                                                                                                       |',
+          '| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |',
+          '| Source                              | `packages/sanity/src/structure/panes/document/documentPanel/banners/`                                                                                                                                                                                                 |',
+          '| Tier                                | SERVICE                                                                                                                                                                                                                                                               |',
+          '| Storied here (prop-driven)          | `PausedScheduledDraftBanner` · `ScheduledReleaseBanner` · `DocumentNotInReleaseBanner` · `VariantDefinitionNotFoundBanner` · `ObsoleteDraftBanner`                                                                                                                    |',
           '| Deliberately not here (pane-driven) | `RevisionNotFoundBanner` · `DeprecatedDocumentTypeBanner` · `UnpublishedDocumentBanner` · `CanvasLinkedBanner` · `ReferenceChangedBanner` · `DocumentNotInVariantBanner` · `DeletedDocumentBanners` · `InsufficientPermissionBanner` (see the `DocumentPane` stories) |',
           '',
-          'The existing Document Banners/In a live pane chapter shows the other half *in a live ' +
-            'document pane*, driven into their states through the real pane. This page is the ' +
+          'The existing Document Banners/In a live pane chapter shows the other half _in a live ' +
+            'document pane_, driven into their states through the real pane. This page is the ' +
             'complement: the ones that are prop-driven, mounted as themselves.',
           '',
-          'So the rule this catalog follows: a banner that takes props is storied here; a banner ' +
-            'that reads the pane is storied by driving the pane. The split is not tidiness, it is the ' +
-            'difference between a real test and a picture of one.',
+          'So the rule this catalog follows: a banner that takes props is storied here; a ' +
+            'banner that reads the pane is storied by driving the pane. The split is not ' +
+            'tidiness, it is the difference between a real test and a picture of one.',
           '',
           '> **Why it matters:** most banners are not really components, they are decisions. ' +
             '`RevisionNotFoundBanner` reads `revisionNotFound` off `useDocumentPane` and returns ' +
             '`null` unless it is true. `DeprecatedDocumentTypeBanner` inspects the schema type. ' +
             '`DeletedDocumentBanners` reads three pane fields at once. For those, the interesting ' +
-            'behaviour is *when they appear*, not what they look like, and mounting them with a ' +
-            'stubbed pane would story the appearance while discarding the decision. Worse, it would ' +
-            'quietly assert that a stub is equivalent to the pane, which is exactly the claim nobody ' +
-            'can check.',
+            'behaviour is _when they appear_, not what they look like, and mounting them with a ' +
+            'stubbed pane would story the appearance while discarding the decision. Worse, it ' +
+            'would quietly assert that a stub is equivalent to the pane, which is exactly the ' +
+            'claim nobody can check.',
         ].join('\n'),
       },
     },

@@ -3,12 +3,12 @@ source: stories/navbar/SearchButton.stories.tsx
 title: 'Acme Content'
 blocks: 3
 roundtrip: true
-sourceHash: 339012c342bf6481
+sourceHash: e8508e61286ed01f
 ---
 
 <!-- @component -->
 
-The navbar trigger that opens global search is deliberately just a button: its entire props interface is a single click handler. It holds no search state, announces the affordance and its keyboard shortcut, and hands off.
+SearchButton is the navbar trigger that opens global search, deliberately just a button: its entire props interface is a single click handler. It holds no search state, announces the affordance and its keyboard shortcut, and hands off.
 
 |        |                                                                             |
 | ------ | --------------------------------------------------------------------------- |

@@ -3,7 +3,7 @@ source: stories/status/DiffFromTo.stories.tsx
 title: 'The Garden of Forking Paths'
 blocks: 1
 roundtrip: true
-sourceHash: c667635221ed480e
+sourceHash: 01770e2569e379c2
 ---
 
 <!-- @component -->

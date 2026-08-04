@@ -3,12 +3,12 @@ source: stories/screens/FallbackErrorScreen.stories.tsx
 title: 'Navbar & Shell/Screens/Fallback Error'
 blocks: 5
 roundtrip: true
-sourceHash: a7f5084818e0ee31
+sourceHash: 010872cab8acbf4d
 ---
 
 <!-- @component -->
 
-This is the last screen. When an error reaches the studio's top-level boundary and nothing else has handled it, this is what replaces the entire interface.
+FallbackErrorScreen is the last screen: when an error reaches the studio's top-level boundary and nothing else has handled it, this is what replaces the entire interface.
 
 |        |                                                                   |
 | ------ | ----------------------------------------------------------------- |

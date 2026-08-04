@@ -85,17 +85,17 @@ const meta: Meta<typeof RelativeTime> = {
     docs: {
       description: {
         component: [
-          'The exact time is never thrown away when a relative phrase replaces it: hovering ' +
-            'reveals it, so a phrase like "2 minutes ago" and the instant it stands for are ' +
-            'always one hover apart, never a forced choice between the two.',
+          'RelativeTime never throws away the exact time when it renders a relative phrase: ' +
+            'hovering reveals it, so a phrase like "2 minutes ago" and the instant it stands for ' +
+            'are always one hover apart.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/core/components/RelativeTime.tsx`, Studio-only (no DS equivalent) |',
-          '| Tier | CHROME. A formatting primitive. Turns a timestamp into a locale-aware relative phrase and emits a semantic `<time datetime>` element, with the absolute time tucked into `title` for hover. Studio uses it wherever "edited / published X ago" appears |',
-          '| Audit | ⚪ not-audited as a unit. On the positive side of `datatips` / working-memory: the exact time is available on hover via the `title` attribute, so the relative phrase does not discard the absolute fact |',
-          '| Determinism | `useRelativeTime` reads `Date.now()` internally unless a `relativeTo` instant is supplied; every story here pins `relativeTo` to a fixed `NOW` so phrases never drift |',
-          '| Patterns | `datatips` |',
+          '|             |                                                                                                                                                                                                                                                        |',
+          '| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |',
+          '| Source      | `packages/sanity/src/core/components/RelativeTime.tsx`, Studio-only (no DS equivalent)                                                                                                                                                                 |',
+          '| Tier        | CHROME. A formatting primitive. Turns a timestamp into a locale-aware relative phrase and emits a semantic `<time datetime>` element, with the absolute time tucked into `title` for hover. Studio uses it wherever "edited / published X ago" appears |',
+          '| Audit       | ⚪ not-audited as a unit. On the positive side of `datatips` / working-memory: the exact time is available on hover via the `title` attribute, so the relative phrase does not discard the absolute fact                                               |',
+          '| Determinism | `useRelativeTime` reads `Date.now()` internally unless a `relativeTo` instant is supplied; every story here pins `relativeTo` to a fixed `NOW` so phrases never drift                                                                                  |',
+          '| Patterns    | `datatips`                                                                                                                                                                                                                                             |',
           '',
           'Thresholds it crosses (from the hook): past 10 seconds it moves to seconds, then ' +
             'minutes, hours, days, weeks; once months or years apart it switches to an absolute ' +

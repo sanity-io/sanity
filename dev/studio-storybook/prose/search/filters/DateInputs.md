@@ -1,9 +1,9 @@
 ---
 source: stories/search/filters/DateInputs.stories.tsx
 title: 'Search/Filter Inputs/Date'
-blocks: 18
+blocks: 13
 roundtrip: true
-sourceHash: 4bc67b1601e41e4b
+sourceHash: 35843b58afce0810
 ---
 
 <!-- @component -->
@@ -51,14 +51,6 @@ Same field, `includeTime: true`. `isDateTimeFormat` is now true, so `ParsedDateT
 
 The same `DateAfter` control inside a full-screen search. Every input in this family reads `state.fullscreen` and steps its font size up (`fontSize={fullscreen ? 2 : 1}`) on the text input, the same convention `SearchFilterStringInput` and the number family follow. The date family is easy to assume is exempt, given how much more it renders.
 
-<!-- @story DateEqualEmpty -->
-
-The resting state of `dateEqual` - and, since they share this exact component, `dateNotEqual` too. `CommonDateEqualInput` differs from the direction inputs in one detail: clearing the calendar selection calls `onChange(null)` outright rather than emitting `{date: null}`, since equality has no direction worth preserving once the date is gone. This is `dateEqual`'s own declared `initialValue`, `{date: null, includeTime: false}`.
-
-<!-- @story DateEqualFilled -->
-
-Emits `{date, includeTime}`, structurally identical to `DateAfter` filled, just without a direction. `dateEqual`'s `groqFilter` does not compare a raw timestamp for equality; it widens to `dateTime(field) > start && dateTime(field) < end` for the picked day (see the datetime variants below for where that window narrows).
-
 <!-- @story DateTimeEqualFilled -->
 
 `dateTimeEqual`'s `groqFilter` builds a same-day window with `startOfDay`/`endOfDay` when `includeTime` is false, so "published on July 15" matches any time that day. `dateTimeNotEqual` points `inputComponent` at this identical `SearchFilterDateTimeEqualInput` and negates the same window rather than rendering anything different.
@@ -70,18 +62,6 @@ With `includeTime: true`, the same `groqFilter` narrows its window to `startOfMi
 <!-- @story DateRangeFilled -->
 
 `dateRange`, both bounds set. `CommonDateRangeInput` renders two `ParsedDateTextInput`s (start, end) above one `DatePicker` in `selectRange` mode. Its placeholders default to today for the end bound and seven days prior for the start, so an empty range still reads as a sensible default window rather than blank boxes with no hint of scale.
-
-<!-- @story DateTimeRangeFilled -->
-
-`dateTimeRange` with `includeTime: false`. `getStartAndEndDate` still rounds each picked bound to a day boundary (`roundDay: 'start'` for `from`, `'end'` for `to`) even though the field is a datetime, so a calendar click on "July 25" as the end bound resolves to the last instant of that day rather than its midnight.
-
-<!-- @story DateTimeRangeWithTime -->
-
-Same range, `includeTime: true`. Both bounds now round to `'start'` of the picked instant rather than one rounding to the start and the other to the end of its day, and the text inputs format and parse full timestamps like the equal and direction variants above.
-
-<!-- @story DateLast -->
-
-`SearchFilterDateLastInput` is the one member of this family with no date/datetime split at all: `dateLast` and `dateTimeLast` both point `inputComponent` at this exact component, and it takes no `isDateTime` prop to receive. A relative window like "in the last 7 days" reads the same regardless of whether the field carries a clock, because `dateLast`'s `groqFilter` always floors to a whole day (`sub(...).toISOString().split('T')[0]`) even when the operator is `dateTimeLast`. The unit select (day/month/year) is the only structural choice this input makes; the number box beside it is a plain uncontrolled string, the same pattern the number family uses. Shown here with the value both operators declare as their default, `{unit: 'day', unitValue: 7}`.
 
 <!-- @story DatePickerOpen -->
 

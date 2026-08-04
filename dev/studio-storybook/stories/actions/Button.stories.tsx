@@ -44,33 +44,34 @@ const meta: Meta<typeof Button> = {
         // Docs-voice exemplar (2026-07-30): metadata rides in the mono table, the prose
         // opens with the argument, and the em-dash is retired from the essay register.
         component: [
-          'Almost everything a person *does* in Studio lands on a button, so the decision is ' +
-            'made once: one shared control, and every action inherits its padding, its tone, and ' +
-            'its sizing.',
+          'Button is Studio’s shared button component. Every action control in the product ' +
+            'wraps it, inheriting its padding, tone mapping, and sizing.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/ui-components/button/Button.tsx`, the Studio shadow of `@sanity/ui` Button |',
-          '| Tier | CHROME. The most commodity control there is; the shadow only pins layout, maps tone, and requires a tooltip when icon-only |',
-          '| Audit | 🔴 needs-work (`idempotency`). Submit controls that can double-fire; see the two Idempotency stories |',
-          '| Patterns | `button-groups` · `prominent-done` · `fitts-law` |',
+          '|          |                                                                                                                            |',
+          '| -------- | -------------------------------------------------------------------------------------------------------------------------- |',
+          '| Source   | `packages/sanity/src/ui-components/button/Button.tsx`, the Studio shadow of `@sanity/ui` Button                            |',
+          '| Tier     | CHROME. The most commodity control there is; the shadow only pins layout, maps tone, and requires a tooltip when icon-only |',
+          '| Audit    | 🔴 needs-work (`idempotency`). Submit controls that can double-fire; see the two Idempotency stories                       |',
+          '| Patterns | `button-groups` · `prominent-done` · `fitts-law`                                                                           |',
           '',
-          'Reach for the Studio `Button` and you inherit the padding, the tone mapping, and the ' +
-            'sizing the rest of the app already uses. There is no way to ship a control a little ' +
-            'too tall or a little too loud, and an icon-only button cannot even compile without a ' +
-            'tooltip, so it is never nameless.',
+          'The component enforces this at the type level. Size and padding come from a fixed ' +
+            'scale rather than arbitrary values, and an icon-only button requires `tooltipProps`, ' +
+            'so it cannot compile without an accessible label.',
           '',
-          'This page covers both layers at once. The `Primitive` story is the raw `@sanity/ui` ' +
-            'button; every other story is the Studio wrapper. Read them side by side and the ' +
-            'wrapper’s entire job becomes visible: it takes choices away, on purpose.',
+          'This page covers both layers. The `Primitive` story is the raw `@sanity/ui` button; ' +
+            'every other story is the Studio wrapper. Comparing them shows what the wrapper ' +
+            'removes from the primitive: layout and tone choices, and a nameless icon-only ' +
+            'button.',
           '',
-          '> **Why it matters:** a button must make double-submission impossible. The audit ' +
-            'found submit controls that stay live during an async write, so a rapid second click ' +
-            'posts a duplicate. The fix is to flip into a pending state the instant it fires; the ' +
-            'two Idempotency stories show the shipped behaviour and the repair side by side.',
+          '> **Why it matters:** submit controls must not double-fire on a fast repeat click. ' +
+            'The audit found buttons that stay enabled during an async write, so a second click ' +
+            'posts a duplicate mutation. The fix disables the button and sets it to `loading` the ' +
+            'instant it fires; the two Idempotency stories show the defect and the fix side by ' +
+            'side.',
           '',
-          'The page closes *in context*: the document header of the Anna Karenina draft, where ' +
-            'Publish, Review changes, and the overflow menu are all this one shared control.',
+          'The last story shows the component in its real context: the document header of the ' +
+            'Anna Karenina draft. Publish, Review changes, and the overflow menu there are all ' +
+            'instances of this one shared control.',
         ].join('\n'),
       },
     },

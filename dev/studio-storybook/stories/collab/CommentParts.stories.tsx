@@ -38,14 +38,14 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'A comment thread is assembled from four small pieces, and each one holds a decision ' +
-            'of its own: the author avatar, the field breadcrumb, the reactions bar, and the ' +
-            'delete confirmation.',
+          'CommentParts covers the four small pieces a comment thread is assembled from, each ' +
+            'holding a decision of its own: the author avatar, the field breadcrumb, the ' +
+            'reactions bar, and the delete confirmation.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                 |',
+          '| ------ | ----------------------------------------------- |',
           '| Source | `packages/sanity/src/core/comments/components/` |',
-          '| Tier | CHROME |',
+          '| Tier   | CHROME                                          |',
           '',
           'The thread itself is already storied under CMS Patterns/Comments. These are the ' +
             'parts it composes.',
@@ -54,8 +54,8 @@ const meta: Meta = {
             'document, and that single fact shapes three of these four components. The breadcrumb ' +
             'exists because a comment several levels deep into a document is meaningless without ' +
             'its path. It elides the middle rather than the end, because the first and last ' +
-            'segments carry the most meaning, the document type you are in and the field you are ' +
-            'on, while the middle is array indices nobody reads. And the elision is not a ' +
+            'segments carry the most meaning, the document type the comment is in and the field ' +
+            'it is on, while the middle is array indices nobody reads. And the elision is not a ' +
             'truncation: the hidden segments go into a tooltip, so the path is folded rather than ' +
             'lost.',
         ].join('\n'),

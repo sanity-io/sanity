@@ -3,12 +3,12 @@ source: stories/presentation/PreviewHeader.stories.tsx
 title: 'Overlays & Navigation/Preview Header'
 blocks: 7
 roundtrip: true
-sourceHash: 260826fb26ebde90
+sourceHash: 7b2b9bc061540a74
 ---
 
 <!-- @component -->
 
-Every Presentation user touches this toolbar constantly: the URL field, the viewport toggle, the overlay toggle, refresh, and the share and open-in-new-tab controls all live here, reflecting connection state as it changes underneath them.
+PreviewHeader is the toolbar every Presentation user touches constantly: the URL field, the viewport toggle, the overlay toggle, refresh, and the share and open-in-new-tab controls all live here, reflecting connection state as it changes underneath them.
 
 |          |                                                              |
 | -------- | ------------------------------------------------------------ |

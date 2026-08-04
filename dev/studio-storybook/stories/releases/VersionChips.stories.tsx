@@ -62,11 +62,11 @@ const meta: Meta = {
             'simultaneous truth, and the states it has to distinguish are unusually dense for one ' +
             'small control.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/core/releases/components/documentHeader/` |',
-          '| Tier | SERVICE |',
-          '| Patterns | `visible-system-state` |',
+          '|          |                                                                |',
+          '| -------- | -------------------------------------------------------------- |',
+          '| Source   | `packages/sanity/src/core/releases/components/documentHeader/` |',
+          '| Tier     | SERVICE                                                        |',
+          '| Patterns | `visible-system-state`                                         |',
           '',
           'The row of chips at the top of a document that names every version of it, published, ' +
             'draft, and one per release, and lets you switch between them. Each chip is a button ' +
@@ -90,9 +90,9 @@ const meta: Meta = {
             'document in eight releases the row overflows, and without that the version you are ' +
             'editing can be scrolled off screen.',
           '',
-          '> **Why it matters:** the interface would otherwise show you content while hiding ' +
-            'which content it is. A control this small is carrying an unusual amount of state, ' +
-            'and every one of its behaviours exists to keep that state legible rather than merely ' +
+          '> **Why it matters:** the interface would otherwise show content while hiding which ' +
+            'content it is. A control this small is carrying an unusual amount of state, and ' +
+            'every one of its behaviours exists to keep that state legible rather than merely ' +
             'present.',
         ].join('\n'),
       },
@@ -273,8 +273,16 @@ export const ContextMenuItems: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'The row used inside the chip\'s context menu, and inside every "copy to release" menu. It is a denser thing than the chip: avatar, title, and a second line saying *when* - "as soon as possible", a relative date, or "undecided".\n\nThat second line is why the menu is usable. A list of release names asks you to remember which is which; a list of names with their timing attached does not. The scheduled one also carries a trailing padlock, so a locked target is refused visibly rather than after you pick it.',
+        story: [
+          'The row used inside the chip\'s context menu, and inside every "copy to release" ' +
+            'menu. It is a denser thing than the chip: avatar, title, and a second line saying ' +
+            '_when_ - "as soon as possible", a relative date, or "undecided".',
+          '',
+          'That second line is why the menu is usable. A list of release names asks you to ' +
+            'remember which is which; a list of names with their timing attached does not. The ' +
+            'scheduled one also carries a trailing padlock, so a locked target is refused ' +
+            'visibly rather than after you pick it.',
+        ].join('\n'),
       },
     },
   },

@@ -36,12 +36,12 @@ const meta: Meta<typeof TextWithTone> = {
             'set apart from neutral help text by hue only, invisible in grayscale and to ' +
             'colour-blind editors.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/core/components/textWithTone/TextWithTone.tsx`, Studio-only, no DS equivalent |',
-          '| Tier | CHROME. A pure presentation primitive: it wraps `@sanity/ui` `<Text>` and swaps one CSS custom property (`--card-fg-color`) per `tone`, plus an optional `dimmed` opacity. Zero domain logic |',
-          '| Audit | 🔴 needs-work (`similarity`, `error-messages`). TextWithTone is the mechanism behind colour-only status text. The audit found form errors rendered as a red icon + pink fill with the actual message hidden until hover; where the message is shown, it is distinguished from neutral copy by hue alone. Toned text with no shape or label cue is unreadable in grayscale and to colour-blind editors |',
-          '| Patterns | `similarity` · `error-messages` |',
+          '|          |                                                                                                                                                                                                                                                                                                                                                                                                       |',
+          '| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |',
+          '| Source   | `packages/sanity/src/core/components/textWithTone/TextWithTone.tsx`, Studio-only, no DS equivalent                                                                                                                                                                                                                                                                                                    |',
+          '| Tier     | CHROME. A pure presentation primitive: it wraps `@sanity/ui` `<Text>` and swaps one CSS custom property (`--card-fg-color`) per `tone`, plus an optional `dimmed` opacity. Zero domain logic                                                                                                                                                                                                          |',
+          '| Audit    | 🔴 needs-work (`similarity`, `error-messages`). TextWithTone is the mechanism behind colour-only status text. The audit found form errors rendered as a red icon + pink fill with the actual message hidden until hover; where the message is shown, it is distinguished from neutral copy by hue alone. Toned text with no shape or label cue is unreadable in grayscale and to colour-blind editors |',
+          '| Patterns | `similarity` · `error-messages`                                                                                                                                                                                                                                                                                                                                                                       |',
           '',
           'The little primitive that tints a line of text by tone, the mechanism behind ' +
             "Studio's coloured validation messages, filter labels, and error strips. Any time a " +
@@ -56,12 +56,12 @@ const meta: Meta<typeof TextWithTone> = {
             'short-circuits the tone rule entirely (`&:not([data-muted])`), and `dimmed` drops ' +
             'opacity to 0.3, both are visible in the sweeps below.',
           '',
-          '> **Why it matters:** when this is used for status, pair the toned text with a leading ' +
-            'icon that carries the same meaning by shape, so the message reads as an error before ' +
-            'the pink is perceived.',
+          '> **Why it matters:** when this is used for status, pair the toned text with a ' +
+            'leading icon that carries the same meaning by shape, so the message reads as an ' +
+            'error before the pink is perceived.',
           '',
-          'The page closes in context: the toned lines composed into a real validation summary ' +
-            'for the book Anna Karenina.',
+          'The last story shows it in context: the toned lines composed into a real validation ' +
+            'summary for the book Anna Karenina.',
         ].join('\n'),
       },
     },

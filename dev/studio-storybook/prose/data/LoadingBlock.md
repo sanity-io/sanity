@@ -3,12 +3,12 @@ source: stories/data/LoadingBlock.stories.tsx
 title: 'Lists & Data/LoadingBlock'
 blocks: 1
 roundtrip: true
-sourceHash: a67c31ae5d1b2e76
+sourceHash: 03326ab5723c02ac
 ---
 
 <!-- @component -->
 
-There is always a gap between asking for data and getting it, and something has to sit in that gap. This is Studio's simplest answer: a centred spinner, an optional delayed label, and no knowledge of what it is waiting for. It is honest and it is everywhere, though for list and pane regions a layout-shaped skeleton usually serves an editor better than a spinner over a blank frame.
+LoadingBlock is Studio's simplest answer to the gap between asking for data and getting it: a centred spinner, an optional delayed label, and no knowledge of what it is waiting for. It is used everywhere, though for list and pane regions a layout-shaped skeleton usually serves an editor better than a spinner over a blank frame.
 
 |          |                                                                                                                                                                                                                                                                                                                                         |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -24,4 +24,4 @@ Harness notes: prop-driven, no store or provider stack (only the global i18n dec
 
 > **Why it matters:** the delays are deliberate anti-flash timing. Nothing paints for the first 750ms and the label waits 2000ms, so a fast load never flashes a spinner at all. When a story frame starts empty and the spinner appears a beat later, that is the anti-flash timing doing its job.
 
-The page closes **in context**: opening the "Anna Karenina" book. The pane chrome paints instantly while LoadingBlock fills the body until the document resolves.
+The last story shows it in context: opening the "Anna Karenina" book. The pane chrome paints instantly while LoadingBlock fills the body until the document resolves.

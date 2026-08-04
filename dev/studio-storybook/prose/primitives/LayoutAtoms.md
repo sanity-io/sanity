@@ -3,7 +3,7 @@ source: stories/primitives/LayoutAtoms.stories.tsx
 title: 'UI v3 Primitives/Layout'
 blocks: 1
 roundtrip: true
-sourceHash: 571ccfb71c337c74
+sourceHash: 322429a2df71ffb9
 ---
 
 <!-- @component -->
@@ -18,4 +18,4 @@ Every pane, dialog, and field in Studio is built from one of these seven atoms, 
 | Patterns | `layout`                                                                                                                                                                                                                                         |
 | Scale    | space 0/4/8/12/20/32/52/84/136/220px · radius 0/1/3/6/9/12/21px                                                                                                                                                                                  |
 
-Reading the ladder is how a `space={3}` becomes a deliberate 12px rather than a guess.
+Reading the ladder is how a `gap={3}` becomes a deliberate 12px rather than a guess.

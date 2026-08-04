@@ -3,12 +3,12 @@ source: stories/navbar/NewDocumentButton.stories.tsx
 title: 'Acme Content'
 blocks: 1
 roundtrip: true
-sourceHash: 787bd825a7a5bbf5
+sourceHash: bac9aab94ee8693b
 ---
 
 <!-- @component -->
 
-The navbar's create affordance, the plus that opens the list of document types an author can start, is deliberately presentational: the schema walk, the permission checks, and the sort all happen upstream, and the button just renders the resulting list and its empty, loading, and no-permission states.
+NewDocumentButton is the navbar's create affordance, the plus that opens the list of document types an author can start. It is deliberately presentational: the schema walk, the permission checks, and the sort all happen upstream, and the button just renders the resulting list and its empty, loading, and no-permission states.
 
 |        |                                                                                        |
 | ------ | -------------------------------------------------------------------------------------- |

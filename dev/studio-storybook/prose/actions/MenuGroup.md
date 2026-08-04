@@ -3,12 +3,12 @@ source: stories/actions/MenuGroup.stories.tsx
 title: 'Actions & Commands/MenuGroup'
 blocks: 2
 roundtrip: true
-sourceHash: ff31ebb47501dff2
+sourceHash: add2360b6603f181
 ---
 
 <!-- @component -->
 
-Menus grow. Every feature that ships adds a row, nobody ever removes one, and eventually the document menu is a column of fifteen things an editor reads past to reach the two they came for.
+MenuGroup is the grouping primitive Studio's menus use to organize items into sections, rather than one column that grows unbounded as features ship.
 
 |                 |                                                                                                                                                                             |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -18,13 +18,13 @@ Menus grow. Every feature that ships adds a row, nobody ever removes one, and ev
 | Required config | `popover={{placement: "right-start", fallbackPlacements: ["left-start", "bottom", "top"]}}`. There is no sensible default, and no default is supplied                       |
 | Patterns        | `smart-menu-items` · `hicks-law`                                                                                                                                            |
 
-Menus grow. Every feature that ships adds a row, nobody ever removes one, and eventually the document menu is a column of fifteen things an editor reads past to reach the two they came for. `MenuGroup` is the way out. Drop one among your `MenuItem`s and its children live a level deeper, so the top of the menu stays short and scannable while Export, Advanced and Danger zone wait behind a hover.
+Drop one among a set of `MenuItem`s and its children live a level deeper, so the top of the menu stays short and scannable while Export, Advanced and Danger zone wait behind a hover.
 
 Open any menu below and hover a group to expand it. Groups nest, as the `Nested` story shows, but two levels is the practical limit: past that a person stops knowing where they are in the tree, and the chunking that was meant to reduce the search cost starts adding to it.
 
 > **Why it matters:** placement is not optional here. `@sanity/ui` `MenuGroup` ships _no_ default flyout placement, so an unconfigured group inherits `Popover`’s `placement="bottom"` and opens its flyout directly below its own trigger, hiding the items underneath. Pass the right-first shape in the table above, with `left-start` leading the fallbacks so a starved edge flips sideways rather than stacking. Every story here does, and so does every Studio call site.
 
-The page closes _in context_: the "Anna Karenina" document-actions menu with its long tail chunked into Publishing, Translate and a critical Danger zone group.
+The last story shows it in context: the "Anna Karenina" document-actions menu with its long tail chunked into Publishing, Translate and a critical Danger zone group.
 
 <!-- @story Nested -->
 

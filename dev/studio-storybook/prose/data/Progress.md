@@ -3,12 +3,12 @@ source: stories/data/Progress.stories.tsx
 title: 'Lists & Data/Progress'
 blocks: 1
 roundtrip: true
-sourceHash: fe8a7558e3d788aa
+sourceHash: 444ebdcf01b8dec5
 ---
 
 <!-- @component -->
 
-Studio ships two correct determinate progress primitives that are simply not being reached for: the audit found panes going blank on load with no skeleton, not because these components are broken, but because nothing calls them there.
+CircularProgress and LinearProgress are two correct determinate progress primitives that Studio already ships but rarely reaches for. The audit found panes going blank on load with no skeleton, not because these components are broken, but because nothing calls them there.
 
 |          |                                                                                                                                                                                                                                                                            |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -19,4 +19,4 @@ Studio ships two correct determinate progress primitives that are simply not bei
 
 `CircularProgress` clamps with `Math.min(Math.max(value, 0), 100)`; `LinearProgress` translates by `value - 100%` and is clipped by an `overflow: clip` root, so 120 and -20 both render as full / empty rather than spilling. The clamping story shows both extremes.
 
-> **Why it matters:** storied here so the fix has a component to reach for. The gap the audit found, a blank content region with no skeleton, was never a defect in these primitives; it was them going unused where they were needed.
+> **Why it matters:** storied here so the fix has a component to reach for, rather than needing a new one built.

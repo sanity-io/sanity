@@ -3,12 +3,12 @@ source: stories/tools/vision/SavedQueries.stories.tsx
 title: 'Lists & Data/Vision/SavedQueries'
 blocks: 1
 roundtrip: true
-sourceHash: 24b6b272da24dbf4
+sourceHash: 6b70b616fd5eee8d
 ---
 
 <!-- @component -->
 
-Two kinds of saved query share one list, but they live in different worlds: personal queries persist in a local key-value store, private and always available, while shared queries are real documents in the workspace dataset that a teammate can see.
+SavedQueries holds two kinds of saved query in one list: personal queries persist in a local key-value store, private and always available; shared queries are real documents in the workspace dataset that a teammate can see.
 
 |         |                                                                                                                                                                                               |
 | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

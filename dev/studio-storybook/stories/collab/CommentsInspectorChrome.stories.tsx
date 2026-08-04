@@ -30,12 +30,12 @@ const meta: Meta = {
             'beside a document to show its comment threads, is where the two decisions on this ' +
             'surface live.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                       |',
+          '| ------ | ----------------------------------------------------- |',
           '| Source | `packages/sanity/src/core/comments/plugin/inspector/` |',
-          '| Tier | CHROME |',
+          '| Tier   | CHROME                                                |',
           '',
-          'The inspector *body* needs an addon dataset (comments live in a separate dataset ' +
+          'The inspector _body_ needs an addon dataset (comments live in a separate dataset ' +
             'from content) and is out of scope. Its chrome does not.',
           '',
           '> **Why the header matters more than it looks:** it carries an open/resolved toggle, ' +
@@ -110,8 +110,16 @@ export const HeaderUpsell: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'On a plan without comments. The same header renders in `upsell` mode, dropping the controls it could not honour rather than showing them disabled.\n\nThat is the opposite call from `CreateReleaseMenuItem`, which keeps its disabled row with a tooltip - and both are defensible for different reasons. A disabled control teaches you the feature exists and you cannot use it; removing it keeps a surface you are only browsing from looking broken. The inconsistency is worth noticing rather than assuming one of them is wrong.',
+        story: [
+          'On a plan without comments. The same header renders in `upsell` mode, dropping the ' +
+            'controls it could not honour rather than showing them disabled.',
+          '',
+          'That is the opposite call from `CreateReleaseMenuItem`, which keeps its disabled ' +
+            'row with a tooltip - and both are defensible for different reasons. A disabled ' +
+            'control teaches a person the feature exists and is unavailable; removing it keeps ' +
+            'a browsing-only surface from looking broken. The inconsistency is worth noticing ' +
+            'rather than assuming one of them is wrong.',
+        ].join('\n'),
       },
     },
   },

@@ -16,16 +16,26 @@ const meta: Meta = {
           'These are the two screens that replace the studio when there is no tool to render, ' +
             'either the one the URL asked for does not exist, or the config declares none at all.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                                      |',
+          '| ------ | -------------------------------------------------------------------- |',
           '| Source | `core/studio/screens/ToolNotFoundScreen.tsx` and `NoToolsScreen.tsx` |',
-          '| Tier | CHROME |',
+          '| Tier   | CHROME                                                               |',
           '',
-          'They are storied together because they are the same screen twice, and reading them side by side is the only way to see the one thing that separates them.',
+          'They are storied together because they are the same screen twice, and reading them ' +
+            'side by side is the only way to see the one thing that separates them.',
           '',
-          '> **Why it matters:** these two states have different audiences and the copy knows it. "Tool not found" is almost always an editor with a stale link, so it names the missing tool and stops - there is nothing an editor can do about a tool that is not configured. "No configured tools" is almost always a developer running a studio they are in the middle of setting up, so it says what to do and links to the documentation that says how. Same layout, same caution card, same icon; different reader, different ending.',
+          '> **Why it matters:** these two states have different audiences and the copy knows ' +
+            'it. "Tool not found" is almost always an editor with a stale link, so it names the ' +
+            'missing tool and stops - there is nothing an editor can do about a tool that is not ' +
+            'configured. "No configured tools" is almost always a developer running a studio they ' +
+            'are in the middle of setting up, so it says what to do and links to the ' +
+            'documentation that says how. Same layout, same caution card, same icon; different ' +
+            'reader, different ending.',
           '',
-          'Worth noticing what neither of them does: offer a way back. Unlike `NotFoundScreen`, there is no button here at all. For "no tools" that is right - there is nowhere to go. For "tool not found" it is more arguable, since the studio may well have other tools that work.',
+          'Worth noticing what neither of them does: offer a way back. Unlike `NotFoundScreen`, ' +
+            'there is no button here at all. For "no tools" that is right - there is nowhere to ' +
+            'go. For "tool not found" it is more arguable, since the studio may well have other ' +
+            'tools that work.',
         ].join('\n'),
       },
     },

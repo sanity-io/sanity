@@ -3,12 +3,12 @@ source: stories/scheduling/DialogTimeZone.stories.tsx
 title: 'Scheduling/Time Zone Dialog'
 blocks: 1
 roundtrip: true
-sourceHash: e53e5693c4406147
+sourceHash: 7521c317351eaf7f
 ---
 
 <!-- @component -->
 
-Schedule a document to publish at 9am and the obvious question is: 9am where? This dialog is Studio's answer, naming the interpreting zone explicitly instead of leaving it a silent assumption.
+DialogTimeZone names the time zone a scheduled publish is interpreted in, rather than leaving it a silent assumption.
 
 |          |                                                                                                                                                                                                                        |
 | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -21,4 +21,4 @@ It lists every IANA zone ordered by offset behind a searchable autocomplete, off
 
 > **Why it matters:** the chosen zone is persisted per scope, scheduled publishing, content releases, input, not globally. Setting it for scheduled publishing does not move it for releases. Each surface remembers its own interpreting zone on purpose.
 
-The page closes in context: the picker opened for the content releases scope while scheduling the "Spring campaign" release, publish at 9am answered with where.
+The last story shows the picker in context: opened for the content releases scope while scheduling the "Spring campaign" release, naming where "publish at 9am" means.

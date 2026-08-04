@@ -3,12 +3,12 @@ source: stories/data/PreviewCard.stories.tsx
 title: 'Lists & Data/PreviewCard'
 blocks: 1
 roundtrip: true
-sourceHash: 555e23ba0c451e7b
+sourceHash: 58229bdcb70baab2
 ---
 
 <!-- @component -->
 
-Every row a person clicks in a list, every reference result they pick, sits inside one of these. This is the selectable container that gives Studio's lists their consistent hit-area, radius, and selection look, and just as importantly, quietly tells the preview inside it whether it is the active row.
+PreviewCard is the selectable container behind every list row and reference result. It gives Studio's lists their consistent hit-area, radius, and selection look, and quietly tells the preview inside it whether it is the active row.
 
 |          |                                                                                                                                                                                                                          |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

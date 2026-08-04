@@ -81,13 +81,14 @@ const meta: Meta<typeof NotAuthenticatedScreen> = {
     docs: {
       description: {
         component: [
-          'This is the screen for someone who is signed in and still not allowed in. Not a ' +
-            'login prompt: the authentication worked, the authorization did not.',
+          'NotAuthenticatedScreen is the screen for someone who is signed in and still not ' +
+            'allowed in. Not a login prompt: the authentication worked, the authorization did ' +
+            'not.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                                      |',
+          '| ------ | -------------------------------------------------------------------- |',
           '| Source | `packages/sanity/src/core/studio/screens/NotAuthenticatedScreen.tsx` |',
-          '| Tier | SERVICE |',
+          '| Tier   | SERVICE                                                              |',
           '',
           'It is the only screen in this family rendered as a `Dialog` rather than a card, with ' +
             'a single "Sign out" action.',
@@ -108,7 +109,7 @@ const meta: Meta<typeof NotAuthenticatedScreen> = {
           '**A thing to notice about the first render.** `currentUser` starts as `null` and is ' +
             'filled in when the auth observable emits, so for one frame the sentence reads ' +
             '"signed in as ( )" with an empty name, empty email and no provider. With a ' +
-            'synchronous store you will not catch it; over a slow auth request you will. There is ' +
+            'synchronous store this goes unnoticed; over a slow auth request it shows. There is ' +
             'no skeleton or guard on that paragraph.',
         ].join('\n'),
       },

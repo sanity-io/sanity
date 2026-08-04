@@ -3,7 +3,7 @@ source: stories/screens/ToolScreens.stories.tsx
 title: 'Navbar & Shell/Screens/Tool Screens'
 blocks: 4
 roundtrip: true
-sourceHash: d90c40c8a8f18d2e
+sourceHash: 4c5e39551afdb061
 ---
 
 <!-- @component -->

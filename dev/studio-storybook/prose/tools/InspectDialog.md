@@ -3,12 +3,12 @@ source: stories/tools/InspectDialog.stories.tsx
 title: 'A field guide to content modelling'
 blocks: 1
 roundtrip: true
-sourceHash: 6126feb274999c2f
+sourceHash: fe955118373ca657
 ---
 
 <!-- @component -->
 
-Sooner or later a developer needs to see the actual document: the system fields, the exact reference, the shape a GROQ query will return, not the friendly form on top of it. Inspect is that escape hatch, one menu click away and one click to close.
+InspectDialog is the escape hatch for seeing the actual document: the system fields, the exact reference, the shape a GROQ query will return, not the friendly form on top of it. It is one menu click away and one click to close.
 
 |          |                                                                                                                                                                                                                                              |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -23,4 +23,4 @@ The story mounts the **real** `InspectDialog` on the studio provider stack (`lib
 
 > **Why it matters:** this is the seam done right: the raw document is reachable from _inside_ the form, on demand, and gone again just as fast. Developers get ground truth without leaving the editor, and editors never have to see it unless they go looking.
 
-The page closes **in context**: Inspect opened on the "Anna Karenina" draft, the raw JSON behind the book you’re editing, `_id`, author `_ref` and all.
+The last story shows it in context: opened on the "Anna Karenina" draft, the raw JSON behind the book being edited, `_id`, author `_ref` and all.

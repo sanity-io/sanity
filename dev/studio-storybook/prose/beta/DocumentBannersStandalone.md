@@ -3,7 +3,7 @@ source: stories/beta/DocumentBannersStandalone.stories.tsx
 title: 'Article'
 blocks: 9
 roundtrip: true
-sourceHash: be715f417fa6aaba
+sourceHash: 3ff2f41cc4de5156
 ---
 
 <!-- @component -->

@@ -3,7 +3,7 @@ source: stories/status/JsonFieldDiff.stories.tsx
 title: 'Lists & Data/JsonFieldDiff'
 blocks: 1
 roundtrip: true
-sourceHash: 5e5ae9cf451897fb
+sourceHash: f69658aed0c852ab
 ---
 
 <!-- @component -->

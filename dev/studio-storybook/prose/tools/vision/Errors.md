@@ -3,12 +3,12 @@ source: stories/tools/vision/Errors.stories.tsx
 title: 'Lists & Data/Vision/Errors'
 blocks: 1
 roundtrip: true
-sourceHash: 8f8a04148ad5f77e
+sourceHash: 4bb9a42edb610177
 ---
 
 <!-- @component -->
 
-When a query fails, the moment a person most needs to read the error clearly is exactly when Vision renders it hardest to see: the message prints smaller than the result it just replaced.
+This page covers Vision's GROQ error rendering. The message prints smaller than the result it just replaced, exactly when a query fails and a person most needs to read it clearly.
 
 |          |                                                                                                                          |
 | -------- | ------------------------------------------------------------------------------------------------------------------------ |

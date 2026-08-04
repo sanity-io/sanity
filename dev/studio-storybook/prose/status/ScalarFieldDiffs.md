@@ -3,7 +3,7 @@ source: stories/status/ScalarFieldDiffs.stories.tsx
 title: 'Custom date'
 blocks: 1
 roundtrip: true
-sourceHash: 7baab590930724f2
+sourceHash: f025faf26e453ac0
 ---
 
 <!-- @component -->

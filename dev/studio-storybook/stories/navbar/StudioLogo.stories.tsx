@@ -25,10 +25,10 @@ const meta: Meta = {
             'that mounts is not a component that is mounted. It renders the workspace title in ' +
             'medium weight, correctly, and the studio no longer mounts it.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/core/studio/components/navbar/StudioLogo.tsx` |',
-          '| Tier | CHROME |',
+          '|        |                                                                                      |',
+          '| ------ | ------------------------------------------------------------------------------------ |',
+          '| Source | `packages/sanity/src/core/studio/components/navbar/StudioLogo.tsx`                   |',
+          '| Tier   | CHROME                                                                               |',
           '| Status | dead code, ledger #61. Nothing imports `StudioLogo` outside its own barrel re-export |',
           '',
           '> ### Correction, 2026-07-26. This page previously described a seam that no longer ' +

@@ -3,12 +3,12 @@ source: stories/customisation/CustomField.stories.tsx
 title: 'Article'
 blocks: 4
 roundtrip: true
-sourceHash: 12182b0505370c64
+sourceHash: f83de45feaa4228d
 ---
 
 <!-- @component -->
 
-A custom input that appears inside a box nobody wrote is the field: the layer between the form and the input that carries the label, description, validation message, presence avatars, change indicator, and collapse affordance around whatever renders inside it.
+CustomField is the layer between the form and the input: it carries the label, description, validation message, presence avatars, change indicator, and collapse affordance around whatever renders inside it. A custom input that appears inside a box nobody wrote is the field.
 
 |      |                                                            |
 | ---- | ---------------------------------------------------------- |

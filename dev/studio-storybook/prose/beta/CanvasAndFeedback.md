@@ -3,7 +3,7 @@ source: stories/beta/CanvasAndFeedback.stories.tsx
 title: 'The launch announcement'
 blocks: 6
 roundtrip: true
-sourceHash: 1fd1155eab693410
+sourceHash: 982200181cb53147
 ---
 
 <!-- @component -->

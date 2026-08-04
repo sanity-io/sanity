@@ -3,7 +3,7 @@ source: stories/customisation/PortableTextMarks.stories.tsx
 title: 'Internal link'
 blocks: 6
 roundtrip: true
-sourceHash: 1d26950408919f4d
+sourceHash: b847ab3508fa68da
 ---
 
 <!-- @component -->
@@ -22,7 +22,7 @@ Annotations, decorators, styles, and list items customise the text of a Portable
  lists:   [{title: 'Checklist', value: 'checklist', component: ChecklistItem}],
  marks: {
    decorators:  [{title: 'Highlight', value: 'highlight', component: Highlight}],
-   annotations: [{name: 'internalLink', type: 'object', components: {annotation: Ann}}],
+annotations: [{name: 'internalLink', type: 'object', components: {annotation: Ann}}],
  }}
 ```
 

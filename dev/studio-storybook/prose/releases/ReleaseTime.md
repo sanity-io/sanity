@@ -3,7 +3,7 @@ source: stories/releases/ReleaseTime.stories.tsx
 title: 'Releases/Release Time'
 blocks: 6
 roundtrip: true
-sourceHash: 52bfc91e3be43060
+sourceHash: a44d0c06c754d33f
 ---
 
 <!-- @component -->
@@ -19,7 +19,7 @@ This is the "when" column of the releases table. It answers one question, when w
 
 An active release with `intendedPublishAt` set has a date, but nothing is going to happen at that date on its own, it is the author's intent, so the label reads "Estimated". Move the release to the scheduled state and the same date becomes a commitment the system will act on, so the label reads "Scheduled" and a padlock appears. An interface that showed both as a bare timestamp would be lying about one of them.
 
-The undecided case is dimmed to 50% opacity, which is the component quietly ranking its own output: a date you have not decided is worth less of the reader's attention than one you have.
+The undecided case is dimmed to 50% opacity, which is the component quietly ranking its own output: a date nobody has committed to is worth less of the reader's attention than one that has been.
 
 The formatted time runs through `useTimeZone`, so these render in the viewing machine's timezone with an abbreviation appended when it differs from the release timezone. The fixture dates are fixed, the rendering of them is not. That same hook is why a component this simple needs the full studio provider stack, see the comment in the story source.
 

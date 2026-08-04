@@ -3,12 +3,12 @@ source: stories/navbar/PresenceMenu.stories.tsx
 title: 'Acme Content'
 blocks: 3
 roundtrip: true
-sourceHash: 1abc61d1eff7e0eb
+sourceHash: 6d809b7bc3861a92
 ---
 
 <!-- @component -->
 
-The navbar's global presence indicator, the stacked avatars of everyone currently in the studio, and a menu listing them with where they are, is the shell surfacing collaboration at a glance, distinct from the per-document presence you see inside the editor.
+PresenceMenu is the navbar's global presence indicator: the stacked avatars of everyone currently in the studio, plus a menu listing them with where they are. It is the shell surfacing collaboration at a glance, distinct from the per-document presence shown inside the editor.
 
 |        |                                                                                                       |
 | ------ | ----------------------------------------------------------------------------------------------------- |

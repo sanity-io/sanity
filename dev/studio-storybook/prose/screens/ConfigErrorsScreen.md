@@ -3,7 +3,7 @@ source: stories/screens/ConfigErrorsScreen.stories.tsx
 title: 'Navbar & Shell/Screens/Config Errors (unimplemented)'
 blocks: 2
 roundtrip: true
-sourceHash: e10959dbb113622f
+sourceHash: f34d38e299600222
 ---
 
 <!-- @component -->

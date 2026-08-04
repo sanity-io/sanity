@@ -3,12 +3,12 @@ source: stories/screens/SchemaErrorsScreen.stories.tsx
 title: 'Navbar & Shell/Screens/Schema Errors'
 blocks: 5
 roundtrip: true
-sourceHash: f94352820bb7ee25
+sourceHash: aa2dbb7834f215e0
 ---
 
 <!-- @component -->
 
-This screen replaces the entire studio when the schema does not compile. Not a warning banner over a working studio: the studio does not start.
+SchemaErrorsScreen replaces the entire studio when the schema does not compile. Not a warning banner over a working studio: the studio does not start.
 
 |        |                                                                               |
 | ------ | ----------------------------------------------------------------------------- |
@@ -17,7 +17,7 @@ This screen replaces the entire studio when the schema does not compile. Not a w
 
 It lists every problem group with an error in it, each as a bordered card carrying a breadcrumb to the offending path, the message, and a link to the relevant docs page when the problem has a `helpId`.
 
-> **Why it matters:** this is the studio's compiler-error screen, and it is aimed squarely at a developer with the schema file open. That shows in two choices. The path is rendered as a breadcrumb of code segments rather than a dotted string, so a path like article, fields, author reads as a route into the file rather than a symbol to decode. And a help ID becomes a real docs link, so a schema rule you have never met is one click from its explanation instead of a phrase to paste into a search engine.
+> **Why it matters:** this is the studio's compiler-error screen, and it is aimed squarely at a developer with the schema file open. That shows in two choices. The path is rendered as a breadcrumb of code segments rather than a dotted string, so a path like article, fields, author reads as a route into the file rather than a symbol to decode. And a help ID becomes a real docs link, so a schema rule nobody has met before is one click from its explanation instead of a phrase to paste into a search engine.
 
 **The Copy to clipboard button is the quiet good idea.** It runs `formatSchemaErrorsToMarkdown` and puts the whole report on the clipboard as markdown - ready to paste into a pull request, an issue, or a chat with someone who can help. A screen full of errors is exactly the moment somebody wants to hand the errors to somebody else, and this is the only screen in the family that makes that a single click.
 

@@ -53,10 +53,10 @@ const meta: Meta<typeof CapabilityGate> = {
     docs: {
       description: {
         component: [
-          'Studio does not always run on its own: it can be embedded inside a host application, the ' +
-            'Sanity Dashboard, another core UI, that already ships things like the global user menu ' +
-            'or the workspace switcher. CapabilityGate is the seam that lets the same Studio code ' +
-            'render standalone and embedded without duplicating chrome.',
+          'CapabilityGate lets the same Studio code render standalone and embedded without ' +
+            'duplicating chrome. Studio does not always run on its own: it can be embedded inside ' +
+            'a host application, the Sanity Dashboard, another core UI, that already ships things ' +
+            'like the global user menu or the workspace switcher.',
           '',
           '| | |',
           '|---|---|',
@@ -66,23 +66,24 @@ const meta: Meta<typeof CapabilityGate> = {
           '| Patterns | `component-api-design` |',
           '| Capabilities | `globalUserMenu` · `globalWorkspaceControl` · `comlink` |',
           '',
-          'A component marks a slice of the tree as "I provide this locally, unless my host already ' +
-            'does" and CapabilityGate renders that local implementation only when the rendering ' +
-            'context does not already provide the capability, then steps aside when the host takes ' +
-            'over.',
+          'A component marks a slice of the tree as "I provide this locally, unless my host ' +
+            'already does" and CapabilityGate renders that local implementation only when the ' +
+            'rendering context does not already provide the capability, then steps aside when the ' +
+            'host takes over.',
           '',
-          'The gotcha is the default `condition="unavailable"`: children render when the capability ' +
-            'is absent (the local fallback fills in). Flip to `condition="available"` and children ' +
-            'render only when the host provides it. The stories seed capabilities via a lightweight ' +
-            'resource-cache decorator.',
+          'The gotcha is the default `condition="unavailable"`: children render when the ' +
+            'capability is absent (the local fallback fills in). Flip to `condition="available"` ' +
+            'and children render only when the host provides it. The stories seed capabilities ' +
+            'via a lightweight resource-cache decorator.',
           '',
-          '> **Why it matters:** the default is inverted from what you would guess, setting the ' +
-            'condition to unavailable renders the children, because the gate exists to supply a local ' +
-            'fallback a host can override. Read it as render this unless someone upstream already ' +
-            'handles it, and the two branches stop surprising you.',
+          '> **Why it matters:** the default is inverted from what most people expect: setting ' +
+            'the condition to unavailable renders the children, because the gate exists to supply ' +
+            'a local fallback a host can override. Read it as render this unless someone upstream ' +
+            'already handles it.',
           '',
-          "The page closes *in context*: Studio's standalone top bar over the book workspace, where " +
-            'the gate supplies Studio’s own user menu because no host provides one.',
+          "The last story shows the gate in context: Studio's standalone top bar over the book " +
+            'workspace, where the gate supplies Studio’s own user menu because no host provides ' +
+            'one.',
         ].join('\n'),
       },
     },

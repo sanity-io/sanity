@@ -10,9 +10,9 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'A pane that waits on data has to say so without lying about the shape of what is coming, ' +
-            'and these two atoms are how Studio does it: an indeterminate spinner when there is no ' +
-            'progress to report, a shimmer placeholder when there is a layout worth holding still.',
+          'Spinner and Skeleton are how Studio shows a pane waiting on data without lying about ' +
+            "the shape of what's coming: an indeterminate spinner when there is no progress to " +
+            'report, a shimmer placeholder when there is a layout worth holding still.',
           '',
           '| | |',
           '|---|---|',
@@ -21,9 +21,10 @@ const meta: Meta = {
           '| Audit | ⚪ not-audited as a unit; instances inherit whatever the consuming component’s audit found |',
           '| Patterns | `spinners-loading` |',
           '',
-          'Reach for `Spinner` only when the total is unknown; once you know `done / total`, the ' +
-            'determinate `ProgressIcon` (Lists & Data) tells the reader more. A skeleton should match ' +
-            'the real content box it stands in for, so the layout does not shift when the data lands.',
+          'Reach for `Spinner` only when the total is unknown; once you know `done / total`, ' +
+            'the determinate `ProgressIcon` (Lists & Data) tells the reader more. A skeleton ' +
+            'should match the real content box it stands in for, so the layout does not shift ' +
+            'when the data lands.',
         ].join('\n'),
       },
     },

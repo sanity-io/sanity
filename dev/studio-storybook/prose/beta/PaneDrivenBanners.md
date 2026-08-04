@@ -3,7 +3,7 @@ source: stories/beta/PaneDrivenBanners.stories.tsx
 title: 'Document Banners/Pane-driven'
 blocks: 11
 roundtrip: true
-sourceHash: f623bfbb8a450b2d
+sourceHash: b421acf77ee713c7
 ---
 
 <!-- @component -->

@@ -41,14 +41,23 @@ const meta: Meta = {
           "The status slot at the top of a document's comments list is what shows in place of " +
             'the thread list while it errors, loads, or has nothing in it yet.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/core/comments/components/list/CommentsListStatus.tsx` |',
-          '| Tier | CHROME. It never renders a comment itself, only the states around the absence of one |',
+          '|        |                                                                                      |',
+          '| ------ | ------------------------------------------------------------------------------------ |',
+          '| Source | `packages/sanity/src/core/comments/components/list/CommentsListStatus.tsx`           |',
+          '| Tier   | CHROME. It never renders a comment itself, only the states around the absence of one |',
           '',
-          'It is a pure `if`-ladder over four flags (`error`, `loading`, `hasNoComments`, `status`), checked in that order, with no memo and no local state. The empty-state copy branches again on `status` (`open` vs `resolved`), so the same `hasNoComments` flag produces two different messages depending on which tab the reader is looking at.',
+          'It is a pure `if`-ladder over four flags (`error`, `loading`, `hasNoComments`, ' +
+            '`status`), checked in that order, with no memo and no local state. The empty-state ' +
+            'copy branches again on `status` (`open` vs `resolved`), so the same `hasNoComments` ' +
+            'flag produces two different messages depending on which tab the reader is looking ' +
+            'at.',
           '',
-          '> **Why the order matters:** the parent list component derives its empty flag from the thread count alone, independent of whether a fetch is in flight, so while a first fetch is loading there are no comments yet, and the empty flag is already true by the time the loading flag is also true. Checking the error and loading branches before the empty-comments branch is what keeps a loading list from flashing an empty-state message before its first paint.',
+          '> **Why the order matters:** the parent list component derives its empty flag from ' +
+            'the thread count alone, independent of whether a fetch is in flight, so while a ' +
+            'first fetch is loading there are no comments yet, and the empty flag is already true ' +
+            'by the time the loading flag is also true. Checking the error and loading branches ' +
+            'before the empty-comments branch is what keeps a loading list from flashing an ' +
+            'empty-state message before its first paint.',
         ].join('\n'),
       },
     },

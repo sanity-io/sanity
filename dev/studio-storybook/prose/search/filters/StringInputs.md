@@ -1,9 +1,9 @@
 ---
 source: stories/search/filters/StringInputs.stories.tsx
 title: 'Search/Filter Inputs/String'
-blocks: 6
+blocks: 5
 roundtrip: true
-sourceHash: 02d2899bdd3d0121
+sourceHash: ace24a8a0d38b025
 ---
 
 <!-- @component -->
@@ -32,12 +32,6 @@ The same control carrying a value. Edit it and watch the emitted value follow.
 <!-- @story StringFullscreen -->
 
 The same component inside a full-screen search. It reads `state.fullscreen` and steps its font size up, which is the only difference between the two, and the pattern the other inputs follow too.
-
-<!-- @story StringList -->
-
-Used when the field declares `options.list`, so the filter offers a choice rather than free text. The distinction matters: free text needs a match operator, a known set can use equality. The five options below are read from the fixture schema's `status` field, not hardcoded here.
-
-**Note the precondition.** `SearchFilterStringListInput` collects options only from document types present in `documentTypesNarrowed` (`fieldDefinition.documentTypes.filter((d) => documentTypesNarrowed.includes(d))`), so this story narrows the search to `article` first. Without that narrowing the menu renders empty, which is exactly what a studio user sees if they add a list filter before narrowing by type.
 
 <!-- @story StringListSelected -->
 

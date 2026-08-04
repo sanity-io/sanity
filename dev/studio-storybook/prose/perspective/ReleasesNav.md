@@ -3,12 +3,12 @@ source: stories/perspective/ReleasesNav.stories.tsx
 title: 'Navbar & Shell/Perspective/Releases Nav'
 blocks: 7
 roundtrip: true
-sourceHash: 61b80d3053ba56f4
+sourceHash: 6859307483013f63
 ---
 
 <!-- @component -->
 
-This is the pill in the studio navbar that names which view of the content a person is currently editing, and opens the menu that changes it. Everything an editor sees below it, every document, every list, every preview, is filtered through whatever this says.
+ReleasesNav is the pill in the studio navbar that names which view of the content a person is currently editing, and opens the menu that changes it. Everything an editor sees below it, every document, every list, every preview, is filtered through whatever this says.
 
 |          |                                                               |
 | -------- | ------------------------------------------------------------- |
@@ -22,7 +22,7 @@ Three parts in a rounded container: an optional link to the Releases tool, the c
 
 **Harness note:** these stories mount the real component over a real `createRouter` with a `releases` tool registered, because `ReleasesToolLink` encodes tool-scoped router state and throws on a router that has no scoped route for that tool name. The perspective itself is seeded per story, see `lib/perspectiveHarness.tsx`.
 
-> **Why it matters:** this is the highest-stakes small control in the studio, because it silently changes the meaning of everything else on screen. A document that looks published is published in this perspective; switch to a release and the same document shows different field values with no other visual change. So the control is designed to be permanently readable rather than merely available: the label is always visible, never collapsed to an icon, and it names the perspective in full rather than abbreviating it. A perspective switcher that only shows its state on hover would be a defect, not a design.
+> **Why it matters:** this is the highest-stakes small control in the studio, because it silently changes the meaning of everything else on screen. A document that looks published is published in this perspective; switch to a release and the same document shows different field values with no other visual change. So the control is designed to be permanently readable rather than merely available: the label is always visible, never collapsed to an icon, and it names the perspective in full rather than abbreviating it.
 
 <!-- @story Drafts -->
 

@@ -3,12 +3,12 @@ source: stories/navbar/FreeTrial.stories.tsx
 title: 'Acme Content'
 blocks: 1
 roundtrip: true
-sourceHash: 31d25f90c477ccae
+sourceHash: 55572ce70a596707
 ---
 
 <!-- @component -->
 
-The free-trial surface is the one navbar control built to persuade rather than inform. An ordinary document action waits for someone to ask for it; this one can put itself in front of a person the moment Studio loads.
+FreeTrial is the one navbar control built to persuade rather than inform: it can put itself in front of a person the moment Studio loads, without anyone asking for it.
 
 |        |                                                                                                                                                                                                                                                                                                                                     |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

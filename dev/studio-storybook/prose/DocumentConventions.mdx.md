@@ -2,7 +2,7 @@
 source: stories/DocumentConventions.mdx
 format: mdx-verbatim
 roundtrip: true
-sourceHash: 40cae8ca0bd42b63
+sourceHash: 87d711f4dc8b1d72
 ---
 
 import {Meta} from '@storybook/addon-docs/blocks'
@@ -89,12 +89,38 @@ To resolve this, each register uses a distinct font: mono for measured fact, ser
     <span>Instrument</span>
     <span>OS mono</span>
   </div>
-  <p style={{fontFamily: 'var(--sbx-mono)', fontSize: 'var(--sbx-data)', lineHeight: 1.6, color: 'var(--sbx-muted)'}}>
-    <span style={{color: 'var(--sbx-faint)', fontSize: 'var(--sbx-label)', letterSpacing: '0.08em', textTransform: 'uppercase'}}>Source&nbsp;&nbsp;</span>
+  <p
+    style={{
+      fontFamily: 'var(--sbx-mono)',
+      fontSize: 'var(--sbx-data)',
+      lineHeight: 1.6,
+      color: 'var(--sbx-muted)',
+    }}
+  >
+    <span
+      style={{
+        color: 'var(--sbx-faint)',
+        fontSize: 'var(--sbx-label)',
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase',
+      }}
+    >
+      Source&nbsp;&nbsp;
+    </span>
     {'packages/sanity/src/ui-components/button/Button.tsx'}
   </p>
-  <p style={{fontFamily: 'var(--sbx-serif)', fontSize: 'var(--sbx-body)', lineHeight: 1.55, color: 'var(--sbx-faint)', marginTop: 14}}>
-    {'Everything a probe produced: source paths, tiers, audit verdicts, counts, file and line. If a number came from somewhere, it speaks mono.'}
+  <p
+    style={{
+      fontFamily: 'var(--sbx-serif)',
+      fontSize: 'var(--sbx-body)',
+      lineHeight: 1.55,
+      color: 'var(--sbx-faint)',
+      marginTop: 14,
+    }}
+  >
+    {
+      'Everything a probe produced: source paths, tiers, audit verdicts, counts, file and line. If a number came from somewhere, it speaks mono.'
+    }
   </p>
 </div>
 
@@ -103,11 +129,31 @@ To resolve this, each register uses a distinct font: mono for measured fact, ser
     <span>Essay</span>
     <span>Newsreader, Georgia stack fallback</span>
   </div>
-  <p style={{fontFamily: 'var(--sbx-serif)', fontSize: 'var(--sbx-lead)', lineHeight: 1.55, color: 'var(--sbx-fg)', maxWidth: '52ch'}}>
-    {'Almost everything a person '}<em style={{fontStyle: 'italic'}}>does</em>{' in Studio lands on a button, so the decision is made once.'}
+  <p
+    style={{
+      fontFamily: 'var(--sbx-serif)',
+      fontSize: 'var(--sbx-lead)',
+      lineHeight: 1.55,
+      color: 'var(--sbx-fg)',
+      maxWidth: '52ch',
+    }}
+  >
+    {'Almost everything a person '}
+    <em style={{fontStyle: 'italic'}}>does</em>
+    {' in Studio lands on a button, so the decision is made once.'}
   </p>
-  <p style={{fontFamily: 'var(--sbx-serif)', fontSize: 'var(--sbx-body)', lineHeight: 1.55, color: 'var(--sbx-faint)', marginTop: 14}}>
-    {'The arguing register: what the component is, why it matters, what the audit found. It is the serif sanity.io itself reads in, and it runs optically small, so essay sizes sit a step above the old Inter sizes.'}
+  <p
+    style={{
+      fontFamily: 'var(--sbx-serif)',
+      fontSize: 'var(--sbx-body)',
+      lineHeight: 1.55,
+      color: 'var(--sbx-faint)',
+      marginTop: 14,
+    }}
+  >
+    {
+      'The arguing register: what the component is, why it matters, what the audit found. It is the serif sanity.io itself reads in, and it runs optically small, so essay sizes sit a step above the old Inter sizes.'
+    }
   </p>
 </div>
 
@@ -116,11 +162,29 @@ To resolve this, each register uses a distinct font: mono for measured fact, ser
     <span>Chrome</span>
     <span>Inter</span>
   </div>
-  <p style={{fontFamily: 'Inter, system-ui, sans-serif', fontSize: 'var(--sbx-title)', fontWeight: 650, letterSpacing: '-0.022em', color: 'var(--sbx-fg)'}}>
+  <p
+    style={{
+      fontFamily: 'Inter, system-ui, sans-serif',
+      fontSize: 'var(--sbx-title)',
+      fontWeight: 650,
+      letterSpacing: '-0.022em',
+      color: 'var(--sbx-fg)',
+    }}
+  >
     {'Actions & Commands'}
   </p>
-  <p style={{fontFamily: 'var(--sbx-serif)', fontSize: 'var(--sbx-body)', lineHeight: 1.55, color: 'var(--sbx-faint)', marginTop: 14}}>
-    {'Headings, labels, controls, navigation. The surface the components live in, which should stay quiet enough that the other two registers can be heard.'}
+  <p
+    style={{
+      fontFamily: 'var(--sbx-serif)',
+      fontSize: 'var(--sbx-body)',
+      lineHeight: 1.55,
+      color: 'var(--sbx-faint)',
+      marginTop: 14,
+    }}
+  >
+    {
+      'Headings, labels, controls, navigation. The surface the components live in, which should stay quiet enough that the other two registers can be heard.'
+    }
   </p>
 </div>
 
@@ -150,22 +214,39 @@ Begin each docblock with a two-column markdown table, not a paragraph with bolde
   */}
   <table style={metaTable}>
     <tbody>
-    <tr>
-      <td style={metaKey}>Source</td>
-      <td style={metaVal}><code style={{fontFamily: 'var(--sbx-mono)', fontSize: '0.92em'}}>packages/sanity/src/ui-components/button/Button.tsx</code>, the Studio shadow of <code style={{fontFamily: 'var(--sbx-mono)', fontSize: '0.92em'}}>@sanity/ui</code> Button</td>
-    </tr>
-    <tr>
-      <td style={metaKey}>Tier</td>
-      <td style={metaVal}>CHROME. The most commodity control there is; the shadow only pins layout, maps tone, and requires a tooltip when icon-only</td>
-    </tr>
-    <tr>
-      <td style={metaKey}>Audit</td>
-      <td style={metaVal}>🔴 needs-work (<code style={{fontFamily: 'var(--sbx-mono)', fontSize: '0.92em'}}>idempotency</code>). Submit controls that can double-fire; see the two Idempotency stories</td>
-    </tr>
-    <tr>
-      <td style={metaKey}>Patterns</td>
-      <td style={metaVal}><code style={{fontFamily: 'var(--sbx-mono)', fontSize: '0.92em'}}>button-groups</code> · <code style={{fontFamily: 'var(--sbx-mono)', fontSize: '0.92em'}}>prominent-done</code> · <code style={{fontFamily: 'var(--sbx-mono)', fontSize: '0.92em'}}>fitts-law</code></td>
-    </tr>
+      <tr>
+        <td style={metaKey}>Source</td>
+        <td style={metaVal}>
+          <code style={{fontFamily: 'var(--sbx-mono)', fontSize: '0.92em'}}>
+            packages/sanity/src/ui-components/button/Button.tsx
+          </code>
+          , the Studio shadow of{' '}
+          <code style={{fontFamily: 'var(--sbx-mono)', fontSize: '0.92em'}}>@sanity/ui</code> Button
+        </td>
+      </tr>
+      <tr>
+        <td style={metaKey}>Tier</td>
+        <td style={metaVal}>
+          CHROME. The most commodity control there is; the shadow only pins layout, maps tone, and
+          requires a tooltip when icon-only
+        </td>
+      </tr>
+      <tr>
+        <td style={metaKey}>Audit</td>
+        <td style={metaVal}>
+          🔴 needs-work (
+          <code style={{fontFamily: 'var(--sbx-mono)', fontSize: '0.92em'}}>idempotency</code>).
+          Submit controls that can double-fire; see the two Idempotency stories
+        </td>
+      </tr>
+      <tr>
+        <td style={metaKey}>Patterns</td>
+        <td style={metaVal}>
+          <code style={{fontFamily: 'var(--sbx-mono)', fontSize: '0.92em'}}>button-groups</code> ·{' '}
+          <code style={{fontFamily: 'var(--sbx-mono)', fontSize: '0.92em'}}>prominent-done</code> ·{' '}
+          <code style={{fontFamily: 'var(--sbx-mono)', fontSize: '0.92em'}}>fitts-law</code>
+        </td>
+      </tr>
     </tbody>
   </table>
 </div>
@@ -179,12 +260,24 @@ Start each docblock with a serif lede paragraph at `--sbx-lead` stating why the 
     <span>Real example</span>
     <span>Button.stories.tsx</span>
   </div>
-  <p style={{fontFamily: 'var(--sbx-serif)', fontSize: 'var(--sbx-lead)', lineHeight: 1.55, color: 'var(--sbx-fg)', maxWidth: '52ch'}}>
-    {'Almost everything a person '}<em style={{fontStyle: 'italic'}}>does</em>{' in Studio lands on a button, so the decision is made once: one shared control, and every action inherits its padding, its tone, and its sizing.'}
+  <p
+    style={{
+      fontFamily: 'var(--sbx-serif)',
+      fontSize: 'var(--sbx-lead)',
+      lineHeight: 1.55,
+      color: 'var(--sbx-fg)',
+      maxWidth: '52ch',
+    }}
+  >
+    {'Almost everything a person '}
+    <em style={{fontStyle: 'italic'}}>does</em>
+    {
+      ' in Studio lands on a button, so the decision is made once: one shared control, and every action inherits its padding, its tone, and its sizing.'
+    }
   </p>
 </div>
 
-The example does not reference file paths or props—only the Button’s role. A valid lede cannot work for multiple components; otherwise, it is not a true lede.
+The example does not reference file paths or props, only the Button’s role. A valid lede cannot work for multiple components; otherwise, it is not a true lede.
 
 ### 3. No Em-Dashes in Rendered Prose
 
@@ -215,8 +308,19 @@ Use true italics (Newsreader italic) for emphasis. Bold should not be used for e
     <span>Real example</span>
     <span>Button.stories.tsx</span>
   </div>
-  <p style={{fontFamily: 'var(--sbx-serif)', fontSize: 'var(--sbx-body)', lineHeight: 1.55, color: 'var(--sbx-faint)'}}>
-    {'The page closes '}<em style={{fontStyle: 'italic'}}>in context</em>{': the document header of the Anna Karenina draft, where Publish, Review changes, and the overflow menu are all this one shared control.'}
+  <p
+    style={{
+      fontFamily: 'var(--sbx-serif)',
+      fontSize: 'var(--sbx-body)',
+      lineHeight: 1.55,
+      color: 'var(--sbx-faint)',
+    }}
+  >
+    {'The page closes '}
+    <em style={{fontStyle: 'italic'}}>in context</em>
+    {
+      ': the document header of the Anna Karenina draft, where Publish, Review changes, and the overflow menu are all this one shared control.'
+    }
   </p>
 </div>
 
@@ -224,7 +328,7 @@ Use italics for true emphasis (e.g., _in context_). Labels, such as “Why it ma
 
 ## The Metadata Table: Complete Example
 
-Every docblock should start with at least four rows: **Source**, **Tier**, **Audit**, and **Patterns**. Add additional rows for any measured property or aspect that needs documentation, such as configuration shapes, counts, hazards, or contradictions. Do not bury measured information in parentheticals—promote it to its own row.
+Every docblock should start with at least four rows: **Source**, **Tier**, **Audit**, and **Patterns**. Add additional rows for any measured property or aspect that needs documentation, such as configuration shapes, counts, hazards, or contradictions. Do not bury measured information in parentheticals: promote it to its own row.
 
 Copy and adapt this template as needed. The initial `| | |` and `|---|---|` form a headerless, two-column table for a clean label strip.
 

@@ -3,12 +3,12 @@ source: stories/beta/UpsellPanels.stories.tsx
 title: 'No setup'
 blocks: 3
 roundtrip: true
-sourceHash: 82fee28d8604d4c0
+sourceHash: 369a442440427d33
 ---
 
 <!-- @component -->
 
-Selling inside a working tool is a design tightrope: push too hard and it becomes a dark pattern, whisper too quietly and nobody upgrades. This panel is Studio's single, honest answer, one presentational primitive every feature reuses, so the pitch stays consistent and the exits stay real.
+UpsellPanel is Studio's single, honest answer to selling inside a working tool: one presentational primitive every feature reuses, so the pitch stays consistent and the exits stay real.
 
 |          |                                                                                                                                                                                                                                                                                             |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

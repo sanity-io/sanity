@@ -3,12 +3,12 @@ source: stories/navbar/UserMenu.stories.tsx
 title: 'Acme Content'
 blocks: 1
 roundtrip: true
-sourceHash: a8309c26a469afda
+sourceHash: b3d94db588f2af09
 ---
 
 <!-- @component -->
 
-The signed-in identity control at the right of the navbar is the shell's answer to "who am I, and what can I change about my own session": it shows the current user's avatar and opens the personal menu: profile, the appearance and locale preferences, and sign out.
+UserMenu is the signed-in identity control at the right of the navbar: it shows the current user's avatar and opens the personal menu, profile, the appearance and locale preferences, and sign out.
 
 |         |                                                                                                                                                           |
 | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |

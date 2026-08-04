@@ -103,25 +103,25 @@ const meta: Meta = {
             "between Sanity's customisation model and the usual one: you're handed the default " +
             'component as an argument, not an empty slot.',
           '',
-          '| | |',
-          '|---|---|',
+          '|      |                                                            |',
+          '| ---- | ---------------------------------------------------------- |',
           '| Seam | `form.components.input`, typed `ComponentType<InputProps>` |',
-          '| Tier | SERVICE |',
+          '| Tier | SERVICE                                                    |',
           '',
           "The normal move is to decorate rather than replace, so the studio's own components " +
             'remain the substrate of your customisation rather than something you route around. ' +
-            'This is the most common UI customisation in Sanity, replacing how a field is rendered, ' +
-            'shown three ways against the same document so the trade is visible.',
+            'This is the most common UI customisation in Sanity, replacing how a field is ' +
+            'rendered, shown three ways against the same document so the trade is visible.',
           '',
-          'The three stories below are the same schema and the same document. The only thing that ' +
-            'changes is the `form.components.input` entry in the workspace config, and that config ' +
-            'is the real one, resolved by `createWorkspaceFromConfig` exactly as a studio would. ' +
-            'Nothing here is simulated.',
+          'The three stories below are the same schema and the same document. The only thing ' +
+            'that changes is the `form.components.input` entry in the workspace config, and that ' +
+            'config is the real one, resolved by `createWorkspaceFromConfig` exactly as a studio ' +
+            'would. Nothing here is simulated.',
           '',
-          'Read them in order. Default shows what Studio gives you. Wrapped shows that decorating ' +
-            'costs you nothing. Replaced shows what you are actually signing up for when you skip ' +
-            '`renderDefault`: the validation marker on Summary disappears, and so does everything ' +
-            'else Studio was doing on your behalf.',
+          'Read them in order. Default shows what Studio gives you. Wrapped shows that ' +
+            'decorating costs you nothing. Replaced shows what you are actually signing up for ' +
+            'when you skip `renderDefault`: the validation marker on Summary disappears, and so ' +
+            'does everything else Studio was doing on your behalf.',
           '',
           '> **Why it matters:** decorate rather than replace whenever you can. The default ' +
             'component handed to you as an argument is the substrate every other Studio behaviour ' +

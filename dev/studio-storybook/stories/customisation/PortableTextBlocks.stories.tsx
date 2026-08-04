@@ -229,11 +229,11 @@ const meta: Meta = {
             'has to be told how to draw it through one seam every block in the array arrives at, ' +
             'rather than through a registry of renderers keyed by type name.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Seams | `components.block` and `components.inlineBlock`, both typed `ComponentType<BlockProps>`, available at two levels: the workspace config (`form.components.block`) and a schema type’s own `components.block` |',
-          '| Tier | SERVICE |',
-          '| Patterns | `rich-text-editing` |',
+          '|          |                                                                                                                                                                                                             |',
+          '| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |',
+          '| Seams    | `components.block` and `components.inlineBlock`, both typed `ComponentType<BlockProps>`, available at two levels: the workspace config (`form.components.block`) and a schema type’s own `components.block` |',
+          '| Tier     | SERVICE                                                                                                                                                                                                     |',
+          '| Patterns | `rich-text-editing`                                                                                                                                                                                         |',
           '',
           'How a user-created Portable Text member gets rendered inside the editor: one schema, ' +
             'one document, four registrations below.',

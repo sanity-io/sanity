@@ -50,33 +50,34 @@ const meta: Meta = {
             'decide that by reading the document pane directly, each mounted as itself with the ' +
             'pane supplying its input.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/structure/panes/document/documentPanel/banners/` |',
-          '| Tier | SERVICE |',
-          '| Patterns | `visible-system-state` |',
-          '| Coverage | eight plain data fields across all seven banners |',
+          '|          |                                                                       |',
+          '| -------- | --------------------------------------------------------------------- |',
+          '| Source   | `packages/sanity/src/structure/panes/document/documentPanel/banners/` |',
+          '| Tier     | SERVICE                                                               |',
+          '| Patterns | `visible-system-state`                                                |',
+          '| Coverage | eight plain data fields across all seven banners                      |',
           '',
-          'These seven were originally left out on the reasoning that stubbing `useDocumentPane` ' +
-            'would story the appearance while discarding the decision. That reasoning was borrowed ' +
-            'from `DocumentPane` itself, where the pane genuinely is the subject, and it does not ' +
-            'transfer. Look at what these actually read: `revisionNotFound` is a boolean. ' +
-            '`schemaType` is schema data. `isDeleted` / `isDeleting` / `ready` are three flags. The ' +
-            '`if (!revisionNotFound) return null` that decides whether a banner appears is the ' +
-            "banner's code, not the pane's, so handing it a flag and watching it decide tests " +
-            'exactly the thing being storied.',
+          'These seven were originally left out on the reasoning that stubbing ' +
+            '`useDocumentPane` would story the appearance while discarding the decision. That ' +
+            'reasoning was borrowed from `DocumentPane` itself, where the pane genuinely is the ' +
+            'subject, and it does not transfer. Look at what these actually read: ' +
+            '`revisionNotFound` is a boolean. `schemaType` is schema data. `isDeleted` / ' +
+            '`isDeleting` / `ready` are three flags. The `if (!revisionNotFound) return null` ' +
+            "that decides whether a banner appears is the banner's code, not the pane's, so " +
+            'handing it a flag and watching it decide tests exactly the thing being storied.',
           '',
           'Every pane field the stub does not carry is one a banner could read tomorrow and get ' +
-            '`undefined` for, passing here while crashing in a real studio. `lib/documentPaneStub.tsx` ' +
-            'therefore lists its fields explicitly rather than casting a partial object, and anything ' +
-            'reaching past the eight belongs in the live-pane stories instead.',
+            '`undefined` for, passing here while crashing in a real studio. ' +
+            '`lib/documentPaneStub.tsx` therefore lists its fields explicitly rather than casting ' +
+            'a partial object, and anything reaching past the eight belongs in the live-pane ' +
+            'stories instead.',
           '',
-          "Also storied: each banner's negative case. A banner that returns `null` is doing its main " +
-            'job, and an empty dashed frame is the only honest way to show it.',
+          "Also storied: each banner's negative case. A banner that returns `null` is doing its " +
+            'main job, and an empty dashed frame is the only honest way to show it.',
           '',
-          '> **Why it matters:** stub a dependency the component reads as input; refuse when the ' +
-            'thing stubbed is what the story tests. The same hook falls on both sides depending on ' +
-            'the consumer, so the call is made per component rather than per hook.',
+          '> **Why it matters:** stub a dependency the component reads as input; refuse when ' +
+            'the thing stubbed is what the story tests. The same hook falls on both sides ' +
+            'depending on the consumer, so the call is made per component rather than per hook.',
         ].join('\n'),
       },
     },

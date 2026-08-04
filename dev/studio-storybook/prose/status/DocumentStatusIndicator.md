@@ -3,7 +3,7 @@ source: stories/status/DocumentStatusIndicator.stories.tsx
 title: 'Document Status/Status Indicator'
 blocks: 1
 roundtrip: true
-sourceHash: 4c141b777b542821
+sourceHash: 9d30590be99b514d
 ---
 
 <!-- @component -->
@@ -23,4 +23,4 @@ Each dot maps a status to a badge colour: published to `positive`, draft to `cau
 
 > **Why it matters:** the Current/Recommended pair below shows the fix in place, a distinct icon shape plus a label per state, not just a re-tinted dot.
 
-The page closes in context: the status dot scanned down a real author list, Austen published, Tolstoy edited, Lem draft-only.
+The last story shows it in context: the status dot scanned down a real author list, Austen published, Tolstoy edited, Lem draft-only.

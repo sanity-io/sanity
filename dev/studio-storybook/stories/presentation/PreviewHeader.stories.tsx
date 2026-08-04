@@ -93,9 +93,10 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'Every Presentation user touches this toolbar constantly: the URL field, the viewport ' +
-            'toggle, the overlay toggle, refresh, and the share and open-in-new-tab controls all ' +
-            'live here, reflecting connection state as it changes underneath them.',
+          'PreviewHeader is the toolbar every Presentation user touches constantly: the URL ' +
+            'field, the viewport toggle, the overlay toggle, refresh, and the share and ' +
+            'open-in-new-tab controls all live here, reflecting connection state as it changes ' +
+            'underneath them.',
           '',
           '| | |',
           '|---|---|',
@@ -103,13 +104,28 @@ const meta: Meta = {
           '| Tier | SERVICE |',
           '| Patterns | `visible-system-state` |',
           '',
-          'It was the last significant gap in the catalog, and it needed one piece of harness that did not exist: a fake XState actor ref.',
+          'It was the last significant gap in the catalog, and it needed one piece of harness ' +
+            'that did not exist: a fake XState actor ref.',
           '',
-          '**Not storied: the share-preview menu.** `SharePreviewMenu` subscribes to the live client for shared-access tokens, a data-fetching subtree rather than a control reflecting input, so these stories run with share access off, which is itself a common studio configuration. Everything else on the toolbar is covered.',
+          '**Not storied: the share-preview menu.** `SharePreviewMenu` subscribes to the live ' +
+            'client for shared-access tokens, a data-fetching subtree rather than a control ' +
+            'reflecting input, so these stories run with share access off, which is itself a ' +
+            'common studio configuration. Everything else on the toolbar is covered.',
           '',
-          "What `useSelector` actually needs, and therefore the whole surface `lib/fakeActorRef.ts` has to satisfy, is four things: `matches('loading')` for flat states, `matches({loaded: 'reloading'})` for nested ones, `context.<field>`, and `hasTag('busy')` on the separate preview-url machine. The nested form is the one worth care, `matches('loaded')` must also be true while the machine is in `{loaded: 'reloading'}`, and getting that wrong shows the wrong buttons with no error.",
+          'What `useSelector` actually needs, and therefore the whole surface ' +
+            "`lib/fakeActorRef.ts` has to satisfy, is four things: `matches('loading')` for flat " +
+            "states, `matches({loaded: 'reloading'})` for nested ones, `context.<field>`, and " +
+            "`hasTag('busy')` on the separate preview-url machine. The nested form is the one " +
+            "worth care, `matches('loaded')` must also be true while the machine is in `{loaded: " +
+            "'reloading'}`, and getting that wrong shows the wrong buttons with no error.",
           '',
-          "> **Why it matters:** the rule for stubbing is to fake a dependency the component reads as input, and refuse when the thing stubbed is what the story tests. This toolbar is squarely the first kind: its job is laying out controls and reflecting connection state, the state machine is the input it reflects, and the machine's own transitions are covered by the machine's own tests. Faking the actor lets a story pin what the toolbar looks like while reloading, which is otherwise unreachable without a live iframe and a live connection to a running front end.",
+          '> **Why it matters:** the rule for stubbing is to fake a dependency the component ' +
+            'reads as input, and refuse when the thing stubbed is what the story tests. This ' +
+            'toolbar is squarely the first kind: its job is laying out controls and reflecting ' +
+            "connection state, the state machine is the input it reflects, and the machine's own " +
+            "transitions are covered by the machine's own tests. Faking the actor lets a story " +
+            'pin what the toolbar looks like while reloading, which is otherwise unreachable ' +
+            'without a live iframe and a live connection to a running front end.',
         ].join('\n'),
       },
     },

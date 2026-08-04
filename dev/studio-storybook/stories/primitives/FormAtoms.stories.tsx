@@ -23,10 +23,10 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'Every Studio input is one of these raw controls plus a layer of composition, and reading ' +
-            'the atom on its own is how you tell a control defect from an input-composition defect: a ' +
-            '`BooleanInput` is a `Switch` (or `Checkbox`) plus a `FormField`, a `StringInput` is a ' +
-            '`TextInput` plus validation chrome.',
+          'Every Studio input is one of these raw controls plus a layer of composition. Reading ' +
+            'the atom on its own separates a control defect from an input-composition defect: a ' +
+            '`BooleanInput` is a `Switch` (or `Checkbox`) plus a `FormField`, a `StringInput` is ' +
+            'a `TextInput` plus validation chrome.',
           '',
           '| | |',
           '|---|---|',

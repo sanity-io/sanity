@@ -18,14 +18,14 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'The navbar trigger that opens global search is deliberately just a button: its ' +
-            'entire props interface is a single click handler. It holds no search state, ' +
-            'announces the affordance and its keyboard shortcut, and hands off.',
+          'SearchButton is the navbar trigger that opens global search, deliberately just a ' +
+            'button: its entire props interface is a single click handler. It holds no search ' +
+            'state, announces the affordance and its keyboard shortcut, and hands off.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                                             |',
+          '| ------ | --------------------------------------------------------------------------- |',
           '| Source | `packages/sanity/src/core/studio/components/navbar/search/SearchButton.tsx` |',
-          '| Tier | CHROME. It is the doorway to search, not the search itself |',
+          '| Tier   | CHROME. It is the doorway to search, not the search itself                  |',
           '',
           '> **Why it matters:** the trigger and the machinery are cleanly separable, and this ' +
             'page shows both sides. On its own the button is a button, which is the honest thing ' +

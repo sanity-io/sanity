@@ -106,11 +106,11 @@ const meta: Meta = {
             'its drag handle, its preview, its menu, and the affordance that opens it for ' +
             'editing.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Seam | `form.components.item`, typed `ComponentType<ItemProps>` and narrowing to `ObjectItemProps` for arrays of objects |',
-          '| Tier | SERVICE |',
-          '| Patterns | `array-editing` |',
+          '|          |                                                                                                                   |',
+          '| -------- | ----------------------------------------------------------------------------------------------------------------- |',
+          '| Seam     | `form.components.item`, typed `ComponentType<ItemProps>` and narrowing to `ObjectItemProps` for arrays of objects |',
+          '| Tier     | SERVICE                                                                                                           |',
+          '| Patterns | `array-editing`                                                                                                   |',
           '',
           'Where it sits in the stack: an array field renders an array input, which renders one ' +
             "item per member, and each item renders the object's own fields inside it. So a " +

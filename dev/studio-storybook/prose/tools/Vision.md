@@ -3,7 +3,7 @@ source: stories/tools/Vision.stories.tsx
 title: 'Lists & Data/Vision/In Context'
 blocks: 1
 roundtrip: true
-sourceHash: a495b5914afcd58f
+sourceHash: d36ec7a50aba0587
 ---
 
 <!-- @component -->

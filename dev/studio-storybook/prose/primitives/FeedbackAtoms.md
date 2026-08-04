@@ -3,12 +3,12 @@ source: stories/primitives/FeedbackAtoms.stories.tsx
 title: 'UI v3 Primitives/Feedback'
 blocks: 1
 roundtrip: true
-sourceHash: b316a11832417c92
+sourceHash: 84a0ccfa8e1f23dd
 ---
 
 <!-- @component -->
 
-A pane that waits on data has to say so without lying about the shape of what is coming, and these two atoms are how Studio does it: an indeterminate spinner when there is no progress to report, a shimmer placeholder when there is a layout worth holding still.
+Spinner and Skeleton are how Studio shows a pane waiting on data without lying about the shape of what's coming: an indeterminate spinner when there is no progress to report, a shimmer placeholder when there is a layout worth holding still.
 
 |          |                                                                                                                                                                                                     |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

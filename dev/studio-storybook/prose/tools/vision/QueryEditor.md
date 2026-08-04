@@ -3,12 +3,12 @@ source: stories/tools/vision/QueryEditor.stories.tsx
 title: 'Lists & Data/Vision/QueryEditor'
 blocks: 1
 roundtrip: true
-sourceHash: b5670ed44450319f
+sourceHash: c42ca5840e6d3034
 ---
 
 <!-- @component -->
 
-There is no inline diagnostics layer here: a bad query prints no underline, no gutter marker, nothing at all, until it is run. That gap is deliberate, but it means a typo hides in plain sight until execution.
+QueryEditor has no inline diagnostics layer: a bad query prints no underline, no gutter marker, nothing at all, until it is run. That gap is deliberate, but it means a typo hides in plain sight until execution.
 
 |        |                                                                                                                                                        |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |

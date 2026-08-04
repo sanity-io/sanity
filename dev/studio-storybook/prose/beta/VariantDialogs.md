@@ -3,7 +3,7 @@ source: stories/beta/VariantDialogs.stories.tsx
 title: 'Versioning/Variant Dialogs'
 blocks: 4
 roundtrip: true
-sourceHash: 9745afa01ba41c2e
+sourceHash: 5cefeff0b5a7546a
 ---
 
 <!-- @component -->

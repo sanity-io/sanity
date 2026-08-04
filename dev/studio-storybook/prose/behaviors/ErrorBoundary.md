@@ -3,12 +3,12 @@ source: stories/behaviors/ErrorBoundary.stories.tsx
 title: 'Laws & Behaviors/ErrorBoundary'
 blocks: 3
 roundtrip: true
-sourceHash: 05168c8866e195f1
+sourceHash: 7111ccb07049fb9b
 ---
 
 <!-- @component -->
 
-Render errors happen: a preview meets malformed data, a plugin throws. Without a boundary, one component throwing during render takes the entire Studio down with it. ErrorBoundary is the safety net that keeps that from happening to a whole editor.
+ErrorBoundary keeps a render error from taking down the whole editor. Without it, one component throwing during render (a preview meeting malformed data, a plugin throwing) takes the entire Studio down with it.
 
 |          |                                                                                                                                                                                                                     |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -25,7 +25,7 @@ Addressed for `error-messages` looks like the Current vs Recommended pair: repla
 
 > **Why it matters:** there is no reset method. Once the boundary has caught, it keeps showing the caught state until it is remounted, clearing the error condition alone leaves the stale message on screen. To recover you must force a remount (bump the boundary's React key), which is exactly what the Recommended story does.
 
-The page closes _in context_: a book document pane whose Author field throws, the boundary holds the rest of the editor alive and offers recovery in its place.
+The last story shows the boundary in context: a book document pane whose Author field throws, where the boundary holds the rest of the editor alive and offers recovery in its place.
 
 <!-- @story Current -->
 

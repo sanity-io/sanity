@@ -3,7 +3,7 @@ source: stories/overlays/ConfirmDeleteDialog.stories.tsx
 title: 'Overlays & Navigation/Confirm Delete Dialog'
 blocks: 1
 roundtrip: true
-sourceHash: 315bcf10213fa67f
+sourceHash: 8a937e824b72415e
 ---
 
 <!-- @component -->

@@ -3,12 +3,12 @@ source: stories/data/RelativeTime.stories.tsx
 title: 'Lists & Data/RelativeTime'
 blocks: 1
 roundtrip: true
-sourceHash: 371ef221c53d02f5
+sourceHash: 6f6909cba6a0934f
 ---
 
 <!-- @component -->
 
-The exact time is never thrown away when a relative phrase replaces it: hovering reveals it, so a phrase like "2 minutes ago" and the instant it stands for are always one hover apart, never a forced choice between the two.
+RelativeTime never throws away the exact time when it renders a relative phrase: hovering reveals it, so a phrase like "2 minutes ago" and the instant it stands for are always one hover apart.
 
 |             |                                                                                                                                                                                                                                                        |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

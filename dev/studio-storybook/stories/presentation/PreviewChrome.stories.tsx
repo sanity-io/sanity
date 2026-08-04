@@ -19,10 +19,9 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'The error card is the interesting one of these three pieces, because of a button it ' +
-            'only sometimes shows: a preview that fails to connect gets one way back in, but a ' +
-            'preview that connected and failed a safety check gets a second, riskier one, because ' +
-            'the tool admits its own check might be wrong.',
+          'This page covers three isolated pieces of the Presentation tool: the error state ' +
+            'that replaces a preview that will not load, the QR code for opening that preview on ' +
+            'a phone, and the button that opens it in a new tab.',
           '',
           '| | |',
           '|---|---|',
@@ -30,9 +29,17 @@ const meta: Meta = {
           '| Tier | CHROME |',
           '| Patterns | `error-messages` |',
           '',
-          'Three isolated pieces of the Presentation tool: the error state that replaces a preview that will not load, the QR code for opening that preview on a phone, and the button that opens it in a new tab. The Presentation tool itself is out of scope for a storybook: `Preview` needs a live iframe and a comlink connection to a running front end. These three are the parts that do not.',
+          'The Presentation tool itself is out of scope for a storybook: `Preview` needs a live ' +
+            'iframe and a comlink connection to a running front end. These three pieces are the ' +
+            'parts that do not.',
           '',
-          "> **Why it matters:** a preview that fails to connect gets Retry; a preview that connected but failed a check gets Retry and Continue anyway, the second in critical tone. That second button is an admission that the tool's own safety check can be wrong, a preview URL might be perfectly fine and simply fail a CORS probe, and rather than trap the person behind a check it cannot fully trust, it lets them past while marking the exit as risky. Very few error screens in this codebase offer a way through. This one does, and tones it accordingly.",
+          '> **Why it matters:** a preview that fails to connect gets Retry; a preview that ' +
+            'connected but failed a check gets Retry and Continue anyway, the second in critical ' +
+            "tone. That second button is an admission that the tool's own safety check can be " +
+            'wrong, a preview URL might be perfectly fine and simply fail a CORS probe, and ' +
+            'rather than trap the person behind a check it cannot fully trust, it lets them past ' +
+            'while marking the exit as risky. Very few error screens in this codebase offer a way ' +
+            'through. This one does, and tones it accordingly.',
         ].join('\n'),
       },
     },

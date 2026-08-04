@@ -3,12 +3,12 @@ source: stories/tools/vision/ParamsEditor.stories.tsx
 title: 'Lists & Data/Vision/ParamsEditor'
 blocks: 1
 roundtrip: true
-sourceHash: 07534adecf46b9b6
+sourceHash: 89b065894ad82515
 ---
 
 <!-- @component -->
 
-Unlike the query editor, the params pane validates continuously: a parse error flips the whole card critical and disables Fetch, so a malformed object can never reach the API. The catch is where the message lives, inside an icon tooltip, out of reach for anyone navigating by keyboard.
+ParamsEditor validates continuously, unlike the query editor: a parse error flips the whole card critical and disables Fetch, so a malformed object can never reach the API. The catch is where the message lives, inside an icon tooltip, out of reach for anyone navigating by keyboard.
 
 |        |                                                                                                                                                                                  |
 | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

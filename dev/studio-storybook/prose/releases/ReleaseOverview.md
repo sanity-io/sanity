@@ -1,9 +1,9 @@
 ---
 source: stories/releases/ReleaseOverview.stories.tsx
 title: 'Releases/Release Overview'
-blocks: 3
+blocks: 5
 roundtrip: true
-sourceHash: 069a27b79c28a51f
+sourceHash: 3516499a99d91a98
 ---
 
 <!-- @component -->
@@ -21,9 +21,17 @@ The rest of the overview screen's parts. That companion page covers the empty st
 
 > **Why it matters:** that is a different failure mode from the banners on the companion page, which return null from conditions in their props. Here the component cannot show anything real unless the story feeds the same seam the hook reads. The gallery below does that with a mock document preview store, and one cell gets stuck because of it, for a reason that lies past the render.
 
-<!-- @story ScheduledDraftsEmptyStates -->
+<!-- @story CalendarFilterChrome -->
 
-Takes no props at all; it reads `useSingleDocReleaseEnabled()` directly and returns `null` in upsell mode. That is invisible from the call site in `ReleasesOverview.tsx`, which renders it unconditionally whenever `cardinalityView === 'drafts'` has nothing to show - the emptiness or the upsell redirect is entirely this component's call. The "renders nothing" stage below overrides the context locally to prove it, the same technique the companion page uses for the banners.
+The two pieces either side of the calendar filter itself. `CalendarPopover` is the trigger: a popover on a wide viewport, a dialog on a narrow one (`asDialog`), same content either way, and it manages its own open state, so the stories below open it with a click rather than a prop. `DateFilterButton` is what replaces it once a day is picked: a chip carrying the formatted date, with a close icon that fires `onClear` and plays an exit animation first, which is why removing it from the row is not instant.
+
+<!-- @story SchedulesUpsellPanels -->
+
+One component, two unrelated upsell systems behind it: the `releases` branch reads `useReleasesUpsell()`, the `drafts` branch reads `useSingleDocReleaseEnabled()` **and** `useSingleDocReleaseUpsell()`. Both fall back to a safe default with no upsell data when nothing provides them - which is also why `ReleasesOverview` can mount whichever branch is current without checking first. These stories supply real context values locally (the shared harness does not, since almost every other story wants the plain, non-upselling studio) to make the panel content visible rather than the null it renders by default.
+
+<!-- @story ConfirmScheduledDraftsDialogStory -->
+
+Offers to schedule every active scheduled draft in one server action (`client.action`, batched). The second sentence only appears when at least one of the drafts has an intended publish date already in the past - `releaseFixtures.scheduled` is exactly that fixture (its `intendedPublishAt` is 2023, which is why it also carries the caution warning elsewhere on this page), so the two stories below are the same dialog against two different sets rather than two different components.
 
 <!-- @story ColumnCellGallery -->
 

@@ -1,9 +1,9 @@
 ---
 source: stories/releases/ReleaseMenuButton.stories.tsx
 title: 'Article'
-blocks: 17
+blocks: 20
 roundtrip: true
-sourceHash: 56f1b9c73108d27b
+sourceHash: e884b91c78f478e6
 ---
 
 <!-- @component -->
@@ -35,6 +35,10 @@ An active asap release. `ActionsOrder` puts publish first for this type. Publish
 
 `releaseType: "scheduled"` flips `ActionsOrder` to `[scheduleMenuItem, publishMenuItem]`, so Schedule appears before Publish - the only visible effect of the type on an otherwise-identical active release. Duplicate and Archive follow, same as the asap case.
 
+<!-- @story MenuLocked -->
+
+A release in the `scheduled` state (committed, not just intended) is locked: Unschedule appears, Duplicate is live, and Archive renders but disabled - its tooltip explains why (`action.archive.tooltip`) rather than the permission-error copy, because here the block is the lock, not the grant.
+
 <!-- @story MenuArchived -->
 
 Archived releases offer exactly two rows: Unarchive and Delete.
@@ -63,9 +67,17 @@ Delete opens a confirm dialog: the `ReleasePreviewCard` names the release, and t
 
 The same dialog with `documentsCount={0}`. `{!!documentsCount && <Text>...}` is false, so the count sentence does not render at all - the confirmation is the header and the preview card, nothing naming what (if anything) is lost.
 
+<!-- @story ButtonUnscheduleHasNoConfirmation -->
+
+Unschedule looks exactly like every other row until you click it. `RELEASE_ACTION_MAP.unschedule.confirmDialog` is `false`, so `ReleaseMenuButton`'s effect fires the action immediately - no dialog, and (unschedule has no `toastSuccessI18nKey`) no toast either on success. The play function clicks it and asserts no `[data-testid$="-dialog"]` ever appears, the direct contrast to `ButtonConfirmDelete` above.
+
 <!-- @story ButtonPermissionCheckNeverResolves -->
 
 The permission promise never settles (see `StuckPermissionCheck` above). Every row that depends on a resolved grant stays disabled indefinitely, because the `useState<boolean | null>(null)` default reads as falsy - there is no window, however brief, where the row is clickable while the check is still pending.
+
+<!-- @story ToastLinkWithReleaseId -->
+
+The shape `handleDuplicate` actually produces (`{releaseId}`). Clicking the link parses the release id back out of the document id and navigates to it - watch the line below the card update.
 
 <!-- @component -->
 
@@ -109,10 +121,10 @@ The preview receives exactly title, subtitle, media and description plus presenc
 
 > **Why it matters:** a deleted document and an unnamed one render the same row, with no error, no placeholder shimmer, nothing marking them apart. An editor scanning a release cannot tell "this is gone" from "nobody named this yet" without clicking into every row that looks blank.
 
-<!-- @story DocumentPreviewGoingToBePublished -->
-
-Same version id, `isGoingToBePublished`. The preview now resolves `getPublishedId(documentId)` with an empty `perspectiveStack` - the published copy of the title, not the version's - because this row is standing in for what publishing the release would replace it with.
-
 <!-- @story DocumentPreviewResolvedToNothing -->
 
 `article-deleted` is never added to the preview store, so the mock resolves it the way a genuinely missing document resolves: synchronously, to nothing (`observePaths` returns `null` for an unknown id - see `lib/mockDocumentPreviewStore.ts`). `previewLoading` settles to `false` immediately, so this is NOT the loading skeleton - it is the steady-state render of a row whose document is gone, and it reads exactly like `DocumentPreviewTwoUntitledLookAlike` below: a title-less card with no error, no placeholder shimmer, nothing marking it apart from a document that was simply never named.
+
+<!-- @story DocumentPreviewTwoUntitledLookAlike -->
+
+Two real, different documents in the same release (`article-alpha`, `article-beta`) - neither has ever had a `title` field set. Both fall through `TemplatePreview`'s `title = "Untitled"` default identically. Nothing else in the row (id, revision, an icon) surfaces to tell them apart; an editor scanning this release sees two identical rows and has to click into each one to find out they are different documents.

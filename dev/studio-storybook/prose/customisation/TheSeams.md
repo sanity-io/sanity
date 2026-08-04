@@ -3,7 +3,7 @@ source: stories/customisation/TheSeams.stories.tsx
 title: 'Customisation/The Seams'
 blocks: 4
 roundtrip: true
-sourceHash: a6e350f0b117d49e
+sourceHash: 1542ef37e3169ffc
 ---
 
 <!-- @component -->

@@ -31,22 +31,40 @@ const meta: Meta<typeof CorsOriginErrorScreen> = {
     docs: {
       description: {
         component: [
-          'This is the screen an editor or developer hits when the studio can reach the ' +
-            'Content Lake but the Content Lake will not talk back, because this origin is not ' +
+          'CorsOriginErrorScreen is what an editor or developer hits when the studio can reach ' +
+            'the Content Lake but the Content Lake will not talk back, because this origin is not ' +
             "on the project's CORS allowlist.",
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                                        |',
+          '| ------ | ---------------------------------------------------------------------- |',
           '| Source | `packages/sanity/src/core/studio/workspaces/CorsOriginErrorScreen.tsx` |',
-          '| Tier | SERVICE |',
+          '| Tier   | SERVICE                                                                |',
           '',
-          'It is the most carefully built screen in this family, and the only one that is really a small decision tree: three distinct outcomes, each with a deep link into Manage that pre-fills the form that resolves it.',
+          'It is the most carefully built screen in this family, and the only one that is ' +
+            'really a small decision tree: three distinct outcomes, each with a deep link into ' +
+            'Manage that pre-fills the form that resolves it.',
           '',
-          '> **Why it matters:** a CORS failure is a configuration problem in a different application, and the naive version of this screen is a sentence saying so, technically complete and practically useless, because the reader now has to find the project, find the API tab, and retype an origin they are looking at. Instead this screen constructs the exact Manage URL with the origin and the credentials flag already filled in. It carries the state across the boundary rather than describing it. That is the difference between an error message and a fix.',
+          '> **Why it matters:** a CORS failure is a configuration problem in a different ' +
+            'application, and the naive version of this screen is a sentence saying so, ' +
+            'technically complete and practically useless, because the reader now has to find the ' +
+            'project, find the API tab, and retype an origin they are looking at. Instead this ' +
+            'screen constructs the exact Manage URL with the origin and the credentials flag ' +
+            'already filled in. It carries the state across the boundary rather than describing ' +
+            'it. That is the difference between an error message and a fix.',
           '',
-          '**The branch worth studying** is "allowed but no credentials". The origin is on the allowlist, so a naive check would call it fine, but the entry does not permit credentialed requests and the studio needs those for login, drafts and mutations. Manage cannot edit a CORS entry, only add and remove, so the screen says remove it and re-add, and pre-fills the re-add. It is a correct fix built around a limitation in another product.',
+          '**The branch worth studying** is "allowed but no credentials". The origin is on the ' +
+            'allowlist, so a naive check would call it fine, but the entry does not permit ' +
+            'credentialed requests and the studio needs those for login, drafts and mutations. ' +
+            'Manage cannot edit a CORS entry, only add and remove, so the screen says remove it ' +
+            'and re-add, and pre-fills the re-add. It is a correct fix built around a limitation ' +
+            'in another product.',
           '',
-          '**And a piece of restraint:** `canRegisterStudioForOrigin` re-implements Manage\'s own host validator so the "Register Studio" option is hidden for origins the registration form would reject, `localhost`, bare IPs. The screen declines to offer help it knows will fail. The comment in the source asks for it to be kept in sync with Manage, which is an honest admission that the duplication is the price of not sending people to a form that silently does nothing.',
+          "**And a piece of restraint:** `canRegisterStudioForOrigin` re-implements Manage's " +
+            'own host validator so the "Register Studio" option is hidden for origins the ' +
+            'registration form would reject, `localhost`, bare IPs. The screen declines to offer ' +
+            'help it knows will fail. The comment in the source asks for it to be kept in sync ' +
+            'with Manage, which is an honest admission that the duplication is the price of not ' +
+            'sending people to a form that silently does nothing.',
         ].join('\n'),
       },
     },

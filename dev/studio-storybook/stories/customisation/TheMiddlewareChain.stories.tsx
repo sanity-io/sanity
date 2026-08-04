@@ -125,10 +125,10 @@ const meta: Meta = {
             'single plugin that registers the same seam is enough to make those two readings ' +
             'disagree.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                                                                                       |',
+          '| ------ | --------------------------------------------------------------------------------------------------------------------- |',
           '| Source | `core/config/components/useMiddlewareComponents.tsx`. Every studio and form component seam resolves through this hook |',
-          '| Tier | CORE |',
+          '| Tier   | CORE                                                                                                                  |',
           '',
           'Each config in the tree that registers the same seam becomes a middleware layer, and ' +
             'each one receives the layer beneath it as `renderDefault`. If you are the only ' +

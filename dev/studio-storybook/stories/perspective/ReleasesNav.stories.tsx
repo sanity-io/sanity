@@ -23,10 +23,10 @@ const meta: Meta<typeof ReleasesNav> = {
     docs: {
       description: {
         component: [
-          'This is the pill in the studio navbar that names which view of the content a person ' +
-            'is currently editing, and opens the menu that changes it. Everything an editor sees ' +
-            'below it, every document, every list, every preview, is filtered through whatever ' +
-            'this says.',
+          'ReleasesNav is the pill in the studio navbar that names which view of the content a ' +
+            'person is currently editing, and opens the menu that changes it. Everything an ' +
+            'editor sees below it, every document, every list, every preview, is filtered through ' +
+            'whatever this says.',
           '',
           '| | |',
           '|---|---|',
@@ -54,8 +54,7 @@ const meta: Meta<typeof ReleasesNav> = {
             'same document shows different field values with no other visual change. So the ' +
             'control is designed to be permanently readable rather than merely available: the ' +
             'label is always visible, never collapsed to an icon, and it names the perspective in ' +
-            'full rather than abbreviating it. A perspective switcher that only shows its state ' +
-            'on hover would be a defect, not a design.',
+            'full rather than abbreviating it.',
         ].join('\n'),
       },
     },

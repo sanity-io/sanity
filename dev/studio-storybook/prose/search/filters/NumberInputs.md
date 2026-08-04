@@ -1,9 +1,9 @@
 ---
 source: stories/search/filters/NumberInputs.stories.tsx
 title: 'Search/Filter Inputs/Number'
-blocks: 7
+blocks: 6
 roundtrip: true
-sourceHash: 0c6598bccff775b6
+sourceHash: 546a9c9bcfd6b4d8
 ---
 
 <!-- @component -->
@@ -34,10 +34,6 @@ The same component inside a full-screen search. It reads `state.fullscreen` and 
 <!-- @story NumberRangeEmpty -->
 
 The resting state of `numberRange`. Both bounds start at `""` in local state; the operator emits `null` until it has a `value` at all, and its `groqFilter` only produces a filter once both `from` and `to` are finite - a range with one bound set is a real, reachable UI state that still does not compile into a query. See "partially filled" below.
-
-<!-- @story NumberRangeFilled -->
-
-Both bounds set. `numberRange`'s `groqFilter` reads this as `readingTime > 5 && readingTime < 20` - note the operators are strict (`>`/`<`, not `>=`/`<=`), so a range does not include its own endpoints. That is a property of the operator definition, not this input, but it only becomes visible once you can see what the input actually emits.
 
 <!-- @story NumberRangePartial -->
 

@@ -39,21 +39,37 @@ const meta: Meta<typeof ImportErrorScreen> = {
     docs: {
       description: {
         component: [
-          'This is the screen for a failed dynamic import: the studio tried to load a chunk ' +
-            'and could not.',
+          'ImportErrorScreen is the screen for a failed dynamic import: the studio tried to ' +
+            'load a chunk and could not.',
           '',
-          '| | |',
-          '|---|---|',
+          '|        |                                                                 |',
+          '| ------ | --------------------------------------------------------------- |',
           '| Source | `packages/sanity/src/core/studio/screens/ImportErrorScreen.tsx` |',
-          '| Tier | CHROME |',
+          '| Tier   | CHROME                                                          |',
           '',
-          'Almost always caused by a redeploy: a browser holding an old build asks for a chunk hash that no longer exists on the server. The fix is a reload, and the screen knows that.',
+          'Almost always caused by a redeploy: a browser holding an old build asks for a chunk ' +
+            'hash that no longer exists on the server. The fix is a reload, and the screen knows ' +
+            'that.',
           '',
-          '> **Why it matters:** this is one of very few error screens anywhere that can honestly say "the way to fix this is to reload", and it is built around that certainty. With auto-reload set it does not just offer the button, it counts down from five and reloads on its own, a self-healing error state. That is only defensible because the diagnosis is reliable: a missing chunk after a deploy is fixed by fetching the new index, every time. Compare the fallback error screen, which faces an error it cannot classify and therefore offers no automatic anything.',
+          '> **Why it matters:** this is one of very few error screens anywhere that can ' +
+            'honestly say "the way to fix this is to reload", and it is built around that ' +
+            'certainty. With auto-reload set it does not just offer the button, it counts down ' +
+            'from five and reloads on its own, a self-healing error state. That is only ' +
+            'defensible because the diagnosis is reliable: a missing chunk after a deploy is ' +
+            'fixed by fetching the new index, every time. Compare the fallback error screen, ' +
+            'which faces an error it cannot classify and therefore offers no automatic anything.',
           '',
-          '**A detail with real consequences:** the stack trace is rendered only when `isDev`. In a production studio an editor sees a heading, a sentence, and a Reload button - no message, no stack. That is a deliberate trade (stack traces are noise to an editor and leak build paths) and it means the screen you debug is never the screen your users saw.',
+          '**A detail with real consequences:** the stack trace is rendered only when `isDev`. ' +
+            'In a production studio an editor sees a heading, a sentence, and a Reload button - ' +
+            'no message, no stack. That is a deliberate trade (stack traces are noise to an ' +
+            'editor and leak build paths) and it means the screen you debug is never the screen ' +
+            'your users saw.',
           '',
-          '**Harness note:** `isDev` is resolved at build time from the bundler environment, so which branch these stories show depends on how the storybook was built - the dev server shows the developer view, a static build shows the production one. The stories are written to be read either way, and the difference is itself worth noticing.',
+          '**Harness note:** `isDev` is resolved at build time from the bundler environment, so ' +
+            'which branch these stories show depends on how the storybook was built - the dev ' +
+            'server shows the developer view, a static build shows the production one. The ' +
+            'stories are written to be read either way, and the difference is itself worth ' +
+            'noticing.',
         ].join('\n'),
       },
     },

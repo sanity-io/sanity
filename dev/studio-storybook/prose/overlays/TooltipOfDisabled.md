@@ -3,12 +3,12 @@ source: stories/overlays/TooltipOfDisabled.stories.tsx
 title: 'Overlays & Navigation/Tooltip/Of Disabled'
 blocks: 1
 roundtrip: true
-sourceHash: 7ffad2d47828f3ba
+sourceHash: deacdacea277ba92
 ---
 
 <!-- @component -->
 
-A disabled button dispatches no pointer events, so a Tooltip placed directly on it never fires and a disabled control has no way to explain why it cannot be used. This wrapper fixes that for a mouse, and stops there.
+TooltipOfDisabled fixes a Tooltip's dead zone on a disabled button for a mouse, and stops there: a disabled button dispatches no pointer events, so a Tooltip placed directly on it never fires and a disabled control has no way to explain why it cannot be used.
 
 |          |                                                                                                                                                                                                                                                                                                                                                                       |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

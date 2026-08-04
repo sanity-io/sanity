@@ -3,7 +3,7 @@ source: stories/customisation/TheMiddlewareChain.stories.tsx
 title: 'Acme'
 blocks: 2
 roundtrip: true
-sourceHash: c333b08702f8e34b
+sourceHash: 0e4ecb314967dcbd
 ---
 
 <!-- @component -->

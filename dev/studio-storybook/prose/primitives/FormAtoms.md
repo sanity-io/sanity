@@ -3,12 +3,12 @@ source: stories/primitives/FormAtoms.stories.tsx
 title: 'UI v3 Primitives/Form'
 blocks: 1
 roundtrip: true
-sourceHash: 984aed15a835710d
+sourceHash: e911f68e27bcd3d9
 ---
 
 <!-- @component -->
 
-Every Studio input is one of these raw controls plus a layer of composition, and reading the atom on its own is how you tell a control defect from an input-composition defect: a `BooleanInput` is a `Switch` (or `Checkbox`) plus a `FormField`, a `StringInput` is a `TextInput` plus validation chrome.
+Every Studio input is one of these raw controls plus a layer of composition. Reading the atom on its own separates a control defect from an input-composition defect: a `BooleanInput` is a `Switch` (or `Checkbox`) plus a `FormField`, a `StringInput` is a `TextInput` plus validation chrome.
 
 |          |                                                                                                                                                                                                            |
 | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

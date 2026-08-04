@@ -175,9 +175,9 @@ const meta: Meta<typeof ErrorBoundary> = {
     docs: {
       description: {
         component: [
-          'Render errors happen: a preview meets malformed data, a plugin throws. Without a ' +
-            'boundary, one component throwing during render takes the entire Studio down with it. ' +
-            'ErrorBoundary is the safety net that keeps that from happening to a whole editor.',
+          'ErrorBoundary keeps a render error from taking down the whole editor. Without it, ' +
+            'one component throwing during render (a preview meeting malformed data, a plugin ' +
+            'throwing) takes the entire Studio down with it.',
           '',
           '| | |',
           '|---|---|',
@@ -186,27 +186,28 @@ const meta: Meta<typeof ErrorBoundary> = {
           '| Audit | 🔴 needs-work (`error-messages`). The native caught state is a raw `<Code>` dump of the error message: no plain-language explanation, no next step, no recovery affordance |',
           '| Patterns | `error-messages` |',
           '',
-          'ErrorBoundary wraps a subtree, catches the throw, keeps everything around it alive, and ' +
-            'hands the error to wherever your workspace wants it logged. It is the difference between ' +
-            '"one pane shows an error" and "the editor is gone".',
+          'ErrorBoundary wraps a subtree, catches the throw, keeps everything around it alive, ' +
+            'and hands the error to wherever your workspace wants it logged. It is the difference ' +
+            'between "one pane shows an error" and "the editor is gone".',
           '',
-          "Studio's `ErrorBoundary` wraps `@sanity/ui`'s boundary, adds routing to the workspace " +
-            '`onUncaughtError` config, and forwards to an optional `onCatch` prop. On a caught error ' +
-            'the underlying boundary swaps its children for `<Code>{error.message}</Code>`. It has no ' +
-            'reset API, recovery requires remounting the boundary (for example bumping a React `key`), ' +
-            'which the Recommended story does.',
+          "Studio's `ErrorBoundary` wraps `@sanity/ui`'s boundary, adds routing to the " +
+            'workspace `onUncaughtError` config, and forwards to an optional `onCatch` prop. On a ' +
+            'caught error the underlying boundary swaps its children for ' +
+            '`<Code>{error.message}</Code>`. It has no reset API, recovery requires remounting ' +
+            'the boundary (for example bumping a React `key`), which the Recommended story does.',
           '',
-          'Addressed for `error-messages` looks like the Current vs Recommended pair: replace the raw ' +
-            'code dump with an actionable fallback, what happened in plain language, plus a "Try ' +
-            'again" control that remounts the subtree.',
+          'Addressed for `error-messages` looks like the Current vs Recommended pair: replace ' +
+            'the raw code dump with an actionable fallback, what happened in plain language, plus ' +
+            'a "Try again" control that remounts the subtree.',
           '',
-          '> **Why it matters:** there is no reset method. Once the boundary has caught, it keeps ' +
-            'showing the caught state until it is remounted, clearing the error condition alone leaves ' +
-            "the stale message on screen. To recover you must force a remount (bump the boundary's " +
-            'React key), which is exactly what the Recommended story does.',
+          '> **Why it matters:** there is no reset method. Once the boundary has caught, it ' +
+            'keeps showing the caught state until it is remounted, clearing the error condition ' +
+            'alone leaves the stale message on screen. To recover you must force a remount (bump ' +
+            "the boundary's React key), which is exactly what the Recommended story does.",
           '',
-          'The page closes *in context*: a book document pane whose Author field throws, the ' +
-            'boundary holds the rest of the editor alive and offers recovery in its place.',
+          'The last story shows the boundary in context: a book document pane whose Author ' +
+            'field throws, where the boundary holds the rest of the editor alive and offers ' +
+            'recovery in its place.',
         ].join('\n'),
       },
     },

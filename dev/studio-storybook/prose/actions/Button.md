@@ -3,12 +3,12 @@ source: stories/actions/Button.stories.tsx
 title: 'Actions & Commands/Button'
 blocks: 5
 roundtrip: true
-sourceHash: 7095712289157e1c
+sourceHash: 188228444acabf78
 ---
 
 <!-- @component -->
 
-Almost everything a person _does_ in Studio lands on a button, so the decision is made once: one shared control, and every action inherits its padding, its tone, and its sizing.
+Button is Studio’s shared button component. Every action control in the product wraps it, inheriting its padding, tone mapping, and sizing.
 
 |          |                                                                                                                            |
 | -------- | -------------------------------------------------------------------------------------------------------------------------- |
@@ -17,13 +17,13 @@ Almost everything a person _does_ in Studio lands on a button, so the decision i
 | Audit    | 🔴 needs-work (`idempotency`). Submit controls that can double-fire; see the two Idempotency stories                       |
 | Patterns | `button-groups` · `prominent-done` · `fitts-law`                                                                           |
 
-Reach for the Studio `Button` and you inherit the padding, the tone mapping, and the sizing the rest of the app already uses. There is no way to ship a control a little too tall or a little too loud, and an icon-only button cannot even compile without a tooltip, so it is never nameless.
+The component enforces this at the type level. Size and padding come from a fixed scale rather than arbitrary values, and an icon-only button requires `tooltipProps`, so it cannot compile without an accessible label.
 
-This page covers both layers at once. The `Primitive` story is the raw `@sanity/ui` button; every other story is the Studio wrapper. Read them side by side and the wrapper’s entire job becomes visible: it takes choices away, on purpose.
+This page covers both layers. The `Primitive` story is the raw `@sanity/ui` button; every other story is the Studio wrapper. Comparing them shows what the wrapper removes from the primitive: layout and tone choices, and a nameless icon-only button.
 
-> **Why it matters:** a button must make double-submission impossible. The audit found submit controls that stay live during an async write, so a rapid second click posts a duplicate. The fix is to flip into a pending state the instant it fires; the two Idempotency stories show the shipped behaviour and the repair side by side.
+> **Why it matters:** submit controls must not double-fire on a fast repeat click. The audit found buttons that stay enabled during an async write, so a second click posts a duplicate mutation. The fix disables the button and sets it to `loading` the instant it fires; the two Idempotency stories show the defect and the fix side by side.
 
-The page closes _in context_: the document header of the Anna Karenina draft, where Publish, Review changes, and the overflow menu are all this one shared control.
+The last story shows the component in its real context: the document header of the Anna Karenina draft. Publish, Review changes, and the overflow menu there are all instances of this one shared control.
 
 <!-- @story Primitive -->
 

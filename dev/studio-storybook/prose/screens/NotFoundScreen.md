@@ -3,12 +3,12 @@ source: stories/screens/NotFoundScreen.stories.tsx
 title: 'Navbar & Shell/Screens/Workspace Not Found'
 blocks: 2
 roundtrip: true
-sourceHash: ad725825b80a9ffa
+sourceHash: e8b000b9fbeac3ad
 ---
 
 <!-- @component -->
 
-This is what the studio renders when the URL names a workspace that does not exist: a caution-toned full screen with one heading and one way out.
+NotFoundScreen is what the studio renders when the URL names a workspace that does not exist: a caution-toned full screen with one heading and one way out.
 
 |        |                                                              |
 | ------ | ------------------------------------------------------------ |

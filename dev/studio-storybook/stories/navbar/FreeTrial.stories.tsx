@@ -121,15 +121,14 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'The free-trial surface is the one navbar control built to persuade rather than ' +
-            'inform. An ordinary document action waits for someone to ask for it; this one can ' +
-            'put itself in front of a person the moment Studio loads.',
+          'FreeTrial is the one navbar control built to persuade rather than inform: it can put ' +
+            'itself in front of a person the moment Studio loads, without anyone asking for it.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/core/studio/components/navbar/free-trial/FreeTrial.tsx` |',
-          '| Tier | CHROME, a conversion surface painted over the navbar. `UpsellPanel` and the free-trial leaf pieces already have prop-driven fixture stories in `Laws & Behaviors/Upsell`; this page drives the real `FreeTrial` component through `FreeTrialContext` the way the real navbar does, so it is the routing logic those pages leave out |',
-          '| Audit | 🟡 needs-work (`interruption-cost`, `escape-hatch`). An auto-shown `modal` blocks the rest of the navbar the instant Studio boots, before any action from the person using it, and the auto-shown `popover` has no click-outside or Escape dismissal at all |',
+          '|        |                                                                                                                                                                                                                                                                                                                                     |',
+          '| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |',
+          '| Source | `packages/sanity/src/core/studio/components/navbar/free-trial/FreeTrial.tsx`                                                                                                                                                                                                                                                        |',
+          '| Tier   | CHROME, a conversion surface painted over the navbar. `UpsellPanel` and the free-trial leaf pieces already have prop-driven fixture stories in `Laws & Behaviors/Upsell`; this page drives the real `FreeTrial` component through `FreeTrialContext` the way the real navbar does, so it is the routing logic those pages leave out |',
+          '| Audit  | 🟡 needs-work (`interruption-cost`, `escape-hatch`). An auto-shown `modal` blocks the rest of the navbar the instant Studio boots, before any action from the person using it, and the auto-shown `popover` has no click-outside or Escape dismissal at all                                                                         |',
           '',
           'Everything downstream of `FreeTrialContext` is server-decided: `showOnLoad`, ' +
             "`showOnClick`, `daysLeft`, the dialog's heading, image and CTA copy all come from a " +

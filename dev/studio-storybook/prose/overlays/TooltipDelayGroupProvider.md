@@ -3,12 +3,12 @@ source: stories/overlays/TooltipDelayGroupProvider.stories.tsx
 title: 'Overlays & Navigation/Tooltip/Delay Group'
 blocks: 1
 roundtrip: true
-sourceHash: f774be6ced566086
+sourceHash: 1f3ba15abdb031ce
 ---
 
 <!-- @component -->
 
-A toolbar where every icon button waits its own 400ms before showing a tooltip reads as sluggish the moment a finger moves along the row. This provider is how Studio fixes that: once one tooltip in a group has shown, its siblings reveal instantly.
+TooltipDelayGroupProvider fixes toolbar tooltip sluggishness: once one tooltip in a group has shown, its siblings reveal instantly, instead of every icon button waiting its own 400ms as a finger moves along the row.
 
 |          |                                                                                                                                                                   |
 | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |

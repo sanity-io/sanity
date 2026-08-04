@@ -3,12 +3,12 @@ source: stories/actions/MenuButton.stories.tsx
 title: 'Actions & Commands/MenuButton'
 blocks: 5
 roundtrip: true
-sourceHash: c8e11a476fd15502
+sourceHash: 084afce52d56d9bb
 ---
 
 <!-- @component -->
 
-A menu is where a product puts everything it could not fit on screen, which makes the menu button one of the highest-traffic controls in Studio: document actions, the create-document picker and the workspace switcher all live behind one.
+MenuButton is one of the highest-traffic controls in Studio: document actions, the create-document picker and the workspace switcher all live behind one, since a menu is where a product puts everything it could not fit on screen.
 
 |              |                                                                                                                                                                                                |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -18,13 +18,13 @@ A menu is where a product puts everything it could not fit on screen, which make
 | Illustration | `CurrentFlatMenu` is 15 flat siblings; `RecommendedGroupedMenu` is the same 15 capabilities, 4 in front and the tail in two `MenuGroup` submenus                                               |
 | Patterns     | `smart-menu-items` · `action-panel` · `hicks-law` · `choice-overload` · `satisficing`                                                                                                          |
 
-A menu is where a product puts everything it could not fit on screen, which makes the menu button one of the highest-traffic controls in Studio: document actions, the create-document picker and the workspace switcher all live behind one. You compose the trigger and the `Menu` yourself; the shadow takes care of the popover wiring, so the thing opens, animates and dismisses like every other menu in the app.
+The trigger and the `Menu` are composed by the caller; the shadow takes care of the popover wiring, so the thing opens, animates and dismisses like every other menu in the app.
 
 The menu mounts in a portaled popover on `document.body`, so it is never clipped by the pane that owns it. The pair of `…Menu` stories carries the argument this page is making. Read them together: nothing about the component changes between them, only the order and the chunking of what it was handed.
 
 > **Why it matters:** Fifteen alphabetical siblings is a list somebody declined to design, and it charges every editor a full linear scan on every open. Lead with the handful of most-likely actions and collapse the long tail into `MenuGroup` submenus. Same capabilities, a fraction of the scan cost.
 
-The page closes _in context_: the "…" document-actions menu parked on a real "Anna Karenina" book row.
+The last story shows it in context: the "…" document-actions menu parked on a real "Anna Karenina" book row.
 
 <!-- @story Placements -->
 

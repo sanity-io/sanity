@@ -44,17 +44,17 @@ const meta: Meta = {
     docs: {
       description: {
         component: [
-          'The most expensive editing mistakes come from acting on a document whose state a ' +
-            'person misread. These banners are Studio’s answer: a single, calm strip that says, ' +
-            'before you edit, here is the unusual thing about this document.',
+          "These banners are Studio's answer to editing mistakes that come from acting on a " +
+            'document whose state was misread: a single, calm strip that says, before editing, ' +
+            'here is the unusual thing about this document.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Source | `packages/sanity/src/structure/panes/document/documentPanel/banners/*`, Studio-only (no design-system equivalent); all share the `Banner` chrome primitive |',
-          '| Flag | varies per banner: `beta.variants.enabled` (variant banners), `scheduledDrafts.enabled` (scheduled-draft override), `apps.canvas.enabled` (Canvas linked). Each story tags its own gating flag |',
-          '| Tier | CHROME. A document-scoped status strip. `Banner` is a pure layout atom (icon + content + right-aligned action, toned by `CardTone`); the beta banners are hook-reading shells that pick a tone/string and render it |',
-          '| Audit | ⚪ not-audited. These beta banners post-date the pattern pass. The law they serve is `system-status-visibility`: the editor must be told when the document is in an unusual state before they act |',
-          '| Patterns | `document-banners` |',
+          '|          |                                                                                                                                                                                                                     |',
+          '| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |',
+          '| Source   | `packages/sanity/src/structure/panes/document/documentPanel/banners/*`, Studio-only (no design-system equivalent); all share the `Banner` chrome primitive                                                          |',
+          '| Flag     | varies per banner: `beta.variants.enabled` (variant banners), `scheduledDrafts.enabled` (scheduled-draft override), `apps.canvas.enabled` (Canvas linked). Each story tags its own gating flag                      |',
+          '| Tier     | CHROME. A document-scoped status strip. `Banner` is a pure layout atom (icon + content + right-aligned action, toned by `CardTone`); the beta banners are hook-reading shells that pick a tone/string and render it |',
+          '| Audit    | ⚪ not-audited. These beta banners post-date the pattern pass. The law they serve is `system-status-visibility`: the editor must be told when the document is in an unusual state before they act                   |',
+          '| Patterns | `document-banners`                                                                                                                                                                                                  |',
           '',
           'Every beta feature that can put a document into a surprising state (viewing a ' +
             'variant, about to override a schedule, linked to Canvas) adds one, and they all ' +

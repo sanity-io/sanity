@@ -83,11 +83,11 @@ const meta: Meta = {
             'Draft, Published, and whatever else a studio wants to say about a document at a ' +
             'glance.',
           '',
-          '| | |',
-          '|---|---|',
-          '| Seam | `document.badges`, the second of the chapter’s two description seams, sibling of `Customisation/Document Actions` |',
-          '| Tier | SERVICE |',
-          '| Patterns | `draft-publish-lifecycle` |',
+          '|          |                                                                                                                   |',
+          '| -------- | ----------------------------------------------------------------------------------------------------------------- |',
+          '| Seam     | `document.badges`, the second of the chapter’s two description seams, sibling of `Customisation/Document Actions` |',
+          '| Tier     | SERVICE                                                                                                           |',
+          '| Patterns | `draft-publish-lifecycle`                                                                                         |',
           '',
           'There is no `renderDefault`, because there is no markup to delegate to, and the ' +
             'equivalent of decoration is to call the badge you are extending and spread its ' +
