@@ -152,11 +152,11 @@ async function openVariantsTool(page: Page): Promise<void> {
   // The heading renders before the overview has settled its data subscriptions.
   // Wait for the create button to be interactive so the first dialog-open click
   // is not dispatched while the page is still mounting and silently dropped.
-  await expect(page.getByRole('button', {name: 'Create variant definition'}).first()).toBeEnabled()
+  await expect(page.getByRole('button', {name: 'New variant definition'}).first()).toBeEnabled()
 }
 
 async function openCreateVariantDialog(page: Page) {
-  const createVariantButton = page.getByRole('button', {name: 'Create variant definition'}).first()
+  const createVariantButton = page.getByRole('button', {name: 'New variant definition'}).first()
   const dialog = page.getByRole('dialog', {name: 'Create variant definition'})
 
   // Under parallel CI load the studio occasionally drops the first click while it
@@ -501,7 +501,7 @@ test.describe('Variants create flow', () => {
     await page.goto(`/variants/${shortVariantId}`)
     await expect(page.getByRole('heading', {name: title})).toBeVisible()
 
-    await page.locator(`#variant-detail-actions-${shortVariantId}`).click()
+    await page.getByTestId('variant-detail-menu-button').click()
     await page.getByRole('menuitem', {name: 'Delete variant definition'}).click()
     await page.getByTestId('confirm-button').click()
 

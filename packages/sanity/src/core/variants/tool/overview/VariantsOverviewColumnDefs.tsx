@@ -7,7 +7,6 @@ import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
-import {VariantPinButton} from '../components/VariantPinButton'
 import {getVariantId, getVariantConditionsText, getVariantTitle} from '../util'
 
 /**
@@ -78,14 +77,15 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
   return (
     <Box {...cellProps} flex={1} paddingLeft={3} paddingRight={2} paddingY={1} sizing="border">
       <Flex align="center" gap={3}>
-        <VariantPinButton variant={variant} />
         <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
           <Flex align="center" gap={3}>
-            <Stack flex={1} gap={2}>
-              <Text size={1} weight="medium">
+            {/* min-width: 0 lets the flex child shrink below its content width so a long name
+                truncates with a trailing ellipsis instead of overflowing on narrow viewports. */}
+            <Stack flex={1} gap={2} style={{minWidth: 0}}>
+              <Text size={1} textOverflow="ellipsis" weight="medium">
                 {getVariantTitle(variant)}
               </Text>
-              <Text muted size={1}>
+              <Text muted size={1} textOverflow="ellipsis">
                 {conditionsText || t('overview.table.no-conditions')}
               </Text>
             </Stack>

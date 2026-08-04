@@ -2,7 +2,9 @@ import {describe, expect, it} from 'vitest'
 
 import {createMockVariant} from '../../__fixtures__/createMockVariant'
 import {VARIANT_DOCUMENTS_PATH} from '../../store/constants'
+import {type SystemVariant} from '../../types'
 import {
+  buildConditionFacets,
   decodeVariantIdFromRoute,
   filterVariantsForSearch,
   getVariantConditionsText,
@@ -12,6 +14,7 @@ import {
   getVariantTitle,
   isPublishedBundleId,
   isReleaseBundle,
+  variantMatchesConditionFilters,
 } from '../util'
 
 describe('variants tool utilities', () => {
@@ -115,5 +118,48 @@ describe('variants tool utilities', () => {
     expect(isReleaseBundle('published')).toBe(false)
     expect(isReleaseBundle('drafts')).toBe(false)
     expect(isReleaseBundle('rASAP')).toBe(true)
+  })
+})
+
+describe('buildConditionFacets', () => {
+  it('derives one sorted facet per condition key with its distinct values', () => {
+    const variants: SystemVariant[] = [
+      {...createMockVariant('a'), conditions: {market: 'london', brand: 'brand-z'}},
+      {...createMockVariant('b'), conditions: {market: 'plymouth', brand: 'brand-z'}},
+      {...createMockVariant('c'), conditions: {market: 'london'}},
+    ]
+
+    expect(buildConditionFacets(variants)).toEqual([
+      {key: 'brand', values: ['brand-z']},
+      {key: 'market', values: ['london', 'plymouth']},
+    ])
+  })
+
+  it('returns an empty list when no variant carries conditions', () => {
+    const variants: SystemVariant[] = [{...createMockVariant('a'), conditions: {}}]
+    expect(buildConditionFacets(variants)).toEqual([])
+  })
+})
+
+describe('variantMatchesConditionFilters', () => {
+  const variant: SystemVariant = {
+    ...createMockVariant('a'),
+    conditions: {market: 'london', segment: 'VIP'},
+  }
+
+  it('matches when there are no active filters', () => {
+    expect(variantMatchesConditionFilters(variant, {})).toBe(true)
+    expect(variantMatchesConditionFilters(variant, {market: []})).toBe(true)
+  })
+
+  it('ORs values within a dimension and ANDs across dimensions', () => {
+    expect(variantMatchesConditionFilters(variant, {market: ['london', 'plymouth']})).toBe(true)
+    expect(variantMatchesConditionFilters(variant, {market: ['london'], segment: ['VIP']})).toBe(
+      true,
+    )
+    expect(variantMatchesConditionFilters(variant, {market: ['london'], segment: ['New']})).toBe(
+      false,
+    )
+    expect(variantMatchesConditionFilters(variant, {brand: ['brand-z']})).toBe(false)
   })
 })
