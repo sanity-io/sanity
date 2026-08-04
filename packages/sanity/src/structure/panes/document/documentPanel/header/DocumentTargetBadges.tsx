@@ -1,26 +1,31 @@
 import {Card, Flex, Text, type BadgeTone} from '@sanity/ui'
+import {motion} from 'motion/react'
 import {
   forwardRef,
-  type ForwardRefExoticComponent,
   memo,
+  type ForwardRefExoticComponent,
   type RefAttributes,
   type SVGProps,
 } from 'react'
 import {
+  ReleaseAvatarIcon,
+  ReleaseTitle,
   getReleaseTone,
   getVariantTitle,
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseDocument,
-  ReleaseTitle,
+  isSystemBundle,
   usePerspective,
   useTranslation,
   type SystemVariant,
+  type TargetDocumentState,
   type TargetPerspective,
-  ReleaseAvatarIcon,
 } from 'sanity'
 import {styled} from 'styled-components'
 
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 
 /**
@@ -59,6 +64,39 @@ const BadgeContainer = styled(Flex)`
   user-select: none;
   flex: none;
 `
+
+const BadgeMotionWrapper = styled(motion.div)`
+  flex: none;
+`
+
+function isTargetDocumentDefinitivelyMissing(
+  state: TargetDocumentState,
+  bundle: ReturnType<typeof usePerspective>['bundle'],
+): boolean {
+  switch (state.status) {
+    case 'resolving':
+      return false
+    case 'variant-definition-document-not-found':
+      return true
+    case 'variant-missing':
+      return true
+    case 'ready':
+      return !state.targetDocument && !state.variant && !isSystemBundle(bundle)
+    default:
+      return false
+  }
+}
+
+function getSelectedVariantFromState(
+  state: TargetDocumentState,
+  selectedVariant: SystemVariant | undefined,
+): SystemVariant | undefined {
+  if (state.status === 'ready' || state.status === 'variant-missing') {
+    return state.variant
+  }
+
+  return selectedVariant
+}
 
 function getPerspectiveBadgeTone(selectedPerspective: TargetPerspective): BadgeTone {
   if (isDraftPerspective(selectedPerspective)) {
@@ -128,33 +166,37 @@ const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: S
 
 export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
   const {targetDocumentState} = useDocumentPane()
-  const {selectedPerspective} = usePerspective()
+  const {bundle, selectedPerspective, selectedVariant} = usePerspective()
+  const {t} = useTranslation(structureLocaleNamespace)
 
-  const isInCurrentTarget =
-    targetDocumentState.status === 'ready' && Boolean(targetDocumentState.targetDocument)
-
-  if (!isInCurrentTarget) {
-    return null
-  }
-
-  const selectedVariant =
-    targetDocumentState.status === 'ready' ? targetDocumentState.variant : undefined
+  const isTargetMissing = isTargetDocumentDefinitivelyMissing(targetDocumentState, bundle)
+  const badgeOpacity = isTargetMissing ? 0.5 : 1
+  const selectedVariantBadge = getSelectedVariantFromState(targetDocumentState, selectedVariant)
 
   return (
-    <Flex align="center" flex="none" gap={2} paddingRight={1}>
-      <TargetBadge
-        tone={getPerspectiveBadgeTone(selectedPerspective)}
-        border
-        radius={4}
-        data-ui="DocumentTargetPerspectiveBadge"
-      >
-        <PerspectiveBadgeLabel selectedPerspective={selectedPerspective} />
-      </TargetBadge>
-      {selectedVariant ? (
-        <TargetBadge tone="suggest" border radius={4} data-ui="DocumentTargetVariantBadge">
-          <VariantBadgeLabel variant={selectedVariant} />
-        </TargetBadge>
-      ) : null}
-    </Flex>
+    <Tooltip
+      content={t('document-target-badges.not-in-target.tooltip')}
+      disabled={!isTargetMissing}
+    >
+      <Flex align="center" flex="none" gap={2} paddingRight={1}>
+        <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
+          <TargetBadge
+            tone={getPerspectiveBadgeTone(selectedPerspective)}
+            border
+            radius={4}
+            data-ui="DocumentTargetPerspectiveBadge"
+          >
+            <PerspectiveBadgeLabel selectedPerspective={selectedPerspective} />
+          </TargetBadge>
+        </BadgeMotionWrapper>
+        {selectedVariantBadge ? (
+          <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
+            <TargetBadge tone="suggest" border radius={4} data-ui="DocumentTargetVariantBadge">
+              <VariantBadgeLabel variant={selectedVariantBadge} />
+            </TargetBadge>
+          </BadgeMotionWrapper>
+        ) : null}
+      </Flex>
+    </Tooltip>
   )
 })

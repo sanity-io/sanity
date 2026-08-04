@@ -483,6 +483,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The "raw" view mode, meaning the JSON is presented syntax-highlighted, but with no other features - optimal for copying */
   'document-inspector.view-mode.raw-json': 'Raw JSON',
 
+  /** Tooltip on target badges when the document does not exist in the selected perspective */
+  'document-target-badges.not-in-target.tooltip':
+    "Document doesn't exist in the selected perspective yet.",
+
   /** The text for when a form is hidden */
   'document-view.form-view.form-hidden': 'This form is hidden',
   /** Fallback title shown when a form title is not provided */
