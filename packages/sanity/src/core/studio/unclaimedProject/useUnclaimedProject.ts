@@ -112,13 +112,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
       provenanceRef.current = {sessionKey, seenUnclaimed: false}
       setSessionState(undefined)
     }
-
-    if (!isRobot) {
-      // An unclaimed project has no human members, so a human session means any stored claim
-      // record is stale — storage never outlives the state that justified it.
-      clearUnclaimedProjectRecord(projectId)
-    }
-  }, [isRobot, projectId, sessionKey])
+  }, [sessionKey])
 
   useEffect(() => {
     if (!isRobot) return undefined

@@ -61,14 +61,12 @@ describe('useUnclaimedProject', () => {
     vi.clearAllMocks()
   })
 
-  it('stays quiet for a human session and clears any stale record', () => {
+  it('stays quiet for a human session', () => {
     mockUseWorkspace.mockReturnValue({currentUser: HUMAN_USER, projectId: PROJECT_ID})
-    writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
 
     const {result} = renderHook(() => useUnclaimedProject())
 
     expect(result.current).toBeUndefined()
-    expect(readUnclaimedProjectRecord(PROJECT_ID)).toBeUndefined()
     expect(mockRequest).not.toHaveBeenCalled()
   })
 
