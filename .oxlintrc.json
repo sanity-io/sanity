@@ -191,6 +191,8 @@
     // Handy rules that are disabled by default
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
+    // Prefer function components; allow class-based error boundaries (no hook equivalent yet)
+    "react/prefer-function-component": ["error", {"allowErrorBoundary": true}],
     // React Compiler rules, native nursery rule (replaces eslint-plugin-react-hooks compiler rules).
     // Pre-existing violations are grandfathered with inline `oxlint-disable-next-line` suppressions.
     "react/react-compiler": "error",

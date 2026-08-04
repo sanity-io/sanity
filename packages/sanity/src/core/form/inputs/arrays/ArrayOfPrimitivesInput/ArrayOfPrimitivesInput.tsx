@@ -27,6 +27,7 @@ interface State {
  * @hidden
  * @beta
  */
+// oxlint-disable-next-line react/prefer-function-component -- needs getSnapshotBeforeUpdate (no hook equivalent)
 export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInputProps, State> {
   _element: HTMLElement | null = null
 
