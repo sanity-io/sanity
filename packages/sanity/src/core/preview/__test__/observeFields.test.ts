@@ -418,4 +418,108 @@ describe('observeFields', () => {
       sub.unsubscribe()
     })
   })
+
+  describe('variant', () => {
+    const SETTLE_TIME = 200
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    function setupVariantTest() {
+      const fetches: {query: string; options: Record<string, unknown>}[] = []
+      const apiVersions: (string | undefined)[] = []
+
+      const client = {
+        observable: {
+          fetch: (query: string, _params: unknown, options: Record<string, unknown>) => {
+            fetches.push({query, options})
+            return of([
+              [{_id: 'foo', _rev: `rev${fetches.length}`, _type: 'testDoc', title: 'Test'}],
+            ])
+          },
+        },
+        withConfig: (config: {apiVersion?: string}) => {
+          apiVersions.push(config.apiVersion)
+          return client
+        },
+      }
+
+      const channel = new Subject<InvalidationChannelEvent>()
+      const observe = createObserveFields({
+        invalidationChannel: channel,
+        client: client as unknown as SanityClient,
+      })
+
+      return {fetches, apiVersions, channel, observe}
+    }
+
+    it('passes the variant to the query and uses the variants api version', async () => {
+      const harness = setupVariantTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts'], 'alpha').subscribe()
+
+      harness.channel.next({type: 'connected'})
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetches[0].options).toMatchObject({
+        perspective: ['drafts'],
+        variant: 'alpha',
+      })
+      expect(harness.apiVersions).toContain('X')
+      sub.unsubscribe()
+    })
+
+    it('does not share cached field observers between variants', async () => {
+      const harness = setupVariantTest()
+      const subs = [
+        harness.observe('foo', ['title'], undefined, ['drafts']).subscribe(),
+        harness.observe('foo', ['title'], undefined, ['drafts'], 'alpha').subscribe(),
+        harness.observe('foo', ['title'], undefined, ['drafts'], 'beta').subscribe(),
+      ]
+
+      harness.channel.next({type: 'connected'})
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetches.map((fetch) => fetch.options.variant)).toEqual([
+        undefined,
+        'alpha',
+        'beta',
+      ])
+      subs.forEach((sub) => sub.unsubscribe())
+    })
+
+    it('re-fetches for versions outside the perspective stack, since variant scope ids are opaque', async () => {
+      const harness = setupVariantTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts'], 'alpha').subscribe()
+
+      harness.channel.next({type: 'connected'})
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+      const afterConnect = harness.fetches.length
+
+      sendMutations(harness.channel, 'versions.p8Ab12cd34.foo')
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetches.length).toBeGreaterThan(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('does not re-fetch for unrelated documents when a variant is selected', async () => {
+      const harness = setupVariantTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts'], 'alpha').subscribe()
+
+      harness.channel.next({type: 'connected'})
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+      const afterConnect = harness.fetches.length
+
+      sendMutations(harness.channel, ['bar', 'drafts.bar', 'versions.p8Ab12cd34.bar'])
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetches.length).toBe(afterConnect)
+      sub.unsubscribe()
+    })
+  })
 })

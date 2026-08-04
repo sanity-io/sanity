@@ -104,8 +104,19 @@ export function useReferenceInput(options: Options) {
 
   const getReferenceInfo = useCallback(
     (id: string) =>
-      adapter.getReferenceInfo(documentPreviewStore, id, schemaType, perspective.perspectiveStack),
-    [documentPreviewStore, schemaType, perspective.perspectiveStack],
+      adapter.getReferenceInfo(
+        documentPreviewStore,
+        id,
+        schemaType,
+        perspective.perspectiveStack,
+        perspective.selectedVariantName,
+      ),
+    [
+      documentPreviewStore,
+      schemaType,
+      perspective.perspectiveStack,
+      perspective.selectedVariantName,
+    ],
   )
 
   return {

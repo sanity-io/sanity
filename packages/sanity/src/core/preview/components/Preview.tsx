@@ -6,7 +6,9 @@ import {PreviewLoader} from './PreviewLoader'
 /**
  * @internal
  */
-export function Preview(props: RenderPreviewCallbackProps & {perspectiveStack?: PerspectiveStack}) {
+export function Preview(
+  props: RenderPreviewCallbackProps & {perspectiveStack?: PerspectiveStack; variant?: string},
+) {
   const PreviewComponent = usePreviewComponent()
   return <PreviewLoader {...props} component={PreviewComponent} />
 }

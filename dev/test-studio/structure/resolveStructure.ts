@@ -43,7 +43,7 @@ import {typesInOptionGroup} from './groupByOption'
 
 export const structure: StructureResolver = (
   S,
-  {schema, documentStore, i18n, perspectiveStack},
+  {schema, documentStore, i18n, perspectiveStack, selectedVariantName},
 ) => {
   const {t} = i18n
   return S.list()
@@ -59,6 +59,7 @@ export const structure: StructureResolver = (
             {},
             {
               perspective: perspectiveStack,
+              variant: selectedVariantName,
             },
           )
 
