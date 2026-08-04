@@ -65,7 +65,6 @@ const VirtualList = () => {
 
 export default VirtualList
 
-// oxlint-disable-next-line react/react-compiler
 function useVirtualizedSchedules(activeSchedules: Schedule[], sortBy?: ScheduleSort) {
   const containerRef = useRef<HTMLDivElement>(null)
 

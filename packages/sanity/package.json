@@ -150,7 +150,7 @@
     "@sanity-labs/ui-poc": "0.0.1-alpha.25",
     "@sanity/asset-utils": "^2.3.0",
     "@sanity/bifur-client": "^1.0.0",
-    "@sanity/cli": "^7.15.1",
+    "@sanity/cli": "^7.16.0",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.8",
     "@sanity/comlink": "^4.0.1",
