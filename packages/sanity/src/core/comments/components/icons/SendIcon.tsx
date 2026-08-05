@@ -1,8 +1,6 @@
-import {type Ref, type SVGProps, type RefAttributes} from 'react'
+import {type RefAttributes, type SVGProps} from 'react'
 
-export const SendIcon = function Icon(
-  props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>,
-) {
+export function SendIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
   const {ref, ...rest} = props
   return (
     <svg

@@ -1,8 +1,6 @@
-import {type Ref, type SVGProps, type RefAttributes} from 'react'
+import {type RefAttributes, type SVGProps} from 'react'
 
-export const MentionIcon = function Icon(
-  props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>,
-) {
+export function MentionIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
   const {ref, ...rest} = props
   return (
     <svg

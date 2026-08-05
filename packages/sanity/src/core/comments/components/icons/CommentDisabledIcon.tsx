@@ -1,11 +1,9 @@
-import {type Ref, type SVGProps, type RefAttributes} from 'react'
+import {type RefAttributes, type SVGProps} from 'react'
 
 /**
  * @internal
  */
-export const CommentDisabledIcon = function Icon(
-  props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>,
-) {
+export function CommentDisabledIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
   const {ref, ...rest} = props
   return (
     <svg
