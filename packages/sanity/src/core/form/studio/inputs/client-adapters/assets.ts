@@ -5,6 +5,7 @@ import {catchError, map, mergeMap, startWith} from 'rxjs/operators'
 
 import {type VideoAsset} from '../../../../../media-library/plugin/schemas/types'
 import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
+import {withResourceOnProjectHost} from '../../../../util/withResourceOnProjectHost'
 import {sourceName as MEDIA_LIBRARY_SOURCE_NAME} from '../../assetSourceMediaLibrary'
 import {DEFAULT_API_VERSION} from '../../assetSourceMediaLibrary/constants'
 import {type UploadOptions} from '../../uploads/types'
@@ -235,11 +236,8 @@ export function observeVideoAsset(
     return observableOf(minimalAsset)
   }
 
-  const resourceConfig = {
-    resource: {type: 'media-library' as const, id: mediaLibraryId},
-  }
-  const mlClient = client.withConfig({
-    ...resourceConfig,
+  const mlClient = withResourceOnProjectHost(client, {
+    resource: {type: 'media-library', id: mediaLibraryId},
     apiVersion: DEFAULT_API_VERSION,
   })
 

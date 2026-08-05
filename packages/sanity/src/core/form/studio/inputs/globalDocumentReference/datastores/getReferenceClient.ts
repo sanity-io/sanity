@@ -1,13 +1,15 @@
 import {type SanityClient} from '@sanity/client'
 import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
 
+import {withResourceOnProjectHost} from '../../../../../util/withResourceOnProjectHost'
+
 export function getReferenceClient(
   client: SanityClient,
   schemaType: GlobalDocumentReferenceSchemaType,
 ): SanityClient {
   if (schemaType.resourceType === 'dataset') {
     const [projectId, datasetName] = schemaType.resourceId.split('.', 2)
-    return client.withConfig({
+    return withResourceOnProjectHost(client, {
       apiVersion: 'X',
       resource: {
         type: 'dataset',
@@ -16,7 +18,7 @@ export function getReferenceClient(
     })
   }
   if (schemaType.resourceType === 'media-library' || schemaType.resourceType === 'canvas') {
-    return client.withConfig({
+    return withResourceOnProjectHost(client, {
       apiVersion: '2025-02-19',
       resource: {
         type: schemaType.resourceType,
