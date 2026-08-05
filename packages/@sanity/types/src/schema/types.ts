@@ -197,22 +197,18 @@ export type InitialValueProperty<Params, Value> =
  * If the schema has not been run through `inferFromSchema` from
  * `sanity/validation` then value could be a function.
  *
- * `inferFromSchema` mutates the schema converts this value to an array of
- * `Rule` instances.
+ * `inferFromSchema` mutates the schema and converts this value to an array of
+ * `Rule` instances, _except_ for context-aware validation (a function declaring a
+ * `context` parameter), which stays a function so it can be re-evaluated against
+ * the value being validated.
  *
  * @privateRemarks
  *
- * Usage of the schema inside the studio will almost always be from the compiled
- * `createSchema` function. In this case, you can cast the value or throw to
- * narrow the type. E.g.:
- *
- * ```ts
- * if (typeof type.validation === 'function') {
- *   throw new Error(
- *     `Schema type "${type.name}"'s \`validation\` was not run though \`inferFromSchema\``
- *   )
- * }
- * ```
+ * This means a compiled schema can still hold a function here, so do not treat
+ * that as a sign the schema was never compiled. To read rules outside of document
+ * validation, normalize on demand with `normalizeValidationRules(type)` and be
+ * ready for it to throw, since context-aware validation may dereference a context
+ * that only exists while validating. `getValidationRule` does this.
  *
  * @public
  */
