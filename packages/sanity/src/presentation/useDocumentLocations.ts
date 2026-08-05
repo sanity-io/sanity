@@ -16,6 +16,7 @@ import {
   type DocumentLocationsStatus,
 } from './types'
 import {usePresentationPerspectiveStack} from './usePresentationPerspectiveStack'
+import {usePresentationVariant} from './usePresentationVariant'
 
 const INITIAL_STATE: DocumentLocationsState = {locations: []}
 
@@ -38,6 +39,7 @@ export function useDocumentLocations(props: {
   const documentPreviewStore = useDocumentPreviewStore()
 
   const perspectiveStack = usePresentationPerspectiveStack()
+  const variant = usePresentationVariant()
 
   const resolver = resolvers && (typeof resolvers === 'function' ? resolvers : resolvers[type.name])
 
@@ -54,7 +56,7 @@ export function useDocumentLocations(props: {
 
     // Original/advanced resolver which requires explicit use of Observables
     if (typeof resolver === 'function') {
-      const params = {id, type: type.name, version, perspectiveStack}
+      const params = {id, type: type.name, version, perspectiveStack, variant}
       const context = {documentStore}
       const _result = resolver(params, context)
       return isObservable(_result) ? _result : of(_result)
@@ -66,7 +68,7 @@ export function useDocumentLocations(props: {
       // Override the preview selection in the schema type to use the user
       // defined selection defined by the resolver
       const _type = {...type, preview: {select: resolver.select}} satisfies PreviewableType
-      const options = {perspective: perspectiveStack}
+      const options = {perspective: perspectiveStack, variant}
       return documentPreviewStore
         .observeForPreview(doc, _type, options)
         .pipe(map((preview) => resolver.resolve(preview.snapshot || null)))
@@ -74,7 +76,7 @@ export function useDocumentLocations(props: {
 
     // Resolver is explicitly provided state
     return of(resolver)
-  }, [documentStore, documentPreviewStore, id, resolver, type, version, perspectiveStack])
+  }, [documentStore, documentPreviewStore, id, resolver, type, version, perspectiveStack, variant])
 
   const locationsResult$ = useMemo(() => {
     if (!result) return of(initialResult)

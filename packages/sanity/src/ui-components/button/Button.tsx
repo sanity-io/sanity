@@ -44,11 +44,11 @@ type IconButton = {
 export type ButtonProps = BaseButtonProps & (ButtonWithText | IconButton)
 
 const LARGE_BUTTON_PROPS = {
-  space: 3,
+  gap: 3,
   padding: 3,
 }
 const DEFAULT_BUTTON_PROPS = {
-  space: 2,
+  gap: 2,
   padding: 2,
 }
 

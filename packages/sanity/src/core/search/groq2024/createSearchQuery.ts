@@ -68,6 +68,7 @@ export function createSearchQuery(
   searchParams: string | SearchTerms,
   {
     perspective,
+    variant,
     sort,
     isCrossDataset,
     tag,
@@ -181,6 +182,7 @@ export function createSearchQuery(
     options: {
       tag: tag,
       perspective,
+      variant,
     },
     params: finalParams,
     sortOrder,

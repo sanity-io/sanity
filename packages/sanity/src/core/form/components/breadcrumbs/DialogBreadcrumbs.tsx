@@ -5,13 +5,12 @@ import {Badge, Box, Button, Flex, Inline, Menu, MenuItem, Text, useElementSize} 
 import {type PropsWithChildren, useCallback, useMemo, useState, type RefAttributes} from 'react'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
-import {pathToString} from '../../../field/paths/helpers'
 import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
 import {useFormValue} from '../../contexts/FormValue'
 import {useBreadcrumbPreview} from '../../hooks/useBreadcrumbPreview'
 import {useBreadcrumbSiblingInfo} from '../../hooks/useBreadcrumbSiblingInfo'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {NavigatedToNestedObjectViaBreadcrumb} from '../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
+import {NestedObjectOpened} from '../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {shouldBeInBreadcrumb} from '../../studio/tree-editing/utils/build-tree-editing-state/utils'
 import {useFormBuilder} from '../../useFormBuilder'
 
@@ -88,8 +87,8 @@ function BreadcrumbButton({
 
   const handleClick = useCallback(() => {
     onPathSelect(itemPath)
-    telemetry.log(NavigatedToNestedObjectViaBreadcrumb, {
-      path: pathToString(itemPath),
+    telemetry.log(NestedObjectOpened, {
+      path: 'breadcrumb',
     })
   }, [onPathSelect, itemPath, telemetry])
 
