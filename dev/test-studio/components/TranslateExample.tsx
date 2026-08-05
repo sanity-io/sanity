@@ -27,11 +27,7 @@ export const TranslateExample = forwardRef(function TranslateExample() {
           <Translate
             t={t}
             i18nKey="translate.example"
-            components={{
-              Icon: () => <InfoFilledIcon />,
-              Red: ({children}) => <span style={{color: 'red'}}>{children}</span>,
-              Bold: ({children}) => <b>{children}</b>,
-            }}
+            components={{Icon: InfoFilledIcon, Red, Bold}}
             values={{
               keyword: 'something',
               duration: '30',
@@ -73,9 +69,7 @@ export const TranslateExample = forwardRef(function TranslateExample() {
           <Translate
             t={t}
             i18nKey="translate.mismatched-component"
-            components={{
-              VersionBadge: ({children}) => <span style={{fontWeight: 'bold'}}>{children}</span>,
-            }}
+            components={{VersionBadge}}
             values={{title: 'My Release'}}
           />
         </Text>
@@ -83,3 +77,13 @@ export const TranslateExample = forwardRef(function TranslateExample() {
     </Card>
   )
 })
+
+function VersionBadge({children}: {children?: React.ReactNode}) {
+  return <span style={{fontWeight: 'bold'}}>{children}</span>
+}
+function Red({children}: {children?: React.ReactNode}) {
+  return <span style={{color: 'red'}}>{children}</span>
+}
+function Bold({children}: {children?: React.ReactNode}) {
+  return <b>{children}</b>
+}

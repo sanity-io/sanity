@@ -48,9 +48,6 @@ export function VisionGuiResult({
   const {t} = useTranslation(visionLocaleNamespace)
   const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
 
-  const jsonUrl = hasResult ? getJsonBlobUrl(queryResult) : ''
-  const csvUrl = hasResult ? getCsvBlobUrl(queryResult) : ''
-
   return (
     <ResultOuterContainer direction="column" data-testid="vision-result">
       <ResultInnerContainer flex={1}>
@@ -120,14 +117,8 @@ export function VisionGuiResult({
           >
             <SaveResultLabel muted size={compactFooter ? 1 : 2}>
               <Translate
-                components={{
-                  SaveResultButtons: () => (
-                    <>
-                      <SaveJsonButton blobUrl={jsonUrl} />
-                      <SaveCsvButton blobUrl={csvUrl} />
-                    </>
-                  ),
-                }}
+                components={{SaveResultButtons}}
+                componentProps={{queryResult}}
                 i18nKey="result.save-result-as-format"
                 t={t}
               />
@@ -136,5 +127,17 @@ export function VisionGuiResult({
         )}
       </ResultFooter>
     </ResultOuterContainer>
+  )
+}
+
+function SaveResultButtons({queryResult}: {queryResult: unknown}) {
+  const jsonUrl = queryResult ? getJsonBlobUrl(queryResult) : ''
+  const csvUrl = queryResult ? getCsvBlobUrl(queryResult) : ''
+
+  return (
+    <>
+      <SaveJsonButton blobUrl={jsonUrl} />
+      <SaveCsvButton blobUrl={csvUrl} />
+    </>
   )
 }
