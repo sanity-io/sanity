@@ -148,7 +148,6 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
     const finishClaimed = (members?: ProjectMember[]) => {
       terminal = true
       stopClaimPolling()
-      clearUnclaimedProjectRecord(projectId)
       clearUnclaimedProjectSnooze(projectId)
       update({status: 'claimed'})
 
