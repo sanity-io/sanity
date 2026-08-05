@@ -5,6 +5,7 @@ import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {getVersionFromId, type SystemBundle} from '../../util/draftUtils'
 import {readVersionType} from '../../util/versionsUtils'
+import {getVariantTitle} from '../../variants/tool/util'
 import {type SystemVariant} from '../../variants/types'
 import {type Meta, type VariantSet} from '../machines/documentGroupInventoryMachine'
 import {type Variant} from '../machines/selectionMachine'
@@ -150,9 +151,14 @@ function getVariantName({
   document: VersionInfoDocumentStub
   variants: Map<string, SystemVariant>
 }): string {
-  const releaseDocumentId = document._system.variant?._ref
-  const release = releaseDocumentId ? variants.get(releaseDocumentId) : undefined
-  return release?.metadata?.title ?? t('document-group.base-variant')
+  const variantDocumentId = document._system.variant?._ref
+  const variant = variantDocumentId ? variants.get(variantDocumentId) : undefined
+
+  if (!variant) {
+    return t('document-group.base-variant')
+  }
+
+  return getVariantTitle(variant)
 }
 
 function getVersionName({
