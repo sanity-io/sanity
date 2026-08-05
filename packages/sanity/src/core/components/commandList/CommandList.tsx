@@ -102,7 +102,7 @@ const VirtualListChildBox = styled(Box) //
   width: 100%;
 `
 
-const CommandListComponent = function CommandList({
+function CommandListComponent({
   ref,
   activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,
   ariaLabel,
@@ -648,7 +648,7 @@ const CommandListComponent = function CommandList({
 export const CommandList = memo(CommandListComponent)
 CommandList.displayName = 'Memo(CommandList)'
 
-const CommandListItemComponent = function CommandListItem(
+function CommandListItemComponent(
   props: {
     children: React.ReactNode
     activeIndex: number | null

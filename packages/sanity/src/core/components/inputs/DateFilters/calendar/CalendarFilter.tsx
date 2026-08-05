@@ -49,9 +49,7 @@ const PRESERVE_FOCUS_ELEMENT = (
   />
 )
 
-export const CalendarFilter = function Calendar(
-  props: CalendarProps & RefAttributes<HTMLDivElement>,
-) {
+export function CalendarFilter(props: CalendarProps & RefAttributes<HTMLDivElement>) {
   const {
     ref: forwardedRef,
     focusedDate: providedFocusedDate,

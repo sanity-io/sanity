@@ -40,9 +40,7 @@ interface InvalidValueProps {
   onChange: (event: PatchEvent) => void
 }
 
-export const InvalidValueInput = (
-  props: InvalidValueProps & RefAttributes<{focus: () => void}>,
-) => {
+export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focus: () => void}>) {
   const {ref, value, actualType, validTypes, onChange} = props
 
   useImperativeHandle(ref, () => ({
@@ -165,8 +163,6 @@ export const InvalidValueInput = (
     </Alert>
   )
 }
-
-InvalidValueInput.displayName = 'InvalidValueInput'
 
 function ConvertButton({
   converter,

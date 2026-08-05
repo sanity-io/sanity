@@ -12,7 +12,7 @@ import {OpenInSourceDialog} from './OpenInSourceDialog'
 import {SelectAssetsDialog} from './SelectAssetsDialog'
 import {UploadAssetsDialog} from './UploadAssetDialog'
 
-const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceComponent(
+function MediaLibraryAssetSourceComponent(
   props: AssetSourceComponentProps & {libraryId: string | null} & RefAttributes<HTMLDivElement>,
 ) {
   const {

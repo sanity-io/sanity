@@ -149,7 +149,7 @@ const TagBox = styled(Box)`
   max-width: 100%;
 `
 
-export const TagInput = (
+export function TagInput(
   props: {
     readOnly?: boolean
     onChange?: (newValue: {value: string}[]) => void
@@ -158,7 +158,7 @@ export const TagInput = (
     value?: {value: string}[]
   } & Omit<HTMLProps<HTMLInputElement>, 'as' | 'onChange' | 'onFocus' | 'ref' | 'value'> &
     RefAttributes<HTMLInputElement>,
-) => {
+) {
   const {
     ref: forwardedRef,
     disabled,
@@ -304,8 +304,6 @@ export const TagInput = (
     </Root>
   )
 }
-
-TagInput.displayName = 'TagInput'
 
 function Tag(props: {
   enabled: boolean

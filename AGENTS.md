@@ -294,6 +294,27 @@ React 19 passes `ref` as a regular prop. Do not use `forwardRef` — destructure
 (so it is not left in a `...rest` spread) and forward it like any other prop.
 `eslint/no-restricted-imports` bans importing `forwardRef` from `react`.
 
+Prefer a named function declaration over `const X = function …` / arrow wrappers:
+
+```ts
+// preferred
+export function MyComponent(props: Props & RefAttributes<HTMLDivElement>) {
+  const {ref, ...rest} = props
+  return <div ref={ref} {...rest} />
+}
+
+// avoid
+export const MyComponent = function MyComponent(props: …) { … }
+export const MyComponent = (props: …) => { … }
+```
+
+When wrapping with `memo`, declare the component as a function first, then memoize:
+
+```ts
+function MyComponent(props: …) { … }
+export const MyComponentMemo = memo(MyComponent)
+```
+
 For typings, include `ref` on the props type: stop omitting `'ref'` from `HTMLProps` /
 `ComponentProps`, or intersect with `RefAttributes<T>`. Avoid `PropsWithRef` — in `@types/react`
 19 it is a deprecated identity alias and trips `typescript/no-deprecated`.

@@ -81,13 +81,13 @@ export function getRangePosition(range: LayerRange, index: number): rangePositio
   return undefined
 }
 
-export const GlobalPerspectiveMenuItem = (
+export function GlobalPerspectiveMenuItem(
   props: {
     release: ReleaseDocument | 'published' | typeof LATEST
     rangePosition: rangePosition
     menuItemProps?: ReleasesNavMenuItemPropsGetter
   } & RefAttributes<HTMLDivElement>,
-) => {
+) {
   const {ref, release, rangePosition} = props
 
   const {
@@ -231,5 +231,3 @@ export const GlobalPerspectiveMenuItem = (
     </GlobalPerspectiveMenuItemIndicator>
   )
 }
-
-GlobalPerspectiveMenuItem.displayName = 'GlobalPerspectiveMenuItem'

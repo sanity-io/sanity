@@ -29,14 +29,14 @@ vi.mock('../../../../i18n/hooks/useTranslation', () => ({
 
 vi.mock('../../../../../ui-components/popover/Popover', async (importOriginal) => {
   const mod = (await importOriginal()) as Record<string, unknown>
-  const Forward = function PopoverCapture(props: UIPopoverProps & RefAttributes<HTMLDivElement>) {
+  function PopoverCapture(props: UIPopoverProps & RefAttributes<HTMLDivElement>) {
     const {ref, floatingBoundary} = props
     useLayoutEffect(() => {
       lastPopoverProps = {floatingBoundary}
     }, [floatingBoundary])
     return <div ref={ref} data-testid="popover-capture" />
   }
-  return {...mod, Popover: Forward}
+  return {...mod, Popover: PopoverCapture}
 })
 
 function Harness() {

@@ -3,7 +3,7 @@ import {memo, type RefAttributes} from 'react'
 
 import {SelectAssetsDialog} from './SelectAssetsDialog'
 
-const DatasetAssetSourceComponent = function DatasetAssetSourceComponent(
+function DatasetAssetSourceComponent(
   props: AssetSourceComponentProps & RefAttributes<HTMLDivElement>,
 ) {
   const {ref, action = 'select'} = props

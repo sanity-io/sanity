@@ -101,9 +101,7 @@ const CardLoadMore = styled(Card)`
   z-index: 200;
 `
 
-const SelectAssetsComponent = function SelectAssetsComponent(
-  props: AssetSourceComponentProps & RefAttributes<HTMLDivElement>,
-) {
+function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<HTMLDivElement>) {
   const {
     ref,
     selectedAssets,

@@ -3,7 +3,7 @@ import {type RefAttributes} from 'react'
 import {Tooltip, type TooltipProps} from '../../ui-components/tooltip/Tooltip'
 
 /** @internal */
-export const TooltipOfDisabled = function DisabledTooltip({
+export function TooltipOfDisabled({
   ref,
   children,
   content,

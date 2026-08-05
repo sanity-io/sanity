@@ -114,7 +114,7 @@ vi.mock('../../../i18n/Translate', () => ({
 
 vi.mock('../../../../ui-components/popover/Popover', async (importOriginal) => {
   const mod = (await importOriginal()) as Record<string, unknown>
-  const Forward = function PopoverCapture(props: UIPopoverProps & {ref?: Ref<HTMLDivElement>}) {
+  function PopoverCapture(props: UIPopoverProps & {ref?: Ref<HTMLDivElement>}) {
     const {ref} = props
     useLayoutEffect(() => {
       lastPopoverProps = {
@@ -124,7 +124,7 @@ vi.mock('../../../../ui-components/popover/Popover', async (importOriginal) => {
     }, [props.floatingBoundary, props.referenceBoundary])
     return <div ref={ref} data-testid="popover-capture" data-floating-ui-role="popover" />
   }
-  return {...mod, Popover: Forward}
+  return {...mod, Popover: PopoverCapture}
 })
 
 /**

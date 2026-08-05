@@ -47,7 +47,7 @@ export interface VisionCodeMirrorHandle {
   resetEditorContent: (newContent: string) => void
 }
 
-export const VisionCodeMirror = ({
+export function VisionCodeMirror({
   ref,
   onChange,
   initialValue: initialValueProp,
@@ -55,7 +55,7 @@ export const VisionCodeMirror = ({
 }: Pick<ReactCodeMirrorProps, 'onChange'> & {
   initialValue: ReactCodeMirrorProps['value']
   extensions: Extension[]
-} & RefAttributes<VisionCodeMirrorHandle>) => {
+} & RefAttributes<VisionCodeMirrorHandle>) {
   // The value prop is only passed for initial value, and is not updated when the parent component updates the value.
   // If you need to update the value, use the resetEditorContent function.
   const [initialValue] = useState(initialValueProp)
@@ -97,6 +97,3 @@ export const VisionCodeMirror = ({
     </EditorRoot>
   )
 }
-
-// Add display name
-VisionCodeMirror.displayName = 'VisionCodeMirror'

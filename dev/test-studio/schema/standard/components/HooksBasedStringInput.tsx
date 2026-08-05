@@ -2,7 +2,7 @@ import {Inline, Text} from '@sanity/ui'
 import {useState, type RefAttributes} from 'react'
 import {set, type StringInputProps} from 'sanity'
 
-export const HooksBasedStringInput = (props: StringInputProps & RefAttributes<any>) => {
+export function HooksBasedStringInput(props: StringInputProps & RefAttributes<any>) {
   const {ref, value, schemaType, onChange} = props
   const [isEditing, setIsEditing] = useState(false)
 
@@ -26,5 +26,3 @@ export const HooksBasedStringInput = (props: StringInputProps & RefAttributes<an
     </Inline>
   )
 }
-
-HooksBasedStringInput.displayName = 'HooksBasedStringInput'
