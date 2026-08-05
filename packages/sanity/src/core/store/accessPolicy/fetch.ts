@@ -63,10 +63,13 @@ async function fetchAccessPoliciesBatch(params: {
 /**
  * Creates a Media Library-specific client with an explicitly configured API
  * host that includes the project ID in the subdomain. This is to satisfy CORS
- * requirements when performing CDN access policy checks, as browser requests
- * will fail against the global host because it does not include CORS headers.
+ * requirements, as browser requests will fail against the global host because
+ * it does not include CORS headers. (Setting `resource` on a client makes it
+ * ignore `useProjectHostname` and target the global API host.)
+ *
+ * @internal
  */
-function createMediaLibraryClient(client: SanityClient, libraryId: string): SanityClient {
+export function createMediaLibraryClient(client: SanityClient, libraryId: string): SanityClient {
   const {apiHost: base, projectId: subdomain} = client.config()
 
   if (!subdomain) {

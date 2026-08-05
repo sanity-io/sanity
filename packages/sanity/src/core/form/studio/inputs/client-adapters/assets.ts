@@ -5,6 +5,7 @@ import {catchError, map, mergeMap, startWith} from 'rxjs/operators'
 
 import {type VideoAsset} from '../../../../../media-library/plugin/schemas/types'
 import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
+import {createMediaLibraryClient} from '../../../../store/accessPolicy/fetch'
 import {sourceName as MEDIA_LIBRARY_SOURCE_NAME} from '../../assetSourceMediaLibrary'
 import {DEFAULT_API_VERSION} from '../../assetSourceMediaLibrary/constants'
 import {type UploadOptions} from '../../uploads/types'
@@ -235,11 +236,9 @@ export function observeVideoAsset(
     return observableOf(minimalAsset)
   }
 
-  const resourceConfig = {
-    resource: {type: 'media-library' as const, id: mediaLibraryId},
-  }
-  const mlClient = client.withConfig({
-    ...resourceConfig,
+  // Uses the project API host (projectId subdomain) rather than the global
+  // host, which lacks the project's CORS headers and fails in the browser.
+  const mlClient = createMediaLibraryClient(client, mediaLibraryId).withConfig({
     apiVersion: DEFAULT_API_VERSION,
   })
 
