@@ -10,18 +10,19 @@ import {type SanityClient} from '@sanity/client'
  * @internal
  */
 export function createMediaLibraryClient(client: SanityClient, libraryId: string): SanityClient {
-  const {apiHost: base, projectId: subdomain} = client.config()
+  const {apiHost, projectId} = client.config()
 
-  if (!subdomain) {
+  if (!projectId) {
     throw new Error('Cannot create Media Library client: missing projectId in client config')
   }
 
-  const baseUrl = new URL(base)
-  baseUrl.hostname = `${subdomain}.${baseUrl.hostname}`
-  const apiHost = baseUrl.toString()
+  const baseUrl = new URL(apiHost)
+  baseUrl.hostname = `${projectId}.${baseUrl.hostname}`
 
   return client.withConfig({
-    apiHost,
+    // `origin` (rather than `toString()`) avoids a trailing slash and drops
+    // any pathname/search/hash that may have been configured on `apiHost`
+    apiHost: baseUrl.origin,
     resource: {
       id: libraryId,
       type: 'media-library',
