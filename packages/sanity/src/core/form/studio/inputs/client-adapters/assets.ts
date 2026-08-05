@@ -5,7 +5,7 @@ import {catchError, map, mergeMap, startWith} from 'rxjs/operators'
 
 import {type VideoAsset} from '../../../../../media-library/plugin/schemas/types'
 import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
-import {createMediaLibraryClient} from '../../../../store/accessPolicy/fetch'
+import {createMediaLibraryClient} from '../../../../util/createMediaLibraryClient'
 import {sourceName as MEDIA_LIBRARY_SOURCE_NAME} from '../../assetSourceMediaLibrary'
 import {DEFAULT_API_VERSION} from '../../assetSourceMediaLibrary/constants'
 import {type UploadOptions} from '../../uploads/types'
