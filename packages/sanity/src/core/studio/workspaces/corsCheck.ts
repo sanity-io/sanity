@@ -1,7 +1,35 @@
-import {type SanityClient} from '@sanity/client'
+import {type InitializedClientConfig, type SanityClient} from '@sanity/client'
 import type QuickLRU from 'quick-lru'
 
 import {type CorsProbeOutcome} from './WorkspacesProvider'
+
+/**
+ * The project-scoped API base url for `config` — the host whose CORS policy
+ * the studio's allowlist actually governs.
+ *
+ * Normally that's just `config.url`, which `@sanity/client` already builds
+ * from the project subdomain. But a client scoped to a global resource
+ * (`resource: {type: 'media-library' | 'canvas' | 'dataset', …}`) drops the
+ * subdomain and points at the global host, which has no project context: its
+ * `/check/cors` answers `allowed: false` for every origin. Probing it would
+ * report a CORS misconfiguration on any studio whose Media Library request
+ * failed, so rebuild the project url the way `initConfig` does instead.
+ *
+ * Returns `null` when the project url can't be derived — no probe is better
+ * than a probe against the wrong host.
+ */
+function projectApiUrl(config: InitializedClientConfig): string | null {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  if (!config.resource) return config.url
+  if (!config.projectId) return null
+  try {
+    const host = new URL(config.apiHost)
+    host.hostname = `${config.projectId}.${host.hostname}`
+    return `${host.origin}/v${config.apiVersion}`
+  } catch {
+    return null
+  }
+}
 
 /**
  * Cache of in-flight / recently-settled `/check/cors` probes, keyed by
@@ -30,8 +58,8 @@ export function checkCors(
   options: {force?: boolean} = {},
 ): Promise<CorsProbeOutcome | null> {
   const config = client.config()
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {projectId, apiHost, url: baseUrl} = config
+  const {projectId, apiHost} = config
+  const baseUrl = projectApiUrl(config)
   if (!projectId || !baseUrl) return Promise.resolve(null)
 
   const cacheKey = `${projectId}@${apiHost ?? ''}`

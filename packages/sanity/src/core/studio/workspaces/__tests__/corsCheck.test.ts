@@ -1,19 +1,37 @@
-import {type SanityClient} from '@sanity/client'
+import {type ClientConfig, type SanityClient} from '@sanity/client'
 import QuickLRU from 'quick-lru'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {type CorsCheckCache, checkCors} from '../corsCheck'
 
+type ClientConfigResource = NonNullable<ClientConfig['resource']>
+
 function fakeClient(
-  config: {projectId?: string; apiHost?: string; url?: string} = {},
+  config: {
+    projectId?: string
+    apiHost?: string
+    apiVersion?: string
+    url?: string
+    resource?: ClientConfigResource
+  } = {},
 ): SanityClient {
   const resolved = {
     projectId: 'abc123',
     apiHost: 'https://api.sanity.io',
+    apiVersion: '1',
     url: 'https://abc123.api.sanity.io/v1',
     ...config,
   }
   return {config: () => resolved} as unknown as SanityClient
+}
+
+/**
+ * A client scoped to a global resource (Media Library, Canvas, cross-project
+ * dataset). `@sanity/client` drops the project subdomain as soon as `resource`
+ * is set, so `config.url` points at the global host.
+ */
+function fakeResourceClient(resource: ClientConfigResource): SanityClient {
+  return fakeClient({resource, apiVersion: 'X', url: 'https://api.sanity.io/vX'})
 }
 
 function makeCache(): CorsCheckCache {
@@ -86,6 +104,96 @@ describe('checkCors', () => {
       method: 'GET',
       credentials: 'omit',
     })
+  })
+
+  it('probes the project host for a resource-scoped client', async () => {
+    // A resource-scoped client talks to the global host, which has no project
+    // context and so always answers `allowed: false`. Probing it would report
+    // a CORS misconfiguration for every studio whose Media Library request
+    // fails, and take over the screen with the "register Studio" prompt.
+    const fetchMock = vi.fn(
+      async () =>
+        ({
+          ok: true,
+          json: async () => ({result: {allowed: true, withCredentials: true}}),
+        }) as Response,
+    )
+    globalThis.fetch = fetchMock as never
+
+    await checkCors(fakeResourceClient({type: 'media-library', id: 'ml123'}), makeCache())
+
+    expect(fetchMock).toHaveBeenCalledWith('https://abc123.api.sanity.io/vX/check/cors', {
+      method: 'GET',
+      credentials: 'omit',
+    })
+  })
+
+  it('probes the project host on a custom apiHost, port and all', async () => {
+    const fetchMock = vi.fn(
+      async () => ({ok: true, json: async () => ({result: {allowed: true}})}) as Response,
+    )
+    globalThis.fetch = fetchMock as never
+
+    await checkCors(
+      fakeClient({
+        apiHost: 'http://api.sanity.work:8080',
+        apiVersion: '2025-02-19',
+        resource: {type: 'canvas', id: 'cnv123'},
+        url: 'http://api.sanity.work:8080/v2025-02-19',
+      }),
+      makeCache(),
+    )
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://abc123.api.sanity.work:8080/v2025-02-19/check/cors',
+      {method: 'GET', credentials: 'omit'},
+    )
+  })
+
+  it('reuses one cache entry across project-scoped and resource-scoped clients', async () => {
+    // The cache is keyed by `projectId@apiHost`, which is identical for both.
+    // That is only sound because both now probe the project host — otherwise
+    // the resource-scoped client would file a global-host verdict under the
+    // project's key and poison every later probe behind it.
+    const fetchMock = vi.fn(
+      async () =>
+        ({
+          ok: true,
+          json: async () => ({result: {allowed: false, withCredentials: false}}),
+        }) as Response,
+    )
+    globalThis.fetch = fetchMock as never
+    const cache = makeCache()
+
+    const fromResource = await checkCors(
+      fakeResourceClient({type: 'media-library', id: 'ml123'}),
+      cache,
+    )
+    const fromProject = await checkCors(fakeClient(), cache)
+
+    expect(fromResource).toEqual(fromProject)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://abc123.api.sanity.io/vX/check/cors',
+      expect.anything(),
+    )
+  })
+
+  it('returns null for a resource-scoped client with no resolvable project host', async () => {
+    const fetchMock = vi.fn()
+    globalThis.fetch = fetchMock as never
+
+    const result = await checkCors(
+      fakeClient({
+        apiHost: 'not a url',
+        resource: {type: 'media-library', id: 'ml123'},
+        url: 'https://api.sanity.io/vX',
+      }),
+      makeCache(),
+    )
+
+    expect(result).toBeNull()
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   it('evicts a positive verdict after settle so a later failure re-probes', async () => {

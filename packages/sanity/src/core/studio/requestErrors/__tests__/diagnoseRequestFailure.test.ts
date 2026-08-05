@@ -10,7 +10,25 @@ function fakeClient(): SanityClient {
     config: () => ({
       projectId: 'abc123',
       apiHost: 'https://api.sanity.io',
+      apiVersion: '1',
       url: 'https://abc123.api.sanity.io/v1',
+    }),
+  } as unknown as SanityClient
+}
+
+/**
+ * A client scoped to a global resource — e.g. the Media Library client behind
+ * a video field. `@sanity/client` routes these at the global host, so
+ * `config.url` carries no project subdomain.
+ */
+function fakeMediaLibraryClient(): SanityClient {
+  return {
+    config: () => ({
+      projectId: 'abc123',
+      apiHost: 'https://api.sanity.io',
+      apiVersion: 'X',
+      url: 'https://api.sanity.io/vX',
+      resource: {type: 'media-library', id: 'ml123'},
     }),
   } as unknown as SanityClient
 }
@@ -79,6 +97,21 @@ describe('createRequestFailureProbe', () => {
     mockCorsFetch(200, {result: {allowed: true, withCredentials: true}})
     const probe = createRequestFailureProbe(fakeClient(), makeCache())
     expect(await probe(networkError())).toEqual({type: 'unknown'})
+  })
+
+  it('probes the project host for a resource-scoped client', async () => {
+    // The global host has no project context and answers `allowed: false` for
+    // every origin, so probing it would report a CORS misconfiguration — and
+    // take over the screen with the "register Studio" prompt — every time a
+    // Media Library request failed.
+    mockCorsFetch(200, {result: {allowed: true, withCredentials: true}})
+    const probe = createRequestFailureProbe(fakeMediaLibraryClient(), makeCache())
+
+    expect(await probe(networkError())).toEqual({type: 'unknown'})
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'https://abc123.api.sanity.io/vX/check/cors',
+      expect.anything(),
+    )
   })
 
   it('returns unknown for a non-network, non-config error', async () => {
