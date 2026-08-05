@@ -306,6 +306,10 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const debounceSelectionChange = useDebounceSelectionChange(handleSelectionChange)
 
   const handleMouseDown = useCallback(() => {
+    // A mouse press inside the editor means the selection that follows is
+    // made by the user, not restored by a re-focus, so the `blurred` guard
+    // in `handleSelectionChange` must not swallow it.
+    blurred.current = false
     startTransition(() => setMousePressed(true))
   }, [])
 
