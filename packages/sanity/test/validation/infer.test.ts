@@ -147,6 +147,24 @@ describe('schema validation inference', () => {
 
     afterEach(() => {
       client.fetch.mockReset()
+      client.withConfig.mockClear()
+    })
+
+    test('queries the library on the project host, which is the one that allows the origin', async () => {
+      client.fetch.mockImplementation(() => Promise.resolve({_id: 'image-12345-67890-png'}))
+
+      await validateDocument({
+        document: mockDocument,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        getClient,
+        getDocumentExists: () => Promise.resolve(true),
+        workspace: {schema} as Workspace,
+      })
+
+      expect(client.withConfig).toHaveBeenCalledWith({
+        apiHost: 'https://test-project.api.sanity.io',
+        resource: {type: 'media-library', id: 'abc'},
+      })
     })
 
     test("gives error if media can't be found", async () => {
