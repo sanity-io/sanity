@@ -3,7 +3,7 @@ import {CircleIcon} from '@sanity/icons/Circle'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path, type TitledListValue} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useCallback} from 'react'
+import {useCallback, type RefAttributes} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
@@ -16,12 +16,14 @@ import {TaskStatusChanged} from '../../../__telemetry__/tasks.telemetry'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 import {tasksLocaleNamespace} from '../../../i18n'
 
-const StatusMenuButton = forwardRef(function StatusMenuButton(
-  props: {value: string | undefined; options: TitledListValue<string>[]},
-  ref: ForwardedRef<HTMLButtonElement>,
+function StatusMenuButton(
+  props: {
+    value: string | undefined
+    options: TitledListValue<string>[]
+  } & RefAttributes<HTMLButtonElement>,
 ) {
   const {t} = useTranslation(tasksLocaleNamespace)
-  const {value, options, ...rest} = props
+  const {ref, value, options, ...rest} = props
   const selectedOption = options.find((option) => option.value === value)
   const icon = TASK_STATUS.find((status) => status.value === value)?.icon
   return (
@@ -35,7 +37,7 @@ const StatusMenuButton = forwardRef(function StatusMenuButton(
       mode="ghost"
     />
   )
-})
+}
 
 interface StatusSelectorProps {
   value: string | undefined

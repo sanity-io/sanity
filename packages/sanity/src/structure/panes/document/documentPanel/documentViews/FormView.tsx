@@ -1,5 +1,5 @@
 import {Box, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
-import {type FormEvent, forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
+import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
 import {
   createPatchChannel,
@@ -35,8 +35,8 @@ interface FormViewProps {
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const preventDefault = (ev: FormEvent) => ev.preventDefault()
 
-export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function FormView(props, ref) {
-  const {hidden, margins} = props
+export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) {
+  const {ref, hidden, margins} = props
 
   const {
     collapsedFieldSets,
@@ -284,7 +284,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
       </PresenceOverlay>
     </FormContainer>
   )
-})
+}
 
 function prepareMutationEvent(event: DocumentMutationEvent): PatchMsg {
   const patches = event.mutations.map((mut) => mut.patch).filter(Boolean)

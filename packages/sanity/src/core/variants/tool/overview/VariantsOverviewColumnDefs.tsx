@@ -1,5 +1,5 @@
 import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps, useMemo} from 'react'
+import {type HTMLProps, useMemo, type RefAttributes} from 'react'
 import {StateLink} from 'sanity/router'
 
 import {useTranslation, type UseTranslationResponse} from '../../../i18n/hooks/useTranslation'
@@ -48,12 +48,12 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
 
   const VariantLink = useMemo(
     () =>
-      forwardRef(function VariantLinkComponent(
-        linkProps: HTMLProps<HTMLAnchorElement>,
-        ref: ForwardedRef<HTMLAnchorElement>,
+      function VariantLinkComponent(
+        linkProps: HTMLProps<HTMLAnchorElement> & RefAttributes<HTMLAnchorElement>,
       ) {
-        return <StateLink {...linkProps} ref={ref} state={{variantId: encodedVariantId}} />
-      }),
+        const {ref, ...rest} = linkProps
+        return <StateLink {...rest} ref={ref} state={{variantId: encodedVariantId}} />
+      },
     [encodedVariantId],
   )
 

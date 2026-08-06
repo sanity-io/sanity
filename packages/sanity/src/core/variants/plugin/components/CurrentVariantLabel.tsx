@@ -1,6 +1,6 @@
 // oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
 import {Box, Flex, Button, Text} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps, useMemo} from 'react'
+import {type HTMLProps, useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -22,19 +22,19 @@ function VariantDetailLink({variant}: {variant: SystemVariant}) {
 
   const VariantLink = useMemo(
     () =>
-      forwardRef(function VariantLinkComponent(
-        linkProps: HTMLProps<HTMLAnchorElement>,
-        ref: ForwardedRef<HTMLAnchorElement>,
+      function VariantLinkComponent(
+        linkProps: HTMLProps<HTMLAnchorElement> & RefAttributes<HTMLAnchorElement>,
       ) {
+        const {ref, ...rest} = linkProps
         return (
           <OversizedButton
-            {...linkProps}
+            {...rest}
             ref={ref}
             intent={VARIANTS_INTENT}
             params={{id: encodedVariantId}}
           />
         )
-      }),
+      },
     [encodedVariantId],
   )
 

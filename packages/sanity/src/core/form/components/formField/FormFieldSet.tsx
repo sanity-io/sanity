@@ -8,14 +8,13 @@ import {
 import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   type HTMLProps,
   type ReactNode,
   useCallback,
   useImperativeHandle,
   useMemo,
   useRef,
+  type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
 
@@ -143,11 +142,13 @@ const Content = styled(Box)<{
 const EMPTY_ARRAY: never[] = []
 
 /** @internal */
-export const FormFieldSet = forwardRef(function FormFieldSet(
-  props: FormFieldSetProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
+export function FormFieldSet(
+  props: FormFieldSetProps &
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'> &
+    RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref: forwardedRef,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_comments: comments,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -290,4 +291,4 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
       </FormNodeDivergenceDetail>
     </FormRow>
   )
-})
+}

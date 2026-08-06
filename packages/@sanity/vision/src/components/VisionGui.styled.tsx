@@ -1,6 +1,6 @@
 import {Box, Card, Flex, Label, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {type ComponentProps, type ComponentPropsWithoutRef, forwardRef} from 'react'
+import {type ComponentProps, type ComponentPropsWithoutRef, type RefAttributes} from 'react'
 
 import {
   controlsContainer,
@@ -28,11 +28,12 @@ import {
   timingsTextMinHeightVar,
 } from './VisionGui.css'
 
-export const Root = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<typeof Flex>>(
-  function Root(props, ref) {
-    return <Flex {...props} ref={ref} className={root} />
-  },
-)
+export function Root({
+  ref,
+  ...props
+}: ComponentPropsWithoutRef<typeof Flex> & RefAttributes<HTMLDivElement>) {
+  return <Flex {...props} ref={ref} className={root} />
+}
 
 export function Header(props: ComponentProps<typeof Card>) {
   return <Card {...props} className={header} />

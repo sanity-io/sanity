@@ -1,9 +1,8 @@
 import {InfoFilledIcon} from '@sanity/icons/InfoFilled'
 import {Card, Stack, Text} from '@sanity/ui'
-import {forwardRef} from 'react'
 import {Translate, useTranslation} from 'sanity'
 
-export const TranslateExample = forwardRef(function TranslateExample() {
+export function TranslateExample() {
   const {t} = useTranslation('testStudio')
   return (
     <Card padding={4}>
@@ -82,4 +81,4 @@ export const TranslateExample = forwardRef(function TranslateExample() {
       </Stack>
     </Card>
   )
-})
+}

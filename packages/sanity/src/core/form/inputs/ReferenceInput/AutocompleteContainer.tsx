@@ -1,5 +1,5 @@
 import {Grid, useElementRect} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useState} from 'react'
+import {type ReactNode, type Ref, useCallback, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 const NARROW_LAYOUT = css`
@@ -14,12 +14,8 @@ const Root = styled(Grid)<{$narrow: boolean}>((props: {$narrow: boolean}) =>
   props.$narrow ? NARROW_LAYOUT : WIDE_LAYOUT,
 )
 
-export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
-  props: {
-    children: ReactNode
-  },
-  forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
+export function AutocompleteContainer(props: {children: ReactNode; ref?: Ref<HTMLDivElement>}) {
+  const {children, ref: forwardedRef} = props
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
   const handleNewRef = useCallback(
@@ -37,12 +33,12 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
 
   return (
     <Root ref={handleNewRef} gap={1} $narrow={(inputWrapperRect?.width || 480) < 480}>
-      {props.children}
+      {children}
     </Root>
   )
-})
+}
 
-function setForwardedRef<T>(ref: ForwardedRef<T>, instance: T) {
+function setForwardedRef<T>(ref: Ref<T> | undefined, instance: T) {
   if (typeof ref === 'function') {
     ref(instance)
   } else if (ref) {

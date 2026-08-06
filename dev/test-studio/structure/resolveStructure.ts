@@ -69,7 +69,6 @@ export const structure: StructureResolver = (
       S.listItem()
         .id('translate')
         .title('Translate Test')
-        // @ts-expect-error -- pre-existing, fix later
         .child(S.component(TranslateExample).id('example')),
       S.listItem()
         .title('Untitled repro')

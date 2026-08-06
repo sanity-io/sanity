@@ -8,7 +8,6 @@ import {
 import throttle from 'lodash-es/throttle.js'
 import {
   cloneElement,
-  forwardRef,
   Fragment,
   isValidElement,
   memo,
@@ -19,6 +18,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
 
@@ -102,34 +102,32 @@ const VirtualListChildBox = styled(Box) //
   width: 100%;
 `
 
-const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(function CommandList(
-  {
-    activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,
-    ariaLabel,
-    ariaMultiselectable = false,
-    autoFocus,
-    canReceiveFocus,
-    fixedHeight,
-    focusRingOffset = 0,
-    getItemDisabled,
-    getItemKey,
-    getItemSelected,
-    initialIndex,
-    initialScrollAlign = 'start',
-    inputElement,
-    itemHeight,
-    items,
-    onEndReached,
-    onEndReachedIndexOffset = 0,
-    onlyShowSelectionWhenActive,
-    overscan,
-    renderItem,
-    testId,
-    wrapAround = true,
-    ...responsivePaddingProps
-  },
+function CommandListComponent({
   ref,
-) {
+  activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,
+  ariaLabel,
+  ariaMultiselectable = false,
+  autoFocus,
+  canReceiveFocus,
+  fixedHeight,
+  focusRingOffset = 0,
+  getItemDisabled,
+  getItemKey,
+  getItemSelected,
+  initialIndex,
+  initialScrollAlign = 'start',
+  inputElement,
+  itemHeight,
+  items,
+  onEndReached,
+  onEndReachedIndexOffset = 0,
+  onlyShowSelectionWhenActive,
+  overscan,
+  renderItem,
+  testId,
+  wrapAround = true,
+  ...responsivePaddingProps
+}: CommandListProps & RefAttributes<CommandListHandle>) {
   const isMountedRef = useRef(false)
   const [commandListId] = useState(useId())
   const activeIndexRef = useRef(initialIndex ?? 0)
@@ -635,7 +633,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
       )}
     </VirtualListBox>
   )
-})
+}
 
 /**
  * Renders a Command List with support for the following:
@@ -648,9 +646,9 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
  * @internal
  */
 export const CommandList = memo(CommandListComponent)
-CommandList.displayName = 'Memo(ForwardRef(CommandList))'
+CommandList.displayName = 'Memo(CommandList)'
 
-const CommandListItemComponent = forwardRef(function CommandListItem(
+function CommandListItemComponent(
   props: {
     children: React.ReactNode
     activeIndex: number | null
@@ -663,10 +661,10 @@ const CommandListItemComponent = forwardRef(function CommandListItem(
     selected: boolean
     virtualIndex: number
     virtualRowStart: number
-  },
-  forwardedRef: React.ForwardedRef<HTMLLIElement>,
+  } & RefAttributes<HTMLLIElement>,
 ) {
   const {
+    ref: forwardedRef,
     children,
     activeIndex,
     activeItemCount,
@@ -725,10 +723,10 @@ const CommandListItemComponent = forwardRef(function CommandListItem(
       {children}
     </Stack>
   )
-})
+}
 
 const CommandListItem = memo(CommandListItemComponent)
-CommandListItem.displayName = 'Memo(ForwardRef(CommandListItem))'
+CommandListItem.displayName = 'Memo(CommandListItem)'
 
 function getItemIndicies(
   items: FIXME[],
