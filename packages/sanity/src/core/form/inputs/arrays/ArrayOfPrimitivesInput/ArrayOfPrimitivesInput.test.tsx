@@ -36,16 +36,12 @@ function createSchemaType(options: {
   max?: number
 }): ArraySchemaType {
   const {collapseItemsAfter, layout, max} = options
-  const schemaOptions =
-    collapseItemsAfter === undefined && layout === undefined
-      ? undefined
-      : {collapseItemsAfter, layout}
 
   return {
     name: 'testArray',
     jsonType: 'array',
     of: [{name: 'string', jsonType: 'string', type: {name: 'string', jsonType: 'string'}}],
-    options: schemaOptions,
+    options: {collapseItemsAfter, layout},
     validation:
       max === undefined ? undefined : [{_rules: [{flag: 'max' as const, constraint: max}]}],
   } as ArraySchemaType

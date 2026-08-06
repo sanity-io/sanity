@@ -960,7 +960,7 @@ export interface Source {
      * @beta
      */
     arrays: {
-      /** How long arrays are collapsed in the form. */
+      /** Collapsing of long arrays in the form. */
       collapseItems: {
         /** Whether long arrays are collapsed. */
         enabled: boolean
