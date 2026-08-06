@@ -34,7 +34,12 @@ export const resourceRef: Record<string, RefFunc> = {}
 
 // TODO: do we need to defer this code until the document is loaded?
 const el = document.getElementById('sanity-resource-bindings')
-const bindings: ResourceBinding[] = el ? JSON.parse(el.textContent || '[]') : []
+let bindings: ResourceBinding[]
+try {
+  bindings = el ? JSON.parse(el.textContent || '[]') : []
+} catch {
+  bindings = []
+}
 
 Object.entries(RESOURCE_MAP).forEach(([resourceType, data]) => {
   resourceRef[resourceType] = (name: string) => {
