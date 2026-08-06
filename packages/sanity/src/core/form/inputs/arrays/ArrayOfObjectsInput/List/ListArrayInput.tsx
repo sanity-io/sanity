@@ -63,11 +63,16 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   const focusPathKey = useMemo(() => getFocusedMemberKey(focusPath), [focusPath])
 
+  const focusedIndex = useMemo(
+    () => members.findIndex((member) => member.key === focusPathKey),
+    [focusPathKey, members],
+  )
+
   const {collapsible, expanded, onToggle, visibleMembers} = useCollapsibleArrayItems({
     members,
     schemaType,
     layout: 'list',
-    focusedKey: focusPathKey,
+    focusedIndex,
   })
 
   const memberKeys = useMemoCompare(

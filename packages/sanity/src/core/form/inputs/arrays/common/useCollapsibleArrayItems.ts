@@ -16,9 +16,16 @@ const GRID_LIMIT_MULTIPLIER = 2
  */
 const MIN_HIDDEN_ITEMS = 3
 
-interface CollapsibleMember {
+/**
+ * The shape the hook needs from an array member. `key` is not read, but constraining on a
+ * property every member kind has keeps generic inference working — a constraint of only optional
+ * properties is a weak type, which error members (they have no `open`) fail to satisfy.
+ *
+ * @internal
+ */
+export interface CollapsibleMember {
   key: string
-  /** Array of objects members expose whether the item is currently open for editing. */
+  /** Whether the item is currently open for editing. Only array of objects members can be open. */
   open?: boolean
 }
 
@@ -58,21 +65,27 @@ export function useCollapsibleArrayItems<TMember extends CollapsibleMember>(opti
   members: TMember[]
   schemaType: ArraySchemaType
   layout: 'list' | 'grid'
-  focusedKey?: string | number
+  /**
+   * Position of the member the focus path points at. Arrays of objects address items by `_key`
+   * and arrays of primitives by index, so callers resolve this themselves. A negative or
+   * undefined value means the focus is not inside any item.
+   */
+  focusedIndex?: number
 }): CollapsibleArrayItems<TMember> {
-  const {members, schemaType, layout, focusedKey} = options
+  const {members, schemaType, layout, focusedIndex} = options
 
   const limit = useItemLimit(schemaType, layout)
   const hiddenCount = limit === null ? 0 : Math.max(members.length - limit, 0)
   const collapsible = hiddenCount >= MIN_HIDDEN_ITEMS
 
   // Hidden members that are focused or open must be rendered regardless of the collapsed state:
-  // focus can be moved into them from outside the array (a validation marker, a deep link), and
-  // an open member hosts its own edit dialog.
+  // focus can be moved into them from outside the array (a validation marker, appending an item),
+  // and an open member hosts its own edit dialog.
   const forced = useMemo(() => {
     if (!collapsible || limit === null) return false
-    return members.slice(limit).some((member) => member.open === true || member.key === focusedKey)
-  }, [collapsible, focusedKey, limit, members])
+    if (focusedIndex !== undefined && focusedIndex >= limit) return true
+    return members.slice(limit).some((member) => member.open === true)
+  }, [collapsible, focusedIndex, limit, members])
 
   const [expanded, setExpanded] = useState(false)
   const [previouslyForced, setPreviouslyForced] = useState(false)
@@ -98,13 +111,25 @@ export function useCollapsibleArrayItems<TMember extends CollapsibleMember>(opti
 }
 
 /**
- * Resolves the key of the array member the focus path points at, if any.
+ * Resolves the `_key` of the array member the focus path points at, if any.
+ *
+ * Only arrays of objects address their items by key. Arrays of primitives use the item index,
+ * so they must resolve the focused member with {@link getFocusedItemIndex} instead.
  *
  * @internal
  */
-export function getFocusedMemberKey(focusPath: Path): string | number | undefined {
+export function getFocusedMemberKey(focusPath: Path): string | undefined {
   const segment = focusPath[0]
-  if (isKeySegment(segment)) return segment._key
-  if (typeof segment === 'number') return segment
-  return undefined
+  return isKeySegment(segment) ? segment._key : undefined
+}
+
+/**
+ * Resolves the index of the array item the focus path points at, if any. Arrays of primitives
+ * address their items by index rather than by key.
+ *
+ * @internal
+ */
+export function getFocusedItemIndex(focusPath: Path): number | undefined {
+  const segment = focusPath[0]
+  return typeof segment === 'number' ? segment : undefined
 }
