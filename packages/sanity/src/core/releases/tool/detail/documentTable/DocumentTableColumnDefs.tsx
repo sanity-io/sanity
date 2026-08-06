@@ -47,6 +47,7 @@ const MemoReleaseDocumentPreview = memo(
     releaseState?: ReleaseState
     documentRevision?: string
   }) {
+    const willUnpublish = isGoingToUnpublish(item.document)
     const variantId = getVariantIdFromDocument(item.document)
 
     return (
@@ -56,7 +57,7 @@ const MemoReleaseDocumentPreview = memo(
         releaseId={releaseId}
         releaseState={releaseState}
         documentRevision={documentRevision}
-        isGoingToUnpublish={isGoingToUnpublish(item.document)}
+        isGoingToUnpublish={willUnpublish}
         variantId={variantId}
       />
     )
