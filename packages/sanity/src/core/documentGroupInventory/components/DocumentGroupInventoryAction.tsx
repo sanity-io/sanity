@@ -10,12 +10,12 @@ import {Button as BaseButton} from '../../../ui-components/button/Button'
 import {Popover} from '../../../ui-components/popover/Popover'
 import {useVersionRelease} from '../../hooks/useVersionRelease'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {type TFunction} from '../../i18n/types'
 import {type TargetPerspective} from '../../perspective/types'
+import {usePerspective} from '../../perspective/usePerspective'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
-import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
-import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
+import {useAllVariants} from '../../variants/store/useAllVariants'
+import {getDocumentGroupInventoryActionLabel} from '../utils/getDocumentGroupInventoryActionLabel'
 
 export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{
@@ -33,6 +33,8 @@ export const DocumentGroupInventoryAction: ComponentType<
 }) => {
   const {t} = useTranslation()
   const displayedRelease = useVersionRelease(documentId)
+  const {selectedVariant} = usePerspective()
+  const {byId: variantsById} = useAllVariants()
   const buttonElement = useRef<HTMLButtonElement | null>(null)
   const popoverElement = useRef<HTMLDivElement | null>(null)
 
@@ -44,6 +46,22 @@ export const DocumentGroupInventoryAction: ComponentType<
       [versionState],
     ),
   )
+
+  const currentVersion = useObservable(
+    useMemo(
+      () =>
+        versionState.pipe(
+          map(({versions}) => versions.find((version) => version._id === documentId)),
+        ),
+      [versionState, documentId],
+    ),
+  )
+
+  const variantRef = currentVersion?._system?.variant?._ref
+  const documentVariant = variantRef ? variantsById.get(variantRef) : undefined
+  // Prefer the open document's variant; fall back to the globally selected one
+  // (same title shown in the variants navbar).
+  const variant = documentVariant ?? selectedVariant
 
   useClickOutsideEvent(
     (event) => {
@@ -77,7 +95,11 @@ export const DocumentGroupInventoryAction: ComponentType<
         <Button
           ref={buttonElement}
           data-testid="action-document-group-inventory"
-          text={variantLabel({perspective: displayedRelease?.release, t})}
+          text={getDocumentGroupInventoryActionLabel({
+            perspective: displayedRelease?.release,
+            variant,
+            t,
+          })}
           tone="neutral"
           onClick={() => setIsDocumentGroupInventoryActive(!isDocumentGroupInventoryActive)}
           icon={<VariantIcon perspective={displayedRelease.release} />}
@@ -88,36 +110,6 @@ export const DocumentGroupInventoryAction: ComponentType<
       </Popover>
     </LayerProvider>
   )
-}
-
-function variantLabel({
-  perspective,
-  t,
-}: {
-  perspective: TargetPerspective | undefined
-  t: TFunction
-}): string {
-  if (typeof perspective === 'undefined') {
-    return ''
-  }
-
-  if (isAgentBundleName(perspective)) {
-    return t('version.agent-bundle.proposed-changes')
-  }
-
-  if (isDraftPerspective(perspective)) {
-    return 'Draft'
-  }
-
-  if (isPublishedPerspective(perspective)) {
-    return 'Published'
-  }
-
-  if (typeof perspective === 'string') {
-    return perspective
-  }
-
-  return perspective.metadata.title ?? perspective._id
 }
 
 const VariantIcon: ComponentType<{perspective: TargetPerspective | undefined}> = ({

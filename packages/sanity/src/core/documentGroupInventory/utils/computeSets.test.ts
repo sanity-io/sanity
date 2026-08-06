@@ -337,5 +337,22 @@ describe('computeSets', () => {
         'Alpha audience',
       ])
     })
+
+    it('uses the short variant id when a variant definition has no title', () => {
+      const untitled = {
+        ...variantAlphaAudience,
+        metadata: undefined,
+      }
+      const versions = [variantDraft(untitled, 'scopeA')]
+
+      const meta = createMeta({
+        versions,
+        variants: new Map([[untitled._id, untitled]]),
+      })
+
+      const sets = computeSets({meta, current: [], t, variantsEnabled: true})
+
+      expect(sets[0]?.variants.map(({name}) => name)).toEqual(['alpha-audience'])
+    })
   })
 })
