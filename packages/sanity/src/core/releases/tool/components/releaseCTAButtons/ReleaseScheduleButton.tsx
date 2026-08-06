@@ -117,13 +117,12 @@ export const ReleaseScheduleButton = ({
       },
     }
 
-    if (!isEqual(newRelease, release)) {
-      void updateRelease(newRelease)
-    }
-
     // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
     const run = async () => {
       setStatus('scheduling')
+      if (!isEqual(newRelease, release)) {
+        await updateRelease(newRelease)
+      }
       await schedule(release._id, publishAt)
       telemetry.log(ScheduledRelease)
       toast.push({
