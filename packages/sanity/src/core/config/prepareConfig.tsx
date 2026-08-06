@@ -1,5 +1,5 @@
 import {fromUrl} from '@sanity/bifur-client'
-import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
+import {createClient, type ClientConfig, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
@@ -271,8 +271,7 @@ export function prepareConfig(
   config: Config | MissingConfigFile,
   options?: {
     basePath?: string
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    requestHandler?: RequestHandler
+    createStudioFetch?: (getClient: () => SanityClient) => NonNullable<ClientConfig['resolveFetch']>
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -368,7 +367,7 @@ export function prepareConfig(
       }
 
       const auth = getAuthStore(source, {
-        requestHandler: options?.requestHandler,
+        createStudioFetch: options?.createStudioFetch,
         requestErrorChannel: options?.requestErrorChannel,
         requestFailureDiagnostics: options?.requestFailureDiagnostics,
       })
@@ -435,12 +434,11 @@ export function prepareConfig(
 function getAuthStore(
   source: SourceOptions,
   {
-    requestHandler,
+    createStudioFetch,
     requestErrorChannel,
     requestFailureDiagnostics,
   }: {
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    requestHandler?: RequestHandler
+    createStudioFetch?: (getClient: () => SanityClient) => NonNullable<ClientConfig['resolveFetch']>
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -449,15 +447,21 @@ function getAuthStore(
     return source.auth
   }
 
-  const _clientFactory = source.unstable_clientFactory || createClient
+  const _clientFactory = source.unstable_clientFactory
 
   const {projectId, dataset, apiHost} = source
   return createAuthStore({
     apiHost,
     ...source.auth,
     clientFactory: (config) => {
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      return _clientFactory({...config, _requestHandler: requestHandler})
+      if (_clientFactory) return _clientFactory(config)
+
+      let client: SanityClient
+      client = createClient({
+        ...config,
+        ...(createStudioFetch ? {resolveFetch: createStudioFetch(() => client)} : {}),
+      })
+      return client
     },
     // Passed as getters so this unhashable runtime wiring stays out of the
     // auth-store memo key.

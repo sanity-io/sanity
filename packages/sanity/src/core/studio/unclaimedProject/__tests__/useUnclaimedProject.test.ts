@@ -117,8 +117,8 @@ describe('useUnclaimedProject', () => {
   })
 
   it('resolves the sole human project member for the claimed sign-in CTA', async () => {
-    mockRequest.mockImplementation(({uri}: {uri: string}) => {
-      if (uri === `/projects/${PROJECT_ID}`) {
+    mockRequest.mockImplementation(({url}: {url: string}) => {
+      if (url === `/projects/${PROJECT_ID}`) {
         return Promise.resolve({
           createdAt: CREATED_AT,
           organizationId: 'oReal',
@@ -128,8 +128,8 @@ describe('useUnclaimedProject', () => {
           ],
         })
       }
-      if (uri === '/users/claimant') return Promise.resolve({email: 'claimant@example.com'})
-      return Promise.reject(new Error(`Unexpected request: ${uri}`))
+      if (url === '/users/claimant') return Promise.resolve({email: 'claimant@example.com'})
+      return Promise.reject(new Error(`Unexpected request: ${url}`))
     })
     writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
 
@@ -140,7 +140,7 @@ describe('useUnclaimedProject', () => {
     )
     expect(mockRequest).toHaveBeenCalledWith({
       tag: 'unclaimed-project.claimant',
-      uri: '/users/claimant',
+      url: '/users/claimant',
     })
   })
 
@@ -160,7 +160,7 @@ describe('useUnclaimedProject', () => {
     await waitFor(() => expect(result.current).toEqual({status: 'claimed'}))
     expect(mockRequest).toHaveBeenCalledExactlyOnceWith({
       tag: 'unclaimed-project',
-      uri: `/projects/${PROJECT_ID}`,
+      url: `/projects/${PROJECT_ID}`,
     })
   })
 
@@ -172,7 +172,7 @@ describe('useUnclaimedProject', () => {
     await waitFor(() =>
       expect(mockRequest).toHaveBeenCalledExactlyOnceWith({
         tag: 'unclaimed-project',
-        uri: `/projects/${PROJECT_ID}`,
+        url: `/projects/${PROJECT_ID}`,
       }),
     )
     expect(result.current).toBeUndefined()

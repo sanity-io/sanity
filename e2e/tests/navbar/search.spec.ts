@@ -14,7 +14,7 @@ test('searching creates unique saved searches', async ({
   // Clear any existing recent searches to ensure a clean test state
   try {
     await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
-      uri: `/users/me/keyvalue/${SEARCH_KEY}.${dataset}`,
+      url: `/users/me/keyvalue/${SEARCH_KEY}.${dataset}`,
       method: 'DELETE',
     })
   } catch {

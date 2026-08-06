@@ -1,29 +1,29 @@
 /**
  * Dev-only client wrapper for the error playground. Composes the studio's
- * workspace `_requestHandler` so the full classification pipeline runs,
- * but substitutes a synthetic `defaultRequester` for matching demo URLs.
+ * workspace transport so the full classification pipeline runs, while
+ * retaining the synthetic request shapes used by the demo scenarios.
  *
  * Why not patch XHR / fetch directly? get-it can swap transport adapters
  * (xhr in browsers, fetch in workers, possibly more in the future). A
  * client-layer composition is transport-agnostic — it sees only the
- * rxjs Observable<HttpRequestEvent> contract, which is stable.
- *
- * Why not just override `_requestHandler` with synthesis? Because
- * `_requestHandler` is a single slot — overriding it replaces the
- * workspace handler. The classification + dialog pipeline disappears.
- * Composing means we delegate to the workspace handler, only substituting
- * the underlying HTTP at its `defaultRequester` callback.
+ * rxjs observable contract used by the test scenarios.
  */
 
-import {
-  ClientError,
-  type HttpRequestEvent,
-  type RequestHandler,
-  type RequestOptions,
-  type SanityClient,
-  ServerError,
-} from '@sanity/client'
-import {defer, Observable, throwError} from 'rxjs'
+import {ClientError, type SanityClient, ServerError} from '@sanity/client'
+import {firstValueFrom, Observable, throwError} from 'rxjs'
+
+type RequestOptions = {method?: string; url: string}
+type HttpRequestEvent =
+  | {type: 'progress'; stage: 'upload' | 'download'; percent: number; lengthComputable: boolean}
+  | {
+      type: 'response'
+      body: unknown
+      headers: Record<string, string>
+      method: string
+      statusCode: number
+      statusMessage: string
+      url: string
+    }
 
 const DEMO_PATH_PREFIX = '/demo/global-error/'
 
@@ -256,31 +256,32 @@ function responseObservable(
  * @internal
  */
 export function makeDemoClient(baseClient: SanityClient): SanityClient {
-  // Capture the workspace handler so we can delegate to it for both demo
-  // and non-demo requests. The workspace handler owns the classification +
-  // dialog pipeline; we just substitute its inner `defaultRequester`
-  // callback for matched URLs.
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const workspaceHandler = (baseClient.config() as unknown as {_requestHandler?: RequestHandler})
-    ._requestHandler
-
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const handler: RequestHandler = (req, defaultRequester, client) => {
-    const synthRequester = (opts: RequestOptions & {url: string}) => {
-      const synthetic = synthesize(opts)
-      return synthetic ?? defer(() => defaultRequester(opts))
-    }
-    if (workspaceHandler) {
-      return workspaceHandler(req, synthRequester, client)
-    }
-    // No workspace handler attached → just synthesize directly. Used in
-    // tests / standalone client setups.
-    return synthRequester(req)
+  type Fetch = (url: string, init?: {method?: string}) => Promise<Response>
+  type ClientWithFetchResolver = {
+    config(): {resolveFetch?: () => Fetch}
+    withConfig(config: {resolveFetch: () => Fetch}): SanityClient
   }
+  const client = baseClient as unknown as ClientWithFetchResolver
+  const workspaceFetch = client.config().resolveFetch?.() ?? globalThis.fetch
 
-  return baseClient.withConfig({
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    _requestHandler: handler,
+  return client.withConfig({
+    resolveFetch: () => async (url, init) => {
+      const synthetic = synthesize({
+        method: init?.method,
+        url,
+      })
+      if (!synthetic) return workspaceFetch(url, init)
+
+      const event = await firstValueFrom(synthetic)
+      if (event.type !== 'response') {
+        throw new Error('Synthetic request completed without a response')
+      }
+      return new Response(JSON.stringify(event.body), {
+        headers: event.headers,
+        status: event.statusCode,
+        statusText: event.statusMessage,
+      })
+    },
   })
 }
 

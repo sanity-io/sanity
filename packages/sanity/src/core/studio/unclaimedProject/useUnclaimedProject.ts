@@ -160,7 +160,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
 
       void client
         .request<{email?: string}>({
-          uri: `/users/${humanMembers[0].id}`,
+          url: `/users/${humanMembers[0].id}`,
           tag: 'unclaimed-project.claimant',
         })
         .then((user) => {
@@ -258,7 +258,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
     const performCheck = async () => {
       let project: ProjectResponse
       try {
-        project = await client.request({uri: `/projects/${projectId}`, tag: 'unclaimed-project'})
+        project = await client.request({url: `/projects/${projectId}`, tag: 'unclaimed-project'})
       } catch (err) {
         const statusCode = getStatusCode(err)
         const hasMintProvenance =

@@ -874,51 +874,51 @@ describe('Base features', () => {
       })
     })
 
-    test('uri validation', async () => {
+    test('url validation', async () => {
       expect(
         (
           await convertType({
             name: 'foo',
             type: 'string',
-            validation: (rule: any) => rule.uri(),
+            validation: (rule: any) => rule.url(),
           })
         ).typeDef,
       ).toMatchObject({
         validation: [
           {
             level: 'error',
-            rules: [{type: 'uri'}],
+            rules: [{type: 'url'}],
           },
         ],
       })
     })
 
-    test('uri validation with options', async () => {
+    test('url validation with options', async () => {
       expect(
         (
           await convertType({
             name: 'foo',
             type: 'string',
-            validation: (rule: any) => rule.uri({allowRelative: true}),
+            validation: (rule: any) => rule.url({allowRelative: true}),
           })
         ).typeDef,
       ).toMatchObject({
         validation: [
           {
             level: 'error',
-            rules: [{type: 'uri', allowRelative: true}],
+            rules: [{type: 'url', allowRelative: true}],
           },
         ],
       })
     })
 
-    test('uri validation serializes scheme', async () => {
+    test('url validation serializes scheme', async () => {
       expect(
         (
           await convertType({
             name: 'foo',
             type: 'string',
-            validation: (rule: any) => rule.uri({scheme: ['https', /.*foo.*/]}),
+            validation: (rule: any) => rule.url({scheme: ['https', /.*foo.*/]}),
           })
         ).typeDef,
       ).toMatchObject({
@@ -927,7 +927,7 @@ describe('Base features', () => {
             level: 'error',
             rules: [
               {
-                type: 'uri',
+                type: 'url',
                 scheme: [
                   'https',
                   {
@@ -942,52 +942,52 @@ describe('Base features', () => {
       })
     })
 
-    test('uri validation serializes relativeOnly', async () => {
+    test('url validation serializes relativeOnly', async () => {
       expect(
         (
           await convertType({
             name: 'foo',
             type: 'string',
-            validation: (rule: any) => rule.uri({relativeOnly: true}),
+            validation: (rule: any) => rule.url({relativeOnly: true}),
           })
         ).typeDef,
       ).toMatchObject({
         validation: [
           {
             level: 'error',
-            rules: [{type: 'uri', relativeOnly: true}],
+            rules: [{type: 'url', relativeOnly: true}],
           },
         ],
       })
     })
 
-    test('uri validation serializes allowCredentials', async () => {
+    test('url validation serializes allowCredentials', async () => {
       expect(
         (
           await convertType({
             name: 'foo',
             type: 'string',
-            validation: (rule: any) => rule.uri({allowCredentials: true}),
+            validation: (rule: any) => rule.url({allowCredentials: true}),
           })
         ).typeDef,
       ).toMatchObject({
         validation: [
           {
             level: 'error',
-            rules: [{type: 'uri', allowCredentials: true}],
+            rules: [{type: 'url', allowCredentials: true}],
           },
         ],
       })
     })
 
-    test('uri validation serializes all options together', async () => {
+    test('url validation serializes all options together', async () => {
       expect(
         (
           await convertType({
             name: 'foo',
             type: 'string',
             validation: (rule: any) =>
-              rule.uri({
+              rule.url({
                 scheme: ['https'],
                 allowRelative: true,
                 relativeOnly: false,
@@ -1001,7 +1001,7 @@ describe('Base features', () => {
             level: 'error',
             rules: [
               {
-                type: 'uri',
+                type: 'url',
                 scheme: ['https'],
                 allowRelative: true,
                 allowCredentials: true,
@@ -1012,60 +1012,60 @@ describe('Base features', () => {
       })
     })
 
-    test('uri validation preserves regex source for non-string schemes', async () => {
+    test('url validation preserves regex source for non-string schemes', async () => {
       expect(
         (
           await convertType({
             name: 'foo',
             type: 'string',
-            validation: (rule: any) => rule.uri({scheme: [/^https?$/]}),
+            validation: (rule: any) => rule.url({scheme: [/^https?$/]}),
           })
         ).typeDef,
       ).toMatchObject({
         validation: [
           {
             level: 'error',
-            rules: [{type: 'uri', scheme: [{type: 'regex', pattern: '^https?$'}]}],
+            rules: [{type: 'url', scheme: [{type: 'regex', pattern: '^https?$'}]}],
           },
         ],
       })
     })
 
-    test('uri validation recovers anchored regex to plain string', async () => {
-      // Rule.uri() wraps plain strings as /^str$/, and convertSchemeValue should
+    test('url validation recovers anchored regex to plain string', async () => {
+      // Rule.url() wraps plain strings as /^str$/, and convertSchemeValue should
       // recover them back to plain strings. Test with an explicit anchored regex.
       expect(
         (
           await convertType({
             name: 'foo',
             type: 'string',
-            validation: (rule: any) => rule.uri({scheme: [/^http$/]}),
+            validation: (rule: any) => rule.url({scheme: [/^http$/]}),
           })
         ).typeDef,
       ).toMatchObject({
         validation: [
           {
             level: 'error',
-            rules: [{type: 'uri', scheme: ['http']}],
+            rules: [{type: 'url', scheme: ['http']}],
           },
         ],
       })
     })
 
-    test('uri validation preserves regex flags via inline modifiers', async () => {
+    test('url validation preserves regex flags via inline modifiers', async () => {
       expect(
         (
           await convertType({
             name: 'foo',
             type: 'string',
-            validation: (rule: any) => rule.uri({scheme: [/^http$/i]}),
+            validation: (rule: any) => rule.url({scheme: [/^http$/i]}),
           })
         ).typeDef,
       ).toMatchObject({
         validation: [
           {
             level: 'error',
-            rules: [{type: 'uri', scheme: [{type: 'regex', pattern: '(?i)^http$'}]}],
+            rules: [{type: 'url', scheme: [{type: 'regex', pattern: '(?i)^http$'}]}],
           },
         ],
       })
@@ -1433,7 +1433,7 @@ describe('Base features', () => {
             options: {
               list: ['a', 'b', 'c'],
             },
-            validation: [(rule: any) => rule.uri(), (rule: any) => rule.required()],
+            validation: [(rule: any) => rule.url(), (rule: any) => rule.required()],
           },
         ],
       })
@@ -1445,7 +1445,7 @@ describe('Base features', () => {
           level: 'error',
           rules: [
             {type: 'enum', values: ['a', 'b', 'c']},
-            {type: 'uri', scheme: ['http', 'https']},
+            {type: 'url', scheme: ['http', 'https']},
           ],
         },
         {
@@ -2843,7 +2843,7 @@ describe('createSchemaFromManifestTypes', () => {
     // Descriptor format stores schemes as plain strings (e.g. "https") whereas manifest
     // format stores them as RegExp.toString() strings (e.g. "/^https$/").
     // When descriptor-format data is fed to createSchemaFromManifestTypes, plain strings
-    // must be passed through to rule.uri() which anchors them, not converted to unanchored RegExp.
+    // must be passed through to rule.url() which anchors them, not converted to unanchored RegExp.
     const schema = createSchemaFromManifestTypes({
       name: 'test',
       types: [
@@ -2855,7 +2855,7 @@ describe('createSchemaFromManifestTypes', () => {
               level: 'error',
               rules: [
                 {
-                  flag: 'uri',
+                  flag: 'url',
                   constraint: {
                     options: {
                       scheme: ['https', {type: 'regex', pattern: '(?i)^ftp$'}],
@@ -2880,7 +2880,7 @@ describe('createSchemaFromManifestTypes', () => {
         level: 'error',
         rules: [
           {
-            type: 'uri',
+            type: 'url',
             scheme: ['https', {type: 'regex', pattern: '(?i)^ftp$'}],
             allowRelative: true,
           },

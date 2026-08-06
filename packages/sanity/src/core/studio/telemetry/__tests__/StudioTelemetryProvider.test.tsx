@@ -174,7 +174,7 @@ describe('StudioTelemetryProvider', () => {
     // Verify client.request was called with enriched batch
     expect(mockClient.request).toHaveBeenCalledWith(
       expect.objectContaining({
-        uri: '/intake/batch',
+        url: '/intake/batch',
         method: 'POST',
         json: true,
         body: expect.objectContaining({

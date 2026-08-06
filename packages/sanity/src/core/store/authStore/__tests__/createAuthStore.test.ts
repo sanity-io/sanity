@@ -61,14 +61,14 @@ function createMockClientFactory(): MockClientFactoryResult {
 
   const factory = (_options: SanityClientConfig): SanityClient => {
     const client = {
-      request: vi.fn(({uri, method}: {uri: string; method?: string}) => {
-        if (uri === '/users/me') {
+      request: vi.fn(({url, method}: {url: string; method?: string}) => {
+        if (url === '/users/me') {
           if (authenticated) {
             return Promise.resolve(MOCK_USER)
           }
           return Promise.reject(create401Error())
         }
-        if (uri === '/auth/id') {
+        if (url === '/auth/id') {
           if (authenticated) {
             return Promise.resolve({
               id: 'mock-auth-id',
@@ -77,10 +77,10 @@ function createMockClientFactory(): MockClientFactoryResult {
           }
           return Promise.reject(create401Error())
         }
-        if (uri === '/auth/fetch') {
+        if (url === '/auth/fetch') {
           return Promise.resolve({token: 'mock-exchanged-token'})
         }
-        if (uri === '/auth/logout' && method === 'POST') {
+        if (url === '/auth/logout' && method === 'POST') {
           return Promise.resolve({ok: true})
         }
         return Promise.resolve({})
@@ -118,17 +118,17 @@ function createCredentialAwareClientFactory(opts: {
       options.token === opts.token || (options.withCredentials === true && opts.cookieValid)
 
     return {
-      request: vi.fn(({uri}: {uri: string}) => {
-        if (uri === '/auth/fetch') return Promise.resolve({token: opts.token})
-        if (uri === '/auth/logout') return Promise.resolve({ok: true})
+      request: vi.fn(({url}: {url: string}) => {
+        if (url === '/auth/fetch') return Promise.resolve({token: opts.token})
+        if (url === '/auth/logout') return Promise.resolve({ok: true})
 
-        if (uri === '/auth/id') {
+        if (url === '/auth/id') {
           return authed()
             ? Promise.resolve({id: 'mock-auth-id', expiry: Math.floor(Date.now() / 1000) + 3600})
             : Promise.reject(create401Error())
         }
 
-        if (uri === '/users/me') {
+        if (url === '/users/me') {
           return authed() ? Promise.resolve(MOCK_USER) : Promise.reject(create401Error())
         }
 
@@ -733,12 +733,12 @@ describe('createAuthStore: cross-tab sync', () => {
       let usersMeProbes = 0
       const factory = (_options: SanityClientConfig): SanityClient =>
         ({
-          request: vi.fn(({uri}: {uri: string}) => {
-            if (uri === '/users/me') {
+          request: vi.fn(({url}: {url: string}) => {
+            if (url === '/users/me') {
               usersMeProbes += 1
               return Promise.resolve(MOCK_USER)
             }
-            if (uri === '/auth/id') {
+            if (url === '/auth/id') {
               return Promise.resolve({id: 'x', expiry: Math.floor(Date.now() / 1000) + 3600})
             }
             return Promise.resolve({})
@@ -783,15 +783,15 @@ describe('createAuthStore: cross-tab sync', () => {
           // Mirrors @sanity/client: withConfig merges config and returns a new
           // client. The fix calls this with `_requestHandler: undefined`.
           withConfig: (next: SanityClientConfig) => makeClient({...options, ...next}),
-          request: vi.fn(({uri, method}: {uri: string; method?: string}) => {
-            if (uri === '/auth/logout' && method === 'POST') return Promise.resolve({ok: true})
-            if (uri === '/users/me') {
+          request: vi.fn(({url, method}: {url: string; method?: string}) => {
+            if (url === '/auth/logout' && method === 'POST') return Promise.resolve({ok: true})
+            if (url === '/users/me') {
               if (sessionValid) return Promise.resolve(MOCK_USER)
               // A 401 on a middleware-bearing client is parked forever; on a
               // stripped client it rejects normally (the real behavior).
               return middlewareActive ? new Promise(() => {}) : Promise.reject(create401Error())
             }
-            if (uri === '/auth/id') {
+            if (url === '/auth/id') {
               return sessionValid
                 ? Promise.resolve({id: 'x', expiry: Math.floor(Date.now() / 1000) + 3600})
                 : Promise.reject(create401Error())
@@ -804,9 +804,7 @@ describe('createAuthStore: cross-tab sync', () => {
 
       // prepareConfig installs `_requestHandler` on every studio client; emulate
       // that so the probe client carries the parking middleware by default.
-      const factory = (options: SanityClientConfig): SanityClient =>
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        makeClient({...options, _requestHandler: (() => {}) as never})
+      const factory = (options: SanityClientConfig): SanityClient => makeClient(options)
 
       const store = _createAuthStore({
         projectId: PROJECT_ID,
@@ -857,19 +855,19 @@ describe('createAuthStore: cross-tab sync', () => {
         const client = {
           config: () => options,
           withConfig: (next: SanityClientConfig) => makeClient({...options, ...next}),
-          request: vi.fn(({uri, method}: {uri: string; method?: string}) => {
-            if (uri === '/auth/logout' && method === 'POST') {
+          request: vi.fn(({url, method}: {url: string; method?: string}) => {
+            if (url === '/auth/logout' && method === 'POST') {
               // Session already gone: the logout endpoint 401s. Parked forever
               // on a middleware-bearing client; rejects on a stripped one.
               return middlewareActive ? new Promise(() => {}) : Promise.reject(create401Error())
             }
-            if (uri === '/users/me') {
+            if (url === '/users/me') {
               if (sessionValid) return Promise.resolve(MOCK_USER)
               // A 401 on a middleware-bearing client is parked forever; on a
               // stripped (probe) client it rejects normally.
               return middlewareActive ? new Promise(() => {}) : Promise.reject(create401Error())
             }
-            if (uri === '/auth/id') {
+            if (url === '/auth/id') {
               return sessionValid
                 ? Promise.resolve({id: 'x', expiry: Math.floor(Date.now() / 1000) + 3600})
                 : Promise.reject(create401Error())
@@ -882,9 +880,7 @@ describe('createAuthStore: cross-tab sync', () => {
 
       // prepareConfig installs `_requestHandler` on every studio client; emulate
       // that so the logout clients carry the parking middleware by default.
-      const factory = (options: SanityClientConfig): SanityClient =>
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        makeClient({...options, _requestHandler: (() => {}) as never})
+      const factory = (options: SanityClientConfig): SanityClient => makeClient(options)
 
       const store = _createAuthStore({
         projectId: PROJECT_ID,
@@ -932,16 +928,16 @@ describe('createAuthStore: cross-tab sync', () => {
         const client = {
           config: () => options,
           withConfig: (next: SanityClientConfig) => makeClient({...options, ...next}),
-          request: vi.fn(({uri, method}: {uri: string; method?: string}) => {
-            if (uri === '/auth/fetch') return Promise.resolve({token: TOKEN})
-            if (uri === '/auth/logout' && method === 'POST') return Promise.resolve({ok: true})
+          request: vi.fn(({url, method}: {url: string; method?: string}) => {
+            if (url === '/auth/fetch') return Promise.resolve({token: TOKEN})
+            if (url === '/auth/logout' && method === 'POST') return Promise.resolve({ok: true})
             // The cookie is never established, so /auth/id 401s. Parked forever
             // on a middleware-bearing client; rejects on a stripped one.
-            if (uri === '/auth/id') {
+            if (url === '/auth/id') {
               return middlewareActive ? new Promise(() => {}) : Promise.reject(create401Error())
             }
             // /users/me authenticates only via the exchanged token.
-            if (uri === '/users/me') {
+            if (url === '/users/me') {
               return usesToken ? Promise.resolve(MOCK_USER) : Promise.reject(create401Error())
             }
             return Promise.resolve({})
@@ -951,9 +947,7 @@ describe('createAuthStore: cross-tab sync', () => {
       }
 
       // prepareConfig installs `_requestHandler` on every studio client.
-      const factory = (options: SanityClientConfig): SanityClient =>
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        makeClient({...options, _requestHandler: (() => {}) as never})
+      const factory = (options: SanityClientConfig): SanityClient => makeClient(options)
 
       let sessionIdConsumed = false
       const getSessionId = () => {
@@ -988,8 +982,8 @@ describe('createAuthStore: cross-tab sync', () => {
       // reported, and the probe resolves as logged-out (no thrown boot error).
       const factory = (_options: SanityClientConfig): SanityClient =>
         ({
-          request: vi.fn(({uri}: {uri: string}) => {
-            if (uri === '/users/me') {
+          request: vi.fn(({url}: {url: string}) => {
+            if (url === '/users/me') {
               return Promise.reject(
                 Object.assign(new Error('Failed to fetch'), {isNetworkError: true}),
               )
@@ -1140,11 +1134,11 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
   it('resolves promptly with success: false when the exchange fails, without waiting for state', async () => {
     const factory = (_options: SanityClientConfig): SanityClient =>
       ({
-        request: vi.fn(({uri}: {uri: string}) => {
-          if (uri === '/auth/fetch') {
+        request: vi.fn(({url}: {url: string}) => {
+          if (url === '/auth/fetch') {
             return Promise.reject(new Error('sid expired'))
           }
-          if (uri === '/users/me') return Promise.reject(create401Error())
+          if (url === '/users/me') return Promise.reject(create401Error())
           return Promise.resolve({})
         }),
       }) as unknown as SanityClient
@@ -1173,9 +1167,9 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
     try {
       const factory = (_options: SanityClientConfig): SanityClient =>
         ({
-          request: vi.fn(({uri}: {uri: string}) => {
-            if (uri === '/auth/fetch') return Promise.resolve({token: 'exchanged-token'})
-            if (uri === '/auth/id') {
+          request: vi.fn(({url}: {url: string}) => {
+            if (url === '/auth/fetch') return Promise.resolve({token: 'exchanged-token'})
+            if (url === '/auth/id') {
               return Promise.resolve({id: 'x', expiry: Math.floor(Date.now() / 1000) + 3600})
             }
             // /users/me hangs: authState$ never emits a post-exchange state.
@@ -1212,15 +1206,15 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
     const TOKEN = 'valid-exchanged-token'
     const factory = (options: SanityClientConfig): SanityClient =>
       ({
-        request: vi.fn(({uri}: {uri: string}) => {
-          if (uri === '/auth/fetch') {
+        request: vi.fn(({url}: {url: string}) => {
+          if (url === '/auth/fetch') {
             exchangeCount += 1
             return Promise.resolve({token: TOKEN})
           }
-          if (uri === '/auth/id') {
+          if (url === '/auth/id') {
             return Promise.resolve({id: 'x', expiry: Math.floor(Date.now() / 1000) + 3600})
           }
-          if (uri === '/users/me') {
+          if (url === '/users/me') {
             return options.token === TOKEN
               ? Promise.resolve(MOCK_USER)
               : Promise.reject(create401Error())
@@ -1282,10 +1276,10 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
     const TOKEN = 'valid-exchanged-token'
     const factory = (options: SanityClientConfig): SanityClient =>
       ({
-        request: vi.fn(({uri}: {uri: string}) => {
-          if (uri === '/auth/fetch') return Promise.resolve({token: TOKEN})
-          if (uri === '/auth/id') return Promise.reject(new Error('transient server error'))
-          if (uri === '/users/me') {
+        request: vi.fn(({url}: {url: string}) => {
+          if (url === '/auth/fetch') return Promise.resolve({token: TOKEN})
+          if (url === '/auth/id') return Promise.reject(new Error('transient server error'))
+          if (url === '/users/me') {
             return options.token === TOKEN
               ? Promise.resolve(MOCK_USER)
               : Promise.reject(create401Error())
@@ -1317,10 +1311,10 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
     // times out if that wait regresses.
     const factory = (_options: SanityClientConfig): SanityClient =>
       ({
-        request: vi.fn(({uri}: {uri: string}) => {
-          if (uri === '/auth/fetch') return Promise.resolve({token: ''})
-          if (uri === '/auth/id') return Promise.reject(create401Error())
-          if (uri === '/users/me') return Promise.reject(create401Error())
+        request: vi.fn(({url}: {url: string}) => {
+          if (url === '/auth/fetch') return Promise.resolve({token: ''})
+          if (url === '/auth/id') return Promise.reject(create401Error())
+          if (url === '/users/me') return Promise.reject(create401Error())
           return Promise.resolve({})
         }),
       }) as unknown as SanityClient
@@ -1349,9 +1343,9 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
     let probesWithToken = 0
     const factory = (options: SanityClientConfig): SanityClient =>
       ({
-        request: vi.fn(({uri}: {uri: string}) => {
-          if (uri === '/auth/fetch') return Promise.resolve({token: TOKEN})
-          if (uri === '/users/me') {
+        request: vi.fn(({url}: {url: string}) => {
+          if (url === '/auth/fetch') return Promise.resolve({token: TOKEN})
+          if (url === '/users/me') {
             if (options.token === TOKEN) {
               probesWithToken += 1
               return Promise.resolve(MOCK_USER)
@@ -1424,16 +1418,16 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
     let usersMeCalls = 0
     const factory = (_options: SanityClientConfig): SanityClient =>
       ({
-        request: vi.fn(({uri}: {uri: string}) => {
-          if (uri === '/auth/fetch') {
+        request: vi.fn(({url}: {url: string}) => {
+          if (url === '/auth/fetch') {
             return Promise.resolve({token: 'token-unused-in-cookie-mode'})
           }
-          if (uri === '/auth/id') {
+          if (url === '/auth/id') {
             return cookieValid
               ? Promise.resolve({id: 'mock-auth-id', expiry: Math.floor(Date.now() / 1000) + 3600})
               : Promise.reject(create401Error())
           }
-          if (uri === '/users/me') {
+          if (url === '/users/me') {
             usersMeCalls += 1
             // The first call is the initial probe: held pending until the
             // test releases it, after the callback has settled the channel.
@@ -1487,15 +1481,15 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
     let currentUser: CurrentUser = MOCK_USER
     const factory = (_options: SanityClientConfig): SanityClient =>
       ({
-        request: vi.fn(({uri}: {uri: string}) => {
-          if (uri === '/auth/fetch') return Promise.resolve({token: 'exchanged-token'})
-          if (uri === '/auth/id') {
+        request: vi.fn(({url}: {url: string}) => {
+          if (url === '/auth/fetch') return Promise.resolve({token: 'exchanged-token'})
+          if (url === '/auth/id') {
             return Promise.resolve({
               id: 'mock-auth-id',
               expiry: Math.floor(Date.now() / 1000) + 3600,
             })
           }
-          if (uri === '/users/me') return Promise.resolve(currentUser)
+          if (url === '/users/me') return Promise.resolve(currentUser)
           return Promise.resolve({})
         }),
       }) as unknown as SanityClient
@@ -1544,15 +1538,15 @@ describe('createAuthStore: handleCallbackUrl settle contract', () => {
     let currentUser: CurrentUser = MOCK_USER
     const factory = (_options: SanityClientConfig): SanityClient =>
       ({
-        request: vi.fn(({uri}: {uri: string}) => {
-          if (uri === '/auth/fetch') return Promise.resolve({token: 'exchanged-token'})
-          if (uri === '/auth/id') {
+        request: vi.fn(({url}: {url: string}) => {
+          if (url === '/auth/fetch') return Promise.resolve({token: 'exchanged-token'})
+          if (url === '/auth/id') {
             return Promise.resolve({
               id: 'mock-auth-id',
               expiry: Math.floor(Date.now() / 1000) + 3600,
             })
           }
-          if (uri === '/users/me') return Promise.resolve(currentUser)
+          if (url === '/users/me') return Promise.resolve(currentUser)
           return Promise.resolve({})
         }),
       }) as unknown as SanityClient

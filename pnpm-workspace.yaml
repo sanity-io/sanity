@@ -26,7 +26,7 @@ catalog:
   '@optique/run': ^1.1.1
   '@playwright/test': 1.62.1
   '@rolldown/plugin-babel': ^0.2.3
-  '@sanity/client': ^7.26.0
+  '@sanity/client': https://pkg.pr.new/@sanity/client@1217
   '@sanity/migrate': ^8.0.1
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.21.3
@@ -89,6 +89,7 @@ minimumReleaseAgeExclude:
   - 'get-it'
   - 'get-uri@7.0.0'
   - 'groq-js'
+  - 'nanoid@3.3.17'
   # lightningcss and its per-platform native bindings (lightningcss-linux-x64-gnu etc.) release
   # in lockstep; @sanity/tsdown-config tracks its latest so builds pick up new bindings together
   - 'lightningcss'

@@ -1,4 +1,4 @@
-import {type RequestHandler, type SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import QuickLRU from 'quick-lru'
 import {
   type ComponentType,
@@ -11,8 +11,8 @@ import {
   useState,
 } from 'react'
 import {useSyncObservable} from 'react-rx'
-import {defer, firstValueFrom, from, NEVER, Subject, type Observable} from 'rxjs'
-import {catchError, mergeMap, take, tap} from 'rxjs/operators'
+import {firstValueFrom, Subject, type Observable} from 'rxjs'
+import {take} from 'rxjs/operators'
 import {
   ConfigErrorContext,
   type ConfigErrorValue,
@@ -23,8 +23,9 @@ import {
 
 import {prepareConfig} from '../../config/prepareConfig'
 import {type Config} from '../../config/types'
-import {getApiErrorCode, isInvalidSessionError} from '../requestErrors/classify'
+import {getApiErrorCode} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
+import {createStudioFetch as createStudioFetchTransport} from '../requestErrors/createStudioFetch'
 import {
   createRequestFailureProbe,
   type RequestFailureResult,
@@ -150,7 +151,7 @@ export function WorkspacesProvider({
     [],
   )
 
-  // The request handler does two global things, both outside any caller's
+  // The transport wrapper does two global things, both outside any caller's
   // reach:
   //  1. CORS / config detection: a misconfigured origin or a missing
   //     project/dataset makes the studio unusable and no plugin can recover
@@ -166,56 +167,6 @@ export function WorkspacesProvider({
   // Everything else — network errors, 5xx, 429 — propagates to the caller
   // unchanged. Callers that cannot recover locally delegate explicitly via
   // `useStudioErrorHandler()`; the studio never decides on their behalf.
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const requestHandler: RequestHandler = useCallback(
-    (requestOptions, originalRequest, client) => {
-      return defer(() => originalRequest(requestOptions)).pipe(
-        catchError((requestError: unknown, caught) => {
-          // An invalid-session 401 means the session is no longer
-          // authenticated. Hand it to the channel — it claims the
-          // `unauthorized` state once, driving the forced logout below —
-          // and park this request, since the session is being torn down.
-          if (isInvalidSessionError(requestError)) {
-            void requestErrorChannel.handle(requestError)
-            return NEVER
-          }
-
-          // Diagnose config (missing project/dataset) and CORS failures with
-          // the shared probe — the same diagnosis the auth store's `/users/me`
-          // probe uses, so both agree regardless of which request fails first.
-          return from(createRequestFailureProbe(client, corsCache)(requestError)).pipe(
-            mergeMap((result) => {
-              if (result.type === 'unknown') {
-                // Not a config/CORS failure — re-throw so it surfaces normally.
-                throw requestError
-              }
-
-              applyRequestFailure(result, client)
-
-              // For a CORS misconfig the view polls and resolves itself: when
-              // `onCorsRetry` fires we resubscribe to `caught`.
-              if (result.type === 'cors') {
-                return corsRetry.pipe(
-                  take(1),
-                  mergeMap(() => caught.pipe(tap(() => setCorsError(undefined)))),
-                )
-              }
-
-              // Config error: park (never emit) rather than re-throw. The
-              // takeover screen replaces the workspace render, so the failed
-              // request has nowhere useful to go — and re-throwing would
-              // propagate into a live store subscription's render path (e.g.
-              // switching between two misconfigured workspaces), tripping the
-              // error boundary.
-              return NEVER
-            }),
-          )
-        }),
-      )
-    },
-    [applyRequestFailure, corsCache, corsRetry, requestErrorChannel],
-  )
-
   // Diagnostics for the auth store's `/users/me` probe, which runs on a client
   // with this request handler stripped and so can't rely on it for CORS /
   // config detection. Same classifier + the same screen-takeover side effect.
@@ -231,10 +182,25 @@ export function WorkspacesProvider({
     [applyRequestFailure, corsCache],
   )
 
+  const createStudioFetch = useCallback(
+    (getClient: () => SanityClient) => () =>
+      createStudioFetchTransport({
+        channel: requestErrorChannel,
+        diagnostics: requestFailureDiagnostics,
+        fetch: globalThis.fetch,
+        getClient,
+        waitForCorsRetry: async () => {
+          await firstValueFrom(corsRetry.pipe(take(1)))
+          setCorsError(undefined)
+        },
+      }),
+    [corsRetry, requestErrorChannel, requestFailureDiagnostics],
+  )
+
   const workspaces = useDeferredValue(
     prepareConfig(config, {
       basePath,
-      requestHandler,
+      createStudioFetch,
       requestErrorChannel,
       requestFailureDiagnostics,
     }).workspaces satisfies WorkspacesContextValue,

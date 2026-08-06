@@ -51,7 +51,7 @@ export type RequestErrorClaim =
  *
  * // 1. Thunk wrapper — the dialog's "Try again" re-invokes the thunk.
  * //    The thunk may return a promise or a (single-shot) observable:
- * const user = await attempt(() => client.request({uri: '/users/me'}), {
+ * const user = await attempt(() => client.request({url: '/users/me'}), {
  *   retryable: true,
  * })
  *

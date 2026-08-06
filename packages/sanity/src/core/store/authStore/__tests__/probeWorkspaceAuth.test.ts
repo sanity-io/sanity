@@ -40,8 +40,8 @@ function createMockFactory({
   const factory = (config: SanityClientConfig): SanityClient => {
     configs.push(config)
     return {
-      request: vi.fn(({uri}: {uri: string}) => {
-        if (uri === '/auth/id') {
+      request: vi.fn(({url}: {url: string}) => {
+        if (url === '/auth/id') {
           calls++
           if (authIdImpl) return authIdImpl(config)
           if (authenticated) {
