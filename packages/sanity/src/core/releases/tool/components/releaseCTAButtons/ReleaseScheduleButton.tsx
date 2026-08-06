@@ -100,11 +100,8 @@ export const ReleaseScheduleButton = ({
   const handleConfirmSchedule = useCallback(async () => {
     if (!publishAt) return
 
-    // Lock in the intended publish date to the date the release is being
-    // scheduled for. Without this, unscheduling later reverts the release to a
-    // previously planned date instead of the most recently scheduled one
-    // (SAPP-2726). From the menu item entry point this also switches the
-    // release type to "scheduled".
+    // Keep intendedPublishAt in step with the scheduled date, otherwise a later
+    // unschedule reverts to a previously planned date (getPublishDateFromRelease falls back to it).
     const newRelease = {
       ...release,
       metadata: {
