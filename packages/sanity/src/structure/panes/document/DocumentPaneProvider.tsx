@@ -91,8 +91,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     onFocusPath,
     onSetMaximizedPane,
     maximized = false,
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    forcedVersion,
     historyStore,
   } = props
   const {
@@ -136,25 +134,14 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const documentType = options.type
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
-  const perspective = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName, selectedVariantName, selectedPerspective} =
+    usePerspective()
 
   const workspace = useWorkspace()
   const advancedVersionControlEnabled = workspace.advancedVersionControl.enabled
   const isDraftModelEnabled = workspace.document.drafts.enabled
 
   const enhancedObjectDialogEnabled = true
-
-  const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
-    // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
-    if (forcedVersion) {
-      return forcedVersion
-    }
-
-    return {
-      selectedPerspectiveName: perspective.selectedPerspectiveName,
-      selectedReleaseId: perspective.selectedReleaseId,
-    }
-  }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
 
   const {data: releases = EMPTY_ARRAY} = useActiveReleases()
 
@@ -238,7 +225,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   // Exception: a creatable missing draft variant (server-advertised id) is editable — typing
   // creates the document seeded from the published sibling.
   const isVariantTargetReadOnly =
-    Boolean(perspective.selectedVariantName) &&
+    Boolean(selectedVariantName) &&
     targetDocumentState.status !== 'ready' &&
     !getCreatableVariantTarget(targetDocumentState)
 
@@ -260,7 +247,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         isVariantTargetReadOnly ||
         (!isPaused &&
           !isPerspectiveWriteable({
-            selectedPerspective: perspective.selectedPerspective,
+            selectedPerspective: selectedPerspective,
             isDraftModelEnabled,
             schemaType,
           }).result)
@@ -271,7 +258,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       isDeleting,
       isDraftModelEnabled,
       params.rev,
-      perspective.selectedPerspective,
+      selectedPerspective,
       isVariantTargetReadOnly,
       schemaType,
       releases,
