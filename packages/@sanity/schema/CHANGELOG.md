@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.9.1](https://github.com/sanity-io/sanity/compare/v6.9.0...v6.9.1) (2026-08-06)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^8.8.3 ([#13866](https://github.com/sanity-io/sanity/issues/13866)) ([6712f2d](https://github.com/sanity-io/sanity/commit/6712f2d6b195888c4623412e3fc59d25a6963d55))
 ## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
 
 ### Bug Fixes

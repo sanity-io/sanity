@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.9.1](https://github.com/sanity-io/sanity/compare/v6.9.0...v6.9.1) (2026-08-06)
+
+### Bug Fixes
+
+* **comments:** clear the blur guard on mouse press inside the editor ([52c2ead](https://github.com/sanity-io/sanity/commit/52c2ead16ebf4f67f7ba95d0d6b3d6cdf2387452))
+* **comments:** drop the teardown mutation of a reset editor instance ([#13887](https://github.com/sanity-io/sanity/issues/13887)) ([b8fcd61](https://github.com/sanity-io/sanity/commit/b8fcd61ef6fc70de7b7fe95927278f4dab642b04))
+* **core:** use project api host for media library video asset queries ([#13883](https://github.com/sanity-io/sanity/issues/13883)) ([1c9ab5e](https://github.com/sanity-io/sanity/commit/1c9ab5e2b136edf49b75ec31c216bfb48bc9221f))
+* **deps:** update dependency @sanity/cli to ^7.18.0 ([#13890](https://github.com/sanity-io/sanity/issues/13890)) ([38e1996](https://github.com/sanity-io/sanity/commit/38e19965306ce5672ead4ff44a686d1a54759f32))
+* **deps:** update dependency get-it to ^8.8.3 ([#13866](https://github.com/sanity-io/sanity/issues/13866)) ([6712f2d](https://github.com/sanity-io/sanity/commit/6712f2d6b195888c4623412e3fc59d25a6963d55))
+* **form:** opt hotspot preview images out of the global img reset ([#13877](https://github.com/sanity-io/sanity/issues/13877)) ([8558aff](https://github.com/sanity-io/sanity/commit/8558affb577633617f6de506e9b05f7ad84ed367))
+* **form:** resolve context-aware validation rules in inputs ([#13878](https://github.com/sanity-io/sanity/issues/13878)) ([9ad5a19](https://github.com/sanity-io/sanity/commit/9ad5a19b5fe519a7907140e2bcef4a9b52771a18))
 ## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
 
 ### Features
