@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.9.1](https://github.com/sanity-io/sanity/compare/v6.9.0...v6.9.1) (2026-08-06)
+
+### Bug Fixes
+
+* **form:** resolve context-aware validation rules in inputs ([#13878](https://github.com/sanity-io/sanity/issues/13878)) ([9ad5a19](https://github.com/sanity-io/sanity/commit/9ad5a19b5fe519a7907140e2bcef4a9b52771a18))
 ## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
 
 ### Bug Fixes

@@ -1,6 +1,6 @@
 {
   "name": "embedded-studio",
-  "version": "6.9.0",
+  "version": "6.9.1",
   "private": true,
   "scripts": {
     "build": "vite build && sanity manifest extract",
