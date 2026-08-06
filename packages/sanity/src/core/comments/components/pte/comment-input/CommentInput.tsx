@@ -128,6 +128,7 @@ export function CommentInput(props: CommentInputProps & RefAttributes<CommentInp
   const [focused, setFocused] = useState<boolean>(false)
   const editorRef = useRef<Editor | null>(null)
   const editorContainerRef = useRef<HTMLDivElement | null>(null)
+  const resetInstanceRef = useRef(false)
   const [showDiscardDialog, setShowDiscardDialog] = useState<boolean>(false)
 
   const preDivRef = useRef<HTMLDivElement | null>(null)
@@ -144,6 +145,10 @@ export function CommentInput(props: CommentInputProps & RefAttributes<CommentInp
   }, [])
 
   const resetEditorInstance = useCallback(() => {
+    // The discarded instance flushes pending mutations during teardown; drop
+    // them in `handleEvent` so a finished draft cannot overwrite the
+    // consumer's cleared draft state.
+    resetInstanceRef.current = true
     setEditorInstanceKey(keyGenerator())
   }, [])
 
@@ -152,6 +157,7 @@ export function CommentInput(props: CommentInputProps & RefAttributes<CommentInp
       // Focus the editor when ready if focusOnMount is true
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (event.type === 'ready') {
+        resetInstanceRef.current = false
         if (focusOnMount) {
           requestFocus()
         }
@@ -168,7 +174,7 @@ export function CommentInput(props: CommentInputProps & RefAttributes<CommentInp
 
       // Update the comment value whenever the comment is edited by the user.
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      if (event.type === 'mutation') {
+      if (event.type === 'mutation' && !resetInstanceRef.current) {
         onChange(event.value || EMPTY_ARRAY)
       }
     },

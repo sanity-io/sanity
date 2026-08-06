@@ -2,7 +2,12 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 const EVENT_LISTENER_OPTIONS: AddEventListenerOptions = {passive: true}
 const SCROLL_LISTENER_OPTIONS: AddEventListenerOptions = {passive: true, capture: true}
-const EMPTY_RECT = new DOMRect()
+
+function emptyRect(): DOMRect {
+  return typeof DOMRect === 'undefined'
+    ? ({x: 0, y: 0, width: 0, height: 0, top: 0, right: 0, bottom: 0, left: 0} as DOMRect)
+    : new DOMRect()
+}
 
 interface CursorElementHookOptions {
   disabled: boolean
@@ -117,7 +122,7 @@ export function useCursorElement(opts: CursorElementHookOptions): HTMLElement | 
       contextElement: rootElement ?? undefined,
       getBoundingClientRect: () => {
         const liveRect = rangeRef.current?.getBoundingClientRect()
-        return liveRect ?? cursorRect ?? EMPTY_RECT
+        return liveRect ?? cursorRect ?? emptyRect()
       },
     } as unknown as HTMLElement
   }, [cursorRect, rootElement])

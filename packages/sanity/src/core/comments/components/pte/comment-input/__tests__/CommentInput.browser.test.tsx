@@ -1,5 +1,6 @@
+import {type PortableTextBlock} from '@sanity/types'
 import {BoundaryElementProvider} from '@sanity/ui'
-import {useState} from 'react'
+import {type ReactNode, useState} from 'react'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
@@ -13,7 +14,7 @@ import {CommentsInputStory} from './CommentInputStory'
  * by this element; only the ambient floating boundary is short — matching how
  * CommentsPortableTextInput provides the PTE field root as boundary.
  */
-function ShortBoundaryProvider(props: {children: React.ReactNode}) {
+function ShortBoundaryProvider(props: {children: ReactNode}) {
   const [element, setElement] = useState<HTMLDivElement | null>(null)
 
   return (
@@ -104,5 +105,37 @@ describe('Comments', () => {
       await userEvent.keyboard('{Enter}')
       await submitted
     })
+
+    it('Should start the next comment empty after submitting the previous one', async () => {
+      const {insertPortableText} = testHelpers()
+      let resolve!: (value: PortableTextBlock[]) => void
+      const submitted = new Promise<PortableTextBlock[]>((r) => (resolve = r))
+
+      void render(<CommentsInputStory onSubmit={resolve} />)
+      const $editable = page.getByTestId('comment-input-editable')
+      await expect.element($editable).toBeVisible()
+      await insertPortableText('First comment', $editable)
+      await expect.element(page.getByTestId('comment-input-send-button')).toBeEnabled()
+      // Submit while ' typed' still sits in the mutation debounce, so the
+      // discarded instance's teardown flush carries it.
+      await userEvent.keyboard(' typed')
+      await userEvent.keyboard('{Enter}')
+      expect(textOf(await submitted)).toBe('First comment typed')
+
+      await expect.element($editable).not.toHaveTextContent('First comment')
+
+      await insertPortableText('Second comment', $editable)
+      await expect.element($editable).toHaveTextContent(/^Second comment$/)
+    })
   })
 })
+
+function textOf(value: PortableTextBlock[]): string {
+  return value
+    .map((block) =>
+      Array.isArray(block.children)
+        ? block.children.map((child) => ('text' in child ? child.text : '')).join('')
+        : '',
+    )
+    .join('\n')
+}
