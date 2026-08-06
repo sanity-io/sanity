@@ -105,6 +105,7 @@ import select from './debug/select'
 import {navbarSettingsDialogRepro} from './debug/settingsV2DialogRepro'
 import {simpleArrayOfObjects} from './debug/simpleArrayOfObjects'
 import {simpleReferences} from './debug/simpleReferences'
+import {twoArgValidationRepro} from './debug/twoArgValidationRepro'
 import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
@@ -318,6 +319,7 @@ export function createSchemaTypes(projectId: string) {
     reservedFieldNames,
     review,
     navbarSettingsDialogRepro,
+    twoArgValidationRepro,
     select,
     typeWithNoToplevelStrings,
     uploads,

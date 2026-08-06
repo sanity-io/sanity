@@ -21,6 +21,7 @@ export function PreviewLoader(
   props: RenderPreviewCallbackProps & {
     component: ComponentType<Omit<PreviewProps, 'renderDefault'>>
     perspectiveStack?: PerspectiveStack
+    variant?: string
   },
 ): React.JSX.Element {
   const {
@@ -31,6 +32,7 @@ export function PreviewLoader(
     schemaType,
     skipVisibilityCheck,
     perspectiveStack,
+    variant,
     ...restProps
   } = props
 
@@ -51,6 +53,7 @@ export function PreviewLoader(
     schemaType,
     value,
     perspectiveStack,
+    variant,
   })
 
   const style: CSSProperties = useMemo(

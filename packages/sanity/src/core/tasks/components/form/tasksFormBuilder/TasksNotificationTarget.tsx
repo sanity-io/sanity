@@ -50,11 +50,12 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
   const documentId = target?.document?._ref ?? ''
   const documentType = target?.documentType ?? ''
 
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
   const {isLoading: previewValuesLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,
     perspectiveStack,
+    variant: selectedVariantName,
   })
   const targetContentTitle = value?.title || null
   const imageUrl = isImageSource(value?.media)

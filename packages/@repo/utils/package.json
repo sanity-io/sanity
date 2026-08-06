@@ -1,6 +1,6 @@
 {
   "name": "@repo/utils",
-  "version": "6.8.0",
+  "version": "6.9.1",
   "private": true,
   "description": "Shared repository utils",
   "type": "module",

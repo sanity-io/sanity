@@ -1,5 +1,5 @@
 import {TextInput} from '@sanity/ui'
-import {type ComponentProps, forwardRef} from 'react'
+import {type ComponentProps, type RefAttributes} from 'react'
 
 import {CustomTextInputBox} from './CustomTextInputBox'
 
@@ -8,14 +8,12 @@ interface CustomTextInputProps extends ComponentProps<typeof TextInput> {
   $smallClearButton?: boolean
 }
 
-export const CustomTextInput = forwardRef<HTMLInputElement, CustomTextInputProps>(
-  function CustomTextInput(props, ref) {
-    const {$background, $smallClearButton, ...rest} = props
+export function CustomTextInput(props: CustomTextInputProps & RefAttributes<HTMLInputElement>) {
+  const {ref, $background, $smallClearButton, ...rest} = props
 
-    return (
-      <CustomTextInputBox $background={$background} $smallClearButton={$smallClearButton}>
-        <TextInput {...rest} ref={ref} />
-      </CustomTextInputBox>
-    )
-  },
-)
+  return (
+    <CustomTextInputBox $background={$background} $smallClearButton={$smallClearButton}>
+      <TextInput {...rest} ref={ref} />
+    </CustomTextInputBox>
+  )
+}

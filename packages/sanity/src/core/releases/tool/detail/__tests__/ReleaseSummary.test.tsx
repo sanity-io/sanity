@@ -32,6 +32,10 @@ vi.mock('../useBundleDocuments', () => ({
   useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
 }))
 
+vi.mock('../CopyReleaseActions', () => ({
+  CopyReleaseActions: () => <div data-testid="copy-release-actions" />,
+}))
+
 vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
   SanityDefaultPreview: vi.fn(({isPlaceholder, title, subtitle, status}) => (
     <div data-ui={isPlaceholder ? 'Placeholder' : 'Preview'}>
@@ -138,9 +142,13 @@ const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
   )
 }
 
-const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
+const renderTest = async (
+  props: Partial<ReleaseSummaryProps>,
+  options?: {variantsEnabled?: boolean},
+) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
+    ...(options?.variantsEnabled ? {config: {beta: {variants: {enabled: true}}}} : undefined),
   })
 
   return render(
@@ -307,6 +315,35 @@ describe('ReleaseSummary', () => {
 
       expect(screen.queryByTestId('cardinality-one-empty-state')).not.toBeInTheDocument()
       expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+  })
+
+  describe('with beta.variants (DocumentTable command lane)', () => {
+    const prerenderVariantsTest = async (props: Partial<ReleaseSummaryProps> = {}) => {
+      await renderTest(props, {variantsEnabled: true})
+      await screen.findByTestId('document-table-card')
+    }
+
+    it('keeps the command lane when the release has no documents', async () => {
+      await prerenderVariantsTest({documents: []})
+
+      expect(screen.getByTestId('release-documents-search')).toBeInTheDocument()
+      expect(screen.getByText('Add document')).toBeInTheDocument()
+      // Copy and Activity are release-level actions that now live in the always-rendered header
+      // (ReleaseDashboardHeader), not in this table's command lane, so they stay reachable when the
+      // table is loading/errored/empty. The command lane holds table operations only.
+      expect(screen.queryByTestId('copy-release-actions')).not.toBeInTheDocument()
+    })
+
+    it('keeps filter tabs when search yields no results', async () => {
+      await prerenderVariantsTest()
+
+      const searchInput = screen.getByTestId('release-documents-search')
+      await userEvent.type(searchInput, 'nonexistent query')
+
+      expect(screen.queryAllByTestId('table-row')).toHaveLength(0)
+      expect(screen.getByRole('tab', {name: /all/i})).toBeInTheDocument()
+      expect(searchInput).toHaveFocus()
     })
   })
 

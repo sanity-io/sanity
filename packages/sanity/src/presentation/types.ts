@@ -75,6 +75,11 @@ export type DocumentLocationResolver = (
     type: string
     version: string | undefined
     perspectiveStack: StackablePerspective[]
+    /**
+     * The selected editing variant as a bare variant id, or `undefined` when no variant is
+     * selected. Pass it as the variant param in the client, alongside `perspectiveStack`.
+     */
+    variant?: string
   },
   context: {documentStore: DocumentStore},
 ) =>

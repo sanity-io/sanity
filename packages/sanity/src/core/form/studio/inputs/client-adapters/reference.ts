@@ -37,6 +37,12 @@ export function getReferenceInfo(
   id: string,
   referenceType: ReferenceSchemaType,
   perspective?: StackablePerspective[],
+  /**
+   * The selected editing variant as a bare variant id. Type resolution and preview values are
+   * resolved as seen through that variant. Availability keeps base perspective semantics, since
+   * variant documents carry server-generated ids that cannot be derived client-side.
+   */
+  variant?: string,
 ): Observable<ReferenceInfo> {
   const {publishedId, draftId} = getIdPair(id)
 
@@ -73,6 +79,7 @@ export function getReferenceInfo(
         draftId,
         undefined,
         perspective,
+        variant,
       )
 
       return typeName$.pipe(
@@ -119,6 +126,8 @@ export function getReferenceInfo(
             refSchemaType,
             publishedId,
             perspective,
+            undefined,
+            variant,
           )
 
           return combineLatest([previewState$, publishedDocumentExists$]).pipe(

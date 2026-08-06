@@ -95,4 +95,19 @@ describe('number-input', () => {
     const input = result.container.querySelector('input')!
     expect(input.inputMode).toBe('numeric')
   })
+
+  it('renders rules declared by context-aware validation', async () => {
+    const {result} = await renderNumberInput({
+      fieldDefinition: {
+        name: 'contextAwarePositiveInteger',
+        title: 'Integer',
+        type: 'number',
+        validation: (Rule, context) => (context?.hidden ? Rule.skip() : Rule.integer().positive()),
+      },
+      render: (inputProps) => <NumberInput {...inputProps} />,
+    })
+
+    const input = result.container.querySelector('input')!
+    expect(input.inputMode).toBe('numeric')
+  })
 })

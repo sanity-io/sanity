@@ -4,8 +4,6 @@ import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '
 import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import uniqueId from 'lodash-es/uniqueId.js'
 import {
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   memo,
   type MouseEvent,
@@ -13,6 +11,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {type Subscription} from 'rxjs'
 import {styled} from 'styled-components'
@@ -102,10 +101,16 @@ const CardLoadMore = styled(Card)`
   z-index: 200;
 `
 
-const SelectAssetsComponent = function SelectAssetsComponent(
-  props: AssetSourceComponentProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
+function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<HTMLDivElement>) {
+  const {
+    ref,
+    selectedAssets,
+    assetType = 'image',
+    dialogHeaderTitle,
+    onClose,
+    onSelect,
+    accept,
+  } = props
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const [_elementId] = useState(() => `default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
@@ -116,7 +121,6 @@ const SelectAssetsComponent = function SelectAssetsComponent(
   const [isLastPage, setIsLastPage] = useState(false)
   const [hasResetAutoFocus, setHasResetFocus] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const {selectedAssets, assetType = 'image', dialogHeaderTitle, onClose, onSelect, accept} = props
 
   const isImageOnlyWildCard = accept && accept === 'image/*' && assetType === 'image'
   const fetchPage = useCallback(
@@ -311,4 +315,4 @@ const SelectAssetsComponent = function SelectAssetsComponent(
   )
 }
 
-export const SelectAssetsDialog = memo(forwardRef(SelectAssetsComponent))
+export const SelectAssetsDialog = memo(SelectAssetsComponent)

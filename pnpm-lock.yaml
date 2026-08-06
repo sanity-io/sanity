@@ -1314,8 +1314,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       get-it:
-        specifier: ^8.8.2
-        version: 8.8.2
+        specifier: ^8.8.3
+        version: 8.8.3
       groq-js:
         specifier: ^2.0.0
         version: 2.0.0
@@ -1680,8 +1680,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@sanity/cli':
-        specifier: ^7.16.0
-        version: 7.16.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(oxfmt@0.62.0)(rolldown@1.2.0)(supports-color@8.1.1)(typescript@7.0.2)(xstate@5.32.5)
+        specifier: ^7.18.0
+        version: 7.18.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(oxfmt@0.62.0)(rolldown@1.2.0)(supports-color@8.1.1)(typescript@7.0.2)(xstate@5.32.5)
       '@sanity/client':
         specifier: 'catalog:'
         version: 7.26.0
@@ -6071,8 +6071,8 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@sanity/cli-core@2.8.0':
-    resolution: {integrity: sha512-tFrPVKqme9JJ8+7n3RaqG8fSOTqh5igJQ7YUnE0rfZMtYSCQKqY5lllDDhcZivzGQgdVnxKhw4D87aLqmkvcSw==}
+  '@sanity/cli-core@2.8.1':
+    resolution: {integrity: sha512-ZDzGQqmESOmDI4/zc69Wlv21DLIPiQQnvWOxXcekfK0/YG1bKDaWsHwSdNqWaYkepwAc0k3/SDIyh0AsyohMVA==}
     engines: {node: '>=22.12'}
     peerDependencies:
       babel-plugin-react-compiler: '*'
@@ -6080,8 +6080,8 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@sanity/cli@7.16.0':
-    resolution: {integrity: sha512-sYziJaKMTbm6PomKQy0cyIq8S/IXLpPBtueo13mnw9iBTY6UqAAUn51X1AFltdhJoEkKALjRpojLFBOZQ4pAKg==}
+  '@sanity/cli@7.18.0':
+    resolution: {integrity: sha512-ANu0be2UjT71PuQaDnHTNQB73VeYiznF5ob3zQ2ivhX2d90vR5fL40HeYGXQnXwH/+D+K8M/0HAJKCaTf6ayzQ==}
     engines: {node: '>=22.12'}
     hasBin: true
     peerDependencies:
@@ -6414,8 +6414,8 @@ packages:
       svelte:
         optional: true
 
-  '@sanity/workbench-cli@1.9.0':
-    resolution: {integrity: sha512-mEXtRQXEL8prCoYqf4Mkm6Wqc4GDRm4JxOrQsZGSuEm7t1YyQ87ar/opGS/NZz9llHe8tCh8P3jWmoEny2GB7A==}
+  '@sanity/workbench-cli@1.10.0':
+    resolution: {integrity: sha512-h9+AUoL0wKOSAhPMNmH1rFqZawNdkDogPg5W1avOfAwwm6DtqAFi63OCd2DtCqSStuq3OH9jOB9k6sgq7hnPjA==}
     engines: {node: '>=22.12'}
 
   '@sanity/workbench@0.1.0-alpha.36':
@@ -9699,8 +9699,8 @@ packages:
     resolution: {integrity: sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==}
     engines: {node: '>= 0.4'}
 
-  get-it@8.8.2:
-    resolution: {integrity: sha512-TwmJRNodzreuB0fG5OIe1yD6iXrD6J3X7mLveVZqU8Iofl0IiryiqZ4DJAP/pUBZiODlYmJOHmhTpZCuGyOomw==}
+  get-it@8.8.3:
+    resolution: {integrity: sha512-IfkbWqOGO2kd2Ccgiz/NIzk3bcwjtVqBm3RNa3j/veHg2q7c1DgS3EXrCrvIWH0jbNTbhkdblnxBP7Dm8CiH+A==}
     engines: {node: '>=14.0.0'}
 
   get-latest-version@6.0.1:
@@ -17774,12 +17774,12 @@ snapshots:
     dependencies:
       '@oclif/core': 4.13.2
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.0)(vite@8.2.0)
-      '@sanity/cli-core': 2.8.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
+      '@sanity/cli-core': 2.8.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/generate-help-url': 4.0.0
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench-cli': 1.9.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)
+      '@sanity/workbench-cli': 1.10.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)
       '@vitejs/plugin-react': 6.0.5(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.2.0)
       chokidar: 5.0.0
       cjs-module-lexer: 2.2.0
@@ -17824,7 +17824,7 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/cli-core@2.8.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)':
+  '@sanity/cli-core@2.8.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)':
     dependencies:
       '@inquirer/prompts': 8.5.2(@types/node@24.13.3)
       '@oclif/core': 4.13.2
@@ -17832,7 +17832,7 @@ snapshots:
       boxen: 8.0.1
       debug: 4.4.3(supports-color@8.1.1)
       empathic: 2.0.1
-      get-it: 8.8.2
+      get-it: 8.8.3
       get-tsconfig: 4.14.0
       import-meta-resolve: 4.2.0
       jiti: 2.7.0
@@ -17863,15 +17863,15 @@ snapshots:
       - terser
       - yaml
 
-  '@sanity/cli@7.16.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(oxfmt@0.62.0)(rolldown@1.2.0)(supports-color@8.1.1)(typescript@7.0.2)(xstate@5.32.5)':
+  '@sanity/cli@7.18.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(oxfmt@0.62.0)(rolldown@1.2.0)(supports-color@8.1.1)(typescript@7.0.2)(xstate@5.32.5)':
     dependencies:
       '@oclif/core': 4.13.2
       '@oclif/plugin-help': 6.2.55
       '@oclif/plugin-not-found': 3.2.88(@types/node@24.13.3)
       '@sanity/cli-build': 5.1.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)
-      '@sanity/cli-core': 2.8.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
+      '@sanity/cli-core': 2.8.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/client': 7.26.0
-      '@sanity/codegen': 7.0.3(@oclif/core@4.13.2)(@sanity/cli-core@2.8.0)(oxfmt@0.62.0)(react@19.2.8)(supports-color@8.1.1)
+      '@sanity/codegen': 7.0.3(@oclif/core@4.13.2)(@sanity/cli-core@2.8.1)(oxfmt@0.62.0)(react@19.2.8)(supports-color@8.1.1)
       '@sanity/descriptors': 1.3.0
       '@sanity/export': 6.2.0(supports-color@8.1.1)
       '@sanity/generate-help-url': 4.0.0
@@ -17883,7 +17883,7 @@ snapshots:
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/template-validator': 3.1.0
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench-cli': 1.9.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)
+      '@sanity/workbench-cli': 1.10.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)
       '@sanity/worker-channels': 2.0.0
       '@vercel/frameworks': 3.29.0
       chokidar: 5.0.0
@@ -17966,7 +17966,7 @@ snapshots:
   '@sanity/client@7.26.0':
     dependencies:
       '@sanity/eventsource': 5.0.4
-      get-it: 8.8.2
+      get-it: 8.8.3
       nanoid: 3.3.16
       rxjs: 7.8.2
 
@@ -18002,7 +18002,7 @@ snapshots:
       - codemirror
       - react-dom
 
-  '@sanity/codegen@7.0.3(@oclif/core@4.13.2)(@sanity/cli-core@2.8.0)(oxfmt@0.62.0)(react@19.2.8)(supports-color@8.1.1)':
+  '@sanity/codegen@7.0.3(@oclif/core@4.13.2)(@sanity/cli-core@2.8.1)(oxfmt@0.62.0)(react@19.2.8)(supports-color@8.1.1)':
     dependencies:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@babel/generator': 7.29.7
@@ -18013,7 +18013,7 @@ snapshots:
       '@babel/traverse': 7.29.7(supports-color@8.1.1)
       '@babel/types': 7.29.7
       '@oclif/core': 4.13.2
-      '@sanity/cli-core': 2.8.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
+      '@sanity/cli-core': 2.8.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/worker-channels': 2.0.0
       chokidar: 3.6.0
@@ -18103,7 +18103,7 @@ snapshots:
   '@sanity/export@6.2.0(supports-color@8.1.1)':
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
-      get-it: 8.8.2
+      get-it: 8.8.3
       json-stream-stringify: 3.1.7
       p-queue: 9.3.1
       tar: 7.5.20
@@ -18153,7 +18153,7 @@ snapshots:
       '@sanity/generate-help-url': 4.0.0
       '@sanity/mutator': link:packages/@sanity/mutator
       debug: 4.4.3(supports-color@8.1.1)
-      get-it: 8.8.2
+      get-it: 8.8.3
       gunzip-maybe: 1.4.2
       p-map: 7.0.5
       tar-fs: 3.1.3
@@ -18266,7 +18266,7 @@ snapshots:
       '@sanity/blueprints': 0.23.1(vite@8.2.0)
       '@sanity/blueprints-parser': 0.4.0
       '@sanity/cli-build': 5.1.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)
-      '@sanity/cli-core': 2.8.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
+      '@sanity/cli-core': 2.8.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/client': 7.26.0
       adm-zip: 0.6.0
       array-treeify: 0.1.5
@@ -18516,10 +18516,10 @@ snapshots:
       - '@emotion/is-prop-valid'
       - typescript
 
-  '@sanity/workbench-cli@1.9.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)':
+  '@sanity/workbench-cli@1.10.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(supports-color@8.1.1)(tsx@4.23.1)(typescript@7.0.2)(yaml@2.9.0)':
     dependencies:
       '@module-federation/vite': 1.20.1(typescript@7.0.2)(vite@8.2.0)
-      '@sanity/cli-core': 2.8.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
+      '@sanity/cli-core': 2.8.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.10)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/types': link:packages/@sanity/types
       '@vitejs/plugin-react': 6.0.5(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.2.0)
       form-data: 4.0.6
@@ -21961,7 +21961,7 @@ snapshots:
       hasown: 2.0.4
       math-intrinsics: 1.1.0
 
-  get-it@8.8.2:
+  get-it@8.8.3:
     dependencies:
       decompress-response: 7.0.0
       is-retry-allowed: 2.2.0
@@ -21970,7 +21970,7 @@ snapshots:
 
   get-latest-version@6.0.1:
     dependencies:
-      get-it: 8.8.2
+      get-it: 8.8.3
       registry-auth-token: 5.1.1
       registry-url: 7.2.0
       semver: 7.8.5

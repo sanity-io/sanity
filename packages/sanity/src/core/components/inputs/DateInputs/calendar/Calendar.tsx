@@ -16,8 +16,6 @@ import {setYear} from 'date-fns/setYear'
 import {
   type ComponentProps,
   type FormEvent,
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   useCallback,
   useEffect,
@@ -25,6 +23,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -81,11 +80,9 @@ const CALENDAR_ICON_BUTTON_PROPS = {
   padding: 2,
 }
 
-export const Calendar = forwardRef(function Calendar(
-  props: CalendarProps,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
+export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref: forwardedRef,
     selectTime,
     value,
     timeStep = 1,
@@ -446,7 +443,7 @@ export const Calendar = forwardRef(function Calendar(
       </Box>
     </Box>
   )
-})
+}
 
 function CalendarTimePresetButton(props: {
   'hours': number

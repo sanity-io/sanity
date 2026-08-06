@@ -1,5 +1,5 @@
 import {Menu, MenuDivider} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, Fragment} from 'react'
+import {Fragment, type RefAttributes} from 'react'
 
 import {MenuButton, type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
@@ -10,14 +10,23 @@ const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
 }
 
-export const CollapseOverflowMenu = forwardRef(function CollapseOverflowMenu(
+export function CollapseOverflowMenu(
   props: Pick<
     CollapseMenuProps,
     'disableRestoreFocusOnClose' | 'menuButtonProps' | 'onMenuClose'
-  > & {menuOptions: React.JSX.Element[]; menuButton: React.JSX.Element},
-  forwardedRef: ForwardedRef<HTMLButtonElement>,
+  > & {
+    menuOptions: React.JSX.Element[]
+    menuButton: React.JSX.Element
+  } & RefAttributes<HTMLButtonElement>,
 ) {
-  const {disableRestoreFocusOnClose, menuButton, menuButtonProps, menuOptions, onMenuClose} = props
+  const {
+    ref: forwardedRef,
+    disableRestoreFocusOnClose,
+    menuButton,
+    menuButtonProps,
+    menuOptions,
+    onMenuClose,
+  } = props
 
   return (
     <MenuButton
@@ -68,4 +77,4 @@ export const CollapseOverflowMenu = forwardRef(function CollapseOverflowMenu(
       }
     />
   )
-})
+}

@@ -85,8 +85,11 @@ jobs:
         run: |
           echo "Creating datasets: ${{ env.CHROMIUM_DATASET }} and ${{ env.FIREFOX_DATASET }}"
           SANITY_E2E_DATASET=${{ env.CHROMIUM_DATASET }} pnpm e2e:setup &
+          chromium_pid=$!
           SANITY_E2E_DATASET=${{ env.FIREFOX_DATASET }} pnpm e2e:setup &
-          wait
+          firefox_pid=$!
+          wait "$chromium_pid"
+          wait "$firefox_pid"
 
   deploy-preview:
     runs-on: ubuntu-8core

@@ -81,6 +81,11 @@ export interface SearchFactoryOptions {
   unique?: boolean
   strategy?: SearchStrategy
   perspective?: ClientPerspective
+  /**
+   * The selected editing variant as a bare variant id. When set, documents are searched as seen
+   * through that variant, on top of `perspective`.
+   */
+  variant?: string
 }
 
 /**
@@ -121,6 +126,11 @@ export type SearchOptions = {
   cursor?: string
   limit?: number
   perspective?: ClientPerspective
+  /**
+   * The selected editing variant as a bare variant id. When set, documents are searched as seen
+   * through that variant, on top of `perspective`.
+   */
+  variant?: string
   isCrossDataset?: boolean
   queryType?: 'prefixLast' | 'prefixNone'
 }
