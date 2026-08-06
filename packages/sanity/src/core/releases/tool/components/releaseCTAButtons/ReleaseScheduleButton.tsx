@@ -100,6 +100,12 @@ export const ReleaseScheduleButton = ({
   const handleConfirmSchedule = useCallback(async () => {
     if (!publishAt) return
 
+    if (isScheduledDateInPast()) {
+      // rerender dialog to recalculate isScheduledDateInPast
+      setRerenderDialog((cur) => cur + 1)
+      return
+    }
+
     // Keep intendedPublishAt in step with the scheduled date, otherwise a later
     // unschedule reverts to a previously planned date (getPublishDateFromRelease falls back to it).
     const newRelease = {
@@ -113,12 +119,6 @@ export const ReleaseScheduleButton = ({
 
     if (!isEqual(newRelease, release)) {
       void updateRelease(newRelease)
-    }
-
-    if (isScheduledDateInPast()) {
-      // rerender dialog to recalculate isScheduledDateInPast
-      setRerenderDialog((cur) => cur + 1)
-      return
     }
 
     // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
