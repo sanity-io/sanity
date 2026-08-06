@@ -128,4 +128,26 @@ describe('ReleaseScheduleButton', () => {
 
     expect(useReleaseOperationsMockReturn.updateRelease).not.toHaveBeenCalled()
   })
+
+  test('does not schedule and shows an error toast when updateRelease fails', async () => {
+    useReleaseOperationsMockReturn.updateRelease.mockReset()
+    useReleaseOperationsMockReturn.updateRelease.mockRejectedValue(new Error('network error'))
+
+    await openScheduleDialog()
+
+    // change the scheduled date to a new future date
+    const dateInput = screen.getByTestId('date-input')
+    await userEvent.clear(dateInput)
+    await userEvent.type(dateInput, 'Oct 15, 2030 10:00')
+    await userEvent.tab()
+
+    await userEvent.click(screen.getByTestId('confirm-button'))
+
+    await waitFor(() => {
+      expect(useReleaseOperationsMockReturn.updateRelease).toHaveBeenCalled()
+    })
+
+    expect(await screen.findByText(/network error/)).toBeInTheDocument()
+    expect(useReleaseOperationsMockReturn.schedule).not.toHaveBeenCalled()
+  })
 })
