@@ -50,25 +50,28 @@ function createSchemaType(options: {max?: number; collapseItemsAfter?: number | 
     name: 'testArray',
     jsonType: 'array',
     of: [{name: 'testItem', jsonType: 'object', type: {name: 'testItem', jsonType: 'object'}}],
-    options: collapseItemsAfter === undefined ? undefined : {collapseItemsAfter},
+    options: {collapseItemsAfter},
     validation:
       max !== undefined ? [{_rules: [{flag: 'max' as const, constraint: max}]}] : undefined,
   } as ArraySchemaType
 }
 
-function renderListArrayInput(options: {
+interface RenderOptions {
   collapseItemsAfter?: number | false
   focusPath?: Path
   max?: number
   memberCount: number
   openMemberKey?: string
   validation?: FormNodeValidation[]
-}) {
+}
+
+function createProps(options: RenderOptions) {
   const members = Array.from({length: options.memberCount}, (_, idx) => ({
     key: `key-${idx}`,
     open: `key-${idx}` === options.openMemberKey,
   }))
-  const props = {
+
+  return {
     arrayFunctions: ValidationProbe,
     elementProps: {id: 'test', onFocus: vi.fn(), onBlur: vi.fn(), ref: {current: null}},
     members,
@@ -79,8 +82,10 @@ function renderListArrayInput(options: {
     focusPath: options.focusPath ?? [],
     validation: options.validation,
   } as unknown as ArrayOfObjectsInputProps<ObjectItem>
+}
 
-  return render(<ListArrayInput {...props} />, {
+function renderListArrayInput(options: RenderOptions) {
+  return render(<ListArrayInput {...createProps(options)} />, {
     wrapper: ({children}: {children: ReactNode}) => (
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
@@ -203,18 +208,7 @@ describe('ListArrayInput', () => {
 
       expect(renderedMemberKeys()).toHaveLength(10)
 
-      const members = Array.from({length: 10}, (_, idx) => ({key: `key-${idx}`, open: false}))
-      rerender(
-        <ListArrayInput
-          {...({
-            arrayFunctions: ValidationProbe,
-            elementProps: {id: 'test', onFocus: vi.fn(), onBlur: vi.fn(), ref: {current: null}},
-            members,
-            schemaType: createSchemaType({}),
-            focusPath: [],
-          } as unknown as ArrayOfObjectsInputProps<ObjectItem>)}
-        />,
-      )
+      rerender(<ListArrayInput {...createProps({memberCount: 10})} />)
 
       expect(renderedMemberKeys()).toHaveLength(10)
     })
