@@ -16,6 +16,9 @@ const GRID_LIMIT_MULTIPLIER = 2
  */
 const MIN_HIDDEN_ITEMS = 3
 
+/** Stands in for the limit when collapsing is switched off, so nothing is ever hidden. */
+const NO_LIMIT = Number.POSITIVE_INFINITY
+
 /**
  * The shape the hook needs from an array member. `key` is not read, but constraining on a
  * property every member kind has keeps generic inference working — a constraint of only optional
@@ -38,18 +41,15 @@ export interface CollapsibleArrayItems<TMember> {
   visibleMembers: TMember[]
 }
 
-/**
- * Reads the item limit for an array field, preferring the field's own schema option over the
- * studio-wide configuration.
- */
-function useItemLimit(schemaType: ArraySchemaType, layout: 'list' | 'grid'): number | null {
+/** A field's own schema option wins over the studio-wide configuration. */
+function useItemLimit(schemaType: ArraySchemaType, layout: 'list' | 'grid'): number {
   const source = useContext(SourceContext)
   const collapseItems = source?.form?.arrays?.collapseItems ?? initialCollapseArrayItems
   const fieldLimit = schemaType.options?.collapseItemsAfter
 
   // An explicit per-field limit is taken literally, including for grids.
-  if (typeof fieldLimit === 'number') return fieldLimit > 0 ? fieldLimit : null
-  if (fieldLimit === false || !collapseItems.enabled) return null
+  if (typeof fieldLimit === 'number') return fieldLimit > 0 ? fieldLimit : NO_LIMIT
+  if (fieldLimit === false || !collapseItems.enabled) return NO_LIMIT
 
   return layout === 'grid' ? collapseItems.limit * GRID_LIMIT_MULTIPLIER : collapseItems.limit
 }
@@ -75,14 +75,13 @@ export function useCollapsibleArrayItems<TMember extends CollapsibleMember>(opti
   const {members, schemaType, layout, focusedIndex} = options
 
   const limit = useItemLimit(schemaType, layout)
-  const hiddenCount = limit === null ? 0 : Math.max(members.length - limit, 0)
-  const collapsible = hiddenCount >= MIN_HIDDEN_ITEMS
+  const collapsible = members.length - limit >= MIN_HIDDEN_ITEMS
 
   // Hidden members that are focused or open must be rendered regardless of the collapsed state:
   // focus can be moved into them from outside the array (a validation marker, appending an item),
   // and an open member hosts its own edit dialog.
   const forced = useMemo(() => {
-    if (!collapsible || limit === null) return false
+    if (!collapsible) return false
     if (focusedIndex !== undefined && focusedIndex >= limit) return true
     return members.slice(limit).some((member) => member.open === true)
   }, [collapsible, focusedIndex, limit, members])
@@ -103,7 +102,7 @@ export function useCollapsibleArrayItems<TMember extends CollapsibleMember>(opti
   const isExpanded = expanded || forced
 
   const visibleMembers = useMemo(
-    () => (collapsible && !isExpanded && limit !== null ? members.slice(0, limit) : members),
+    () => (collapsible && !isExpanded ? members.slice(0, limit) : members),
     [collapsible, isExpanded, limit, members],
   )
 
@@ -111,10 +110,8 @@ export function useCollapsibleArrayItems<TMember extends CollapsibleMember>(opti
 }
 
 /**
- * Resolves the `_key` of the array member the focus path points at, if any.
- *
- * Only arrays of objects address their items by key. Arrays of primitives use the item index,
- * so they must resolve the focused member with {@link getFocusedItemIndex} instead.
+ * Resolves the `_key` of the array member the focus path points at, if any. Only arrays of
+ * objects address their items by key.
  *
  * @internal
  */
@@ -124,8 +121,24 @@ export function getFocusedMemberKey(focusPath: Path): string | undefined {
 }
 
 /**
- * Resolves the index of the array item the focus path points at, if any. Arrays of primitives
- * address their items by index rather than by key.
+ * Position of the key-addressed member the focus path points at, or `-1` when the focus is not
+ * inside an item. For arrays of objects.
+ *
+ * @internal
+ */
+export function useFocusedMemberIndex(members: CollapsibleMember[], focusPath: Path): number {
+  const focusedKey = getFocusedMemberKey(focusPath)
+
+  return useMemo(
+    () =>
+      focusedKey === undefined ? -1 : members.findIndex((member) => member.key === focusedKey),
+    [focusedKey, members],
+  )
+}
+
+/**
+ * Position of the item the focus path points at, if any. Arrays of primitives address their items
+ * by index rather than by key.
  *
  * @internal
  */

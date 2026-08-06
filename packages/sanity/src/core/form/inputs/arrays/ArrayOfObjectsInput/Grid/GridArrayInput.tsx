@@ -9,7 +9,10 @@ import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetC
 import {ArrayItemsToggle} from '../../common/ArrayItemsToggle'
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
 import {Item, List} from '../../common/list'
-import {getFocusedMemberKey, useCollapsibleArrayItems} from '../../common/useCollapsibleArrayItems'
+import {
+  useCollapsibleArrayItems,
+  useFocusedMemberIndex,
+} from '../../common/useCollapsibleArrayItems'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {ErrorItem} from './ErrorItem'
@@ -52,12 +55,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     return <GridItem {...itemProps} />
   }, [])
 
-  const focusPathKey = useMemo(() => getFocusedMemberKey(focusPath), [focusPath])
-
-  const focusedIndex = useMemo(
-    () => members.findIndex((member) => member.key === focusPathKey),
-    [focusPathKey, members],
-  )
+  const focusedIndex = useFocusedMemberIndex(members, focusPath)
 
   const {collapsible, expanded, onToggle, visibleMembers} = useCollapsibleArrayItems({
     members,

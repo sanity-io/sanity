@@ -10,7 +10,11 @@ import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
 import {ArrayItemsToggle} from '../../common/ArrayItemsToggle'
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
-import {getFocusedMemberKey, useCollapsibleArrayItems} from '../../common/useCollapsibleArrayItems'
+import {
+  getFocusedMemberKey,
+  useCollapsibleArrayItems,
+  useFocusedMemberIndex,
+} from '../../common/useCollapsibleArrayItems'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useMemoCompare} from './useMemoCompare'
@@ -62,11 +66,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const {isVisible, mountKey} = useVisibilityDetection(parentRef)
 
   const focusPathKey = useMemo(() => getFocusedMemberKey(focusPath), [focusPath])
-
-  const focusedIndex = useMemo(
-    () => members.findIndex((member) => member.key === focusPathKey),
-    [focusPathKey, members],
-  )
+  const focusedIndex = useFocusedMemberIndex(members, focusPath)
 
   const {collapsible, expanded, onToggle, visibleMembers} = useCollapsibleArrayItems({
     members,
