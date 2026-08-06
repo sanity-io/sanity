@@ -165,15 +165,11 @@ const getCurrentUser = async (
   //
   // Guarded for custom `unstable_clientFactory` clients that may not implement
   // `withConfig` — those don't carry the middleware anyway.
-  const probeClient =
-    typeof client.withConfig === 'function'
-      ? // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        client.withConfig({_requestHandler: undefined})
-      : client
+  const probeClient = client
   const fetchUser = () =>
     probeClient
       .request({
-        uri: '/users/me',
+        url: '/users/me',
         tag: `users.get-current${tag ? `.${tag}` : ''}`,
       })
       .catch(async (err) => {
@@ -247,14 +243,10 @@ const probeCurrentUser = (client: SanityClient): Promise<AuthProbeResult> => {
   // stuck instead of transitioning to authenticated. The 401 must reach the
   // `.catch` here. Guarded for custom clients that may not implement
   // `withConfig` (those don't carry the middleware anyway).
-  const probeClient =
-    typeof client.withConfig === 'function'
-      ? // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        client.withConfig({_requestHandler: undefined})
-      : client
+  const probeClient = client
   return probeClient
     .request<{id: string; expiry: number}>({
-      uri: '/auth/id',
+      url: '/auth/id',
       tag: 'auth.check-id',
     })
     .then(
@@ -286,7 +278,7 @@ const probeCurrentUser = (client: SanityClient): Promise<AuthProbeResult> => {
 async function exchangeSessionForToken(client: SanityClient, sessionId: string): Promise<string> {
   const {token} = await client.request<{token: string}>({
     method: 'GET',
-    uri: `/auth/fetch`,
+    url: `/auth/fetch`,
     query: {sid: sessionId},
     tag: 'auth.fetch-token',
   })
@@ -970,12 +962,9 @@ export function _createAuthStore({
     //
     // Both clients are hit: even with loginMethod=token an auth cookie may
     // be set on the project api domain, so both must be destroyed.
-    const stripMiddleware = (c: SanityClient) =>
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      typeof c.withConfig === 'function' ? c.withConfig({_requestHandler: undefined}) : c
     await Promise.allSettled([
-      stripMiddleware(tokenClient).request({uri: '/auth/logout', method: 'POST'}),
-      stripMiddleware(cookieClient).request({uri: '/auth/logout', method: 'POST'}),
+      tokenClient.request({url: '/auth/logout', method: 'POST'}),
+      cookieClient.request({url: '/auth/logout', method: 'POST'}),
     ])
 
     // Clear local auth state regardless of the server call's outcome. This

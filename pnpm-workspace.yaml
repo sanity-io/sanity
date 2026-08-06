@@ -26,7 +26,7 @@ catalog:
   '@optique/run': ^1.1.1
   '@playwright/test': 1.62.1
   '@rolldown/plugin-babel': ^0.2.3
-  '@sanity/client': ^7.26.2
+  '@sanity/client': ^8.0.0
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.24.1
@@ -77,16 +77,14 @@ minimumReleaseAgeExclude:
   - '@typescript/*'
   - '@vanilla-extract/*'
   - '@vercel/stega'
-  # Scoped packages of the yuku toolchain used by rolldown-plugin-dts (native codegen/parser
-  # bindings plus shared types), they release in lockstep with it (like @oxlint/* for oxlint)
-  - '@yuku-codegen/*'
-  - '@yuku-parser/*'
   - '@yuku-toolchain/*'
   - 'csstype'
   - 'data-uri-to-buffer@7.0.0'
   - 'eslint-plugin-boundaries'
+  # Fresh majors pulled in by @sanity/client v8; exclude so install can resolve before the age gate
+  - 'eventsource@5.0.0'
+  - 'eventsource-parser@4.0.0'
   - 'get-it'
-  - 'get-uri@7.0.0'
   - 'groq-js'
   # lightningcss and its per-platform native bindings (lightningcss-linux-x64-gnu etc.) release
   # in lockstep; @sanity/tsdown-config tracks its latest so builds pick up new bindings together
@@ -119,6 +117,8 @@ minimumReleaseAgeExclude:
   - 'web-vitals'
   # covers yuku-ast/yuku-codegen/yuku-parser, which ship together with rolldown-plugin-dts
   - 'yuku-*'
+  - framer-motion@13.1.0
+  - motion@13.1.0
 
 overrides:
   vitest: 'catalog:'
