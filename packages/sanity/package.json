@@ -69,6 +69,10 @@
       "monorepo": "./src/_exports/presentation.ts",
       "default": "./lib/presentation.js"
     },
+    "./resources": {
+      "monorepo": "./src/_exports/resources.ts",
+      "default": "./lib/resources.js"
+    },
     "./router": {
       "monorepo": "./src/_exports/router.ts",
       "default": "./lib/router.js"
@@ -101,6 +105,7 @@
       "./media-library": "./lib/media-library.js",
       "./migrate": "./lib/migrate.js",
       "./presentation": "./lib/presentation.js",
+      "./resources": "./lib/resources.js",
       "./router": "./lib/router.js",
       "./structure": "./lib/structure.js",
       "./workbench": "./lib/workbench.js",
