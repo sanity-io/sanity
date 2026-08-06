@@ -3,6 +3,7 @@ import {type ComponentProps} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {useDocumentPreviewValues} from '../../../../tasks/hooks/useDocumentPreviewValues'
 import {activeASAPRelease, activeScheduledRelease} from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseDocumentPreview} from '../ReleaseDocumentPreview'
@@ -88,9 +89,6 @@ describe('ReleaseDocumentPreview', () => {
   })
 
   it('renders in loading state', async () => {
-    // Mock loading state
-    const {useDocumentPreviewValues} =
-      await import('../../../../tasks/hooks/useDocumentPreviewValues')
     vi.mocked(useDocumentPreviewValues).mockReturnValueOnce({
       isLoading: true,
       value: null,
@@ -163,5 +161,54 @@ describe('ReleaseDocumentPreview', () => {
       ['variant', 'alpha-audience'],
       ['perspective', 'rActive'],
     ])
+  })
+
+  describe('preview value resolution', () => {
+    it('resolves the version through the release perspective', async () => {
+      await renderTest({
+        documentId: 'versions.rActive.doc123',
+        documentTypeName: 'post',
+        releaseId: activeScheduledRelease._id,
+        releaseState: 'active',
+      })
+
+      expect(useDocumentPreviewValues).toHaveBeenLastCalledWith({
+        documentId: 'versions.rActive.doc123',
+        documentType: 'post',
+        perspectiveStack: ['rActive'],
+      })
+    })
+
+    it('resolves the published document while an unpublish is still pending', async () => {
+      await renderTest({
+        documentId: 'versions.rActive.doc123',
+        documentTypeName: 'post',
+        releaseId: activeScheduledRelease._id,
+        releaseState: 'active',
+        isGoingToUnpublish: true,
+      })
+
+      expect(useDocumentPreviewValues).toHaveBeenLastCalledWith({
+        documentId: 'doc123',
+        documentType: 'post',
+        perspectiveStack: [],
+      })
+    })
+
+    it('resolves the draft once the release has run the unpublish', async () => {
+      await renderTest({
+        documentId: 'versions.rASAP.doc123',
+        documentTypeName: 'post',
+        releaseId: activeASAPRelease._id,
+        releaseState: 'published',
+        isGoingToUnpublish: true,
+      })
+
+      expect(useDocumentPreviewValues).toHaveBeenLastCalledWith({
+        documentId: 'doc123',
+        documentType: 'post',
+        perspectiveStack: ['drafts'],
+      })
+    })
   })
 })
