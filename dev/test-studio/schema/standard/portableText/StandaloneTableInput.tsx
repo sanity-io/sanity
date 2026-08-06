@@ -14,11 +14,16 @@ const TABLE_SIZE = 3
  */
 export function StandaloneTableInput(props: PortableTextInputProps) {
   if (!props.value || props.value.length === 0) {
+    // The table type is whichever member is not the text block; row and
+    // cell names follow the `${table}Row` / `${table}Cell` convention the
+    // container bindings use.
+    const tableType = props.schemaType.of.find((member) => member.name !== 'block')?.name
+
     return (
       <Button
         mode="ghost"
         text="Insert table"
-        onClick={() => props.onChange(set([scaffoldTable()]))}
+        onClick={() => props.onChange(set([scaffoldTable(tableType ?? 'standaloneTable')]))}
       />
     )
   }
@@ -46,16 +51,16 @@ export function StandaloneTableInput(props: PortableTextInputProps) {
   )
 }
 
-function scaffoldTable() {
+function scaffoldTable(tableType: string) {
   return {
-    _type: 'standaloneTable',
+    _type: tableType,
     _key: randomKey(),
     headerRows: 1,
     rows: Array.from({length: TABLE_SIZE}, () => ({
-      _type: 'row',
+      _type: `${tableType}Row`,
       _key: randomKey(),
       cells: Array.from({length: TABLE_SIZE}, () => ({
-        _type: 'cell',
+        _type: `${tableType}Cell`,
         _key: randomKey(),
         value: [
           {

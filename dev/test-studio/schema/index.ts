@@ -147,6 +147,7 @@ import simpleBlockNoteBody from './standard/portableText/simpleBlockNoteBody'
 import simpleBlockNoteUrl from './standard/portableText/simpleBlockNoteUrl'
 import spotifyEmbed from './standard/portableText/spotifyEmbed'
 import {
+  plainTextTable,
   standaloneTable,
   standaloneTableDoc,
   tableCellContent,
@@ -217,6 +218,7 @@ export function createSchemaTypes(projectId: string) {
     richTextObject,
     ...Object.values(scrollBugTypes),
     customPlugins,
+    plainTextTable,
     standaloneTable,
     standaloneTableDoc,
     tableCellContent,

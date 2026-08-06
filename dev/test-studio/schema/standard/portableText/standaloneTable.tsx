@@ -43,11 +43,28 @@ const tableTextMemberConfig = {
   },
 } as const
 
-const standaloneTableContainers = {
-  table: defineContainer({type: 'standaloneTable', arrayField: 'rows'}),
-  row: defineContainer({type: 'row', arrayField: 'cells'}),
-  cell: defineContainer({type: 'cell', arrayField: 'value'}),
+// A plain-text variant: cells hold one unformatted line each. The
+// toolbar collapses on its own, membership is root-derived and this
+// config offers nothing to toggle, so the field renders as a bare grid.
+// Storage is unchanged (still Portable Text under the cells); this only
+// narrows what an editor can put in them, so it does not turn the table
+// into typed structured content (see EDEX-1931 for that).
+const plainTextMemberConfig = {
+  styles: [{title: 'Normal', value: 'normal'}],
+  lists: [],
+  marks: {decorators: [], annotations: []},
+} as const
+
+function tableContainers(tableType: string) {
+  return {
+    table: defineContainer({type: tableType, arrayField: 'rows'}),
+    row: defineContainer({type: `${tableType}Row`, arrayField: 'cells'}),
+    cell: defineContainer({type: `${tableType}Cell`, arrayField: 'value'}),
+  }
 }
+
+const standaloneTableContainers = tableContainers('standaloneTable')
+const plainTextTableContainers = tableContainers('plainTextTable')
 
 // The field holds exactly one block, the table. Root-level inserts and
 // breaks would mint siblings (the container edge-escape raises a root
@@ -83,6 +100,16 @@ const oneBlockBehaviors = [
   }),
 ]
 
+// The plain-text variant additionally holds each cell to a single line:
+// breaks are denied everywhere, not just at root.
+const plainTextBehaviors = [
+  ...oneBlockBehaviors,
+  defineBehavior({
+    on: 'insert.break',
+    actions: [],
+  }),
+]
+
 // Binds the table plugin to the `standaloneTable` shape; used by every
 // field that carries the type, standalone or embedded.
 function TableContainersPlugins(props: PortableTextPluginsProps) {
@@ -107,6 +134,21 @@ function StandaloneTablePlugins(props: PortableTextPluginsProps) {
   )
 }
 
+function PlainTextTablePlugins(props: PortableTextPluginsProps) {
+  return (
+    <>
+      {props.renderDefault({
+        ...props,
+        plugins: {
+          ...props.plugins,
+          table: {enabled: true, containers: plainTextTableContainers},
+        },
+      })}
+      <BehaviorPlugin behaviors={plainTextBehaviors} />
+    </>
+  )
+}
+
 // Rich-table's cells mirror ours: the same text config plus images,
 // passed to `richTablePlugin` via `portableTextSchemaTypeName` so the
 // side-by-side comparison differs only in architecture, not in schema
@@ -121,45 +163,66 @@ export const tableCellContent = defineType({
   ],
 })
 
-export const standaloneTable = defineType({
-  type: 'object',
+// The table object type. Row and cell type names follow the convention
+// the container bindings and the input's scaffold both rely on:
+// `${name}Row` and `${name}Cell`.
+function tableObjectType(options: {
+  name: string
+  title: string
+  cellMembers: ReturnType<typeof defineArrayMember>[]
+}) {
+  return defineType({
+    type: 'object',
+    name: options.name,
+    title: options.title,
+    fields: [
+      defineField({type: 'number', name: 'headerRows'}),
+      defineField({
+        type: 'array',
+        name: 'rows',
+        of: [
+          defineArrayMember({
+            type: 'object',
+            name: `${options.name}Row`,
+            fields: [
+              defineField({
+                type: 'array',
+                name: 'cells',
+                of: [
+                  defineArrayMember({
+                    type: 'object',
+                    name: `${options.name}Cell`,
+                    fields: [
+                      defineField({
+                        type: 'array',
+                        name: 'value',
+                        of: options.cellMembers,
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  })
+}
+
+export const standaloneTable = tableObjectType({
   name: 'standaloneTable',
   title: 'Standalone table',
-  fields: [
-    defineField({type: 'number', name: 'headerRows'}),
-    defineField({
-      type: 'array',
-      name: 'rows',
-      of: [
-        defineArrayMember({
-          type: 'object',
-          name: 'row',
-          fields: [
-            defineField({
-              type: 'array',
-              name: 'cells',
-              of: [
-                defineArrayMember({
-                  type: 'object',
-                  name: 'cell',
-                  fields: [
-                    defineField({
-                      type: 'array',
-                      name: 'value',
-                      of: [
-                        defineArrayMember({type: 'block', ...tableTextMemberConfig}),
-                        defineArrayMember({type: 'image'}),
-                      ],
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        }),
-      ],
-    }),
+  cellMembers: [
+    defineArrayMember({type: 'block', ...tableTextMemberConfig}),
+    defineArrayMember({type: 'image'}),
   ],
+})
+
+export const plainTextTable = tableObjectType({
+  name: 'plainTextTable',
+  title: 'Plain text table',
+  cellMembers: [defineArrayMember({type: 'block', ...plainTextMemberConfig})],
 })
 
 // The standalone table field: a Portable Text array constrained to one
@@ -185,6 +248,28 @@ function standaloneTableField(options: {name: string; title: string; fieldset?: 
       input: StandaloneTableInput,
       portableText: {
         plugins: StandaloneTablePlugins,
+      },
+    },
+    validation: (rule) => rule.max(1),
+  })
+}
+
+// The same field with cells stripped to raw text. Nothing to toggle, so
+// the toolbar renders empty and the field reads as a bare grid.
+function plainTextTableField(options: {name: string; title: string; fieldset?: string}) {
+  return defineField({
+    type: 'array',
+    name: options.name,
+    title: options.title,
+    fieldset: options.fieldset,
+    of: [
+      defineArrayMember({type: 'block', ...plainTextMemberConfig}),
+      defineArrayMember({type: 'plainTextTable'}),
+    ],
+    components: {
+      input: StandaloneTableInput,
+      portableText: {
+        plugins: PlainTextTablePlugins,
       },
     },
     validation: (rule) => rule.max(1),
@@ -219,6 +304,11 @@ export const standaloneTableDoc = defineType({
     standaloneTableField({
       name: 'ptTable',
       title: 'Portable Text table',
+      fieldset: 'standalone',
+    }),
+    plainTextTableField({
+      name: 'plainTable',
+      title: 'Plain text table',
       fieldset: 'standalone',
     }),
     defineField({
