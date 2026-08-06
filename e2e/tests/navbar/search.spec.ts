@@ -41,15 +41,44 @@ test('searching creates unique saved searches', async ({
   const searchInput = page.getByPlaceholder('Search', {exact: true})
   const searchResults = page.getByTestId('search-results')
 
-  // Helper to perform a search and click a result
+  // Helper to perform a search and click a result.
+  //
+  // The document is created at the start of this test and searched for
+  // immediately. The search index is eventually consistent, so the just-created
+  // document may not be returned by the first query even though the write has
+  // completed. Rather than rely on Playwright's whole-test retry to mask this,
+  // re-issue the query (clear + re-type) until the expected option appears. This
+  // awaits the real precondition (the document has become searchable) without
+  // changing what the test asserts.
   async function performSearch(query: string, optionName: string) {
     await expect(studioSearch).toBeVisible()
     await studioSearch.click({force: true})
     await expect(searchInput).toBeVisible()
-    await searchInput.fill(query)
-    await expect(searchResults).toBeVisible()
+
     const option = searchResults.getByRole('option', {name: optionName}).first()
-    await expect(option).toBeVisible()
+    const perAttemptTimeout = 10_000
+    const maxAttempts = 6
+
+    // oxlint-disable no-await-in-loop -- sequential index-lag retry is intentional
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      await searchInput.fill('')
+      await searchInput.fill(query)
+      await expect(searchResults).toBeVisible()
+
+      const appeared = await option
+        .waitFor({state: 'visible', timeout: perAttemptTimeout})
+        .then(() => true)
+        .catch(() => false)
+
+      if (appeared) break
+
+      if (attempt === maxAttempts) {
+        // Surface a normal assertion failure with the usual diagnostics.
+        await expect(option).toBeVisible()
+      }
+    }
+    // oxlint-enable no-await-in-loop
+
     await option.click({force: true})
     // Wait for search dialog to close
     await expect(searchResults).not.toBeVisible()

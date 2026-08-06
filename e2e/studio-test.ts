@@ -127,6 +127,27 @@ export const test = baseTest.extend<SanityFixtures>({
         )
         .toBeGreaterThanOrEqual(3)
 
+      // The `form-view` element is rendered before the form fields themselves are.
+      // While the document pair is still connecting (or `formState` is momentarily
+      // `null`), `form-view` only contains a loading spinner / "form hidden" text —
+      // no inputs. The `FormBuilder` renders each field wrapped in a
+      // `[data-testid="field-<name>"]` element, so waiting for the first field to
+      // be attached guarantees the form is mounted and its inputs are interactive.
+      //
+      // This closes a race where callers immediately `.fill()` a field that has
+      // not yet mounted, which surfaced in CI as `locator.fill` timing out. It
+      // does not change what any test asserts; it only awaits a precondition every
+      // caller already implicitly depends on.
+      //
+      // Note: we target the field wrapper generically (rather than the form
+      // header) because some document types render fields without a visible title
+      // header, e.g. types with `__experimental_formPreviewTitle: false` such as
+      // the live-edit `playlist` type, whose header is not rendered at all.
+      await page
+        .locator('[data-testid="form-view"] [data-testid^="field-"]')
+        .first()
+        .waitFor({state: 'attached', timeout: 30_000})
+
       return id
     }
 
