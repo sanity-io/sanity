@@ -13,6 +13,7 @@ import {css, styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {COMMENTS_MENTIONS_POPOVER_UI} from '../../../helpers'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {MentionsMenu, type MentionsMenuHandle} from '../../mentions/MentionsMenu'
 import {renderChild} from '../render/renderChild'
@@ -218,6 +219,7 @@ export function Editable(props: EditableProps) {
         arrow={false}
         constrainSize
         content={popoverContent}
+        data-ui={COMMENTS_MENTIONS_POPOVER_UI}
         disabled={!mentionsMenuOpen}
         fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
         floatingBoundary={floatingBoundary}

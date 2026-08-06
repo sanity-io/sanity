@@ -9,7 +9,7 @@ import {
   type CommentInputHandle,
   type CommentInputProps,
 } from '../../../components/pte/comment-input/CommentInput'
-import {hasCommentMessageValue} from '../../../helpers'
+import {getCommentsMentionsPopoverElement, hasCommentMessageValue} from '../../../helpers'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 
@@ -63,7 +63,12 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
 
       onClickOutside()
     },
-    () => [contentElementRef.current],
+    () => [
+      contentElementRef.current,
+      // Mentions menu portals outside the composer (SAPP-4093). Treat it as
+      // part of the input so selecting a user does not open discard.
+      getCommentsMentionsPopoverElement(),
+    ],
   )
 
   const content = (
