@@ -11,17 +11,6 @@ export function useCommentHasChanged(message: CommentMessage): boolean {
   return useMemo(() => !isEqual(prevMessage, message), [prevMessage, message])
 }
 
-/** `data-ui` for the portaled comments mentions popover (SAPP-4093). */
-export const COMMENTS_MENTIONS_POPOVER_UI = 'comments-mentions-popover'
-
-/** Returns the portaled mentions popover element, if mounted. */
-export function getCommentsMentionsPopoverElement(): HTMLElement | null {
-  if (typeof document === 'undefined') {
-    return null
-  }
-  return document.querySelector<HTMLElement>(`[data-ui="${COMMENTS_MENTIONS_POPOVER_UI}"]`)
-}
-
 /**
  * @internal
  */

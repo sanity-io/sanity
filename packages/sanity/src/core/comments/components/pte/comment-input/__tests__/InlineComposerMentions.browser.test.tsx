@@ -1,8 +1,7 @@
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
-import {useClickOutsideEvent} from '@sanity/ui'
+import {BoundaryElementProvider} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
-import {useCallback, useRef, useState} from 'react'
-import {CommentInput, type CommentInputHandle} from 'sanity'
+import {useState} from 'react'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
@@ -10,7 +9,7 @@ import {page, userEvent} from 'vitest/browser'
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {type UserListWithPermissionsHookValue} from '../../../../../hooks/useUserListWithPermissions'
-import {getCommentsMentionsPopoverElement, hasCommentMessageValue} from '../../../../helpers'
+import {InlineCommentInputPopover} from '../../../../plugin/input/components/InlineCommentInputPopover'
 
 const currentUser: CurrentUser = {
   email: '',
@@ -39,64 +38,45 @@ const MENTION_DATA: UserListWithPermissionsHookValue = {
 }
 
 /**
- * Mirrors InlineCommentInputPopover: click outside the composer opens discard
- * when there is a draft value. Mentions are portaled, so they must be excluded
- * from that outside check (SAPP-4093).
+ * Stands in for a `oneLine` Portable Text field: the commented text sits in a
+ * field root that is a single line tall, and that root is the boundary element
+ * the composer inherits.
  */
-function InlineComposerHarness() {
+function InlineComposerStory() {
   const [value, setValue] = useState<PortableTextBlock[] | null>(null)
-  const [discarded, setDiscarded] = useState(false)
-  const commentInputRef = useRef<CommentInputHandle | null>(null)
-  const contentElementRef = useRef<HTMLDivElement | null>(null)
-
-  const handleDiscardConfirm = useCallback(() => {
-    commentInputRef.current?.discardDialogController.close()
-    setDiscarded(true)
-    setValue(null)
-  }, [])
-
-  const handleDiscardCancel = useCallback(() => {
-    commentInputRef.current?.discardDialogController.close()
-  }, [])
-
-  useClickOutsideEvent(
-    () => {
-      if (hasCommentMessageValue(value)) {
-        commentInputRef.current?.discardDialogController.open()
-        return
-      }
-      setDiscarded(true)
-    },
-    () => [contentElementRef.current, getCommentsMentionsPopoverElement()],
-  )
+  const [fieldElement, setFieldElement] = useState<HTMLDivElement | null>(null)
+  const [referenceElement, setReferenceElement] = useState<HTMLSpanElement | null>(null)
+  const [closed, setClosed] = useState(false)
 
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <div data-testid="outside-area" style={{padding: 40}}>
         Outside
       </div>
-      <div ref={contentElementRef} data-testid="inline-composer">
-        <CommentInput
-          currentUser={currentUser}
-          focusLock
-          focusOnMount
-          mentionOptions={MENTION_DATA}
-          onChange={setValue}
-          onDiscardCancel={handleDiscardCancel}
-          onDiscardConfirm={handleDiscardConfirm}
-          onSubmit={noop}
-          ref={commentInputRef}
-          value={value}
-        />
+      <div ref={setFieldElement} style={{height: 24, overflow: 'hidden'}}>
+        <span ref={setReferenceElement}>Commented text</span>
       </div>
-      {discarded ? <div data-testid="composer-discarded">discarded</div> : null}
+      <BoundaryElementProvider element={fieldElement}>
+        {referenceElement && !closed ? (
+          <InlineCommentInputPopover
+            currentUser={currentUser}
+            mentionOptions={MENTION_DATA}
+            onChange={setValue}
+            onClickOutside={() => setClosed(true)}
+            onDiscardConfirm={noop}
+            onSubmit={noop}
+            referenceElement={referenceElement}
+            value={value}
+          />
+        ) : null}
+      </BoundaryElementProvider>
     </TestWrapper>
   )
 }
 
-describe('Inline comment composer mentions (SAPP-4093)', () => {
-  it('selecting a mention from the portaled menu does not open discard', async () => {
-    void render(<InlineComposerHarness />)
+describe('Inline comment composer', () => {
+  it('keeps the mentions menu sized when the field boundary is one line tall (SAPP-4093)', async () => {
+    void render(<InlineComposerStory />)
 
     const $editable = page.getByTestId('comment-input-editable')
     await expect.element($editable).toBeVisible()
@@ -105,22 +85,41 @@ describe('Inline comment composer mentions (SAPP-4093)', () => {
     const $mentionsMenu = page.getByTestId('comments-mentions-menu')
     await expect.element($mentionsMenu).toBeVisible()
 
-    // Click the mention option (Card rendered as button).
+    // The menu opened at a usable size and collapsed shortly after, once the
+    // floating position had been measured against the field boundary.
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    await expect.element($mentionsMenu).toBeVisible()
+
+    const rect = $mentionsMenu.element().getBoundingClientRect()
+    expect(rect.width).toBeGreaterThan(0)
+    expect(rect.height).toBeGreaterThan(0)
+  })
+
+  it('does not treat picking a mention as a click outside the composer', async () => {
+    void render(<InlineComposerStory />)
+
+    const $editable = page.getByTestId('comment-input-editable')
+    await expect.element($editable).toBeVisible()
+    await userEvent.keyboard('@')
+
+    const $mentionsMenu = page.getByTestId('comments-mentions-menu')
+    await expect.element($mentionsMenu).toBeVisible()
     await userEvent.click($mentionsMenu.getByRole('button'))
 
     await expect.element(page.getByTestId('comment-mentions-loading-skeleton')).toBeVisible()
     await expect.element(page.getByText('Discard comment?')).not.toBeInTheDocument()
-    await expect.element(page.getByTestId('composer-discarded')).not.toBeInTheDocument()
+    await expect.element($editable).toBeVisible()
   })
 
-  it('clicking truly outside still opens discard when the draft has a value', async () => {
+  it('asks to discard when clicking outside the composer with a draft value', async () => {
     const {insertPortableText} = testHelpers()
-    void render(<InlineComposerHarness />)
+    void render(<InlineComposerStory />)
 
     const $editable = page.getByTestId('comment-input-editable')
     await expect.element($editable).toBeVisible()
     await insertPortableText('hello', $editable)
     await expect.element($editable).toHaveTextContent('hello')
+    // The draft value has reached the composer once submitting is possible.
     await expect.element(page.getByTestId('comment-input-send-button')).toBeEnabled()
 
     await userEvent.click(page.getByTestId('outside-area'))

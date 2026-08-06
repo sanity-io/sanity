@@ -1,31 +1,10 @@
 import {type PortableTextBlock} from '@sanity/types'
-import {BoundaryElementProvider} from '@sanity/ui'
-import {type ReactNode, useState} from 'react'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {CommentsInputStory} from './CommentInputStory'
-
-/**
- * Simulates the short BoundaryElementProvider used around oneLine PTE fields
- * when authoring an inline comment (SAPP-4093). The comment input is not clipped
- * by this element; only the ambient floating boundary is short — matching how
- * CommentsPortableTextInput provides the PTE field root as boundary.
- */
-function ShortBoundaryProvider(props: {children: ReactNode}) {
-  const [element, setElement] = useState<HTMLDivElement | null>(null)
-
-  return (
-    <>
-      <div ref={setElement} style={{height: 32, width: 400, overflow: 'hidden'}} />
-      {element ? (
-        <BoundaryElementProvider element={element}>{props.children}</BoundaryElementProvider>
-      ) : null}
-    </>
-  )
-}
 
 describe('Comments', () => {
   describe('CommentInput', () => {
@@ -65,28 +44,6 @@ describe('Comments', () => {
       await userEvent.click($mentionButton)
       await expect.element(page.getByTestId('comments-mentions-menu')).toBeVisible()
       await expect.element($editable).toHaveFocus()
-    })
-
-    it('keeps mentions menu sized when ambient boundary is short (SAPP-4093)', async () => {
-      void render(
-        <ShortBoundaryProvider>
-          <CommentsInputStory />
-        </ShortBoundaryProvider>,
-      )
-      const $editable = page.getByTestId('comment-input-editable')
-      await expect.element($editable).toBeVisible()
-      await userEvent.keyboard('@')
-      const $mentionsMenu = page.getByTestId('comments-mentions-menu')
-      await expect.element($mentionsMenu).toBeVisible()
-
-      // Customer saw collapse ~250–300ms after open when constrainSize used the
-      // short oneLine PTE boundary; wait past that window then assert size.
-      await new Promise((resolve) => setTimeout(resolve, 400))
-      await expect.element($mentionsMenu).toBeVisible()
-
-      const rect = $mentionsMenu.element().getBoundingClientRect()
-      expect(rect.width).toBeGreaterThan(0)
-      expect(rect.height).toBeGreaterThan(0)
     })
 
     it('Should be able to submit', async () => {

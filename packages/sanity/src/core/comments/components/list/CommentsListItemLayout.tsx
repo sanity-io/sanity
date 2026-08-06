@@ -22,12 +22,7 @@ import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListW
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {useUser} from '../../../store/user/hooks'
-import {
-  hasCommentMessageValue,
-  getCommentsMentionsPopoverElement,
-  isTextSelectionComment,
-  useCommentHasChanged,
-} from '../../helpers'
+import {hasCommentMessageValue, isTextSelectionComment, useCommentHasChanged} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
   type CommentContext,
@@ -331,11 +326,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   useDidUpdate(isEditing, handleCloseMenu)
 
-  useClickOutsideEvent(!hasChanges && cancelEdit, () => [
-    rootElementRef.current,
-    // Portaled mentions menu is outside the edit root; keep edit mode when selecting.
-    getCommentsMentionsPopoverElement(),
-  ])
+  useClickOutsideEvent(!hasChanges && cancelEdit, () => [rootElementRef.current])
 
   const name = user?.displayName ? (
     <Text size={1} weight="medium" textOverflow="ellipsis" title={user.displayName}>

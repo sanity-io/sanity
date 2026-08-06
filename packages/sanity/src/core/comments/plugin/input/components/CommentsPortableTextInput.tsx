@@ -597,25 +597,18 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   return (
     <>
       <BoundaryElementProvider element={boundaryElement}>
-        {showFloatingInput &&
-          currentUser && (
-            // Nested popovers inside the inline comment composer (e.g. mentions) should
-            // constrain against the document scroll area, not the PTE field root. For
-            // oneLine fields the field root is only ~one line tall, which collapses
-            // constrainSize popovers to 0×0 (SAPP-4093).
-            <BoundaryElementProvider element={scrollElement}>
-              <InlineCommentInputPopover
-                currentUser={currentUser}
-                mentionOptions={mentionOptions}
-                onChange={setNextCommentValue}
-                onClickOutside={resetStates}
-                onDiscardConfirm={handleCommentDiscardConfirm}
-                onSubmit={handleSubmit}
-                referenceElement={popoverAuthoringReferenceElement}
-                value={nextCommentValue}
-              />
-            </BoundaryElementProvider>
-          )}
+        {showFloatingInput && currentUser && (
+          <InlineCommentInputPopover
+            currentUser={currentUser}
+            mentionOptions={mentionOptions}
+            onChange={setNextCommentValue}
+            onClickOutside={resetStates}
+            onDiscardConfirm={handleCommentDiscardConfirm}
+            onSubmit={handleSubmit}
+            referenceElement={popoverAuthoringReferenceElement}
+            value={nextCommentValue}
+          />
+        )}
         <AnimatePresence>
           {showFloatingButton && !showFloatingInput && (
             <FloatingButtonPopover

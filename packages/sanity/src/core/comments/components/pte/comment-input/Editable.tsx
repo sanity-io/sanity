@@ -5,7 +5,7 @@ import {
   usePortableTextEditorSelection,
 } from '@portabletext/editor'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
-import {useClickOutsideEvent, usePortal} from '@sanity/ui'
+import {useClickOutsideEvent} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import isEqual from 'lodash-es/isEqual.js'
 import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -13,7 +13,6 @@ import {css, styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {COMMENTS_MENTIONS_POPOVER_UI} from '../../../helpers'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {MentionsMenu, type MentionsMenuHandle} from '../../mentions/MentionsMenu'
 import {renderChild} from '../render/renderChild'
@@ -91,7 +90,6 @@ export function Editable(props: EditableProps) {
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [inputElement, setInputElement] = useState<HTMLDivElement | null>(null)
   const mentionsMenuRef = useRef<MentionsMenuHandle | null>(null)
-  const portal = usePortal()
 
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
@@ -112,17 +110,12 @@ export function Editable(props: EditableProps) {
     rootElement: rootElement,
   })
 
-  // Mention menus must not inherit a short ambient BoundaryElementProvider (e.g. a
-  // oneLine PTE field root). constrainSize against that boundary collapses the
-  // popover to 0×0 (SAPP-4093). Constrain to the document scroll area instead.
-  const floatingBoundary = portal.elements?.documentScrollElement || document.body
-
   const renderPlaceholder = useCallback(
     () => <PlaceholderWrapper>{placeholder}</PlaceholderWrapper>,
     [placeholder],
   )
 
-  useClickOutsideEvent(mentionsMenuOpen && closeMentions, () => [popoverRef.current, rootElement])
+  useClickOutsideEvent(mentionsMenuOpen && closeMentions, () => [popoverRef.current])
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -219,13 +212,10 @@ export function Editable(props: EditableProps) {
         arrow={false}
         constrainSize
         content={popoverContent}
-        data-ui={COMMENTS_MENTIONS_POPOVER_UI}
         disabled={!mentionsMenuOpen}
         fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-        floatingBoundary={floatingBoundary}
         open={mentionsMenuOpen}
         placement="bottom"
-        portal
         ref={popoverRef}
         referenceElement={cursorElement}
       />
