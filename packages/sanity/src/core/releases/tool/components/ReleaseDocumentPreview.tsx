@@ -89,8 +89,8 @@ export function ReleaseDocumentPreview({
   // A document marked to be unpublished previews the document the release acts on rather than its
   // own version, matching the document pane, which shows the current published version for these.
   // Running the release deletes that published document and leaves the content behind as a draft,
-  // so once the release has run resolve through drafts instead. The drafts perspective still layers
-  // over published, so it also covers the document having been republished since.
+  // so once the release has run, resolve through drafts instead. Nothing is left to preview if that
+  // draft is later discarded.
   const perspectiveStack = useMemo<PerspectiveStack>(() => {
     if (!isGoingToUnpublish) return [getReleaseIdFromReleaseDocumentId(releaseId)]
     return releaseState === 'published' ? ['drafts'] : []

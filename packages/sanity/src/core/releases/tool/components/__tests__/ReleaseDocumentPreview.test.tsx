@@ -4,7 +4,12 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useDocumentPreviewValues} from '../../../../tasks/hooks/useDocumentPreviewValues'
-import {activeASAPRelease, activeScheduledRelease} from '../../../__fixtures__/release.fixture'
+import {
+  activeASAPRelease,
+  activeScheduledRelease,
+  archivedScheduledRelease,
+  publishedASAPRelease,
+} from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseDocumentPreview} from '../ReleaseDocumentPreview'
 
@@ -197,9 +202,9 @@ describe('ReleaseDocumentPreview', () => {
 
     it('resolves the draft once the release has run the unpublish', async () => {
       await renderTest({
-        documentId: 'versions.rASAP.doc123',
+        documentId: 'versions.rPublished.doc123',
         documentTypeName: 'post',
-        releaseId: activeASAPRelease._id,
+        releaseId: publishedASAPRelease._id,
         releaseState: 'published',
         isGoingToUnpublish: true,
       })
@@ -208,6 +213,39 @@ describe('ReleaseDocumentPreview', () => {
         documentId: 'doc123',
         documentType: 'post',
         perspectiveStack: ['drafts'],
+      })
+    })
+
+    // An archived release never ran, so its published documents are untouched and remain the right
+    // preview source. Pinned so that widening the drafts branch has to be a deliberate change.
+    it('resolves the published document for an archived release', async () => {
+      await renderTest({
+        documentId: 'versions.rArchived.doc123',
+        documentTypeName: 'post',
+        releaseId: archivedScheduledRelease._id,
+        releaseState: 'archived',
+        isGoingToUnpublish: true,
+      })
+
+      expect(useDocumentPreviewValues).toHaveBeenLastCalledWith({
+        documentId: 'doc123',
+        documentType: 'post',
+        perspectiveStack: [],
+      })
+    })
+
+    it('resolves the published document when no release state is given', async () => {
+      await renderTest({
+        documentId: 'versions.rActive.doc123',
+        documentTypeName: 'post',
+        releaseId: activeScheduledRelease._id,
+        isGoingToUnpublish: true,
+      })
+
+      expect(useDocumentPreviewValues).toHaveBeenLastCalledWith({
+        documentId: 'doc123',
+        documentType: 'post',
+        perspectiveStack: [],
       })
     })
   })
