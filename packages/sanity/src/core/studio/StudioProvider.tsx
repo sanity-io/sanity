@@ -152,16 +152,14 @@ export function StudioProvider({
 let _refractorRegistered = false
 
 async function registerRefractorLanguages() {
-  const [{default: registerLanguage}, languages] = await Promise.all([
-    import('./registerRefractorLanguage.lazy'),
-    Promise.all([
-      import('refractor/bash'),
-      import('refractor/javascript'),
-      import('refractor/json'),
-      import('refractor/jsx'),
-      import('refractor/typescript'),
-      import('./refractorGroq.lazy'),
-    ]),
+  const {default: registerLanguage} = await import('./registerRefractorLanguage.lazy')
+  const languages = await Promise.all([
+    import('refractor/bash'),
+    import('refractor/javascript'),
+    import('refractor/json'),
+    import('refractor/jsx'),
+    import('refractor/typescript'),
+    import('./refractorGroq.lazy'),
   ])
 
   languages.forEach((language) => registerLanguage(language.default))
