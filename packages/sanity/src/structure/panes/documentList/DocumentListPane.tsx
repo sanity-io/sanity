@@ -17,6 +17,7 @@ import {
   useTranslation,
   useUnique,
 } from 'sanity'
+import shallowEquals from 'shallow-equals'
 import {keyframes, styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../i18n'
@@ -33,6 +34,7 @@ import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
 import {isOrderByIdsParam, reorderItemsByIdsParam} from './orderByIdsParam'
 import {type LoadingVariant, type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
+import {useMemoCompare} from './useMemoCompare'
 
 /**
  * @internal
@@ -90,7 +92,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {perspectiveStack, selectedVariantName} = usePerspective()
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
-  const params = options.params || EMPTY_RECORD
+  const params = useMemoCompare(options.params || EMPTY_RECORD, shallowEquals)
   const typeName = useMemo(() => {
     const staticTypes = findStaticTypesInFilter(filter, params)
     if (staticTypes?.length === 1) return staticTypes[0]
