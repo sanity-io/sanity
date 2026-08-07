@@ -242,6 +242,16 @@ function describeSeries(
   kind: 'interaction' | 'pageload',
   label: string,
 ): Pick<TrendSeries, 'description' | 'goal' | 'group'> {
+  if (label.startsWith('component: ')) {
+    const name = label.slice('component: '.length)
+    return {
+      group: 'responsiveness',
+      description:
+        `Interaction latency (click/type → next paint) for “${name}”. ` +
+        `A per-component latency percentile — not the page's INP Core Web Vital.`,
+      goal: 'lower',
+    }
+  }
   if (label.includes('time to editable')) {
     return {
       group: 'load',

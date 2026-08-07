@@ -226,6 +226,20 @@ export function collectInp(
 ): ScenarioReport {
   const inpValues = sessions.map((session) => [session.inpMs])
   const interactionCounts = sessions.map((session) => [session.interactionCount])
+  const labels = [
+    ...new Set(sessions.flatMap((session) => session.perLabel.map((entry) => entry.label))),
+  ]
+  const perComponent: MetricReport[] = labels.map((label) => {
+    const perSession = sessions.map(
+      (session) => session.perLabel.find((entry) => entry.label === label)?.latencies ?? [],
+    )
+    return {
+      label: `component: ${label}`,
+      unit: 'ms',
+      presentAsEfps: false,
+      experiment: {sessions: perSession, summary: summarize(perSession.flat())},
+    }
+  })
   const metrics: MetricReport[] = [
     {
       label: 'INP',
@@ -242,6 +256,7 @@ export function collectInp(
         summary: summarize(interactionCounts.flat()),
       },
     },
+    ...perComponent,
   ]
   return {
     scenario,
