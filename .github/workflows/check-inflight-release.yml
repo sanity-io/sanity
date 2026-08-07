@@ -4,6 +4,11 @@ on:
   pull_request:
     # synchronize is needed for check-pr-release-status
     types: [opened, closed, reopened, ready_for_review, converted_to_draft, synchronize]
+  schedule:
+    # safety-net sweep behind the per-PR fast paths; GitHub drops/delays scheduled runs, so convergence is best-effort and self-heals on the next tick
+    - cron: "*/15 * * * *"
+  # manual trigger for immediate verification / on-demand unstick
+  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -12,6 +17,7 @@ jobs:
   update-release-status:
     name: "Update status checks for open PRs"
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     if: |
       (github.head_ref == 'ci/release-main' &&
@@ -40,6 +46,7 @@ jobs:
   check-pr-release-status:
     runs-on: ubuntu-latest
     name: "Update status check for PR"
+    timeout-minutes: 10
 
     if: github.event_name == 'pull_request'
 
@@ -64,3 +71,51 @@ jobs:
           RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
           RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+  reconcile-open-prs:
+    name: "Reconcile in-flight release checks for all open PRs"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    concurrency:
+      group: inflight-release-reconcile
+      # overlapping ticks queue rather than cancel a sweep mid-flight
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      - name: Reconcile in-flight release status checks for all open PRs
+        run: |
+          pnpm --silent release-notes status-check-prs
+        env:
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+  # the reconciler is the safety net for stuck PRs, so a failed sweep needs to be seen
+  notify-on-failure:
+    needs: [reconcile-open-prs]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":alert-dot: The in-flight release reconciler failed on <${{ github.server_url }}/${{ github.repository }}|${{github.repository}}> - open PRs may be stuck BLOCKED (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run >)"
+            }

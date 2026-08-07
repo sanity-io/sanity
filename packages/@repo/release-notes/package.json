@@ -27,6 +27,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.112.3",
     "@conventional-changelog/git-client": "^2.7.0",
+    "@octokit/plugin-throttling": "^11.0.5",
     "@octokit/rest": "^22.0.1",
     "@optique/core": "catalog:",
     "@optique/run": "catalog:",
