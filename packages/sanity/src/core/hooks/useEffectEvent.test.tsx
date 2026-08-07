@@ -1,4 +1,5 @@
 import {render} from '@testing-library/react'
+// oxlint-disable-next-line eslint/no-restricted-imports -- intentional: regression coverage for facebook/react#34818 still needs a real forwardRef fiber
 import {forwardRef, memo, useEffect} from 'react'
 import {useEffectEvent} from 'use-effect-event'
 import {describe, expect, test, vi} from 'vitest'
@@ -8,7 +9,8 @@ import {describe, expect, test, vi} from 'vitest'
  * when the calling component is wrapped in `forwardRef` or `memo`
  * (https://github.com/facebook/react/issues/34818). This test fails if the
  * ponyfill is replaced with the native hook before the upstream fix ships in
- * the lowest React version we support.
+ * the lowest React version we support. Studio code must not use `forwardRef`
+ * (see oxlint ban); this file is the sole exception so we keep covering that fiber.
  */
 describe('useEffectEvent', () => {
   test('calls the latest callback from forwardRef and memo components', () => {

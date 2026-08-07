@@ -19,7 +19,6 @@ import {Box, useToast} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {fromString, startsWith} from '@sanity/util/paths'
 import {
-  forwardRef,
   type ReactNode,
   startTransition,
   useCallback,
@@ -28,6 +27,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {useEffectEvent} from 'use-effect-event'
 
@@ -72,27 +72,29 @@ function keyGenerator() {
  * the public `editorRef` prop's contract.
  */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const LegacyEditorRefPlugin = forwardRef<PortableTextEditor | null>((_, ref) => {
+const LegacyEditorRefPlugin = (props: RefAttributes<PortableTextEditor | null>) => {
+  const {ref} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const portableTextEditor = usePortableTextEditor()
 
   useImperativeHandle(ref, () => portableTextEditor, [portableTextEditor])
 
   return null
-})
+}
 LegacyEditorRefPlugin.displayName = 'LegacyEditorRefPlugin'
 
 /**
  * Captures the editor instance so callbacks defined outside
  * `EditorProvider` can take snapshots.
  */
-const EditorRefPlugin = forwardRef<Editor | null>((_, ref) => {
+const EditorRefPlugin = (props: RefAttributes<Editor | null>) => {
+  const {ref} = props
   const editor = useEditor()
 
   useImperativeHandle(ref, () => editor, [editor])
 
   return null
-})
+}
 EditorRefPlugin.displayName = 'EditorRefPlugin'
 
 /** @internal */

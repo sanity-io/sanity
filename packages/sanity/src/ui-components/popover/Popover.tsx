@@ -1,6 +1,6 @@
 /* oxlint-disable no-restricted-imports */
 import {Popover as UIPopover, type PopoverProps as UIPopoverProps} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+import {type HTMLProps, type RefAttributes} from 'react'
 
 /** @internal */
 export type PopoverProps = UIPopoverProps
@@ -13,10 +13,11 @@ export type PopoverProps = UIPopoverProps
  *
  * @internal
  */
-export const Popover = forwardRef(function Popover(
-  props: PopoverProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'children' | 'content' | 'width'>,
-  ref: ForwardedRef<HTMLDivElement>,
+export function Popover(
+  props: PopoverProps &
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'children' | 'content' | 'width'> &
+    RefAttributes<HTMLDivElement>,
 ) {
-  const {animate = true, ...restProps} = props
+  const {ref, animate = true, ...restProps} = props
   return <UIPopover {...restProps} animate={animate} ref={ref} />
-})
+}

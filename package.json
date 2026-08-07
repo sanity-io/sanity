@@ -1,6 +1,6 @@
 {
   "name": "sanity-root",
-  "version": "6.9.0",
+  "version": "6.9.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -128,7 +128,7 @@
     "oxfmt": "^0.62.0",
     "oxlint": "^1.76.0",
     "oxlint-tsgolint": "^7.0.2001",
-    "pkg-pr-new": "^0.0.78",
+    "pkg-pr-new": "^0.0.86",
     "playwright": "catalog:",
     "sanity": "workspace:*",
     "tsx": "^4.23.1",

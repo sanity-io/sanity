@@ -1,5 +1,5 @@
 import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
+import {type ReactNode, useCallback, useMemo, type RefAttributes} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 
 import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
@@ -26,11 +26,9 @@ export interface PaneHeaderProps {
  * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
-export const PaneHeader = forwardRef(function PaneHeader(
-  props: PaneHeaderProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
+export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref,
     actions,
     backButton,
     border,
@@ -133,4 +131,4 @@ export const PaneHeader = forwardRef(function PaneHeader(
       </Root>
     </LayerProvider>
   )
-})
+}

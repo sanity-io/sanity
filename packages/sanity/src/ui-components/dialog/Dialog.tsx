@@ -8,7 +8,13 @@ import {
   Flex,
   Text,
 } from '@sanity/ui'
-import {type ComponentProps, forwardRef, type HTMLProps, type ReactNode, type Ref} from 'react'
+import {
+  type ComponentProps,
+  type HTMLProps,
+  type ReactNode,
+  type Ref,
+  type RefAttributes,
+} from 'react'
 import {useTranslation} from 'react-i18next'
 
 /** @internal */
@@ -55,18 +61,18 @@ export type DialogProps = Pick<
  *
  * @internal
  */
-export const Dialog = forwardRef(function Dialog(
-  {
-    animate = true,
-    bodyHeight,
-    children,
-    footer,
-    padding = true,
-    zOffset,
-    ...props
-  }: DialogProps & Pick<HTMLProps<HTMLDivElement>, 'onDragEnter' | 'onDrop'>,
-  ref: Ref<HTMLDivElement>,
-) {
+export function Dialog({
+  ref,
+  animate = true,
+  bodyHeight,
+  children,
+  footer,
+  padding = true,
+  zOffset,
+  ...props
+}: DialogProps &
+  Pick<HTMLProps<HTMLDivElement>, 'onDragEnter' | 'onDrop'> &
+  RefAttributes<HTMLDivElement>) {
   const {t} = useTranslation()
 
   return (
@@ -115,4 +121,4 @@ export const Dialog = forwardRef(function Dialog(
       </Box>
     </UIDialog>
   )
-})
+}

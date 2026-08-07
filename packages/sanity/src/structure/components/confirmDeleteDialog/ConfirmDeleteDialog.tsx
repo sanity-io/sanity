@@ -80,10 +80,12 @@ export function ConfirmDeleteDialog({
     hasUnknownDatasetNames,
   } = useReferringDocuments(id)
   const documentTitle = <DocTitle document={useMemo(() => ({_id: id, _type: type}), [id, type])} />
-  const showConfirmButton = !isLoading
   const {data: documentVersions, loading: versionsLoading} = useDocumentVersions({
     documentId: getPublishedId(id),
   })
+  // Wait for the version count too, so the button copy doesn't flash from
+  // "Delete all versions" to "Delete document" while the count loads
+  const showConfirmButton = !isLoading && !versionsLoading
 
   const handleConfirm = useCallback(() => {
     onConfirm(documentVersions, {
@@ -107,8 +109,14 @@ export function ConfirmDeleteDialog({
           ? {
               text:
                 totalCount > 0
-                  ? t('confirm-delete-dialog.confirm-anyway-button.text', {context: action})
-                  : t('confirm-delete-dialog.confirm-button.text', {context: action}),
+                  ? t('confirm-delete-dialog.confirm-anyway-button.text', {
+                      context: action,
+                      count: documentVersions.length,
+                    })
+                  : t('confirm-delete-dialog.confirm-button.text', {
+                      context: action,
+                      count: documentVersions.length,
+                    }),
               onClick: handleConfirm,
             }
           : undefined,

@@ -2,14 +2,13 @@ import {createImageUrlBuilder} from '@sanity/image-url'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import {Button, Spinner} from '@sanity/ui'
 import {
-  type ForwardedRef,
-  forwardRef,
   type RefObject,
   Suspense,
   use,
   useImperativeHandle,
   useMemo,
   useRef,
+  type RefAttributes,
 } from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {type ObjectInputProps, set, setIfMissing, unset, useClient} from 'sanity'
@@ -24,11 +23,10 @@ interface AuthorReference {
   name: string
 }
 
-export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
-  props: ObjectInputProps<Reference, ReferenceSchemaType>,
-  ref: ForwardedRef<any>,
+export function AuthorReferenceInput(
+  props: ObjectInputProps<Reference, ReferenceSchemaType> & RefAttributes<any>,
 ) {
-  const {schemaType, value, readOnly} = props
+  const {ref, schemaType, value, readOnly} = props
   const client = useClient({apiVersion: '2022-09-09'})
   const current = value && value._ref
   const imageBuilder = createImageUrlBuilder(client)
@@ -89,7 +87,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
       </Suspense>
     </div>
   )
-})
+}
 
 function AuthorOptions({
   authorsPromise,

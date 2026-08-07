@@ -288,6 +288,37 @@ returns first-render values when the calling component is wrapped in `forwardRef
 wraps the native hook, so check the implementation before trusting one — `react-rx` is safe on both
 v4 and v5 because `useObservableEvent` builds on the same `use-effect-event` ponyfill.
 
+### Refs: use `props.ref`, not `forwardRef`
+
+React 19 passes `ref` as a regular prop. Do not use `forwardRef` — destructure `ref` from props
+(so it is not left in a `...rest` spread) and forward it like any other prop.
+`eslint/no-restricted-imports` bans importing `forwardRef` from `react`.
+
+Prefer a named function declaration over `const X = function …` / arrow wrappers:
+
+```ts
+// preferred
+export function MyComponent(props: Props & RefAttributes<HTMLDivElement>) {
+  const {ref, ...rest} = props
+  return <div ref={ref} {...rest} />
+}
+
+// avoid
+export const MyComponent = function MyComponent(props: …) { … }
+export const MyComponent = (props: …) => { … }
+```
+
+When wrapping with `memo`, declare the component as a function first, then memoize:
+
+```ts
+function MyComponent(props: …) { … }
+export const MyComponentMemo = memo(MyComponent)
+```
+
+For typings, include `ref` on the props type: stop omitting `'ref'` from `HTMLProps` /
+`ComponentProps`, or intersect with `RefAttributes<T>`. Avoid `PropsWithRef` — in `@types/react`
+19 it is a deprecated identity alias and trips `typescript/no-deprecated`.
+
 ## Testing
 
 ### Unit Tests (Vitest)

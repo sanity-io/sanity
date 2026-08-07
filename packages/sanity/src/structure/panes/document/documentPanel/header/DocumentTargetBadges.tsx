@@ -1,12 +1,6 @@
 import {Card, Flex, Text, type BadgeTone} from '@sanity/ui'
 import {motion} from 'motion/react'
-import {
-  forwardRef,
-  memo,
-  type ForwardRefExoticComponent,
-  type RefAttributes,
-  type SVGProps,
-} from 'react'
+import {memo, type RefAttributes, type SVGProps} from 'react'
 import {
   ReleaseAvatarIcon,
   ReleaseTitle,
@@ -31,9 +25,8 @@ import {useDocumentPane} from '../../useDocumentPane'
 /**
  * TODO: Replace by the RhombusIcon from @sanity/icons once available.
  */
-const RhombusIcon: ForwardRefExoticComponent<
-  Omit<SVGProps<SVGSVGElement>, 'ref'> & RefAttributes<SVGSVGElement>
-> = forwardRef(function RhombusIcon(props, ref) {
+function RhombusIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
+  const {ref, ...rest} = props
   return (
     <svg
       data-sanity-icon="rhombus"
@@ -42,7 +35,7 @@ const RhombusIcon: ForwardRefExoticComponent<
       viewBox="0 0 21 21"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...props}
+      {...rest}
       ref={ref}
     >
       <path
@@ -53,7 +46,7 @@ const RhombusIcon: ForwardRefExoticComponent<
       />
     </svg>
   )
-})
+}
 
 const TargetBadge = styled(Card)`
   display: inline-flex;

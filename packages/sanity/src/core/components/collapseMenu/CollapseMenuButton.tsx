@@ -1,10 +1,4 @@
-import {
-  type ElementType,
-  type ForwardedRef,
-  forwardRef,
-  type HTMLProps,
-  type ReactNode,
-} from 'react'
+import {type ElementType, type HTMLProps, type ReactNode, type RefAttributes} from 'react'
 
 import {Button, type ButtonProps} from '../../../ui-components/button/Button'
 import {type TooltipProps} from '../../../ui-components/tooltip/Tooltip'
@@ -26,11 +20,13 @@ export interface CollapseMenuButtonProps extends CommonProps {
 }
 
 /** @internal */
-export const CollapseMenuButton = forwardRef(function CollapseMenuButton(
-  props: CollapseMenuButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size'>,
-  ref: ForwardedRef<HTMLButtonElement>,
+export function CollapseMenuButton(
+  props: CollapseMenuButtonProps &
+    Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size'> &
+    RefAttributes<HTMLButtonElement>,
 ) {
   const {
+    ref,
     // oxlint-disable-next-line no-unused-vars
     collapsedProps,
     // oxlint-disable-next-line no-unused-vars
@@ -45,4 +41,4 @@ export const CollapseMenuButton = forwardRef(function CollapseMenuButton(
   } = props
 
   return <Button data-ui="CollapseMenuButton" {...rest} ref={ref} />
-})
+}
