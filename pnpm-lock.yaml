@@ -1920,7 +1920,7 @@ importers:
         specifier: ^14.0.1
         version: 14.0.1
       web-vitals:
-        specifier: ^6.0.0
+        specifier: ^6.0.1
         version: 6.1.0
       xstate:
         specifier: ^5.32.5
