@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.9.2](https://github.com/sanity-io/sanity/compare/v6.9.1...v6.9.2) (2026-08-07)
+
+### Bug Fixes
+
+* **comments:** enable click-outside handler when comment popover is open ([#12695](https://github.com/sanity-io/sanity/issues/12695)) ([e84ea82](https://github.com/sanity-io/sanity/commit/e84ea826f30a3ad923b85da2216a48fcd6b8601c))
+* **comments:** keep mention menu sized in oneLine PTE fields ([#13888](https://github.com/sanity-io/sanity/issues/13888)) ([e8293a9](https://github.com/sanity-io/sanity/commit/e8293a9c9e0a655348b2b57beeaeea1eebbb49f2))
+* **core:** keep an open object dialog open when focus lands on the item itself ([#13924](https://github.com/sanity-io/sanity/issues/13924)) ([5f7d3af](https://github.com/sanity-io/sanity/commit/5f7d3afa465e5efcd897e77c9da70b52d93eb2ed))
+* **core:** resolve circular import warnings reported by tsdown ([#13753](https://github.com/sanity-io/sanity/issues/13753)) ([696f04f](https://github.com/sanity-io/sanity/commit/696f04fc856bffdb04d5ff05474901c783b92c3e))
+* **core:** retain claimed project banner across refresh ([#13879](https://github.com/sanity-io/sanity/issues/13879)) ([14cebf8](https://github.com/sanity-io/sanity/commit/14cebf8f8e28f021c9b6a420977f88941f5e6f76))
+* **deps:** update portabletext ([#13874](https://github.com/sanity-io/sanity/issues/13874)) ([b83b4c7](https://github.com/sanity-io/sanity/commit/b83b4c755d645bb15a90c57cf37eafeb3a1ffc34))
+* **structure:** make delete dialog copy count-aware ([#13010](https://github.com/sanity-io/sanity/issues/13010)) ([41aeaee](https://github.com/sanity-io/sanity/commit/41aeaee8603c1c5dabc7d07b26e456d6d99b2711))
 ## [6.9.1](https://github.com/sanity-io/sanity/compare/v6.9.0...v6.9.1) (2026-08-06)
 
 ### Bug Fixes
