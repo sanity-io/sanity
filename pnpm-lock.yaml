@@ -95,7 +95,7 @@ catalogs:
       specifier: ^7.0.2
       version: 7.0.2
     vite:
-      specifier: ^8.2.0
+      specifier: ^8.2.1
       version: 8.2.1
     vitest-browser-react:
       specifier: ^2.2.0
