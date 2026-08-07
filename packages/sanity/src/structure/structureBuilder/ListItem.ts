@@ -3,10 +3,6 @@ import {type Observable} from 'rxjs'
 import {type I18nTextRecord} from 'sanity'
 
 import {type ChildResolver, type ItemChild} from './ChildResolver'
-import {ComponentBuilder} from './Component'
-import {DocumentBuilder} from './Document'
-import {DocumentListBuilder} from './DocumentList'
-import {ListBuilder} from './List'
 import {HELP_URL, SerializeError} from './SerializeError'
 import {
   type Collection,
@@ -16,6 +12,7 @@ import {
 } from './StructureNodes'
 import {type StructureContext} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
+import {isSerializable} from './util/isSerializable'
 import {validateId} from './util/validateId'
 
 /**
@@ -309,13 +306,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
     }
 
     const serializeOptions = {path: options.path.concat(id), hint: 'child'}
-    let listChild =
-      child instanceof ComponentBuilder ||
-      child instanceof DocumentListBuilder ||
-      child instanceof DocumentBuilder ||
-      child instanceof ListBuilder
-        ? child.serialize(serializeOptions)
-        : child
+    let listChild = isSerializable<Collection>(child) ? child.serialize(serializeOptions) : child
 
     // In the case of a function, create a bound version that will pass the correct serialize
     // context, so we may lazily resolve it at some point in the future without losing context

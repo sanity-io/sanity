@@ -338,22 +338,24 @@
   },
   "overrides": [
     {
-      // Known architectural runtime import cycles, excluded from `import/no-cycle` until they
-      // are untangled (needs lazy resolution / registry redesign, tracked in PR 13753):
-      // - the form middleware-components system (default input/preview resolution is recursive:
-      //   arrays render nested inputs through the registry that includes arrays)
-      // - the field diff-component registry (`resolveDiffComponent` <-> `defaultComponents` <->
-      //   `ChangeList`) and `Preview`/divergence, which resolve through the form system
-      // - `structureBuilder`'s `ListItem` <-> `List` (the builders `instanceof`-check each other)
-      // Shrink this list when cycles are fixed; do not add new entries.
+      // The one known architectural runtime import cycle, excluded from `import/no-cycle` until
+      // it is untangled (tracked in PR 13753): the field diff-component registry.
+      // `defaultComponents` maps schema types to diff components; those components render nested
+      // changes through `ChangeList`/`buildChangeList`, which resolve components from the
+      // registry again (`resolveDiffComponent`) and attach them to the change nodes. Breaking it
+      // needs the resolver to be provided via context instead of imported statically.
+      // Shrink this list when the cycle is fixed; do not add new entries.
       "files": [
-        "packages/sanity/src/core/divergence/**/*",
-        "packages/sanity/src/core/field/diff/**/*",
-        "packages/sanity/src/core/field/types/**/*",
-        "packages/sanity/src/core/form/**/*",
-        "packages/sanity/src/core/preview/components/Preview.tsx",
-        "packages/sanity/src/structure/structureBuilder/List.ts",
-        "packages/sanity/src/structure/structureBuilder/ListItem.ts"
+        "packages/sanity/src/core/field/diff/changes/buildChangeList.ts",
+        "packages/sanity/src/core/field/diff/components/ChangeList.tsx",
+        "packages/sanity/src/core/field/diff/resolve/defaultComponents.ts",
+        "packages/sanity/src/core/field/diff/resolve/resolveDiffComponent.ts",
+        "packages/sanity/src/core/field/types/file/diff/FileFieldDiff.tsx",
+        "packages/sanity/src/core/field/types/image/diff/ImageFieldDiff.tsx",
+        "packages/sanity/src/core/field/types/portableText/diff/components/Annotation.tsx",
+        "packages/sanity/src/core/field/types/portableText/diff/components/InlineObject.tsx",
+        "packages/sanity/src/core/field/types/portableText/diff/components/PortableText.tsx",
+        "packages/sanity/src/core/field/types/portableText/diff/PTDiff.tsx"
       ],
       "rules": {"import/no-cycle": "off"}
     },
