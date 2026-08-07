@@ -1670,9 +1670,6 @@ importers:
       '@rexxars/react-json-inspector':
         specifier: ^9.0.1
         version: 9.0.1(react@19.2.8)
-      '@sanity-labs/ui-poc':
-        specifier: 0.0.1-alpha.25
-        version: 0.0.1-alpha.25(react-dom@19.2.8)(react@19.2.8)
       '@sanity/asset-utils':
         specifier: ^2.3.0
         version: 2.3.0
@@ -1901,6 +1898,9 @@ importers:
       swr:
         specifier: ^2.4.2
         version: 2.4.2(react@19.2.8)
+      ui5:
+        specifier: npm:@sanity/ui@alpha
+        version: '@sanity/ui@5.0.0-alpha.1(react-dom@19.2.8)(react@19.2.8)'
       urlpattern-polyfill:
         specifier: 10.1.0
         version: 10.1.0
@@ -6017,14 +6017,6 @@ packages:
     resolution: {integrity: sha512-+i7GXix4Akt34VDWgSM1Lpq8Hxf8SH8022uNsDRXSNuAqQMjKVGWLItAyc2TyfWVwWZLhsCF3lj5tdW7cecDxQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@sanity-labs/ui-poc@0.0.1-alpha.25':
-    resolution: {integrity: sha512-TaH3RSCRmceGCFMIrHBk0erSvmbYZxrlp9gnL5gXn8Yk7StK/M6qI7iB+gBdxmKcfGiwSbw82AbnXYf7KmpzCw==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-    hasBin: true
-    peerDependencies:
-      react: ^19.2
-      react-dom: ^19.2
-
   '@sanity/ailf@7.33.0':
     resolution: {integrity: sha512-kneqvcJNs5ytWGdVyWS/vmqVxZUZlcpCkIYdmAk1+CHrvc69X906LLADCOJfPEn7LPzy3xuiCslM5OGsjhMaCA==}
     hasBin: true
@@ -6335,6 +6327,14 @@ packages:
       react: ^18 || >=19.0.0-0
       react-dom: ^18 || >=19.0.0-0
       styled-components: ^5.2 || ^6
+
+  '@sanity/ui@5.0.0-alpha.1':
+    resolution: {integrity: sha512-KBHqAko3jnnruZoEC4kVTJCAGGFu7zRPUWZhCCmnoN0Z1XVYtMcYynT91MPkcjMfIa8Cpx3B5kPMdtgf+VXxbA==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    hasBin: true
+    peerDependencies:
+      react: ^19.2
+      react-dom: ^19.2
 
   '@sanity/uuid@3.0.3':
     resolution: {integrity: sha512-aJvKuFwzcZKRwuIjrRPfXfXKpSdnLF4CnedV5WcX1n5SzhufvRNHIot5lkx1+Y1DwiMVQOZ5gDSPJH+P6Ao70A==}
@@ -17648,16 +17648,6 @@ snapshots:
 
   '@sanity-labs/design-tokens@0.0.2-alpha.4': {}
 
-  '@sanity-labs/ui-poc@0.0.1-alpha.25(react-dom@19.2.8)(react@19.2.8)':
-    dependencies:
-      '@sanity-labs/design-tokens': 0.0.2-alpha.4
-      '@sanity/icons': 3.8.0(react@19.2.8)
-      clsx: 2.1.1
-      comment-json: 5.0.0
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
-      react-refractor: 4.0.0(react@19.2.8)
-
   '@sanity/ailf@7.33.0(@aws-sdk/credential-provider-node@3.972.70)(@noble/hashes@2.2.0)(@smithy/signature-v4@5.6.6)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.22.0)(playwright-core@1.62.1)(socks@2.8.9)(supports-color@8.1.1)':
     dependencies:
       '@google-cloud/bigquery': 8.3.1(supports-color@8.1.1)
@@ -18430,6 +18420,16 @@ snapshots:
       use-effect-event: 2.0.3(react@19.2.8)
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
+
+  '@sanity/ui@5.0.0-alpha.1(react-dom@19.2.8)(react@19.2.8)':
+    dependencies:
+      '@sanity-labs/design-tokens': 0.0.2-alpha.4
+      '@sanity/icons': 3.8.0(react@19.2.8)
+      clsx: 2.1.1
+      comment-json: 5.0.0
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      react-refractor: 4.0.0(react@19.2.8)
 
   '@sanity/uuid@3.0.3':
     dependencies:
