@@ -211,6 +211,11 @@
     "import/newline-after-import": "error",
     "import/no-duplicates": ["error", {"prefer-inline": true}],
     "import/consistent-type-specifier-style": ["error", "prefer-inline"],
+    // Prevent new runtime import cycles (type-only imports are not counted). The known
+    // architectural cycles are excluded via an override below; shrink that list over time
+    // instead of adding to it. The tsdown build (`checks.circularDependency`) is the
+    // complementary bundle-level check.
+    "import/no-cycle": "error",
     // Side-effect CSS imports are intentional (bundler injects styles)
     "import/no-unassigned-import": ["error", {"allow": ["**/*.css"]}],
     "import/extensions": [
@@ -332,6 +337,26 @@
     "jsx_a11y/aria-proptypes": "off"
   },
   "overrides": [
+    {
+      // Known architectural runtime import cycles, excluded from `import/no-cycle` until they
+      // are untangled (needs lazy resolution / registry redesign, tracked in PR 13753):
+      // - the form middleware-components system (default input/preview resolution is recursive:
+      //   arrays render nested inputs through the registry that includes arrays)
+      // - the field diff-component registry (`resolveDiffComponent` <-> `defaultComponents` <->
+      //   `ChangeList`) and `Preview`/divergence, which resolve through the form system
+      // - `structureBuilder`'s `ListItem` <-> `List` (the builders `instanceof`-check each other)
+      // Shrink this list when cycles are fixed; do not add new entries.
+      "files": [
+        "packages/sanity/src/core/divergence/**/*",
+        "packages/sanity/src/core/field/diff/**/*",
+        "packages/sanity/src/core/field/types/**/*",
+        "packages/sanity/src/core/form/**/*",
+        "packages/sanity/src/core/preview/components/Preview.tsx",
+        "packages/sanity/src/structure/structureBuilder/List.ts",
+        "packages/sanity/src/structure/structureBuilder/ListItem.ts"
+      ],
+      "rules": {"import/no-cycle": "off"}
+    },
     {
       "files": ["scripts/**/*", "examples/functions/**/*"],
       "rules": {"no-console": "off", "no-unsafe-type-assertion": "off"}
