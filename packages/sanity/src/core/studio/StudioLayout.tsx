@@ -146,6 +146,16 @@ export function StudioLayoutComponent() {
 
   const toolControlsDocumentTitle = !!activeTool?.controlsDocumentTitle
 
+  // Keep using an effect (rather than a declarative `<title>`) so that when a
+  // tool takes over `document.title` we leave the previous value in place until
+  // that tool mounts its own title — unmounting a React `<title>` would clear it.
+  useEffect(() => {
+    if (toolControlsDocumentTitle) {
+      return
+    }
+    document.title = documentTitle
+  }, [documentTitle, toolControlsDocumentTitle])
+
   // Fire a one-shot "Studio Ready" telemetry event the first time the
   // active tool resolves. Gives us a user-perceived "Studio is interactive"
   // timing, from browser navigation start to first tool render.
@@ -219,49 +229,45 @@ export function StudioLayoutComponent() {
   }, [])
 
   return (
-    <>
-      {/* React 19 hoists `<title>` elements rendered anywhere in the tree up to `<head>`. */}
-      {!toolControlsDocumentTitle && <title>{documentTitle}</title>}
-      <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
-        <NavbarContext.Provider value={navbarContextValue}>
-          {/* oxlint-disable-next-line react/react-compiler -- Navbar comes from useNavbarComponent(), stable per workspace */}
-          <Navbar />
-        </NavbarContext.Provider>
-        <UnclaimedProjectNudge />
-        {isLegacyDeskRedirect && <RedirectingScreen />}
-        {!activeTool && defaultRouteTools.length === 0 && <NoToolsScreen />}
-        {tools.length > 0 && !activeTool && activeToolName && !isLegacyDeskRedirect && (
-          <ToolNotFoundScreen toolName={activeToolName} />
-        )}
-        {searchFullscreenOpen && (
-          <SearchFullscreenPortalCard ref={setSearchFullscreenPortalEl} overflow="auto" />
-        )}
-        {/* By using the tool name as the key on the error boundary, we force it to re-render
-            when switching tools, which ensures we don't show the wrong tool having crashed */}
-        <StudioErrorBoundary
-          key={activeTool?.name}
-          heading={`The ${activeTool?.name} tool crashed`}
-          getErrorScreen={getErrorScreen}
-        >
-          {detectViteDevServerStopped && <DetectViteDevServerStopped />}
-          <Card flex={1} hidden={searchFullscreenOpen}>
-            {activeTool && activeToolName && (
-              <RouteScope
-                scope={activeToolName}
-                __unsafe_disableScopedSearchParams={
-                  activeTool.router?.__unsafe_disableScopedSearchParams
-                }
-              >
-                <Suspense fallback={<LoadingBlock showText />}>
-                  {/* oxlint-disable-next-line react/react-compiler -- ActiveToolLayout comes from useActiveToolLayoutComponent(), stable per workspace */}
-                  <ActiveToolLayout activeTool={activeTool} />
-                  <ToolMountTimer toolName={activeTool.name} t0Ref={toolMountT0Ref} />
-                </Suspense>
-              </RouteScope>
-            )}
-          </Card>
-        </StudioErrorBoundary>
-      </Flex>
-    </>
+    <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
+      <NavbarContext.Provider value={navbarContextValue}>
+        {/* oxlint-disable-next-line react/react-compiler -- Navbar comes from useNavbarComponent(), stable per workspace */}
+        <Navbar />
+      </NavbarContext.Provider>
+      <UnclaimedProjectNudge />
+      {isLegacyDeskRedirect && <RedirectingScreen />}
+      {!activeTool && defaultRouteTools.length === 0 && <NoToolsScreen />}
+      {tools.length > 0 && !activeTool && activeToolName && !isLegacyDeskRedirect && (
+        <ToolNotFoundScreen toolName={activeToolName} />
+      )}
+      {searchFullscreenOpen && (
+        <SearchFullscreenPortalCard ref={setSearchFullscreenPortalEl} overflow="auto" />
+      )}
+      {/* By using the tool name as the key on the error boundary, we force it to re-render
+          when switching tools, which ensures we don't show the wrong tool having crashed */}
+      <StudioErrorBoundary
+        key={activeTool?.name}
+        heading={`The ${activeTool?.name} tool crashed`}
+        getErrorScreen={getErrorScreen}
+      >
+        {detectViteDevServerStopped && <DetectViteDevServerStopped />}
+        <Card flex={1} hidden={searchFullscreenOpen}>
+          {activeTool && activeToolName && (
+            <RouteScope
+              scope={activeToolName}
+              __unsafe_disableScopedSearchParams={
+                activeTool.router?.__unsafe_disableScopedSearchParams
+              }
+            >
+              <Suspense fallback={<LoadingBlock showText />}>
+                {/* oxlint-disable-next-line react/react-compiler -- ActiveToolLayout comes from useActiveToolLayoutComponent(), stable per workspace */}
+                <ActiveToolLayout activeTool={activeTool} />
+                <ToolMountTimer toolName={activeTool.name} t0Ref={toolMountT0Ref} />
+              </Suspense>
+            </RouteScope>
+          )}
+        </Card>
+      </StudioErrorBoundary>
+    </Flex>
   )
 }

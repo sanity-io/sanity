@@ -1,4 +1,5 @@
 import {type SanityDocument, type ObjectSchemaType} from '@sanity/types'
+import {useState} from 'react'
 import {useTranslation, useValuePreview} from 'sanity'
 
 import {LOADING_PANE} from '../../constants'
@@ -16,11 +17,17 @@ export const DocumentTitle = ({
   displayed,
   ready,
   schemaType,
+  enabled = true,
 }: {
   isDeleted: boolean
   displayed: Partial<SanityDocument>
   ready: boolean
   schemaType: ObjectSchemaType | undefined
+  /**
+   * When false, this pane must not render a `<title>` (e.g. not the last pane,
+   * or StructureTitle is supplying an explicit pane title via PassthroughTitle).
+   */
+  enabled?: boolean
 }) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const isNewDocument = !displayed?._createdAt
@@ -29,6 +36,7 @@ export const DocumentTitle = ({
     schemaType,
     value: displayed,
   })
+  const [committedTitle, setCommittedTitle] = useState<string | null>(null)
 
   // if the document is deleted, we don't want to show the title
   const documentTitle = isDeleted
@@ -40,13 +48,27 @@ export const DocumentTitle = ({
       : value?.title || t('browser-document-title.untitled-document')
 
   const newTitle = useConstructDocumentTitle(documentTitle)
+  const titleReady = ready && !previewValueIsLoading
 
-  // Keep the previous document title until the preview value is ready, to
-  // avoid briefly flashing an "Untitled" title while it loads.
-  if (!ready || previewValueIsLoading) return null
+  // Commit the resolved title during render so loading re-renders can keep
+  // showing it. Returning null would unmount the hoisted `<title>` and discard
+  // the previous value — unlike the old effect, which simply skipped assignment.
+  if (enabled && titleReady && committedTitle !== newTitle) {
+    setCommittedTitle(newTitle)
+  }
+
+  // React requires a single `<title>` at a time; only the active owner renders one.
+  if (!enabled) {
+    return null
+  }
+
+  const titleToRender = titleReady ? newTitle : committedTitle
+  if (titleToRender === null) {
+    return null
+  }
 
   // React 19 hoists `<title>` elements rendered anywhere in the tree up to `<head>`.
-  return <title>{newTitle}</title>
+  return <title>{titleToRender}</title>
 }
 
 const PassthroughTitle = (props: {title?: string}) => {

@@ -56,6 +56,7 @@ import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentTitle} from '../../components/structureTool/StructureTitle'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDeletedDocumentLastRevision} from '../../hooks/useDeletedDocumentLastRevision'
+import {useResolvedPanesList} from '../../structureResolvers/useResolvedPanesList'
 import {type PaneMenuItem} from '../../types'
 import {
   InlineChangesSwitchedOff,
@@ -123,12 +124,16 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const router = useRouter()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
+  const {resolvedPanes} = useResolvedPanesList()
   const {
     options,
     menuItemGroups = DEFAULT_MENU_ITEM_GROUPS,
     title = null,
     views: viewsProp = [],
   } = pane
+  // Only the last pane may own the browser `<title>`. When the structure
+  // builder supplies an explicit pane title, StructureTitle renders it instead.
+  const controlsBrowserTitle = index === resolvedPanes.length - 1 && !title
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const paneOptions = useUnique(options)
   const documentIdRaw = paneOptions.id
@@ -775,6 +780,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
             displayed={displayed}
             ready={ready}
             schemaType={schemaType}
+            enabled={controlsBrowserTitle}
           />
           <ParseErrorsProvider>{children}</ParseErrorsProvider>
         </DivergencesProvider>
