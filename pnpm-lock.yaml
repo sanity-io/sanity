@@ -1689,7 +1689,7 @@ importers:
         specifier: ^3.0.8
         version: 3.0.8
       '@sanity/comlink':
-        specifier: ^4.0.1
+        specifier: ^4.0.3
         version: 4.0.3
       '@sanity/diff':
         specifier: workspace:*
