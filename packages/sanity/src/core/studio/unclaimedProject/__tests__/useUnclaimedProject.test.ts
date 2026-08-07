@@ -104,7 +104,7 @@ describe('useUnclaimedProject', () => {
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
-  it('reports claimed and cleans up when the project moved to a real organization', async () => {
+  it('reports claimed, keeps mint provenance, and clears snooze state', async () => {
     mockRequest.mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
     writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
     writeUnclaimedProjectSnoozedAt(PROJECT_ID, new Date().toISOString())
@@ -112,8 +112,23 @@ describe('useUnclaimedProject', () => {
     const {result} = renderHook(() => useUnclaimedProject())
 
     await waitFor(() => expect(result.current).toEqual({status: 'claimed'}))
-    expect(readUnclaimedProjectRecord(PROJECT_ID)).toBeUndefined()
+    expect(readUnclaimedProjectRecord(PROJECT_ID)).toEqual({claimUrl: CLAIM_URL})
     expect(readUnclaimedProjectSnoozedAt(PROJECT_ID)).toBeUndefined()
+  })
+
+  it('restores the claimed state after a remount while the robot session remains active', async () => {
+    mockRequest.mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
+    writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
+
+    const first = renderHook(() => useUnclaimedProject())
+    await waitFor(() => expect(first.result.current).toEqual({status: 'claimed'}))
+    first.unmount()
+
+    const second = renderHook(() => useUnclaimedProject())
+    await waitFor(() => expect(second.result.current).toEqual({status: 'claimed'}))
+
+    expect(readUnclaimedProjectRecord(PROJECT_ID)).toEqual({claimUrl: CLAIM_URL})
+    expect(mockRequest).toHaveBeenCalledTimes(2)
   })
 
   it('resolves the sole human project member for the claimed sign-in CTA', async () => {
@@ -388,7 +403,7 @@ describe('useUnclaimedProject', () => {
     const {result} = renderHook(() => useUnclaimedProject())
 
     await waitFor(() => expect(result.current).toEqual({status: 'claimed'}))
-    expect(readUnclaimedProjectRecord(PROJECT_ID)).toBeUndefined()
+    expect(readUnclaimedProjectRecord(PROJECT_ID)).toMatchObject({claimUrl: CLAIM_URL})
   })
 
   it('keeps the countdown when the lookup is rate-limited', async () => {
