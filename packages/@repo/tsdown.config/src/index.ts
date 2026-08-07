@@ -19,10 +19,6 @@ import {type UserConfig} from 'tsdown'
  * - `outDir: 'lib'` - the packages publish `lib`, not tsdown's default `dist`
  * - `clean: ['lib']` - remove `lib` before each build (include `outDir` when overriding with
  *   a package-specific array; a `string[]` replaces tsdown's default of cleaning only `outDir`)
- *
- * `@sanity/tsdown-config` enables rolldown's circular dependency check and suppresses the
- * type-only `.d.ts` cycles from the declaration bundling pass, so only runtime import cycles
- * warn during builds.
  */
 export function defineConfig(options: PackageOptions = {}): Promise<UserConfig> {
   return defineTsdownConfig({
