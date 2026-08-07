@@ -1761,8 +1761,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       '@sanity/workbench':
-        specifier: 0.1.0-alpha.36
-        version: 0.1.0-alpha.36(@sanity/sdk@2.19.0)(react@19.2.8)(xstate@5.32.5)
+        specifier: 0.1.0-alpha.41
+        version: 0.1.0-alpha.41(@sanity/sdk@2.19.0)(react@19.2.8)(xstate@5.32.5)
       '@sentry/react':
         specifier: ^10.68.0
         version: 10.68.0(react@19.2.8)
@@ -6097,6 +6097,10 @@ packages:
     resolution: {integrity: sha512-7GEzTFRY6kWRjHbJYUDEGKPXHVl/XItGpV5LYCLcWMvBlgfujXuAjdp4hJVZqX8F8OtBzIFqdhiSn5Kh5u/V5Q==}
     engines: {node: '>=20'}
 
+  '@sanity/client@7.26.2':
+    resolution: {integrity: sha512-iEkGiHbrxCnT/A30A6pH+vX4otP3lLp935Vwuv0/YrnETxrKCn6PnsZU+TfTm6ZEZ9kZGs8wKP5yBLmZw5S6OQ==}
+    engines: {node: '>=20'}
+
   '@sanity/code-input@7.3.3':
     resolution: {integrity: sha512-SVxDJKXGI6t5GeaSu9Ve5Ap83vLR2rMGhHK1mcqOa6NJlUuyWGHsZm3yfk7U9fTWnUz+e3rU5JtYA2GTBaq8cw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -6421,11 +6425,11 @@ packages:
     resolution: {integrity: sha512-h9+AUoL0wKOSAhPMNmH1rFqZawNdkDogPg5W1avOfAwwm6DtqAFi63OCd2DtCqSStuq3OH9jOB9k6sgq7hnPjA==}
     engines: {node: '>=22.12'}
 
-  '@sanity/workbench@0.1.0-alpha.36':
-    resolution: {integrity: sha512-1gkMw1LezDFTu7I+F+R4RtruTkjdoy6B9LM56cNSMo48S1fAmFSWY5JIAv7aA/WipzXwiMVnctAmIAo7lF9rMQ==}
+  '@sanity/workbench@0.1.0-alpha.41':
+    resolution: {integrity: sha512-8k1jROB1DHD1T4tt+noGaYswLTzTDZv8lRankeusSh9UGGXdHBYaXv0mCfdV9P5kNnCqWN/cmhkAOmE/8or2Zg==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     peerDependencies:
-      '@sanity/sdk': ^2.9.0
+      '@sanity/sdk': ^3.0.0-rc.1
       xstate: ^5.31.0
 
   '@sanity/worker-channels@2.0.0':
@@ -11042,6 +11046,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  nanoid@3.3.17:
+    resolution: {integrity: sha512-xQLf0A3HOMlgHq0n247/LRuAOYmB7dXJ/DvAxGvsSBij45XtBSmQycu+F8ODbHwns/XyFZagyL1+J0Offw1E0g==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
   nanoid@5.1.16:
     resolution: {integrity: sha512-kVrnsrJqMR8+oLJnGEmSWw9BivK5mt7H3FZatVRjrc5wGqFYuBxX1yG7+A7Gi5AefkX6t/oCkizcQgpu0cY1dQ==}
     engines: {node: ^18 || >=20}
@@ -15346,7 +15355,7 @@ snapshots:
   '@codemirror/lint@6.9.7':
     dependencies:
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.6
+      '@codemirror/view': 6.43.7
       crelt: 1.0.7
 
   '@codemirror/search@6.7.1':
@@ -15363,7 +15372,7 @@ snapshots:
     dependencies:
       '@codemirror/language': 6.12.4
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.6
+      '@codemirror/view': 6.43.7
       '@lezer/highlight': 1.2.3
 
   '@codemirror/view@6.43.6':
@@ -17980,6 +17989,13 @@ snapshots:
       nanoid: 3.3.16
       rxjs: 7.8.2
 
+  '@sanity/client@7.26.2':
+    dependencies:
+      '@sanity/eventsource': 5.0.4
+      get-it: 8.8.3
+      nanoid: 3.3.17
+      rxjs: 7.8.2
+
   '@sanity/code-input@7.3.3(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4)':
     dependencies:
       '@codemirror/lang-html': 6.4.11
@@ -18562,10 +18578,10 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/workbench@0.1.0-alpha.36(@sanity/sdk@2.19.0)(react@19.2.8)(xstate@5.32.5)':
+  '@sanity/workbench@0.1.0-alpha.41(@sanity/sdk@2.19.0)(react@19.2.8)(xstate@5.32.5)':
     dependencies:
       '@module-federation/runtime': 2.8.1
-      '@sanity/client': 7.26.0
+      '@sanity/client': 7.26.2
       '@sanity/color': 3.0.8
       '@sanity/sdk': 2.19.0(@types/react@19.2.18)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
@@ -20681,7 +20697,7 @@ snapshots:
       '@codemirror/lint': 6.9.7
       '@codemirror/search': 6.7.1
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.6
+      '@codemirror/view': 6.43.7
 
   color-convert@2.0.1:
     dependencies:
@@ -23344,6 +23360,8 @@ snapshots:
   nano-pubsub@3.0.0: {}
 
   nanoid@3.3.16: {}
+
+  nanoid@3.3.17: {}
 
   nanoid@5.1.16: {}
 
