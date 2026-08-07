@@ -1,5 +1,4 @@
 import {type SanityDocument, type ObjectSchemaType} from '@sanity/types'
-import {useEffect} from 'react'
 import {useTranslation, useValuePreview} from 'sanity'
 
 import {LOADING_PANE} from '../../constants'
@@ -41,23 +40,19 @@ export const DocumentTitle = ({
       : value?.title || t('browser-document-title.untitled-document')
 
   const newTitle = useConstructDocumentTitle(documentTitle)
-  useEffect(() => {
-    if (!ready || previewValueIsLoading) return
-    // Set the title as the document title
-    document.title = newTitle
-  }, [documentTitle, ready, newTitle, previewValueIsLoading])
 
-  return null
+  // Keep the previous document title until the preview value is ready, to
+  // avoid briefly flashing an "Untitled" title while it loads.
+  if (!ready || previewValueIsLoading) return null
+
+  // React 19 hoists `<title>` elements rendered anywhere in the tree up to `<head>`.
+  return <title>{newTitle}</title>
 }
 
 const PassthroughTitle = (props: {title?: string}) => {
   const {title} = props
   const newTitle = useConstructDocumentTitle(title)
-  useEffect(() => {
-    // Set the title as the document title
-    document.title = newTitle
-  }, [newTitle, title])
-  return null
+  return <title>{newTitle}</title>
 }
 
 export const StructureTitle = (props: StructureTitleProps) => {
