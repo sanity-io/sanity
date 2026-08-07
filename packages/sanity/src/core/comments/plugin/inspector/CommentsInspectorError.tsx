@@ -1,4 +1,5 @@
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'

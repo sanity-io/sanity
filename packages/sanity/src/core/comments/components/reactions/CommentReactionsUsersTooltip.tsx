@@ -1,7 +1,8 @@
 import {type CurrentUser} from '@sanity/types'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useListFormat} from '../../../hooks/useListFormat'
