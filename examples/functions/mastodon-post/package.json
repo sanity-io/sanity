@@ -4,7 +4,7 @@
   "main": "index.ts",
   "dependencies": {
     "@humanwhocodes/crosspost": "^1.0.4",
-    "@sanity/functions": "^1.4.0"
+    "@sanity/functions": "^1.6.1"
   },
   "blueprintResourceItem": {
     "type": "sanity.function.document",
