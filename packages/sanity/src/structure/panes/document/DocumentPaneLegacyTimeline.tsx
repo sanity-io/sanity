@@ -4,9 +4,9 @@ import {getPublishedId, useTimelineSelector, useTimelineStore} from 'sanity'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {EMPTY_PARAMS} from './constants'
-import {usePaneOptions} from './DocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'
+import {usePaneOptions} from './usePaneOptions'
 
 export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderProps) => {
   const {pane} = props

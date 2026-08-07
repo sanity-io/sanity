@@ -13,15 +13,13 @@ import {PreviewLoader} from '../../preview/components/PreviewLoader'
 import {EMPTY_ARRAY} from '../../util/empty'
 import {FormValueProvider} from '../contexts/FormValue'
 import {GetFormValueProvider} from '../contexts/GetFormValue'
-import {
-  useAnnotationComponent,
-  useBlockComponent,
-  useFieldComponent,
-  useInlineBlockComponent,
-  useInputComponent,
-  useItemComponent,
-  usePreviewComponent,
-} from '../form-components-hooks/componentHooks'
+import {useAnnotationComponent} from '../form-components-hooks/useAnnotationComponent'
+import {useBlockComponent} from '../form-components-hooks/useBlockComponent'
+import {useFieldComponent} from '../form-components-hooks/useFieldComponent'
+import {useInlineBlockComponent} from '../form-components-hooks/useInlineBlockComponent'
+import {useInputComponent} from '../form-components-hooks/useInputComponent'
+import {useItemComponent} from '../form-components-hooks/useItemComponent'
+import {usePreviewComponent} from '../form-components-hooks/usePreviewComponent'
 import {FullscreenPTEProvider} from '../inputs/PortableText/contexts/fullscreen'
 import {type PatchChannel} from '../patch/PatchChannel'
 import {PatchEvent} from '../patch/PatchEvent'

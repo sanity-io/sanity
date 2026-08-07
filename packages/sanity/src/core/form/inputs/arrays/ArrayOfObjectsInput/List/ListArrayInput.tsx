@@ -5,7 +5,7 @@ import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
-import {useItemComponent} from '../../../../form-components-hooks/componentHooks'
+import {useItemComponent} from '../../../../form-components-hooks/useItemComponent'
 import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
