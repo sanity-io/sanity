@@ -1,6 +1,7 @@
-import {type ArraySchemaType, type FormNodeValidation} from '@sanity/types'
+import {type ArraySchemaType, type FormNodeValidation, type Path} from '@sanity/types'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -43,37 +44,59 @@ function ValidationProbe() {
   )
 }
 
-function createSchemaType(max?: number): ArraySchemaType {
+function createSchemaType(options: {max?: number; collapseItemsAfter?: number | false}) {
+  const {max, collapseItemsAfter} = options
   return {
     name: 'testArray',
     jsonType: 'array',
     of: [{name: 'testItem', jsonType: 'object', type: {name: 'testItem', jsonType: 'object'}}],
+    options: {collapseItemsAfter},
     validation:
       max !== undefined ? [{_rules: [{flag: 'max' as const, constraint: max}]}] : undefined,
   } as ArraySchemaType
 }
 
-function renderListArrayInput(options: {
+interface RenderOptions {
+  collapseItemsAfter?: number | false
+  focusPath?: Path
   max?: number
   memberCount: number
+  openMemberKey?: string
   validation?: FormNodeValidation[]
-}) {
-  const members = Array.from({length: options.memberCount}, (_, idx) => ({key: `key-${idx}`}))
-  const props = {
+}
+
+function createProps(options: RenderOptions) {
+  const members = Array.from({length: options.memberCount}, (_, idx) => ({
+    key: `key-${idx}`,
+    open: `key-${idx}` === options.openMemberKey,
+  }))
+
+  return {
     arrayFunctions: ValidationProbe,
     elementProps: {id: 'test', onFocus: vi.fn(), onBlur: vi.fn(), ref: {current: null}},
     members,
-    schemaType: createSchemaType(options.max),
-    focusPath: [],
+    schemaType: createSchemaType({
+      max: options.max,
+      collapseItemsAfter: options.collapseItemsAfter,
+    }),
+    focusPath: options.focusPath ?? [],
     validation: options.validation,
   } as unknown as ArrayOfObjectsInputProps<ObjectItem>
+}
 
-  return render(<ListArrayInput {...props} />, {
+function renderListArrayInput(options: RenderOptions) {
+  return render(<ListArrayInput {...createProps(options)} />, {
     wrapper: ({children}: {children: ReactNode}) => (
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
     ),
   })
+}
+
+function renderedMemberKeys(): string[] {
+  const calls = virtualizedArrayListMock.mock.calls
+  const passedProps = calls[calls.length - 1][0] as {members: {key: string}[]}
+  return passedProps.members.map((member) => member.key)
 }
 
 describe('ListArrayInput', () => {
@@ -135,5 +158,72 @@ describe('ListArrayInput', () => {
 
     const emptyCard = container.querySelector('[data-ui="Card"]')
     expect(emptyCard).not.toHaveAttribute('data-tone', 'critical')
+  })
+
+  describe('collapsing long arrays', () => {
+    it('renders every item when collapsing would hide fewer than three of them', () => {
+      renderListArrayInput({memberCount: 6})
+
+      expect(renderedMemberKeys()).toHaveLength(6)
+      expect(screen.queryByTestId('array-items-toggle')).toBeNull()
+    })
+
+    it('renders the first four items and a toggle when the array is long', () => {
+      renderListArrayInput({memberCount: 10})
+
+      expect(renderedMemberKeys()).toEqual(['key-0', 'key-1', 'key-2', 'key-3'])
+      expect(screen.getByTestId('array-items-toggle')).toBeInTheDocument()
+    })
+
+    it('reports the full item count to the validation context while collapsed', () => {
+      renderListArrayInput({max: 10, memberCount: 10})
+
+      expect(screen.getByTestId('max-reached')).toHaveTextContent('true')
+    })
+
+    it('renders every item once the toggle is used, and collapses again on a second use', async () => {
+      renderListArrayInput({memberCount: 10})
+
+      await userEvent.click(screen.getByRole('button', {expanded: false}))
+      expect(renderedMemberKeys()).toHaveLength(10)
+
+      await userEvent.click(screen.getByRole('button', {expanded: true}))
+      expect(renderedMemberKeys()).toHaveLength(4)
+    })
+
+    it('expands when the focus path points at a hidden item', () => {
+      renderListArrayInput({memberCount: 10, focusPath: [{_key: 'key-8'}]})
+
+      expect(renderedMemberKeys()).toHaveLength(10)
+    })
+
+    it('expands when a hidden item is open for editing', () => {
+      renderListArrayInput({memberCount: 10, openMemberKey: 'key-8'})
+
+      expect(renderedMemberKeys()).toHaveLength(10)
+    })
+
+    it('stays expanded after focus leaves a hidden item', () => {
+      const {rerender} = renderListArrayInput({memberCount: 10, focusPath: [{_key: 'key-8'}]})
+
+      expect(renderedMemberKeys()).toHaveLength(10)
+
+      rerender(<ListArrayInput {...createProps({memberCount: 10})} />)
+
+      expect(renderedMemberKeys()).toHaveLength(10)
+    })
+
+    it('honours a per-field item limit', () => {
+      renderListArrayInput({collapseItemsAfter: 2, memberCount: 10})
+
+      expect(renderedMemberKeys()).toEqual(['key-0', 'key-1'])
+    })
+
+    it('never collapses when the field opts out', () => {
+      renderListArrayInput({collapseItemsAfter: false, memberCount: 50})
+
+      expect(renderedMemberKeys()).toHaveLength(50)
+      expect(screen.queryByTestId('array-items-toggle')).toBeNull()
+    })
   })
 })

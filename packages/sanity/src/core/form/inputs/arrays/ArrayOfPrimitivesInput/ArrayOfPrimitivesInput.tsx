@@ -4,11 +4,15 @@ import {PureComponent} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {ArrayOfPrimitivesItem} from '../../../members/array/items/ArrayOfPrimitivesItem'
+import {type ArrayOfPrimitivesMember} from '../../../store/types/members'
 import {type ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
 import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
+import {ArrayItemsToggle} from '../common/ArrayItemsToggle'
 import {ArrayValidationProvider} from '../common/ArrayValidationContext'
+import {CollapsibleArrayItems} from '../common/CollapsibleArrayItems'
 import {Item, List} from '../common/list'
+import {getFocusedItemIndex} from '../common/useCollapsibleArrayItems'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 import {UploadTargetCard} from './arrayOfPrimitiveUploadTarget'
 import {getEmptyValue} from './getEmptyValue'
@@ -19,6 +23,14 @@ import {nearestIndexOf} from './utils/nearestIndex'
 
 interface State {
   disableTransition: boolean
+}
+
+/**
+ * dndkit restores focus by item id, so the id has to change when an item's value moves to a
+ * different position. Keying on position alone would restore focus to the original index.
+ */
+function getSortId(member: ArrayOfPrimitivesMember): string {
+  return `${member.key}-${member.kind === 'item' ? member.item.value : 'error'}`
 }
 
 /**
@@ -150,6 +162,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
     const {
       schemaType,
       members,
+      focusPath,
       readOnly,
       renderInput,
       onUpload,
@@ -168,13 +181,6 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
     const hasErrors = validation?.some((v) => v.level === 'error')
     const errorTone: CardTone | undefined = hasErrors ? 'critical' : undefined
 
-    // Note: we need this in order to generate new id's when items are moved around in the list
-    // without it, dndkit will restore focus on the original index of the dragged item
-    const membersWithSortIds = members.map((member) => ({
-      id: `${member.key}-${member.kind === 'item' ? member.item.value : 'error'}`,
-      member: member,
-    }))
-
     return (
       <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
         <Stack gap={2} data-testid="array-primitives-input">
@@ -186,55 +192,71 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
             tabIndex={0}
           >
             <Stack gap={1}>
-              {membersWithSortIds.length === 0 ? (
+              {members.length === 0 ? (
                 <NoItemsPlaceholder schemaType={schemaType} validation={validation} />
               ) : (
-                <Card padding={1} border tone={errorTone}>
-                  <List
-                    onItemMove={this.handleSortEnd}
-                    onItemMoveStart={this.handleItemMoveStart}
-                    onItemMoveEnd={this.handleItemMoveEnd}
-                    items={membersWithSortIds.map((m) => m.id)}
-                    sortable={isSortable}
-                    gap={isGrid ? 3 : 1}
-                    gridTemplateColumns={isGrid ? [2, 3, 4] : 1}
-                    padding={isGrid ? 1 : undefined}
-                    margin={isGrid ? 1 : undefined}
-                  >
-                    {membersWithSortIds.map(({member, id}, index) => {
-                      return (
-                        <Item
-                          key={member.key}
-                          id={id}
+                <CollapsibleArrayItems
+                  members={members}
+                  schemaType={schemaType}
+                  layout={isGrid ? 'grid' : 'list'}
+                  focusedIndex={getFocusedItemIndex(focusPath)}
+                >
+                  {({collapsible, expanded, onToggle, visibleMembers}) => (
+                    <>
+                      <Card padding={1} border tone={errorTone}>
+                        <List
+                          onItemMove={this.handleSortEnd}
+                          onItemMoveStart={this.handleItemMoveStart}
+                          onItemMoveEnd={this.handleItemMoveEnd}
+                          items={visibleMembers.map(getSortId)}
                           sortable={isSortable}
-                          disableTransition={this.state.disableTransition}
+                          gap={isGrid ? 3 : 1}
+                          gridTemplateColumns={isGrid ? [2, 3, 4] : 1}
+                          padding={isGrid ? 1 : undefined}
+                          margin={isGrid ? 1 : undefined}
                         >
-                          {member.kind === 'item' && (
-                            <ChangeIndicator
-                              path={member.item.path}
-                              isChanged={changed}
-                              hasFocus={false}
-                            >
-                              <ArrayOfPrimitivesItem
-                                member={member}
-                                renderItem={this.renderArrayItem}
-                                renderInput={renderInput}
-                              />
-                            </ChangeIndicator>
-                          )}
-                          {member.kind === 'error' && (
-                            <ErrorItem
-                              readOnly={readOnly}
+                          {visibleMembers.map((member) => (
+                            <Item
+                              key={member.key}
+                              id={getSortId(member)}
                               sortable={isSortable}
-                              member={member}
-                              onRemove={() => onItemRemove(index)}
-                            />
-                          )}
-                        </Item>
-                      )
-                    })}
-                  </List>
-                </Card>
+                              disableTransition={this.state.disableTransition}
+                            >
+                              {member.kind === 'item' && (
+                                <ChangeIndicator
+                                  path={member.item.path}
+                                  isChanged={changed}
+                                  hasFocus={false}
+                                >
+                                  <ArrayOfPrimitivesItem
+                                    member={member}
+                                    renderItem={this.renderArrayItem}
+                                    renderInput={renderInput}
+                                  />
+                                </ChangeIndicator>
+                              )}
+                              {member.kind === 'error' && (
+                                <ErrorItem
+                                  readOnly={readOnly}
+                                  sortable={isSortable}
+                                  member={member}
+                                  onRemove={() => onItemRemove(member.index)}
+                                />
+                              )}
+                            </Item>
+                          ))}
+                        </List>
+                      </Card>
+                      {collapsible && (
+                        <ArrayItemsToggle
+                          expanded={expanded}
+                          onToggle={onToggle}
+                          totalCount={members.length}
+                        />
+                      )}
+                    </>
+                  )}
+                </CollapsibleArrayItems>
               )}
             </Stack>
           </UploadTargetCard>

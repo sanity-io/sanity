@@ -1,5 +1,4 @@
 import {type DragStartEvent} from '@dnd-kit/core'
-import {isKeySegment} from '@sanity/types'
 import {Card, type CardTone, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
@@ -9,7 +8,13 @@ import {useItemComponent} from '../../../../form-components-hooks/componentHooks
 import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
+import {ArrayItemsToggle} from '../../common/ArrayItemsToggle'
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
+import {
+  getFocusedMemberKey,
+  useCollapsibleArrayItems,
+  useFocusedMemberIndex,
+} from '../../common/useCollapsibleArrayItems'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useMemoCompare} from './useMemoCompare'
@@ -56,25 +61,24 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   // Stores the index of the item being dragged
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)
 
-  const memberKeys = useMemoCompare(
-    useMemo(() => members.map((member) => member.key), [members]),
-    shallowEquals,
-  )
-
   const parentRef = useRef<HTMLDivElement>(null)
   // Detect visibility changes to remount virtualizer when becoming visible
   const {isVisible, mountKey} = useVisibilityDetection(parentRef)
 
-  const focusPathKey = useMemo(() => {
-    const segment = focusPath[0]
-    if (isKeySegment(segment)) {
-      return segment._key
-    }
-    if (typeof segment === 'number') {
-      return segment
-    }
-    return undefined
-  }, [focusPath])
+  const focusPathKey = useMemo(() => getFocusedMemberKey(focusPath), [focusPath])
+  const focusedIndex = useFocusedMemberIndex(members, focusPath)
+
+  const {collapsible, expanded, onToggle, visibleMembers} = useCollapsibleArrayItems({
+    members,
+    schemaType,
+    layout: 'list',
+    focusedIndex,
+  })
+
+  const memberKeys = useMemoCompare(
+    useMemo(() => visibleMembers.map((member) => member.key), [visibleMembers]),
+    shallowEquals,
+  )
 
   const handleItemMoveStart = useCallback((event: DragStartEvent) => {
     const {active} = event
@@ -114,7 +118,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
             ) : isVisible ? (
               <VirtualizedArrayList
                 key={mountKey}
-                members={members}
+                members={visibleMembers}
                 tone={errorTone}
                 memberKeys={memberKeys}
                 activeDragItemIndex={activeDragItemIndex}
@@ -137,6 +141,13 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 radius={radius}
               />
             ) : null}
+            {collapsible && (
+              <ArrayItemsToggle
+                expanded={expanded}
+                onToggle={onToggle}
+                totalCount={members.length}
+              />
+            )}
           </Stack>
         </UploadTargetCard>
         <ArrayFunctions
