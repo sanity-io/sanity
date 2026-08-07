@@ -136,7 +136,7 @@ function _objectApply(value: FIXME, patch: FIXME) {
   // The patch is not directed to me
   const [head, ...tail] = patch.path
   if (typeof head !== 'string') {
-    throw new Error(`Expected field name to be a string, instad got: ${head}`)
+    throw new Error(`Expected field name to be a string, instead got: ${head}`)
   }
 
   if (tail.length === 0 && patch.type === 'unset') {

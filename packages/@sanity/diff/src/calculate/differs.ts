@@ -348,7 +348,7 @@ function diffArrayByKey<A>(
     const fromInput = fromArray.at(fromIndex)
     const toInput = toArray.at(toIndex)
 
-    const diff = diffInput(fromInput, toInput)
+    const diff = diffInput(fromInput, toInput, options)
     items.push({
       fromIndex,
       toIndex,
