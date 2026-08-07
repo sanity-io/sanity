@@ -11,7 +11,6 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import shallowEquals from 'shallow-equals'
 
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
@@ -167,15 +166,6 @@ export const appendRestoreDefaultItems = (options: {
   ]
 }
 
-export function useShallowUnique<ValueType>(value: ValueType): ValueType {
-  const [previous, setPrevious] = useState<ValueType>(value)
-  if (!shallowEquals(previous, value)) {
-    setPrevious(value)
-    return value
-  }
-  return previous
-}
-
 /**
  * @internal
  */
@@ -195,7 +185,7 @@ export const PaneContainer = memo(function PaneContainer(
     suppressRestoreDefaultMenuItems,
   } = pane
   const {defaultOrdering = EMPTY_ARRAY, filter} = options
-  const params = useShallowUnique(options.params || EMPTY_RECORD)
+  const params = options.params || EMPTY_RECORD
   const sourceName = pane.source
   const typeName = useMemo(() => {
     const staticTypes = findStaticTypesInFilter(filter, params)
