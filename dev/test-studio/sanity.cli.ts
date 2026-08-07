@@ -1,6 +1,6 @@
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {defineCliConfig} from 'sanity/cli'
-import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
+import {defaultClientConditions, mergeConfig} from 'vite'
 
 const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 // Enables Vite DevTools (https://devtools.vite.dev) for both `sanity dev` and `sanity build`.
@@ -48,7 +48,7 @@ export default defineCliConfig({
       return reactCompilerAllowList.test(filename)
     },
   },
-  async vite(viteConfig: UserConfig, {command, mode}): Promise<UserConfig> {
+  async vite(viteConfig, {command, mode}) {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     let nextConfig = mergeConfig(viteConfig, {
@@ -68,7 +68,7 @@ export default defineCliConfig({
             },
           }
         : {}),
-    } satisfies UserConfig)
+    })
 
     if (isViteDevToolsEnabled) {
       // Lazy import so the devtools package is only loaded when the flag is enabled
@@ -77,7 +77,7 @@ export default defineCliConfig({
         plugins: [DevTools()],
         // `devtools: {}` makes `sanity build` emit a Rolldown build session that the DevTools dock can inspect
         build: {rolldownOptions: {devtools: {}}},
-      } satisfies UserConfig)
+      })
     }
 
     // Support React Production Profiling on deployed studios
@@ -98,14 +98,14 @@ export default defineCliConfig({
             },
           },
         },
-      } satisfies UserConfig)
+      })
     }
 
     // Support hot reloading of files from monorepo workspaces during development
     if (mode !== 'production' && command === 'serve') {
       return mergeConfig(nextConfig, {
         resolve: {conditions: ['monorepo', ...defaultClientConditions]},
-      } satisfies UserConfig)
+      })
     }
 
     return nextConfig
