@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {type ComponentType, useCallback} from 'react'
+import {type ComponentType, useCallback, useMemo} from 'react'
 
 // Each form component hook lives in its own module (together with the default component it
 // resolves) so that form components which consume a sibling hook (e.g. `ListArrayInput` uses
@@ -15,14 +15,20 @@ export function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(
   componentResolver: (schemaType: SchemaType) => ComponentType<Omit<T, 'renderDefault'>>
 }): React.JSX.Element {
   const {componentResolver, componentProps} = props
+  const {schemaType} = componentProps
 
   // NOTE: this will not happen, but we do this to avoid updating too many places
   // TODO: We need to clean up the preview machinery + types to remove this
-  if (!componentProps.schemaType) {
+  if (!schemaType) {
     throw new Error('the `schemaType` property must be defined')
   }
 
-  const DefaultResolvedComponent = componentResolver(componentProps.schemaType)
+  // Memoized so the resolved component keeps a stable identity across renders; a new identity
+  // would make React unmount and remount the subtree.
+  const DefaultResolvedComponent = useMemo(
+    () => componentResolver(schemaType),
+    [componentResolver, schemaType],
+  )
 
   const renderDefault = useCallback(
     (parentTypeProps: T) => {
