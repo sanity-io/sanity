@@ -1942,7 +1942,7 @@ importers:
         specifier: 'catalog:'
         version: 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.0)(vite@8.2.0)
       '@sanity/sdk':
-        specifier: ^2.18.0
+        specifier: ^2.19.0
         version: 2.19.0(@types/react@19.2.18)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
@@ -15346,7 +15346,7 @@ snapshots:
   '@codemirror/lint@6.9.7':
     dependencies:
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.6
+      '@codemirror/view': 6.43.7
       crelt: 1.0.7
 
   '@codemirror/search@6.7.1':
@@ -15363,7 +15363,7 @@ snapshots:
     dependencies:
       '@codemirror/language': 6.12.4
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.6
+      '@codemirror/view': 6.43.7
       '@lezer/highlight': 1.2.3
 
   '@codemirror/view@6.43.6':
@@ -20681,7 +20681,7 @@ snapshots:
       '@codemirror/lint': 6.9.7
       '@codemirror/search': 6.7.1
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.6
+      '@codemirror/view': 6.43.7
 
   color-convert@2.0.1:
     dependencies:
