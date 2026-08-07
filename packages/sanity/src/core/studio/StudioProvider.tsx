@@ -151,21 +151,27 @@ export function StudioProvider({
 
 let _refractorRegistered = false
 
-function ensureRefractorLanguages() {
-  if (_refractorRegistered) return
-  _refractorRegistered = true
-  void import('react-refractor').then(({registerLanguage}) =>
+async function registerRefractorLanguages() {
+  const [{default: registerLanguage}, languages] = await Promise.all([
+    import('./registerRefractorLanguage.lazy'),
     Promise.all([
       import('refractor/bash'),
       import('refractor/javascript'),
       import('refractor/json'),
       import('refractor/jsx'),
       import('refractor/typescript'),
-      import('@sanity/prism-groq').then((m) => ({default: m.refractorGroq})),
-    ])
-      .then((languages) => languages.forEach((lang) => registerLanguage(lang.default)))
-      .catch((error) =>
-        console.warn('Failed to load syntax highlighting languages for code blocks', error),
-      ),
+      import('./refractorGroq.lazy'),
+    ]),
+  ])
+
+  languages.forEach((language) => registerLanguage(language.default))
+}
+
+function ensureRefractorLanguages() {
+  if (_refractorRegistered) return
+  _refractorRegistered = true
+
+  void registerRefractorLanguages().catch((error) =>
+    console.warn('Failed to load syntax highlighting languages for code blocks', error),
   )
 }

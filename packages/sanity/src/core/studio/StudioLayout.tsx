@@ -27,11 +27,7 @@ import {ToolMountTimer} from './ToolMountTimer'
 import {UnclaimedProjectNudge} from './unclaimedProject/UnclaimedProjectNudge'
 import {useWorkspace} from './workspace'
 
-const DetectViteDevServerStopped = lazy(() =>
-  import('./ViteDevServerStopped').then((DevServerStopped) => ({
-    default: DevServerStopped.DetectViteDevServerStopped,
-  })),
-)
+const DetectViteDevServerStopped = lazy(() => import('./DetectViteDevServerStopped.lazy'))
 
 const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
 
