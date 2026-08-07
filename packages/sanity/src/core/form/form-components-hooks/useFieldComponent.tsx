@@ -9,7 +9,7 @@ import {useResolveDefaultComponent} from './useResolveDefaultComponent'
 /**
  * @internal
  */
-export function DefaultField(props: Omit<FieldProps, 'renderDefault'>): React.JSX.Element {
+function DefaultField(props: Omit<FieldProps, 'renderDefault'>): React.JSX.Element {
   return useResolveDefaultComponent<Omit<FieldProps, 'renderDefault'>>({
     componentProps: props,
     componentResolver: defaultResolveFieldComponent,

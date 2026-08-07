@@ -9,7 +9,7 @@ import {useResolveDefaultComponent} from './useResolveDefaultComponent'
 /**
  * @internal
  */
-export function DefaultPreview(props: Omit<PreviewProps, 'renderDefault'>): React.JSX.Element {
+function DefaultPreview(props: Omit<PreviewProps, 'renderDefault'>): React.JSX.Element {
   return useResolveDefaultComponent<PreviewProps>({
     componentProps: props,
     componentResolver: defaultResolvePreviewComponent,

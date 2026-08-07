@@ -9,7 +9,7 @@ import {useResolveDefaultComponent} from './useResolveDefaultComponent'
 /**
  * @internal
  */
-export function DefaultItem(props: Omit<ItemProps, 'renderDefault'>): React.JSX.Element {
+function DefaultItem(props: Omit<ItemProps, 'renderDefault'>): React.JSX.Element {
   return useResolveDefaultComponent<Omit<ItemProps, 'renderDefault'>>({
     componentProps: props,
     componentResolver: defaultResolveItemComponent,

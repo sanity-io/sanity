@@ -9,9 +9,7 @@ import {useResolveDefaultComponent} from './useResolveDefaultComponent'
 /**
  * @internal
  */
-export function DefaultAnnotation(
-  props: Omit<BlockAnnotationProps, 'renderDefault'>,
-): React.JSX.Element {
+function DefaultAnnotation(props: Omit<BlockAnnotationProps, 'renderDefault'>): React.JSX.Element {
   return useResolveDefaultComponent<Omit<BlockAnnotationProps, 'renderDefault'>>({
     componentProps: props,
     componentResolver: defaultResolveAnnotationComponent,

@@ -9,7 +9,7 @@ import {useResolveDefaultComponent} from './useResolveDefaultComponent'
 /**
  * @internal
  */
-export function DefaultInput(props: Omit<InputProps, 'renderDefault'>): React.JSX.Element {
+function DefaultInput(props: Omit<InputProps, 'renderDefault'>): React.JSX.Element {
   return useResolveDefaultComponent<Omit<InputProps, 'renderDefault'>>({
     componentProps: props,
     componentResolver: defaultResolveInputComponent,

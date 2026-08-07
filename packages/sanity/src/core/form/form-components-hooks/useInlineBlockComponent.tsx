@@ -9,7 +9,7 @@ import {useResolveDefaultComponent} from './useResolveDefaultComponent'
 /**
  * @internal
  */
-export function DefaultInlineBlock(props: Omit<BlockProps, 'renderDefault'>): React.JSX.Element {
+function DefaultInlineBlock(props: Omit<BlockProps, 'renderDefault'>): React.JSX.Element {
   return useResolveDefaultComponent<Omit<BlockProps, 'renderDefault'>>({
     componentProps: props,
     componentResolver: defaultResolveInlineBlockComponent,
