@@ -16,6 +16,7 @@ import {
 } from './StructureNodes'
 import {type UserComponent} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
+import {serializableMarker} from './util/isSerializable'
 import {validateId} from './util/validateId'
 
 /**
@@ -81,6 +82,8 @@ export interface BuildableComponent extends Partial<StructureNode> {
  * @public
  */
 export class ComponentBuilder implements Serializable<Component> {
+  /** Brand consumed by `isSerializable` (avoids circular `instanceof` imports) */
+  readonly [serializableMarker] = true
   /** component builder option object */
   protected spec: BuildableComponent
 

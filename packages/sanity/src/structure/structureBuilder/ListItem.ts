@@ -12,7 +12,7 @@ import {
 } from './StructureNodes'
 import {type StructureContext} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
-import {isSerializable} from './util/isSerializable'
+import {isSerializable, serializableMarker} from './util/isSerializable'
 import {validateId} from './util/validateId'
 
 /**
@@ -134,6 +134,8 @@ export type PartialListItem = Partial<UnserializedListItem>
  *
  * @public */
 export class ListItemBuilder implements Serializable<ListItem> {
+  /** Brand consumed by `isSerializable` (avoids circular `instanceof` imports) */
+  readonly [serializableMarker] = true
   /** List item option object. See {@link PartialListItem} */
   protected spec: PartialListItem
 
