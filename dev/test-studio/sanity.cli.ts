@@ -48,7 +48,7 @@ export default defineCliConfig({
       return reactCompilerAllowList.test(filename)
     },
   },
-  async vite(viteConfig: UserConfig, {command, mode}): Promise<UserConfig> {
+  async vite(viteConfig, {command, mode}) {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     let nextConfig = mergeConfig(viteConfig, {
