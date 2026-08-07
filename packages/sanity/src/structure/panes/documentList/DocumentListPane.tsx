@@ -31,9 +31,9 @@ import {
 } from './DocumentListPaneSearchOrdering'
 import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
 import {isOrderByIdsParam, reorderItemsByIdsParam} from './orderByIdsParam'
-import {useShallowUnique} from './PaneContainer'
 import {type LoadingVariant, type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
+import {useShallowUnique} from './useShallowUnique'
 
 /**
  * @internal
