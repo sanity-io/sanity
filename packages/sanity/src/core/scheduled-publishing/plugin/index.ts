@@ -8,14 +8,8 @@ import resolveDocumentActions from './documentActions/schedule'
 import resolveDocumentBadges from './documentBadges/scheduled'
 
 const Tool = lazy(() => import('../tool/Tool'))
-const DocumentBannerInput = lazy(() =>
-  import('./inputResolver').then((module) => ({default: module.DocumentBannerInput})),
-)
-const SchedulePublishingStudioLayout = lazy(() =>
-  import('./SchedulePublishingStudioLayout').then((module) => ({
-    default: module.SchedulePublishingStudioLayout,
-  })),
-)
+const DocumentBannerInput = lazy(() => import('./DocumentBannerInput.lazy'))
+const SchedulePublishingStudioLayout = lazy(() => import('./SchedulePublishingStudioLayout.lazy'))
 
 /**
  * @internal

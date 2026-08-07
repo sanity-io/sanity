@@ -15,11 +15,7 @@ import {SchemaErrorsScreen} from './screens/schemaErrors/SchemaErrorsScreen'
  * in instances where it is used, since DevServerStoppedError is only thrown
  * when this module is loaded, and this screen is also conditional on this error type
  */
-const DevServerStoppedErrorScreen = lazy(() =>
-  import('./ViteDevServerStopped').then((DevServerStopped) => ({
-    default: DevServerStopped.DevServerStoppedErrorScreen,
-  })),
-)
+const DevServerStoppedErrorScreen = lazy(() => import('./DevServerStoppedErrorScreen.lazy'))
 
 interface StudioErrorBoundaryProps {
   children: ReactNode

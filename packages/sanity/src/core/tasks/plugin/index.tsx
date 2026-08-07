@@ -5,25 +5,11 @@ import {type ObjectInputProps} from '../../form/types/inputProps'
 import {tasksUsEnglishLocaleBundle} from '../i18n'
 import {TaskCreateAction} from './TaskCreateAction'
 
-const TasksDocumentInputLayout = lazy(() =>
-  import('./TasksDocumentInputLayout').then((module) => ({
-    default: module.TasksDocumentInputLayout,
-  })),
-)
-const TasksFooterOpenTasks = lazy(() =>
-  import('./TasksFooterOpenTasks').then((module) => ({default: module.TasksFooterOpenTasks})),
-)
-const TasksStudioActiveToolLayout = lazy(() =>
-  import('./TasksStudioActiveToolLayout').then((module) => ({
-    default: module.TasksStudioActiveToolLayout,
-  })),
-)
-const TasksStudioLayout = lazy(() =>
-  import('./TasksStudioLayout').then((module) => ({default: module.TasksStudioLayout})),
-)
-const TasksStudioNavbar = lazy(() =>
-  import('./TasksStudioNavbar').then((module) => ({default: module.TasksStudioNavbar})),
-)
+const TasksDocumentInputLayout = lazy(() => import('./TasksDocumentInputLayout.lazy'))
+const TasksFooterOpenTasks = lazy(() => import('./TasksFooterOpenTasks.lazy'))
+const TasksStudioActiveToolLayout = lazy(() => import('./TasksStudioActiveToolLayout.lazy'))
+const TasksStudioLayout = lazy(() => import('./TasksStudioLayout.lazy'))
+const TasksStudioNavbar = lazy(() => import('./TasksStudioNavbar.lazy'))
 
 // The footer action is consumed as a `ReactNode` outside any Suspense boundary
 // (see DocumentStatusBarActions), so the lazy component needs its own boundary here.
