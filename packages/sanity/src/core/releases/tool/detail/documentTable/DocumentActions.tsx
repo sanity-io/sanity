@@ -117,7 +117,7 @@ const DocumentActionsInner = memo(
           <DiscardVersionDialog
             isGoingToUnpublish={isGoingToUnpublish(document.document)}
             onClose={() => setShowDiscardDialog(false)}
-            documentId={document.document._id}
+            versionId={document.document._id}
             documentType={document.document._type}
             fromPerspective={releaseTitle || t('release-placeholder.title')}
           />

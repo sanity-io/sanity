@@ -212,12 +212,19 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
         tabIndex={0}
         data-id={_id}
         mode="ghost"
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         onKeyPress={onKeyPress}
         padding={0}
         style={{padding: 2}}
       >
         <Container __unstable_checkered>
-          <Image alt={originalFilename} src={imageUrl} onClick={onClick} data-id={_id} />
+          <Image
+            alt={originalFilename}
+            src={imageUrl}
+            onClick={onClick}
+            data-id={_id}
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
           {isDeleting && <LoadingBlock />}
         </Container>
       </Button>

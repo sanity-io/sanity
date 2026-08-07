@@ -257,9 +257,9 @@ export function useReferringDocuments(documentId: string): ReferringDocuments {
 }
 
 /**
-+ * Fetches the documents within the same dataset that reference the subject
-+ * document using the document store's `listenQuery`
-+ */
+ * Fetches the documents within the same dataset that reference the subject
+ * document using the document store's `listenQuery`
+ */
 function fetchInternalReferences(
   documentId: string,
   documentStore: DocumentStore,

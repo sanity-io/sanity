@@ -547,6 +547,7 @@ describe.each(BROWSE_AFTER_UPLOAD_CONFIGS)(
     it('passes selectedAssets when opened via browse with existing value', async () => {
       const SelectedAssetsTestSource: AssetSource = {
         name: 'media-library-mock',
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         title: 'Test',
         component: (props) => (
           <div

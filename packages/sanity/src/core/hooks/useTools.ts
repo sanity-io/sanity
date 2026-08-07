@@ -7,5 +7,6 @@ import {useSource} from '../studio/source'
  * @beta
  */
 export function useTools(): Tool[] {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return useSource().tools
 }

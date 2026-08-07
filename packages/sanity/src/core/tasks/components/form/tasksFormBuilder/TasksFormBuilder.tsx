@@ -9,6 +9,7 @@ import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {createPatchChannel} from '../../../../form/patch/PatchChannel'
 import {FormBuilder} from '../../../../form/studio/FormBuilder'
 import {useDocumentForm} from '../../../../form/useDocumentForm'
+import {PerspectiveProvider} from '../../../../perspective/PerspectiveProvider'
 import {useCurrentUser} from '../../../../store/user/hooks'
 import {useWorkspace} from '../../../../studio/workspace'
 import {MentionUserProvider} from '../../../context/mentionUser/MentionUserProvider'
@@ -181,9 +182,16 @@ export function TasksFormBuilder() {
   return (
     // This provider needs to be mounted before the TasksAddonWorkspaceProvider.
     <MentionUserProvider>
-      <TasksAddonWorkspaceProvider mode={viewMode === 'edit' ? 'edit' : 'create'}>
-        <TasksFormBuilderInner documentId={selectedTask} initialValue={initialValue} />
-      </TasksAddonWorkspaceProvider>
+      {/* Task documents live in the addon dataset and never have release- or variant-scoped
+          versions, so the form must not inherit the globally selected perspective: a selected
+          variant makes `useDocumentForm` treat the task's variant target as missing (blocking all
+          edits), and a selected release makes it check permissions against a nonexistent version
+          document. Tasks always edit the base document, so the form gets a neutral perspective. */}
+      <PerspectiveProvider selectedPerspectiveName={undefined}>
+        <TasksAddonWorkspaceProvider mode={viewMode === 'edit' ? 'edit' : 'create'}>
+          <TasksFormBuilderInner documentId={selectedTask} initialValue={initialValue} />
+        </TasksAddonWorkspaceProvider>
+      </PerspectiveProvider>
     </MentionUserProvider>
   )
 }

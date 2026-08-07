@@ -10,8 +10,8 @@ import {defineBehavior, forward, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, EventListenerPlugin} from '@portabletext/editor/plugins'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {stegaClean} from '@sanity/client/stega'
-import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
-import {type MutableRefObject, useCallback, useEffect, useState} from 'react'
+import {Card, useRootTheme} from '@sanity/ui'
+import {type RefObject, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {set, unset} from '../../../patch/patch'
@@ -34,6 +34,10 @@ import {
 import {unpackageValue} from './unpackageValue'
 
 const INVALID_CLASS_NAME = 'invalid'
+const FONT_SIZE = [2]
+const PADDING = [3]
+const RADIUS = [2]
+const SPACE = [3]
 
 const StyledRoot = styled.div`
   flex: 1;
@@ -84,11 +88,13 @@ export function StringInputPortableText(props: StringInputProps) {
 
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (event.type === 'focused') {
         onFocus(event.event)
         return
       }
 
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (event.type === 'blurred') {
         onBlur(event.event)
         return
@@ -100,6 +106,7 @@ export function StringInputPortableText(props: StringInputProps) {
       // On patch, set the optimistic value used to create an optimistic diff that can be rendered
       // immediately to reflect the user's input that has not yet been committed.
       if (
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         event.type === 'patch' &&
         event.patch.type === 'diffMatchPatch' &&
         event.patch.origin === 'local'
@@ -112,6 +119,7 @@ export function StringInputPortableText(props: StringInputProps) {
       // can be used to perform actions that are lower priority than rendering the user's input.
       //
       // On mutation, execute the relevant patches to commit the user's input.
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (event.type === 'mutation') {
         const value = unpackageValue(event.value)
         const valueRemainsUndefined = typeof definitiveValue === 'undefined' && value === ''
@@ -140,10 +148,6 @@ export function StringInputPortableText(props: StringInputProps) {
   }))
 
   const rootTheme = useRootTheme()
-  const fontSize = useArrayProp(2)
-  const padding = useArrayProp(3)
-  const radius = useArrayProp(2)
-  const space = useArrayProp(3)
 
   const diffSegments = diff.type === 'string' ? diff.segments : undefined
 
@@ -158,14 +162,14 @@ export function StringInputPortableText(props: StringInputProps) {
 
     if (isEntireValuedDeleted && diffSegments) {
       return (
-        <StyledPlaceholder $fontSize={fontSize} $space={space} $padding={padding}>
+        <StyledPlaceholder $fontSize={FONT_SIZE} $space={SPACE} $padding={PADDING}>
           <DeletedSegment segment={diffSegments[0]} />
         </StyledPlaceholder>
       )
     }
 
     return null
-  }, [diff.fromValue, diff.toValue, diffSegments, fontSize, space, padding])
+  }, [diff.fromValue, diff.toValue, diffSegments])
 
   return (
     <StyledRoot>
@@ -181,9 +185,9 @@ export function StringInputPortableText(props: StringInputProps) {
           style={style}
           renderPlaceholder={props.displayInlineChanges ? renderPlaceholder : undefined}
           rangeDecorations={props.displayInlineChanges ? rangeDecorations : undefined}
-          $fontSize={fontSize}
-          $space={space}
-          $padding={padding}
+          $fontSize={FONT_SIZE}
+          $space={SPACE}
+          $padding={PADDING}
           $scheme={rootTheme.scheme}
           $tone={rootTheme.tone}
           data-scheme={rootTheme.scheme}
@@ -192,7 +196,7 @@ export function StringInputPortableText(props: StringInputProps) {
         />
       </EditorProvider>
       <StyledEditorRepresentation
-        radius={radius}
+        radius={RADIUS}
         $scheme={rootTheme.scheme}
         $tone={rootTheme.tone}
         data-scheme={rootTheme.scheme}
@@ -228,7 +232,7 @@ function UpdateValuePlugin(props: {value: string | undefined}) {
  * (e.g. during programmatic focus). Without this bridge, the ref remains unset and the
  * PTE-backed string input never receives focus.
  */
-function FocusBridgePlugin(props: {focusRef: MutableRefObject<{focus: () => void} | undefined>}) {
+function FocusBridgePlugin(props: {focusRef: RefObject<{focus: () => void} | undefined>}) {
   const editor = useEditor()
   const {focusRef} = props
 

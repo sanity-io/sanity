@@ -2,7 +2,7 @@
 import {SyncIcon} from '@sanity/icons/Sync'
 import {Box, Card, Code, Container, Heading, Inline, Stack, Text} from '@sanity/ui'
 import {useEffect, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {of, take, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {styled} from 'styled-components'
@@ -21,7 +21,10 @@ const COUNTDOWN_SECONDS = 5
 export function ImportErrorScreen(props: {error: Error; eventId?: string; autoReload?: boolean}) {
   const {error, eventId, autoReload} = props
 
-  const countdownSeconds = useObservable(
+  // Kept synchronous: the countdown drives the imperative auto-reload effect
+  // below, so a deferred value lagging real time could fire the reload late
+  // or transiently miss the threshold.
+  const countdownSeconds = useSyncObservable(
     useMemo(
       () =>
         autoReload
@@ -51,13 +54,13 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
     >
       <View display="flex" height="fill">
         <Container width={3}>
-          <Stack space={6}>
-            <Stack space={4}>
+          <Stack gap={6}>
+            <Stack gap={4}>
               <Heading>Import error</Heading>
               <Text>An error occurred during dynamic import.</Text>
               {isDev && (
                 <Card border radius={2} overflow="auto" padding={4} tone="critical">
-                  <Stack space={4}>
+                  <Stack gap={4}>
                     {error.message && (
                       <Code weight={'bold'} size={1}>
                         {error.message}
@@ -73,7 +76,7 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
                   Reloading {countdownSeconds <= 0 ? 'now' : `in ${countdownSeconds}s`}…
                 </Text>
               ) : null}
-              <Inline space={3}>
+              <Inline gap={3}>
                 <Button
                   onClick={reloadPage}
                   text={autoReload ? 'Reload now' : 'Reload'}

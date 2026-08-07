@@ -1,4 +1,6 @@
 import {Flex} from '@sanity/ui'
+import {Suspense, use} from 'react'
+import {type ObservablePromise} from 'react-rx'
 import {useClient} from 'sanity'
 
 import {DelayedSpinner} from '../components/DelayedSpinner'
@@ -8,15 +10,26 @@ import {type VisionProps} from '../types'
 
 export function VisionContainer(props: VisionProps) {
   const datasetsClient = useClient({apiVersion: 'v2025-06-27'})
-  const loadedDatasets = useDatasets({client: datasetsClient, datasets: props.config.datasets})
+  const datasetsPromise = useDatasets({client: datasetsClient, datasets: props.config.datasets})
 
-  if (!loadedDatasets) {
-    return (
-      <Flex align="center" height="fill" justify="center">
-        <DelayedSpinner />
-      </Flex>
-    )
-  }
+  return (
+    <Suspense
+      fallback={
+        <Flex align="center" height="fill" justify="center">
+          <DelayedSpinner />
+        </Flex>
+      }
+    >
+      <LoadedVisionContainer {...props} datasetsPromise={datasetsPromise} />
+    </Suspense>
+  )
+}
+
+function LoadedVisionContainer({
+  datasetsPromise,
+  ...props
+}: VisionProps & {datasetsPromise: ObservablePromise<string[] | Error>}) {
+  const loadedDatasets = use(datasetsPromise)
 
   const datasets =
     loadedDatasets instanceof Error

@@ -174,6 +174,7 @@ export const PaneContainer = memo(function PaneContainer(
   props: BaseStructureToolPaneProps<'documentList'>,
 ) {
   const {index, isSelected, pane, paneKey} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {name: parentSourceName} = useSource()
 
   const {

@@ -9,6 +9,7 @@ import {type StudioLayoutComponent as StudioLayoutComponentType} from '../Studio
 // StudioLayout renders `@sanity/ui` components that require a `ThemeProvider`
 // via context. Wrap every render in a minimal studio theme.
 const wrapper = ({children}: {children: ReactNode}) => (
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
 )
 
@@ -50,6 +51,10 @@ vi.mock('sanity/_singletons', () => ({
 
 vi.mock('../StudioErrorBoundary', () => ({
   StudioErrorBoundary: ({children}: {children: React.ReactNode}) => <>{children}</>,
+}))
+
+vi.mock('../unclaimedProject/UnclaimedProjectNudge', () => ({
+  UnclaimedProjectNudge: () => null,
 }))
 
 vi.mock('../screens/NoToolsScreen', () => ({

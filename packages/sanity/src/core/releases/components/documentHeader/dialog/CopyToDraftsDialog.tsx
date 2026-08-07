@@ -3,31 +3,27 @@ import {memo, useCallback, useTransition} from 'react'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {useCopyToDrafts} from '../../../hooks/useCopyToDrafts'
+import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
 import {releasesLocaleNamespace} from '../../../i18n'
 
 interface CopyToDraftsDialogProps {
-  documentId: string
-  fromRelease: string
   onClose: () => void
-  onNavigate: () => void
+  onConfirm: (options: CopyToDraftsOptions) => Promise<void>
 }
 
 export const CopyToDraftsDialog = memo(function CopyToDraftsDialog(props: CopyToDraftsDialogProps) {
-  const {documentId, fromRelease, onClose, onNavigate} = props
+  const {onClose, onConfirm} = props
   const {t: tReleases} = useTranslation(releasesLocaleNamespace)
 
   const [isProcessing, startTransition] = useTransition()
 
-  const {handleCopyToDrafts} = useCopyToDrafts({documentId, fromRelease, onNavigate})
-
   const handleConfirm = useCallback(
     () =>
       startTransition(async () => {
-        await handleCopyToDrafts()
+        await onConfirm({shouldConfirmDraftDiscard: false})
         onClose()
       }),
-    [handleCopyToDrafts, onClose, startTransition],
+    [onConfirm, onClose, startTransition],
   )
 
   return (

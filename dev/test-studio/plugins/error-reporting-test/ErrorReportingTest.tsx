@@ -120,8 +120,8 @@ export function ErrorReportingTest() {
   return (
     <Box overflow="auto" padding={[3, 4, 5]}>
       <Container width={1}>
-        <Stack space={4}>
-          <TabList space={2}>
+        <Stack gap={4}>
+          <TabList gap={2}>
             <Tab
               aria-controls="errors-panel-boundary"
               id="errors-tab-boundary"
@@ -233,8 +233,8 @@ interface DemoEntry {
 function DemoSection(props: {heading: string; description?: ReactNode; demos: DemoEntry[]}) {
   return (
     <Card padding={4} radius={3} shadow={1}>
-      <Stack space={4}>
-        <Stack space={3}>
+      <Stack gap={4}>
+        <Stack gap={3}>
           <Heading size={2}>{props.heading}</Heading>
           {props.description && (
             <Text muted size={1}>
@@ -242,7 +242,7 @@ function DemoSection(props: {heading: string; description?: ReactNode; demos: De
             </Text>
           )}
         </Stack>
-        <Stack space={2}>
+        <Stack gap={2}>
           {props.demos.map((demo) => (
             <DemoRow key={demo.label} demo={demo} />
           ))}
@@ -255,11 +255,11 @@ function DemoSection(props: {heading: string; description?: ReactNode; demos: De
 function DemoRow({demo}: {demo: DemoEntry}) {
   return (
     <Card border padding={4} radius={2} tone="transparent">
-      <Stack space={3}>
+      <Stack gap={3}>
         <Flex align="center" gap={4} wrap="wrap">
           <Box flex={1} style={{minWidth: 240}}>
             {demo.description ? (
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text size={1} weight="medium">
                   {demo.label}
                 </Text>
@@ -283,7 +283,7 @@ function DemoRow({demo}: {demo: DemoEntry}) {
         </Flex>
         {demo.result && (
           <Card padding={3} radius={2} tone="transparent" border>
-            <Stack space={2}>
+            <Stack gap={2}>
               <Text muted size={0} weight="semibold">
                 Result
               </Text>
@@ -659,8 +659,8 @@ function RequestErrorsDemo() {
 
   return (
     <Card padding={4} radius={3} shadow={1}>
-      <Stack space={4}>
-        <Stack space={3}>
+      <Stack gap={4}>
+        <Stack gap={3}>
           <Heading size={2}>Request errors</Heading>
           <Text muted size={1}>
             Each button issues a real request through the studio&apos;s client pipeline. The call
@@ -669,7 +669,7 @@ function RequestErrorsDemo() {
             handled outcomes are shown in place under each row.
           </Text>
         </Stack>
-        <Stack space={2}>
+        <Stack gap={2}>
           {demos.map((demo) => (
             <DemoRow key={demo.label} demo={demo} />
           ))}

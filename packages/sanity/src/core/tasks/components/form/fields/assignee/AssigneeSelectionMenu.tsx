@@ -43,11 +43,7 @@ function MentionUserMenuItem(props: {
           </Text>
         </Flex>
 
-        {!user.granted && (
-          <Badge fontSize={1} mode="outline">
-            {t('form.input.assignee.unauthorized.text')}
-          </Badge>
-        )}
+        {!user.granted && <Badge fontSize={1}>{t('form.input.assignee.unauthorized.text')}</Badge>}
       </Flex>
     </MenuItem>
   )

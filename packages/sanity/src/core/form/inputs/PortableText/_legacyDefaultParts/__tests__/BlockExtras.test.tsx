@@ -57,6 +57,7 @@ const value = [
   },
 ]
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function renderCustomMarkers(markers: PortableTextMarker[]) {
   return markers.map((marker, index) => {
     if (marker.type === 'customMarkerTest') {
@@ -91,6 +92,7 @@ function renderBlockActions() {
 
 describe('Portable Text Editor Block Extras', () => {
   test.skip('custom markers', async () => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const markers: PortableTextMarker[] = [
       {type: 'customMarkerTest', path: [{_key: value[0]._key}]},
     ]
@@ -104,6 +106,7 @@ describe('Portable Text Editor Block Extras', () => {
   })
 
   test.skip('block actions', async () => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const markers: PortableTextMarker[] = [
       {type: 'customMarkerTest', path: [{_key: value[0]._key}]},
     ]

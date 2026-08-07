@@ -6,6 +6,7 @@ import {defineLocalesResources} from 'sanity'
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const structureLocaleStrings = defineLocalesResources('structure', {
   /** Label for the "Copy document ID" menu item */
   'action.copy-document-id.label': 'Copy document ID',
@@ -226,6 +227,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when a document is not part of any release
    * @deprecated – no longer in use
    * */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'banners.release.navigate-to-edit-description-none': 'This document is not part of any release',
   /** The text for the banner that appears when a document only has one version but is in a draft or published pinned release */
   'banners.release.navigate-to-edit-description-single':
@@ -385,14 +387,28 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'confirm-delete-dialog.cdr-table.project-id.label': 'Project ID',
   /** The text in the "Delete anyway" button in the confirm delete dialog that confirms the action */
   'confirm-delete-dialog.confirm-anyway-button.text_delete': 'Delete all versions anyway',
+  /** The text in the "Delete anyway" button when the document only has a single version */
+  'confirm-delete-dialog.confirm-anyway-button.text_delete_one': 'Delete anyway',
+  /** The text in the "Delete anyway" button when the document has multiple versions */
+  'confirm-delete-dialog.confirm-anyway-button.text_delete_other': 'Delete all versions anyway',
   /** The text in the "Unpublish anyway" button in the confirm delete dialog that confirms the action */
   'confirm-delete-dialog.confirm-anyway-button.text_unpublish': 'Unpublish anyway',
   /** The text in the "Delete now" button in the confirm delete dialog that confirms the action */
   'confirm-delete-dialog.confirm-button.text_delete': 'Delete all versions',
+  /** The text in the "Delete now" button when the document only has a single version */
+  'confirm-delete-dialog.confirm-button.text_delete_one': 'Delete document',
+  /** The text in the "Delete now" button when the document has multiple versions */
+  'confirm-delete-dialog.confirm-button.text_delete_other': 'Delete all versions',
   /** The text in the "Unpublish now" button in the confirm delete dialog that confirms the action */
   'confirm-delete-dialog.confirm-button.text_unpublish': 'Unpublish now',
   /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
   'confirm-delete-dialog.confirmation.text_delete':
+    'Are you sure you want to delete all the versions of this document?',
+  /** The confirmation text when the document only has a single version */
+  'confirm-delete-dialog.confirmation.text_delete_one':
+    'Are you sure you want to delete this document?',
+  /** The confirmation text when the document has multiple versions */
+  'confirm-delete-dialog.confirmation.text_delete_other':
     'Are you sure you want to delete all the versions of this document?',
   /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
   'confirm-delete-dialog.confirmation.text_unpublish':
@@ -464,6 +480,14 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-inspector.dialog.title': 'Inspecting <DocumentTitle/>',
   /** The title shown in the dialog header, when the document being inspected is not created yet/has no value */
   'document-inspector.dialog.title-no-value': 'No value',
+  /** Accessibility label for the close button shown when an inspector panel failed to render */
+  'document-inspector.error.close-button.aria-label': 'Close panel',
+  /** Text explaining that the inspector panel failed to render */
+  'document-inspector.error.description': 'An error occurred while rendering this panel.',
+  /** Label for the button that attempts to render the inspector panel again */
+  'document-inspector.error.retry-button.text': 'Retry',
+  /** The title shown in the inspector panel header when the panel failed to render */
+  'document-inspector.error.title': 'Something went wrong',
   /** Title shown for menu item that opens the "Inspect" dialog */
   'document-inspector.menu-item.title': 'Inspect',
   /** the placeholder text for the search input on the inspect dialog */
@@ -472,6 +496,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-inspector.view-mode.parsed': 'Parsed',
   /** The "raw" view mode, meaning the JSON is presented syntax-highlighted, but with no other features - optimal for copying */
   'document-inspector.view-mode.raw-json': 'Raw JSON',
+
+  /** Tooltip on target badges when the document does not exist in the selected perspective */
+  'document-target-badges.not-in-target.tooltip':
+    "Document doesn't exist in the selected perspective yet.",
 
   /** The text for when a form is hidden */
   'document-view.form-view.form-hidden': 'This form is hidden',

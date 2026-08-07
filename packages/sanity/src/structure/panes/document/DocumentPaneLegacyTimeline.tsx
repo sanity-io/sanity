@@ -17,6 +17,7 @@ export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderP
 
   const [timelineError, setTimelineError] = useState<Error | null>(null)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const store = useTimelineStore({
     documentId: getPublishedId(options.id),
     documentType: options.type,

@@ -1,4 +1,7 @@
-import {useEffect, useMemo, useState} from 'react'
+import {useMemo} from 'react'
+import {useSyncObservable} from 'react-rx'
+import {of} from 'rxjs'
+import {map, startWith} from 'rxjs/operators'
 
 import {getPublishedId} from '../../../util/draftUtils'
 import {useDocumentStore} from '../../datastores'
@@ -28,31 +31,26 @@ export function useDocumentType(documentId: string, specifiedType = '*'): Docume
     [specifiedType],
   )
 
-  // Set up our state that we'll only use when we need to reach out to the API to find
-  // the document type for a given document. Otherwise we'll be using SYNC_RESOLVED_STATE.
-  // For consistency (between different document ids/types), we're setting the sync resolved
-  // state here as well, but it isn't strictly necessary for correct rendering.
-  const [resolvedState, setDocumentType] = useState<DocumentTypeResolveState>(
-    isResolved ? SYNC_RESOLVED_STATE : LOADING_STATE,
+  const resolvedState$ = useMemo(
+    () =>
+      // Skip the API when the document type is already known synchronously
+      isResolved
+        ? of(SYNC_RESOLVED_STATE)
+        : documentStore.resolveTypeForDocument(publishedId, specifiedType).pipe(
+            map((documentType): DocumentTypeResolveState => ({documentType, isLoaded: true})),
+            startWith(LOADING_STATE),
+          ),
+    [documentStore, isResolved, publishedId, specifiedType, SYNC_RESOLVED_STATE],
   )
 
-  // Reset documentType when documentId changes. Note that we're using the referentially
-  // stable LOADING_STATE in order to prevent double rendering on initial load.
-  // oxlint-disable-next-line react/react-compiler
-  useEffect(() => setDocumentType(LOADING_STATE), [publishedId, specifiedType])
-
-  // Load the documentType from Content Lake, unless we're already in a resolved state
-  useEffect(() => {
-    if (isResolved) {
-      return undefined
-    }
-
-    const sub = documentStore
-      .resolveTypeForDocument(publishedId, specifiedType)
-      .subscribe((documentType: string) => setDocumentType({documentType, isLoaded: true}))
-
-    return () => sub.unsubscribe()
-  }, [documentStore, publishedId, specifiedType, isResolved])
+  // Kept synchronous: the lookup is keyed to the live document id, so a
+  // deferred snapshot could report the previous document's type as
+  // `isLoaded: true` during an id transition, mounting the form against the
+  // wrong schema type.
+  const resolvedState = useSyncObservable(
+    resolvedState$,
+    isResolved ? SYNC_RESOLVED_STATE : LOADING_STATE,
+  )
 
   return isResolved
     ? // `isResolved` is only true when we're _synchronously_ resolved

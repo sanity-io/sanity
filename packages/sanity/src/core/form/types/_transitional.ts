@@ -21,6 +21,7 @@ import {type ItemProps} from './itemProps'
  * @hidden
  * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export type RenderCustomMarkers = (markers: PortableTextMarker[]) => ReactNode
 
 /**
@@ -45,6 +46,7 @@ export interface RenderBlockActionsProps {
  * @hidden
  * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export type RenderBlockActionsCallback = (props: RenderBlockActionsProps) => ReactNode
 
 /**
@@ -70,6 +72,7 @@ export interface PortableTextMarker {
  * @hidden
  * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export type FormBuilderCustomMarkersComponent = ComponentType<{markers: PortableTextMarker[]}>
 
 /**
@@ -78,7 +81,9 @@ export type FormBuilderCustomMarkersComponent = ComponentType<{markers: Portable
  * @beta
  */
 export type FormBuilderMarkersComponent = ComponentType<{
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   markers: PortableTextMarker[]
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
   validation: FormNodeValidation[]
 }>

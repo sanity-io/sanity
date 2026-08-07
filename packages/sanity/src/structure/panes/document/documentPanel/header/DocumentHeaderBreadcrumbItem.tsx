@@ -8,7 +8,7 @@ import {LOADING_PANE} from '../../../../constants'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {type Panes} from '../../../../structureResolvers/useResolvedPanes'
 import {type RouterPanes} from '../../../../types'
-import {FocusDocumentPaneNavigated} from './__telemetry__/focus.telemetry'
+import {DocumentPaneNavigated} from './__telemetry__/focus.telemetry'
 
 export function DocumentHeaderBreadcrumbItem({
   paneData,
@@ -24,7 +24,7 @@ export function DocumentHeaderBreadcrumbItem({
   const telemetry = useTelemetry()
   const routerPanes = useMemo(() => (routerState?.panes || []) as RouterPanes, [routerState?.panes])
 
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
   // In case if it's a pane with a title, use the title
   const staticTitle = pane !== LOADING_PANE && 'title' in pane ? pane.title : null
 
@@ -35,6 +35,7 @@ export function DocumentHeaderBreadcrumbItem({
     documentId: documentId ?? '',
     documentType: documentType ?? '',
     perspectiveStack: perspectiveStack,
+    variant: selectedVariantName,
   })
 
   // Use preview title for documents, static title for other panes
@@ -47,7 +48,7 @@ export function DocumentHeaderBreadcrumbItem({
   }, [documentId, previewValue, staticTitle, t, isLoading])
 
   const handleClick = useCallback(() => {
-    telemetry.log(FocusDocumentPaneNavigated)
+    telemetry.log(DocumentPaneNavigated, {path: 'breadcrumb'})
     router.navigate({panes: routerPanes.slice(0, paneData.groupIndex)})
   }, [telemetry, router, routerPanes, paneData.groupIndex])
 

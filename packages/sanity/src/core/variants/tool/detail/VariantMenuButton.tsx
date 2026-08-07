@@ -1,17 +1,29 @@
+import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {Menu} from '@sanity/ui'
 import {useRouter} from 'sanity/router'
 
+import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
-import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DeleteVariantDialog} from '../../components/dialog/DeleteVariantDialog'
 import {useVariantDeleteAction} from '../../hooks/useVariantDeleteAction'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
-import {getVariantId, getVariantTitle} from '../util'
+import {getVariantTitle} from '../util'
 
-export function VariantDetailMenuButton({
+/**
+ * The variant detail overflow (`⋯`) menu — the `menu` slot of the shared {@link DetailActionRail}.
+ *
+ * Delete lives here (critical) rather than as its own top-level button, so the variant detail's
+ * action rail matches the Releases rail's shape (primary + `⋯`). Delete is disabled while the
+ * variant still contains documents (with an explanatory hint), reusing {@link useVariantDeleteAction}
+ * for the confirm flow. Future variant-level actions (duplicate, add-to-release) land here too.
+ *
+ * @internal
+ */
+export function VariantMenuButton({
   documentCount,
   documentsLoading = false,
   variant,
@@ -42,12 +54,22 @@ export function VariantDetailMenuButton({
   return (
     <>
       <MenuButton
-        button={<ContextMenuButton disabled={isDeleting} loading={isDeleting} />}
-        id={`variant-detail-actions-${getVariantId(variant._id)}`}
+        id="variant-detail-menu"
+        button={
+          <Button
+            aria-label={t('detail.menu.label')}
+            icon={EllipsisHorizontalIcon}
+            mode="bleed"
+            tooltipProps={{content: t('detail.menu.label')}}
+            data-testid="variant-detail-menu-button"
+          />
+        }
         menu={
           <Menu>
             <MenuItem
-              disabled={deleteDisabled}
+              data-testid="delete-variant-menu-item"
+              disabled={deleteDisabled || isDeleting}
+              icon={TrashIcon}
               onClick={handleDelete}
               text={t('overview.action.delete-variant')}
               tone="critical"

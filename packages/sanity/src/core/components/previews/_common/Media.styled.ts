@@ -20,7 +20,7 @@ export const MediaWrapper = styled.span<{
     width: ${$responsive ? '100%' : rem(width)};
     height: ${$responsive ? '100%' : rem(height)};
     min-width: ${$responsive ? undefined : rem(width)};
-    border-radius: ${({theme}) => rem(theme.sanity.radius[$radius])};
+    border-radius: ${({theme}) => rem(theme.sanity.radius[$radius]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     display: flex;
     overflow: hidden;
     overflow: clip;

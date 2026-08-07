@@ -34,25 +34,36 @@
     },
     "boundaries/root-path": "packages/sanity",
     "boundaries/include": ["src/**/*.*"],
+    "boundaries/legacy-warnings": false,
     "boundaries/elements": [
-      {"type": "sanity", "pattern": ["src/_exports/index.ts"], "mode": "full"},
-      {"type": "sanity__contents", "pattern": ["src/core/**/*.*"], "mode": "full"},
-      {"type": "sanity/_internal", "pattern": ["src/_exports/_internal.ts"], "mode": "full"},
-      {"type": "sanity/_internal__contents", "pattern": ["src/_internal/**/*.*"], "mode": "full"},
-      {"type": "sanity/cli", "pattern": ["src/_exports/cli.ts"], "mode": "full"},
-      {"type": "sanity/cli__contents", "pattern": ["src/cli/**/*.*"], "mode": "full"},
-      {"type": "sanity/desk", "pattern": ["src/_exports/desk.ts"], "mode": "file"},
-      {"type": "sanity/desk__contents", "pattern": ["src/desk/**/*.*"], "mode": "file"},
-      {"type": "sanity/router", "pattern": ["src/_exports/router.ts"], "mode": "full"},
-      {"type": "sanity/router__contents", "pattern": ["src/router/**/*.*"], "mode": "full"},
-      {"type": "sanity/structure", "pattern": ["src/_exports/structure.ts"], "mode": "file"},
-      {"type": "sanity/structure__contents", "pattern": ["src/structure/**/*.*"], "mode": "file"},
-      {"type": "sanity/_singletons", "pattern": ["src/_exports/_singletons.ts"], "mode": "file"},
+      {"type": "sanity__contents", "pattern": "src/core", "partialMatch": false},
+      {
+        "type": "sanity/_internal__contents",
+        "pattern": "src/_internal",
+        "partialMatch": false
+      },
+      {"type": "sanity/cli__contents", "pattern": "src/cli", "partialMatch": false},
+      {"type": "sanity/desk__contents", "pattern": "src/desk", "partialMatch": false},
+      {"type": "sanity/router__contents", "pattern": "src/router", "partialMatch": false},
+      {
+        "type": "sanity/structure__contents",
+        "pattern": "src/structure",
+        "partialMatch": false
+      },
       {
         "type": "sanity/_singletons__contents",
-        "pattern": ["src/_singletons/**/*.*"],
-        "mode": "full"
+        "pattern": "src/_singletons",
+        "partialMatch": false
       }
+    ],
+    "boundaries/files": [
+      {"category": "sanity", "pattern": "src/_exports/index.ts"},
+      {"category": "sanity/_internal", "pattern": "src/_exports/_internal.ts"},
+      {"category": "sanity/cli", "pattern": "src/_exports/cli.ts"},
+      {"category": "sanity/desk", "pattern": "src/_exports/desk.ts"},
+      {"category": "sanity/router", "pattern": "src/_exports/router.ts"},
+      {"category": "sanity/structure", "pattern": "src/_exports/structure.ts"},
+      {"category": "sanity/_singletons", "pattern": "src/_exports/_singletons.ts"}
     ]
   },
   "ignorePatterns": [
@@ -112,6 +123,16 @@
             "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
           },
           {
+            "name": "react",
+            "importNames": ["forwardRef"],
+            "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
+          },
+          {
+            "name": "react",
+            "importNames": ["useEffectEvent"],
+            "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+          },
+          {
             "name": "react/jsx-runtime",
             "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
           },
@@ -150,6 +171,7 @@
     ],
     "typescript/ban-ts-comment": "error",
     "typescript/prefer-ts-expect-error": "error",
+    "typescript/no-deprecated": "error",
     "react/jsx-key": "error",
     "unicorn/no-abusive-eslint-disable": "error",
     // Not relevant as we use the modern jsx-runtime transform
@@ -179,6 +201,8 @@
     // Handy rules that are disabled by default
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
+    // Prefer function components; allow class-based error boundaries (no hook equivalent yet)
+    "react/prefer-function-component": ["error", {"allowErrorBoundary": true}],
     // React Compiler rules, native nursery rule (replaces eslint-plugin-react-hooks compiler rules).
     // Pre-existing violations are grandfathered with inline `oxlint-disable-next-line` suppressions.
     "react/react-compiler": "error",
@@ -187,6 +211,8 @@
     "import/newline-after-import": "error",
     "import/no-duplicates": ["error", {"prefer-inline": true}],
     "import/consistent-type-specifier-style": ["error", "prefer-inline"],
+    // Side-effect CSS imports are intentional (bundler injects styles)
+    "import/no-unassigned-import": ["error", {"allow": ["**/*.css"]}],
     "import/extensions": [
       "error",
       {
@@ -458,6 +484,16 @@
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
               },
               {
+                "name": "react",
+                "importNames": ["forwardRef"],
+                "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
+              },
+              {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+              },
+              {
                 "name": "react/jsx-runtime",
                 "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
               },
@@ -525,105 +561,132 @@
           "error",
           {
             "default": "disallow",
-            "rules": [
+            "policies": [
               {
-                "from": {"type": "sanity/_internal"},
-                "allow": {"to": {"type": "sanity/_internal__contents"}}
+                "from": {"file": {"categories": "sanity/_internal"}},
+                "allow": {"to": {"element": {"type": "sanity/_internal__contents"}}}
               },
               {
-                "from": {"type": "sanity/_internal__contents"},
-                "allow": {"to": {"type": ["sanity", "sanity/_internal__contents"]}}
-              },
-              {"from": {"type": "sanity/cli"}, "allow": {"to": {"type": "sanity/cli__contents"}}},
-              {
-                "from": {"type": "sanity/cli__contents"},
-                "allow": {"to": {"type": "sanity/cli__contents"}}
-              },
-              {"from": {"type": "sanity"}, "allow": {"to": {"type": "sanity__contents"}}},
-              {
-                "from": {"type": "sanity__contents"},
+                "from": {"element": {"type": "sanity/_internal__contents"}},
                 "allow": {
-                  "to": {"type": ["sanity__contents", "sanity/router", "sanity/_singletons"]}
+                  "to": [
+                    {"file": {"categories": "sanity"}},
+                    {"element": {"type": "sanity/_internal__contents"}}
+                  ]
                 }
               },
               {
-                "from": {"type": "sanity/desk"},
+                "from": {"file": {"categories": "sanity/cli"}},
+                "allow": {"to": {"element": {"type": "sanity/cli__contents"}}}
+              },
+              {
+                "from": {"element": {"type": "sanity/cli__contents"}},
+                "allow": {"to": {"element": {"type": "sanity/cli__contents"}}}
+              },
+              {
+                "from": {"file": {"categories": "sanity"}},
+                "allow": {"to": {"element": {"type": "sanity__contents"}}}
+              },
+              {
+                "from": {"element": {"type": "sanity__contents"}},
                 "allow": {
-                  "to": {
-                    "type": [
-                      "sanity/desk__contents",
-                      "sanity/structure",
-                      "sanity/structure__contents"
-                    ]
-                  }
+                  "to": [
+                    {"element": {"type": "sanity__contents"}},
+                    {"file": {"categories": ["sanity/router", "sanity/_singletons"]}}
+                  ]
                 }
               },
               {
-                "from": {"type": "sanity/desk__contents"},
+                "from": {"file": {"categories": "sanity/desk"}},
                 "allow": {
-                  "to": {
-                    "type": [
-                      "sanity",
-                      "sanity/desk__contents",
-                      "sanity/router",
-                      "sanity/_internal",
-                      "sanity/structure",
-                      "sanity/structure__contents",
-                      "sanity/_singletons"
-                    ]
-                  }
+                  "to": [
+                    {"element": {"type": ["sanity/desk__contents", "sanity/structure__contents"]}},
+                    {"file": {"categories": "sanity/structure"}}
+                  ]
                 }
               },
               {
-                "from": {"type": "sanity/router"},
-                "allow": {"to": {"type": "sanity/router__contents"}}
-              },
-              {
-                "from": {"type": "sanity/router__contents"},
-                "allow": {"to": {"type": ["sanity/router__contents", "sanity/_singletons"]}}
-              },
-              {
-                "from": {"type": "sanity/structure"},
-                "allow": {"to": {"type": "sanity/structure__contents"}}
-              },
-              {
-                "from": {"type": "sanity/structure__contents"},
+                "from": {"element": {"type": "sanity/desk__contents"}},
                 "allow": {
-                  "to": {
-                    "type": [
-                      "sanity",
-                      "sanity/structure__contents",
-                      "sanity/router",
-                      "sanity/_singletons"
-                    ]
-                  }
+                  "to": [
+                    {
+                      "element": {
+                        "type": ["sanity/desk__contents", "sanity/structure__contents"]
+                      }
+                    },
+                    {
+                      "file": {
+                        "categories": [
+                          "sanity",
+                          "sanity/router",
+                          "sanity/_internal",
+                          "sanity/structure",
+                          "sanity/_singletons"
+                        ]
+                      }
+                    }
+                  ]
                 }
               },
               {
-                "from": {"type": "sanity/_singletons"},
-                "allow": {"to": {"type": "sanity/_singletons__contents"}}
+                "from": {"file": {"categories": "sanity/router"}},
+                "allow": {"to": {"element": {"type": "sanity/router__contents"}}}
               },
               {
-                "from": {"type": "sanity/_singletons__contents"},
-                "allow": {"to": {"type": "sanity/_singletons__contents"}}
+                "from": {"element": {"type": "sanity/router__contents"}},
+                "allow": {
+                  "to": [
+                    {"element": {"type": "sanity/router__contents"}},
+                    {"file": {"categories": "sanity/_singletons"}}
+                  ]
+                }
               },
               {
-                "from": {"type": "sanity/_singletons__contents"},
+                "from": {"file": {"categories": "sanity/structure"}},
+                "allow": {"to": {"element": {"type": "sanity/structure__contents"}}}
+              },
+              {
+                "from": {"element": {"type": "sanity/structure__contents"}},
+                "allow": {
+                  "to": [
+                    {"element": {"type": "sanity/structure__contents"}},
+                    {
+                      "file": {
+                        "categories": ["sanity", "sanity/router", "sanity/_singletons"]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "from": {"file": {"categories": "sanity/_singletons"}},
+                "allow": {"to": {"element": {"type": "sanity/_singletons__contents"}}}
+              },
+              {
+                "from": {"element": {"type": "sanity/_singletons__contents"}},
+                "allow": {"to": {"element": {"type": "sanity/_singletons__contents"}}}
+              },
+              {
+                "from": {"element": {"type": "sanity/_singletons__contents"}},
                 "allow": {
                   "to": {
-                    "type": [
-                      "sanity__contents",
-                      "sanity/structure__contents",
-                      "sanity/router__contents"
-                    ]
+                    "element": {
+                      "type": [
+                        "sanity__contents",
+                        "sanity/structure__contents",
+                        "sanity/router__contents"
+                      ]
+                    }
                   },
                   "dependency": {"kind": "type"}
                 }
               },
               {
-                "from": {"type": "sanity/_singletons__contents"},
+                "from": {"element": {"type": "sanity/_singletons__contents"}},
                 "disallow": {
-                  "to": {"type": ["sanity", "sanity/structure", "sanity/router"]},
+                  "to": {
+                    "file": {"categories": ["sanity", "sanity/structure", "sanity/router"]}
+                  },
                   "dependency": {"kind": "type"}
                 }
               }
@@ -738,6 +801,16 @@
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
               },
               {
+                "name": "react",
+                "importNames": ["forwardRef"],
+                "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
+              },
+              {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+              },
+              {
                 "name": "react/jsx-runtime",
                 "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
               },
@@ -849,6 +922,16 @@
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
               },
               {
+                "name": "react",
+                "importNames": ["forwardRef"],
+                "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
+              },
+              {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+              },
+              {
                 "name": "react/jsx-runtime",
                 "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
               },
@@ -951,6 +1034,16 @@
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
               },
               {
+                "name": "react",
+                "importNames": ["forwardRef"],
+                "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
+              },
+              {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
+              },
+              {
                 "name": "react/jsx-runtime",
                 "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
               },
@@ -1047,6 +1140,16 @@
                 "name": "react",
                 "importNames": ["createRef"],
                 "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
+              },
+              {
+                "name": "react",
+                "importNames": ["forwardRef"],
+                "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
+              },
+              {
+                "name": "react",
+                "importNames": ["useEffectEvent"],
+                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
               },
               {
                 "name": "react/jsx-runtime",

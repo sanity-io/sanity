@@ -154,7 +154,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             <Text size={0}>{IconComponent && <IconComponent />}</Text>
           </IconBox>
         </div>
-        <Stack space={2}>
+        <Stack gap={2}>
           <Text size={1} weight="medium">
             {t(TIMELINE_ITEM_I18N_KEY_MAPPING[documentVariantType][type])}
             {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (

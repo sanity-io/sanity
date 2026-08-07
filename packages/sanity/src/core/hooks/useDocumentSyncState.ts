@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {combineLatest, type Observable, of, timer} from 'rxjs'
 import {distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators'
 
@@ -183,5 +183,9 @@ export function useDocumentSyncState(
     [docTypeName, documentStore, publishedDocId, version],
   )
 
-  return useObservable(observable, INITIAL)
+  // Kept synchronous: `useDocumentForm` derives `syncBlocked` (part of
+  // `readOnly`) from this — a `stalled` / `recovering` sync locks the editor.
+  // A deferred value could keep the editor writable after sync is blocked,
+  // risking edits against unsynced state.
+  return useSyncObservable(observable, INITIAL)
 }

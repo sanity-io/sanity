@@ -1,6 +1,6 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Flex} from '@sanity/ui'
-import {type ChangeEvent, forwardRef} from 'react'
+import {type ChangeEvent, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
@@ -15,7 +15,8 @@ interface FilterPopoverContentHeaderProps {
 }
 
 const SearchHeaderBox = styled(Box)`
-  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
+  border-bottom: 1px solid
+    ${({theme}) => theme.sanity.color.base.border /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   flex-shrink: 0;
 `
 
@@ -23,10 +24,13 @@ const SearchHeaderContentFlex = styled(Flex)`
   box-sizing: border-box;
 `
 
-export const FilterPopoverContentHeader = forwardRef<
-  HTMLInputElement,
-  FilterPopoverContentHeaderProps
->(function FilterPopoverContentHeader({ariaInputLabel, onChange, onClear, typeFilter}, ref) {
+export function FilterPopoverContentHeader({
+  ref,
+  ariaInputLabel,
+  onChange,
+  onClear,
+  typeFilter,
+}: FilterPopoverContentHeaderProps & RefAttributes<HTMLInputElement>) {
   const {
     state: {fullscreen},
   } = useSearchState()
@@ -56,4 +60,4 @@ export const FilterPopoverContentHeader = forwardRef<
       </SearchHeaderContentFlex>
     </SearchHeaderBox>
   )
-})
+}

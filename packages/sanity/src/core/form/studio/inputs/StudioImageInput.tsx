@@ -29,6 +29,7 @@ export type ImageInputProps = Omit<
  * @beta */
 export function StudioImageInput(props: ImageInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {image: imageConfig} = useFormBuilder().__internal
   const documentPreviewStore = useDocumentPreviewStore()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)

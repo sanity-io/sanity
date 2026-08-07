@@ -236,7 +236,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
             presence={presence}
             inputId={id}
             content={
-              <Stack space={2}>
+              <Stack gap={2}>
                 <FormFieldHeaderText
                   deprecated={schemaType.deprecated}
                   description={schemaType.description}
@@ -284,6 +284,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
                 onChange={handleChange}
                 onParseError={setParseError}
                 parseInputValue={parseInputValue}
+                // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                 placeholder={schemaType.placeholder}
                 serialize={serialize}
                 timeStep={timeStep}

@@ -69,7 +69,7 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
       sizing="border"
     >
       <Container width={1}>
-        <Stack space={5}>
+        <Stack gap={5}>
           <Flex justify="space-between" align="center" gap={2}>
             <Heading as="h1">{t('schema-errors.title', 'Schema errors')}</Heading>
             <Button

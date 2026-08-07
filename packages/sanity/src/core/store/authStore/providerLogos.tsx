@@ -4,7 +4,9 @@ import {css, styled} from 'styled-components'
 
 import {type AuthProvider} from '../../config/auth/types'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const GithubRootSvg = styled.svg(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {fg} = theme.sanity.color.base
 
   return css`

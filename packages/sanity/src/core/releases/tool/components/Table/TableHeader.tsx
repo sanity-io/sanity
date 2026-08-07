@@ -3,6 +3,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type CSSProperties, useMemo} from 'react'
+import {styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -11,9 +12,18 @@ import {type HeaderProps, type TableHeaderProps} from './types'
 
 const MotionIcon = motion.create(ArrowUpIcon)
 
+// Column headers are semibold so the header row reads clearly as a header, distinct from the row
+// content below — especially on sparse, single-column tables. For sortable headers (rendered as a
+// button, whose label weight isn't a prop) the same weight is forced onto the inner Text.
+const HeaderSortButton = styled(Button)`
+  & [data-ui='Text'] {
+    font-weight: 600;
+  }
+`
+
 const BasicHeader = ({text}: {text: string}) => (
   <Box padding={2}>
-    <Text muted size={1} weight="medium">
+    <Text muted size={1} weight="semibold">
       {text}
     </Text>
   </Box>
@@ -22,6 +32,7 @@ const BasicHeader = ({text}: {text: string}) => (
 const SortHeaderButton = ({
   header,
   text,
+  paddingLeft,
 }: Omit<ButtonProps, 'text'> &
   HeaderProps & {
     text: string
@@ -39,11 +50,14 @@ const SortHeaderButton = ({
   )
 
   return (
-    <Button
+    <HeaderSortButton
       iconRight={header.sorting && sort?.column === header.id ? sortIcon : undefined}
       onClick={() => setSortColumn(String(header.id))}
       mode="bleed"
       size="default"
+      // Optional left-inset override so a header label can line up with content that is inset less
+      // than the default button padding (e.g. an 8px cell). Defaults to the button's own padding.
+      paddingLeft={paddingLeft}
       text={text}
     />
   )

@@ -53,6 +53,7 @@ export function DateInput(props: DateInputProps) {
       onChange={handleChange}
       onParseError={setParseError}
       parseInputValue={parseInputValue}
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       placeholder={schemaType.placeholder}
       calendarLabels={calendarLabels}
       readOnly={readOnly}

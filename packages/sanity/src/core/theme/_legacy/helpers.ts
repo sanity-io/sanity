@@ -7,6 +7,7 @@ import {type LegacyThemeTints} from './types'
  * @internal
  * @deprecated – Will be removed in upcoming major version
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function _buildTints(bg: string, mid: string, fg: string): LegacyThemeTints {
   return {
     50: mix(0.1, mid, bg),

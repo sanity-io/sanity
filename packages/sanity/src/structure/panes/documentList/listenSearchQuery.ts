@@ -40,6 +40,11 @@ interface ListenQueryOptions {
   searchQuery: string
   sort: SortOrder
   perspective?: ClientPerspective
+  /**
+   * The selected editing variant as a bare variant id. When set, the list resolves documents as
+   * seen through that variant, on top of `perspective`.
+   */
+  variant?: string
   staticTypeNames?: string[] | null
   maxFieldDepth?: number
   searchStrategy?: SearchStrategy
@@ -119,6 +124,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     schema,
     sort,
     perspective,
+    variant,
     limit,
     params,
     filter: groqFilter,
@@ -168,6 +174,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     params,
     searchQuery,
     perspective,
+    variant,
     sort: toStaticSortOrder(sort),
     staticTypeNames,
   })
@@ -208,6 +215,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
             params,
             strategy: searchStrategy,
             maxDepth: maxFieldDepth,
+            variant,
           })
 
           const doFetch = () => {
@@ -229,6 +237,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
               skipSortByScore,
               sort,
               perspective,
+              variant,
             }
 
             return search(searchTerms, searchOptions).pipe(

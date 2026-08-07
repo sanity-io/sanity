@@ -20,6 +20,7 @@ function makeRouterState(searchParams: Record<string, string>): RouterContextVal
     resolvePathFromState: vi.fn(),
     resolveIntentLink: vi.fn(),
     navigateUrl: vi.fn(),
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     navigateStickyParams: vi.fn(),
     navigate: vi.fn(),
     navigateIntent: vi.fn(),

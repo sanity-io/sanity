@@ -56,6 +56,7 @@ describe('useStudioFeedbackTags', () => {
   }
 
   beforeEach(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     vi.mocked(useClient).mockReturnValue({
       config: () => ({projectId: 'proj-abc'}),
     } as never)
@@ -148,6 +149,7 @@ describe('useStudioFeedbackTags', () => {
   })
 
   it('handles missing projectId from client config', () => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     vi.mocked(useClient).mockReturnValue({
       config: () => ({projectId: undefined}),
     } as never)

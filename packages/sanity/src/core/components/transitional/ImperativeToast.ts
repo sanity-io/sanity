@@ -1,5 +1,5 @@
 import {useToast} from '@sanity/ui'
-import {forwardRef, type ReactNode, useImperativeHandle} from 'react'
+import {type ReactNode, type Ref, useImperativeHandle} from 'react'
 
 /** @internal */
 export interface ToastParams {
@@ -15,12 +15,13 @@ export interface ToastParams {
  * @internal
  * @deprecated -- Refactor the component so it can call `useToast` instead
  */
-export const ImperativeToast = forwardRef((_, ref) => {
+export function ImperativeToast({ref}: {ref?: Ref<{push: (params: ToastParams) => string}>}) {
   const {push} = useToast()
 
   useImperativeHandle(ref, () => ({push}))
 
   return null
-})
+}
 
-ImperativeToast.displayName = 'ForwardRef(ImperativeToast)'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+ImperativeToast.displayName = 'ImperativeToast'

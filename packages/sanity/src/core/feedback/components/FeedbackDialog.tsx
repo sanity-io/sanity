@@ -214,8 +214,8 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
       padding={false}
     >
       <Card paddingX={4} paddingY={5} borderTop onPaste={handlePaste}>
-        <Stack space={5}>
-          <Stack space={2}>
+        <Stack gap={5}>
+          <Stack gap={2}>
             <Text size={1} weight="medium">
               {sentimentLabel ?? t('feedback.sentiment.label')}
             </Text>
@@ -238,7 +238,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
             </Flex>
           </Stack>
 
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text as="label" htmlFor={messageId} size={1} weight="medium">
               {t('feedback.message.label')}
             </Text>
@@ -268,8 +268,8 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
           </Stack>
 
           {(message.trim() || imageFile) && (resolvedName || resolvedEmail) && (
-            <Stack space={4}>
-              <Stack space={3} paddingRight={3}>
+            <Stack gap={4}>
+              <Stack gap={3} paddingRight={3}>
                 <Text as="label" htmlFor={contactConsentId} size={1} weight="medium">
                   {t('feedback.consent.label')}
                 </Text>

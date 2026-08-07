@@ -11,6 +11,7 @@ import {type DocumentPaneProviderProps} from './types'
  * @internal
  */
 export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProps) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const {setParams, params} = usePaneRouter()
   const handleSetScheduledDraftPerspective = useCallback(

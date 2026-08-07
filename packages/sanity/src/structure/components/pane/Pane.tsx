@@ -1,7 +1,5 @@
 import {BoundaryElementProvider, Card, type CardProps, Code, Flex} from '@sanity/ui'
 import {
-  type ForwardedRef,
-  forwardRef,
   type HTMLProps,
   type ReactNode,
   useCallback,
@@ -10,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {IsLastPaneProvider, LegacyLayerProvider} from 'sanity'
 import {PaneContext} from 'sanity/_singletons'
@@ -42,13 +41,14 @@ const Root = styled(Card)`
  * @hidden
  * @internal
  */
-export const Pane = forwardRef(function Pane(
+export function Pane(
   props: PaneProps &
     Omit<CardProps, 'as' | 'overflow'> &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'>,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'> &
+    RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref: forwardedRef,
     children,
     currentMinWidth: currentMinWidthProp,
     currentMaxWidth: currentMaxWidthProp,
@@ -239,4 +239,4 @@ export const Pane = forwardRef(function Pane(
       {divider}
     </>
   )
-})
+}

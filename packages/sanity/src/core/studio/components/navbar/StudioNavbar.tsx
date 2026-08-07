@@ -60,7 +60,7 @@ const RootCard = styled(Card)`
 
 const NavGrid = styled(Grid)`
   grid-template-columns: auto auto auto;
-  @media screen and (min-width: ${({theme}) => `${theme.sanity.media[4]}px`}) {
+  @media screen and (min-width: ${({theme}) => `${theme.sanity.media[4] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px`}) {
     grid-template-columns: 1fr auto 1fr;
   }
 `
@@ -87,7 +87,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchOpen,
   } = useContext(NavbarContext)
 
-  const {selectedPerspective, perspectiveStack} = usePerspective()
+  const {selectedPerspective, perspectiveStack, selectedVariantName} = usePerspective()
 
   const ToolMenu = useToolMenuComponent()
 
@@ -259,6 +259,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                             onClose={handleCloseSearchFullscreen}
                             onOpen={handleOpenSearchFullscreen}
                             open={searchFullscreenOpen}
+                            previewPerspective={perspectiveStack}
+                            previewVariant={selectedVariantName}
                           />
                         </PortalProvider>
                       ) : (
@@ -267,6 +269,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                           onOpen={handleOpenSearch}
                           open={searchOpen}
                           previewPerspective={perspectiveStack}
+                          previewVariant={selectedVariantName}
                         />
                       )}
                     </BoundaryElementProvider>

@@ -1,5 +1,5 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {type ForwardedRef, forwardRef} from 'react'
+import {type RefAttributes} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -12,10 +12,7 @@ interface SearchButtonProps {
 /**
  * @internal
  */
-export const SearchButton = forwardRef(function SearchButton(
-  {onClick}: SearchButtonProps,
-  ref: ForwardedRef<HTMLButtonElement>,
-) {
+export function SearchButton({ref, onClick}: SearchButtonProps & RefAttributes<HTMLButtonElement>) {
   const {t} = useTranslation()
 
   return (
@@ -33,4 +30,4 @@ export const SearchButton = forwardRef(function SearchButton(
       ref={ref}
     />
   )
-})
+}

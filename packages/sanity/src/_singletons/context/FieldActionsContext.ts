@@ -7,6 +7,7 @@ import type {FieldCommentsProps} from '../../core/form/types/fieldProps'
 /** @internal */
 export interface FieldActionsContextValue {
   actions: DocumentFieldActionNode[]
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   __internal_comments?: FieldCommentsProps
   __internal_slot?: ReactNode
   focused?: boolean

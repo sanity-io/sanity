@@ -352,6 +352,19 @@ describe('createSearchQuery', () => {
       expect(options.tag).toEqual('customTag')
     })
 
+    it('should pass the configured perspective and variant as query options', () => {
+      const {options} = createSearchQuery(
+        {
+          query: 'term',
+          types: [testType],
+        },
+        {perspective: ['rSummer', 'drafts'], variant: 'alpha-audience'},
+      )
+
+      expect(options.perspective).toEqual(['rSummer', 'drafts'])
+      expect(options.variant).toEqual('alpha-audience')
+    })
+
     it('should use configured sort field and direction', () => {
       const {query} = createSearchQuery(
         {

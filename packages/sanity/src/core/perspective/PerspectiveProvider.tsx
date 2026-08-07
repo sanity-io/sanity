@@ -3,13 +3,12 @@ import {PerspectiveContext} from 'sanity/_singletons'
 
 import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
-import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useWorkspace} from '../studio/workspace'
-import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
 import {getBundleIdFromPerspective} from '../variants/documents/getBundleIdFromPerspective'
 import {useAllVariants} from '../variants/store/useAllVariants'
 import {getSelectedPerspective} from './getSelectedPerspective'
+import {getSelectedReleaseId} from './getSelectedReleaseId'
 import {getSelectedVariant} from './getSelectedVariant'
 import {type PerspectiveContextValue, type ReleaseId} from './types'
 
@@ -62,11 +61,7 @@ export function PerspectiveProvider({
     return {
       selectedPerspective,
       selectedPerspectiveName,
-      selectedReleaseId: isSystemBundleName(selectedPerspectiveName)
-        ? undefined
-        : releases
-            .map((release) => getReleaseIdFromReleaseDocumentId(release._id))
-            .find((releaseName) => releaseName === selectedPerspectiveName),
+      selectedReleaseId: getSelectedReleaseId(selectedPerspectiveName, releases),
       perspectiveStack,
       excludedPerspectives,
       selectedVariantName,

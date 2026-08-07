@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
 import {useClient} from '../hooks/useClient'
 import {useSchema} from '../hooks/useSchema'
@@ -61,6 +61,7 @@ const slowCommitCooldown = {lastToastAt: 0}
  * @hidden
  * @beta */
 export function useUserStore(): UserStore {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, currentUser} = useSource()
   const resourceCache = useResourceCache()
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -88,6 +89,7 @@ export function useUserStore(): UserStore {
 export function useGrantsStore(): GrantsStore {
   // `currentUser` is read from the source directly (instead of via `useCurrentUser` from
   // `./user/hooks`) to avoid a circular import: `./user/hooks` imports `useUserStore` from here.
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, currentUser} = useSource()
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
@@ -162,6 +164,7 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
  * @hidden
  * @beta */
 export function useDocumentStore(): DocumentStore {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient, i18n, currentUser} = useSource()
   const schema = useSchema()
   const templates = useTemplates()
@@ -304,6 +307,7 @@ export function useDocumentStore(): DocumentStore {
 
 /** @internal */
 export function useConnectionStatusStore(): ConnectionStatusStore {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {bifur} = useSource().__internal
   const resourceCache = useResourceCache()
 
@@ -330,6 +334,7 @@ export function useConnectionStatusStore(): ConnectionStatusStore {
 export function usePresenceStore(): PresenceStore {
   const {
     __internal: {bifur},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
   const resourceCache = useResourceCache()
   const userStore = useUserStore()
@@ -441,7 +446,11 @@ export function useRenderingContextStore(): RenderingContextStore {
 export function useComlinkStore(): ComlinkStore {
   const resourceCache = useResourceCache()
   const renderingContext = useRenderingContextStore()
-  const capabilities = useObservable(renderingContext.capabilities, {})
+  // Kept synchronous: `createComlinkStore` starts the comlink node when
+  // `capabilities.comlink` flips true, so a deferred snapshot would delay
+  // comlink initialization. Capabilities emit once at boot; there is nothing
+  // to gain from deferring them.
+  const capabilities = useSyncObservable(renderingContext.capabilities, {})
 
   return useMemo(() => {
     const comlinkStore =

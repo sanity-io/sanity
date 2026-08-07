@@ -46,6 +46,7 @@ export function convertToValidationMarker(
   }
 
   // legacy support for `paths`
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   for (const path of validatorResult.paths || []) {
     normalizedPaths.push(path)
   }
@@ -56,6 +57,7 @@ export function convertToValidationMarker(
     return [
       {
         level: level || 'error',
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         item: {message},
         message,
         path: context.path || [],

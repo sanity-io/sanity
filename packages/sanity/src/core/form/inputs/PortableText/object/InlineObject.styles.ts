@@ -14,7 +14,9 @@ export const TooltipBox = styled(Box)`
   max-width: 250px;
 `
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function rootStyle({theme}: {theme: Theme}) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {color, radius} = theme.sanity
 
   return css`

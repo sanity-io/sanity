@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.9.1](https://github.com/sanity-io/sanity/compare/v6.9.0...v6.9.1) (2026-08-06)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^8.8.3 ([#13866](https://github.com/sanity-io/sanity/issues/13866)) ([6712f2d](https://github.com/sanity-io/sanity/commit/6712f2d6b195888c4623412e3fc59d25a6963d55))
+## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^8.8.1 ([#13841](https://github.com/sanity-io/sanity/issues/13841)) ([a4d8244](https://github.com/sanity-io/sanity/commit/a4d82442b3f74beb5004d557bf8b9f17ca14ccf9))
+* **deps:** update dependency get-it to ^8.8.2 ([#13865](https://github.com/sanity-io/sanity/issues/13865)) ([7ea95c3](https://github.com/sanity-io/sanity/commit/7ea95c3ff2b75203e9d83ec2a80fa2af39a19cdd))
+## [6.7.0](https://github.com/sanity-io/sanity/compare/v6.6.0...v6.7.0) (2026-07-28)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.2.1 ([#13684](https://github.com/sanity-io/sanity/issues/13684)) ([ad2634f](https://github.com/sanity-io/sanity/commit/ad2634fd01e69a5090896f68524984c06e48c74a))
+* **deps:** update dependency groq-js to v2 ([#13677](https://github.com/sanity-io/sanity/issues/13677)) ([7ac6d86](https://github.com/sanity-io/sanity/commit/7ac6d86c9b844603a919c88e66e9f904ef95a991))
 ## [6.6.0](https://github.com/sanity-io/sanity/compare/v6.5.0...v6.6.0) (2026-07-22)
 
 ### Bug Fixes

@@ -66,7 +66,9 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   onToggleFullscreen: () => void
   path: Path
   rangeDecorations?: RangeDecoration[]
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderBlockActions?: RenderBlockActionsCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
 }
 

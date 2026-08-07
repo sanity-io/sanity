@@ -19,13 +19,12 @@ import range from 'lodash-es/range.js'
 import {
   type ComponentProps,
   type FormEvent,
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
+  type RefAttributes,
 } from 'react'
 
 import {type TimeZoneScope, useTimeZone} from '../../../../../hooks/useTimeZone'
@@ -61,12 +60,10 @@ const PRESERVE_FOCUS_ELEMENT = (
   />
 )
 
-export const Calendar = forwardRef(function Calendar(
-  props: CalendarProps,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
+export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
   const {getCurrentZoneDate, zoneDateToUtc} = useTimeZone(props.timeZoneScope)
   const {
+    ref: forwardedRef,
     selectTime,
     onFocusedDateChange,
     selectedDate = getCurrentZoneDate(),
@@ -89,6 +86,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleFocusedMonthChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (e: FormEvent<HTMLSelectElement>) => setFocusedDateMonth(Number(e.currentTarget.value)),
     [setFocusedDateMonth],
   )
@@ -115,6 +113,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleMinutesChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (event: FormEvent<HTMLSelectElement>) => {
       const m = Number(event.currentTarget.value)
       onSelect(zoneDateToUtc(setMinutes(selectedDate, m)))
@@ -123,6 +122,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleHoursChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (event: FormEvent<HTMLSelectElement>) => {
       const m = Number(event.currentTarget.value)
       onSelect(zoneDateToUtc(setHours(selectedDate, m)))
@@ -294,7 +294,7 @@ export const Calendar = forwardRef(function Calendar(
       )}
     </Box>
   )
-})
+}
 
 function CalendarTimePresetButton(props: {
   hours: number
@@ -322,6 +322,7 @@ function CalendarTimePresetButton(props: {
 
 function CalendarMonthSelect(props: {
   moveFocusedDate: (by: number) => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onChange: (e: FormEvent<HTMLSelectElement>) => void
   value?: number
 }) {

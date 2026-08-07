@@ -1,6 +1,6 @@
 import {type ReleaseState} from '@sanity/client'
 import {Card} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useMemo} from 'react'
+import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {type PreviewLayoutKey} from '../../../components/previews/types'
@@ -62,20 +62,20 @@ export function ReleaseDocumentPreview({
 
   const LinkComponent = useMemo(
     () =>
-      forwardRef(function LinkComponent(
-        linkProps: React.ComponentPropsWithoutRef<'a'>,
-        ref: ForwardedRef<HTMLAnchorElement>,
+      function LinkComponent(
+        linkProps: React.ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>,
       ) {
+        const {ref, ...rest} = linkProps
         return (
           <IntentLink
-            {...linkProps}
+            {...rest}
             intent="edit"
             params={params}
             searchParams={searchParams}
             ref={ref}
           />
         )
-      }),
+      },
     [params, searchParams],
   )
 

@@ -18,10 +18,9 @@ import {type ArrayOfObjectsItemMember} from '../../../store/types/members'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {
-  CreateAppendedObject,
-  CreatePrependedObject,
-  NavigatedToViaArrayList,
-  RemovedObject,
+  ObjectCreated,
+  ObjectEdited,
+  ObjectRemoved,
 } from '../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {type ArrayInputCopyEvent, type ArrayInputInsertEvent} from '../../../types/event'
@@ -90,6 +89,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const getFormValue = useGetFormValue()
   const {onCopy} = useCopyPaste()
   const telemetry = useTelemetry()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {
@@ -99,7 +99,8 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   })
 
   const onRemove = useCallback(() => {
-    telemetry.log(RemovedObject, {
+    telemetry.log(ObjectRemoved, {
+      location: 'array_list',
       path: pathToString(member.item.path),
       origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })
@@ -118,17 +119,12 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const telemetryInsertSiblingsTelemetry = useCallback(
     (event: Omit<ArrayInputInsertEvent<ObjectItem>, 'referenceItem'>) => {
-      if (event.position === 'before') {
-        telemetry.log(CreatePrependedObject, {
-          path: pathToString(member.item.path),
-          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-        })
-      } else {
-        telemetry.log(CreateAppendedObject, {
-          path: pathToString(member.item.path),
-          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-        })
-      }
+      telemetry.log(ObjectCreated, {
+        location: 'array_list',
+        position: event.position === 'before' ? 'prepended' : 'appended',
+        path: pathToString(member.item.path),
+        origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+      })
     },
     [enhancedObjectDialogEnabled, member.item.path, telemetry],
   )
@@ -277,7 +273,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   )
 
   const handleOpen = useCallback(() => {
-    telemetry.log(NavigatedToViaArrayList, {
+    telemetry.log(ObjectEdited, {
+      location: 'array_list',
+      position: 'nested',
       path: pathToString(member.item.path),
       origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })

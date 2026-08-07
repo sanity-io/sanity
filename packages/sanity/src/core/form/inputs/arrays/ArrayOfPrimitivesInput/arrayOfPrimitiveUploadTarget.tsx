@@ -5,17 +5,7 @@ import {UploadIcon} from '@sanity/icons/Upload'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, Flex, Inline, Layer, Text, useToast} from '@sanity/ui'
 import sortBy from 'lodash-es/sortBy.js'
-import {
-  type ComponentType,
-  type ForwardedRef,
-  forwardRef,
-  type ForwardRefExoticComponent,
-  type PropsWithoutRef,
-  type ReactNode,
-  type RefAttributes,
-  useCallback,
-  useState,
-} from 'react'
+import {type ComponentType, type ReactNode, type RefAttributes, useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {type FIXME} from '../../../../FIXME'
@@ -60,17 +50,11 @@ function getUploadCandidates(
 
 function uploadTarget<Props>(
   Component: ComponentType<Props>,
-): ForwardRefExoticComponent<
-  PropsWithoutRef<UploadTargetProps & Props> & RefAttributes<HTMLElement>
-> {
+): (props: UploadTargetProps & Props & RefAttributes<HTMLElement>) => ReactNode {
   const FileTarget = fileTarget<FIXME>(Component)
 
-  // @ts-expect-error TODO fix PropsWithoutRef related union typings
-  return forwardRef(function UploadTarget(
-    props: UploadTargetProps & Props,
-    forwardedRef: ForwardedRef<HTMLElement>,
-  ) {
-    const {children, resolveUploader, onUpload, types, ...rest} = props
+  return function UploadTarget(props: UploadTargetProps & Props & RefAttributes<HTMLElement>) {
+    const {ref: forwardedRef, children, resolveUploader, onUpload, types, ...rest} = props
     const {push: pushToast} = useToast()
     const {t} = useTranslation()
 
@@ -153,7 +137,7 @@ function uploadTarget<Props>(
         </FileTarget>
       </Root>
     )
-  })
+  }
 }
 
 const StyledCard = styled(Card)`
@@ -194,7 +178,7 @@ function DropMessage(props: DropMessageProps) {
     <>
       {acceptedFiles.length > 0 ? (
         <>
-          <Inline space={2}>
+          <Inline gap={2}>
             <Text>
               <UploadIcon />
             </Text>
@@ -207,7 +191,7 @@ function DropMessage(props: DropMessageProps) {
           </Inline>
           {rejectedFilesCount > 0 && (
             <Box marginTop={4}>
-              <Inline space={2}>
+              <Inline gap={2}>
                 <Text muted size={1}>
                   <AccessDeniedIcon />
                 </Text>
@@ -221,7 +205,7 @@ function DropMessage(props: DropMessageProps) {
           )}
         </>
       ) : (
-        <Inline space={2}>
+        <Inline gap={2}>
           <Text>
             <AccessDeniedIcon />
           </Text>

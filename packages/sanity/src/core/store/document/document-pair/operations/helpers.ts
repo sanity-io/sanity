@@ -110,10 +110,17 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
     return operations
   }
 
+  // A declared creatable variant target: the variant document doesn't exist yet, but its id is
+  // known ahead of time (the server-advertised `_system.draft` weak ref on the variant-of-published
+  // sibling), so typing must create it seeded from the published variant — exactly like the base
+  // pair creates the draft from published. Only `patch` and `commit` are exempted: the document
+  // still doesn't exist, so publish/unpublish/discardChanges stay `TARGET_NOT_FOUND` until it does.
+  const allowVersionCreate = args.target?.kind === 'variant' && args.target.allowCreate === true
+
   return {
     ...operations,
-    commit: createTargetNotFoundOperation('commit'),
-    patch: createTargetNotFoundOperation('patch'),
+    commit: allowVersionCreate ? operations.commit : createTargetNotFoundOperation('commit'),
+    patch: allowVersionCreate ? operations.patch : createTargetNotFoundOperation('patch'),
     publish: createTargetNotFoundOperation('publish'),
     unpublish: createTargetNotFoundOperation('unpublish'),
     discardChanges: createTargetNotFoundOperation('discardChanges'),

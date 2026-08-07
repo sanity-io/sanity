@@ -1,7 +1,7 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
-import {useMemo, type ComponentType} from 'react'
+import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {useTranslation} from 'sanity'
 import {styled, css} from 'styled-components'

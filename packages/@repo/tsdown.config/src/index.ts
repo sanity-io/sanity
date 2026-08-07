@@ -31,9 +31,9 @@ function isTypeOnlyCircularDependencyWarning(message: string): boolean {
  * `@sanity/tsdown-config`, with these defaults:
  *
  * - `tsconfig: 'tsconfig.lib.json'` - build/dts config (`noCheck: true`; type checking is via oxlint)
- * - `dts: {tsgo: true}` - generate `.d.ts` files with tsgo (`@typescript/native-preview`);
- *   tsgo only emits declarations here — type checking is owned by oxlint (`options.typeCheck`),
- *   and no `typescript` dependency is needed
+ * - `dts: {tsgo: true}` - generate `.d.ts` files with the TypeScript 7 native compiler (`tsc`);
+ *   declaration emit only — type checking is owned by oxlint (`options.typeCheck`).
+ *   Packages must depend on `typescript` (catalog, v7+) so rolldown-plugin-dts can resolve it
  * - `exports.devExports: 'monorepo'` - local builds regenerate the `exports` map in
  *   `package.json` with the `monorepo` condition pointing at the sources (resolved by the
  *   monorepo tsconfigs and the dev studios) while `publishConfig.exports` receives the built

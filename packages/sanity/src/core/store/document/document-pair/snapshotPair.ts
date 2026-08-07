@@ -33,7 +33,9 @@ function withSnapshots(pair: DocumentVersion): DocumentVersionSnapshots {
     snapshots$: pair.events.pipe(
       filter(isSnapshotEvent),
       map((event) => event.document),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       publishReplay(1),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       refCount(),
     ),
 
@@ -94,7 +96,9 @@ export const snapshotPair = memoize(
           ...(version ? {version: withSnapshots(version)} : {}),
         }
       }),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       publishReplay(1),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       refCount(),
     )
   },

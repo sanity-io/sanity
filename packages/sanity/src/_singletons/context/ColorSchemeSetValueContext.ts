@@ -8,5 +8,6 @@ import type {StudioThemeColorSchemeKey} from '../../core/theme/types'
  * @internal
  */
 export const ColorSchemeSetValueContext = createContext<
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ((nextScheme: StudioThemeColorSchemeKey) => void) | false | null
 >('sanity/_singletons/context/color-scheme-set-value', null)

@@ -10,12 +10,12 @@ import {
 } from '@sanity/ui'
 import {
   type ElementType,
-  forwardRef,
   type HTMLProps,
   isValidElement,
   type ReactNode,
   type Ref,
   useMemo,
+  type RefAttributes,
 } from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
@@ -80,25 +80,24 @@ const PreviewWrapper = styled(Box)`
  *
  * @internal
  */
-export const MenuItem = forwardRef(function MenuItem(
-  {
-    badgeText,
-    children: childrenProp,
-    disabled,
-    hotkeys,
-    icon: Icon,
-    iconRight: IconRight,
-    preview = null,
-    renderMenuItem,
-    text,
-    tooltipProps,
-    __unstable_subtitle,
-    __unstable_space,
-    ...rest
-  }: MenuItemProps &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'selected' | 'tabIndex' | 'size'>,
-  ref: Ref<HTMLDivElement>,
-) {
+export function MenuItem({
+  ref,
+  badgeText,
+  children: childrenProp,
+  disabled,
+  hotkeys,
+  icon: Icon,
+  iconRight: IconRight,
+  preview = null,
+  renderMenuItem,
+  text,
+  tooltipProps,
+  __unstable_subtitle,
+  __unstable_space,
+  ...rest
+}: MenuItemProps &
+  Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'selected' | 'tabIndex' | 'size'> &
+  RefAttributes<HTMLDivElement>) {
   const menuItemContent = useMemo(() => {
     return (
       <Flex align="center" gap={2}>
@@ -121,7 +120,7 @@ export const MenuItem = forwardRef(function MenuItem(
           </Box>
         )}
         {text && (
-          <Stack flex={1} space={__unstable_subtitle ? 1 : 2}>
+          <Stack flex={1} gap={__unstable_subtitle ? 1 : 2}>
             <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
               {text}
             </Text>
@@ -189,4 +188,4 @@ export const MenuItem = forwardRef(function MenuItem(
   }
 
   return children
-})
+}

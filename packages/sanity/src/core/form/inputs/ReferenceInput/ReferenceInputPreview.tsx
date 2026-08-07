@@ -6,13 +6,12 @@ import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/
 import {
   type ComponentProps,
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {IntentLink} from 'sanity/router'
 
@@ -156,21 +155,21 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
 
   const OpenLink = useMemo(
     () =>
-      forwardRef(function OpenLink(
-        restProps: ComponentProps<typeof IntentLink>,
-        _ref: ForwardedRef<HTMLAnchorElement>,
+      function OpenLink(
+        restProps: ComponentProps<typeof IntentLink> & RefAttributes<HTMLAnchorElement>,
       ) {
+        const {ref, ...linkProps} = restProps
         return (
           <IntentLink
-            {...restProps}
+            {...linkProps}
             intent="edit"
             params={{id: value?._ref, type: refType?.name}}
             target="_blank"
             rel="noopener noreferrer"
-            ref={_ref}
+            ref={ref}
           />
         )
-      }),
+      },
     [refType?.name, value?._ref],
   )
 
@@ -239,7 +238,7 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
 
   return (
     <WithFocusRingCard border $radius={2} padding={1} tone={tone} ref={setCardRef} tabIndex={-1}>
-      <Stack space={1}>
+      <Stack gap={1}>
         <Flex gap={1} align="center" style={{lineHeight: 0}}>
           <TooltipDelayGroupProvider>
             <ReferenceLinkCard

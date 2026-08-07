@@ -27,6 +27,7 @@ import {
 } from './types'
 
 function getPTEFormatActions(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   editor: PortableTextEditor,
   schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
@@ -50,7 +51,9 @@ function getPTEFormatActions(
       icon: decorator?.icon,
       key: decorator.value,
       handle: (): void => {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.toggleMark(editor, decorator.value)
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.focus(editor)
       },
       hotkeys,
@@ -60,6 +63,7 @@ function getPTEFormatActions(
 }
 
 function getPTEListActions(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   editor: PortableTextEditor,
   schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
@@ -73,6 +77,7 @@ function getPTEListActions(
       disabled: disabled || !applicable.lists.has(listItem.value),
       icon: listItem?.icon,
       handle: (): void => {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.toggleList(editor, listItem.value)
       },
       title: listItem.i18nTitleKey && t ? t(listItem.i18nTitleKey) : listItem.title,
@@ -90,6 +95,7 @@ function getAnnotationIcon(type: ObjectSchemaType): ComponentType | string | und
 }
 
 function getPTEAnnotationActions(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   editor: PortableTextEditor,
   schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
@@ -108,7 +114,9 @@ function getPTEAnnotationActions(
       key: aType.name,
       handle: (active?: boolean): void => {
         if (active) {
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           PortableTextEditor.removeAnnotation(editor, aType)
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           PortableTextEditor.focus(editor)
         } else {
           onInsert(aType)
@@ -124,6 +132,7 @@ function getPTEAnnotationActions(
  * @internal
  */
 export function getPTEToolbarActionGroups(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   editor: PortableTextEditor,
   options: {
     schemaTypes: PortableTextMemberSchemaTypes
@@ -179,25 +188,21 @@ export function getInsertMenuItems(
   onInsertBlock: (type: ObjectSchemaType) => void,
   onInsertInline: (type: ObjectSchemaType) => void,
 ): BlockItem[] {
-  const blockItems = types.blockObjects.map(
-    (type, index): BlockItem => ({
-      handle: () => onInsertBlock(type),
-      icon: getInsertMenuIcon(type, BlockElementIcon),
-      inline: false,
-      key: `block-${index}`,
-      type,
-    }),
-  )
+  const blockItems = types.blockObjects.map((type, index): BlockItem => ({
+    handle: () => onInsertBlock(type),
+    icon: getInsertMenuIcon(type, BlockElementIcon),
+    inline: false,
+    key: `block-${index}`,
+    type,
+  }))
 
-  const inlineItems = types.inlineObjects.map(
-    (type, index): BlockItem => ({
-      handle: () => onInsertInline(type),
-      icon: getInsertMenuIcon(type, InlineElementIcon),
-      inline: true,
-      key: `inline-${index}`,
-      type,
-    }),
-  )
+  const inlineItems = types.inlineObjects.map((type, index): BlockItem => ({
+    handle: () => onInsertInline(type),
+    icon: getInsertMenuIcon(type, InlineElementIcon),
+    inline: true,
+    key: `inline-${index}`,
+    type,
+  }))
 
   // Do not include items that are supposed to be hidden
   const filteredBlockItems = blockItems.concat(inlineItems).filter((item) => !item.type?.hidden)

@@ -16,16 +16,7 @@ import {
 } from '@sanity/preview-url-secret/constants'
 import {BoundaryElementProvider, Flex, useMediaIndex} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useEffectEvent,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type CommentIntentGetter,
   COMMENTS_INSPECTOR_NAME,
@@ -38,6 +29,7 @@ import {
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
+import {useEffectEvent} from 'use-effect-event'
 
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE, NARROW_MEDIA_INDEX} from './constants'
 import PostMessageFeatures from './features/PostMessageFeatures'
@@ -126,6 +118,7 @@ export default function PresentationTool(props: {
   const {navigate: routerNavigate, state: routerState} = useRouter() as RouterContextValue & {
     state: PresentationStateParams
   }
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
 
   const canSharePreviewAccess = useSelector(
@@ -507,6 +500,7 @@ export default function PresentationTool(props: {
         refreshRef.current = window.setTimeout(fallback, 300)
         visualEditingComlink.post('presentation/refresh', {
           source: 'manual',
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           livePreviewEnabled:
             previewKitConnection === 'connected' || loadersConnection === 'connected',
         })

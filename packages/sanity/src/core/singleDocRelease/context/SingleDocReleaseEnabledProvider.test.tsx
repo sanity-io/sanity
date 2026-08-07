@@ -15,6 +15,7 @@ vi.mock('../../studio/source', () => ({
 }))
 
 const useFeatureEnabledMock = useFeatureEnabled as ReturnType<typeof vi.fn>
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const useSourceMock = useSource as ReturnType<typeof vi.fn>
 
 const featureFlagName = 'singleDocRelease'

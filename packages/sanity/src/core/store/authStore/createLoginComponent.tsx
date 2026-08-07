@@ -107,6 +107,7 @@ export function createLoginComponent({
 }: CreateLoginComponentOptions) {
   function LoginComponent({projectId, ...props}: LoginComponentProps) {
     const {t} = useTranslation()
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const redirectPath = props.redirectPath || props.basePath || '/'
 
     const [providerData, setProviderData] = useState<{
@@ -121,6 +122,10 @@ export function createLoginComponent({
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
 
+    // Deferred (per review): the only way to change workspace mid-login is a
+    // URL change, which triggers a full reload — so `client$` doesn't swap
+    // under a mounted login screen. react-rx v5's identity-coherent deferral
+    // also falls back to the live value if the client ever does change.
     const client = useObservable(client$)
 
     const getProviderData = useCallback(async () => {
@@ -201,7 +206,7 @@ export function createLoginComponent({
                 <WarningOutlineIcon />
               </Text>
             </Box>
-            <Stack flex={1} marginLeft={3} space={4}>
+            <Stack flex={1} marginLeft={3} gap={4}>
               <Text as="h1" size={1} weight="medium">
                 No login providers available
               </Text>
@@ -240,7 +245,7 @@ export function createLoginComponent({
     }
 
     return (
-      <Stack space={4}>
+      <Stack gap={4}>
         <Heading align="center" size={1}>
           Choose login provider
         </Heading>
@@ -258,7 +263,7 @@ export function createLoginComponent({
             />
           )}
 
-          <Stack space={2}>
+          <Stack gap={2}>
             {providerList?.map((provider, index) => (
               <ProviderButton
                 key={`${provider.url}_${index}`}

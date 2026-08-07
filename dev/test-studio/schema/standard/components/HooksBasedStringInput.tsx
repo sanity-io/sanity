@@ -1,9 +1,9 @@
 import {Inline, Text} from '@sanity/ui'
-import {forwardRef, useState} from 'react'
+import {useState, type RefAttributes} from 'react'
 import {set, type StringInputProps} from 'sanity'
 
-export const HooksBasedStringInput = forwardRef<any, StringInputProps>((props, ref) => {
-  const {value, schemaType, onChange} = props
+export function HooksBasedStringInput(props: StringInputProps & RefAttributes<any>) {
+  const {ref, value, schemaType, onChange} = props
   const [isEditing, setIsEditing] = useState(false)
 
   return (
@@ -12,6 +12,7 @@ export const HooksBasedStringInput = forwardRef<any, StringInputProps>((props, r
         <input
           type="text"
           ref={ref}
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           placeholder={schemaType.placeholder}
           onChange={(event) => onChange(set(event.target.value))}
           value={value}
@@ -24,6 +25,4 @@ export const HooksBasedStringInput = forwardRef<any, StringInputProps>((props, r
       </button>
     </Inline>
   )
-})
-
-HooksBasedStringInput.displayName = 'HooksBasedStringInput'
+}

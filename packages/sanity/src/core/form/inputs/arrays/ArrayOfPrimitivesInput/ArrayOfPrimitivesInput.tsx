@@ -27,6 +27,7 @@ interface State {
  * @hidden
  * @beta
  */
+// oxlint-disable-next-line react/prefer-function-component -- needs getSnapshotBeforeUpdate (no hook equivalent)
 export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInputProps, State> {
   _element: HTMLElement | null = null
 
@@ -176,7 +177,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
 
     return (
       <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
-        <Stack space={2} data-testid="array-primitives-input">
+        <Stack gap={2} data-testid="array-primitives-input">
           <UploadTargetCard
             types={schemaType.of}
             resolveUploader={resolveUploader}
@@ -184,7 +185,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
             {...elementProps}
             tabIndex={0}
           >
-            <Stack space={1}>
+            <Stack gap={1}>
               {membersWithSortIds.length === 0 ? (
                 <NoItemsPlaceholder schemaType={schemaType} validation={validation} />
               ) : (
@@ -196,7 +197,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
                     items={membersWithSortIds.map((m) => m.id)}
                     sortable={isSortable}
                     gap={isGrid ? 3 : 1}
-                    columns={isGrid ? [2, 3, 4] : 1}
+                    gridTemplateColumns={isGrid ? [2, 3, 4] : 1}
                     padding={isGrid ? 1 : undefined}
                     margin={isGrid ? 1 : undefined}
                   >

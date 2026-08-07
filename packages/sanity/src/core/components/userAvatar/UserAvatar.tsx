@@ -8,7 +8,7 @@ import {
   Skeleton,
 } from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type ForwardedRef, forwardRef, useState} from 'react'
+import {useState, type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -98,11 +98,10 @@ function TooltipUserAvatar(props: Omit<UserAvatarProps, 'user'> & {user: User}) 
   )
 }
 
-const StaticUserAvatar = forwardRef(function StaticUserAvatar(
-  props: Omit<UserAvatarProps, 'user'> & {user: User},
-  ref: ForwardedRef<HTMLDivElement>,
+function StaticUserAvatar(
+  props: Omit<UserAvatarProps, 'user'> & {user: User} & RefAttributes<HTMLDivElement>,
 ) {
-  const {user, animateArrowFrom, position, size, status, tone, ...restProps} = props
+  const {ref, user, animateArrowFrom, position, size, status, tone, ...restProps} = props
   const [imageLoadError, setImageLoadError] = useState<null | Error>(null)
   const userColor = useUserColor(user.id)
   const imageUrl = imageLoadError ? undefined : user?.imageUrl
@@ -124,7 +123,7 @@ const StaticUserAvatar = forwardRef(function StaticUserAvatar(
       {...restProps}
     />
   )
-})
+}
 
 function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> & {user: string}) {
   const [value, loading] = useUser(user)

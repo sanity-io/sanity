@@ -42,18 +42,16 @@ vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useSearchState: vi.fn(),
   useActiveReleases: vi.fn(() => ({})),
-  usePerspective: vi.fn(
-    (): PerspectiveContextValue => ({
-      perspectiveStack: ['drafts'],
-      excludedPerspectives: [],
-      selectedPerspective: 'drafts',
-      selectedPerspectiveName: undefined,
-      selectedReleaseId: undefined,
-      selectedVariantName: undefined,
-      selectedVariant: undefined,
-      bundle: 'drafts',
-    }),
-  ),
+  usePerspective: vi.fn((): PerspectiveContextValue => ({
+    perspectiveStack: ['drafts'],
+    excludedPerspectives: [],
+    selectedPerspective: 'drafts',
+    selectedPerspectiveName: undefined,
+    selectedReleaseId: undefined,
+    selectedVariantName: undefined,
+    selectedVariant: undefined,
+    bundle: 'drafts',
+  })),
 }))
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),

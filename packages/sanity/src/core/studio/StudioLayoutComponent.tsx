@@ -21,6 +21,7 @@ import {useNavbarComponent} from './studio-components-hooks/useNavbarComponent'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {getPageVisibilitySnapshot} from './telemetry/pageVisibility'
 import {ToolMountTimer} from './ToolMountTimer'
+import {UnclaimedProjectNudge} from './unclaimedProject/UnclaimedProjectNudge'
 import {useWorkspace} from './workspace'
 
 const DetectViteDevServerStopped = lazy(() =>
@@ -188,6 +189,7 @@ export function StudioLayoutComponent() {
         {/* oxlint-disable-next-line react/react-compiler -- Navbar comes from useNavbarComponent(), stable per workspace */}
         <Navbar />
       </NavbarContext.Provider>
+      <UnclaimedProjectNudge />
       {isLegacyDeskRedirect && <RedirectingScreen />}
       {!activeTool && defaultRouteTools.length === 0 && <NoToolsScreen />}
       {tools.length > 0 && !activeTool && activeToolName && !isLegacyDeskRedirect && (

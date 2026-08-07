@@ -1,6 +1,6 @@
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type Ref, forwardRef, type HTMLProps} from 'react'
+import {type Ref, type HTMLProps} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
@@ -10,18 +10,6 @@ import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {VariantsOverview} from '../overview/VariantsOverview'
 import {getVariantId} from '../util'
-
-const mockedSetVariant = vi.fn()
-
-vi.mock('../../../perspective/useSetVariant', () => ({
-  useSetVariant: vi.fn(() => mockedSetVariant),
-}))
-
-vi.mock('../../../perspective/usePerspective', () => ({
-  usePerspective: vi.fn(() => ({
-    selectedVariant: undefined,
-  })),
-}))
 
 const mockNavigate = vi.fn()
 
@@ -58,10 +46,11 @@ vi.mock('sanity/router', async (importOriginal) => ({
       variantId ? `/variants/${variantId}` : '/variants',
     ),
   })),
-  StateLink: forwardRef(function MockStateLink(
-    {state, ...rest}: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>,
+  StateLink: function MockStateLink({
     ref,
-  ) {
+    state,
+    ...rest
+  }: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>) {
     return (
       // oxlint-disable-next-line jsx_a11y/anchor-has-content
       <a
@@ -74,7 +63,7 @@ vi.mock('sanity/router', async (importOriginal) => ({
         }}
       />
     )
-  }),
+  },
 }))
 
 vi.mock('../../store/useAllVariants', () => ({
@@ -111,7 +100,6 @@ describe('VariantsOverview', () => {
     documentCountsMock.loading = true
     documentCountsMock.error = null
     mockNavigate.mockClear()
-    mockedSetVariant.mockClear()
     variantOperationsMock.createVariant.mockReset()
     variantOperationsMock.deleteVariant.mockReset()
     variantOperationsMock.createVariant.mockImplementation(
@@ -134,7 +122,10 @@ describe('VariantsOverview', () => {
       resources: [variantsUsEnglishLocaleBundle],
     })
     const view = render(<VariantsOverview />, {wrapper})
-    await screen.findByPlaceholderText('Search variant definitions…', {}, {timeout: 5000})
+    // Wait on the always-present page description rather than the search box (search now lives in the
+    // shared DocumentTable command lane, which only renders once there are rows) — and not on the
+    // title, which the empty state duplicates as its own h1.
+    await screen.findByText(/Manage variant definitions/, {}, {timeout: 5000})
     return view
   }
 
@@ -154,7 +145,7 @@ describe('VariantsOverview', () => {
         'Manage variant definitions that control how content is personalized for different audiences, locales, and segments.',
       ),
     ).toBeInTheDocument()
-    expect(screen.getByRole('button', {name: 'Create variant definition'})).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'New variant definition'})).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search variant definitions…')).toBeInTheDocument()
   })
 
@@ -253,19 +244,6 @@ describe('VariantsOverview', () => {
     })
   })
 
-  it('pins a variant from the overview table', async () => {
-    setVariants([variantAlphaAudience])
-    const user = userEvent.setup()
-
-    await renderOverview()
-
-    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(1))
-
-    await user.click(screen.getByTestId('pin-variant-button'))
-
-    expect(mockedSetVariant).toHaveBeenCalledWith({variantId: variantAlphaAudience._id})
-  })
-
   it('deletes a variant from the row actions menu', async () => {
     setVariants([variantAlphaAudience])
     documentCountsMock.data = {[variantAlphaAudience._id]: 0}
@@ -313,6 +291,40 @@ describe('VariantsOverview', () => {
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
   })
 
+  it('shows filter empty state when condition filters exclude every definition', async () => {
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
+
+    await user.click(screen.getByRole('button', {name: 'Add filter'}))
+    const filterPopover = (await screen.findByPlaceholderText('Find a dimension…')).closest(
+      '[data-ui="Popover"]',
+    )
+    if (!filterPopover) throw new Error('Filter popover not found')
+    const filterMenu = within(filterPopover as HTMLElement)
+
+    // Drive dimensions and values by testid: the selected dimension's label is echoed as a muted
+    // Text header in the right (values) pane, so getByText('Audience') is ambiguous, and the button's
+    // accessible name doesn't resolve cleanly for getByRole.
+    await user.click(filterMenu.getByTestId('variant-filter-dimension-audience'))
+    await user.click(filterMenu.getByTestId('variant-filter-value-audience-alpha'))
+
+    await user.click(filterMenu.getByTestId('variant-filter-dimension-locale'))
+    await user.click(filterMenu.getByTestId('variant-filter-value-locale-nb-NO'))
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('table-row')).not.toBeInTheDocument()
+    })
+
+    expect(screen.getByTestId('variants-filter-empty-state')).toHaveTextContent(
+      'No variant definitions match the active filters',
+    )
+    expect(screen.queryByTestId('variants-empty-state')).not.toBeInTheDocument()
+  })
+
   it('shows empty state when there are no variants', async () => {
     variantsMock.data = []
 
@@ -326,7 +338,7 @@ describe('VariantsOverview', () => {
     expect(screen.getByTestId('no-variants-info-text')).toHaveTextContent('Variant definitions')
     const emptyState = screen.getByTestId('variants-empty-state')
     expect(
-      within(emptyState).getByRole('button', {name: 'Create variant definition'}),
+      within(emptyState).getByRole('button', {name: 'New variant definition'}),
     ).toBeInTheDocument()
     expect(within(emptyState).getByRole('link', {name: 'Documentation'})).toHaveAttribute(
       'href',
@@ -350,7 +362,7 @@ describe('VariantsOverview', () => {
 
     await renderOverview()
 
-    await user.click(screen.getAllByRole('button', {name: 'Create variant definition'})[0]!)
+    await user.click(screen.getAllByRole('button', {name: 'New variant definition'})[0]!)
 
     expect(screen.getByRole('dialog', {name: 'Create variant definition'})).toBeInTheDocument()
 

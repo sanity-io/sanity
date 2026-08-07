@@ -13,6 +13,7 @@ import {useResolvedPanes} from '../../structureResolvers/useResolvedPanes'
 import {type PaneNode, type RouterPanes} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 import {PaneLayout} from '../pane/PaneLayout'
+import {getMaximizedPaneTransition} from './getMaximizedPaneTransition'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 import {StructureTitle} from './StructureTitle'
 
@@ -45,6 +46,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
     useCallback((state) => typeof state.intent === 'string', []),
   )
   const {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     sanity: {media},
   } = useTheme()
 
@@ -165,44 +167,24 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
     navigate({panes: panesWithoutFocus}, {replace: true})
   }, [navigate, paneDataItems, routerState?.panes, setMaximizedPane])
 
-  // Manage maximised pane: sync with navigation and handle cleanup
+  // Manage maximised pane: sync with navigation and handle cleanup. The
+  // decision logic lives in `getMaximizedPaneTransition` (covered by unit
+  // tests); most importantly it skips transient snapshots (intent resolution,
+  // loading placeholders) so navigation churn cannot drop the maximize state.
   useEffect(() => {
-    const selectedIndex = paneDataItems.findIndex((pane) => pane.selected)
-    const prevSelectedIndex = previousSelectedIndexRef.current
-    previousSelectedIndexRef.current = selectedIndex
+    const transition = getMaximizedPaneTransition({
+      isResolvingIntent,
+      paneDataItems,
+      maximizedPane,
+      previousSelectedIndex: previousSelectedIndexRef.current,
+    })
+    if (transition.type === 'skip-transient') return
 
-    if (!maximizedPane) return
-
-    // Clear focus if the maximised pane is not a document pane (focus only works with documents)
-    if (maximizedPane.pane !== LOADING_PANE && maximizedPane.pane.type !== 'document') {
-      setMaximizedPane(null)
-      return
+    previousSelectedIndexRef.current = transition.selectedIndex
+    if (transition.type === 'set') {
+      setMaximizedPane(transition.pane)
     }
-
-    // When navigating in focus mode, update focus to follow the newly selected pane
-    // This ensures opening a document to the right works correctly even when they were opened previously
-    if (selectedIndex !== -1 && selectedIndex !== prevSelectedIndex) {
-      const selectedPane = paneDataItems[selectedIndex]
-      // Only set focus if the newly selected pane is a document pane
-      setMaximizedPane(selectedPane)
-
-      return
-    }
-
-    // Clean up or find fallback when maximised pane no longer exists
-    const isMaximizedPanePresent = paneDataItems.some((pane) => pane.key === maximizedPane.key)
-
-    if (!isMaximizedPanePresent) {
-      const fallbackPane = paneDataItems.find(
-        (pane) =>
-          pane.groupIndex === maximizedPane.groupIndex &&
-          pane.siblingIndex === maximizedPane.siblingIndex &&
-          pane.pane !== LOADING_PANE &&
-          pane.pane.type === 'document',
-      )
-      setMaximizedPane(fallbackPane || null)
-    }
-  }, [maximizedPane, paneDataItems, setMaximizedPane])
+  }, [isResolvingIntent, maximizedPane, paneDataItems, setMaximizedPane])
 
   if (!hasDefinedDocumentTypes) {
     return <NoDocumentTypesScreen />

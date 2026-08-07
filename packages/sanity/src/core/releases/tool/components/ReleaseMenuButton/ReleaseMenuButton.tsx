@@ -254,7 +254,7 @@ export const ReleaseMenuButton = ({
           },
         }}
       >
-        <Stack space={4} paddingX={4} paddingBottom={4}>
+        <Stack gap={4} paddingX={4} paddingBottom={4}>
           <ReleasePreviewCard release={release} />
           {!!documentsCount && (
             <Text muted size={1}>
@@ -320,6 +320,7 @@ export const ReleaseMenuButton = ({
         key={`custom-action-${index}`}
         icon={action.icon}
         text={action.label}
+        tone={action.tone}
         disabled={action.disabled || isPerformingOperation}
         onClick={handleOnActionClick(action)}
         tooltipProps={action.title ? {content: action.title} : undefined}

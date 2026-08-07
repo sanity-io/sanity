@@ -315,7 +315,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} release={release} />
-        <Stack flex={1} paddingY={2} paddingRight={2} space={2} style={{minWidth: 0}}>
+        <Stack flex={1} paddingY={2} paddingRight={2} gap={2} style={{minWidth: 0}}>
           <ReleaseTitle
             title={release.metadata.title}
             fallback={tCore('release.placeholder-untitled-release')}

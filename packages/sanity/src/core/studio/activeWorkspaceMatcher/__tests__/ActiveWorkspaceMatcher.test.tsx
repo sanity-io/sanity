@@ -47,6 +47,7 @@ function createWorkspace(
     icon: null,
     customIcon: false,
     auth: {state: {subscribe: vi.fn(), pipe: vi.fn()}} as unknown as WorkspaceSummary['auth'],
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal: {sources: []},
     ...rest,
   } as WorkspaceSummary
@@ -59,6 +60,7 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
       id: 'user1',
       name: 'Test User',
       email: 'test@test.com',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       role: 'administrator',
       roles: [{name: 'administrator', title: 'Administrator'}],
       profileImage: '',
@@ -228,6 +230,7 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
         id: 'admin1',
         name: 'Admin',
         email: 'admin@test.com',
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         role: 'administrator',
         roles: [{name: 'administrator', title: 'Administrator'}],
         profileImage: '',

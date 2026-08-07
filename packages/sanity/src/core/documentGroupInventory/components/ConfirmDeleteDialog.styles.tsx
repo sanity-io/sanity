@@ -30,16 +30,16 @@ export const Table = styled.table`
   inline-size: 100%;
   text-align: start;
   padding-block: 0;
-  padding-inline: ${({theme}) => rem(theme.sanity.space[2])};
+  padding-inline: ${({theme}) => rem(theme.sanity.space[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   border-collapse: collapse;
 
   th {
-    padding: ${({theme}) => rem(theme.sanity.space[1])};
+    padding: ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   }
 
   td {
     padding-block: 0;
-    padding-inline: ${({theme}) => rem(theme.sanity.space[1])};
+    padding-inline: ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   }
 
   tr > *:last-child {
@@ -61,7 +61,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
 
   return (
     <Box padding={2}>
-      <Inline space={2}>
+      <Inline gap={2}>
         <Text size={1} muted>
           {t('document-group.delete.other-reference-count.title', {count: difference})}
         </Text>

@@ -1,5 +1,4 @@
 import {type SanityClient, type SingleActionResult} from '@sanity/client'
-import {getPublishedId} from '@sanity/client/csm'
 import {type SanityDocumentLike} from '@sanity/types'
 
 import {type TargetPerspective} from '../../perspective/types'
@@ -24,6 +23,28 @@ function getSupportedBundleId(
   return bundleId
 }
 
+type BaseOptions = {
+  client: SanityClient
+  variant: Pick<SystemVariant, '_id'>
+  selectedPerspective: TargetPerspective
+  documentGroupId: string
+  signal?: AbortSignal
+}
+
+/**
+ * @internal
+ */
+export type CreateVariantScopedDocumentOptions = BaseOptions &
+  (
+    | {
+        document: Omit<SanityDocumentLike, '_id'>
+      }
+    | {
+        baseId: string
+        ifBaseRevisionId?: string
+      }
+  )
+
 /**
  * Creates a variant-scoped version document via the variants document create action.
  *
@@ -31,33 +52,52 @@ function getSupportedBundleId(
  */
 export async function createVariantScopedDocument({
   client,
-  baseId,
-  baseRevisionId,
   variant,
   selectedPerspective,
-}: {
-  client: SanityClient
-  /** Source document whose fields are copied into the new variant-scoped version. */
-  baseId: string
-  baseRevisionId?: string
-  variant: SystemVariant
-  selectedPerspective: TargetPerspective
-}): Promise<SingleActionResult> {
-  if (!baseId) {
-    throw new Error('Source document must have an _id')
-  }
-
-  const publishedId = getPublishedId(baseId)
+  documentGroupId,
+  signal,
+  ...options
+}: CreateVariantScopedDocumentOptions): Promise<SingleActionResult> {
   const bundleId = getSupportedBundleId(selectedPerspective)
 
-  const action: VariantDocumentCreateFromBaseAction = {
+  const action: Pick<
+    VariantDocumentCreateFromBaseAction,
+    'actionType' | 'variantId' | 'publishedId' | 'bundleId'
+  > = {
     actionType: 'sanity.action.document.variant.create',
-    publishedId,
     variantId: getVariantId(variant._id),
-    baseId,
-    ...(baseRevisionId ? {ifBaseRevisionId: baseRevisionId} : {}),
     ...(bundleId ? {bundleId} : {}),
+    publishedId: documentGroupId,
   }
 
-  return variantsClient(client).action(action, {tag: 'variants.document.create'})
+  if ('baseId' in options) {
+    return variantsClient(client).action(
+      {
+        baseId: options.baseId,
+        ...(typeof options.ifBaseRevisionId === 'string'
+          ? {ifBaseRevisionId: options.ifBaseRevisionId}
+          : {}),
+        ...action,
+      },
+      {
+        tag: 'variants.document.create',
+        signal,
+      },
+    )
+  }
+
+  if ('document' in options) {
+    return variantsClient(client).action(
+      {
+        document: options.document,
+        ...action,
+      },
+      {
+        tag: 'variants.document.create',
+        signal,
+      },
+    )
+  }
+
+  throw new Error('`createVariantScopedDocument`: `baseId` or `document` must be provided.')
 }

@@ -27,7 +27,9 @@ export function useTrackFocusPath(props: Props): void {
   const portableTextMemberItems = usePortableTextMemberItems()
   const elementRefs = usePortableTextMemberItemElementRefs()
   const editor = useEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const legacyEditor = usePortableTextEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
 
   // Read selection from a ref instead of subscribing to it, so our own select() calls below don't
@@ -169,15 +171,18 @@ export function useTrackFocusPath(props: Props): void {
             currentSelection?.focus.path &&
             isEqual(currentSelection.focus.path.slice(0, path.length), path)
           if (isTextBlock && isSameSelection) {
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             PortableTextEditor.select(legacyEditor, null)
           }
 
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           PortableTextEditor.select(legacyEditor, {
             anchor: {path, offset: 0},
             focus: {path, offset: 0},
           })
           // Object blocks open their interface when focused, so only call focus for text blocks.
           if (isTextBlock) {
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             PortableTextEditor.focus(legacyEditor)
           }
           handledFocusPathRef.current = focusPath

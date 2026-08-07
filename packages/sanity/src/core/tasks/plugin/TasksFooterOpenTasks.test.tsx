@@ -56,10 +56,12 @@ const mockUseTasksStore = useTasksStore as ReturnType<typeof vi.fn>
 
 const createTaskMock = ({
   targetDocumentId,
+  targetDocumentVersionId,
   status = 'open',
   title = 'Test task',
 }: {
   targetDocumentId?: string
+  targetDocumentVersionId?: string
   status?: TaskDocument['status']
   title?: string
 }): TaskDocument => ({
@@ -80,6 +82,7 @@ const createTaskMock = ({
           _weak: true,
           _ref: targetDocumentId,
         },
+        documentVersionId: targetDocumentVersionId,
       }
     : undefined,
   title,
@@ -89,6 +92,7 @@ const createTaskMock = ({
 describe('TasksFooterOpenTasks', () => {
   const wrapper = ({children}: {children?: React.ReactNode}) => {
     return (
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>
         <LayerProvider>
           <TasksEnabledProvider>
@@ -169,5 +173,75 @@ describe('TasksFooterOpenTasks', () => {
 
     expect(screen.getByRole('button')).toBeInTheDocument()
     expect(screen.getByTestId('tasks-badge')).toBeInTheDocument()
+  })
+
+  it('renders the button when a version document is active and the task targets that version', async () => {
+    setUpMocks({
+      tasks: [createTaskMock({targetDocumentId: 'doc1', targetDocumentVersionId: 'rRelease1'})],
+    })
+    render(
+      <>
+        <TasksFooterOpenTasks />
+        <SetActiveDocument documentId="versions.rRelease1.doc1" documentType="author" />
+      </>,
+      {wrapper},
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+    expect(screen.getByRole('button')).toBeInTheDocument()
+  })
+
+  it('does not render the button when the task targets a version but the base document is active', async () => {
+    setUpMocks({
+      tasks: [createTaskMock({targetDocumentId: 'doc1', targetDocumentVersionId: 'rRelease1'})],
+    })
+    const {container} = render(
+      <>
+        <TasksFooterOpenTasks />
+        <SetActiveDocument documentId="doc1" documentType="author" />
+      </>,
+      {wrapper},
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('does not render the button when a version document is active but the task targets the base document', async () => {
+    setUpMocks({tasks: [createTaskMock({targetDocumentId: 'doc1'})]})
+    const {container} = render(
+      <>
+        <TasksFooterOpenTasks />
+        <SetActiveDocument documentId="versions.rRelease1.doc1" documentType="author" />
+      </>,
+      {wrapper},
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('does not render the button when the task targets a different version of the active document', async () => {
+    setUpMocks({
+      tasks: [createTaskMock({targetDocumentId: 'doc1', targetDocumentVersionId: 'rRelease1'})],
+    })
+    const {container} = render(
+      <>
+        <TasksFooterOpenTasks />
+        <SetActiveDocument documentId="versions.rRelease2.doc1" documentType="author" />
+      </>,
+      {wrapper},
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+    expect(container).toBeEmptyDOMElement()
   })
 })

@@ -49,6 +49,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, states} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {__internal_tasks, beta} = useSource()
 
   const {

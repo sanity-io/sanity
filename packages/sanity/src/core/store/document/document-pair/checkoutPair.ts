@@ -5,7 +5,7 @@ import {
   type SingleMutationResult,
 } from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
-import {type SanityDocument} from '@sanity/types'
+import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
 import {combineLatest, defer, EMPTY, from, merge, type Observable, of, timer} from 'rxjs'
 import {
@@ -26,6 +26,8 @@ import {
 
 import {isInvalidSessionError} from '../../../util/apiErrors'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
+import {type VariantDocumentCreateFromDocumentAction} from '../../../variants/store/variantsClient'
+import {getVariantId} from '../../../variants/tool/util'
 import {
   type BufferedDocumentEvent,
   createBufferedDocument,
@@ -173,6 +175,7 @@ function isLiveEditMutation(mutationParams: Mutation['params'], publishedId: str
 }
 
 function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[] {
+  // @ts-expect-error - TODO: remove this once the client types are updated to support VariantActions
   const actions = mutationParams.mutations.flatMap<Action>((mutations) => {
     // This action is not always interoperable with the equivalent mutation. It will fail if the
     // published version of the document already exists.
@@ -183,6 +186,16 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
     if (mutations.create) {
       // the actions API requires attributes._id to be set, while it's optional in the mutation API
       requireId(mutations.create)
+      const createSystem = (mutations.create as SanityDocumentLike)._system
+      if (mutations.create._id === idPair.versionId && createSystem?.variant) {
+        return {
+          actionType: 'sanity.action.document.variant.create',
+          publishedId: idPair.publishedId,
+          variantId: getVariantId(createSystem.variant._ref),
+          document: mutations.create,
+          bundleId: createSystem.bundleId,
+        } as VariantDocumentCreateFromDocumentAction
+      }
       return {
         actionType: 'sanity.action.document.create',
         publishedId: idPair.publishedId,
@@ -237,6 +250,7 @@ function commitMutations(
   mutationParams: Mutation['params'],
 ): Promise<MutationResult> {
   const {resultRev, ...mutation} = mutationParams
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return operationsApiClient(client, idPair).dataRequest('mutate', mutation, {
     visibility: 'async',
     returnDocuments: false,
@@ -423,21 +437,20 @@ export function checkoutPair(
     mergeMap((commitRequest) => {
       const apiRequestSentAt = Date.now()
       return submitCommitRequest(client, idPair, commitRequest).pipe(
-        map(
-          (attemptResult): CommitAttemptResult =>
-            attemptResult.type === 'success'
-              ? {
-                  ...attemptResult,
-                  result: {
-                    ...attemptResult.result,
-                    _perfTimings: {
-                      firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
-                      apiRequestSentAt,
-                      apiResponseReceivedAt: Date.now(),
-                    },
+        map((attemptResult): CommitAttemptResult =>
+          attemptResult.type === 'success'
+            ? {
+                ...attemptResult,
+                result: {
+                  ...attemptResult.result,
+                  _perfTimings: {
+                    firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
+                    apiRequestSentAt,
+                    apiResponseReceivedAt: Date.now(),
                   },
-                }
-              : attemptResult,
+                },
+              }
+            : attemptResult,
         ),
       )
     }),
@@ -603,26 +616,22 @@ function reportLatency(options: {
   }
 
   const submittedMutations = commits$.pipe(
-    map(
-      (ev): LatencyTrackingEntry => ({
-        type: 'submit' as const,
-        transactionId: ev.transactionId,
-        timestamp: new Date(),
-        perfTimings: ev._perfTimings,
-      }),
-    ),
+    map((ev): LatencyTrackingEntry => ({
+      type: 'submit' as const,
+      transactionId: ev.transactionId,
+      timestamp: new Date(),
+      perfTimings: ev._perfTimings,
+    })),
     share(),
   )
 
   const receivedMutations = listenerEvents$.pipe(
     filter((ev) => ev.type === 'mutation'),
-    map(
-      (ev): LatencyTrackingEntry => ({
-        type: 'receive' as const,
-        transactionId: ev.transactionId,
-        timestamp: new Date(),
-      }),
-    ),
+    map((ev): LatencyTrackingEntry => ({
+      type: 'receive' as const,
+      transactionId: ev.transactionId,
+      timestamp: new Date(),
+    })),
     share(),
   )
 

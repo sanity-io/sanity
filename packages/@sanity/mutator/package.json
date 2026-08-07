@@ -1,6 +1,6 @@
 {
   "name": "@sanity/mutator",
-  "version": "6.6.0",
+  "version": "6.9.1",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
   "keywords": [
     "cms",
@@ -62,6 +62,7 @@
     "@types/lodash-es": "^4.17.12",
     "@types/node": "catalog:",
     "tsdown": "catalog:",
+    "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },

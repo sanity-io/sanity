@@ -3,10 +3,6 @@ import {Box, type CardTone, Flex, Text, useToast} from '@sanity/ui'
 import uniqBy from 'lodash-es/uniqBy.js'
 import {
   type ComponentType,
-  type ForwardedRef,
-  forwardRef,
-  type ForwardRefExoticComponent,
-  type PropsWithoutRef,
   type ReactNode,
   type RefAttributes,
   useCallback,
@@ -73,17 +69,12 @@ const Root = styled.div`
 
 export function uploadTarget<Props>(
   Component: ComponentType<Props>,
-): ForwardRefExoticComponent<
-  PropsWithoutRef<UploadTargetProps & Props> & RefAttributes<HTMLElement>
-> {
+): (props: UploadTargetProps & Props & RefAttributes<HTMLElement>) => ReactNode {
   const FileTarget = fileTarget<FIXME>(Component)
 
-  // @ts-expect-error TODO fix PropsWithoutRef related union typings
-  return forwardRef(function UploadTarget(
-    props: UploadTargetProps & Props,
-    forwardedRef: ForwardedRef<HTMLElement>,
-  ) {
+  return function UploadTarget(props: UploadTargetProps & Props & RefAttributes<HTMLElement>) {
     const {
+      ref: forwardedRef,
       children,
       isReadOnly,
       onOpenSourceForUpload,
@@ -98,6 +89,7 @@ export function uploadTarget<Props>(
     const {push: pushToast} = useToast()
     const {t} = useTranslation()
     const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const source = useSource()
 
     const formBuilder = useFormBuilder()
@@ -376,7 +368,7 @@ export function uploadTarget<Props>(
         </FileTarget>
       </Root>
     )
-  })
+  }
 }
 
 /**

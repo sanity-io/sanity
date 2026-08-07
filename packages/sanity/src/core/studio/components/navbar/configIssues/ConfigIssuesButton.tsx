@@ -66,8 +66,8 @@ export function ConfigIssuesButton() {
           scheme={scheme}
           id={dialogId}
         >
-          <Stack space={4}>
-            <Stack space={3}>
+          <Stack gap={4}>
+            <Stack gap={3}>
               <Text as="h2" size={1} weight="medium">
                 Found {totalWarnings} configuration warning{totalWarnings === 1 ? '' : 's'}
               </Text>{' '}
@@ -78,7 +78,7 @@ export function ConfigIssuesButton() {
             </Stack>
 
             {configWarnings.length > 0 && (
-              <Stack space={3}>
+              <Stack gap={3}>
                 {configWarnings.map((warning, index) => (
                   <Card
                     key={`${warning.type}-${warning.projectId}-${index}`}
@@ -87,7 +87,7 @@ export function ConfigIssuesButton() {
                     shadow={1}
                     tone="caution"
                   >
-                    <Stack space={2}>
+                    <Stack gap={2}>
                       <Text size={1} weight="medium">
                         Divergent auth config
                       </Text>

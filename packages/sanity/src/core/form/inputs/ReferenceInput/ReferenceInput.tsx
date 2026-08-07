@@ -330,8 +330,8 @@ export function ReferenceInput(props: ReferenceInputProps) {
   return (
     <div style={props.elementProps.style}>
       <ReferenceInputPreview {...props}>
-        <Stack space={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
-          <Stack space={2}>
+        <Stack gap={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
+          <Stack gap={2}>
             {isWeakRefToNonexistent ? (
               <Alert
                 data-testid="alert-nonexistent-document"

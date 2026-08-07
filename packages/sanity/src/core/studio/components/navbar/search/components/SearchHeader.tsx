@@ -3,7 +3,7 @@ import {ControlsIcon} from '@sanity/icons/Controls'
 import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
 import {Box, Card, Flex} from '@sanity/ui'
-import {type ChangeEvent, forwardRef, useCallback, useEffect, useRef} from 'react'
+import {type ChangeEvent, useCallback, useEffect, useRef, type RefAttributes} from 'react'
 import {keyframes, styled} from 'styled-components'
 
 import {Button} from '../../../../../../ui-components/button/Button'
@@ -39,10 +39,11 @@ interface SearchHeaderProps {
 /**
  * @internal
  */
-export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(function SearchHeader(
-  {ariaInputLabel, onClose},
+export function SearchHeader({
   ref,
-) {
+  ariaInputLabel,
+  onClose,
+}: SearchHeaderProps & RefAttributes<HTMLInputElement>) {
   const isMountedRef = useRef(false)
 
   const {t} = useTranslation()
@@ -154,4 +155,4 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
       </Flex>
     </Card>
   )
-})
+}

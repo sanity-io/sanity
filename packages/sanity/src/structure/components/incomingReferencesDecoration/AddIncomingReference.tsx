@@ -118,6 +118,7 @@ export function AddIncomingReference({
   const schema = useSchema()
   const schemaType = schema.get(type)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const {strategy: searchStrategy} = source.search
   const documentPreviewStore = useDocumentPreviewStore()
@@ -184,7 +185,7 @@ export function AddIncomingReference({
   )
 
   return (
-    <Stack space={2} padding={2}>
+    <Stack gap={2} padding={2}>
       <Box paddingY={2}>
         <Text size={1} weight="medium">
           {t('incoming-references-input.reference-from', {type})}

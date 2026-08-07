@@ -52,7 +52,9 @@ function BooleanField(field: FieldProps) {
           path={field.path}
         >
           <FieldActionsProvider
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             __internal_slot={field.__internal_slot}
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             __internal_comments={field.__internal_comments}
             actions={fieldActionsNodes}
             focused={focused}
@@ -92,7 +94,9 @@ function DateTimeField(field: FieldProps) {
           />
         )}
         <FieldActionsProvider
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_slot={field.__internal_slot}
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_comments={field.__internal_comments}
           actions={fieldActionsNodes}
           focused={focused}
@@ -124,7 +128,9 @@ function PrimitiveField(field: FieldProps) {
       )}
 
       <FieldActionsProvider
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         __internal_slot={field.__internal_slot}
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         __internal_comments={field.__internal_comments}
         actions={fieldActionsNodes}
         focused={focused}
@@ -132,7 +138,9 @@ function PrimitiveField(field: FieldProps) {
       >
         <div data-testid={`field-${field.inputId}`}>
           <FormField
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             __internal_slot={field.__internal_slot}
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             __internal_comments={field.__internal_comments}
             __unstable_headerActions={fieldActionsNodes}
             __unstable_presence={field.presence}
@@ -191,14 +199,18 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
       )}
 
       <FieldActionsProvider
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         __internal_slot={field.__internal_slot}
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         __internal_comments={field.__internal_comments}
         actions={fieldActionsNodes}
         focused={focused}
         path={field.path}
       >
         <FormFieldSet
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_comments={field.__internal_comments}
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_slot={field.__internal_slot}
           __unstable_headerActions={fieldActionsNodes}
           __unstable_presence={field.presence}
@@ -252,7 +264,9 @@ function ImageOrFileField(field: ObjectFieldProps) {
 
       <FieldActionsProvider actions={fieldActionsNodes} focused={focused} path={field.path}>
         <FormFieldSet
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_comments={field.__internal_comments}
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __internal_slot={field.__internal_slot}
           __unstable_headerActions={fieldActionsNodes}
           __unstable_presence={presence}

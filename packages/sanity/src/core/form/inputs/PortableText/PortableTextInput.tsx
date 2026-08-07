@@ -19,17 +19,17 @@ import {Box, useToast} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {fromString, startsWith} from '@sanity/util/paths'
 import {
-  forwardRef,
   type ReactNode,
   startTransition,
   useCallback,
   useEffect,
-  useEffectEvent,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util/empty'
@@ -71,26 +71,30 @@ function keyGenerator() {
  * care of imperatively forwarding the legacy `PortableTextEditor` instance,
  * the public `editorRef` prop's contract.
  */
-const LegacyEditorRefPlugin = forwardRef<PortableTextEditor | null>((_, ref) => {
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+const LegacyEditorRefPlugin = (props: RefAttributes<PortableTextEditor | null>) => {
+  const {ref} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const portableTextEditor = usePortableTextEditor()
 
   useImperativeHandle(ref, () => portableTextEditor, [portableTextEditor])
 
   return null
-})
+}
 LegacyEditorRefPlugin.displayName = 'LegacyEditorRefPlugin'
 
 /**
  * Captures the editor instance so callbacks defined outside
  * `EditorProvider` can take snapshots.
  */
-const EditorRefPlugin = forwardRef<Editor | null>((_, ref) => {
+const EditorRefPlugin = (props: RefAttributes<Editor | null>) => {
+  const {ref} = props
   const editor = useEditor()
 
   useImperativeHandle(ref, () => editor, [editor])
 
   return null
-})
+}
 EditorRefPlugin.displayName = 'EditorRefPlugin'
 
 /** @internal */
@@ -121,6 +125,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     hotkeys,
     initialActive,
     initialFullscreen,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     markers = EMPTY_ARRAY,
     onChange,
     onCopy,
@@ -133,7 +138,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     path,
     readOnly,
     rangeDecorations: rangeDecorationsProp,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     renderBlockActions,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     renderCustomMarkers,
     schemaType,
     value,
@@ -141,6 +148,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   } = props
 
   const {onBlur, ref: elementRef} = elementProps
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const defaultLegacyEditorRef = useRef<PortableTextEditor | null>(null)
   const editorRef = useRef<Editor | null>(null)
   const legacyEditorRef = editorRefProp || defaultLegacyEditorRef
@@ -238,7 +246,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const focusedDivergence = divergenceNavigator.enabled
     ? divergenceNavigator.state.focusedDivergence
     : undefined
-  // oxlint-disable-next-line react/react-compiler
   useEffect(() => controlImplicitExpandedState(), [focusedDivergence])
 
   const toast = useToast()
@@ -377,6 +384,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     if (!isActive) {
       setIsActive(true)
       if (legacyEditorRef.current) {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.focus(legacyEditorRef.current)
       }
     }
@@ -470,6 +478,7 @@ function EditorChangePlugin(
 ) {
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       switch (event.type) {
         case 'blurred':
           props.onChange({
