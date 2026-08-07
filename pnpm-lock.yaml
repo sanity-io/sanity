@@ -2113,8 +2113,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
-        specifier: ^5.1.24
-        version: 5.1.24(@emotion/is-prop-valid@1.4.0)(@sanity/assist@6.1.17)(@sanity/language-filter@5.0.13)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4)
+        specifier: ^5.1.25
+        version: 5.1.25(@sanity/assist@6.1.17)(@sanity/language-filter@5.0.14)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4)
       styled-components:
         specifier: 'catalog:'
         version: 6.4.4(react-dom@19.2.8)(react@19.2.8)
@@ -6215,6 +6215,14 @@ packages:
 
   '@sanity/language-filter@5.0.13':
     resolution: {integrity: sha512-d4OcIjhv0oJeux9R2pmJ2tYJmRm+GVMcDTXevxHAUqKPHhFi8A0c3OnPNoz3tqAjWFT7aO1wADoV6LufoefSWQ==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      react: ^19.2
+      react-dom: ^19.2
+      sanity: ^5 || ^6.0.0-0
+
+  '@sanity/language-filter@5.0.14':
+    resolution: {integrity: sha512-W7qhXSsxDuMrDwYRS3VcvCoclvtlcFXpsZnxyoAeJIcLPm30P1dJbf9TloUNO3lfBzzOJaGVwUBY7tbK8G00Pw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
@@ -12350,6 +12358,19 @@ packages:
       '@sanity/assist':
         optional: true
 
+  sanity-plugin-internationalized-array@5.1.25:
+    resolution: {integrity: sha512-7MXnqOcKcwwm2UD8BsIZjilY0aj9i8eO7w9174if79waER4QDjlPlTojph1UfI1O2x4j0AMnAZgIgUDA8rEsww==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      '@sanity/assist': ^6.1.17
+      '@sanity/language-filter': ^5.0.14
+      react: ^19.2
+      react-dom: ^19.2
+      sanity: ^5 || ^6.0.0-0
+    peerDependenciesMeta:
+      '@sanity/assist':
+        optional: true
+
   sanity-plugin-media@6.1.0:
     resolution: {integrity: sha512-0mo7J3EClwOHkSTsg2reB3wmXdQv4TWMeRfqOYqYnvPuf+gX+g5dJY0KRPrbI4+q25fhl32KKPN7PZqgOpa1Ag==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -18188,6 +18209,19 @@ snapshots:
   '@sanity/json-match@1.0.5': {}
 
   '@sanity/language-filter@5.0.13(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4)':
+    dependencies:
+      '@sanity/icons': 5.2.1(react@19.2.8)
+      '@sanity/ui': 3.5.1(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      react-rx: 4.2.5(react@19.2.8)(rxjs@7.8.2)
+      rxjs: 7.8.2
+      sanity: link:packages/sanity
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+      - styled-components
+
+  '@sanity/language-filter@5.0.14(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4)':
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/ui': 3.5.1(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
@@ -24982,6 +25016,22 @@ snapshots:
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/language-filter': 5.0.13(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4)
+      '@sanity/ui': 3.5.1(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
+      '@sanity/util': link:packages/@sanity/util
+      lodash-es: 4.18.1
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      sanity: link:packages/sanity
+    optionalDependencies:
+      '@sanity/assist': 6.1.17(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4)
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+      - styled-components
+
+  sanity-plugin-internationalized-array@5.1.25(@sanity/assist@6.1.17)(@sanity/language-filter@5.0.14)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4):
+    dependencies:
+      '@sanity/icons': 5.2.1(react@19.2.8)
+      '@sanity/language-filter': 5.0.14(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.4.4)
       '@sanity/ui': 3.5.1(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
       '@sanity/util': link:packages/@sanity/util
       lodash-es: 4.18.1
