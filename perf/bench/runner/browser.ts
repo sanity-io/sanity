@@ -12,6 +12,7 @@ const TINY_PNG = Buffer.from(TINY_PNG_BASE64, 'base64')
  */
 const SILENCED_EXTERNAL = [
   'studio-static.sanity.io', // Inter webfonts — consistent fallback on both sides
+  'design-system-static.sanity.io', // @sanity-labs/ui-poc InterVariable webfonts — same fallback story
   'telemetry.sanity.io',
 ]
 
