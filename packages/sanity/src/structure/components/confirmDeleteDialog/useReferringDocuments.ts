@@ -244,16 +244,43 @@ const INITIAL_STATE: ReferringDocuments = {
   crossDatasetReferences: undefined,
 }
 
-export function useReferringDocuments(documentId: string): ReferringDocuments {
+const EMPTY_READY_STATE: ReferringDocuments = {
+  isLoading: false,
+  totalCount: 0,
+  projectIds: [],
+  datasetNames: [],
+  hasUnknownDatasetNames: false,
+  internalReferences: {totalCount: 0, references: []},
+  crossDatasetReferences: {totalCount: 0, references: []},
+}
+
+/**
+ * @internal
+ */
+export interface UseReferringDocumentsOptions {
+  /**
+   * When `false`, skips fetching incoming references and returns an empty ready
+   * state
+   */
+  enabled?: boolean
+}
+
+export function useReferringDocuments(
+  documentId: string,
+  options?: UseReferringDocumentsOptions,
+): ReferringDocuments {
+  const enabled = options?.enabled ?? true
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentStore = useDocumentStore()
 
-  const referringDocuments$ = useMemo(
-    () => referringDocuments({documentId, versionedClient, documentStore}),
-    [documentId, versionedClient, documentStore],
-  )
+  const referringDocuments$ = useMemo(() => {
+    if (!enabled) {
+      return of(EMPTY_READY_STATE)
+    }
+    return referringDocuments({documentId, versionedClient, documentStore})
+  }, [documentId, documentStore, enabled, versionedClient])
 
-  return useObservable(referringDocuments$, INITIAL_STATE)
+  return useObservable(referringDocuments$, enabled ? INITIAL_STATE : EMPTY_READY_STATE)
 }
 
 /**
