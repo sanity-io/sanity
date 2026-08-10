@@ -96,6 +96,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     historyStore,
   } = props
   const {
+    // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
     store: timelineStore,
     error: timelineError,
     ready: timelineReady,
@@ -602,6 +603,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         setIsDocumentGroupInventoryActive,
         isDeleted,
         timelineError,
+        // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
         timelineStore,
         title,
         value,
