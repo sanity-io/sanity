@@ -44,7 +44,9 @@ export function DiscardVersionDialog(props: {
   // perspective: the dialog is opened from version chips and the release tool's document table,
   // where the selected perspective can be a different release (or the drafts pair) and would
   // discard the wrong document.
-  const discardScopeId = isVersionId(versionId) ? getVersionFromId(versionId) : undefined
+  // `|| undefined` so a malformed version id (no bundle segment) falls back to the perspective
+  // target below rather than checking out an empty scope.
+  const discardScopeId = (isVersionId(versionId) && getVersionFromId(versionId)) || undefined
   // Only the draft case follows the selected perspective, so that discarding a draft targets the
   // variant-scoped version when a variant is selected. While that lookup resolves, confirming is
   // disabled below instead of silently operating on the base pair.
