@@ -1,4 +1,4 @@
-import {type CardProps, useElementRect} from '@sanity/ui'
+import {type CardProps, useElementSize} from '@sanity/ui'
 import {type HTMLProps, useEffect, useMemo, useState} from 'react'
 import {PaneLayoutContext} from 'sanity/_singletons'
 
@@ -30,9 +30,8 @@ export function PaneLayout(
   const {children, minWidth, onCollapse, onExpand, ...restProps} = props
   const [controller] = useState(() => createPaneLayoutController())
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const rootRect = useElementRect(rootElement)
-  const width = rootRect?.width || 0
+  const rootSize = useElementSize(rootElement)
+  const width = rootSize?.border.width
   const collapsed = width === undefined || !minWidth ? undefined : width < minWidth
   const [state, setState] = useState<PaneLayoutState>({
     expandedElement: null,
@@ -44,7 +43,7 @@ export function PaneLayout(
   useEffect(() => controller.setRootElement(rootElement), [controller, rootElement])
 
   // Set root size
-  useEffect(() => controller.setRootWidth(width), [controller, width])
+  useEffect(() => controller.setRootWidth(width || 0), [controller, width])
 
   // Subscribe to state changes
   useEffect(() => controller.subscribe(setState), [controller])

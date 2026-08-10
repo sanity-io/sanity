@@ -1,5 +1,5 @@
-import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
-import {type ReactNode, useCallback, useMemo, type RefAttributes} from 'react'
+import {Box, Card, Flex, LayerProvider, useElementSize} from '@sanity/ui'
+import {type ReactNode, type RefAttributes, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 
 import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
@@ -41,14 +41,13 @@ export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement
     appendTitle,
   } = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const paneRect = useElementRect(paneElement || null)
+  const paneSize = useElementSize(paneElement || null)
 
   const layoutStyle = useMemo(
     () => ({
-      width: collapsed ? paneRect?.height || window.innerHeight : undefined,
+      width: collapsed ? paneSize?.border.height || window.innerHeight : undefined,
     }),
-    [collapsed, paneRect],
+    [collapsed, paneSize],
   )
 
   const handleTitleClick = useCallback(() => {
