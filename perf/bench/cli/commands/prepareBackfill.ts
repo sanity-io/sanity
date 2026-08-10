@@ -30,7 +30,7 @@ export const prepareBackfillCommand = command(
   object({
     action: constant('prepare-backfill'),
     sha: option('--sha', string({metavar: 'SHA'}), {
-      description: message`Commit whose packages to build (the harness and scenarios come from HEAD)`,
+      description: message`Full 40-char sha of the commit whose packages to build (the harness and scenarios come from HEAD)`,
     }),
   }),
   {
@@ -41,10 +41,14 @@ export const prepareBackfillCommand = command(
 export type PrepareBackfillArgs = InferValue<typeof prepareBackfillCommand>
 
 export function prepareBackfill(argv: PrepareBackfillArgs): void {
-  // Not a security boundary (spawnSync array args, no shell) — this catches
-  // typos and leading-dash values git would misparse as options
-  if (!/^[0-9a-f]{7,40}$/i.test(argv.sha)) {
-    throw new Error(`--sha must be a commit hash (7-40 hex chars), got ${JSON.stringify(argv.sha)}`)
+  // Full length required — the workflow stamps the run documents with this
+  // raw value (BENCH_GIT_SHA), and the stored series identifies commits by
+  // their full sha; an abbreviated sha would store a point that never joins
+  // the daily runs for the same commit. Also catches typos and leading-dash
+  // values git would misparse as options (not a security boundary —
+  // spawnSync array args, no shell).
+  if (!/^[0-9a-f]{40}$/i.test(argv.sha)) {
+    throw new Error(`--sha must be a full 40-char commit hash, got ${JSON.stringify(argv.sha)}`)
   }
   buildDistAtCommit(argv.sha, path.join(BENCH_ROOT, 'dist'))
 }

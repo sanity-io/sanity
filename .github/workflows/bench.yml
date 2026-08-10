@@ -27,7 +27,7 @@ on:
         type: boolean
         default: false
       backfill_sha:
-        description: "Backfill: build and measure this main-history commit instead of HEAD (requires run_suite, do not combine with self_test; result is stored under this sha, harness/scenarios come from HEAD)"
+        description: "Backfill: build and measure this main-history commit instead of HEAD (full 40-char sha; requires run_suite, incompatible with self_test; result is stored under this sha, harness/scenarios come from HEAD)"
         required: false
         type: string
 
@@ -83,6 +83,26 @@ jobs:
       # last on main, so those events always build
       - uses: ./.github/actions/setup
         if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
+
+      # A backfill dispatch only makes sense as "run the full suite against
+      # the historical build": without run_suite nothing consumes the dist
+      # (a green run that backfilled nothing), and self_test would compare
+      # the historical build against HEAD's reference config, reporting
+      # product diffs as harness drift
+      - name: Validate backfill inputs
+        if: github.event_name == 'workflow_dispatch' && inputs.backfill_sha != ''
+        env:
+          RUN_SUITE: ${{ inputs.run_suite }}
+          SELF_TEST: ${{ inputs.self_test }}
+        run: |
+          if [ "$RUN_SUITE" != "true" ]; then
+            echo "::error::backfill_sha requires run_suite"
+            exit 1
+          fi
+          if [ "$SELF_TEST" = "true" ]; then
+            echo "::error::backfill_sha cannot be combined with self_test"
+            exit 1
+          fi
 
       # Backfill: build the experiment dist from the requested historical
       # commit's packages (HEAD's harness overlaid) instead of HEAD's — used
