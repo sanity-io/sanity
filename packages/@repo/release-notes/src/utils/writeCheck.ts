@@ -42,9 +42,9 @@ export async function writeCheck({
   })
 
   const matching = data.check_runs.filter((run) => run.external_id === EXTERNAL_ID)
+  // check-run ids are monotonic, so the highest id is the newest run; started_at is null for queued runs
   const latest = matching.reduce<(typeof matching)[number] | undefined>(
-    (mostRecent, run) =>
-      !mostRecent || (run.started_at ?? '') > (mostRecent.started_at ?? '') ? run : mostRecent,
+    (newest, run) => (!newest || run.id > newest.id ? run : newest),
     undefined,
   )
 

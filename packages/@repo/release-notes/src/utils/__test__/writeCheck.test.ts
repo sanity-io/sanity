@@ -64,7 +64,7 @@ describe('writeCheck', () => {
       expect(octokit.checks.update).not.toHaveBeenCalled()
     })
 
-    it('finishes the most recently started in-progress run rather than creating a new one', async () => {
+    it('finishes the newest in-progress run rather than creating a new one', async () => {
       const octokit = mockOctokit([
         {
           id: 10,
@@ -93,6 +93,32 @@ describe('writeCheck', () => {
           status: 'completed',
           conclusion: 'success',
           started_at: '9',
+        },
+      ])
+
+      await writeCheck({currentPrNumber: 1, headSha: HEAD_SHA})
+
+      expect(octokit.checks.create).not.toHaveBeenCalled()
+      expect(octokit.checks.update).toHaveBeenCalledWith(
+        expect.objectContaining({check_run_id: 20, status: 'completed', conclusion: 'success'}),
+      )
+    })
+
+    it('finishes a newer queued run (null started_at) instead of no-oping on an older success', async () => {
+      const octokit = mockOctokit([
+        {
+          id: 10,
+          external_id: EXTERNAL_ID,
+          status: 'completed',
+          conclusion: 'success',
+          started_at: '5',
+        },
+        {
+          id: 20,
+          external_id: EXTERNAL_ID,
+          status: 'queued',
+          conclusion: null,
+          started_at: null,
         },
       ])
 
