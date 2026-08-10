@@ -117,6 +117,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Default tooltip for the action */
   'action.restore.tooltip': 'Restore to this revision',
 
+  /** Tooltip when action is disabled because the version is already marked for unpublishing */
+  'action.unpublish.disabled.already-unpublished': 'This document is already set to be unpublished',
   /** Tooltip when action is disabled because the document is not already published */
   'action.unpublish.disabled.not-published': 'This document is not published',
   /** Tooltip when action is disabled because the operation is not ready   */

@@ -18,6 +18,7 @@ import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_KEY = {
+  ALREADY_UNPUBLISHED: 'action.unpublish.disabled.already-unpublished',
   NOT_PUBLISHED: 'action.unpublish.disabled.not-published',
   NOT_READY: 'action.unpublish.disabled.not-ready',
   LIVE_EDIT_ENABLED: 'action.unpublish.disabled.live-edit-enabled',

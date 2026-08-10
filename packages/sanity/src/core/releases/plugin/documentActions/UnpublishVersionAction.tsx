@@ -96,6 +96,9 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
             documentVersionId={version._id}
             documentType={type}
             onClose={() => setDialogOpen(false)}
+            // In the document pane `DocumentOperationResults` already toasts the unpublish
+            // operation events this dialog would report.
+            showCompletionToasts={false}
           />
         ),
       },

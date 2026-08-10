@@ -1,16 +1,17 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Stack, Text, useToast} from '@sanity/ui'
-import {type CSSProperties, useCallback, useState} from 'react'
+import {type CSSProperties, useCallback, useEffect, useRef, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
+import {useDocumentOperationEvent} from '../../../hooks/useDocumentOperationEvent'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {Preview} from '../../../preview/components/Preview'
 import {useValuePreview} from '../../../preview/useValuePreview'
-import {getVersionFromId} from '../../../util/draftUtils'
-import {useVersionOperations} from '../../hooks/useVersionOperations'
+import {getPublishedId, getVersionFromId} from '../../../util/draftUtils'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
@@ -21,13 +22,24 @@ export function UnpublishVersionDialog(props: {
   onClose: () => void
   documentVersionId: string
   documentType: string
+  /**
+   * Whether the dialog pushes its own completion toasts. Callers rendered inside the document
+   * pane should leave this off: `DocumentOperationResults` already toasts the same operation
+   * events there, so the dialog would duplicate them. Defaults to `true` for the release tool,
+   * which has no such listener.
+   */
+  showCompletionToasts?: boolean
 }): React.JSX.Element {
-  const {onClose, documentVersionId, documentType} = props
+  const {onClose, documentVersionId, documentType, showCompletionToasts = true} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: coreT} = useTranslation()
 
   const schema = useSchema()
-  const {unpublishVersion} = useVersionOperations()
+  const publishedId = getPublishedId(documentVersionId)
+  // The bundle to unpublish is the one encoded in the id, never the selected perspective: the
+  // dialog is opened from the release tool's document table and from version chips.
+  const releaseId = getVersionFromId(documentVersionId)
+  const {unpublish} = useDocumentOperation(publishedId, documentType, releaseId)
   const [isUnpublishing, setIsUnpublishing] = useState(false)
   const toast = useToast()
   const {data} = useActiveReleases()
@@ -44,40 +56,56 @@ export function UnpublishVersionDialog(props: {
   const schemaType = schema.get(documentType)
 
   const preview = useValuePreview({schemaType, value: {_id: documentVersionId}})
+  const previewTitle = preview?.value?.title
 
-  const handleUnpublish = useCallback(async () => {
-    setIsUnpublishing(true)
+  const event = useDocumentOperationEvent(publishedId, documentType)
+  const prevEvent = useRef(event)
+  const awaitingUnpublishRef = useRef(false)
 
-    // The run() wrapper instead of doing it inline in try/catch is because of the React Compiler not fully supporting the syntax yet
-    const run = async () => {
-      await unpublishVersion(documentVersionId)
-      toast.push({
-        closable: true,
-        status: 'success',
-        description: (
-          <Translate
-            t={coreT}
-            i18nKey={'release.action.unpublish-version.success'}
-            values={{title: preview?.value?.title || documentVersionId}}
-          />
-        ),
-      })
+  useEffect(() => {
+    if (!event || event === prevEvent.current) return
+    prevEvent.current = event
+
+    if (!awaitingUnpublishRef.current) return
+    // `operationEvents` is keyed by published id and type only, so an unpublish of another bundle
+    // of the same document would otherwise be mistaken for this dialog's own result.
+    if (event.op !== 'unpublish' || event.idPair.versionId !== documentVersionId) return
+
+    awaitingUnpublishRef.current = false
+
+    if (showCompletionToasts) {
+      toast.push(
+        event.type === 'success'
+          ? {
+              closable: true,
+              status: 'success',
+              description: (
+                <Translate
+                  t={coreT}
+                  i18nKey={'release.action.unpublish-version.success'}
+                  values={{title: previewTitle || documentVersionId}}
+                />
+              ),
+            }
+          : {
+              closable: true,
+              status: 'error',
+              title: coreT('release.action.unpublish-version.failure'),
+              description: event.error.message,
+            },
+      )
     }
-    try {
-      await run()
-    } catch (err) {
-      toast.push({
-        closable: true,
-        status: 'error',
-        title: coreT('release.action.unpublish-version.failure'),
-        description: err.message,
-      })
-    }
-
-    setIsUnpublishing(false)
 
     onClose()
-  }, [coreT, documentVersionId, onClose, preview?.value?.title, toast, unpublishVersion])
+  }, [coreT, documentVersionId, event, onClose, previewTitle, showCompletionToasts, toast])
+
+  const handleUnpublish = useCallback(() => {
+    if (unpublish.disabled) return
+
+    setIsUnpublishing(true)
+    awaitingUnpublishRef.current = true
+    unpublish.execute()
+  }, [unpublish])
 
   return (
     <Dialog
@@ -96,7 +124,7 @@ export function UnpublishVersionDialog(props: {
           text: t('unpublish-dialog.action.unpublish'),
           onClick: handleUnpublish,
           tone: 'critical',
-          disabled: isUnpublishing,
+          disabled: isUnpublishing || Boolean(unpublish.disabled),
           loading: isUnpublishing,
         },
       }}
