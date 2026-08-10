@@ -49,11 +49,15 @@ export interface HistoryStore {
     options?: RestoreOptions,
   ) => Observable<void>
 
-  /** @internal */
+  /**
+   * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
+   * @internal
+   */
   getTimelineController: (options: {
     client: SanityClient
     documentId: string
     documentType: string
+    // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   }) => TimelineController
 }
 
@@ -149,11 +153,14 @@ const getTimelineController = ({
   client: SanityClient
   documentId: string
   documentType: string
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
 }): TimelineController => {
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   const timeline = new Timeline({
     enableTrace: isDev,
     publishedId: documentId,
   })
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   return new TimelineController({
     client,
     documentId,
@@ -313,6 +320,7 @@ export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore 
 
     restore: (id, targetId, rev, options) => restore(client, id, targetId, rev, options),
 
+    // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
     getTimelineController,
   }
 }

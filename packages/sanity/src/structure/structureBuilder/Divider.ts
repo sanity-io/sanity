@@ -2,8 +2,11 @@ import uniqueId from 'lodash-es/uniqueId.js'
 import {type I18nTextRecord} from 'sanity'
 
 import {type Divider, type Serializable} from './StructureNodes'
+import {serializableMarker} from './util/isSerializable'
 
 export class DividerBuilder implements Serializable<Divider> {
+  /** Brand consumed by `isSerializable` (avoids circular `instanceof` imports) */
+  readonly [serializableMarker] = true
   protected spec: Divider
 
   constructor(spec?: Divider) {

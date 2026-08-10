@@ -1,3 +1,4 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {BoundaryElementProvider, Card, Flex, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {

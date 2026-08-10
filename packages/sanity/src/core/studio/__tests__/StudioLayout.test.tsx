@@ -4,7 +4,7 @@ import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type StudioReadyMeasured as StudioReadyMeasuredType} from '../__telemetry__/bootstrap.telemetry'
-import {type StudioLayoutComponent as StudioLayoutComponentType} from '../StudioLayout'
+import {type StudioLayoutComponent as StudioLayoutComponentType} from '../StudioLayoutComponent'
 
 // StudioLayout renders `@sanity/ui` components that require a `ThemeProvider`
 // via context. Wrap every render in a minimal studio theme.
@@ -25,9 +25,11 @@ vi.mock('../networkCheck/useNetworkProtocolCheck', () => ({
   useNetworkProtocolCheck: vi.fn(),
 }))
 
-vi.mock('../studio-components-hooks/componentHooks', () => ({
-  useLayoutComponent: vi.fn(),
+vi.mock('../studio-components-hooks/useNavbarComponent', () => ({
   useNavbarComponent: () => () => <div data-testid="navbar" />,
+}))
+
+vi.mock('../studio-components-hooks/useActiveToolLayoutComponent', () => ({
   useActiveToolLayoutComponent:
     () =>
     ({activeTool}: {activeTool: {name: string}}) => (
@@ -109,7 +111,7 @@ describe('StudioLayoutComponent telemetry', () => {
 
     const {useTelemetry} = await import('@sanity/telemetry/react')
     ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: telemetryLog})
-    ;({StudioLayoutComponent} = await import('../StudioLayout'))
+    ;({StudioLayoutComponent} = await import('../StudioLayoutComponent'))
     ;({StudioReadyMeasured} = await import('../__telemetry__/bootstrap.telemetry'))
   })
 

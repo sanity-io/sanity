@@ -13,6 +13,7 @@ import {
 } from './StructureNodes'
 import {type StructureContext, type View} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
+import {serializableMarker} from './util/isSerializable'
 import {resolveTypeForDocument} from './util/resolveTypeForDocument'
 import {validateId} from './util/validateId'
 import {form} from './views'
@@ -90,6 +91,8 @@ export interface PartialDocumentNode {
  *
  * @public */
 export class DocumentBuilder implements Serializable<DocumentNode> {
+  /** Brand consumed by `isSerializable` (avoids circular `instanceof` imports) */
+  readonly [serializableMarker] = true
   /** Component builder option object See {@link PartialDocumentNode} */
   protected spec: PartialDocumentNode
 

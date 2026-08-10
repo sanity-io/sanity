@@ -5,15 +5,13 @@ import {type DocumentFieldAction} from '../../config/document/fieldActions/types
 import {type FormNodePresence} from '../../presence/types'
 import {PreviewLoader} from '../../preview/components/PreviewLoader'
 import {useSource} from '../../studio/source'
-import {
-  useAnnotationComponent,
-  useBlockComponent,
-  useFieldComponent,
-  useInlineBlockComponent,
-  useInputComponent,
-  useItemComponent,
-  usePreviewComponent,
-} from '../form-components-hooks/componentHooks'
+import {useAnnotationComponent} from '../form-components-hooks/useAnnotationComponent'
+import {useBlockComponent} from '../form-components-hooks/useBlockComponent'
+import {useFieldComponent} from '../form-components-hooks/useFieldComponent'
+import {useInlineBlockComponent} from '../form-components-hooks/useInlineBlockComponent'
+import {useInputComponent} from '../form-components-hooks/useInputComponent'
+import {useItemComponent} from '../form-components-hooks/useItemComponent'
+import {usePreviewComponent} from '../form-components-hooks/usePreviewComponent'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {type PatchChannel} from '../patch/PatchChannel'
 import {type PatchEvent} from '../patch/PatchEvent'

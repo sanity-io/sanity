@@ -25,7 +25,7 @@ vi.mock('./VirtualizedArrayList', () => ({
 function MockItemComponent() {
   return null
 }
-vi.mock('../../../../form-components-hooks/componentHooks', () => ({
+vi.mock('../../../../form-components-hooks/useItemComponent', () => ({
   useItemComponent: () => MockItemComponent,
 }))
 
