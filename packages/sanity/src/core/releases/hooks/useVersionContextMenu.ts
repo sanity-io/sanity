@@ -1,4 +1,5 @@
-import {useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
+import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type MouseEvent, type RefObject, useCallback, useMemo, useRef, useState} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'

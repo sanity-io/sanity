@@ -1,6 +1,7 @@
 import {PlayIcon} from '@sanity/icons/Play'
 import {StopIcon} from '@sanity/icons/Stop'
-import {Box, Button, Card, Flex, Hotkeys, Text, Tooltip} from '@sanity/ui'
+import {Box, Button, Card, Flex, Hotkeys, Text} from '@sanity/ui'
+import {Tooltip} from '@sanity/ui/tooltip'
 import {useTranslation} from 'sanity'
 
 import {visionLocaleNamespace} from '../i18n'

@@ -1,6 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 // oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
-import {Box, Button, Menu, MenuDivider, Text, TextInput} from '@sanity/ui'
+import {Box, Button, Text, TextInput} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'

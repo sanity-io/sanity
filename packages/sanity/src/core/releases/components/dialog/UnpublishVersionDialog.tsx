@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Stack, Text, useToast} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type CSSProperties, useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'

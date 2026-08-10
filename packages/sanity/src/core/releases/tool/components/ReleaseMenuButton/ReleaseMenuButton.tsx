@@ -1,7 +1,9 @@
 import {type ReleaseDocument, type SingleActionResult} from '@sanity/client'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, MenuDivider, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Spinner, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {RouterContext, useRouter} from 'sanity/router'
 

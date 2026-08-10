@@ -11,7 +11,7 @@ import {
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getByDataUi} from '../../../../../../test/setup/customQueries'
+import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import type * as ConnectionStatusStoreMod from '../../../../store/connection-status/connection-status-store'
@@ -196,7 +196,19 @@ describe('ReleaseSummary', () => {
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
       await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
-      await userEvent.click(screen.getByText('Discard version'))
+
+      // Every row keeps its menu mounted, and closed ones are hidden with `display: none`.
+      // Runtime styles are disabled in jsdom, so the open menu does not read as visible to
+      // `getByRole` either, which is why it is picked by the absence of that hidden style.
+      const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
+        (popover) => popover.style.display !== 'none',
+      )
+
+      await userEvent.click(
+        within(openMenu).getByRole('menuitem', {name: 'Discard version', hidden: true}),
+      )
+
+      expect(await screen.findByRole('dialog')).toBeInTheDocument()
     })
 
     it('allows for sorting of documents', async () => {

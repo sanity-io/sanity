@@ -1,16 +1,10 @@
 import {UserIcon} from '@sanity/icons/User'
+import {Badge, Box, Container, Flex, Text, TextInput, VirtualList} from '@sanity/ui'
 import {
-  Badge,
-  Box,
-  Container,
-  Flex,
   Menu,
   // oxlint-disable-next-line no-restricted-imports
   MenuItem,
-  Text,
-  TextInput,
-  VirtualList,
-} from '@sanity/ui'
+} from '@sanity/ui/menu'
 import deburr from 'lodash-es/deburr.js'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'

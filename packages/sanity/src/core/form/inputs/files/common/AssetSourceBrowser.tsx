@@ -2,7 +2,7 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ImageIcon} from '@sanity/icons/Image'
 import {SearchIcon} from '@sanity/icons/Search'
 import {type AssetSource} from '@sanity/types'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useId} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'

@@ -1,5 +1,5 @@
 import {type Action} from '@sanity/client'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 
 import {useClient} from '../../hooks/useClient'

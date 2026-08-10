@@ -1,4 +1,5 @@
-import {Card, Code, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {type CSSProperties} from 'react'
 import {styled} from 'styled-components'
 

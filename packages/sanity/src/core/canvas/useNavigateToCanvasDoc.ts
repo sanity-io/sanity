@@ -1,5 +1,5 @@
 import {type Bridge} from '@sanity/message-protocol'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 
 import {useClient} from '../hooks/useClient'

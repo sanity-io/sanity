@@ -2,15 +2,8 @@
 // The design of the Studio version menu item doesn't align with the limitations of the
 // 'ui-components/menuItem/MenuItem.tsx' since we want both a subtitle and a top right aligned version badge.
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {
-  Badge,
-  Card,
-  type CardTone,
-  Flex,
-  MenuDivider,
-  MenuItem as UIMenuItem,
-  Text,
-} from '@sanity/ui'
+import {Badge, Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {MenuDivider, MenuItem as UIMenuItem} from '@sanity/ui/menu'
 import {Fragment, useCallback} from 'react'
 import {type SemVer} from 'semver'
 

@@ -45,7 +45,7 @@ const toastMock = vi.hoisted(() => ({
   push: vi.fn(),
 }))
 
-vi.mock('@sanity/ui', async (importOriginal) => ({
+vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   ...(await importOriginal()),
   useToast: vi.fn(() => toastMock),
 }))
@@ -164,7 +164,9 @@ describe('VariantDetail', () => {
       expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
     })
 
-    expect(screen.getByText('Developer audience')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-description-display')).toHaveTextContent(
+      'Developer audience',
+    )
     // Conditions render as read-only key/value metadata (muted key, solid value), not pills.
     expect(screen.getByText('audience')).toBeInTheDocument()
     expect(screen.getByText('alpha')).toBeInTheDocument()

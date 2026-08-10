@@ -3,21 +3,9 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {UlistIcon} from '@sanity/icons/Ulist'
 import {type InsertMenuOptions, type SchemaType} from '@sanity/types'
-import {
-  Box,
-  Button,
-  Flex,
-  Grid,
-  Menu,
-  MenuItem,
-  Stack,
-  Tab,
-  TabList,
-  Text,
-  TextInput,
-  Tooltip,
-  type MenuItemProps,
-} from '@sanity/ui'
+import {Box, Button, Flex, Grid, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
+import {Menu, MenuItem, type MenuItemProps} from '@sanity/ui/menu'
+import {Tooltip} from '@sanity/ui/tooltip'
 import startCase from 'lodash-es/startCase.js'
 import {useReducer, useState, type ChangeEvent, type CSSProperties} from 'react'
 import {isValidElementType} from 'react-is'
