@@ -15,9 +15,11 @@ function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): 
   const {updateRelease} = useReleaseOperations()
   const [timer, setTimer] = useState<NodeJS.Timeout | undefined>(undefined)
   const telemetry = useTelemetry()
-  // Tracks the last description we logged so title-only edits and repeated saves
-  // of an unchanged description do not emit duplicate telemetry.
-  const lastLoggedDescription = useRef(release.metadata?.description ?? '')
+  // Scoped to a release id because this component instance is reused across release navigation.
+  const lastLoggedDescription = useRef({
+    releaseId: release._id,
+    description: release.metadata?.description ?? '',
+  })
 
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasUpdatePermission, setHasUpdatePermission] = useState<boolean | null>(null)
@@ -30,8 +32,18 @@ function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): 
       const newTimer = setTimeout(() => {
         if (hasUpdatePermission) {
           const nextDescription = changedValue.metadata?.description ?? ''
-          if (nextDescription !== lastLoggedDescription.current) {
-            lastLoggedDescription.current = nextDescription
+          const isSameRelease = lastLoggedDescription.current.releaseId === release._id
+          const baselineDescription = isSameRelease
+            ? lastLoggedDescription.current.description
+            : (release.metadata?.description ?? '')
+          const hasChangedDescription = nextDescription !== baselineDescription
+
+          lastLoggedDescription.current = {
+            releaseId: release._id,
+            description: nextDescription,
+          }
+
+          if (hasChangedDescription) {
             telemetry.log(
               ReleaseDescriptionSet,
               getReleaseDescriptionTelemetry('edit', nextDescription),
@@ -43,7 +55,7 @@ function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): 
 
       setTimer(newTimer)
     },
-    [hasUpdatePermission, timer, updateRelease, telemetry],
+    [hasUpdatePermission, timer, updateRelease, telemetry, release],
   )
 
   const isMounted = useRef(false)
