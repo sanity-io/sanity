@@ -1,6 +1,7 @@
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {act, render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -13,12 +14,16 @@ import {
 const {
   mockClearUnclaimedProjectRecord,
   mockEnvironment,
+  mockLogout,
   mockUseUnclaimedProject,
+  mockUseUnclaimedProjectCopy,
   mockUseWorkspace,
 } = vi.hoisted(() => ({
   mockClearUnclaimedProjectRecord: vi.fn(),
   mockEnvironment: {isDev: true},
+  mockLogout: vi.fn(),
   mockUseUnclaimedProject: vi.fn(),
+  mockUseUnclaimedProjectCopy: vi.fn(),
   mockUseWorkspace: vi.fn(),
 }))
 
@@ -26,15 +31,46 @@ vi.mock('../../../store/authStore/unclaimedProjectStorage', async (importOrigina
   ...(await importOriginal()),
   clearUnclaimedProjectRecord: mockClearUnclaimedProjectRecord,
 }))
+vi.mock('../../../hooks/useConditionalToast', () => ({useConditionalToast: vi.fn()}))
+vi.mock('../../../hooks/useDateTimeFormat', () => ({
+  useDateTimeFormat: () => ({format: () => ''}),
+}))
+vi.mock('../../../hooks/useRelativeTime', () => ({useRelativeTime: () => ''}))
 vi.mock('../../../environment', () => mockEnvironment)
 vi.mock('../../workspace', () => ({useWorkspace: mockUseWorkspace}))
 vi.mock('../useUnclaimedProject', async (importOriginal) => ({
   ...(await importOriginal()),
   useUnclaimedProject: mockUseUnclaimedProject,
 }))
+vi.mock('../useUnclaimedProjectCopy', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useUnclaimedProjectCopy: mockUseUnclaimedProjectCopy,
+}))
 
 const theme = buildTheme()
 const PROJECT_ID = 'test-project'
+const COPY = {
+  criticalThresholdHours: 12,
+  snoozeMinutes: 60,
+  banner: {
+    text: 'Claim this project before {{expiresAt}}.',
+    criticalText: 'Claim this project now.',
+    claimButtonText: 'Claim project',
+  },
+  toast: {
+    title: 'Claim this project.',
+    criticalTitle: 'Claim this project now.',
+    description: 'Keep everything you built.',
+    claimButtonText: 'Claim project',
+    snoozeButtonText: 'Remind me later',
+  },
+  claimed: {
+    text: 'This project is yours.',
+    identityText: 'Log in as {{identity}}.',
+    signInButtonText: 'Log in',
+  },
+  noClaimUrl: {text: 'Open the original claim link.'},
+}
 
 const wrapper = ({children}: {children: ReactNode}) => (
   <ThemeProvider theme={theme}>{children}</ThemeProvider>
@@ -74,6 +110,26 @@ describe('UnclaimedProjectNudge', () => {
 
     expect(mockClearUnclaimedProjectRecord).not.toHaveBeenCalled()
     expect(mockUseUnclaimedProject).not.toHaveBeenCalled()
+  })
+
+  it('clears claim provenance before leaving the post-claim robot session', async () => {
+    mockUseWorkspace.mockReturnValue({
+      auth: {logout: mockLogout},
+      currentUser: {provider: 'sanity-token'},
+      projectId: PROJECT_ID,
+    })
+    mockUseUnclaimedProject.mockReturnValue({
+      status: 'claimed',
+      email: 'claimant@example.com',
+    })
+    mockUseUnclaimedProjectCopy.mockReturnValue(COPY)
+
+    render(<UnclaimedProjectNudge />, {wrapper})
+    const [signInButton] = screen.getAllByRole('button', {name: 'Log in'})
+    await userEvent.click(signInButton)
+
+    expect(mockClearUnclaimedProjectRecord).toHaveBeenCalledExactlyOnceWith(PROJECT_ID)
+    expect(mockLogout).toHaveBeenCalledOnce()
   })
 })
 

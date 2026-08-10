@@ -160,6 +160,7 @@ const EventsStatus = () => {
   )
 }
 
+/* oxlint-disable no-deprecated -- renders the deprecated legacy document timeline */
 const TimelineStatus = () => {
   const {timelineStore} = useDocumentPane()
   const chunks = useTimelineSelector(timelineStore, (state) => state.chunks)
@@ -182,6 +183,7 @@ const TimelineStatus = () => {
     />
   )
 }
+/* oxlint-enable no-deprecated */
 
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
@@ -192,6 +194,7 @@ export function DocumentStatusLine() {
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
+  // oxlint-disable-next-line no-deprecated -- the legacy timeline opt-out keeps working until the next major
   const eventsEnabled = source.beta?.eventsAPI?.documents
 
   // The scope of the document targeted by the selected perspective (undefined while the target is

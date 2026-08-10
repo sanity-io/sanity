@@ -7,7 +7,7 @@ import {
   type SanityDocumentLike,
   type ValidationMarker,
 } from '@sanity/types'
-import {pathFor, resolveKeyedPath} from '@sanity/util/paths'
+import {isEqual, pathFor, resolveKeyedPath} from '@sanity/util/paths'
 import throttle from 'lodash-es/throttle.js'
 import {
   type RefObject,
@@ -363,6 +363,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const presence = useObservable(presence$, [])
 
   const [openPath, onSetOpenPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
+  // Mirrors `openPath` so `handleFocus` sees writes made earlier in the same tick,
+  // before the state update has been rendered.
+  const openPathRef = useRef<Path>(openPath)
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
   const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
   const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
@@ -644,6 +647,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         onSetFieldGroupState((prevState) => setAtPath(prevState, op.path, op.groupName))
       }
     })
+    openPathRef.current = path
     onSetOpenPath(path)
   }
 
@@ -685,7 +689,12 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     if (nextFocusPath !== focusPathRef.current) {
       setFocusPath(pathFor(nextFocusPath))
 
-      if (enhancedObjectDialogEnabled) {
+      // Focusing a field inside a nested object reveals the dialog that edits it, so
+      // `openPath` follows the focused field's parent. An array item reports its own
+      // path as the focus path though, so when focus lands on whatever is already open
+      // — a Portable Text block object re-reporting the editor selection, for instance —
+      // stepping one segment up from there would close the dialog editing it.
+      if (enhancedObjectDialogEnabled && !isEqual(openPathRef.current, nextFocusPath)) {
         handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
       }
 

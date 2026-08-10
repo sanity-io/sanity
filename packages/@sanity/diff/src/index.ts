@@ -1,4 +1,4 @@
-export {diffInput} from './calculate/diffInput'
+export {diffInput} from './calculate/differs'
 export {wrap} from './inputWrappers'
 export {
   type AddedDiff,
