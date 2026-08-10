@@ -1,3 +1,4 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type MendozaEffectPair, type MendozaPatch} from '@sanity/types'
 
 import {type Chunk, type ChunkType} from '../../../field/types'

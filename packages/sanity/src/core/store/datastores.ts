@@ -46,7 +46,6 @@ import {type ProjectStore} from './project/types'
 import {createRenderingContextStore} from './renderingContext/createRenderingContextStore'
 import {type RenderingContextStore} from './renderingContext/types'
 import {useResourceCache} from './ResourceCacheProvider'
-import {useCurrentUser} from './user/hooks'
 import {createUserStore, type UserStore} from './user/userStore'
 
 /**
@@ -88,10 +87,11 @@ export function useUserStore(): UserStore {
  * @hidden
  * @beta */
 export function useGrantsStore(): GrantsStore {
+  // `currentUser` is read from the source directly (instead of via `useCurrentUser` from
+  // `./user/hooks`) to avoid a circular import: `./user/hooks` imports `useUserStore` from here.
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {getClient} = useSource()
+  const {getClient, currentUser} = useSource()
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const currentUser = useCurrentUser()
   const resourceCache = useResourceCache()
   const errorHandler = useStudioErrorHandler()
 
