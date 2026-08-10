@@ -137,7 +137,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
                 <Text aria-hidden="true" size={1}>
                   <WarningOutlineIcon />
                 </Text>
-                <Box flexGrow={1} marginLeft={3}>
+                <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
                   <Text size={1}>
                     <Translate
                       i18nKey="document-group.delete.referring-document-count.text"

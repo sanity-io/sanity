@@ -356,7 +356,9 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
               flex={1}
             >
               <Flex align="flex-end" gap={2}>
-                <Box flexGrow={1}>{name}</Box>
+                <Box flexBasis="0%" flexGrow={1}>
+                  {name}
+                </Box>
 
                 {!displayError && (
                   <Flex align="center" gap={1}>
@@ -379,7 +381,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
             </Flex>
 
             {intent && (
-              <Box flexGrow={1}>
+              <Box flexBasis="0%" flexGrow={1}>
                 <IntentText muted size={0} textOverflow="ellipsis">
                   <Translate
                     t={t}
