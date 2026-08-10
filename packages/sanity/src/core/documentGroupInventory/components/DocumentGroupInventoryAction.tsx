@@ -1,5 +1,3 @@
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
 import {LayerProvider, useClickOutsideEvent} from '@sanity/ui'
 import {type ComponentType, type PropsWithChildren, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
@@ -75,7 +73,6 @@ export const DocumentGroupInventoryAction: ComponentType<
           tone="neutral"
           onClick={() => setIsDocumentGroupInventoryActive(!isDocumentGroupInventoryActive)}
           icon={RhombusIcon}
-          iconRight={isDocumentGroupInventoryActive ? ChevronDownIcon : ChevronUpIcon}
           tooltipProps={{}}
           mode="ghost"
         />
