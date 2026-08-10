@@ -20,7 +20,7 @@
   "dependencies": {
     "sanity-plugin-internationalized-array": "^5.1.25",
     "styled-components": "catalog:",
-    "tsx": "^4.23.5"
+    "tsx": "^4.23.11"
   },
   "devDependencies": {
     "@optique/core": "catalog:",
