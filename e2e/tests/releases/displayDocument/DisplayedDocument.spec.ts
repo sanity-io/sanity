@@ -46,16 +46,17 @@ function getInventoryVariant(
 async function openDocumentGroupInventory(page: Page) {
   const inventoryButton = page.getByTestId('action-document-group-inventory')
   await expect(inventoryButton).toBeVisible()
+  await expect(inventoryButton).toContainText('Manage versions')
   await inventoryButton.click()
   await expect(page.getByTestId('document-group-inventory')).toBeVisible()
 }
 
 /**
- * The inventory toggle button is labelled with the variant of the currently displayed document
+ * The currently displayed perspective is shown in the document target badges in the pane header
  * (e.g. "Draft", "Published", or a release title).
  */
 async function expectDisplayedVariantLabel(page: Page, label: string) {
-  await expect(page.getByTestId('action-document-group-inventory')).toContainText(label)
+  await expect(page.getByTestId('document-target-badges')).toContainText(label)
 }
 
 test.describe('displayedDocument', () => {
