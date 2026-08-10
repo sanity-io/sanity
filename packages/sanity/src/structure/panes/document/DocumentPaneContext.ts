@@ -95,8 +95,9 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   setIsDocumentGroupInventoryActive: (active: boolean) => void
   timelineError: Error | null
   /**
-   * Soon to be deprecated with the upcoming `releases` changes.
+   * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
    */
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   timelineStore?: TimelineStore
   title: string | null
   validation: ValidationMarker[]

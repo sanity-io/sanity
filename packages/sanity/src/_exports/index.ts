@@ -1359,6 +1359,7 @@ export {
   type HistoryStoreOptions,
   removeMissingReferences,
 } from '../core/store/history/createHistoryStore'
+/* oxlint-disable no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major */
 export {
   type ParsedTimeRef,
   Timeline,
@@ -1378,9 +1379,9 @@ export {useTimelineSelector} from '../core/store/history/useTimelineSelector'
 export {
   type TimelineState,
   type TimelineStore,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
+/* oxlint-enable no-deprecated */
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 export {
