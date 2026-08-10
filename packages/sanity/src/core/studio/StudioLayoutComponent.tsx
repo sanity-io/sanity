@@ -22,10 +22,13 @@ import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {getPageVisibilitySnapshot} from './telemetry/pageVisibility'
 import {ToolMountTimer} from './ToolMountTimer'
 import {UnclaimedProjectNudge} from './unclaimedProject/UnclaimedProjectNudge'
-import {loadDetectViteDevServerStopped} from './ViteDevServerStopped.loaders'
 import {useWorkspace} from './workspace'
 
-const DetectViteDevServerStopped = lazy(loadDetectViteDevServerStopped)
+const DetectViteDevServerStopped = lazy(() =>
+  import('./ViteDevServerStopped').then((DevServerStopped) => ({
+    default: DevServerStopped.DetectViteDevServerStopped,
+  })),
+)
 
 const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
 

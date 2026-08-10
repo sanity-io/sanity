@@ -9,13 +9,17 @@ import {isImportError} from '../error/isImportError'
 import {FallbackErrorScreen} from './screens/FallbackErrorScreen'
 import {ImportErrorScreen} from './screens/ImportErrorScreen'
 import {SchemaErrorsScreen} from './screens/schemaErrors/SchemaErrorsScreen'
-import {loadDevServerStoppedErrorScreen} from './ViteDevServerStopped.loaders'
 
 /**
- * Loading the detector also preloads this error screen, so it remains available
- * after the Vite dev server disconnects.
+ * The DevServerStoppedErrorScreen will always have been lazy loaded to client
+ * in instances where it is used, since DevServerStoppedError is only thrown
+ * when this module is loaded, and this screen is also conditional on this error type
  */
-const DevServerStoppedErrorScreen = lazy(loadDevServerStoppedErrorScreen)
+const DevServerStoppedErrorScreen = lazy(() =>
+  import('./ViteDevServerStopped').then((DevServerStopped) => ({
+    default: DevServerStopped.DevServerStoppedErrorScreen,
+  })),
+)
 
 interface StudioErrorBoundaryProps {
   children: ReactNode

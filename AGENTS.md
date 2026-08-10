@@ -294,6 +294,11 @@ const MyComponent = lazy(() =>
 )
 ```
 
+The sole exception is `ViteDevServerStopped`: its detector and error screen must continue selecting
+named exports from the same dynamically imported module with `import(...).then(...)`. Loading the
+detector must cache the module containing the error screen before the Vite dev server can disconnect;
+separate lazy entrypoints would require a new request to a server that is already unavailable.
+
 ### Do Not Weaken the Linter
 
 Fix the reported problem instead of silencing it. In order of preference:
