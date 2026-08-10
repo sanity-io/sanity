@@ -264,10 +264,12 @@ function fetchInternalReferences(
   documentId: string,
   documentStore: DocumentStore,
 ): Observable<ReferringDocuments['internalReferences']> {
-  const referencesClause = '*[references($documentId)][0...100]{_id,_type}'
-  const totalClause = 'count(*[references($documentId)])'
+  // Documents now self reference themselves, within the _system.group field. We need to exclude them from the references query.
+  const referencesQuery = `*[references($documentId) && _system.group._ref != $documentId]`
+  const referencesClause = `${referencesQuery}[0...100]{_id,_type}`
+  const totalClause = `count(${referencesQuery})`
   const fetchQuery = `{"references":${referencesClause},"totalCount":${totalClause}}`
-  const listenQuery = '*[references($documentId)]'
+  const listenQuery = referencesQuery
 
   return documentStore.listenQuery(
     {fetch: fetchQuery, listen: listenQuery},
