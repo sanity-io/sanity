@@ -73,7 +73,6 @@ export const DocumentGroupInventoryAction: ComponentType<
           tone="neutral"
           onClick={() => setIsDocumentGroupInventoryActive(!isDocumentGroupInventoryActive)}
           icon={RhombusIcon}
-          tooltipProps={{}}
           mode="ghost"
         />
       </Popover>
