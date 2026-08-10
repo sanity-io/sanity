@@ -183,7 +183,7 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     expect(screen.queryByTestId('not-found')).toBeNull()
   })
 
-  it('renders NotFoundComponent for static hidden: true workspace URL', () => {
+  it('redirects a static hidden: true workspace URL to the first visible workspace', async () => {
     const hiddenWorkspace = createWorkspace({
       name: 'hidden',
       basePath: '/hidden',
@@ -206,13 +206,17 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
           LoadingComponent={LoadingComponent}
           NotFoundComponent={NotFoundComponent}
         >
-          <div data-testid="children">Should not render</div>
+          <div data-testid="children">Visible workspace content</div>
         </ActiveWorkspaceMatcher>
       </TestWrapper>,
     )
 
-    expect(screen.getByTestId('not-found')).toBeDefined()
-    expect(screen.queryByTestId('children')).toBeNull()
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/visible')
+    })
+
+    expect(screen.getByTestId('children')).toBeDefined()
+    expect(screen.queryByTestId('not-found')).toBeNull()
   })
 
   it('renders children when callback evaluates to false (visible)', () => {
@@ -514,21 +518,54 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     expect(screen.queryByTestId('not-found')).toBeNull()
   })
 
-  it('navigates to first visible workspace when go-to-default is clicked from NotFoundComponent', async () => {
-    const staticHidden = createWorkspace({
-      name: 'static-hidden',
-      basePath: '/static-hidden',
-      hidden: true,
+  it('redirects a callback-hidden workspace URL to the first visible workspace, preserving search', async () => {
+    // Mirrors the hosted-studio auth flow: the auth round trip returns the
+    // browser to a workspace URL resolved before the user was known, which may
+    // point at a workspace hidden for that user.
+    const fnHidden = createWorkspace({
+      name: 'fn-hidden',
+      basePath: '/fn-hidden',
+      hidden: () => true,
     })
     const staticVisible = createWorkspace({name: 'static-visible', basePath: '/static-visible'})
 
-    const workspaces = [staticHidden, staticVisible]
+    const workspaces = [fnHidden, staticVisible]
     const contextValue = createContextValue(workspaces, {
-      'static-hidden': createAuthState(),
+      'fn-hidden': createAuthState(),
       'static-visible': createAuthState(),
     })
 
-    const history = createMemoryHistory({initialEntries: ['/static-hidden']})
+    const history = createMemoryHistory({initialEntries: ['/fn-hidden?foo=bar']})
+
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Visible workspace content</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/static-visible')
+    })
+    expect(history.location.search).toBe('?foo=bar')
+
+    expect(screen.getByTestId('children')).toBeDefined()
+    expect(screen.queryByTestId('not-found')).toBeNull()
+  })
+
+  it('navigates to root when go-to-default is clicked from NotFoundComponent', async () => {
+    const visible = createWorkspace({name: 'visible', basePath: '/common/visible'})
+
+    const workspaces = [visible]
+    const contextValue = createContextValue(workspaces, {visible: createAuthState()})
+
+    // A path outside any workspace basePath renders the not-found screen.
+    const history = createMemoryHistory({initialEntries: ['/no-such-workspace']})
 
     render(
       <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
@@ -547,7 +584,7 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     await userEvent.click(screen.getByTestId('not-found'))
 
     await waitFor(() => {
-      expect(history.location.pathname).toBe('/static-visible')
+      expect(history.location.pathname).toBe('/common/visible')
     })
 
     expect(screen.getByTestId('children')).toBeDefined()

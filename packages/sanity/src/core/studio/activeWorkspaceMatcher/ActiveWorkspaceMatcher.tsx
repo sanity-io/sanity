@@ -59,17 +59,12 @@ export function ActiveWorkspaceMatcher({
     case 'match': {
       const matchedWorkspace = result.workspace
 
-      if (
-        typeof matchedWorkspace.hidden === 'function' &&
-        workspaceAuthStates[matchedWorkspace.name] === undefined
-      ) {
-        return <LoadingComponent />
-      }
-
       const matchedWorkspaceIsVisible = visibleWorkspaces.some(
         (workspace) => workspace.name === matchedWorkspace.name,
       )
 
+      // Only reachable when every workspace is hidden: matchWorkspace redirects
+      // away from a hidden workspace whenever a visible one exists.
       if (!matchedWorkspaceIsVisible) {
         return <NotFoundComponent onNavigateToDefaultWorkspace={handleNavigateToDefaultWorkspace} />
       }

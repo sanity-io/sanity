@@ -1,5 +1,6 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Button, Stack, Text, useToast} from '@sanity/ui'
+import {Button, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 

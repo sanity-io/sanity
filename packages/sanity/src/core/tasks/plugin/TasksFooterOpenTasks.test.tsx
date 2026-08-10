@@ -30,12 +30,20 @@ vi.mock('../context/isLastPane/useIsLastPane', () => ({
 }))
 vi.mock('@sanity/ui', async () => {
   const actual = await vi.importActual('@sanity/ui')
-  const useToastMock = vi.fn()
   const useMediaIndexMock = vi.fn()
   return new Proxy(actual, {
     get: (target, property: keyof typeof actual) => {
-      if (property === 'useToast') return useToastMock
       if (property === 'useMediaIndex') return useMediaIndexMock
+      return target[property]
+    },
+  })
+})
+vi.mock('@sanity/ui/toast', async () => {
+  const actual = await vi.importActual('@sanity/ui/toast')
+  const useToastMock = vi.fn()
+  return new Proxy(actual, {
+    get: (target, property: keyof typeof actual) => {
+      if (property === 'useToast') return useToastMock
       return target[property]
     },
   })

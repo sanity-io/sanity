@@ -4,7 +4,8 @@ import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {isReference, type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, Menu, useGlobalKeyDown} from '@sanity/ui'
+import {Box, Flex, useGlobalKeyDown} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {
   type ComponentPropsWithoutRef,
   type MouseEvent,

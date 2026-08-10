@@ -1,5 +1,6 @@
 import {createPreviewSecret} from '@sanity/preview-url-secret/create-secret'
-import {Button, Card, Code, Flex, Stack, Text} from '@sanity/ui'
+import {Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useClient} from 'sanity'
 import {IntentLink, RouteScope, StateLink, useRouter, useStateLink} from 'sanity/router'
 

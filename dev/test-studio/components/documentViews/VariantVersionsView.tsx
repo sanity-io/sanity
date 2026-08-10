@@ -1,5 +1,6 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Box, Button, Card, Code, Dialog, Grid, Inline, Stack, Text} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Grid, Inline, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, of, type Observable} from 'rxjs'

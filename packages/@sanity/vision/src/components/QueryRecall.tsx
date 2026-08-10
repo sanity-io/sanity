@@ -9,20 +9,18 @@ import {
   Box,
   Button,
   Card,
-  Code,
   Dialog,
   Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
   Stack,
   Tab,
   TabList,
   Text,
   TextInput,
-  Tooltip,
-  useToast,
 } from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
+import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
+import {Tooltip} from '@sanity/ui/tooltip'
 import isEqual from 'lodash-es/isEqual.js'
 import {type ComponentProps, type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'

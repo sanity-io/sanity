@@ -1,4 +1,5 @@
-import {Button, Card, Code, Stack} from '@sanity/ui'
+import {Button, Card, Stack} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
 import {usePaneRouter} from 'sanity/structure'
 

@@ -1,4 +1,4 @@
-import {Autocomplete} from '@sanity/ui'
+import {Autocomplete} from '@sanity/ui/autocomplete'
 import {useCallback, useId, useState} from 'react'
 
 import {type ConditionSuggestionOption, filterConditionOption} from './conditionSuggestions'

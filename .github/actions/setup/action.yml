@@ -10,7 +10,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: pnpm/setup@v1
+    - uses: pnpm/setup@v2
       with:
         cache: true
         runtime: node@${{ inputs.node-version }}

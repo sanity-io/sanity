@@ -40,7 +40,7 @@ export function RevertChangesConfirmDialog({
       referenceElement={referenceElement}
       tone="critical"
       placement="bottom"
-      fallbackPlacements={['bottom', 'bottom-start', 'bottom-end']}
+      fallbackPlacements={['bottom-start', 'bottom-end', 'top', 'top-start', 'top-end']}
     />
   )
 }

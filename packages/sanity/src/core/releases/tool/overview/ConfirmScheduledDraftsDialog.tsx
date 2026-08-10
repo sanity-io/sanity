@@ -1,5 +1,6 @@
 import {type ReleaseDocument, type ScheduleReleaseAction} from '@sanity/client'
-import {Stack, Text, useToast} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {isPast} from 'date-fns/isPast'
 import {useCallback, useMemo, useState} from 'react'
 

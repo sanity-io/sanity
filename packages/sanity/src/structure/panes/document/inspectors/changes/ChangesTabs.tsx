@@ -130,6 +130,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
         hidden={paneRouterTab !== 'history'}
         id="history-panel"
       >
+        {/* oxlint-disable-next-line no-deprecated -- the legacy timeline opt-out keeps working until the next major */}
         {source.beta?.eventsAPI?.documents ? (
           <EventsSelector showList={paneRouterTab === 'history'} />
         ) : (
@@ -143,6 +144,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
         id="review-panel"
         height="fill"
       >
+        {/* oxlint-disable-next-line no-deprecated -- the legacy timeline opt-out keeps working until the next major */}
         {source.beta?.eventsAPI?.documents ? (
           <>
             {paneRouterTab === 'review' ? (

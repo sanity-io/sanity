@@ -30,7 +30,7 @@ catalog:
   '@sanity/migrate': ^8.0.1
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.24.0
-  '@sanity/ui': ^3.5.1
+  '@sanity/ui': ^4.0.0
   '@types/node': ^24.13.3
   '@types/react': ^19.2.18
   '@types/react-dom': ^19.2.4

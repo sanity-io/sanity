@@ -1,5 +1,6 @@
 import {DocumentSheetIcon} from '@sanity/icons/DocumentSheet'
-import {Button, Tooltip} from '@sanity/ui'
+import {Button} from '@sanity/ui'
+import {Tooltip} from '@sanity/ui/tooltip'
 import {useTranslation} from 'sanity'
 
 import {visionLocaleNamespace} from '../i18n'

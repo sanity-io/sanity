@@ -1,7 +1,8 @@
 import {DownloadIcon} from '@sanity/icons/Download'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
-import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import uniqueId from 'lodash-es/uniqueId.js'
 import {
   type KeyboardEvent,

@@ -1,4 +1,5 @@
-import {Autocomplete, Box, Flex, type Placement, Text} from '@sanity/ui'
+import {Box, Flex, type Placement, Text} from '@sanity/ui'
+import {Autocomplete} from '@sanity/ui/autocomplete'
 import {
   type ComponentProps,
   type ReactElement,

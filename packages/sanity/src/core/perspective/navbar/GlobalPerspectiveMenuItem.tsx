@@ -3,8 +3,10 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {EyeClosedIcon} from '@sanity/icons/EyeClosed'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LockIcon} from '@sanity/icons/Lock'
-// oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
-import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports -- custom use for Button not supported by ui-components
+import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
+import {MenuItem} from '@sanity/ui/menu'
 import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
 

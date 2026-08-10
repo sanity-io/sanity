@@ -1,5 +1,6 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Button, Grid, Text, useToast} from '@sanity/ui'
+import {Button, Grid, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 

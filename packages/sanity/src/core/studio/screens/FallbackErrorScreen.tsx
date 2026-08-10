@@ -1,5 +1,6 @@
 /* oxlint-disable i18next/no-literal-string */
-import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
+import {Box, Card, Container, Heading, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {styled} from 'styled-components'
 
 import {ErrorActions} from '../../components/errorActions/ErrorActions'

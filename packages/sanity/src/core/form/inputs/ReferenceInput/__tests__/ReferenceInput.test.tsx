@@ -1,6 +1,7 @@
 import {Schema} from '@sanity/schema'
 import {type Reference} from '@sanity/types'
-import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
+import {ToastProvider} from '@sanity/ui/toast'
 import {render, screen} from '@testing-library/react'
 import noop from 'lodash-es/noop.js'
 import {useImperativeHandle, type RefAttributes} from 'react'

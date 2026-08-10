@@ -1331,6 +1331,10 @@ export interface BetaFeatures {
    * If it is not enabled, it will continue using the legacy Timeline.
    */
   eventsAPI?: {
+    /**
+     * @deprecated This option will be removed in the next major version, after which document
+     * history will always use the events API and the legacy Timeline will no longer be available.
+     */
     documents?: boolean
     releases?: boolean
   }

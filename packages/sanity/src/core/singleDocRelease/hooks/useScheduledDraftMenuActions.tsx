@@ -3,7 +3,7 @@ import {CalendarIcon} from '@sanity/icons/Calendar'
 import {EditIcon} from '@sanity/icons/Edit'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 
 import {type MenuItem} from '../../../ui-components/menuItem/MenuItem'

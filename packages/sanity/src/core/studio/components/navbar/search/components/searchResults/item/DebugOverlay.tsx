@@ -1,5 +1,6 @@
 /* oxlint-disable i18next/no-literal-string */
-import {Card, type CardTone, Code, Inline, Stack} from '@sanity/ui'
+import {Card, type CardTone, Inline, Stack} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../../../../ui-components/tooltip/Tooltip'

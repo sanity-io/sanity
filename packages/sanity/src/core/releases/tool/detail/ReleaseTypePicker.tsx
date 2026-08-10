@@ -1,6 +1,7 @@
 import {type ReleaseType} from '@sanity/client'
 import {PublishIcon} from '@sanity/icons/Publish'
-import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {isBefore} from 'date-fns/isBefore'
 import {startOfMinute} from 'date-fns/startOfMinute'
 import isEqual from 'lodash-es/isEqual.js'

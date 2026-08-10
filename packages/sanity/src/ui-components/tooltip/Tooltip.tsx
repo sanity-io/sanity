@@ -1,13 +1,10 @@
+import {Box, Flex, type HotkeysProps, Text} from '@sanity/ui'
 import {
-  Box,
-  Flex,
-  type HotkeysProps,
-  Text,
   // oxlint-disable-next-line no-restricted-imports
   Tooltip as UITooltip,
   // oxlint-disable-next-line no-restricted-imports
   type TooltipProps as UITooltipProps,
-} from '@sanity/ui'
+} from '@sanity/ui/tooltip'
 import {type RefAttributes} from 'react'
 
 import {Hotkeys} from '../../core/components/Hotkeys'

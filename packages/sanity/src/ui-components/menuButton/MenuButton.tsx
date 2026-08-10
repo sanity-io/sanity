@@ -2,8 +2,8 @@
 import {
   MenuButton as UIMenuButton,
   type MenuButtonProps as UIMenuButtonProps,
-  type PopoverProps,
-} from '@sanity/ui'
+} from '@sanity/ui/menu'
+import {type PopoverProps} from '@sanity/ui/popover'
 import {type RefAttributes} from 'react'
 
 /** @internal */

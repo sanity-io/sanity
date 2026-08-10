@@ -1,6 +1,7 @@
 import {type RenderBlockFunction} from '@portabletext/editor'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
+import {type AvatarSize, Card, Flex, Stack} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui/menu'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'

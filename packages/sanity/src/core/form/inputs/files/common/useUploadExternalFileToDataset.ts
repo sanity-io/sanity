@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type SchemaType} from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import get from 'lodash-es/get.js'
 import {useCallback, useRef} from 'react'
 

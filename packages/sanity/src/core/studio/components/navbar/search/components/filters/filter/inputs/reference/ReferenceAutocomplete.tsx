@@ -1,5 +1,6 @@
 import {type ReferenceValue, type SchemaType} from '@sanity/types'
-import {Autocomplete, Box, Flex, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui'
+import {Autocomplete} from '@sanity/ui/autocomplete'
 import {useCallback, useId, useMemo, useRef, useState, type Ref, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
 

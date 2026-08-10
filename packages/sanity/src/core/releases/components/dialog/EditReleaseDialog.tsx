@@ -1,5 +1,6 @@
 import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
-import {Card, Flex, Stack, Text, TextArea, TextInput, useToast} from '@sanity/ui'
+import {Card, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type ChangeEvent, useCallback, useId, useRef, useState} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'

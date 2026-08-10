@@ -1,4 +1,4 @@
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 

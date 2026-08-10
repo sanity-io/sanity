@@ -1,4 +1,5 @@
 import 'ui5/styles.css'
+import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
 
@@ -1359,6 +1360,7 @@ export {
   type HistoryStoreOptions,
   removeMissingReferences,
 } from '../core/store/history/createHistoryStore'
+/* oxlint-disable no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major */
 export {
   type ParsedTimeRef,
   Timeline,
@@ -1378,9 +1380,9 @@ export {useTimelineSelector} from '../core/store/history/useTimelineSelector'
 export {
   type TimelineState,
   type TimelineStore,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
+/* oxlint-enable no-deprecated */
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 export {
