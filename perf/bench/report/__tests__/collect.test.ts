@@ -13,11 +13,14 @@ const ENV_KEYS = [
   'GITHUB_REF_NAME',
   'GITHUB_RUN_ID',
   'BENCH_MERGE_BASE',
+  'BENCH_GIT_SHA',
 ] as const
 let savedEnv: Record<string, string | undefined>
 
 beforeEach(() => {
   savedEnv = Object.fromEntries(ENV_KEYS.map((key) => [key, process.env[key]]))
+  // Tests assert exact metadata — ambient CI values must not leak in
+  for (const key of ENV_KEYS) delete process.env[key]
 })
 
 afterEach(() => {
@@ -62,6 +65,17 @@ describe('collectRunMetadata', () => {
     expect(metadata().git.mergeBaseSha).toBe('ref456')
     delete process.env.BENCH_MERGE_BASE
     expect(metadata().git.mergeBaseSha).toBeUndefined()
+  })
+
+  it('prefers BENCH_GIT_SHA over GITHUB_SHA (backfill runs measure a different commit)', () => {
+    process.env.GITHUB_SHA = 'abc'
+    process.env.GITHUB_HEAD_REF = 'perf-bench'
+    process.env.BENCH_GIT_SHA = 'historical456'
+    expect(metadata().git.sha).toBe('historical456')
+    // The workflow sets it unconditionally, so on non-backfill events it
+    // arrives as the empty string and must fall through
+    process.env.BENCH_GIT_SHA = ''
+    expect(metadata().git.sha).toBe('abc')
   })
 })
 
