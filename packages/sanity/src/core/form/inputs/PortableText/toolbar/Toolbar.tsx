@@ -7,7 +7,8 @@ import {
 import {CollapseIcon} from '@sanity/icons/Collapse'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
-import {Box, Flex, useElementSize, useToast} from '@sanity/ui'
+import {Box, Flex, useElementSize} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 

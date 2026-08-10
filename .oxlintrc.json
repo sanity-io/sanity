@@ -865,16 +865,31 @@
                   "Dialog",
                   "DialogProps",
                   "ErrorBoundary",
+                  "Tab",
+                  "TabProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/menu",
+                "importNames": [
                   "MenuButton",
                   "MenuButtonProps",
                   "MenuGroup",
                   "MenuGroupProps",
                   "MenuItem",
-                  "MenuItemProps",
-                  "Popover",
-                  "PopoverProps",
-                  "Tab",
-                  "TabProps",
+                  "MenuItemProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/popover",
+                "importNames": ["Popover", "PopoverProps"],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/tooltip",
+                "importNames": [
                   "Tooltip",
                   "TooltipProps",
                   "TooltipDelayGroupProvider",
@@ -986,16 +1001,31 @@
                   "Dialog",
                   "DialogProps",
                   "ErrorBoundary",
+                  "Tab",
+                  "TabProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/menu",
+                "importNames": [
                   "MenuButton",
                   "MenuButtonProps",
                   "MenuGroup",
                   "MenuGroupProps",
                   "MenuItem",
-                  "MenuItemProps",
-                  "Popover",
-                  "PopoverProps",
-                  "Tab",
-                  "TabProps",
+                  "MenuItemProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/popover",
+                "importNames": ["Popover", "PopoverProps"],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/tooltip",
+                "importNames": [
                   "Tooltip",
                   "TooltipProps",
                   "TooltipDelayGroupProvider",
@@ -1098,16 +1128,31 @@
                   "Dialog",
                   "DialogProps",
                   "ErrorBoundary",
+                  "Tab",
+                  "TabProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/menu",
+                "importNames": [
                   "MenuButton",
                   "MenuButtonProps",
                   "MenuGroup",
                   "MenuGroupProps",
                   "MenuItem",
-                  "MenuItemProps",
-                  "Popover",
-                  "PopoverProps",
-                  "Tab",
-                  "TabProps",
+                  "MenuItemProps"
+                ],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/popover",
+                "importNames": ["Popover", "PopoverProps"],
+                "message": "Please use the (more opinionated) exported components in sanity/src/ui-components instead."
+              },
+              {
+                "name": "@sanity/ui/tooltip",
+                "importNames": [
                   "Tooltip",
                   "TooltipProps",
                   "TooltipDelayGroupProvider",

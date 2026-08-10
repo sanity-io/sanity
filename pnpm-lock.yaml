@@ -32,8 +32,8 @@ catalogs:
       specifier: ^0.24.0
       version: 0.24.0
     '@sanity/ui':
-      specifier: ^3.5.2
-      version: 3.5.2
+      specifier: ^4.0.0
+      version: 4.0.0
     '@sanity/vanilla-extract-vite-plugin':
       specifier: ^0.2.10
       version: 0.2.11
@@ -246,7 +246,7 @@ importers:
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 3.5.2(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
+        version: 4.0.0(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -372,7 +372,7 @@ importers:
     dependencies:
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 3.5.2(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
+        version: 4.0.0(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -412,7 +412,7 @@ importers:
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 3.5.2(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
+        version: 4.0.0(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
       '@visx/axis':
         specifier: ^4.0.0
         version: 4.0.0(@types/react@19.2.18)(react@19.2.8)
@@ -519,7 +519,7 @@ importers:
         version: link:../../packages/@sanity/types
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 3.5.2(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
+        version: 4.0.0(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
       '@sanity/visual-editing':
         specifier: ^5.7.3
         version: 5.7.3(@sanity/client@7.26.2)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)(typescript@7.0.2)
@@ -621,7 +621,7 @@ importers:
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 3.5.2(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
+        version: 4.0.0(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
@@ -737,7 +737,7 @@ importers:
         version: link:../../packages/@sanity/types
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 3.5.2(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
+        version: 4.0.0(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
       '@sanity/util':
         specifier: workspace:*
         version: link:../../packages/@sanity/util
@@ -1498,7 +1498,7 @@ importers:
         version: 1.0.4
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 3.5.2(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
+        version: 4.0.0(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
       '@sanity/uuid':
         specifier: ^3.0.3
         version: 3.0.3
@@ -1753,7 +1753,7 @@ importers:
         version: link:../@sanity/types
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 3.5.2(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
+        version: 4.0.0(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)
       '@sanity/util':
         specifier: workspace:*
         version: link:../@sanity/util
@@ -6356,6 +6356,14 @@ packages:
     peerDependencies:
       react: ^18 || >=19.0.0-0
       react-dom: ^18 || >=19.0.0-0
+      styled-components: ^5.2 || ^6
+
+  '@sanity/ui@4.0.0':
+    resolution: {integrity: sha512-M9Qb1xoaV+L1XIxaSYMt9p6yP8ddEwPz4eAnev+bKMvzF+jOAImyawvKNPvO/5mnNwsKPMhtj5G1BdF2Hac62A==}
+    engines: {node: '>=22.12'}
+    peerDependencies:
+      react: ^19.2
+      react-dom: ^19.2
       styled-components: ^5.2 || ^6
 
   '@sanity/uuid@3.0.3':
@@ -18377,6 +18385,20 @@ snapshots:
       motion: 13.0.0(react-dom@19.2.8)(react@19.2.8)
       react: 19.2.8
       react-compiler-runtime: 1.0.0(react@19.2.8)
+      react-dom: 19.2.8(react@19.2.8)
+      react-is: 19.2.8
+      react-refractor: 4.0.0(react@19.2.8)
+      styled-components: 6.4.4(react-dom@19.2.8)(react@19.2.8)
+      use-effect-event: 2.0.3(react@19.2.8)
+
+  '@sanity/ui@4.0.0(react-dom@19.2.8)(react@19.2.8)(styled-components@6.4.4)':
+    dependencies:
+      '@floating-ui/react-dom': 2.1.9(react-dom@19.2.8)(react@19.2.8)
+      '@sanity/color': 3.0.8
+      '@sanity/icons': 5.2.1(react@19.2.8)
+      csstype: 3.2.3
+      motion: 13.0.0(react-dom@19.2.8)(react@19.2.8)
+      react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       react-is: 19.2.8
       react-refractor: 4.0.0(react@19.2.8)

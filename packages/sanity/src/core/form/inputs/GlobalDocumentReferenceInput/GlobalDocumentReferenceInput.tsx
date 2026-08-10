@@ -5,7 +5,9 @@ import {
   type GlobalDocumentReferenceValue,
   isGlobalDocumentReference,
 } from '@sanity/types'
-import {Box, Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Inline, Stack, useClickOutsideEvent} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {
   type FocusEvent,
   type KeyboardEvent,

@@ -1,5 +1,5 @@
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useId} from 'react'
 
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'

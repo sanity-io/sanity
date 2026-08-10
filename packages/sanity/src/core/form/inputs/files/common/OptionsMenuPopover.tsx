@@ -1,4 +1,5 @@
-import {Menu, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {type ReactNode, type RefObject, useCallback, useEffect, useState} from 'react'
 
 import {Popover} from '../../../../../ui-components/popover/Popover'

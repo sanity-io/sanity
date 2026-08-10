@@ -1,6 +1,7 @@
 import {Box} from '@sanity-labs/ui-poc'
 import {SortIcon} from '@sanity/icons/Sort'
-import {Menu, MenuDivider, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {memo, useId} from 'react'
 import {useGetI18nText, useTranslation} from 'sanity'
 

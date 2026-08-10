@@ -1,5 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {Box, Label, MenuDivider, Text} from '@sanity/ui'
+import {Box, Label, Text} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui/menu'
 import {type MouseEvent, useCallback} from 'react'
 import {TooltipOfDisabled, useGetI18nText, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'

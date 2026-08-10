@@ -4,11 +4,10 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button as UIButton,
   Flex,
-  Menu,
-  MenuDivider,
   Stack,
   Text,
 } from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useState} from 'react'
 import {take} from 'rxjs/operators'
 

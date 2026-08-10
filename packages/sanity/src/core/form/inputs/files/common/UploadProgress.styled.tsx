@@ -1,4 +1,5 @@
-import {Code, Flex, Stack} from '@sanity/ui'
+import {Flex, Stack} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {styled} from 'styled-components'
 
 import {RatioBox} from '../ImageInput/ImagePreview.styled'

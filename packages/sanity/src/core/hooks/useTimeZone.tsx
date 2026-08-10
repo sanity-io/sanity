@@ -1,6 +1,6 @@
 import {tz as tzHelper, TZDate} from '@date-fns/tz'
 import {type ClientError} from '@sanity/client'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
 import {format as dateFnsFormat} from 'date-fns/format'
 import {useCallback, useEffect, useMemo, useState} from 'react'
