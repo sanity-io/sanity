@@ -10,6 +10,10 @@ export const EDIT_INTENT_MODE = 'presentation'
 // How long we wait until an iframe is loaded until we consider it to be slow and possibly failed
 export const MAX_TIME_TO_OVERLAYS_CONNECTION = 3_000 // ms
 
+// How long we wait for the iframe `load` event before surfacing the connection error UI.
+// Generous because dev servers can spend a long time compiling the preview on first load.
+export const MAX_TIME_TO_IFRAME_LOAD = 15_000 // ms
+
 // The API version to use when using `@sanity/client`
 export const API_VERSION = apiVersion
 
