@@ -5,9 +5,9 @@ on:
     # synchronize is needed for check-pr-release-status
     types: [opened, closed, reopened, ready_for_review, converted_to_draft, synchronize]
   schedule:
-    # safety-net sweep behind the per-PR fast paths; GitHub drops/delays scheduled runs, so convergence is best-effort and self-heals on the next tick
+    # safety net behind the per-PR paths; best-effort and self-healing, since GitHub delays scheduled ticks
     - cron: "*/15 * * * *"
-  # manual trigger for immediate verification / on-demand unstick
+  # on-demand unstick and verification
   workflow_dispatch: {}
 
 permissions:
@@ -104,7 +104,7 @@ jobs:
           RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
-  # the reconciler is the safety net for stuck PRs, so a failed sweep needs to be seen
+  # a failed sweep can leave PRs stuck BLOCKED, so it must page
   notify-on-failure:
     needs: [reconcile-open-prs]
     if: failure()
