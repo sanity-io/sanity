@@ -1,6 +1,7 @@
 import {Card, Flex} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
+import {select} from 'react-i18next/icu.macro'
 import {
   getCreatableVariantTarget,
   isPublishedPerspective,
@@ -28,7 +29,7 @@ const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {editState, revisionNotFound, targetDocumentState} = useDocumentPane()
+  const {editState, revisionNotFound, targetDocumentState, value} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
   const {selectedPerspective, selectedVariantName} = usePerspective()
 
@@ -57,16 +58,13 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
     ) {
       return false
     }
-
-    if (selectedPerspective) {
-      if (isPublishedPerspective(selectedPerspective)) {
-        return isReady && Boolean(editState?.published)
-      }
-      if (isReleaseDocument(selectedPerspective)) {
-        return isReady && Boolean(editState?.version)
-      }
-    }
-    return isReady
+    // Validates if for the selected perspective a document exists.
+    // Always true for drafts perspective.
+    return (
+      isReady &&
+      ((targetDocumentState.status === 'ready' && Boolean(targetDocumentState.targetDocument)) ||
+        selectedPerspective === 'drafts')
+    )
   }, [collapsed, editState, selectedPerspective, selectedVariantName, targetDocumentState])
 
   let actions: React.JSX.Element | null = null
