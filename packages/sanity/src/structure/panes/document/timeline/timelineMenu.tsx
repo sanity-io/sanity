@@ -1,3 +1,4 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {
   Flex,

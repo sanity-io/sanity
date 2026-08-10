@@ -109,9 +109,12 @@ function UnclaimedProjectNudgeInner({
     unclaimed.expiresAt.getTime() - now <= copy.criticalThresholdHours * 3_600_000,
   )
 
-  // The claim URL is spent; the robot token still works, so the token is cleared through this
-  // CTA rather than automatically — a fresh session lands on the login screen.
-  const handleSignIn = useCallback(() => void auth.logout?.(), [auth])
+  // The claim URL is spent; keep its provenance while the robot token is active so this banner
+  // survives refreshes. Clear it together with the token so a fresh session lands on login.
+  const handleSignIn = useCallback(() => {
+    clearUnclaimedProjectRecord(projectId)
+    void auth.logout?.()
+  }, [auth, projectId])
 
   // Dismissal happens through the snooze button: useConditionalToast re-pushes while enabled,
   // which would defeat a close control.

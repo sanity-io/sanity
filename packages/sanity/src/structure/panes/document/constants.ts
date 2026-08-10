@@ -17,3 +17,6 @@ export const DEFAULT_MENU_ITEM_GROUPS: PaneMenuItemGroup[] = [{id: 'inspectors'}
 export const HISTORY_INSPECTOR_NAME = 'sanity/structure/history'
 export const VALIDATION_INSPECTOR_NAME = 'sanity/structure/validation'
 export const INCOMING_REFERENCES_INSPECTOR_NAME = 'sanity/structure/incoming-references'
+
+// timeline
+export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'

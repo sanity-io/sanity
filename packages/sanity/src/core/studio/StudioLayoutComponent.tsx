@@ -1,0 +1,225 @@
+/* oxlint-disable @sanity/i18n/no-attribute-template-literals */
+import {useTelemetry} from '@sanity/telemetry/react'
+import {Card, Flex} from '@sanity/ui'
+import startCase from 'lodash-es/startCase.js'
+import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {NavbarContext} from 'sanity/_singletons'
+import {RouteScope, useRouter, useRouterState} from 'sanity/router'
+import {styled} from 'styled-components'
+
+import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
+import {isDefaultRouteTool} from '../config/isDefaultRouteTool'
+import {DocumentLimitsUpsellPanel} from '../limits/context/documents/DocumentLimitsUpsellPanel'
+import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
+import {StudioReadyMeasured} from './__telemetry__/bootstrap.telemetry'
+import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
+import {NoToolsScreen} from './screens/NoToolsScreen'
+import {RedirectingScreen} from './screens/RedirectingScreen'
+import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
+import {useActiveToolLayoutComponent} from './studio-components-hooks/useActiveToolLayoutComponent'
+import {useNavbarComponent} from './studio-components-hooks/useNavbarComponent'
+import {StudioErrorBoundary} from './StudioErrorBoundary'
+import {getPageVisibilitySnapshot} from './telemetry/pageVisibility'
+import {ToolMountTimer} from './ToolMountTimer'
+import {UnclaimedProjectNudge} from './unclaimedProject/UnclaimedProjectNudge'
+import {useWorkspace} from './workspace'
+
+const DetectViteDevServerStopped = lazy(() =>
+  import('./ViteDevServerStopped').then((DevServerStopped) => ({
+    default: DevServerStopped.DetectViteDevServerStopped,
+  })),
+)
+
+const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
+
+const SearchFullscreenPortalCard = styled(Card)`
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  overflow: clip;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 200;
+`
+
+// Module-level one-shot guard so the event fires once per page load, not
+// per-mount (StrictMode double-mounts in dev; re-mounting Studio shouldn't
+// refire either).
+let studioReadyFired = false
+
+/**
+ * @internal
+ * The default Studio Layout component
+ * */
+export function StudioLayoutComponent() {
+  const {name, title, tools} = useWorkspace()
+  const telemetry = useTelemetry()
+
+  // In the background, check if the network protocol used to communicate with the
+  // Sanity API is modern (HTTP/2 or newer). Shows a toast if it's not.
+  useNetworkProtocolCheck()
+
+  const defaultRouteTools = useMemo(() => tools.filter(isDefaultRouteTool), [tools])
+
+  const router = useRouter()
+  const activeToolName = useRouterState(
+    useCallback(
+      (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
+      [],
+    ),
+  )
+  const activeTool = useMemo(
+    () => tools.find((tool) => tool.name === activeToolName),
+    [activeToolName, tools],
+  )
+  // Track T0 for tool-mount timing. Because React Compiler forbids impure
+  // calls like `performance.now()` during render, we capture the timestamp
+  // in an effect that runs when `activeToolName` changes. The effect runs
+  // before the tool's `<Suspense>` resolves (since the Suspense fallback
+  // renders first), so the delta captured in `ToolMountTimer` still
+  // includes lazy-chunk fetch time.
+  const toolMountT0Ref = useRef<number | null>(null)
+  const lastToolNameRef = useRef<string | undefined>(undefined)
+  useEffect(() => {
+    if (activeToolName !== lastToolNameRef.current) {
+      lastToolNameRef.current = activeToolName
+      toolMountT0Ref.current = activeToolName ? performance.now() : null
+    }
+  }, [activeToolName])
+  const [searchFullscreenOpen, setSearchFullscreenOpen] = useState<boolean>(false)
+  const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
+    null,
+  )
+  const [searchOpen, setSearchOpen] = useState<boolean>(false)
+
+  const documentTitle = useMemo(() => {
+    const workspaceTitle = title || startCase(name)
+    const toolTitle = activeTool ? activeTool.title || activeTool.name : undefined
+    if (toolTitle) {
+      return `${toolTitle} | ${workspaceTitle}`
+    }
+    return workspaceTitle
+  }, [activeTool, name, title])
+
+  const toolControlsDocumentTitle = !!activeTool?.controlsDocumentTitle
+
+  // Fire a one-shot "Studio Ready" telemetry event the first time the
+  // active tool resolves. Gives us a user-perceived "Studio is interactive"
+  // timing, from browser navigation start to first tool render.
+  useEffect(() => {
+    if (studioReadyFired) return
+    if (!activeTool) return
+    studioReadyFired = true
+    const durationMs = performance.now()
+    telemetry.log(StudioReadyMeasured, {
+      durationMs,
+      toolsCount: tools.length,
+      activeToolName: activeTool.name,
+      ...getPageVisibilitySnapshot(durationMs),
+    })
+  }, [activeTool, telemetry, tools.length])
+
+  const handleSearchFullscreenOpenChange = useCallback((open: boolean) => {
+    setSearchFullscreenOpen(open)
+  }, [])
+
+  const handleSearchOpenChange = useCallback((open: boolean) => {
+    setSearchOpen(open)
+  }, [])
+
+  const navbarContextValue = useMemo(
+    () => ({
+      searchFullscreenOpen,
+      searchFullscreenPortalEl,
+      searchOpen,
+      onSearchFullscreenOpenChange: handleSearchFullscreenOpenChange,
+      onSearchOpenChange: handleSearchOpenChange,
+    }),
+    [
+      searchFullscreenOpen,
+      searchFullscreenPortalEl,
+      searchOpen,
+      handleSearchFullscreenOpenChange,
+      handleSearchOpenChange,
+    ],
+  )
+
+  const Navbar = useNavbarComponent()
+  const ActiveToolLayout = useActiveToolLayoutComponent()
+
+  /**
+   * Handle legacy URL redirects from `/desk` to `/structure`
+   */
+  const isLegacyDeskRedirect =
+    !activeTool &&
+    (activeToolName === 'desk' || !activeToolName) &&
+    typeof window !== 'undefined' &&
+    /\/desk(\/|$)/.test(window.location.pathname) &&
+    tools.some((tool) => tool.name === 'structure')
+
+  useEffect(() => {
+    if (!isLegacyDeskRedirect) {
+      return
+    }
+
+    router.navigateUrl({
+      path: window.location.pathname.replace(/\/desk/, '/structure'),
+      replace: true,
+    })
+  }, [isLegacyDeskRedirect, router])
+
+  const getErrorScreen = useCallback((error: Error) => {
+    if (isDocumentLimitError(error)) {
+      return <DocumentLimitsUpsellPanel />
+    }
+    return null
+  }, [])
+
+  return (
+    <>
+      {/* React 19 hoists `<title>` elements rendered anywhere in the tree up to `<head>`. */}
+      {!toolControlsDocumentTitle && <title>{documentTitle}</title>}
+      <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
+        <NavbarContext.Provider value={navbarContextValue}>
+          {/* oxlint-disable-next-line react/react-compiler -- Navbar comes from useNavbarComponent(), stable per workspace */}
+          <Navbar />
+        </NavbarContext.Provider>
+        <UnclaimedProjectNudge />
+        {isLegacyDeskRedirect && <RedirectingScreen />}
+        {!activeTool && defaultRouteTools.length === 0 && <NoToolsScreen />}
+        {tools.length > 0 && !activeTool && activeToolName && !isLegacyDeskRedirect && (
+          <ToolNotFoundScreen toolName={activeToolName} />
+        )}
+        {searchFullscreenOpen && (
+          <SearchFullscreenPortalCard ref={setSearchFullscreenPortalEl} overflow="auto" />
+        )}
+        {/* By using the tool name as the key on the error boundary, we force it to re-render
+            when switching tools, which ensures we don't show the wrong tool having crashed */}
+        <StudioErrorBoundary
+          key={activeTool?.name}
+          heading={`The ${activeTool?.name} tool crashed`}
+          getErrorScreen={getErrorScreen}
+        >
+          {detectViteDevServerStopped && <DetectViteDevServerStopped />}
+          <Card flex={1} hidden={searchFullscreenOpen}>
+            {activeTool && activeToolName && (
+              <RouteScope
+                scope={activeToolName}
+                __unsafe_disableScopedSearchParams={
+                  activeTool.router?.__unsafe_disableScopedSearchParams
+                }
+              >
+                <Suspense fallback={<LoadingBlock showText />}>
+                  {/* oxlint-disable-next-line react/react-compiler -- ActiveToolLayout comes from useActiveToolLayoutComponent(), stable per workspace */}
+                  <ActiveToolLayout activeTool={activeTool} />
+                  <ToolMountTimer toolName={activeTool.name} t0Ref={toolMountT0Ref} />
+                </Suspense>
+              </RouteScope>
+            )}
+          </Card>
+        </StudioErrorBoundary>
+      </Flex>
+    </>
+  )
+}

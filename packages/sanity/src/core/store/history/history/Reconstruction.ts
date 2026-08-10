@@ -1,3 +1,4 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type Diff} from '@sanity/diff'
 
 import {type Annotation, type Chunk} from '../../../field/types'
