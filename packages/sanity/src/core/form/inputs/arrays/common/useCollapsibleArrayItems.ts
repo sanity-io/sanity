@@ -10,12 +10,6 @@ import {initialCollapseArrayItems} from '../../../../config/configPropertyReduce
  */
 const GRID_LIMIT_MULTIPLIER = 2
 
-/**
- * Collapsing is skipped unless it hides at least this many items, since hiding one or two rows
- * costs about as much vertical space as the toggle that replaces them.
- */
-const MIN_HIDDEN_ITEMS = 3
-
 /** Stands in for the limit when collapsing is switched off, so nothing is ever hidden. */
 const NO_LIMIT = Number.POSITIVE_INFINITY
 
@@ -75,7 +69,7 @@ export function useCollapsibleArrayItems<TMember extends CollapsibleMember>(opti
   const {members, schemaType, layout, focusedIndex} = options
 
   const limit = useItemLimit(schemaType, layout)
-  const collapsible = members.length - limit >= MIN_HIDDEN_ITEMS
+  const collapsible = members.length > limit
 
   // Hidden members that are focused or open must be rendered regardless of the collapsed state:
   // focus can be moved into them from outside the array (a validation marker, appending an item),
