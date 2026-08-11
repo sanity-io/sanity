@@ -34,7 +34,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "tsx": "^4.23.1",
+    "tsx": "^4.23.12",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
