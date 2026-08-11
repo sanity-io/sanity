@@ -23,7 +23,9 @@ import {command, constant, option} from '@optique/core/primitives'
 import {string} from '@optique/core/valueparser'
 
 import {BENCH_ROOT} from '../benchRoot'
-import {buildDistAtCommit} from './prepareReference'
+import {buildDistAtCommit, git, setOutput} from './prepareReference'
+
+const REPO_ROOT = path.dirname(path.dirname(BENCH_ROOT))
 
 export const prepareBackfillCommand = command(
   'prepare-backfill',
@@ -50,5 +52,11 @@ export function prepareBackfill(argv: PrepareBackfillArgs): void {
   if (!/^[0-9a-f]{40}$/i.test(argv.sha)) {
     throw new Error(`--sha must be a full 40-char commit hash, got ${JSON.stringify(argv.sha)}`)
   }
+  // The measured commit's committer date — the workflow passes it to the
+  // measuring jobs (BENCH_GIT_COMMITTED_AT) so the stored documents land on
+  // the commit's date on the time-series x-axis, not the backfill run's.
+  // Resolved here because this is the only job with full history; the shard
+  // jobs are depth-1 checkouts of HEAD and cannot resolve the historical sha.
+  setOutput('committed_at', git(['show', '-s', '--format=%cI', argv.sha], REPO_ROOT))
   buildDistAtCommit(argv.sha, path.join(BENCH_ROOT, 'dist'))
 }

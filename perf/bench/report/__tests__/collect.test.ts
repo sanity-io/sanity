@@ -14,6 +14,7 @@ const ENV_KEYS = [
   'GITHUB_RUN_ID',
   'BENCH_MERGE_BASE',
   'BENCH_GIT_SHA',
+  'BENCH_GIT_COMMITTED_AT',
 ] as const
 let savedEnv: Record<string, string | undefined>
 
@@ -76,6 +77,17 @@ describe('collectRunMetadata', () => {
     // arrives as the empty string and must fall through
     process.env.BENCH_GIT_SHA = ''
     expect(metadata().git.sha).toBe('abc')
+  })
+
+  it('stamps the measured commit date, preferring BENCH_GIT_COMMITTED_AT', () => {
+    process.env.GITHUB_SHA = 'abc'
+    process.env.GITHUB_HEAD_REF = 'perf-bench'
+    process.env.BENCH_GIT_COMMITTED_AT = '2026-08-02T14:30:00+02:00'
+    expect(metadata().git.committedAt).toBe('2026-08-02T14:30:00+02:00')
+    // Empty (non-backfill) falls through to HEAD's committer date — the test
+    // process runs inside the repo, so a real ISO date comes back
+    process.env.BENCH_GIT_COMMITTED_AT = ''
+    expect(metadata().git.committedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/)
   })
 })
 

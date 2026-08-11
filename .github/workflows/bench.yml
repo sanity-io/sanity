@@ -66,6 +66,10 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     outputs:
       has_code_changes: ${{ steps.changes.outputs.has_changes }}
+      # Committer date of the backfilled commit (empty on non-backfill runs) —
+      # resolved by prepare-backfill, consumed as BENCH_GIT_COMMITTED_AT by the
+      # measuring jobs so stored documents land on the commit's date
+      backfill_committed_at: ${{ steps.build.outputs.committed_at }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -110,6 +114,7 @@ jobs:
       # downstream jobs run unchanged and store the result under that sha
       # (BENCH_GIT_SHA below).
       - name: Build packages and experiment studio
+        id: build
         if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
         env:
           BACKFILL_SHA: ${{ inputs.backfill_sha }}
@@ -224,6 +229,7 @@ jobs:
       # documents with that sha (empty on non-backfill events; see
       # report/collect.ts)
       BENCH_GIT_SHA: ${{ inputs.backfill_sha }}
+      BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
     strategy:
       fail-fast: false
       matrix:
@@ -319,6 +325,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       # See bench-interaction: stamps backfill runs with the measured sha
       BENCH_GIT_SHA: ${{ inputs.backfill_sha }}
+      BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
     strategy:
       fail-fast: false
       matrix:
@@ -626,6 +633,7 @@ jobs:
       # See bench-interaction: stamps backfill runs (soak/INP here) with the
       # measured sha
       BENCH_GIT_SHA: ${{ inputs.backfill_sha }}
+      BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
     steps:
       - uses: actions/checkout@v7
         with:
