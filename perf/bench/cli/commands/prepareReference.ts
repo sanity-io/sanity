@@ -23,7 +23,7 @@ import process from 'node:process'
 
 import {object} from '@optique/core/constructs'
 import {message} from '@optique/core/message'
-import {withDefault} from '@optique/core/modifiers'
+import {optional, withDefault} from '@optique/core/modifiers'
 import {type InferValue} from '@optique/core/parser'
 import {command, constant, option} from '@optique/core/primitives'
 import {string} from '@optique/core/valueparser'
@@ -39,6 +39,11 @@ export const prepareReferenceCommand = command(
         description: message`Base branch the PR merges into (merge-base is resolved against origin/REF)`,
       }),
       'main',
+    ),
+    at: optional(
+      option('--at', string({metavar: 'SHA'}), {
+        description: message`Build the reference at this exact commit instead of the merge-base (A/B dispatch; full 40-char sha; fails loudly, no absolute-mode fallback)`,
+      }),
     ),
   }),
   {
@@ -122,6 +127,20 @@ export function buildDistAtCommit(sha: string, targetDist: string): void {
 
 export function prepareReference(argv: PrepareReferenceArgs): void {
   const referenceDist = path.join(BENCH_ROOT, '.reference/dist')
+
+  // Explicit reference commit (`ab_from`/`ab_to` dispatch): no merge-base, no
+  // cache, and no absolute-mode fallback — the comparison IS the run, so a
+  // reference that cannot build must fail it (mirrors prepare-backfill).
+  if (argv.at) {
+    if (!/^[0-9a-f]{40}$/i.test(argv.at)) {
+      throw new Error(`--at must be a full 40-char commit hash, got ${JSON.stringify(argv.at)}`)
+    }
+    setOutput('merge_base', argv.at)
+    buildDistAtCommit(argv.at, referenceDist)
+    setOutput('comparison', 'ab')
+    return
+  }
+
   const mergeBase = git(['merge-base', 'HEAD', `origin/${argv.baseRef}`], REPO_ROOT)
   setOutput('merge_base', mergeBase)
 

@@ -40,7 +40,7 @@ export function documentIdForRun(run: BenchRunDocument): string {
     : `benchRun-${run.git.sha}-${run.runner.runId ?? 'local'}`
 }
 
-export async function storeRun(inputPathArg?: string): Promise<void> {
+export async function storeRun(inputPathArg?: string, options: {ab?: boolean} = {}): Promise<void> {
   const inputPath = path.resolve(
     inputPathArg ??
       path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'results', 'merged.json'),
@@ -61,10 +61,17 @@ export async function storeRun(inputPathArg?: string): Promise<void> {
     useCdn: false,
   })
 
-  if (run.mode !== 'absolute') {
+  // The mode must match the caller's stated intent: absolute runs are
+  // time-series points, ab runs are standalone comparison documents (the
+  // trend query filters on mode, so a mixup would silently mis-shelve the
+  // document rather than break loudly here).
+  const expectedMode = options.ab ? 'ab' : 'absolute'
+  if (run.mode !== expectedMode) {
     console.error(
-      `Refusing to store a ${run.mode}-mode run: only absolute-mode runs are comparable to the ` +
-        `dashboard's time series. (A labeled PR must run absolute mode to be stored.)`,
+      options.ab
+        ? `--ab expects an A/B comparison document, got a ${run.mode}-mode run`
+        : `Refusing to store a ${run.mode}-mode run as a time-series point: only absolute-mode ` +
+            `runs are comparable to the dashboard's series. (Pass --ab to store a comparison.)`,
     )
     process.exit(1)
   }

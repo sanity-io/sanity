@@ -61,7 +61,7 @@ switch (result.action) {
   case 'store':
     await (
       await import('../report/storeToSanity')
-    ).storeRun(result.file ? resolveFromInvocation(result.file) : undefined)
+    ).storeRun(result.file ? resolveFromInvocation(result.file) : undefined, {ab: result.ab})
     break
   case 'dev':
     await (await import('../runner/devServer')).startBenchDev()

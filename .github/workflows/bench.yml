@@ -27,7 +27,15 @@ on:
         type: boolean
         default: false
       backfill_sha:
-        description: "Backfill: build and measure this main-history commit instead of HEAD (full 40-char sha; requires run_suite, incompatible with self_test; result is stored under this sha, harness/scenarios come from HEAD)"
+        description: "Backfill: build and measure this main-history commit instead of HEAD (full 40-char sha; requires run_suite, incompatible with self_test and ab_from/ab_to; result is stored under this sha, harness/scenarios come from HEAD)"
+        required: false
+        type: string
+      ab_from:
+        description: "A/B: reference commit to compare against (full 40-char sha; set together with ab_to; incompatible with backfill_sha and self_test; verdicts land in the run summary)"
+        required: false
+        type: string
+      ab_to:
+        description: "A/B: experiment commit to measure (full 40-char sha; set together with ab_from)"
         required: false
         type: string
 
@@ -74,10 +82,10 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-          # Backfill builds add a worktree at a historical commit, which a
-          # depth-1 clone doesn't have (inputs.backfill_sha is empty on
+          # Backfill and A/B builds add a worktree at a historical commit,
+          # which a depth-1 clone doesn't have (the inputs are empty on
           # non-dispatch events)
-          fetch-depth: ${{ inputs.backfill_sha != '' && '0' || '1' }}
+          fetch-depth: ${{ (inputs.backfill_sha != '' || inputs.ab_to != '') && '0' || '1' }}
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -93,34 +101,56 @@ jobs:
       # (a green run that backfilled nothing), and self_test would compare
       # the historical build against HEAD's reference config, reporting
       # product diffs as harness drift
-      - name: Validate backfill inputs
-        if: github.event_name == 'workflow_dispatch' && inputs.backfill_sha != ''
+      - name: Validate dispatch inputs
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          (inputs.backfill_sha != '' || inputs.ab_from != '' || inputs.ab_to != '')
         env:
           RUN_SUITE: ${{ inputs.run_suite }}
           SELF_TEST: ${{ inputs.self_test }}
+          BACKFILL_SHA: ${{ inputs.backfill_sha }}
+          AB_FROM: ${{ inputs.ab_from }}
+          AB_TO: ${{ inputs.ab_to }}
         run: |
-          if [ "$RUN_SUITE" != "true" ]; then
-            echo "::error::backfill_sha requires run_suite"
+          if [ -n "$AB_FROM" ] && [ -z "$AB_TO" ] || [ -z "$AB_FROM" ] && [ -n "$AB_TO" ]; then
+            echo "::error::ab_from and ab_to must be set together"
             exit 1
           fi
-          if [ "$SELF_TEST" = "true" ]; then
-            echo "::error::backfill_sha cannot be combined with self_test"
+          if [ -n "$AB_TO" ] && [ -n "$BACKFILL_SHA" ]; then
+            echo "::error::ab_from/ab_to cannot be combined with backfill_sha"
             exit 1
+          fi
+          if [ -n "$AB_TO" ] && [ "$SELF_TEST" = "true" ]; then
+            echo "::error::ab_from/ab_to cannot be combined with self_test"
+            exit 1
+          fi
+          if [ -n "$BACKFILL_SHA" ]; then
+            if [ "$RUN_SUITE" != "true" ]; then
+              echo "::error::backfill_sha requires run_suite"
+              exit 1
+            fi
+            if [ "$SELF_TEST" = "true" ]; then
+              echo "::error::backfill_sha cannot be combined with self_test"
+              exit 1
+            fi
           fi
 
-      # Backfill: build the experiment dist from the requested historical
-      # commit's packages (HEAD's harness overlaid) instead of HEAD's — used
-      # to repair holes in the daily time series after harness outages. The
-      # downstream jobs run unchanged and store the result under that sha
+      # Backfill / A/B: build the experiment dist from the requested
+      # historical commit's packages (HEAD's harness overlaid) instead of
+      # HEAD's — backfill repairs holes in the daily time series, ab_to is
+      # the experiment side of an A/B dispatch. The downstream jobs run
+      # unchanged and, for backfill, store the result under that sha
       # (BENCH_GIT_SHA below).
       - name: Build packages and experiment studio
         id: build
         if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
         env:
           BACKFILL_SHA: ${{ inputs.backfill_sha }}
+          AB_TO: ${{ inputs.ab_to }}
         run: |
-          if [ -n "$BACKFILL_SHA" ]; then
-            pnpm bench prepare-backfill --sha "$BACKFILL_SHA"
+          HISTORICAL_SHA="${BACKFILL_SHA:-$AB_TO}"
+          if [ -n "$HISTORICAL_SHA" ]; then
+            pnpm bench prepare-backfill --sha "$HISTORICAL_SHA"
           else
             pnpm build:bench
           fi
@@ -133,10 +163,13 @@ jobs:
           retention-days: 7
 
   build-reference:
+    # PR path (label-gated, merge-base reference) or A/B dispatch (explicit
+    # reference commit via ab_from)
     if: >-
-      github.event_name == 'pull_request' &&
-      contains(github.event.pull_request.labels.*.name, 'trigger:perf-bench') &&
-      (github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench')
+      (github.event_name == 'pull_request' &&
+       contains(github.event.pull_request.labels.*.name, 'trigger:perf-bench') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench')) ||
+      (github.event_name == 'workflow_dispatch' && inputs.ab_from != '')
     runs-on: ubuntu-8core
     timeout-minutes: 25
     permissions:
@@ -162,14 +195,18 @@ jobs:
       # reference dist, comparing against the wrong baseline.
       - name: Compute merge-base
         id: merge-base
+        if: github.event_name == 'pull_request'
         env:
           BASE_REF: ${{ github.base_ref }}
         run: echo "sha=$(git merge-base HEAD "origin/$BASE_REF")" >> "$GITHUB_OUTPUT"
 
       # Re-pushes to a PR usually share the merge-base: reuse the built
-      # reference outright (keyed on merge-base sha + harness sources)
+      # reference outright (keyed on merge-base sha + harness sources).
+      # PR-only, like the merge-base step: A/B dispatches build an explicit
+      # commit and are rare enough not to warrant a cache.
       - name: Restore reference dist cache
         id: reference-cache
+        if: github.event_name == 'pull_request'
         uses: actions/cache@v6
         with:
           path: perf/bench/.reference/dist
@@ -180,16 +217,24 @@ jobs:
       # merge_base and comparison outputs, and falls back to absolute mode
       # (comparison=skipped) when the merge-base predates perf/bench or the
       # reference build fails
-      - name: Build reference studio at merge-base
+      - name: Build reference studio
         id: reference
         env:
           CACHE_HIT: ${{ steps.reference-cache.outputs.cache-hit }}
           # The reference build is the same harness + scenarios (checked out
-          # from HEAD) against merge-base packages - only product code differs
+          # from HEAD) against the reference commit's packages - only product
+          # code differs. PRs resolve the merge-base; A/B dispatches pass the
+          # explicit ab_from commit via --at (fails loudly, no fallback).
           SANITY_STUDIO_BENCH_API_HOST: https://localhost:4312
           SANITY_STUDIO_BENCH_PROJECT_ID: benchref
           BASE_REF: ${{ github.base_ref }}
-        run: pnpm bench prepare-reference --base-ref "$BASE_REF"
+          AB_FROM: ${{ inputs.ab_from }}
+        run: |
+          if [ -n "$AB_FROM" ]; then
+            pnpm bench prepare-reference --at "$AB_FROM"
+          else
+            pnpm bench prepare-reference --base-ref "$BASE_REF"
+          fi
 
       - uses: actions/upload-artifact@v7
         if: steps.reference.outputs.comparison == 'ab'
@@ -215,7 +260,7 @@ jobs:
       ((github.event_name == 'pull_request' &&
         needs.build.outputs.has_code_changes == 'true') ||
        (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
-       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
+       (github.event_name == 'workflow_dispatch' && (inputs.run_suite || inputs.ab_to != '')))
     runs-on: ubuntu-8core
     # Headroom for a/b runs of the heavy scenarios (synthetic sessions cost
     # ~90s each and run on both sides)
@@ -228,7 +273,7 @@ jobs:
       # Backfill runs measure a historical commit's build — stamp the run
       # documents with that sha (empty on non-backfill events; see
       # report/collect.ts)
-      BENCH_GIT_SHA: ${{ inputs.backfill_sha }}
+      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
     strategy:
       fail-fast: false
@@ -315,7 +360,7 @@ jobs:
       ((github.event_name == 'pull_request' &&
         needs.build.outputs.has_code_changes == 'true') ||
        (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
-       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
+       (github.event_name == 'workflow_dispatch' && (inputs.run_suite || inputs.ab_to != '')))
     runs-on: ubuntu-8core
     timeout-minutes: 20
     permissions:
@@ -324,7 +369,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       # See bench-interaction: stamps backfill runs with the measured sha
-      BENCH_GIT_SHA: ${{ inputs.backfill_sha }}
+      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
     strategy:
       fail-fast: false
@@ -489,6 +534,65 @@ jobs:
             exit 1
           fi
 
+  # A/B dispatch counterpart of `report`: a dispatched comparison has no PR to
+  # comment on, so the verdict table goes to the run's summary page instead —
+  # the natural landing spot for the "dispatch, then open the run" loop.
+  report-dispatch:
+    needs: [bench-interaction, bench-pageload]
+    if: >-
+      !cancelled() &&
+      github.event_name == 'workflow_dispatch' && inputs.ab_to != '' &&
+      needs.bench-interaction.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Download shard results
+        uses: actions/download-artifact@v8
+        with:
+          pattern: bench-results-*
+          merge-multiple: true
+          path: perf/bench/results
+
+      - name: Write merged report
+        env:
+          # Keep in sync with the report job / shard matrices above
+          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic
+          BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge
+        run: pnpm bench report
+
+      - name: Publish report to the run summary
+        run: cat perf/bench/results/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      # Persist the comparison as its own mode:'ab' document — an
+      # investigation record (git.sha = ab_to, mergeBaseSha = ab_from), not a
+      # time-series point; the trends dashboard only plots absolute-mode docs.
+      # Token here is safe: dispatch runs execute default-branch code, the
+      # same trust level as track-main.
+      - name: Store comparison document
+        env:
+          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+        run: pnpm bench store --ab "$GITHUB_WORKSPACE/perf/bench/results/merged.json"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: bench-report
+          path: perf/bench/results/report.md
+          retention-days: 30
+
+      - name: Fail on missing scenario results
+        run: |
+          if [ -f perf/bench/results/missing-scenarios.json ]; then
+            echo "::error::Benchmark shard(s) delivered no results: $(cat perf/bench/results/missing-scenarios.json | tr -d '\n')"
+            exit 1
+          fi
+
   # Store the PR's experiment-side (absolute) result under its branch so the
   # trends dashboard's branch comparison has real data. Separate from `report`
   # so the metrics write token is never present in the write-scoped job that
@@ -616,12 +720,14 @@ jobs:
     #
     # Fixed session counts across the board — comparability over speed, no
     # dynamic-stopping shortcut across days.
+    # ab_to guard: an A/B dispatch measures a historical experiment build —
+    # storing its soak/INP as a daily main point would corrupt the series
     if: >-
       !cancelled() &&
       needs.bench-interaction.result == 'success' &&
       needs.bench-pageload.result == 'success' &&
       ((github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
-       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
+       (github.event_name == 'workflow_dispatch' && inputs.run_suite && inputs.ab_to == ''))
     needs: [build, bench-interaction, bench-pageload]
     runs-on: ubuntu-8core
     timeout-minutes: 45
@@ -632,7 +738,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       # See bench-interaction: stamps backfill runs (soak/INP here) with the
       # measured sha
-      BENCH_GIT_SHA: ${{ inputs.backfill_sha }}
+      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
     steps:
       - uses: actions/checkout@v7
