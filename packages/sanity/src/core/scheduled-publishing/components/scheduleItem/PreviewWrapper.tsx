@@ -1,6 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type ElementType, type ReactNode, useMemo, useState} from 'react'
+import {type ElementType, type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
@@ -10,7 +10,6 @@ import {DocumentStatusIndicator} from '../../../components/documentStatusIndicat
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
-import {getDocumentVersionInfoFromVersions} from '../../../releases/util/getDocumentVersionInfoFromVersions'
 import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
@@ -205,6 +204,5 @@ export default PreviewWrapper
 
 function DocumentVersionsStatus({publishedDocumentId}: {publishedDocumentId: string}) {
   const {versions} = useDocumentVersions({documentId: publishedDocumentId})
-  const versionsInfo = useMemo(() => getDocumentVersionInfoFromVersions(versions), [versions])
-  return <DocumentStatusIndicator draft={versionsInfo.draft} published={versionsInfo.published} />
+  return <DocumentStatusIndicator documentVersions={versions} />
 }

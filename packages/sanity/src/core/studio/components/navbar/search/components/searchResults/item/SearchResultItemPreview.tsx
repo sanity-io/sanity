@@ -95,22 +95,10 @@ export function SearchResultItemPreview({
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         {showBadge && <Badge>{schemaType.title}</Badge>}
-        <DocumentStatusIndicator
-          draft={versionsInfo.draft}
-          published={versionsInfo.published}
-          versions={versionsInfo.versions}
-        />
+        <DocumentStatusIndicator documentVersions={versions} />
       </Flex>
     )
-  }, [
-    isLoading,
-    presence,
-    schemaType.title,
-    showBadge,
-    versionsInfo.draft,
-    versionsInfo.published,
-    versionsInfo.versions,
-  ])
+  }, [isLoading, presence, schemaType.title, showBadge, versions])
 
   const tooltip = (
     <DocumentStatus

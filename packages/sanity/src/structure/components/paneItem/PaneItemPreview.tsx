@@ -16,8 +16,10 @@ import {
   type GeneralPreviewLayoutKey,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
+  getPublishedId,
   SanityDefaultPreview,
   useDocumentVersionInfo,
+  useDocumentVersions,
   usePerspective,
 } from 'sanity'
 
@@ -51,6 +53,9 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const versionsInfo = useDocumentVersionInfo(value._id)
+  // Shares the cached observable with the `useDocumentVersionInfo` call above, so this adds no
+  // extra fetching. `DocumentStatus` needs the derived record, the indicator needs the raw stubs.
+  const {versions} = useDocumentVersions({documentId: getPublishedId(value._id)})
 
   const {perspectiveStack, selectedVariantName} = usePerspective()
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
@@ -97,11 +102,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     <TooltipDelayGroupProvider>
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentStatusIndicator
-          draft={versionsInfo.draft}
-          published={versionsInfo.published}
-          versions={versionsInfo.versions}
-        />
+        <DocumentStatusIndicator documentVersions={versions} />
       </Flex>
     </TooltipDelayGroupProvider>
   )

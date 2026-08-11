@@ -46,11 +46,7 @@ export function ReferencePreview(props: {
               <DocumentPreviewPresence presence={documentPresence} />
             )}
 
-            <DocumentStatusIndicator
-              draft={versionsInfo.draft}
-              published={versionsInfo.published}
-              versions={versionsInfo.versions}
-            />
+            <DocumentStatusIndicator documentVersions={versions} />
           </Inline>
         </Box>
       ),
@@ -71,6 +67,7 @@ export function ReferencePreview(props: {
       previewStub,
       refType,
       showTypeLabel,
+      versions,
       versionsInfo.draft,
       versionsInfo.published,
       versionsInfo.versions,
