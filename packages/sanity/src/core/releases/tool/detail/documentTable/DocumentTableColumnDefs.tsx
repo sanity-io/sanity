@@ -47,7 +47,7 @@ const MemoReleaseDocumentPreview = memo(
     releaseState?: ReleaseState
     documentRevision?: string
   }) {
-    const isGoingToBePublished = isGoingToUnpublish(item.document)
+    const willUnpublish = isGoingToUnpublish(item.document)
     const variantId = getVariantIdFromDocument(item.document)
 
     return (
@@ -57,12 +57,18 @@ const MemoReleaseDocumentPreview = memo(
         releaseId={releaseId}
         releaseState={releaseState}
         documentRevision={documentRevision}
-        isGoingToBePublished={isGoingToBePublished}
+        isGoingToUnpublish={willUnpublish}
         variantId={variantId}
       />
     )
   },
-  (prev, next) => prev.item.memoKey === next.item.memoKey && prev.releaseId === next.releaseId,
+  // `releaseState` decides which document an unpublish-marked row resolves its preview from, so it
+  // has to take part in the comparison. Today a state change also lands a fresh `memoKey`, but that
+  // is a side effect of how the document observables rebuild rather than a guarantee.
+  (prev, next) =>
+    prev.item.memoKey === next.item.memoKey &&
+    prev.releaseId === next.releaseId &&
+    prev.releaseState === next.releaseState,
 )
 
 // Carries its own overflow CSS because @sanity/ui's `textOverflow` prop is inert here.

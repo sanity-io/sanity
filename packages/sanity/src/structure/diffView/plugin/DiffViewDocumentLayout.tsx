@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {
   type DocumentVariantType,

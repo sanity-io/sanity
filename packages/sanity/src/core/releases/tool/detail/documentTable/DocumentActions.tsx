@@ -1,6 +1,7 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
-import {Box, Card, Label, Menu, MenuDivider} from '@sanity/ui'
+import {Box, Card, Label} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {memo, useMemo, useState} from 'react'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'

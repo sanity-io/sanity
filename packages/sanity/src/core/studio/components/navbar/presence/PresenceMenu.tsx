@@ -1,6 +1,7 @@
 import {AddUserIcon} from '@sanity/icons/AddUser'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Box, Menu, MenuDivider, Stack, Text} from '@sanity/ui'
+import {Box, Stack, Text} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 

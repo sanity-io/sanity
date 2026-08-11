@@ -39,7 +39,12 @@ export function collectRunMetadata(options: {
     schemaVersion: 1,
     mode: options.mode,
     git: {
-      sha: process.env.GITHUB_SHA ?? git(['rev-parse', 'HEAD']),
+      // BENCH_GIT_SHA: the commit the measured dist was actually built from,
+      // when that differs from the checkout — backfill runs build a
+      // historical commit's packages with HEAD's harness (see
+      // cli/commands/prepareBackfill.ts) and must be stored under that
+      // commit, not the workflow's HEAD
+      sha: process.env.BENCH_GIT_SHA || process.env.GITHUB_SHA || git(['rev-parse', 'HEAD']),
       // GITHUB_HEAD_REF is empty (not unset) outside pull_request events, and
       // schedule runs are detached checkouts where rev-parse answers "HEAD" —
       // prefer GITHUB_REF_NAME there

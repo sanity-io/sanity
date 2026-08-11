@@ -1,4 +1,5 @@
-import {Box, MenuDivider, Text} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui/menu'
 
 import {MenuGroup, type MenuGroupProps} from '../../../../ui-components/menuGroup/MenuGroup'
 import {

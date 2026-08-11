@@ -1,5 +1,5 @@
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
-import {ToastProvider} from '@sanity/ui'
+import {ToastProvider} from '@sanity/ui/toast'
 import {type ReactNode, useEffect, useMemo} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'

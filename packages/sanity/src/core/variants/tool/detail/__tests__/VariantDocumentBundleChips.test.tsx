@@ -96,9 +96,9 @@ describe('VariantDocumentBundleChips', () => {
     // Only the first bundle (published) renders inline; the fixed-width cell never crops.
     expect(screen.getByText('Published')).toBeInTheDocument()
     expect(screen.getByTestId('variant-bundle-chips-overflow')).toHaveTextContent('+2')
-    // The overflowed bundles are hidden until the badge is hovered.
-    expect(screen.queryByText('Draft')).not.toBeInTheDocument()
-    expect(screen.queryByText('Summer launch')).not.toBeInTheDocument()
+    // Tooltip content stays mounted while closed, but the overflowed bundles are not visible.
+    expect(screen.getByText('Draft')).not.toBeVisible()
+    expect(screen.getByText('Summer launch')).not.toBeVisible()
   })
 
   it('renders a single release chip with an intent link and no overflow badge', async () => {
@@ -140,6 +140,6 @@ describe('VariantDocumentBundleChips', () => {
 
     expect(screen.getByText('Fall campaign')).toBeInTheDocument()
     expect(screen.getByTestId('variant-bundle-chips-overflow')).toHaveTextContent('+1')
-    expect(screen.queryByText('Summer launch')).not.toBeInTheDocument()
+    expect(screen.getByText('Summer launch')).not.toBeVisible()
   })
 })

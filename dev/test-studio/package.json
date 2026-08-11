@@ -20,19 +20,19 @@
     "@portabletext/plugin-character-pair-decorator": "^8.0.44",
     "@portabletext/react": "^7.0.1",
     "@portabletext/toolkit": "^5.0.2",
-    "@sanity/assist": "^6.1.17",
+    "@sanity/assist": "^6.1.18",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.8",
     "@sanity/debug-preview-url-secret-plugin": "^2.0.20",
-    "@sanity/document-internationalization": "^6.2.28",
-    "@sanity/google-maps-input": "^6.1.9",
+    "@sanity/document-internationalization": "^6.2.29",
+    "@sanity/google-maps-input": "^6.1.10",
     "@sanity/icons": "^5.2.1",
     "@sanity/image-url": "^2.1.1",
     "@sanity/logos": "^2.2.5",
     "@sanity/migrate": "catalog:",
     "@sanity/preview-url-secret": "^4.1.2",
     "@sanity/react-loader": "^2.1.2",
-    "@sanity/themer": "^0.3.0",
+    "@sanity/themer": "^0.3.2",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
     "@sanity/util": "workspace:*",
@@ -55,7 +55,7 @@
     "sanity": "workspace:*",
     "sanity-plugin-asset-source-unsplash": "^7.0.21",
     "sanity-plugin-internationalized-array": "^5.1.25",
-    "sanity-plugin-media": "^6.1.0",
+    "sanity-plugin-media": "^6.1.1",
     "styled-components": "catalog:"
   },
   "devDependencies": {
@@ -71,7 +71,7 @@
     "babel-plugin-react-compiler": "catalog:",
     "chokidar": "^5.0.0",
     "rimraf": "catalog:",
-    "tsx": "^4.23.5",
+    "tsx": "^4.23.11",
     "vite": "catalog:"
   }
 }

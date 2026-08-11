@@ -1,5 +1,6 @@
 import {type Path} from '@sanity/types'
-import {Autocomplete, Box, Flex, type Placement, Text} from '@sanity/ui'
+import {Box, Flex, type Placement, Text} from '@sanity/ui'
+import {Autocomplete} from '@sanity/ui/autocomplete'
 import * as PathUtils from '@sanity/util/paths'
 import {
   type ComponentProps,

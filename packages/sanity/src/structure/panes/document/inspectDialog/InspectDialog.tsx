@@ -1,6 +1,7 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
 import {type SanityDocument} from '@sanity/types'
-import {Card, Code, Flex, TabList, TabPanel} from '@sanity/ui'
+import {Card, Flex, TabList, TabPanel} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
 import {Translate, useTranslation} from 'sanity'
 

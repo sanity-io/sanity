@@ -1,4 +1,4 @@
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {memo, type ReactNode, useCallback, useId, useMemo, useState} from 'react'
 import {
   ContextMenuButton,

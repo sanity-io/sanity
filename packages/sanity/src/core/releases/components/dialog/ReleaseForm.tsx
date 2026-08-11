@@ -5,13 +5,15 @@ import {
   // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   Button,
   Flex,
-  Menu,
-  // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
-  MenuItem,
   Stack,
   TabPanel,
   Text,
 } from '@sanity/ui'
+import {
+  Menu,
+  // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
+  MenuItem,
+} from '@sanity/ui/menu'
 import {addHours} from 'date-fns/addHours'
 import {startOfHour} from 'date-fns/startOfHour'
 import {
@@ -167,8 +169,9 @@ export function ReleaseForm(props: {
             popover={{
               placement: 'bottom',
               matchReferenceWidth: true,
-              // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-              boundaryElement: menuButton,
+              // Match pre-v4 `boundaryElement` (applied to both floating and reference).
+              floatingBoundary: menuButton,
+              referenceBoundary: menuButton,
             }}
             menu={
               <Menu>
