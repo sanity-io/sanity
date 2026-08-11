@@ -110,6 +110,7 @@ minimumReleaseAgeExclude:
   - 'sanity-plugin-media'
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-utils'
+  - 'tsx'
   - 'tsdown'
   # verkit is part of the tsdown toolchain (tsdown dependency since 0.22.12)
   - 'verkit'
