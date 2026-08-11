@@ -101,6 +101,25 @@ export interface SanityFormConfig {
    */
   components?: FormComponents
 
+  /**
+   * Array-related functionality.
+   * @hidden
+   * @beta
+   */
+  arrays?: {
+    /**
+     * Renders long arrays with a limited number of items, collapsing the rest behind a
+     * "show all items" toggle so that a single long array doesn't push the rest of the
+     * document form out of view.
+     */
+    collapseItems?: {
+      /** @defaultValue `true` */
+      enabled?: boolean
+      /** @defaultValue `4` */
+      limit?: number
+    }
+  }
+
   file?: {
     /**
      * @hidden
@@ -935,6 +954,22 @@ export interface Source {
    * @beta
    */
   form: {
+    /**
+     * Array-related functionality.
+     * @hidden
+     * @beta
+     */
+    arrays: {
+      /** Collapsing of long arrays in the form. */
+      collapseItems: {
+        /** Whether long arrays are collapsed. */
+        enabled: boolean
+
+        /** The number of items rendered before the remaining items are collapsed. */
+        limit: number
+      }
+    }
+
     /**
      * File-related functionality.
      * @hidden
