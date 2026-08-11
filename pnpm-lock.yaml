@@ -521,8 +521,8 @@ importers:
         specifier: 'catalog:'
         version: 4.0.1(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
       '@sanity/visual-editing':
-        specifier: ^5.7.3
-        version: 5.7.3(@sanity/client@7.26.2)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)(typescript@7.0.2)
+        specifier: ^6.0.0
+        version: 6.0.0(@sanity/client@7.26.2)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)(typescript@7.0.2)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -748,8 +748,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
-        specifier: ^5.7.3
-        version: 5.7.3(@sanity/client@7.26.2)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)(typescript@7.0.2)
+        specifier: ^6.0.0
+        version: 6.0.0(@sanity/client@7.26.2)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)(typescript@7.0.2)
       '@turf/helpers':
         specifier: ^7.4.0
         version: 7.4.0
@@ -6448,9 +6448,9 @@ packages:
       '@sanity/types':
         optional: true
 
-  '@sanity/visual-editing@5.7.3':
-    resolution: {integrity: sha512-07O7vwiB2B+vMqmP9yOp5DnDFgkL4FHrrpmI8U4zE9DQNF2aSvTMbKqtQfzeoM8kONT1yf84+0QchAm22f7fEQ==}
-    engines: {node: '>=20.19'}
+  '@sanity/visual-editing@6.0.0':
+    resolution: {integrity: sha512-1wk/2RWPzcJUJiOdfXPSFXE/88ewP6HxRhFjLVaBJfdXwV1+bQvJqXdlBDYkqhZ1VxWx4gPSRgPwHmeD5+HwTQ==}
+    engines: {node: '>=22.12'}
     peerDependencies:
       '@sanity/client': ^7.24.0
       '@sveltejs/kit': '>= 2'
@@ -18536,16 +18536,16 @@ snapshots:
     optionalDependencies:
       '@sanity/types': link:packages/@sanity/types
 
-  '@sanity/visual-editing@5.7.3(@sanity/client@7.26.2)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)(typescript@7.0.2)':
+  '@sanity/visual-editing@6.0.0(@sanity/client@7.26.2)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)(typescript@7.0.2)':
     dependencies:
       '@sanity/comlink': 4.0.3
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/mutate': 0.18.1(xstate@5.32.5)
       '@sanity/presentation-comlink': 2.2.2(@sanity/types@packages+@sanity+types)
-      '@sanity/preview-url-secret': 4.1.2(@sanity/client@7.26.2)
+      '@sanity/preview-url-secret': 4.1.3(@sanity/client@7.26.2)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/ui': 3.5.2(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
-      '@sanity/visual-editing-csm': 3.0.13(@sanity/client@7.26.2)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
+      '@sanity/ui': 4.0.1(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
+      '@sanity/visual-editing-csm': 3.0.14(@sanity/client@7.26.2)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
       '@vercel/stega': 1.1.0
       dequal: 2.0.3
       lodash-es: 4.18.1
