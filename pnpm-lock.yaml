@@ -23,8 +23,8 @@ catalogs:
       specifier: ^7.26.2
       version: 7.26.2
     '@sanity/migrate':
-      specifier: ^8.0.1
-      version: 8.0.1
+      specifier: ^8.0.2
+      version: 8.0.2
     '@sanity/telemetry':
       specifier: ^1.1.0
       version: 1.1.0
@@ -722,7 +722,7 @@ importers:
         version: 2.2.5(react@19.2.8)
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 8.0.1(supports-color@8.1.1)(xstate@5.32.5)
+        version: 8.0.2(supports-color@8.1.1)(xstate@5.32.5)
       '@sanity/preview-url-secret':
         specifier: ^4.1.2
         version: 4.1.2(@sanity/client@7.26.2)
@@ -1726,7 +1726,7 @@ importers:
         version: 0.24.0
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 8.0.1(supports-color@8.1.1)(xstate@5.32.5)
+        version: 8.0.2(supports-color@8.1.1)(xstate@5.32.5)
       '@sanity/mutate':
         specifier: ^0.18.1
         version: 0.18.1(xstate@5.32.5)
@@ -6256,8 +6256,8 @@ packages:
     resolution: {integrity: sha512-F/MwFVc3fN8uVvCIGuTxHN5EVo148wLhjL7h/u6wbShWJGMKgcGx0n6MwfCPyi6ftpdvRXsPZVDgZ1GMeeBf2Q==}
     engines: {node: '>=20.0.0'}
 
-  '@sanity/migrate@8.0.1':
-    resolution: {integrity: sha512-a0soNMIiSBdYgHoRp/Xf02uqmx5DL4Y2qwio4ux43fhxJCfmGkrbevoBt2J1Vf7risT+Gn9n7cL450J1P5j94w==}
+  '@sanity/migrate@8.0.2':
+    resolution: {integrity: sha512-XeDbtq/YmpXwLd01wJU/mrNqXxPEKRZiPugt/ukXJoDdetjgBNmcIPkic6RnXpzHyLNf/Pi6+d5ktlrUvMYI2Q==}
     engines: {node: '>=22.12'}
 
   '@sanity/mutate@0.18.1':
@@ -17838,7 +17838,7 @@ snapshots:
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.0.0
       '@sanity/import': 6.0.3(@sanity/client@7.26.2)(supports-color@8.1.1)
-      '@sanity/migrate': 8.0.1(supports-color@8.1.1)(xstate@5.32.5)
+      '@sanity/migrate': 8.0.2(supports-color@8.1.1)(xstate@5.32.5)
       '@sanity/runtime-cli': 17.4.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.11)(typescript@7.0.2)(yaml@2.9.0)
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
@@ -18158,7 +18158,7 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.3
 
-  '@sanity/migrate@8.0.1(supports-color@8.1.1)(xstate@5.32.5)':
+  '@sanity/migrate@8.0.2(supports-color@8.1.1)(xstate@5.32.5)':
     dependencies:
       '@sanity/client': 7.26.2
       '@sanity/mutate': 0.18.1(xstate@5.32.5)
