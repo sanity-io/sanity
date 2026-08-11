@@ -1734,8 +1734,8 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/mutator
       '@sanity/presentation-comlink':
-        specifier: ^2.2.2
-        version: 2.2.2(@sanity/types@packages+@sanity+types)
+        specifier: ^2.2.3
+        version: 2.2.3(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
         specifier: ^4.1.3
         version: 4.1.3(@sanity/client@7.26.2)
@@ -6267,6 +6267,10 @@ packages:
 
   '@sanity/presentation-comlink@2.2.2':
     resolution: {integrity: sha512-LR2UZTZBFX5FwHpklmTnqdg9lP+YYV2D1WSON9tJk/3Z3qec3cWbXB1D/8LkTC0CZVtaZ3nqyikqfU7kpR3n0Q==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+
+  '@sanity/presentation-comlink@2.2.3':
+    resolution: {integrity: sha512-XRsLYFNq6DhMm+Ddt+lWzV4nuARmteYAYHrrbKFzpOpt9hCBsLjWbvTELxohEzhIFNoxbVBaRcY6GDB1/ANRFw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@sanity/preview-url-secret@4.1.3':
@@ -18138,6 +18142,15 @@ snapshots:
       xstate: 5.32.5
 
   '@sanity/presentation-comlink@2.2.2(@sanity/types@packages+@sanity+types)':
+    dependencies:
+      '@sanity/client': 7.26.2
+      '@sanity/comlink': 4.0.3
+      '@sanity/visual-editing-types': 2.0.13(@sanity/client@7.26.2)(@sanity/types@packages+@sanity+types)
+      xstate: 5.32.5
+    transitivePeerDependencies:
+      - '@sanity/types'
+
+  '@sanity/presentation-comlink@2.2.3(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 7.26.2
       '@sanity/comlink': 4.0.3
