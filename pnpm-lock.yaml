@@ -2113,8 +2113,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
-        specifier: ^5.1.25
-        version: 5.1.25(@sanity/assist@6.1.18)(@sanity/language-filter@5.0.14)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
+        specifier: ^5.1.26
+        version: 5.1.26(@sanity/assist@6.1.18)(@sanity/language-filter@5.0.15)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
       styled-components:
         specifier: 'catalog:'
         version: 6.5.1(react-dom@19.2.8)(react@19.2.8)
@@ -6230,6 +6230,14 @@ packages:
 
   '@sanity/language-filter@5.0.14':
     resolution: {integrity: sha512-W7qhXSsxDuMrDwYRS3VcvCoclvtlcFXpsZnxyoAeJIcLPm30P1dJbf9TloUNO3lfBzzOJaGVwUBY7tbK8G00Pw==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      react: ^19.2
+      react-dom: ^19.2
+      sanity: ^5 || ^6.0.0-0
+
+  '@sanity/language-filter@5.0.15':
+    resolution: {integrity: sha512-uGSbws7h9UWO1z4/1+t5a9FOtkwTOxB9wLDsFo5+DHI5XOHs6Cf58/1Q1fU+3pMDfLkQNfBKRj85d/ShJ26M0w==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
@@ -12266,6 +12274,19 @@ packages:
       '@sanity/assist':
         optional: true
 
+  sanity-plugin-internationalized-array@5.1.26:
+    resolution: {integrity: sha512-pnzdgepYYQ/GZXR5PsOZStj4SLF6LRYZK7kC3Y3NPZjV5jB7pMgVrC2WTtNvucW7nxhagW/TMrrjk0QfWqYcew==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      '@sanity/assist': ^6.1.18
+      '@sanity/language-filter': ^5.0.15
+      react: ^19.2
+      react-dom: ^19.2
+      sanity: ^5 || ^6.0.0-0
+    peerDependenciesMeta:
+      '@sanity/assist':
+        optional: true
+
   sanity-plugin-media@6.1.1:
     resolution: {integrity: sha512-jkIbxoYgCq7oWkWzwuSaPqQOyGCAKNG5uNvYH6pZf7ePIDLZjXluf5ZhzAhZtL1PSEO42Qf9DPP3VBahdu9J+A==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -18125,6 +18146,18 @@ snapshots:
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/ui': 3.5.2(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      react-rx: 4.2.5(react@19.2.8)(rxjs@7.8.2)
+      rxjs: 7.8.2
+      sanity: link:packages/sanity
+    transitivePeerDependencies:
+      - styled-components
+
+  '@sanity/language-filter@5.0.15(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)':
+    dependencies:
+      '@sanity/icons': 5.2.1(react@19.2.8)
+      '@sanity/ui': 4.0.1(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       react-rx: 4.2.5(react@19.2.8)(rxjs@7.8.2)
@@ -24768,6 +24801,21 @@ snapshots:
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/language-filter': 5.0.14(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
       '@sanity/ui': 3.5.2(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
+      '@sanity/util': link:packages/@sanity/util
+      lodash-es: 4.18.1
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      sanity: link:packages/sanity
+    optionalDependencies:
+      '@sanity/assist': 6.1.18(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
+    transitivePeerDependencies:
+      - styled-components
+
+  sanity-plugin-internationalized-array@5.1.26(@sanity/assist@6.1.18)(@sanity/language-filter@5.0.15)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1):
+    dependencies:
+      '@sanity/icons': 5.2.1(react@19.2.8)
+      '@sanity/language-filter': 5.0.15(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
+      '@sanity/ui': 4.0.1(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
       '@sanity/util': link:packages/@sanity/util
       lodash-es: 4.18.1
       react: 19.2.8
