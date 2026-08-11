@@ -95,11 +95,18 @@ function renderedMemberCount(): number {
 
 describe('ArrayOfPrimitivesInput', () => {
   describe('collapsing long arrays', () => {
-    it('renders every item when collapsing would hide fewer than three of them', () => {
-      renderArrayOfPrimitivesInput({memberCount: 6})
+    it('renders every item when the array is no longer than the limit', () => {
+      renderArrayOfPrimitivesInput({memberCount: 4})
 
-      expect(renderedMemberCount()).toBe(6)
+      expect(renderedMemberCount()).toBe(4)
       expect(screen.queryByTestId('array-items-toggle')).toBeNull()
+    })
+
+    it('collapses as soon as the array exceeds the limit by one item', () => {
+      renderArrayOfPrimitivesInput({memberCount: 5})
+
+      expect(renderedMemberCount()).toBe(4)
+      expect(screen.getByTestId('array-items-toggle')).toBeInTheDocument()
     })
 
     it('renders the first four items and a toggle when the array is long', () => {

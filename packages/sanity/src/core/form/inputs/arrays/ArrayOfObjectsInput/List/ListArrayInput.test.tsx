@@ -161,11 +161,18 @@ describe('ListArrayInput', () => {
   })
 
   describe('collapsing long arrays', () => {
-    it('renders every item when collapsing would hide fewer than three of them', () => {
-      renderListArrayInput({memberCount: 6})
+    it('renders every item when the array is no longer than the limit', () => {
+      renderListArrayInput({memberCount: 4})
 
-      expect(renderedMemberKeys()).toHaveLength(6)
+      expect(renderedMemberKeys()).toHaveLength(4)
       expect(screen.queryByTestId('array-items-toggle')).toBeNull()
+    })
+
+    it('collapses as soon as the array exceeds the limit by one item', () => {
+      renderListArrayInput({memberCount: 5})
+
+      expect(renderedMemberKeys()).toHaveLength(4)
+      expect(screen.getByTestId('array-items-toggle')).toBeInTheDocument()
     })
 
     it('renders the first four items and a toggle when the array is long', () => {
