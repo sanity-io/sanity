@@ -1,6 +1,6 @@
 {
   "name": "efps-tests",
-  "version": "6.9.1",
+  "version": "6.9.2",
   "private": true,
   "description": "Sanity Studio eFPS perf suite",
   "keywords": [],
@@ -18,9 +18,9 @@
     "write:report": "tsx ./formatefpsResult.ts"
   },
   "dependencies": {
-    "sanity-plugin-internationalized-array": "^5.1.25",
+    "sanity-plugin-internationalized-array": "^5.1.26",
     "styled-components": "catalog:",
-    "tsx": "^4.23.11"
+    "tsx": "^4.23.12"
   },
   "devDependencies": {
     "@optique/core": "catalog:",

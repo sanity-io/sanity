@@ -1,6 +1,6 @@
 {
   "name": "sanity-root",
-  "version": "6.9.1",
+  "version": "6.9.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -131,7 +131,7 @@
     "pkg-pr-new": "^0.0.87",
     "playwright": "catalog:",
     "sanity": "workspace:*",
-    "tsx": "^4.23.11",
+    "tsx": "^4.23.12",
     "turbo": "^2.10.9",
     "typescript": "catalog:",
     "vercel": "^57.0.0",
