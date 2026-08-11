@@ -1948,8 +1948,8 @@ importers:
         specifier: 'catalog:'
         version: 0.2.11(babel-plugin-macros@3.1.0)(vite@8.2.1)
       '@sanity/visual-editing-csm':
-        specifier: ^3.0.13
-        version: 3.0.13(@sanity/client@7.26.2)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
+        specifier: ^3.0.14
+        version: 3.0.14(@sanity/client@7.26.2)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
       '@testing-library/jest-dom':
         specifier: ^6.9.1
         version: 6.10.0(@testing-library/dom@10.4.1)
@@ -6400,8 +6400,24 @@ packages:
     peerDependencies:
       '@sanity/client': ^7.24.0
 
+  '@sanity/visual-editing-csm@3.0.14':
+    resolution: {integrity: sha512-s4y23lOABX5kUW50zsboRH4FYHe9AV6Qdozn5CMSvY0gogIWvNUAqJtr65iL0ApSDHvn+MFRPM4xyz7ISYojDA==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      '@sanity/client': ^7.24.0
+
   '@sanity/visual-editing-types@2.0.12':
     resolution: {integrity: sha512-qynYDllVWlo1Gitr/2Guanx7zMdki5mqyzqNXyoqmo5BIq0Cq6ZJx6CDAcuFI2P9bV6mOG2/F678AD10e6kj4Q==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      '@sanity/client': ^7.24.0
+      '@sanity/types': '*'
+    peerDependenciesMeta:
+      '@sanity/types':
+        optional: true
+
+  '@sanity/visual-editing-types@2.0.13':
+    resolution: {integrity: sha512-GThdnqPCCjapluvq0T6FpH/scpzrDB8VpPygE54ZZRzZ9dci9mkHIf+hCFaOqFYo/af2hcERRsiyQcWXqJjm6w==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/client': ^7.24.0
@@ -18452,7 +18468,22 @@ snapshots:
       - '@sanity/types'
       - typescript
 
+  '@sanity/visual-editing-csm@3.0.14(@sanity/client@7.26.2)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)':
+    dependencies:
+      '@sanity/client': 7.26.2
+      '@sanity/visual-editing-types': 2.0.13(@sanity/client@7.26.2)(@sanity/types@packages+@sanity+types)
+      valibot: 1.4.2(typescript@7.0.2)
+    transitivePeerDependencies:
+      - '@sanity/types'
+      - typescript
+
   '@sanity/visual-editing-types@2.0.12(@sanity/client@7.26.2)(@sanity/types@packages+@sanity+types)':
+    dependencies:
+      '@sanity/client': 7.26.2
+    optionalDependencies:
+      '@sanity/types': link:packages/@sanity/types
+
+  '@sanity/visual-editing-types@2.0.13(@sanity/client@7.26.2)(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 7.26.2
     optionalDependencies:

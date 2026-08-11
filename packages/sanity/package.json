@@ -241,7 +241,7 @@
     "@rolldown/plugin-babel": "catalog:",
     "@sanity/sdk": "^2.19.0",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
-    "@sanity/visual-editing-csm": "^3.0.13",
+    "@sanity/visual-editing-csm": "^3.0.14",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.3",
