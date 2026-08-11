@@ -54,10 +54,13 @@ describe('ReleaseAvatarIcon', () => {
     )
   })
 
-  it('renders DotIcon for undecided releases', () => {
+  it('renders UnknownIcon for undecided releases', () => {
     render(<ReleaseAvatarIcon release={activeUndecidedRelease} />)
 
-    expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute('data-sanity-icon', 'dot')
+    expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(
+      'data-sanity-icon',
+      'unknown',
+    )
   })
 
   it('renders DotIcon with caution tone for drafts perspective', () => {
