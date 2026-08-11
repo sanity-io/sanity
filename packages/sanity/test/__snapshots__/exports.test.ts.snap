@@ -854,7 +854,7 @@ exports[`exports snapshot 1`] = `
     "ZIndexContext": "object",
     "zIndexContextDefaults": "object",
   },
-  "./_unstable-embedded-form": {
+  "./_unstable-embedded": {
     "ChangeIndicatorsTracker": "object",
     "CopyPasteProvider": "function",
     "DivergencesProvider": "function",

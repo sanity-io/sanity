@@ -1,8 +1,10 @@
 /**
- * Unstable export surface for rendering the Studio form (`FormBuilder` and friends) embedded in
- * an app outside the Studio, without pulling in the full `sanity` root entry (and the stylesheets
- * it side-effect imports). Like other underscore-prefixed entries this is not considered part of
- * the public API — exports may be added, changed or removed in any release without notice.
+ * Unstable export surface for embedding Studio functionality in an app outside the Studio —
+ * form rendering (`FormBuilder` and friends) plus the supporting providers and utilities it
+ * needs (workspace, source, locale, presence, etc.) — without pulling in the full `sanity` root
+ * entry (and the stylesheets it side-effect imports). Like other underscore-prefixed entries this
+ * is not considered part of the public API — exports may be added, changed or removed in any
+ * release without notice.
  */
 import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
