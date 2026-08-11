@@ -42,7 +42,20 @@ Neither fix touches the other.
    Slower, but ends the recurring dependency on a shared project's role grants for future
    demos — full control on an account-owned project instead.
 
-**As of this note:** pinging Cody Olsen for the fast-path role bump (in progress).
+**As of this note:** sent Pedro a paste-ready diagnosis (repro steps + 4 trace IDs) covering
+both tracks — access on `ppsg7ml5` and entitlement on `ttfgug5v`. Also surfaced a real identity
+wrinkle worth remembering: the same email can have separate Sanity accounts per login provider
+(SAML vs Google vs GitHub), each with its own project memberships — an "Administrator" grant
+visible on one identity's Members page doesn't mean the identity your CLI/token is currently
+using has any access at all. Re-ran the repro under both identities; still blocked on both as of
+2026-08-11. This is now Pedro's to resolve — no further action needed here until he responds.
+
+**Call outcome (2026-08-11):** the POLITICO intro call happened using the already-deployed
+coffee shop demo (`https://test-studio-preview-iframe-git-cursor-coffee-shop-presen-764c1b.sanity.dev`)
+instead of this build — sufficient for an intro conversation, since variant-switching wasn't
+live here yet. This POLITICO build is parked in a known-good state (base content + 4 articles on
+`ttfgug5v`/`production`, zero console errors, localization verified) ready to pick up variants
+the moment either access fix lands.
 
 ## Once either lands
 
