@@ -1737,6 +1737,9 @@ importers:
       '@rexxars/react-json-inspector':
         specifier: ^9.0.1
         version: 9.0.1(react@19.2.8)
+      '@sanity/access-ui':
+        specifier: workspace:*
+        version: link:../@sanity/access-ui
       '@sanity/asset-utils':
         specifier: ^2.3.0
         version: 2.3.0
