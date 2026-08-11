@@ -5,7 +5,7 @@
   "dependencies": {
     "@portabletext/to-html": "^5.0.2",
     "@sanity/client": "^7.26.2",
-    "@sanity/functions": "^1.4.0"
+    "@sanity/functions": "^1.6.2"
   },
   "blueprintResourceItem": {
     "name": "klaviyo-campaign-create",
