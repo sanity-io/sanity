@@ -1899,7 +1899,7 @@ importers:
         specifier: ^14.0.1
         version: 14.0.1
       swr:
-        specifier: ^2.4.2
+        specifier: ^2.5.0
         version: 2.5.0(react@19.2.8)
       urlpattern-polyfill:
         specifier: 10.1.0
