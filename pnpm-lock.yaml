@@ -1734,7 +1734,7 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/mutator
       '@sanity/presentation-comlink':
-        specifier: ^2.2.0
+        specifier: ^2.2.2
         version: 2.2.2(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
         specifier: ^4.1.2
