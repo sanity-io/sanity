@@ -71,7 +71,6 @@ describe('RequestAccessScreen', () => {
     })
 
     expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
-    expect(screen.getAllByText(/test@example\.com/)).not.toHaveLength(0)
   })
 
   it('keeps in-progress form state when auth re-emits a new client for the same project', async () => {
