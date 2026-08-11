@@ -1764,7 +1764,7 @@ importers:
         specifier: 0.1.0-alpha.36
         version: 0.1.0-alpha.36(@sanity/sdk@2.19.0)(react@19.2.8)(xstate@5.32.5)
       '@sentry/react':
-        specifier: ^10.68.0
+        specifier: ^10.69.0
         version: 10.69.0(react@19.2.8)
       '@tanstack/react-table':
         specifier: ^8.21.3
