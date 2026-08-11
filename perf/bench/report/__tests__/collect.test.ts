@@ -88,6 +88,10 @@ describe('collectRunMetadata', () => {
     // process runs inside the repo, so a real ISO date comes back
     process.env.BENCH_GIT_COMMITTED_AT = ''
     expect(metadata().git.committedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/)
+    // A malformed override is dropped, not stored — an unparseable date would
+    // poison the trend axis ordering/filtering built on this field
+    process.env.BENCH_GIT_COMMITTED_AT = 'not-a-date'
+    expect(metadata().git.committedAt).toBeUndefined()
   })
 })
 
