@@ -38,7 +38,7 @@ export function RunDetailPopover(props: {
 }) {
   const {series, point, previousSha, referenceElement, onClose} = props
   const [contentEl, setContentEl] = useState<HTMLDivElement | null>(null)
-  const [copiedAbCommand, setCopiedAbCommand] = useState(false)
+  const [abCopyState, setAbCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
   // The bench workflow's ab_from/ab_to inputs require full shas, and GitHub
   // has no URL that prefills a workflow_dispatch form — so the affordance is
   // a copyable command, previous point as reference, this point as experiment
@@ -185,13 +185,22 @@ export function RunDetailPopover(props: {
                   fontSize={1}
                   icon={CopyIcon}
                   text={
-                    copiedAbCommand ? 'Copied — paste in a terminal' : 'Copy A/B vs previous run'
+                    abCopyState === 'copied'
+                      ? 'Copied — paste in a terminal'
+                      : abCopyState === 'failed'
+                        ? 'Copy failed — command in tooltip'
+                        : 'Copy A/B vs previous run'
                   }
                   title={abCommand}
                   aria-label="Copy the gh command dispatching an A/B bench comparison of this commit against the previous point's commit"
                   onClick={() => {
-                    void navigator.clipboard.writeText(abCommand)
-                    setCopiedAbCommand(true)
+                    // Only claim success on success: clipboard access can be
+                    // denied (permissions, non-secure context) and the title
+                    // attribute is the manual fallback either way
+                    navigator.clipboard.writeText(abCommand).then(
+                      () => setAbCopyState('copied'),
+                      () => setAbCopyState('failed'),
+                    )
                   }}
                 />
               </Stack>
