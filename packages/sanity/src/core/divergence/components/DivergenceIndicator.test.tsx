@@ -58,5 +58,11 @@ test('does not forward the styling path to the DOM', async () => {
     </TestProvider>,
   )
 
-  expect(container.firstElementChild).not.toHaveAttribute('path')
+  const renderedElements = container.querySelectorAll('*')
+  expect(renderedElements.length).toBeGreaterThan(0)
+
+  for (const element of renderedElements) {
+    expect(element).not.toHaveAttribute('path')
+    expect(element).not.toHaveAttribute('$path')
+  }
 })
