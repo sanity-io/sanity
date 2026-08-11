@@ -32,7 +32,7 @@ export const DivergenceIndicator: ComponentType<DivergenceIndicatorProps> = ({
   const {t} = useTranslation()
 
   return (
-    <Container path={path} initial={{opacity: 0}} exit={{opacity: 0}} animate={{opacity: 1}}>
+    <Container $path={path} initial={{opacity: 0}} exit={{opacity: 0}} animate={{opacity: 1}}>
       <Button
         aria-label={t('divergence.unresolved-divergence', {
           count: 1,
@@ -62,10 +62,10 @@ export const DivergenceIndicator: ComponentType<DivergenceIndicatorProps> = ({
   )
 }
 
-const Container = styled(motion.div)<{path: Path}>`
+const Container = styled(motion.div)<{$path: Path}>`
   @supports (position-anchor: --anchor) {
     position: absolute;
-    ${({path}) => (path ? `position-anchor: ${pathToAnchorIdent('input', path)};` : undefined)}
+    ${({$path}) => ($path ? `position-anchor: ${pathToAnchorIdent('input', $path)};` : undefined)}
     inset-block-start: anchor(center);
     transform: translateY(-50%);
     line-height: 0;
