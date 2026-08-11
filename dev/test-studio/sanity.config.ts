@@ -54,6 +54,9 @@ import {coffeeShopSchemaTypes} from './schema/coffeeShop'
 import {coffeeShopPresentationResolve, coffeeShopPreviewUrl} from './schema/coffeeShop/presentation'
 import {coffeeShopStructure} from './schema/coffeeShop/structure'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
+import {politicoSchemaTypes} from './schema/politico'
+import {politicoPresentationResolve, politicoPreviewUrl} from './schema/politico/presentation'
+import {politicoStructure} from './schema/politico/structure'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
@@ -730,6 +733,41 @@ export default defineConfig([
           {id: 'en', title: 'English'},
           {id: 'de', title: 'German'},
           {id: 'fr', title: 'French'},
+        ],
+        defaultLanguages: ['en'],
+        fieldTypes: ['string'],
+      }),
+    ],
+    mediaLibrary: {
+      enabled: true,
+    },
+    beta: {
+      variants: {
+        enabled: true,
+      },
+    },
+  },
+  {
+    name: 'politico',
+    title: 'POLITICO',
+    basePath: '/politico',
+    projectId: 'ttfgug5v',
+    dataset: 'production',
+    schema: {types: politicoSchemaTypes},
+    plugins: [
+      structureTool({structure: politicoStructure}),
+      presentationTool({
+        allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
+        previewUrl: politicoPreviewUrl,
+        resolve: politicoPresentationResolve,
+      }),
+      visionTool(),
+      internationalizedArray({
+        languages: [
+          {id: 'en', title: 'English'},
+          {id: 'fr', title: 'French'},
+          {id: 'es', title: 'Spanish'},
+          {id: 'de', title: 'German'},
         ],
         defaultLanguages: ['en'],
         fieldTypes: ['string'],
