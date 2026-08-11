@@ -112,7 +112,9 @@ jobs:
           AB_FROM: ${{ inputs.ab_from }}
           AB_TO: ${{ inputs.ab_to }}
         run: |
-          if [ -n "$AB_FROM" ] && [ -z "$AB_TO" ] || [ -z "$AB_FROM" ] && [ -n "$AB_TO" ]; then
+          # Explicit grouping: && and || share precedence in sh and associate
+          # left, so the ungrouped form silently passes when only ab_from is set
+          if { [ -n "$AB_FROM" ] && [ -z "$AB_TO" ]; } || { [ -z "$AB_FROM" ] && [ -n "$AB_TO" ]; }; then
             echo "::error::ab_from and ab_to must be set together"
             exit 1
           fi
@@ -255,8 +257,13 @@ jobs:
     # nothing. The `!cancelled()` status function is required so the job still
     # runs when build-reference is *skipped* (a plain custom if: would itself
     # skip on a skipped need); guard on build succeeding.
+    # The ab_to clause requires build-reference success: on the PR path a
+    # broken reference falls back to absolute mode (comparison=skipped, job
+    # green), but `prepare-reference --at` fails the job instead — benching
+    # on regardless would produce a comparison-less run wearing an A/B label
     if: >-
       !cancelled() && needs.build.result == 'success' &&
+      (inputs.ab_to == '' || needs.build-reference.result == 'success') &&
       ((github.event_name == 'pull_request' &&
         needs.build.outputs.has_code_changes == 'true') ||
        (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
@@ -355,8 +362,13 @@ jobs:
     # (build-reference skipped). Gated to the triggers track-main consumes, so
     # the self-test path doesn't launch these shards for nothing. `!cancelled()`
     # lets it run past the skipped build-reference need; guard on build.
+    # The ab_to clause requires build-reference success: on the PR path a
+    # broken reference falls back to absolute mode (comparison=skipped, job
+    # green), but `prepare-reference --at` fails the job instead — benching
+    # on regardless would produce a comparison-less run wearing an A/B label
     if: >-
       !cancelled() && needs.build.result == 'success' &&
+      (inputs.ab_to == '' || needs.build-reference.result == 'success') &&
       ((github.event_name == 'pull_request' &&
         needs.build.outputs.has_code_changes == 'true') ||
        (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
@@ -570,6 +582,17 @@ jobs:
       - name: Publish report to the run summary
         run: cat perf/bench/results/report.md >> "$GITHUB_STEP_SUMMARY"
 
+      # After the summary (so the missing scenarios are already named there)
+      # but BEFORE the store: a dead shard must fail the run, not persist an
+      # incomplete comparison — mirrors store-pr only running after `report`
+      # succeeds on the PR path
+      - name: Fail on missing scenario results
+        run: |
+          if [ -f perf/bench/results/missing-scenarios.json ]; then
+            echo "::error::Benchmark shard(s) delivered no results: $(cat perf/bench/results/missing-scenarios.json | tr -d '\n')"
+            exit 1
+          fi
+
       # Persist the comparison as its own mode:'ab' document — an
       # investigation record (git.sha = ab_to, mergeBaseSha = ab_from), not a
       # time-series point; the trends dashboard only plots absolute-mode docs.
@@ -581,17 +604,11 @@ jobs:
         run: pnpm bench store --ab "$GITHUB_WORKSPACE/perf/bench/results/merged.json"
 
       - uses: actions/upload-artifact@v7
+        if: always()
         with:
           name: bench-report
           path: perf/bench/results/report.md
           retention-days: 30
-
-      - name: Fail on missing scenario results
-        run: |
-          if [ -f perf/bench/results/missing-scenarios.json ]; then
-            echo "::error::Benchmark shard(s) delivered no results: $(cat perf/bench/results/missing-scenarios.json | tr -d '\n')"
-            exit 1
-          fi
 
   # Store the PR's experiment-side (absolute) result under its branch so the
   # trends dashboard's branch comparison has real data. Separate from `report`
