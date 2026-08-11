@@ -2,6 +2,7 @@ import {type ReleaseType} from '@sanity/client'
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {DotIcon} from '@sanity/icons/Dot'
+import {UnknownIcon} from '@sanity/icons/Unknown'
 import {type BadgeTone, Text} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 import {Box, type Space} from 'ui5'
@@ -20,6 +21,7 @@ interface IconProps {
 function renderReleaseTypeIcon(releaseType: ReleaseType, iconProps: IconProps) {
   if (releaseType === 'asap') return <BoltIcon {...iconProps} />
   if (releaseType === 'scheduled') return <ClockIcon {...iconProps} />
+  if (releaseType === 'undecided') return <UnknownIcon {...iconProps} />
   return <DotIcon {...iconProps} />
 }
 
