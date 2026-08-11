@@ -46,14 +46,14 @@
   },
   "dependencies": {
     "@sanity/client": "catalog:",
-    "@sanity/icons": "^5.2.1"
+    "@sanity/icons": "^5.2.1",
+    "@sanity/ui": "catalog:"
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
     "@rolldown/plugin-babel": "catalog:",
-    "@sanity/ui": "catalog:",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.3",
@@ -70,7 +70,6 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@sanity/ui": ">=4.0.0-0 <5",
     "react": "^19.2.2"
   },
   "browserslist": [
