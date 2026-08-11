@@ -58,22 +58,23 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
       return false
     }
 
+    // Prefer `targetDocument` so published / release variants (which are not always present on
+    // `editState.published`) still render the footer.
     const hasTargetDocument =
       targetDocumentState.status === 'ready' && Boolean(targetDocumentState.targetDocument)
-
-    // Prefer `targetDocument` so published / release variants (which are not always present on
-    // `editState.published`) still render the footer. Keep the legacy `editState` checks for:
-    // - published base documents
-    // - release fallbacks: when the pinned release has no version, the form checks out the first
-    //   existing version into `editState.version` and the inventory/actions must stay available
-    if (isPublishedPerspective(selectedPerspective)) {
-      return isReady && (hasTargetDocument || Boolean(editState?.published))
-    }
-    if (isReleaseDocument(selectedPerspective)) {
-      return isReady && (hasTargetDocument || Boolean(editState?.version))
+    if (hasTargetDocument) {
+      return isReady
     }
 
-    // Drafts (and other system perspectives): always show once ready.
+    if (selectedPerspective) {
+      if (isPublishedPerspective(selectedPerspective)) {
+        return isReady && Boolean(editState?.published)
+      }
+      if (isReleaseDocument(selectedPerspective)) {
+        return isReady && Boolean(editState?.version)
+      }
+    }
+
     return isReady
   }, [collapsed, editState, selectedPerspective, selectedVariantName, targetDocumentState])
 
