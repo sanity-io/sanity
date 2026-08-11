@@ -36,7 +36,8 @@
     "exports": {
       ".": "./lib/index.js",
       "./package.json": "./package.json"
-    }
+    },
+    "access": "public"
   },
   "scripts": {
     "build": "tsdown",

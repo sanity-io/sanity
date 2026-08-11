@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {getProviderTitle} from './providerTitle'
+import {getProviderTitle} from '../providerTitle'
 
 describe('getProviderTitle', () => {
   it.each([

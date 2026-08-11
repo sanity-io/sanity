@@ -1,8 +1,8 @@
 import {describe, expect, it} from 'vitest'
 
-import {listMyAccessRequests, submitAccessRequest} from './accessRequests'
+import {listMyAccessRequests, submitAccessRequest} from '../accessRequests'
+import {type SubmitAccessRequestResult} from '../types'
 import {createApiError, createClientStub} from './testUtils'
-import {type SubmitAccessRequestResult} from './types'
 
 describe('listMyAccessRequests', () => {
   it('returns an empty array when the API responds with null', async () => {

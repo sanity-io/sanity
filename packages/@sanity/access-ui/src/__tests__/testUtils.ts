@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {vi} from 'vitest'
 
-import {type AccessRequest} from './types'
+import {type AccessRequest} from '../types'
 
 /**
  * Client stub routing by URL: `/access/requests/me` hits `list`, everything

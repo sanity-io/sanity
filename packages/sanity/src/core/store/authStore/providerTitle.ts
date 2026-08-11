@@ -12,10 +12,6 @@ export function getProviderTitle(provider?: string): string | undefined {
     return 'Sanity'
   }
 
-  if (provider === 'vercel') {
-    return 'Vercel'
-  }
-
   if (provider?.startsWith('saml-')) {
     return 'SAML/SSO'
   }

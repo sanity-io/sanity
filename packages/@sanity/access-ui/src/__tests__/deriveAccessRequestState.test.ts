@@ -1,8 +1,8 @@
 import {describe, expect, it} from 'vitest'
 
-import {deriveAccessRequestState} from './deriveAccessRequestState'
+import {deriveAccessRequestState} from '../deriveAccessRequestState'
+import {type AccessRequest, type AccessRequestState} from '../types'
 import {createAccessRequest} from './testUtils'
-import {type AccessRequest, type AccessRequestState} from './types'
 
 const NOW = new Date('2026-08-11T12:00:00Z').getTime()
 const daysAgo = (days: number) => new Date(NOW - days * 24 * 60 * 60 * 1000).toISOString()

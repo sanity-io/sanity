@@ -4,7 +4,7 @@ import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
-import {RequestAccessForm, type RequestAccessFormProps} from './RequestAccessForm'
+import {RequestAccessForm, type RequestAccessFormProps} from '../RequestAccessForm'
 import {createAccessRequest, createApiError, createClientStub} from './testUtils'
 
 const theme = buildTheme()
