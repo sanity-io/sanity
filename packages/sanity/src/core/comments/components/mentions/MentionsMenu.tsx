@@ -1,4 +1,4 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import deburr from 'lodash-es/deburr.js'
 import {
   type Ref,
@@ -10,6 +10,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {CommandList} from '../../../components/commandList/CommandList'
 import {type CommandListHandle} from '../../../components/commandList/types'

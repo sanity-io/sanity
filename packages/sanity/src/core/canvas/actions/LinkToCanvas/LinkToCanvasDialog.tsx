@@ -1,8 +1,9 @@
 import {type SanityDocument} from '@sanity/client'
 import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
-import {Box, Card, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback, useId} from 'react'
+import {Box} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
