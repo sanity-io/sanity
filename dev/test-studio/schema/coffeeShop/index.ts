@@ -408,6 +408,29 @@ export const demoCoffeeLandingPage = defineType({
   },
 })
 
+export const demoCoffeeLoyaltyPage = defineType({
+  name: 'demoCoffeeLoyaltyPage',
+  title: 'Coffee Demo: Loyalty page',
+  type: 'document',
+  icon: BillIcon,
+  description:
+    'Gated by the "Loyalty page" feature flag — the base document holds a "coming soon" placeholder; the flag-scoped variant holds the real perks copy. Demonstrates a flag gating an entire page rather than just a section, at /loyalty.',
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({name: 'heading', title: 'Heading', type: 'internationalizedArrayString'}),
+    defineField({name: 'body', title: 'Body', type: 'internationalizedArrayText'}),
+    defineField({name: 'ctaLabel', title: 'CTA label', type: 'internationalizedArrayString'}),
+  ],
+  preview: {
+    select: {title: 'title'},
+  },
+})
+
 export const coffeeShopSchemaTypes = [
   internationalizedArrayTextValue,
   internationalizedArrayText,
@@ -415,6 +438,7 @@ export const coffeeShopSchemaTypes = [
   demoCoffeePromo,
   demoCoffeeProduct,
   demoCoffeeLandingPage,
+  demoCoffeeLoyaltyPage,
 ]
 
 /** @deprecated Use `coffeeShopSchemaTypes` — kept for the full test-studio schema import. */

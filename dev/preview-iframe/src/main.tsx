@@ -15,6 +15,7 @@ import {
 import {DemoStateProvider, useDemoState} from './demoState'
 import {HomePage} from './HomePage'
 import {studioUrl, useLiveMode} from './loader'
+import {LoyaltyPage} from './LoyaltyPage'
 import {ProductPage} from './ProductPage'
 
 // @sanity/visual-editing's "Open in Studio" affordance navigates to an
@@ -93,6 +94,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/products/:slug" element={<ProductPage />} />
+            <Route path="/loyalty" element={<LoyaltyPage />} />
             <Route path="/intent/*" element={<IntentRedirect />} />
           </Routes>
         </div>

@@ -177,6 +177,7 @@ export function SiteHeader() {
       </Link>
       <nav>
         <Link to="/">{t.navHome}</Link>
+        <Link to="/loyalty">{t.navLoyalty}</Link>
       </nav>
     </header>
   )
@@ -196,7 +197,10 @@ export const DEMO_VARIANT_OPTIONS: DemoVariantOption[] = [
   {value: 'pernl-vip', label: 'VIP / loyalty member', group: 'Personalization'},
   {value: 'pernl-local', label: 'Local regular (pickup)', group: 'Personalization'},
   {value: 'exprm-hero-treatment-b', label: 'Treatment B', group: 'A/B testing'},
+  {value: 'exprm-hero-treatment-c', label: 'Treatment C', group: 'A/B testing'},
   {value: 'fflag-early-access', label: 'Early access (on)', group: 'Feature flag'},
+  {value: 'fflag-loyalty-page', label: 'Loyalty page (on)', group: 'Feature flag'},
+  {value: 'fflag-subscribe-cta', label: 'Subscribe promo (on)', group: 'Feature flag'},
 ]
 
 const GROUP_STYLE: Record<DemoVariantGroup, {bg: string; fg: string; icon: string}> = {

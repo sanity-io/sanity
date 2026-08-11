@@ -1,4 +1,5 @@
 export const LANDING_PAGE_ID = 'demo-coffee-landing'
+export const LOYALTY_PAGE_ID = 'demo-coffee-loyalty'
 
 // Localized via the regular internationalizedArray plugin (not Content Variants) —
 // $lang picks the requested locale, falling back to English when untranslated.
@@ -72,6 +73,22 @@ export const PRODUCT_DETAIL_QUERY = `*[_type == "demoCoffeeProduct" && slug.curr
   grindOptions,
   "relatedProducts": *[_type == "demoCoffeeProduct" && slug.current != $slug] | order(_createdAt desc)[0...3]${PRODUCT_CARD_PROJECTION}
 }`
+
+export const LOYALTY_PAGE_QUERY = `*[_type == "demoCoffeeLoyaltyPage" && _id == $id][0]{
+  _id,
+  title,
+  "heading": ${localized('heading')},
+  "body": ${localized('body')},
+  "ctaLabel": ${localized('ctaLabel')}
+}`
+
+export interface LoyaltyPage {
+  _id: string
+  title?: string
+  heading?: string
+  body?: string
+  ctaLabel?: string
+}
 
 export interface CoffeeOrigin {
   _id?: string

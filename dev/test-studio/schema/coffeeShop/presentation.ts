@@ -11,6 +11,10 @@ export const coffeeShopPresentationResolve = {
       route: '/products/:slug',
       filter: `_type == "demoCoffeeProduct" && slug.current == $slug`,
     },
+    {
+      route: '/loyalty',
+      filter: `_type == "demoCoffeeLoyaltyPage"`,
+    },
   ]),
   locations: {
     demoCoffeeLandingPage: defineLocations({
@@ -27,6 +31,12 @@ export const coffeeShopPresentationResolve = {
           locations: [{title: doc.title || 'Product', href: `/products/${doc.slug}`}],
         }
       },
+    }),
+    demoCoffeeLoyaltyPage: defineLocations({
+      select: {title: 'title'},
+      resolve: (doc) => ({
+        locations: [{title: doc?.title || 'Loyalty', href: '/loyalty'}],
+      }),
     }),
   },
 }

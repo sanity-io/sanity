@@ -8,6 +8,7 @@ import {useDemoState} from './demoState'
 const UI_STRINGS = {
   en: {
     navHome: 'Home',
+    navLoyalty: 'Loyalty rewards',
     brandBadge: 'demo shop',
     sizeLabel: 'Size',
     grindLabel: 'Grind',
@@ -16,6 +17,7 @@ const UI_STRINGS = {
     relatedProducts: 'You might also like',
     productNotFound: 'This product was not found for the current perspective.',
     noLandingPage: 'No landing page yet — open the Seed coffee shop tool in the studio workspace.',
+    noLoyaltyPage: 'No loyalty page yet — open the Seed coffee shop tool in the studio workspace.',
     queryFailed: 'Query failed',
     originFrom: (name: string, region?: string) =>
       region ? `From ${name}, ${region}` : `From ${name}`,
@@ -24,6 +26,7 @@ const UI_STRINGS = {
   },
   de: {
     navHome: 'Startseite',
+    navLoyalty: 'Treueprogramm',
     brandBadge: 'Demo-Shop',
     sizeLabel: 'Größe',
     grindLabel: 'Mahlgrad',
@@ -33,6 +36,8 @@ const UI_STRINGS = {
     productNotFound: 'Dieses Produkt wurde für die aktuelle Perspektive nicht gefunden.',
     noLandingPage:
       'Noch keine Landingpage — öffne das Tool „Seed coffee shop“ im Studio-Workspace.',
+    noLoyaltyPage:
+      'Noch keine Treueprogramm-Seite — öffne das Tool „Seed coffee shop“ im Studio-Workspace.',
     queryFailed: 'Abfrage fehlgeschlagen',
     originFrom: (name: string, region?: string) =>
       region ? `Von ${name}, ${region}` : `Von ${name}`,
@@ -41,6 +46,7 @@ const UI_STRINGS = {
   },
   fr: {
     navHome: 'Accueil',
+    navLoyalty: 'Programme de fidélité',
     brandBadge: 'boutique démo',
     sizeLabel: 'Taille',
     grindLabel: 'Mouture',
@@ -50,6 +56,8 @@ const UI_STRINGS = {
     productNotFound: "Ce produit n'a pas été trouvé pour la perspective actuelle.",
     noLandingPage:
       "Pas encore de page d'accueil — ouvrez l'outil « Seed coffee shop » dans l'espace de travail Studio.",
+    noLoyaltyPage:
+      "Pas encore de page de fidélité — ouvrez l'outil « Seed coffee shop » dans l'espace de travail Studio.",
     queryFailed: 'Échec de la requête',
     originFrom: (name: string, region?: string) =>
       region ? `De ${name}, ${region}` : `De ${name}`,

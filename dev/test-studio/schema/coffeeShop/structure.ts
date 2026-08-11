@@ -13,6 +13,15 @@ export const coffeeShopStructure: StructureResolver = (S) =>
             .documentId('demo-coffee-landing')
             .title('Landing page'),
         ),
+      S.listItem()
+        .title('Loyalty page')
+        .id('demo-coffee-loyalty')
+        .child(
+          S.document()
+            .schemaType('demoCoffeeLoyaltyPage')
+            .documentId('demo-coffee-loyalty')
+            .title('Loyalty page'),
+        ),
       S.divider(),
       S.documentTypeListItem('demoCoffeeProduct').title('Products'),
       S.documentTypeListItem('demoCoffeeOrigin').title('Origins'),

@@ -11,6 +11,16 @@ function sectionAttr(pageId: string, sectionKey: string, field?: string) {
   return createDataAttribute({id: pageId, type: 'demoCoffeeLandingPage'}).scope(path).toString()
 }
 
+const AB_TEST_RIBBON_LABEL: Record<string, string> = {
+  'exprm-hero-treatment-b': '🧪 A/B test — Treatment B',
+  'exprm-hero-treatment-c': '🧪 A/B test — Treatment C',
+}
+
+const FLAG_RIBBON_LABEL: Record<string, string> = {
+  'early-access-beta': '🚩 Feature flag — early access on',
+  'subscribe-cta-promo': '🚩 Feature flag — subscribe promo on',
+}
+
 function HeroSection({
   pageId,
   section,
@@ -20,12 +30,12 @@ function HeroSection({
   section: LandingSection
   activeVariant?: string
 }) {
+  const abTestRibbon = activeVariant ? AB_TEST_RIBBON_LABEL[activeVariant] : undefined
+
   return (
     <section className="hero" data-sanity={sectionAttr(pageId, section._key)}>
       <div className="hero-copy">
-        {activeVariant === 'exprm-hero-treatment-b' && (
-          <span className="demo-ribbon demo-ribbon-ab">🧪 A/B test — Treatment B</span>
-        )}
+        {abTestRibbon && <span className="demo-ribbon demo-ribbon-ab">{abTestRibbon}</span>}
         <h1 data-sanity={sectionAttr(pageId, section._key, 'headline')}>
           {section.headline || 'Brew & Bean'}
         </h1>
@@ -85,17 +95,15 @@ function PromoBannerSection({pageId, section}: {pageId: string; section: Landing
   const title = section.title || section.promo?.title
   const tagline = section.tagline || section.promo?.tagline
   const cta = section.ctaLabel || section.promo?.ctaLabel
-  const isFeatureFlagSection = section._key === 'early-access-beta'
+  const flagRibbon = FLAG_RIBBON_LABEL[section._key]
 
   return (
     <section
-      className={isFeatureFlagSection ? 'promo-banner promo-banner-flag' : 'promo-banner'}
+      className={flagRibbon ? 'promo-banner promo-banner-flag' : 'promo-banner'}
       data-sanity={sectionAttr(pageId, section._key)}
     >
       <div>
-        {isFeatureFlagSection && (
-          <span className="demo-ribbon demo-ribbon-flag">🚩 Feature flag — early access on</span>
-        )}
+        {flagRibbon && <span className="demo-ribbon demo-ribbon-flag">{flagRibbon}</span>}
         <h2 data-sanity={sectionAttr(pageId, section._key, 'title')}>{title || 'Special offer'}</h2>
         {tagline && <p data-sanity={sectionAttr(pageId, section._key, 'tagline')}>{tagline}</p>}
       </div>

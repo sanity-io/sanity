@@ -453,12 +453,31 @@ main {
   padding: 0.85rem 1rem 1rem;
 }
 
-.product-page .back-link {
+.product-page .back-link,
+.loyalty-page .back-link {
   margin: 0 0 1.25rem;
 }
 
-.product-page .back-link a {
+.product-page .back-link a,
+.loyalty-page .back-link a {
   color: var(--muted);
+}
+
+.loyalty-page article {
+  max-width: 640px;
+}
+
+.loyalty-page h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  margin: 0 0 1rem;
+}
+
+.loyalty-page p {
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
 }
 
 .product-hero {
