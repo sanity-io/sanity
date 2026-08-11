@@ -49,6 +49,10 @@
       "monorepo": "./src/_exports/_singletons.ts",
       "default": "./lib/_singletons.js"
     },
+    "./_unstable-embedded-form": {
+      "monorepo": "./src/_exports/_unstable-embedded-form.ts",
+      "default": "./lib/_unstable-embedded-form.js"
+    },
     "./cli": {
       "monorepo": "./src/_exports/cli.ts",
       "default": "./lib/cli.js"
@@ -96,6 +100,7 @@
       "./_createContext": "./lib/_createContext.js",
       "./_internal": "./lib/_internal.js",
       "./_singletons": "./lib/_singletons.js",
+      "./_unstable-embedded-form": "./lib/_unstable-embedded-form.js",
       "./cli": "./lib/cli.js",
       "./desk": "./lib/desk.js",
       "./media-library": "./lib/media-library.js",
