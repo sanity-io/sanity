@@ -10,6 +10,7 @@ import {type ReactNode} from 'react'
 export interface RequestAccessLabels {
   title: ReactNode
   sentTitle: ReactNode
+  deniedTitle: ReactNode
   errorTitle: ReactNode
   describeNoAccess: (context: {email?: string}) => ReactNode
   promptProject: ReactNode
@@ -17,7 +18,6 @@ export interface RequestAccessLabels {
   notePlaceholder: string
   noteAriaLabel: string
   submit: ReactNode
-  submitted: ReactNode
   sentDescription: ReactNode
   pendingMessage: ReactNode
   deniedMessage: (context: {message?: string}) => ReactNode
@@ -34,6 +34,7 @@ export interface RequestAccessLabels {
 export const defaultLabels: RequestAccessLabels = {
   title: 'Request access',
   sentTitle: 'Access request sent',
+  deniedTitle: 'Access request declined',
   errorTitle: 'Access request couldn’t be sent',
   describeNoAccess: ({email}) =>
     email ? (
@@ -48,7 +49,6 @@ export const defaultLabels: RequestAccessLabels = {
   notePlaceholder: 'Message (optional)',
   noteAriaLabel: 'Message',
   submit: 'Request access',
-  submitted: 'Request sent',
   sentDescription:
     'Your request has been sent. You will receive a notification if access is approved.',
   pendingMessage: 'Your request to access this content is pending approval.',

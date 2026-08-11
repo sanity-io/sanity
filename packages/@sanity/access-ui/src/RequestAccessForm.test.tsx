@@ -66,6 +66,18 @@ describe('RequestAccessForm', () => {
     expect(screen.queryByRole('form')).not.toBeInTheDocument()
   })
 
+  it('renders the declined title, not the failed-send one, when a prior request was denied', async () => {
+    const client = createClientStub({
+      list: () => Promise.resolve([createAccessRequest({status: 'declined'})]),
+    })
+    await renderForm({client})
+
+    expect(
+      await screen.findByRole('heading', {name: 'Access request declined'}),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+  })
+
   it('falls back to the request form when the prefetch fails', async () => {
     const client = createClientStub({
       list: () => Promise.reject(new Error('boom')),

@@ -89,7 +89,7 @@ type ViewState =
   | {view: 'form'; expired: boolean}
   | {view: 'sent'}
   | {view: 'pending'}
-  | {view: 'blocked'; message: ReactNode}
+  | {view: 'blocked'; title: ReactNode; message: ReactNode}
   | {view: 'sso-enforced'; redirectUrl?: string}
 
 function deriveViewState(options: {
@@ -109,16 +109,18 @@ function deriveViewState(options: {
       case 'denied':
         return {
           view: 'blocked',
+          title: labels.errorTitle,
           message: labels.deniedMessage({message: submitResult.message}),
         }
       case 'over-limit':
         return {
           view: 'blocked',
+          title: labels.errorTitle,
           message: labels.overLimitMessage({message: submitResult.message}),
         }
       case 'email-domain-blocked':
       case 'requests-disabled':
-        return {view: 'blocked', message: submitResult.message}
+        return {view: 'blocked', title: labels.errorTitle, message: submitResult.message}
       case 'error':
         // Fall through to the fetched state; the form stays up with an inline error.
         break
@@ -128,7 +130,11 @@ function deriveViewState(options: {
 
   const state = deriveAccessRequestState(fetchedRequests, resourceId)
   if (state === 'pending') return {view: 'pending'}
-  if (state === 'denied') return {view: 'blocked', message: labels.deniedMessage({})}
+  // Derived from prefetch: the user hasn't submitted anything this session,
+  // so the title must describe the prior decline, not a failed send.
+  if (state === 'denied') {
+    return {view: 'blocked', title: labels.deniedTitle, message: labels.deniedMessage({})}
+  }
   return {view: 'form', expired: state === 'expired'}
 }
 
@@ -165,17 +171,20 @@ function RequestAccessFormContent(
   const providerTitle = getProviderTitle(currentUser?.provider)
   const submitFailed = submitResult?.type === 'error'
 
-  const heading: Record<ViewState['view'], {title: ReactNode; description: ReactNode | null}> = {
+  const heading: Record<
+    Exclude<ViewState['view'], 'blocked'>,
+    {title: ReactNode; description: ReactNode | null}
+  > = {
     'form': {
       title: labels.title,
       description: labels.describeNoAccess({email: currentUser?.email}),
     },
     'sent': {title: labels.sentTitle, description: labels.sentDescription},
     'pending': {title: labels.sentTitle, description: labels.pendingMessage},
-    'blocked': {title: labels.errorTitle, description: null},
     'sso-enforced': {title: labels.errorTitle, description: null},
   }
-  const {title, description} = heading[state.view]
+  const {title, description} =
+    state.view === 'blocked' ? {title: state.title, description: null} : heading[state.view]
 
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
