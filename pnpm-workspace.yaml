@@ -27,7 +27,7 @@ catalog:
   '@playwright/test': 1.62.1
   '@rolldown/plugin-babel': ^0.2.3
   '@sanity/client': ^7.26.2
-  '@sanity/migrate': ^8.0.1
+  '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.24.0
   '@sanity/ui': ^4.0.0
