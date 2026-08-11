@@ -50,7 +50,7 @@ export type PrepareReferenceArgs = InferValue<typeof prepareReferenceCommand>
 
 const REPO_ROOT = path.dirname(path.dirname(BENCH_ROOT))
 
-function git(args: string[], cwd: string): string {
+export function git(args: string[], cwd: string): string {
   const result = spawnSync('git', args, {cwd, encoding: 'utf8'})
   if (result.status !== 0) {
     throw new Error(`git ${args.join(' ')} failed: ${result.stderr?.trim()}`)
@@ -66,7 +66,7 @@ function step(executable: string, args: string[], cwd: string): void {
 }
 
 /** Write a step output for the workflow, and echo it for humans/local runs. */
-function setOutput(key: string, value: string): void {
+export function setOutput(key: string, value: string): void {
   console.log(`${key}=${value}`)
   if (process.env.GITHUB_OUTPUT) {
     fs.appendFileSync(process.env.GITHUB_OUTPUT, `${key}=${value}\n`)

@@ -34,6 +34,18 @@ export function collectRunMetadata(options: {
   const prNumber = Number(
     (process.env.GITHUB_REF ?? '').match(/refs\/pull\/(\d+)\//)?.[1] ?? Number.NaN,
   )
+  // Committer date of the measured commit — the time-series x-axis (dashboards
+  // plot it instead of startedAt so backfilled points land on their commit's
+  // date). Backfill shards check out HEAD, not the measured sha, so the
+  // workflow resolves the date where full history exists (prepare-backfill)
+  // and passes it through; everywhere else HEAD is the measured commit and
+  // its committer date is resolvable even in a depth-1 clone.
+  const committedAtRaw =
+    process.env.BENCH_GIT_COMMITTED_AT || git(['show', '-s', '--format=%cI', 'HEAD'])
+  // Omit anything unparseable — the git() helper answers 'unknown' outside a
+  // repo, and a malformed workflow override must not poison the time axis
+  // consumers sort and filter on
+  const committedAt = Number.isNaN(Date.parse(committedAtRaw)) ? undefined : committedAtRaw
   return {
     _type: 'benchRun',
     schemaVersion: 1,
@@ -52,6 +64,7 @@ export function collectRunMetadata(options: {
         process.env.GITHUB_HEAD_REF ||
         process.env.GITHUB_REF_NAME ||
         git(['rev-parse', '--abbrev-ref', 'HEAD']),
+      ...(committedAt ? {committedAt} : {}),
       // The sha the reference side was built at (bench.yml passes the
       // prepare-reference output through) — rendered in the report footer
       ...(process.env.BENCH_MERGE_BASE ? {mergeBaseSha: process.env.BENCH_MERGE_BASE} : {}),
