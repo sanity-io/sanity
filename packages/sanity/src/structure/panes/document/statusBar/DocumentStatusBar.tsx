@@ -1,7 +1,6 @@
 import {Card, Flex} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
-import {select} from 'react-i18next/icu.macro'
 import {
   getCreatableVariantTarget,
   isPublishedPerspective,
@@ -29,7 +28,7 @@ const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {editState, revisionNotFound, targetDocumentState, value} = useDocumentPane()
+  const {editState, revisionNotFound, targetDocumentState} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
   const {selectedPerspective, selectedVariantName} = usePerspective()
 
@@ -58,13 +57,24 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
     ) {
       return false
     }
-    // Validates if for the selected perspective a document exists.
-    // Always true for drafts perspective.
-    return (
-      isReady &&
-      ((targetDocumentState.status === 'ready' && Boolean(targetDocumentState.targetDocument)) ||
-        selectedPerspective === 'drafts')
-    )
+
+    const hasTargetDocument =
+      targetDocumentState.status === 'ready' && Boolean(targetDocumentState.targetDocument)
+
+    // Prefer `targetDocument` so published / release variants (which are not always present on
+    // `editState.published`) still render the footer. Keep the legacy `editState` checks for:
+    // - published base documents
+    // - release fallbacks: when the pinned release has no version, the form checks out the first
+    //   existing version into `editState.version` and the inventory/actions must stay available
+    if (isPublishedPerspective(selectedPerspective)) {
+      return isReady && (hasTargetDocument || Boolean(editState?.published))
+    }
+    if (isReleaseDocument(selectedPerspective)) {
+      return isReady && (hasTargetDocument || Boolean(editState?.version))
+    }
+
+    // Drafts (and other system perspectives): always show once ready.
+    return isReady
   }, [collapsed, editState, selectedPerspective, selectedVariantName, targetDocumentState])
 
   let actions: React.JSX.Element | null = null
