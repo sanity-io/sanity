@@ -1,4 +1,3 @@
-// oxlint-disable-next-line no-unassigned-import -- style import is effectful
 import './styles.css'
 
 import {enableVisualEditing} from '@sanity/visual-editing'
@@ -31,11 +30,16 @@ function IntentRedirect() {
   return null
 }
 
-// Kept running for click-to-edit overlays when opened inside Presentation, but
-// its perspective/variant state isn't shown — the demo uses its own manual
-// variant switcher, which is the source of truth for what's currently being viewed.
+// Syncs Presentation's own variant selector into the demo's "Viewing as"
+// state via enableVisualEditing's onVariantChange callback, so switching the
+// variant in Presentation drives the same state the manual switcher does —
+// one source of truth, whichever side changes it.
 function VisualEditing() {
-  useEffect(() => enableVisualEditing({}), [])
+  const {setVariant} = useDemoState()
+  useEffect(
+    () => enableVisualEditing({onVariantChange: (variant) => setVariant(variant ?? '')}),
+    [setVariant],
+  )
   useLiveMode({})
   return null
 }
@@ -92,10 +96,10 @@ function App() {
             <Route path="/intent/*" element={<IntentRedirect />} />
           </Routes>
         </div>
+        <Suspense fallback={null}>
+          <VisualEditing />
+        </Suspense>
       </DemoStateProvider>
-      <Suspense fallback={null}>
-        <VisualEditing />
-      </Suspense>
     </BrowserRouter>
   )
 }
