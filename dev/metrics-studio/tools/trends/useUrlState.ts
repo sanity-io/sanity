@@ -23,10 +23,11 @@ export function useUrlState(
 
   // Reflect Back/Forward navigation (pushState entries) back into state.
   useEffect(() => {
-    const onPopState = () => setValue(read())
+    const onPopState = () => {
+      setValue(new URLSearchParams(window.location.search).get(key) ?? fallback)
+    }
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, fallback])
 
   const set = useCallback(

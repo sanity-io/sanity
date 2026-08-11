@@ -192,7 +192,6 @@ export function GroupChange(
                 <RevertChangesButton
                   changeCount={changes.length}
                   onClick={handleRevertChangesConfirm}
-                  // oxlint-disable-next-line react/react-compiler
                   ref={setRevertButtonElement}
                   selected={confirmRevertOpen}
                   disabled={readOnly || !isTargetReady}

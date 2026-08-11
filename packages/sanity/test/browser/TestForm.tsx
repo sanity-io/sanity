@@ -273,12 +273,10 @@ export function TestForm(props: TestFormProps) {
       id: idFromProps,
       level: formState?.level || 0,
       members: formState?.members || EMPTY_ARRAY,
-      // oxlint-disable-next-line react/react-compiler
       onChange: handleChange,
       onFieldGroupSelect: NOOP,
       onPathBlur: handleBlur,
       onPathFocus: handleFocus,
-      // oxlint-disable-next-line react/react-compiler
       onPathOpen: setOpenPath,
       onSelectFieldGroup: handleSetActiveFieldGroup,
       onSetFieldSetCollapsed: handleOnSetCollapsedFieldSet,

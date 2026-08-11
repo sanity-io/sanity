@@ -131,7 +131,6 @@ export function usePortableTextMemberItemsFromProps(
     // oxlint-disable-next-line react/react-compiler -- @todo this should be fixed but it's difficult and needs research
     const items: PortableTextMemberItem[] = result.map((item) => {
       const key = pathToString(item.node.path)
-      // oxlint-disable-next-line react/react-compiler
       const existingItem = portableTextMemberItemsRef.current.find((refItem) => refItem.key === key)
       const isObject = item.kind !== 'textBlock'
       let input: ReactNode = null
