@@ -4,6 +4,7 @@ import book from './book'
 import {commentsCI} from './ci/comments'
 import conditionalFieldset from './ci/conditionalFieldset'
 import validationTest from './ci/validationCI'
+import {coffeeShopSchemaTypes} from './coffeeShop'
 import actions from './debug/actions'
 import {allFieldsGroupHidden} from './debug/allFieldsGroupHidden'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
@@ -105,6 +106,7 @@ import select from './debug/select'
 import {navbarSettingsDialogRepro} from './debug/settingsV2DialogRepro'
 import {simpleArrayOfObjects} from './debug/simpleArrayOfObjects'
 import {simpleReferences} from './debug/simpleReferences'
+import {twoArgValidationRepro} from './debug/twoArgValidationRepro'
 import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
@@ -136,7 +138,7 @@ import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
 import blocks from './standard/portableText/blocks'
 import {ptCustomBlockEditors} from './standard/portableText/customBlockEditors'
-import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
+import {ptCustomMarkersTestType} from './standard/portableText/customMarkers/schemaTypes'
 import {customPlugins} from './standard/portableText/customPlugins'
 import {ptCustomWithDefaultsType} from './standard/portableText/customWithDefaults'
 import manyEditors from './standard/portableText/manyEditors'
@@ -153,7 +155,6 @@ import texts from './standard/texts'
 import urls from './standard/urls'
 import videos from './standard/videos'
 import withObjectFieldsOrder from './standard/withObjectFieldsOrder'
-import {variantsDemoTypes} from './variantsDemo'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -192,7 +193,7 @@ const codeInputType = {
 export function createSchemaTypes(projectId: string) {
   return [
     // Brew & Bean coffee shop Presentation demo (see schema/coffeeShop)
-    ...variantsDemoTypes,
+    ...coffeeShopSchemaTypes,
     // Test documents with standard inputs
     arrays,
     topLevelArrayType,
@@ -321,6 +322,7 @@ export function createSchemaTypes(projectId: string) {
     reservedFieldNames,
     review,
     navbarSettingsDialogRepro,
+    twoArgValidationRepro,
     select,
     typeWithNoToplevelStrings,
     uploads,

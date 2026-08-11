@@ -15,7 +15,7 @@ import {
 import {useRouterState} from 'sanity/router'
 
 import {isProd} from '../../environment'
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {useProjectOrganizationId} from '../../store/project/useProjectOrganizationId'
 import {SANITY_VERSION} from '../../version'
 import {
@@ -24,7 +24,7 @@ import {
 } from '../__telemetry__/featureAvailability.telemetry'
 import {StudioLoaded} from '../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../workspace'
-import {useWorkspaces} from '../workspaces'
+import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
 import {debugLoggingStore} from './utils/debugLoggingStore'

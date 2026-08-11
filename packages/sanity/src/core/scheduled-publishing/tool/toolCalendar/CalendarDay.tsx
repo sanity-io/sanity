@@ -142,18 +142,18 @@ function TooltipContent(props: TooltipContentProps) {
           {format(date, 'd MMMM yyyy')}
         </Text>
       </Box>
-      <Stack space={3}>
+      <Stack gap={3}>
         {(Object.keys(schedulesByState) as Array<keyof typeof schedulesByState>).map((key) => {
           const stateSchedules = schedulesByState[key]
           if (stateSchedules.length === 0) {
             return null
           }
           return (
-            <Stack key={key} space={2}>
+            <Stack key={key} gap={2}>
               <Label muted size={0}>
                 {SCHEDULE_STATE_DICTIONARY[key].title}
               </Label>
-              <Stack space={1}>
+              <Stack gap={1}>
                 {stateSchedules
                   .filter((schedule) => schedule.executeAt)
                   .map((schedule) => {
@@ -163,7 +163,7 @@ function TooltipContent(props: TooltipContentProps) {
                     }
 
                     return (
-                      <Inline key={schedule.id} space={2}>
+                      <Inline key={schedule.id} gap={2}>
                         <Box style={{width: '60px'}}>
                           <Text size={1} weight="regular">
                             {formatDateTz({date: new Date(executeDate), format: 'p'})}
@@ -176,7 +176,6 @@ function TooltipContent(props: TooltipContentProps) {
                         >
                           <Badge
                             fontSize={0}
-                            mode="outline"
                             tone={SCHEDULE_ACTION_DICTIONARY[schedule.action].badgeTone}
                           >
                             {schedule.action}

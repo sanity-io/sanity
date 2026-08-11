@@ -3,13 +3,15 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {EyeClosedIcon} from '@sanity/icons/EyeClosed'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LockIcon} from '@sanity/icons/Lock'
-// oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
-import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
-import {forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
+// oxlint-disable-next-line no-restricted-imports -- custom use for Button not supported by ui-components
+import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
+import {MenuItem} from '@sanity/ui/menu'
+import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
-import {Tooltip} from '../../../ui-components/tooltip'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
 import {usePerspective} from '../../perspective/usePerspective'
@@ -81,15 +83,14 @@ export function getRangePosition(range: LayerRange, index: number): rangePositio
   return undefined
 }
 
-export const GlobalPerspectiveMenuItem = forwardRef<
-  HTMLDivElement,
-  {
+export function GlobalPerspectiveMenuItem(
+  props: {
     release: ReleaseDocument | 'published' | typeof LATEST
     rangePosition: rangePosition
     menuItemProps?: ReleasesNavMenuItemPropsGetter
-  }
->((props, ref) => {
-  const {release, rangePosition} = props
+  } & RefAttributes<HTMLDivElement>,
+) {
+  const {ref, release, rangePosition} = props
 
   const {
     document: {
@@ -168,7 +169,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             flex={1}
             paddingY={2}
             paddingRight={2}
-            space={2}
+            gap={2}
             style={{
               opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
               maxWidth: '200px',
@@ -231,6 +232,4 @@ export const GlobalPerspectiveMenuItem = forwardRef<
       </MenuItem>
     </GlobalPerspectiveMenuItemIndicator>
   )
-})
-
-GlobalPerspectiveMenuItem.displayName = 'GlobalPerspectiveMenuItem'
+}

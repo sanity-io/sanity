@@ -4,19 +4,17 @@ import {useMemo} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, shareReplay, switchMap} from 'rxjs/operators'
 
-import {useClient, useSchema} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
+import {useSchema} from '../../hooks/useSchema'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {
-  createHookFromObservableFactory,
-  getDraftId,
-  getIdPair,
-  getPublishedId,
-  type PartialExcept,
-} from '../../util'
+import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
+import {getDraftId, getPublishedId, getIdPair} from '../../util/draftUtils'
+import {type PartialExcept} from '../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
-import {type DocumentStoreExtraOptions, snapshotPair} from '../document'
+import {snapshotPair} from '../document/document-pair/snapshotPair'
+import {type DocumentStoreExtraOptions} from '../document/getPairListener'
 import {memoize} from '../document/utils/createMemoizer'
-import {useCurrentUser} from '../user'
+import {useCurrentUser} from '../user/hooks'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
 function shareLatestWithRefCount<T>() {

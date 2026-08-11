@@ -24,33 +24,34 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
+import {PaneContent} from '../../../components/pane/PaneContent'
+import {usePane} from '../../../components/pane/usePane'
+import {usePaneLayout} from '../../../components/pane/usePaneLayout'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
-import {DocumentInspectorPanel} from '../documentInspector'
-import {InspectDialog} from '../inspectDialog'
+import {DocumentInspectorPanel} from '../documentInspector/DocumentInspectorPanel'
+import {InspectDialog} from '../inspectDialog/InspectDialog'
 import {useDocumentPane} from '../useDocumentPane'
-import {
-  DeletedDocumentBanners,
-  DeprecatedDocumentTypeBanner,
-  InsufficientPermissionBanner,
-  ReferenceChangedBanner,
-  ScheduledDraftOverrideBanner,
-} from './banners'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {ChooseNewDocumentDestinationBanner} from './banners/ChooseNewDocumentDestinationBanner'
+import {DeletedDocumentBanners} from './banners/DeletedDocumentBanners'
+import {DeprecatedDocumentTypeBanner} from './banners/DeprecatedDocumentTypeBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
 import {DocumentNotInVariantBanner} from './banners/DocumentNotInVariantBanner'
+import {InsufficientPermissionBanner} from './banners/InsufficientPermissionBanner'
 import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {PausedScheduledDraftBanner} from './banners/PausedScheduledDraftBanner'
+import {ReferenceChangedBanner} from './banners/ReferenceChangedBanner'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
+import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
-import {FormView} from './documentViews'
+import {FormView} from './documentViews/FormView'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
 interface DocumentPanelProps {
@@ -288,7 +289,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
 
-    if (targetDocumentState.status === 'variant-missing') {
+    // A creatable missing draft variant renders no banner: the form is simply editable — typing
+    // creates the document at the server-advertised id — matching the base draft/published
+    // experience where editing the published fallback creates the draft.
+    if (targetDocumentState.status === 'variant-missing' && !targetDocumentState.creatableTarget) {
       return <DocumentNotInVariantBanner />
     }
 

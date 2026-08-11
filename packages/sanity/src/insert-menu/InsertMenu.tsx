@@ -3,21 +3,9 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {UlistIcon} from '@sanity/icons/Ulist'
 import {type InsertMenuOptions, type SchemaType} from '@sanity/types'
-import {
-  Box,
-  Button,
-  Flex,
-  Grid,
-  Menu,
-  MenuItem,
-  Stack,
-  Tab,
-  TabList,
-  Text,
-  TextInput,
-  Tooltip,
-  type MenuItemProps,
-} from '@sanity/ui'
+import {Box, Button, Flex, Grid, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
+import {Menu, MenuItem, type MenuItemProps} from '@sanity/ui/menu'
+import {Tooltip} from '@sanity/ui/tooltip'
 import startCase from 'lodash-es/startCase.js'
 import {useReducer, useState, type ChangeEvent, type CSSProperties} from 'react'
 import {isValidElementType} from 'react-is'
@@ -149,7 +137,7 @@ export function InsertMenu(props: InsertMenuProps): React.JSX.Element {
           {/* tabs */}
           {showingTabs ? (
             <Box paddingTop={1} paddingX={1}>
-              <TabList space={1}>
+              <TabList gap={1}>
                 {state.groups.map((group) => (
                   <Tab
                     id={`${group.name}-tab`}
@@ -190,7 +178,7 @@ export function InsertMenu(props: InsertMenuProps): React.JSX.Element {
               ))}
             </Grid>
           ) : (
-            <Stack flex={1} space={1}>
+            <Stack flex={1} gap={1}>
               {filteredSchemaTypes.map((schemaType) => (
                 <MenuItem
                   key={schemaType.name}

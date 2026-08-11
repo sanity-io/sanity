@@ -17,6 +17,7 @@ export const studioComponentsPlugin = definePlugin({
           {props.renderDefault(props)}
         </Box>
       ),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       logo: (props) => <Box data-testid="test-logo-plugin">{props.renderDefault(props)}</Box>,
       navbar: (props) => <Box data-testid="test-navbar-plugin">{props.renderDefault(props)}</Box>,
       toolMenu: (props) => (

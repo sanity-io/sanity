@@ -4,18 +4,17 @@ import {BoundaryElementProvider, Box, type ResponsiveWidthProps, useGlobalKeyDow
 import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Dialog} from '../../../ui-components'
-import {PopoverDialog} from '../../components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {PopoverDialog} from '../../components/popoverDialog/PopoverDialog'
 import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
-import {PresenceOverlay} from '../../presence'
+import {PresenceOverlay} from '../../presence/overlay/PresenceOverlay'
 import {isNativeEditableElement} from '../../studio/copyPaste/utils'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {
-  NavigatedToNestedObjectViaCloseButton,
-  navigatedToNestedObjectViaKeyboardShortcut,
   NestedDialogClosed,
   NestedDialogOpened,
+  NestedObjectOpened,
 } from '../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useFormBuilder} from '../useFormBuilder'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
@@ -83,6 +82,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
   const telemetry = useTelemetry()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {__internal} = useFormBuilder()
   const isInspectOpen = Boolean(__internal.inspectOpen)
   const {absolutePath, path} = (children as React.ReactElement)?.props as {
@@ -150,7 +150,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           const newLastStackPath = lastStackPath.slice(0, -1)
 
           if (newLastStackPath.length > 1) {
-            telemetry.log(navigatedToNestedObjectViaKeyboardShortcut)
+            telemetry.log(NestedObjectOpened, {path: 'keyboard_shortcut'})
             navigateTo(newLastStackPath)
           } else {
             telemetry.log(NestedDialogClosed)
@@ -165,7 +165,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   const handleStackedDialogClose = useCallback(
     (closeAll?: boolean) => {
       if (!closeAll && stack.length >= 2) {
-        telemetry.log(NavigatedToNestedObjectViaCloseButton)
+        telemetry.log(NestedObjectOpened, {path: 'close_button'})
         close({toParent: true})
       } else {
         telemetry.log(NestedDialogClosed)

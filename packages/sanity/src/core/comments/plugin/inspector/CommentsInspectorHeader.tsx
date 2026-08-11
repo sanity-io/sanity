@@ -1,12 +1,15 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, Flex, Menu, Text} from '@sanity/ui'
-import {forwardRef, useCallback} from 'react'
+import {Card, Flex, Text} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {useCallback, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, MenuButton, MenuItem} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentStatus, type CommentsUIMode} from '../../types'
 
@@ -23,12 +26,11 @@ interface CommentsInspectorHeaderProps {
   mode: CommentsUIMode
 }
 
-export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHeader(
-  props: CommentsInspectorHeaderProps,
-  ref: React.ForwardedRef<HTMLDivElement>,
+export function CommentsInspectorHeader(
+  props: CommentsInspectorHeaderProps & RefAttributes<HTMLDivElement>,
 ) {
   const {t} = useTranslation(commentsLocaleNamespace)
-  const {onClose, onViewChange, view, mode} = props
+  const {ref, onClose, onViewChange, view, mode} = props
 
   const handleSetOpenView = useCallback(() => onViewChange('open'), [onViewChange])
   const handleSetResolvedView = useCallback(() => onViewChange('resolved'), [onViewChange])
@@ -90,4 +92,4 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
       </Flex>
     </Root>
   )
-})
+}

@@ -3,21 +3,21 @@ import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@
 import {type Observable, of} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
-import {type SourceClientOptions} from '../../config'
-import {type LocaleSource} from '../../i18n'
-import {type DocumentPreviewStore} from '../../preview'
+import {type SourceClientOptions} from '../../config/types'
+import {type LocaleSource} from '../../i18n/types'
+import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {type Template} from '../../templates'
+import {type Template} from '../../templates/types'
 import {
-  getDocumentVariantType,
-  getIdPair,
   getPublishedId,
   getVersionFromId,
   isDraftId,
   isVersionId,
-} from '../../util'
+  getIdPair,
+} from '../../util/draftUtils'
+import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {type ValidationStatus} from '../../validation'
-import {type HistoryStore} from '../history'
+import {type HistoryStore} from '../history/createHistoryStore'
 import {
   checkoutPair,
   type CommitError,
@@ -34,11 +34,12 @@ import {
   operationEvents,
   type OperationSuccess,
 } from './document-pair/operationEvents'
-import {type OperationsAPI} from './document-pair/operations'
 import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
+import {type OperationsAPI} from './document-pair/operations/types'
 import {validation} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
-import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
+import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
+import {type InitialValueMsg} from './initialValue/types'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {getPairTargetScopeId, normalizeDocumentPairTarget} from './normalizeDocumentPairTarget'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
@@ -251,6 +252,7 @@ export function createDocumentStore({
           ctx,
           getIdPairFromPublished(publishedId, getPairTargetScopeId(target)),
           type,
+          target,
         )
       },
       editState(publishedId, type, version) {

@@ -2,7 +2,7 @@ import {Flex, Stack} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {useCallback, useState} from 'react'
 
-import {useTranslation} from '../../../../../../../../../i18n'
+import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorDateRangeValue} from '../../../../../definitions/operators/dateOperators'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
@@ -82,7 +82,7 @@ export function CommonDateRangeInput({
 
   return (
     <div>
-      <Stack space={3}>
+      <Stack gap={3}>
         <Flex direction="column" gap={3}>
           {/* Start date */}
           <ParsedDateTextInput

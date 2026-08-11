@@ -1,15 +1,19 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
+import {type ComponentType, type ReactNode, useEffect, useMemo, useState} from 'react'
+import {useSyncObservable} from 'react-rx'
+import {catchError, map, of} from 'rxjs'
 
-import {LoadingBlock} from '../components/loadingBlock'
-import {type AuthStore} from '../store'
+import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
+import {type AuthStore} from '../store/authStore/types'
 import {
   AuthBoundaryResolved,
   SessionTokenExchangeCompleted,
 } from './__telemetry__/authBoundary.telemetry'
 import {StudioAuthReadyMeasured} from './__telemetry__/bootstrap.telemetry'
-import {useActiveWorkspace} from './activeWorkspaceMatcher'
-import {AuthenticateScreen, NotAuthenticatedScreen, RequestAccessScreen} from './screens'
+import {useActiveWorkspace} from './activeWorkspaceMatcher/useActiveWorkspace'
+import {AuthenticateScreen} from './screens/AuthenticateScreen'
+import {NotAuthenticatedScreen} from './screens/NotAuthenticatedScreen'
+import {RequestAccessScreen} from './screens/RequestAccessScreen'
 import {getPageVisibilitySnapshot} from './telemetry/pageVisibility'
 
 // Module-level one-shot guard. Survives StrictMode double-mount in dev so the
@@ -23,6 +27,18 @@ interface AuthBoundaryProps {
   NotAuthenticatedComponent?: ComponentType
 }
 
+type LoggedInState = 'logged-in' | 'logged-out' | 'loading' | 'unauthorized'
+
+type AuthStatus = {
+  loggedIn: LoggedInState
+  loginProvider?: string
+}
+
+type AuthStatusResult = {type: 'value'; status: AuthStatus} | {type: 'error'; error: unknown}
+
+const INITIAL_AUTH_STATUS: AuthStatus = {loggedIn: 'loading'}
+const INITIAL_AUTH_RESULT: AuthStatusResult = {type: 'value', status: INITIAL_AUTH_STATUS}
+
 export function AuthBoundary({
   children,
   AuthenticateComponent = AuthenticateScreen,
@@ -32,12 +48,6 @@ export function AuthBoundary({
   const [error, handleError] = useState<unknown>(null)
   if (error) throw error
 
-  const [loggedIn, setLoggedIn] = useState<'logged-in' | 'logged-out' | 'loading' | 'unauthorized'>(
-    'loading',
-  )
-  const [loginProvider, setLoginProvider] = useState<string | undefined>()
-  const {activeWorkspace} = useActiveWorkspace()
-
   // The auth store whose callback flow (sid → credential exchange) has
   // settled. Until the ACTIVE workspace's store has, a logged-out state is
   // ambiguous — it may be the stale pre-exchange probe result — so the
@@ -46,10 +56,53 @@ export function AuthBoundary({
   // mid-exchange keeps the gate closed for the new workspace and a
   // superseded exchange settling late can't open it.
   const [callbackSettledFor, setCallbackSettledFor] = useState<AuthStore | undefined>(undefined)
+  const {activeWorkspace} = useActiveWorkspace()
   const callbackSettled =
     !activeWorkspace.auth.handleCallbackUrl || callbackSettledFor === activeWorkspace.auth
   const telemetry = useTelemetry()
   const [mountTime] = useState(() => performance.now())
+
+  const authStatus$ = useMemo(
+    () =>
+      activeWorkspace.auth.state.pipe(
+        map(({authenticated, currentUser}): AuthStatusResult => {
+          /**
+           * If a user has never had any roles on for the given workspace project
+           * e.g. because they've only ever been an organization member thereby
+           * giving them implicit access to the studio then they will have no roles
+           * array on their user so to account for this case or the case that they have
+           * had roles removed then we need to set the logged in state to unauthorized.
+           */
+          if (
+            authenticated &&
+            (!Array.isArray(currentUser?.roles) || currentUser.roles.length === 0)
+          ) {
+            return {
+              type: 'value',
+              status: {
+                loggedIn: 'unauthorized',
+                loginProvider: currentUser?.provider,
+              },
+            }
+          }
+
+          return {
+            type: 'value',
+            status: {loggedIn: authenticated ? 'logged-in' : 'logged-out'},
+          }
+        }),
+        catchError((err: unknown) => of({type: 'error' as const, error: err})),
+      ),
+    [activeWorkspace],
+  )
+
+  // Kept synchronous: this gates authenticated children and is compared with
+  // the live `callbackSettled` state — a deferred snapshot could keep children
+  // mounted after logout or pair stale `loggedIn` with fresh settlement state.
+  const authResult = useSyncObservable(authStatus$, INITIAL_AUTH_RESULT)
+  if (authResult.type === 'error') throw authResult.error
+
+  const {loggedIn, loginProvider} = authResult.status
 
   // AuthBoundaryResolved: mount-baseline — measures time from this component
   // mounting to auth state resolving. Fires every transition out of 'loading'.
@@ -97,35 +150,6 @@ export function AuthBoundary({
       superseded = true
     }
   }, [activeWorkspace.auth, telemetry])
-
-  useEffect(() => {
-    const subscription = activeWorkspace.auth.state.subscribe({
-      next: ({authenticated, currentUser}) => {
-        /**
-         * If a user has never had any roles on for the given workspace project
-         * e.g. because they've only ever been an organization member thereby
-         * giving them implicit access to the studio then they will have no roles
-         * array on their user so to account for this case or the case that they have
-         * had roles removed then we need to set the logged in state to unauthorized.
-         */
-        if (
-          authenticated &&
-          (!Array.isArray(currentUser?.roles) || currentUser.roles.length === 0)
-        ) {
-          setLoggedIn('unauthorized')
-          if (currentUser?.provider) setLoginProvider(currentUser.provider)
-          return
-        }
-
-        setLoggedIn(authenticated ? 'logged-in' : 'logged-out')
-      },
-      error: handleError,
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [activeWorkspace])
 
   if (loggedIn === 'loading') return <LoadingComponent />
 

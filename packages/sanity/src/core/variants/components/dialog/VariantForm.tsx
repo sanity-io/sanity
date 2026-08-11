@@ -8,10 +8,10 @@ import {Box, Flex, Inline, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type VariantsLocaleResourceKeys, variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type EditableSystemVariant} from '../../types'
@@ -247,8 +247,8 @@ export function VariantForm(props: {
   )
 
   return (
-    <Stack space={5}>
-      <Stack space={3}>
+    <Stack gap={5}>
+      <Stack gap={3}>
         <Text as="label" htmlFor={titleId} size={1} weight="medium">
           {t('dialog.create.variant-title.label')}
         </Text>
@@ -270,7 +270,7 @@ export function VariantForm(props: {
         )}
       </Stack>
 
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text as="label" htmlFor={descriptionId} size={1} weight="medium">
           {t('dialog.create.description.label')}
         </Text>
@@ -285,8 +285,8 @@ export function VariantForm(props: {
         />
       </Stack>
 
-      <Stack space={3}>
-        <Inline space={1}>
+      <Stack gap={3}>
+        <Inline gap={1}>
           <Text as="label" htmlFor={priorityId} size={1} weight="medium">
             {t('dialog.create.priority.label')}
           </Text>
@@ -316,8 +316,8 @@ export function VariantForm(props: {
         )}
       </Stack>
 
-      <Stack space={3}>
-        <Stack space={2}>
+      <Stack gap={3}>
+        <Stack gap={2}>
           <Text size={1} weight="medium">
             {t('dialog.create.conditions.title')}
           </Text>
@@ -326,14 +326,14 @@ export function VariantForm(props: {
           </Text>
         </Stack>
 
-        <Stack space={2}>
+        <Stack gap={2}>
           {conditionRows.map((row, index) => {
             const validation = conditionsValidation.get(index) ?? getEmptyConditionRowValidation()
             const valueValidation = showValidation ? validation.value : null
             const conditionValidationError = validation.key || valueValidation
 
             return (
-              <Stack key={row.id} space={2}>
+              <Stack key={row.id} gap={2}>
                 <Flex align="center" gap={2}>
                   <Box flex={1}>
                     <ConditionAutocompleteInput

@@ -1,4 +1,4 @@
-import {render, renderHook, screen, waitFor} from '@testing-library/react'
+import {render, renderHook, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {of} from 'rxjs'
@@ -35,6 +35,7 @@ vi.mock('@sanity/client', () => ({
 }))
 
 vi.mock('../../../hooks/useClient')
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const useClientMock = useClient as ReturnType<typeof vi.fn>
 
 const mockObservableRequest = vi.fn((announcements) => of(announcements))
@@ -120,8 +121,8 @@ describe('StudioAnnouncementsProvider', () => {
       const {result} = renderHook(() => useStudioAnnouncements(), {
         wrapper,
       })
-      expect(seenAnnouncementsMock).toBeCalled()
-      expect(mockObservableRequest).toBeCalled()
+      expect(seenAnnouncementsMock).toHaveBeenCalled()
+      expect(mockObservableRequest).toHaveBeenCalled()
       expect(result.current.unseenAnnouncements).toEqual([])
       expect(result.current.studioAnnouncements).toEqual(mockAnnouncements)
     })
@@ -234,22 +235,22 @@ describe('StudioAnnouncementsProvider', () => {
       expect(announcement2Elements.length).toBeGreaterThan(0)
 
       // Opening the dialog calls the telemetry only once, with the seen card
-      expect(mockLog).toBeCalledTimes(3)
-      expect(mockLog).toBeCalledWith(ProductAnnouncementCardSeen, {
+      expect(mockLog).toHaveBeenCalledTimes(3)
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardSeen, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
         source: 'studio',
         studio_version: '3.57.0',
       })
-      expect(mockLog).toBeCalledWith(ProductAnnouncementCardClicked, {
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardClicked, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
         source: 'studio',
         studio_version: '3.57.0',
       })
-      expect(mockLog).toBeCalledWith(ProductAnnouncementViewed, {
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementViewed, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
@@ -271,21 +272,22 @@ describe('StudioAnnouncementsProvider', () => {
       expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const closeButton = screen.getByLabelText('Dismiss announcements')
       await userEvent.click(closeButton)
+      // The card renders in a popover, which keeps its content mounted (hidden) while closed.
       await waitFor(() => {
-        expect(screen.queryByText("What's new")).toBeNull()
+        expect(screen.getByText("What's new")).not.toBeVisible()
       })
-      expect(screen.queryByText(mockAnnouncements[1].title)).toBeNull()
+      expect(screen.getByText(mockAnnouncements[1].title)).not.toBeVisible()
 
       // Dismissing the card calls telemetry with the seen and dismiss logs
-      expect(mockLog).toBeCalledTimes(2)
-      expect(mockLog).toBeCalledWith(ProductAnnouncementCardSeen, {
+      expect(mockLog).toHaveBeenCalledTimes(2)
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardSeen, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
         source: 'studio',
         studio_version: '3.57.0',
       })
-      expect(mockLog).toBeCalledWith(ProductAnnouncementCardDismissed, {
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardDismissed, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
@@ -305,32 +307,34 @@ describe('StudioAnnouncementsProvider', () => {
       expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const cardButton = screen.getByLabelText('Open announcements')
       await userEvent.click(cardButton)
+      // The card renders in a popover, which keeps its content mounted (hidden) while closed.
       await waitFor(() => {
-        expect(screen.queryByText("What's new")).toBeNull()
+        expect(screen.getByText("What's new")).not.toBeVisible()
       })
-      expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      // The dismissed card keeps its own copy of the title mounted, so look inside the dialog.
+      expect(within(screen.getByRole('dialog')).getByText(mockAnnouncements[1].title)).toBeVisible()
 
       const closeButton = screen.getByLabelText('Close dialog')
       await userEvent.click(closeButton)
-      expect(screen.queryByText("What's new")).toBeNull()
-      expect(screen.queryByText(mockAnnouncements[1].title)).toBeNull()
+      expect(screen.getByText("What's new")).not.toBeVisible()
+      expect(screen.getByText(mockAnnouncements[1].title)).not.toBeVisible()
 
-      expect(mockLog).toBeCalledTimes(4)
-      expect(mockLog).toBeCalledWith(ProductAnnouncementCardSeen, {
+      expect(mockLog).toHaveBeenCalledTimes(4)
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardSeen, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
         source: 'studio',
         studio_version: '3.57.0',
       })
-      expect(mockLog).toBeCalledWith(ProductAnnouncementCardClicked, {
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementCardClicked, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
         source: 'studio',
         studio_version: '3.57.0',
       })
-      expect(mockLog).toBeCalledWith(ProductAnnouncementModalDismissed, {
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementModalDismissed, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
@@ -338,7 +342,7 @@ describe('StudioAnnouncementsProvider', () => {
         source: 'studio',
         studio_version: '3.57.0',
       })
-      expect(mockLog).toBeCalledWith(ProductAnnouncementViewed, {
+      expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementViewed, {
         announcement_id: 'studioAnnouncement-2',
         announcement_title: 'Announcement 2',
         announcement_internal_name: 'announcement-2',
@@ -366,14 +370,17 @@ describe('StudioAnnouncementsProvider', () => {
       const openDialogButton = screen.getByRole('button', {name: 'Open dialog'})
       await userEvent.click(openDialogButton)
 
-      // The card closes even if we open it from somewhere else
+      // The card closes even if we open it from somewhere else. Its popover keeps the content
+      // mounted (hidden) while closed.
       await waitFor(() => {
-        expect(screen.queryByText("What's new")).toBeNull()
+        expect(screen.getByText("What's new")).not.toBeVisible()
       })
+      // The dismissed card keeps its own copy of the titles mounted, so look inside the dialog.
+      const dialog = within(screen.getByRole('dialog'))
       // The first announcement is seen, it's rendered because it's showing all
-      expect(screen.getByText(mockAnnouncements[0].title)).toBeInTheDocument()
+      expect(dialog.getByText(mockAnnouncements[0].title)).toBeVisible()
       // The second announcement is unseen, so it's rendered
-      expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(dialog.getByText(mockAnnouncements[1].title)).toBeVisible()
     })
   })
   describe('tests audiences - studio version is 3.57.0', () => {
@@ -670,7 +677,7 @@ describe('StudioAnnouncementsProvider-Disabled', () => {
 
     expect(result.current.unseenAnnouncements).toEqual([])
     expect(result.current.studioAnnouncements).toEqual([])
-    expect(seenAnnouncementsMock).not.toBeCalled()
-    expect(mockObservableRequest).not.toBeCalled()
+    expect(seenAnnouncementsMock).not.toHaveBeenCalled()
+    expect(mockObservableRequest).not.toHaveBeenCalled()
   })
 })

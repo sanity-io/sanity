@@ -1,30 +1,27 @@
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {type ReactNode, useCallback} from 'react'
 
-import {type DocumentFieldAction} from '../../config'
-import {type FormNodePresence} from '../../presence'
+import {type DocumentFieldAction} from '../../config/document/fieldActions/types'
+import {type FormNodePresence} from '../../presence/types'
 import {PreviewLoader} from '../../preview/components/PreviewLoader'
-import {useSource} from '../../studio'
-import {
-  useAnnotationComponent,
-  useBlockComponent,
-  useFieldComponent,
-  useInlineBlockComponent,
-  useInputComponent,
-  useItemComponent,
-  usePreviewComponent,
-} from '../form-components-hooks'
+import {useSource} from '../../studio/source'
+import {useAnnotationComponent} from '../form-components-hooks/useAnnotationComponent'
+import {useBlockComponent} from '../form-components-hooks/useBlockComponent'
+import {useFieldComponent} from '../form-components-hooks/useFieldComponent'
+import {useInlineBlockComponent} from '../form-components-hooks/useInlineBlockComponent'
+import {useInputComponent} from '../form-components-hooks/useInputComponent'
+import {useItemComponent} from '../form-components-hooks/useItemComponent'
+import {usePreviewComponent} from '../form-components-hooks/usePreviewComponent'
 import {FormBuilderProvider} from '../FormBuilderProvider'
-import {type PatchChannel, type PatchEvent} from '../patch'
-import {type FormFieldGroup, type StateTree} from '../store'
-import {
-  type BlockAnnotationProps,
-  type BlockProps,
-  type FieldProps,
-  type InputProps,
-  type ItemProps,
-  type RenderPreviewCallbackProps,
-} from '../types'
+import {type PatchChannel} from '../patch/PatchChannel'
+import {type PatchEvent} from '../patch/PatchEvent'
+import {type FormFieldGroup} from '../store/types/fieldGroup'
+import {type StateTree} from '../store/types/state'
+import {type BlockAnnotationProps, type BlockProps} from '../types/blockProps'
+import {type FieldProps} from '../types/fieldProps'
+import {type InputProps} from '../types/inputProps'
+import {type ItemProps} from '../types/itemProps'
+import {type RenderPreviewCallbackProps} from '../types/renderCallback'
 
 /**
  * @alpha This API might change.
@@ -91,6 +88,7 @@ export function FormProvider(props: FormProviderProps) {
     validation,
   } = props
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {file, image} = useSource().form
 
   // These hooks may be stored in context as an perf optimization

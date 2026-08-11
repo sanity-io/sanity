@@ -6,8 +6,8 @@ import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentDocument} from '../../types'
@@ -19,6 +19,7 @@ function truncate(str: string, length = 250) {
 
 interface BlockQuoteStackProps {
   $hasReferencedValue: boolean
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: Theme
 }
 

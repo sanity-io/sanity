@@ -213,5 +213,9 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
     workspace.name,
   ])
 
+  // Deferred (per review): keyed on the stable document `_id`/`_type` and
+  // consumed inside a dialog the user opens for a fixed document, so there's
+  // no cross-document tear. react-rx v5's identity-coherent deferral falls
+  // back to the live value if the observable identity changes.
   return useObservable(linkToCanvas$, initialState)
 }

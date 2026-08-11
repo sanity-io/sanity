@@ -1,10 +1,12 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Flex, useToast} from '@sanity/ui'
+import {Box, Card, Flex} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type FormEvent, useCallback, useState} from 'react'
 
-import {Button, Dialog} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
@@ -40,6 +42,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const {releasePromise} = useGuardWithReleaseLimitUpsell()
 
   const handleOnSubmit = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
 

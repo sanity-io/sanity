@@ -4,19 +4,18 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {styled} from 'styled-components'
 
-import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
-import {DocumentStatus} from '../../../../../../../components/documentStatus'
-import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator'
+import {DocumentStatus} from '../../../../../../../components/documentStatus/DocumentStatus'
+import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator/DocumentStatusIndicator'
+import {type GeneralPreviewLayoutKey} from '../../../../../../../components/previews/types'
 import {type PerspectiveStack} from '../../../../../../../perspective/types'
-import {DocumentPreviewPresence} from '../../../../../../../presence'
-import {
-  getPreviewStateObservable,
-  getPreviewValueWithFallback,
-  SanityDefaultPreview,
-} from '../../../../../../../preview'
+import {DocumentPreviewPresence} from '../../../../../../../presence/DocumentPreviewPresence'
+import {SanityDefaultPreview} from '../../../../../../../preview/components/SanityDefaultPreview'
+import {getPreviewStateObservable} from '../../../../../../../preview/utils/getPreviewStateObservable'
+import {getPreviewValueWithFallback} from '../../../../../../../preview/utils/getPreviewValueWithFallback'
 import {useDocumentVersions} from '../../../../../../../releases/hooks/useDocumentVersions'
 import {getDocumentVersionInfoFromVersions} from '../../../../../../../releases/util/getDocumentVersionInfoFromVersions'
-import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
+import {useDocumentPreviewStore} from '../../../../../../../store/datastores'
+import {type DocumentPresence} from '../../../../../../../store/presence/types'
 
 interface SearchResultItemPreviewProps {
   documentId: string
@@ -24,8 +23,18 @@ interface SearchResultItemPreviewProps {
   layout?: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   perspective?: PerspectiveStack
+  /**
+   * The variant the preview is resolved in, as a bare variant id. Travels with `perspective`.
+   */
+  variant?: string
   schemaType: SchemaType
   showBadge?: boolean
+}
+
+const INITIAL_PREVIEW_STATE = {
+  snapshot: null,
+  isLoading: true,
+  original: null,
 }
 
 /**
@@ -51,23 +60,30 @@ export function SearchResultItemPreview({
   schemaType,
   showBadge = true,
   perspective,
+  variant,
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
 
   const observable = useMemo(() => {
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspective)
-  }, [documentPreviewStore, schemaType, documentId, perspective])
+    return getPreviewStateObservable(
+      documentPreviewStore,
+      schemaType,
+      documentId,
+      perspective,
+      undefined,
+      variant,
+    )
+  }, [documentPreviewStore, schemaType, documentId, perspective, variant])
 
   const documentStub = useMemo(
     () => ({_id: documentId, _type: documentType}),
     [documentId, documentType],
   )
 
-  const {isLoading, snapshot, original} = useObservable(observable, {
-    snapshot: null,
-    isLoading: true,
-    original: null,
-  })
+  // Deferred: react-rx v5's deferral is identity-coherent, so on a document
+  // id change the live snapshot wins and the previous document's title/media
+  // never renders next to the new document's version badges.
+  const {isLoading, snapshot, original} = useObservable(observable, INITIAL_PREVIEW_STATE)
 
   const {versions} = useDocumentVersions({documentId})
   const versionsInfo = useMemo(() => getDocumentVersionInfoFromVersions(versions), [versions])

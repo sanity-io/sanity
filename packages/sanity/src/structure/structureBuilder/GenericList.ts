@@ -20,6 +20,7 @@ import {
   type StructureNode,
 } from './StructureNodes'
 import {getStructureNodeId} from './util/getStructureNodeId'
+import {serializableMarker} from './util/isSerializable'
 import {validateId} from './util/validateId'
 
 function noChildResolver() {
@@ -120,6 +121,8 @@ export abstract class GenericListBuilder<
   TList extends BuildableGenericList,
   ConcreteImpl,
 > implements Serializable<GenericList> {
+  /** Brand consumed by `isSerializable` (avoids circular `instanceof` imports) */
+  readonly [serializableMarker] = true
   /** Check if initial value templates are set */
   protected initialValueTemplatesSpecified = false
   /** Generic list option object */

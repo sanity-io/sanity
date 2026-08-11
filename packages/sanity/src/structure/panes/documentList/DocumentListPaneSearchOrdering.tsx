@@ -1,9 +1,13 @@
+import {Box} from '@sanity-labs/ui-poc'
 import {SortIcon} from '@sanity/icons/Sort'
-import {Box, Menu, MenuDivider, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {memo, useId} from 'react'
 import {useGetI18nText, useTranslation} from 'sanity'
 
-import {Button, MenuButton, MenuItem} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 

@@ -1,7 +1,7 @@
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../i18n'
 import {useVariantOperations} from '../store/useVariantOperations'
 

@@ -3,14 +3,16 @@ import {generateHelpUrl} from '@sanity/generate-help-url'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
-import {Box, Breadcrumbs, Card, Flex, Stack, Text, type ThemeColorToneKey} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, type ThemeColorToneKey} from '@sanity/ui'
+import {Breadcrumbs} from '@sanity/ui/breadcrumbs'
 import capitalize from 'lodash-es/capitalize.js'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getTypeInfo} from './getTypeInfo'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
   error: 'critical',
   warning: 'caution',
@@ -44,7 +46,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
   }, [problemGroups])
 
   return (
-    <Stack as="ul" space={4}>
+    <Stack as="ul" gap={4}>
       {items.map(({group, problem}, i) => {
         const isError = problem.severity === 'error'
         const isWarning = problem.severity === 'warning'
@@ -109,7 +111,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
 
             <Box as="ul" marginTop={4}>
               <Box as="li">
-                <Stack space={3}>
+                <Stack gap={3}>
                   <ErrorMessageText muted size={1}>
                     {problem.message}
                   </ErrorMessageText>

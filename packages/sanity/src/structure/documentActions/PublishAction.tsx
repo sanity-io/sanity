@@ -1,7 +1,8 @@
 import {PublishIcon} from '@sanity/icons/Publish'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
-import {Text, useToast} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
@@ -78,6 +79,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   // tracking) lives on the variant-of-published sibling — the base `published` document says
   // nothing about whether the *variant* is published.
   const publishedInfo = isVariantTarget ? targetDocumentState.publishedSibling : published
+  // Variant publish locks need the sibling revision (not in any pair snapshot). Base draft
+  // publish omits this and keeps using `snapshots.published._rev` inside the operation.
+  const publishedRevisionId = isVariantTarget
+    ? targetDocumentState.publishedSibling?._rev
+    : undefined
 
   const {publish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const validationStatus = useValidationStatus(value._id, type, !release)
@@ -113,10 +119,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const telemetry = useTelemetry()
 
   const doPublish = useCallback(() => {
-    publish.execute()
+    publish.execute(isVariantTarget ? {publishedRevisionId} : undefined)
     telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
-  }, [publish, currentPublishRevision, telemetry, id])
+  }, [publish, isVariantTarget, publishedRevisionId, currentPublishRevision, telemetry, id])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one

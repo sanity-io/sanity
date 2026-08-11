@@ -6,8 +6,8 @@ import {EditDialogOuterBoundaryContext} from 'sanity/_singletons'
 import {
   InsertMenu as SanityInsertMenu,
   type InsertMenuProps as SanityInsertMenuProps,
-} from '../../../../../insert-menu'
-import {Popover, type PopoverProps} from '../../../../../ui-components'
+} from '../../../../../insert-menu/InsertMenu'
+import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 type PopoverState = {open: boolean}

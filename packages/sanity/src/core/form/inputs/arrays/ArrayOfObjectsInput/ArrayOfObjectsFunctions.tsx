@@ -4,12 +4,14 @@ import {type ArraySchemaType} from '@sanity/types'
 import {Grid} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {Button, Tooltip} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {pathToString} from '../../../../field/paths/helpers'
-import {useTranslation} from '../../../../i18n'
-import {CreatedNewObject} from '../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {ObjectCreated} from '../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
-import {type ArrayInputFunctionsProps, type ObjectItem} from '../../../types'
+import {type ArrayInputFunctionsProps} from '../../../types/_transitional'
+import {type ObjectItem} from '../../../types/itemProps'
 import {useArrayValidation} from '../common/ArrayValidationContext'
 import {useInsertMenuPopover} from './InsertMenuPopover'
 
@@ -28,6 +30,7 @@ export function ArrayOfObjectsFunctions<
   const [popoverToggleElement, setPopoverToggleElement] = useState<HTMLButtonElement | null>(null)
 
   const telemetry = useTelemetry()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   const insertItem = useCallback(
@@ -40,7 +43,9 @@ export function ArrayOfObjectsFunctions<
   )
 
   const handleAddBtnClick = useCallback(() => {
-    telemetry.log(CreatedNewObject, {
+    telemetry.log(ObjectCreated, {
+      location: 'array_list',
+      position: 'new',
       path: pathToString(path),
       origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })

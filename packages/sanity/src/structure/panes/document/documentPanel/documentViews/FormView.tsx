@@ -1,16 +1,9 @@
 import {Box, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
-import {
-  type FormEvent,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useEffectEvent,
-  useMemo,
-  useState,
-} from 'react'
+import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
 import {
   createPatchChannel,
+  Delay,
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
   FormBuilder,
@@ -27,8 +20,8 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
-import {Delay} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
@@ -39,10 +32,11 @@ interface FormViewProps {
   margins: [number, number, number, number]
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const preventDefault = (ev: FormEvent) => ev.preventDefault()
 
-export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function FormView(props, ref) {
-  const {hidden, margins} = props
+export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) {
+  const {ref, hidden, margins} = props
 
   const {
     collapsedFieldSets,
@@ -290,7 +284,7 @@ export const FormView = forwardRef<HTMLFormElement, FormViewProps>(function Form
       </PresenceOverlay>
     </FormContainer>
   )
-})
+}
 
 function prepareMutationEvent(event: DocumentMutationEvent): PatchMsg {
   const patches = event.mutations.map((mut) => mut.patch).filter(Boolean)

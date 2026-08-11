@@ -5,16 +5,16 @@ import {Card, Stack} from '@sanity/ui'
 import {startTransition, useCallback, useContext, useMemo, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
-import {Button} from '../../../../ui-components'
-import {useDocumentOperation} from '../../../hooks'
+import {Button} from '../../../../ui-components/button/Button'
+import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {
   getPairTarget,
   getTargetScopeId,
   useTargetDocumentState,
 } from '../../../hooks/useTargetDocumentState'
-import {useTranslation} from '../../../i18n'
-import {useDocumentPairPermissions} from '../../../store'
-import {useConditionalProperty} from '../../conditional-property'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
+import {useConditionalProperty} from '../../conditional-property/useConditionalProperty'
 import {type ChangeNode, type ObjectDiff} from '../../types'
 import {buildObjectChangeList} from '../changes/buildChangeList'
 import {undoChange} from '../changes/undoChange'
@@ -120,8 +120,8 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
 
   return (
     <Card>
-      <Stack space={5}>
-        <Stack as={ChangeListWrapper} space={5}>
+      <Stack gap={5}>
+        <Stack as={ChangeListWrapper} gap={5}>
           {changes.map((change) => (
             <div key={change.key}>
               <ChangeResolver

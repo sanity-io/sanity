@@ -2,7 +2,12 @@ import {describe, expect, it} from 'vitest'
 
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {variantAlphaAudience} from '../../variants/__fixtures__/variants.fixture'
-import {getPairTarget, getTargetDocumentState, getTargetScopeId} from '../useTargetDocumentState'
+import {
+  getCreatableVariantTarget,
+  getPairTarget,
+  getTargetDocumentState,
+  getTargetScopeId,
+} from '../useTargetDocumentState'
 
 const PUBLISHED_ID = 'article-1'
 const RELEASE_ID = 'rSummer'
@@ -52,6 +57,18 @@ const publishedAlphaVariant = versionStub({
     variant: variantRef(variantAlphaAudience._id),
     group: groupRef,
     scopeId: 'varscopePub',
+  },
+})
+// A variant-of-published sibling advertising the (stable, server-generated) id its drafts-bundle
+// sibling will occupy — the enabler for creating the draft variant by typing.
+const DRAFT_SIBLING_ID = `versions.varscopeDraft.${PUBLISHED_ID}`
+const publishedAlphaVariantAdvertisingDraft = versionStub({
+  _id: `versions.varscopePub.${PUBLISHED_ID}`,
+  _system: {
+    variant: variantRef(variantAlphaAudience._id),
+    group: groupRef,
+    scopeId: 'varscopePub',
+    draft: {_ref: DRAFT_SIBLING_ID, _weak: true},
   },
 })
 
@@ -188,6 +205,56 @@ describe('getTargetDocumentState', () => {
         publishedSibling: publishedAlphaVariant,
       })
     })
+
+    describe('creatable target (advertised draft sibling id)', () => {
+      // No drafts-scoped variant; the published variant advertises its draft sibling id.
+      const versions = [publishedBase, draftBase, publishedAlphaVariantAdvertisingDraft]
+
+      it('resolves the creatable target on the drafts bundle', () => {
+        expect(getTargetDocumentState({...variantOptions, versions})).toEqual({
+          status: 'variant-missing',
+          variant: variantAlphaAudience,
+          bundle: 'drafts',
+          publishedSibling: publishedAlphaVariantAdvertisingDraft,
+          creatableTarget: {id: DRAFT_SIBLING_ID, scopeId: 'varscopeDraft'},
+        })
+      })
+
+      it('does not resolve a creatable target for non-drafts bundles', () => {
+        const releaseState = getTargetDocumentState({
+          ...variantOptions,
+          versions,
+          bundle: RELEASE_ID,
+        })
+        expect(releaseState.status).toBe('variant-missing')
+        expect(
+          releaseState.status === 'variant-missing' && releaseState.creatableTarget,
+        ).toBeUndefined()
+      })
+
+      it('does not resolve a creatable target when the sibling advertises no draft id', () => {
+        const state = getTargetDocumentState({
+          ...variantOptions,
+          versions: [publishedBase, draftBase, publishedAlphaVariant],
+        })
+        expect(state.status === 'variant-missing' && state.creatableTarget).toBeUndefined()
+      })
+
+      it('is not creatable once the draft variant exists (regular ready target)', () => {
+        expect(
+          getTargetDocumentState({
+            ...variantOptions,
+            versions: [...versions, draftAlphaVariant],
+          }),
+        ).toEqual({
+          status: 'ready',
+          targetDocument: draftAlphaVariant,
+          scopeId: 'varscope',
+          variant: variantAlphaAudience,
+          publishedSibling: publishedAlphaVariantAdvertisingDraft,
+        })
+      })
+    })
   })
 })
 
@@ -200,6 +267,46 @@ describe('getTargetScopeId', () => {
     ).toBeUndefined()
     expect(
       getTargetScopeId(getTargetDocumentState({...variantOptions, bundle: 'published'})),
+    ).toBeUndefined()
+  })
+
+  it('returns the advertised draft scope for a creatable missing variant', () => {
+    const state = getTargetDocumentState({
+      ...variantOptions,
+      versions: [publishedBase, draftBase, publishedAlphaVariantAdvertisingDraft],
+    })
+    expect(getTargetScopeId(state)).toBe('varscopeDraft')
+  })
+
+  it('returns undefined for a non-creatable missing variant', () => {
+    const state = getTargetDocumentState({
+      ...variantOptions,
+      versions: [publishedBase, draftBase, publishedAlphaVariant],
+    })
+    expect(getTargetScopeId(state)).toBeUndefined()
+  })
+})
+
+describe('getCreatableVariantTarget', () => {
+  it('returns the creatable target only for a variant-missing state that has one', () => {
+    expect(
+      getCreatableVariantTarget(
+        getTargetDocumentState({
+          ...variantOptions,
+          versions: [publishedBase, draftBase, publishedAlphaVariantAdvertisingDraft],
+        }),
+      ),
+    ).toEqual({id: DRAFT_SIBLING_ID, scopeId: 'varscopeDraft'})
+
+    expect(getCreatableVariantTarget(getTargetDocumentState(variantOptions))).toBeUndefined()
+    expect(getCreatableVariantTarget(getTargetDocumentState(baseOptions))).toBeUndefined()
+    expect(
+      getCreatableVariantTarget(
+        getTargetDocumentState({
+          ...variantOptions,
+          versions: [publishedBase, draftBase, publishedAlphaVariant],
+        }),
+      ),
     ).toBeUndefined()
   })
 })
@@ -231,6 +338,22 @@ describe('getPairTarget', () => {
       kind: 'variant',
       scopeId: 'varscope',
       variantId: variantAlphaAudience._id,
+    })
+  })
+
+  it('maps a creatable missing variant to the variant kind with allowCreate', () => {
+    expect(
+      getPairTarget(
+        getTargetDocumentState({
+          ...variantOptions,
+          versions: [publishedBase, draftBase, publishedAlphaVariantAdvertisingDraft],
+        }),
+      ),
+    ).toEqual({
+      kind: 'variant',
+      scopeId: 'varscopeDraft',
+      variantId: variantAlphaAudience._id,
+      allowCreate: true,
     })
   })
 

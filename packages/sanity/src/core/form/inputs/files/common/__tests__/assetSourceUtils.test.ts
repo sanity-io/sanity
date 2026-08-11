@@ -120,6 +120,7 @@ describe('assetSourceUtils', () => {
     it('falls back to title when no i18nKey', () => {
       const source: AssetSource = {
         name: 'my-source',
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         title: 'My Source Title',
         component: () => null,
       } as AssetSource

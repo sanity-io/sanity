@@ -134,7 +134,7 @@ export function PreviewLocationInput(props: {
         style={{zIndex: 1}}
         radius={2}
         ref={inputRef}
-        space={padding}
+        gap={padding}
         suffix={suffix}
         value={sessionValue === undefined ? new URL(value, targetOrigin).toString() : sessionValue}
       />

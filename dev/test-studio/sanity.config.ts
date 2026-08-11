@@ -7,6 +7,7 @@ import {EnvelopeIcon} from '@sanity/icons/Envelope'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
+import {themerTool} from '@sanity/themer/tool'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
@@ -15,7 +16,7 @@ import {media} from 'sanity-plugin-media'
 import {defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
-import {imageAssetSource} from './assetSources'
+import {imageAssetSource} from './assetSources/imageAssetSource'
 import {
   Annotation,
   Block,
@@ -41,12 +42,12 @@ import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
 import {coffeeShopSeedTool} from './plugins/coffee-shop-seed'
-import {errorReportingTestPlugin} from './plugins/error-reporting-test'
-import {formBuilderReproTool} from './plugins/form-builder-repro'
+import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
+import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
-import {languageFilter} from './plugins/language-filter'
-import {routerDebugTool} from './plugins/router-debug'
+import {languageFilter} from './plugins/language-filter/plugin'
+import {routerDebugTool} from './plugins/router-debug/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {coffeeShopSchemaTypes} from './schema/coffeeShop'
@@ -56,7 +57,9 @@ import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
-import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
+import {newDocumentOptions} from './structure/resolveNewDocumentOptions'
+import {structure} from './structure/resolveStructure'
+import {defaultDocumentNode} from './structure/resolveStructureDocumentNode'
 
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
@@ -220,6 +223,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         // uncomment to test
         //defaultApiVersion: '2025-02-05',
       }),
+      themerTool(),
       routerDebugTool(),
       formBuilderReproTool(),
       errorReportingTestPlugin(),
@@ -311,6 +315,17 @@ export default defineConfig([
     hidden: true,
   },
   defaultWorkspace,
+  {
+    ...defaultWorkspace,
+    title: 'Test Studio (variants disabled)',
+    name: 'test-studio-variants-disabled',
+    basePath: '/test-studio-variants-disabled',
+    beta: {
+      variants: {
+        enabled: false,
+      },
+    },
+  },
   {
     ...defaultWorkspace,
     projectId: 'nonexistent',

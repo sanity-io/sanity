@@ -2,11 +2,11 @@ import {Badge, Box, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
 import {styled} from 'styled-components'
 
-import {type UserWithPermission} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
-import {useUser} from '../../../store'
+import {type UserWithPermission} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useUser} from '../../../store/user/hooks'
 import {commentsLocaleNamespace} from '../../i18n'
-import {CommentsAvatar} from '../avatars'
+import {CommentsAvatar} from '../avatars/CommentsAvatar'
 
 const InnerFlex = styled(Flex)``
 
@@ -44,11 +44,7 @@ export function MentionsMenuItem(props: MentionsItemProps) {
           <Box>{text}</Box>
         </InnerFlex>
 
-        {!user.granted && (
-          <Badge fontSize={1} mode="outline">
-            {t('mentions.unauthorized-user')}
-          </Badge>
-        )}
+        {!user.granted && <Badge fontSize={1}>{t('mentions.unauthorized-user')}</Badge>}
       </Flex>
     </Card>
   )

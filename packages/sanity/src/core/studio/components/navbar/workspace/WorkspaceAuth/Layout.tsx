@@ -43,7 +43,7 @@ export function Layout(props: LayoutProps) {
   const prefersDark = usePrefersDark()
 
   return (
-    <Stack space={6}>
+    <Stack gap={6}>
       <Card border radius={3} overflow="auto">
         <Stack>
           {typeof header === 'object' && <Box>{header}</Box>}

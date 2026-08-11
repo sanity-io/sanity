@@ -3,10 +3,10 @@ import {Box, Card, Checkbox, Flex, Grid} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {useCallback, useMemo} from 'react'
 
-import {ChangeIndicator} from '../../../../changeIndicators'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {IncompatibleItemType} from '../../../members/array/IncompatibleItemType'
-import {set, unset} from '../../../patch'
-import {type ArrayOfObjectsInputProps} from '../../../types'
+import {set, unset} from '../../../patch/patch'
+import {type ArrayOfObjectsInputProps} from '../../../types/inputProps'
 
 function isEqual(item: any, otherItem: any): boolean {
   if (item === otherItem) {
@@ -109,7 +109,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
       <Grid
         gap={2}
-        columns={isGrid ? Math.min(options.length, 4) : 1}
+        gridTemplateColumns={isGrid ? Math.min(options.length, 4) : 1}
         tabIndex={0}
         {...elementProps}
       >

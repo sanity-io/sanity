@@ -1,10 +1,15 @@
 import {Card, Flex} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
-import {isPublishedPerspective, isReleaseDocument, usePerspective} from 'sanity'
+import {
+  getCreatableVariantTarget,
+  isPublishedPerspective,
+  isReleaseDocument,
+  usePerspective,
+} from 'sanity'
 
-import {usePaneRouter} from '../../../components'
-import {SpacerButton} from '../../../components/spacerButton'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
+import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
 import {EMPTY_PARAMS} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
@@ -42,8 +47,14 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
     // Hide the footer (status + actions) when a variant is requested but its target document has
     // not resolved to an editable version (missing, invalid selection, or mid-transition).
-    // Mirrors the not-in-variant banner and read-only form state.
-    if (selectedVariantName && targetDocumentState.status !== 'ready') {
+    // Mirrors the not-in-variant banner and read-only form state. Exception: a creatable missing
+    // draft variant is editable (typing creates it), so the footer renders like the base
+    // published-with-no-draft experience.
+    if (
+      selectedVariantName &&
+      targetDocumentState.status !== 'ready' &&
+      !getCreatableVariantTarget(targetDocumentState)
+    ) {
       return false
     }
 

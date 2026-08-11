@@ -7,20 +7,17 @@ import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {type FieldProps} from '../../../form'
-import {getSchemaTypeTitle} from '../../../schema'
-import {useCurrentUser} from '../../../store'
+import {type FieldProps} from '../../../form/types/fieldProps'
+import {getSchemaTypeTitle} from '../../../schema/helpers'
+import {useCurrentUser} from '../../../store/user/hooks'
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 import {isTextSelectionComment, parseCommentFieldPath} from '../../helpers'
-import {
-  applyCommentsFieldAttr,
-  useComments,
-  useCommentsAuthoringPath,
-  useCommentsEnabled,
-  useCommentsScroll,
-  useCommentsSelectedPath,
-  useCommentsUpsell,
-} from '../../hooks'
+import {useComments} from '../../hooks/useComments'
+import {useCommentsAuthoringPath} from '../../hooks/useCommentsAuthoringPath'
+import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
+import {applyCommentsFieldAttr, useCommentsScroll} from '../../hooks/useCommentsScroll'
+import {useCommentsSelectedPath} from '../../hooks/useCommentsSelectedPath'
+import {useCommentsUpsell} from '../../hooks/useCommentsUpsell'
 import {type CommentCreatePayload, type CommentMessage, type CommentsUIMode} from '../../types'
 import {CommentsFieldButton} from './CommentsFieldButton'
 
@@ -55,6 +52,7 @@ export function CommentsField(props: FieldProps) {
 }
 
 const HighlightDiv = styled(motion.div)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {radius, space, color} = theme.sanity
   const bg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][color.dark ? 900 : 50].hex
 
@@ -331,6 +329,7 @@ function CommentFieldInner(
     <FieldStack {...applyCommentsFieldAttr(PathUtils.toString(props.path))} ref={rootRef}>
       {props.renderDefault({
         ...props,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         __internal_comments: internalComments,
       })}
 

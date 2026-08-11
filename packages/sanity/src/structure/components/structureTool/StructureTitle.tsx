@@ -4,7 +4,7 @@ import {useTranslation, useValuePreview} from 'sanity'
 
 import {LOADING_PANE} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
-import {type Panes} from '../../structureResolvers'
+import {type Panes} from '../../structureResolvers/useResolvedPanes'
 import {type DocumentPaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 

@@ -1,4 +1,3 @@
-// oxlint-disable-next-line no-unassigned-import -- imported for its side effects
 import '@portabletext/plugin-table/ui/styles.css'
 
 import {type Container, type ContainerRenderProps} from '@portabletext/editor'
@@ -13,14 +12,16 @@ import {
 } from '@portabletext/plugin-table/ui'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Flex, Menu, MenuDivider, Switch, Text, usePortal} from '@sanity/ui'
+import {Flex, Switch, Text, usePortal} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useId, useMemo} from 'react'
 import {createGlobalStyle, useTheme} from 'styled-components'
 
-import {MenuButton, MenuItem} from '../../../../../ui-components'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {useTranslation} from '../../../../i18n'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useColorSchemeValue} from '../../../../studio/colorScheme'
 
 const studioTableRender = (props: ContainerRenderProps) => <StudioTable {...props} />

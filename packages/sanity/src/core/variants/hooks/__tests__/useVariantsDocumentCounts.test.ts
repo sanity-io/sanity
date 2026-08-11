@@ -17,7 +17,7 @@ import {
 const useClientMock = vi.hoisted(() => vi.fn())
 const useVariantsStoreMock = vi.hoisted(() => vi.fn())
 
-vi.mock('../../../hooks', async (importOriginal) => ({
+vi.mock('../../../hooks/useClient', async (importOriginal) => ({
   ...(await importOriginal()),
   useClient: useClientMock,
 }))

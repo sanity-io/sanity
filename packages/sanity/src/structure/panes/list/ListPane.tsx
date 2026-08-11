@@ -1,7 +1,8 @@
-import {Card, Code} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useI18nText} from 'sanity'
 
-import {Pane} from '../../components'
+import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
 import {type BaseStructureToolPaneProps} from '../types'
 import {ListPaneContent} from './ListPaneContent'

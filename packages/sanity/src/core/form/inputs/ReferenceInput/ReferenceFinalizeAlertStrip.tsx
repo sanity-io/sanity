@@ -1,8 +1,9 @@
 import {type ReferenceSchemaType} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 
-import {Button} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {AlertStrip} from '../../components/AlertStrip'
 
 /**
@@ -30,7 +31,7 @@ export function ReferenceFinalizeAlertStrip({
       status="info"
       data-testid="alert-reference-published"
     >
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text as="p" muted size={1}>
           <Translate
             t={t}

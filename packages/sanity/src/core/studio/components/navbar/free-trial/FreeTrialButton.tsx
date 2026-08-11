@@ -1,11 +1,11 @@
 import {purple, yellow} from '@sanity/color'
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {Card, Text} from '@sanity/ui'
-import {forwardRef, type Ref} from 'react'
+import {type Ref, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 const CenteredStroke = styled.div`
   position: absolute;
@@ -67,10 +67,12 @@ interface FreeTrialButtonProps extends OutlineProps {
   toggleShowContent: () => void
 }
 
-export const FreeTrialButtonTopbar = forwardRef(function FreeTrialButtonTopbar(
-  {toggleShowContent, daysLeft, totalDays}: FreeTrialButtonProps,
-  ref: Ref<HTMLButtonElement>,
-) {
+export function FreeTrialButtonTopbar({
+  ref,
+  toggleShowContent,
+  daysLeft,
+  totalDays,
+}: FreeTrialButtonProps & RefAttributes<HTMLButtonElement>) {
   const {t} = useTranslation()
 
   return (
@@ -90,12 +92,14 @@ export const FreeTrialButtonTopbar = forwardRef(function FreeTrialButtonTopbar(
       {daysLeft > 0 && <SvgFilledOutline daysLeft={daysLeft} totalDays={totalDays} />}
     </Button>
   )
-})
+}
 
-export const FreeTrialButtonSidebar = forwardRef(function FreeTrialButtonSidebar(
-  {toggleShowContent, daysLeft}: Pick<FreeTrialButtonProps, 'toggleShowContent' | 'daysLeft'>,
-  ref: Ref<HTMLButtonElement>,
-) {
+export function FreeTrialButtonSidebar({
+  ref,
+  toggleShowContent,
+  daysLeft,
+}: Pick<FreeTrialButtonProps, 'toggleShowContent' | 'daysLeft'> &
+  RefAttributes<HTMLButtonElement>) {
   const {t} = useTranslation()
 
   return (
@@ -113,4 +117,4 @@ export const FreeTrialButtonSidebar = forwardRef(function FreeTrialButtonSidebar
       }
     />
   )
-})
+}

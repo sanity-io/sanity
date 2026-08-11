@@ -5,9 +5,9 @@ import {useCallback, useState} from 'react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {useDateTimeFormat} from '../../../../hooks'
-import {useActiveReleases} from '../../../store'
+import {useDateTimeFormat} from '../../../../hooks/useDateTimeFormat'
 import {RELEASE_DOCUMENT_TYPE} from '../../../store/constants'
+import {useActiveReleases} from '../../../store/useActiveReleases'
 import {useReleasesIds} from '../../../store/useReleasesIds'
 import {ReleaseForm} from '../ReleaseForm'
 
@@ -162,7 +162,11 @@ describe('ReleaseForm', () => {
         wrapper,
       })
 
-      expect(screen.getByText('As soon as possible')).toBeInTheDocument()
+      // The closed menu keeps its items mounted, so assert on the button the label points at
+      // rather than on the identically labelled menu item.
+      expect(screen.getByLabelText('Approximate time of release')).toHaveTextContent(
+        'As soon as possible',
+      )
     })
   })
 
@@ -265,7 +269,9 @@ describe('ReleaseForm', () => {
         wrapper,
       })
 
-      expect(screen.getByText('At time')).toBeInTheDocument()
+      // The closed menu keeps its items mounted, so assert on the button the label points at
+      // rather than on the identically labelled menu item.
+      expect(screen.getByLabelText('Approximate time of release')).toHaveTextContent('At time')
     })
   })
 

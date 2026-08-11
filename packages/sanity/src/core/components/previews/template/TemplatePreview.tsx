@@ -71,7 +71,7 @@ export function TemplatePreview(props: TemplatePreviewProps) {
     return (
       <Root>
         <HeaderFlex>
-          <Stack flex={1} space={2}>
+          <Stack flex={1} gap={2}>
             <TitleSkeleton />
             <SubtitleSkeleton />
           </Stack>
@@ -83,7 +83,7 @@ export function TemplatePreview(props: TemplatePreviewProps) {
   return (
     <Root>
       <HeaderFlex>
-        <Stack flex={1} space={2}>
+        <Stack flex={1} gap={2}>
           {isValidElementType(Title) && (
             <Text textOverflow="ellipsis">
               <Title layout="default" />

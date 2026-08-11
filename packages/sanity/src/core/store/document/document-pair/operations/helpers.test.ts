@@ -2,8 +2,8 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
-import {createSchema} from '../../../../schema'
-import {type IdPair} from '../../types'
+import {createSchema} from '../../../../schema/createSchema'
+import {type DocumentPairTarget, type IdPair} from '../../types'
 import {createOperationsAPI, TARGET_NOT_FOUND_OPERATIONS} from './helpers'
 import {type OperationArgs, type OperationsAPI} from './types'
 
@@ -29,6 +29,7 @@ function doc(id: string): SanityDocument {
 function createArgs(options: {
   idPair: IdPair
   snapshots: OperationArgs['snapshots']
+  target?: DocumentPairTarget
 }): OperationArgs {
   return {
     client,
@@ -37,8 +38,10 @@ function createArgs(options: {
     typeName: 'book',
     idPair: options.idPair,
     snapshots: options.snapshots,
+    target: options.target,
     draft: {} as OperationArgs['draft'],
     published: {} as OperationArgs['published'],
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     serverActionsEnabled: true,
   }
 }
@@ -62,7 +65,7 @@ describe('TARGET_NOT_FOUND_OPERATIONS', () => {
       const operation = TARGET_NOT_FOUND_OPERATIONS[opName]
       const execute = operation.execute as () => void
       expect(operation.disabled).toBe('TARGET_NOT_FOUND')
-      expect(() => execute()).toThrowError(/does not contain this document/)
+      expect(() => execute()).toThrow(/does not contain this document/)
     }
   })
 })
@@ -79,7 +82,7 @@ describe('createOperationsAPI — self-derived target guard', () => {
     for (const opName of GUARDED_OPS) {
       const execute = operations[opName].execute as () => void
       expect(operations[opName].disabled, opName).toBe('TARGET_NOT_FOUND')
-      expect(() => execute(), opName).toThrowError(/does not contain this document/)
+      expect(() => execute(), opName).toThrow(/does not contain this document/)
     }
 
     // Non-mutating / group-level operations stay functional.
@@ -155,5 +158,64 @@ describe('createOperationsAPI — self-derived target guard', () => {
 
     expect(operations.patch.disabled).toBe(false)
     expect(operations.publish.disabled).toBe(false)
+  })
+
+  describe('declared creatable variant target (allowCreate)', () => {
+    const CREATABLE_TARGET: DocumentPairTarget = {
+      kind: 'variant',
+      scopeId: 'rel',
+      variantId: '_.variants.alpha',
+      allowCreate: true,
+    }
+
+    it('keeps patch and commit enabled when the version is missing for an existing document', () => {
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {draft: null, published: doc(PUBLISHED_ID), version: null},
+          target: CREATABLE_TARGET,
+        }),
+      )
+
+      // Typing must create the variant document at the server-advertised id.
+      expect(operations.patch.disabled).toBe(false)
+      expect(operations.commit.disabled).toBe(false)
+
+      // The document still doesn't exist: everything that operates on it stays disabled.
+      for (const opName of ['publish', 'unpublish', 'discardChanges'] as const) {
+        expect(operations[opName].disabled, opName).toBe('TARGET_NOT_FOUND')
+      }
+    })
+
+    it('keeps all mutating operations guarded for a variant target without allowCreate', () => {
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {draft: null, published: doc(PUBLISHED_ID), version: null},
+          target: {kind: 'variant', scopeId: 'rel', variantId: '_.variants.alpha'},
+        }),
+      )
+
+      for (const opName of GUARDED_OPS) {
+        expect(operations[opName].disabled, opName).toBe('TARGET_NOT_FOUND')
+      }
+    })
+
+    it('does not alter operations once the version document exists', () => {
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {
+            draft: null,
+            published: doc(PUBLISHED_ID),
+            version: doc(PAIR_WITH_VERSION.versionId!),
+          },
+          target: CREATABLE_TARGET,
+        }),
+      )
+
+      expect(operations.patch.disabled).toBe(false)
+      expect(operations.publish.disabled).toBe(false)
+    })
   })
 })

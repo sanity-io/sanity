@@ -8,10 +8,11 @@ import {getSelectionEndBlock, getSelectionStartBlock} from '@portabletext/editor
 import {isEqual} from '@sanity/util/paths'
 import {memo, useCallback, useMemo} from 'react'
 
-import {type PopoverProps} from '../../../../../ui-components'
-import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {useTranslation} from '../../../../i18n'
+import {type PopoverProps} from '../../../../../ui-components/popover/Popover'
+import {CollapseMenu} from '../../../../components/collapseMenu/CollapseMenu'
+import {CollapseMenuButton} from '../../../../components/collapseMenu/CollapseMenuButton'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {getActionIcon} from './helpers'
 import {useActiveActionKeys, useFocusBlock} from './hooks'
@@ -32,6 +33,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const {disabled: disabledProp, groups, isFullscreen, collapsed} = props
   const focusBlock = useFocusBlock()
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const legacyEditor = usePortableTextEditor()
   const editor = useEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
@@ -69,6 +71,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const activeKeys = useActiveActionKeys({actions})
 
   const handleMenuClose = useCallback(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(legacyEditor)
   }, [legacyEditor])
 

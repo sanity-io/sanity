@@ -2,9 +2,9 @@ import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {UploadIcon} from '@sanity/icons/Upload'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {FileInputButton} from '../../form/inputs/files/common/FileInputButton/FileInputButton'
-import {fileTarget} from '../../form/inputs/files/common/fileTarget'
+import {fileTarget} from '../../form/inputs/files/common/fileTarget/fileTarget'
 import {useFeedbackTranslation} from '../i18n/useFeedbackTranslation'
 
 const FileTargetCard = fileTarget(Card)
@@ -54,7 +54,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
 
   if (imageFile) {
     return (
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text size={1} weight="medium">
           {t('feedback.attachment.label')}
         </Text>
@@ -76,7 +76,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
   }
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Text size={1} weight="medium">
         {t('feedback.attachment.label')}
       </Text>

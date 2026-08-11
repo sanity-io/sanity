@@ -1,14 +1,17 @@
 /* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {addWeeks} from 'date-fns/addWeeks'
 import {isAfter} from 'date-fns/isAfter'
 import {isBefore} from 'date-fns/isBefore'
-import {useCallback, useEffect, useState} from 'react'
-import {finalize} from 'rxjs'
+import {Suspense, use, useCallback, useMemo, useState} from 'react'
+import {type ObservablePromise, useObservablePromise, useSyncObservable} from 'react-rx'
+import {catchError, map, NEVER, of} from 'rxjs'
 
-import {Button, Dialog} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {getProviderTitle} from '../../store/authStore/providerTitle'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
@@ -31,107 +34,170 @@ export interface AccessRequest {
 
 const MAX_NOTE_LENGTH = 150
 
+type AccessRequestStatus = {
+  hasBeenDenied: boolean
+  hasPendingRequest: boolean
+  hasExpiredPendingRequest: boolean
+  /** The Access API could not be reached; the screen falls back to `NotAuthenticatedScreen`. */
+  error: boolean
+}
+
+function deriveAccessRequestStatus(
+  requests: AccessRequest[] | null,
+  projectId: string,
+): Omit<AccessRequestStatus, 'error'> {
+  if (!requests || !requests.length) {
+    return {
+      hasBeenDenied: false,
+      hasPendingRequest: false,
+      hasExpiredPendingRequest: false,
+    }
+  }
+
+  const projectRequests = requests.filter((request) => request.resourceId === projectId)
+  const declinedRequest = projectRequests.find((request) => request.status === 'declined')
+  if (declinedRequest && isAfter(addWeeks(new Date(declinedRequest.createdAt), 2), new Date())) {
+    return {
+      hasBeenDenied: true,
+      hasPendingRequest: false,
+      hasExpiredPendingRequest: false,
+    }
+  }
+
+  const pendingRequest = projectRequests.find(
+    (request) =>
+      request.status === 'pending' &&
+      // Access request is less than 2 weeks old
+      isAfter(addWeeks(new Date(request.createdAt), 2), new Date()),
+  )
+  if (pendingRequest) {
+    return {
+      hasBeenDenied: false,
+      hasPendingRequest: true,
+      hasExpiredPendingRequest: false,
+    }
+  }
+
+  const oldPendingRequest = projectRequests.find(
+    (request) =>
+      request.status === 'pending' &&
+      // Access request is more than 2 weeks old
+      isBefore(addWeeks(new Date(request.createdAt), 2), new Date()),
+  )
+  if (oldPendingRequest) {
+    return {
+      hasBeenDenied: false,
+      hasPendingRequest: false,
+      hasExpiredPendingRequest: true,
+    }
+  }
+
+  return {
+    hasBeenDenied: false,
+    hasPendingRequest: false,
+    hasExpiredPendingRequest: false,
+  }
+}
+
 export function RequestAccessScreen() {
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
-  const [client, setClient] = useState<SanityClient | undefined>()
-  const [projectId, setProjectId] = useState<string | undefined>()
-  const toast = useToast()
-
-  const [error, setError] = useState<unknown>(null)
-  const [msgError, setMsgError] = useState<string | undefined>()
-  const [loading, setLoading] = useState(true)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const [hasPendingRequest, setHasPendingRequest] = useState<boolean>(false)
-  const [hasExpiredPendingRequest, setExpiredHasPendingRequest] = useState<boolean>(false)
-  const [hasTooManyRequests, setHasTooManyRequests] = useState<boolean>(false)
-  const [hasBeenDenied, setHasBeenDenied] = useState<boolean>(false)
-
-  const [note, setNote] = useState<string | undefined>()
-  const [noteLength, setNoteLength] = useState<number>(0)
-
   const {activeWorkspace} = useActiveWorkspace()
 
   const handleLogout = useCallback(() => {
     void activeWorkspace.auth.logout?.()
   }, [activeWorkspace])
 
-  // Get config info from active workspace
-  useEffect(() => {
-    const subscription = activeWorkspace.auth.state.subscribe({
-      next: ({client: sanityClient, currentUser: user}) => {
-        // Need to get the client, projectId, and user from workspace
-        // because this screen is outside the SourceContext
-        setProjectId(sanityClient.config().projectId)
-        setClient(sanityClient.withConfig({apiVersion: '2024-07-01'}))
-        setCurrentUser(user)
-      },
-      error: setError,
-    })
+  // The client, projectId and user come from the workspace because this screen
+  // renders outside the SourceContext. Kept synchronous: `client`/`projectId`
+  // derived from this are read into the access-request POST, so a deferred
+  // snapshot could submit against a stale workspace identity.
+  const auth = useSyncObservable(activeWorkspace.auth.state, null)
+  const currentUser = auth?.currentUser
+  const projectId = auth?.client.config().projectId
+  const client = useMemo(() => auth?.client.withConfig({apiVersion: '2024-07-01'}), [auth?.client])
 
-    return () => {
-      subscription.unsubscribe()
+  const accessRequests$ = useMemo(() => {
+    if (!client || !projectId) {
+      // Auth has not emitted yet. NEVER is only a safe placeholder observable:
+      // the hook below is disabled in this state, and the loading UI comes
+      // from the early `<LoadingBlock />` return before the Suspense boundary.
+      return NEVER
     }
-  }, [activeWorkspace])
 
-  // Check if user has a pending access request for this project
-  useEffect(() => {
-    if (!client || !projectId) return () => {}
-    const request$ = client.observable
+    return client.observable
       .request<AccessRequest[] | null>({
         url: '/access/requests/me',
         tag: 'request-access',
       })
-      .pipe(finalize(() => setLoading(false)))
-      .subscribe({
-        next: (requests) => {
-          if (!requests || !requests.length) return
-
-          const projectRequests = requests.filter((request) => request.resourceId === projectId)
-          const declinedRequest = projectRequests.find((request) => request.status === 'declined')
-          if (
-            declinedRequest &&
-            isAfter(addWeeks(new Date(declinedRequest.createdAt), 2), new Date())
-          ) {
-            setHasBeenDenied(true)
-            return
-          }
-          const pendingRequest = projectRequests.find(
-            (request) =>
-              request.status === 'pending' &&
-              // Access request is less than 2 weeks old
-              isAfter(addWeeks(new Date(request.createdAt), 2), new Date()),
-          )
-          if (pendingRequest) {
-            setHasPendingRequest(true)
-            return
-          }
-          const oldPendingRequest = projectRequests.find(
-            (request) =>
-              request.status === 'pending' &&
-              // Access request is more than 2 weeks old
-              isBefore(addWeeks(new Date(request.createdAt), 2), new Date()),
-          )
-          if (oldPendingRequest) {
-            setExpiredHasPendingRequest(true)
-          }
-        },
-        error: (err) => {
+      .pipe(
+        map((requests): AccessRequestStatus => ({
+          error: false,
+          ...deriveAccessRequestStatus(requests, projectId),
+        })),
+        // A failing Access API is not fatal: fall back to the plain not-authorized screen
+        // rather than throwing to an error boundary.
+        catchError((err) => {
           console.error(err)
-          setError(true)
-        },
-      })
-
-    return () => {
-      request$.unsubscribe()
-    }
+          return of<AccessRequestStatus>({
+            hasBeenDenied: false,
+            hasPendingRequest: false,
+            hasExpiredPendingRequest: false,
+            error: true,
+          })
+        }),
+      )
   }, [client, projectId])
 
-  const handleSubmitRequest = useCallback(() => {
-    // If we haven't loaded the client or projectId from
-    // current worspace, return early
-    if (!client || !projectId) return
+  const accessRequestsPromise = useObservablePromise(accessRequests$, {
+    // Nothing to fetch on behalf of this component until auth has emitted.
+    disabled: !client || !projectId,
+  })
 
+  if (!client || !projectId) return <LoadingBlock />
+
+  return (
+    <Suspense fallback={<LoadingBlock />}>
+      <RequestAccessScreenContent
+        accessRequestsPromise={accessRequestsPromise}
+        client={client}
+        projectId={projectId}
+        currentUser={currentUser ?? null}
+        onLogout={handleLogout}
+      />
+    </Suspense>
+  )
+}
+
+function RequestAccessScreenContent({
+  accessRequestsPromise,
+  client,
+  projectId,
+  currentUser,
+  onLogout,
+}: {
+  accessRequestsPromise: ObservablePromise<AccessRequestStatus>
+  client: SanityClient
+  projectId: string
+  currentUser: CurrentUser | null
+  onLogout: () => void
+}) {
+  const {error, hasExpiredPendingRequest, ...fetched} = use(accessRequestsPromise)
+
+  const toast = useToast()
+
+  // Set by submitting the form; the resolved access request status only
+  // reports what the API already knew when this screen loaded.
+  const [msgError, setMsgError] = useState<string | undefined>()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submittedRequest, setSubmittedRequest] = useState(false)
+  const [hasTooManyRequests, setHasTooManyRequests] = useState(false)
+  const [submitDenied, setSubmitDenied] = useState(false)
+  const [note, setNote] = useState<string | undefined>()
+
+  const hasPendingRequest = fetched.hasPendingRequest || submittedRequest
+  const hasBeenDenied = fetched.hasBeenDenied || submitDenied
+  const noteLength = note?.length ?? 0
+
+  const handleSubmitRequest = useCallback(() => {
     setIsSubmitting(true)
 
     client
@@ -141,7 +207,7 @@ export function RequestAccessScreen() {
         body: {note, requestUrl: window?.location.href, type: 'access'},
       })
       .then((request) => {
-        if (request) setHasPendingRequest(true)
+        if (request) setSubmittedRequest(true)
       })
       .catch((err) => {
         const statusCode = err?.response?.statusCode
@@ -150,11 +216,10 @@ export function RequestAccessScreen() {
           // User is over their cross-project request limit
           setHasTooManyRequests(true)
           setMsgError(errMessage)
-        }
-        if (statusCode === 409) {
+        } else if (statusCode === 409) {
           // If we get a 409, user has been denied on this project or has a valid pending request
           // valid pending request should be handled by GET request above
-          setHasBeenDenied(true)
+          setSubmitDenied(true)
           setMsgError(errMessage)
         } else {
           toast.push({
@@ -171,7 +236,6 @@ export function RequestAccessScreen() {
   const providerTitle = getProviderTitle(currentUser?.provider)
   const providerHelp = providerTitle ? ` through ${providerTitle}` : ''
 
-  if (loading) return <LoadingBlock />
   // Fallback to the old not authorized screen
   // if error communicating with Access API
   if (error) return <NotAuthenticatedScreen />
@@ -179,7 +243,7 @@ export function RequestAccessScreen() {
     <Card height="fill">
       <Dialog id="not-authorized-dialog" header="Not authorized" width={1}>
         <Box>
-          <Stack space={4}>
+          <Stack gap={4}>
             <Text>
               You are not authorized to access this studio (currently signed in as{' '}
               <strong>
@@ -227,17 +291,14 @@ export function RequestAccessScreen() {
                     </>
                   )}
                 </Text>
-                <Stack space={3} paddingBottom={0}>
+                <Stack gap={3} paddingBottom={0}>
                   <TextInput
                     maxLength={MAX_NOTE_LENGTH}
                     disabled={isSubmitting}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleSubmitRequest()
                     }}
-                    onChange={(e) => {
-                      setNote(e.currentTarget.value)
-                      setNoteLength(e.currentTarget.value.length)
-                    }}
+                    onChange={(e) => setNote(e.currentTarget.value)}
                     value={note}
                     placeholder="Add your note…"
                   />
@@ -247,13 +308,7 @@ export function RequestAccessScreen() {
             )}
           </Stack>
           <Flex align={'center'} justify={'space-between'} paddingTop={4}>
-            <Button
-              mode="bleed"
-              text={'Sign out'}
-              tone="default"
-              onClick={handleLogout}
-              size="large"
-            />
+            <Button mode="bleed" text={'Sign out'} tone="default" onClick={onLogout} size="large" />
             {!hasTooManyRequests && !hasBeenDenied && (
               <Button
                 mode="default"

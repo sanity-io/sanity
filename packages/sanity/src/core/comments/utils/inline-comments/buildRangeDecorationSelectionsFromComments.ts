@@ -19,7 +19,7 @@ import {
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 
-import {getValueAtPath} from '../../../field'
+import {getValueAtPath} from '../../../field/paths/helpers'
 import {isTextSelectionComment, parseCommentFieldPath} from '../../helpers'
 import {type CommentDocument, type CommentsTextSelectionItem} from '../../types'
 

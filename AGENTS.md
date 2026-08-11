@@ -2,6 +2,8 @@
 
 This document helps AI agents work successfully with the Sanity monorepo.
 
+> **Self-Improvement:** If you discover undocumented requirements, commands, or workflows during your work (e.g., a reviewer asks you to run something not covered here), update this file on the same PR. Keep this guide accurate and helpful for future agents.
+
 ## Prerequisites
 
 - **Node.js**: v24 or latest LTS
@@ -31,7 +33,7 @@ pnpm test
 # Update snapshots if tests fail due to expected changes
 pnpm test -- -u
 
-# Lint + type check (oxlint typeAware + typeCheck; no separate tsc/tsgo step)
+# Lint + type check (oxlint typeAware + typeCheck; no separate tsc step)
 pnpm check:oxlint
 ```
 
@@ -255,7 +257,7 @@ pnpm test:e2e --ui          # Interactive mode
 
 ## Coding Standards
 
-Coding standards are enforced by **oxlint** (native Rust rules, type-aware rules via tsgolint, TypeScript type checking via `options.typeCheck`, and a few ESLint plugins loaded through oxlint's `jsPlugins`). TypeScript type checking is included in `pnpm lint` / `pnpm check:oxlint` — no separate `tsc`/`tsgo` step. Check your code with:
+Coding standards are enforced by **oxlint** (native Rust rules, type-aware rules via tsgolint, TypeScript type checking via `options.typeCheck`, and a few ESLint plugins loaded through oxlint's `jsPlugins`). TypeScript type checking is included in `pnpm lint` / `pnpm check:oxlint` — no separate `tsc` step. Check your code with:
 
 ```bash
 pnpm lint              # Check for issues (oxlint, includes type checking)
@@ -263,6 +265,60 @@ pnpm lint:fix          # Auto-fix issues (oxfmt + oxlint --fix)
 ```
 
 All packages use **ESM** (`"type": "module"`). TypeScript strict mode is enabled.
+
+Rules that the linter already enforces (restricted imports, type-aware rules, React Compiler rules, i18n rules, module boundaries) are not repeated in this guide — run `pnpm lint` and follow the reported messages, which explain the expected pattern.
+
+### Do Not Weaken the Linter
+
+Fix the reported problem instead of silencing it. In order of preference:
+
+1. **Fix the code** so the rule passes. This is almost always the right answer.
+2. **Suppress the single line** as a last resort, when the rule is genuinely wrong for that one spot: `// oxlint-disable-next-line <rule> -- <why>`. Always name the specific rule and explain the exception after `--`. Never suppress a rule merely to make CI green.
+3. **Change `.oxlintrc.json` only when a human explicitly asks.** Do not turn rules off, downgrade severity, add `overrides` entries, or widen `ignorePatterns` on your own initiative — an override silences the rule for every current and future file it matches. If you think a rule is wrong, leave it failing and raise it in your summary or the PR description.
+
+File-wide `/* oxlint-disable <rule> */` is reserved for files that are an exception as a whole — vendored code, the `packages/sanity/src/ui-components` wrappers around raw `@sanity/ui`, CLI scripts that print to `console`. Follow that existing precedent rather than reaching for it to clear a handful of errors.
+
+`options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
+
+### Effect events: use `use-effect-event`, not React's native hook
+
+Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
+returns first-render values when the calling component is wrapped in `forwardRef` or `memo`
+([facebook/react#34818](https://github.com/facebook/react/issues/34818), fixed in 19.3 canaries).
+`eslint/no-restricted-imports` in `.oxlintrc.json` enforces this. The bug reaches any dependency that
+wraps the native hook, so check the implementation before trusting one — `react-rx` is safe on both
+v4 and v5 because `useObservableEvent` builds on the same `use-effect-event` ponyfill.
+
+### Refs: use `props.ref`, not `forwardRef`
+
+React 19 passes `ref` as a regular prop. Do not use `forwardRef` — destructure `ref` from props
+(so it is not left in a `...rest` spread) and forward it like any other prop.
+`eslint/no-restricted-imports` bans importing `forwardRef` from `react`.
+
+Prefer a named function declaration over `const X = function …` / arrow wrappers:
+
+```ts
+// preferred
+export function MyComponent(props: Props & RefAttributes<HTMLDivElement>) {
+  const {ref, ...rest} = props
+  return <div ref={ref} {...rest} />
+}
+
+// avoid
+export const MyComponent = function MyComponent(props: …) { … }
+export const MyComponent = (props: …) => { … }
+```
+
+When wrapping with `memo`, declare the component as a function first, then memoize:
+
+```ts
+function MyComponent(props: …) { … }
+export const MyComponentMemo = memo(MyComponent)
+```
+
+For typings, include `ref` on the props type: stop omitting `'ref'` from `HTMLProps` /
+`ComponentProps`, or intersect with `RefAttributes<T>`. Avoid `PropsWithRef` — in `@types/react`
+19 it is a deprecated identity alias and trips `typescript/no-deprecated`.
 
 ## Testing
 
@@ -279,6 +335,22 @@ Tests require a build first because some tests use compiled output:
 
 ```bash
 pnpm build && pnpm test
+```
+
+#### Test Timeouts
+
+When a test needs a custom timeout, use the Vitest options object as the second argument (not the deprecated third-argument form). Prefer numeric separators for readability:
+
+```ts
+// Correct
+test('my test', {timeout: 30_000}, async () => {
+  // ...
+})
+
+// Wrong — timeout as third argument (deprecated)
+test('my test', async () => {
+  // ...
+}, 30000)
 ```
 
 #### Vanilla-extract in jsdom tests
@@ -300,6 +372,37 @@ Conventions that follow from this:
   throws "Styles were unable to be assigned to a file". `disableRuntimeStyles` only skips style
   injection, not the transform.
 
+#### @sanity/ui overlays stay mounted when closed
+
+From `@sanity/ui` v4, Tooltip/Popover/Menu keep their content mounted via React `<Activity>`
+while closed (hidden with `display: none`). Consequences for tests:
+
+- Plain text / test-id queries can match **closed** overlay content. Prefer scoping to the
+  visible element under test (or assert visibility) instead of `getByText` / `getByTestId` on
+  the whole document.
+- In jsdom, asserting that closed content is hidden works (`expect(...).not.toBeVisible()`), but
+  selecting the **open** overlay by visibility does not. Runtime styles are disabled there, so
+  nothing overrides the `hidden` attribute `@sanity/ui` puts on an open popover, and
+  `getByRole` (which skips inaccessible nodes) finds neither the open nor the closed copy. Pick
+  the open one by the absence of the `display: none` that `<Activity>` applies to closed
+  overlays, rather than by index:
+
+  ```ts
+  const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
+    (popover) => popover.style.display !== 'none',
+  )
+  const item = within(openMenu).getByRole('menuitem', {name: 'Discard version', hidden: true})
+  ```
+
+  Selecting with `getAllByText(...)[0]` also works, but silently depends on portal ordering.
+  Visibility-based selection belongs in the browser-mode suite, where real styles apply and
+  `checkVisibility()` is meaningful.
+
+- Test routers must include intent routes (`route.create('/', [route.intents('/intent')])`).
+  Reference item menus render `IntentLink` ("Open in new tab") even while closed; without
+  intent routes, `resolveIntentLink` throws during render and the form subtree disappears.
+  See `packages/sanity/test/browser/TestWrapper.tsx` and `test/testUtils/TestProvider.tsx`.
+
 ### E2E Tests (Playwright)
 
 ```bash
@@ -313,7 +416,7 @@ pnpm test:e2e --ui          # Interactive mode
 Lefthook runs on commit (see `lefthook.yml`), which:
 
 1. Runs oxfmt on staged files
-2. Runs oxlint `--fix` on staged `.js/.ts/.tsx` files
+2. Runs oxlint `--fix` on staged `.js/.ts/.tsx` files (with `--no-error-on-unmatched-pattern` so packages in oxlint `ignorePatterns`, e.g. `@repo/test-dts-exports`, can still be committed)
 
 If the hook fails, run `pnpm lint:fix` to fix issues.
 
@@ -396,19 +499,71 @@ added new feature                       # missing type and scope
 
 ## Pull Request Workflow
 
-**Always create PRs as drafts first.**
+### 1. Create as Draft PR First
+
+**Always create PRs as drafts first.** The prompter (person who requested the work) reviews before the broader team.
 
 ```bash
 # Create a draft PR — title MUST follow conventional commit format
-gh pr create --draft --title "fix(scope): description" --body "..."
+gh pr create --draft --title "fix(scope): description" --body "..." --label "🤖 bot"
 ```
 
-Workflow:
+### 2. Apply the "🤖 bot" Label
 
-1. **Agent creates draft PR** - Push changes and open as draft
-2. **Prompter reviews** - The person who requested the changes reviews the draft
-3. **Mark ready for review** - Once the prompter approves, mark PR as ready: `gh pr ready`
-4. **Team reviews** - Team members review and approve
+**All PRs created by AI agents must be labeled with `🤖 bot`.** This label already exists on the repo and helps the team identify agent-created PRs for tracking and review workflows.
+
+When creating or updating a PR, always ensure the label is applied. If the create command did not accept `--label`, add it afterward:
+
+```bash
+gh pr edit --add-label "🤖 bot"
+```
+
+### 3. Move Out of Draft
+
+Once the prompter approves and CI is green, convert from draft to ready-for-review:
+
+```bash
+gh pr ready
+```
+
+### 4. What Not To Touch Unless Asked
+
+- **`.github/CODEOWNERS`** — do not add or change ownership rules unless explicitly requested
+- **Release automation / version bumps** — versioning is driven by conventional commits on merge; do not open manual version PRs unless asked
+
+### Useful PR Labels
+
+| Label                | When to use                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| `🤖 bot`             | **Required** on every AI-agent PR                                                    |
+| `trigger: preview`   | Publishes preview packages via [`pkg.pr.new`](https://pkg.pr.new) (maintainer-gated) |
+| `trigger:perf-bench` | Runs the `perf/bench` suite on the PR (maintainer-gated)                             |
+| `full-test-suite`    | Forces the full unit test suite to run                                               |
+
+Do **not** apply `trigger:*` labels unless the prompter or a maintainer asks — they kick off expensive or publish workflows.
+
+### Crediting Original Authors (Ported / Cherry-picked Work)
+
+When porting or rebasing someone else's PR (community contribution, backport, etc.), credit the **original author**, not only the agent or whoever opens the port PR:
+
+1. Prefer commits authored as the original contributor when history allows:
+
+   ```bash
+   git commit --author="their-name <their-github-email>" -m "..."
+   ```
+
+2. Otherwise add a `Co-authored-by:` trailer (and mention them in the PR description / Notes for release):
+
+   ```
+   Co-authored-by: Their Name <their-github-noreply@users.noreply.github.com>
+   ```
+
+Workflow summary:
+
+1. **Agent creates draft PR** with the `🤖 bot` label
+2. **Prompter reviews** the draft
+3. **Mark ready for review** once the prompter approves
+4. **Team reviews** and merges
 
 This ensures the person who prompted the changes can verify correctness before involving the broader team.
 
@@ -472,11 +627,23 @@ See `turbo.json` for full list of environment variables that affect builds.
 
 These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The startup update script already runs `pnpm install`.
 
-- **`pnpm test` needs `tsc` at the repo root for vitest `*.test-d.*` type tests.** Vitest is configured with `typecheck.enabled: true` (see `vitest.config.mts` and `packages/sanity/vitest.config.mts`), which spawns the real `tsc` binary for those type tests (in the `sanity` and `@sanity/types` projects). CI type checking of application code is owned by oxlint (`options.typeCheck`); `@typescript/native-preview` (`tsgo`) remains a root dependency for the VS Code tsgo language server. The repo does not declare `typescript` directly, so pnpm only hoists `typescript` into the virtual store (`node_modules/.pnpm/node_modules/typescript`) and never creates a root `node_modules/.bin/tsc`. Without `tsc` on the path, `pnpm test` still passes every test but exits non-zero with `Spawning typechecker failed - is typescript installed?`. The startup update script fixes this by symlinking the hoisted `typescript` to the root (`node_modules/typescript` + `node_modules/.bin/tsc`). If you ever run a manual `pnpm install` that wipes these symlinks and then see that error, re-create them (or re-run the update script). Running a single project (e.g. `pnpm vitest run --project=sanity`) also triggers this.
+### Services
+
+| Service                                           | Port | Purpose                                          |
+| ------------------------------------------------- | ---- | ------------------------------------------------ |
+| Test studio (`pnpm dev` / `pnpm dev:test-studio`) | 3333 | Local Sanity Studio for manual verification      |
+| Preview iframe (`pnpm dev:preview-iframe`)        | 3334 | Cross-origin Presentation preview (vanilla Vite) |
+
+No Docker, databases, or other local services are required for unit tests, lint, or build. CI-style verification (`pnpm lint`, `pnpm build`, `pnpm test`) runs entirely in-process.
+
+### Gotchas
+
+- **Root `typescript` is TypeScript 7.** Catalog `typescript` (^7) is a normal root dependency and provides the native `tsc` binary for vitest typecheck (`*.test-d.*`) and for tsdown `dts: {tsgo: true}` (packages also declare catalog `typescript`). CI type checking of application code is owned by oxlint (`options.typeCheck`). Tools that still need the TypeScript 6 compiler API keep that isolated: `@repo/typedoc` (typedoc) and `@repo/test-dts-exports` (ts-morph) depend on `typescript` aliased to `@typescript/typescript6`. The old symlink workaround for a missing root `tsc` is no longer needed.
 - **Dev studio auth for cloud agents — use the `STUDIO_AUTH_TOKEN` secret, not interactive login.** `pnpm dev` runs `sanity dev --no-auto-updates` (non-interactive, no upgrade prompt) and serves the app at `http://localhost:3333`. The test studio connects to Sanity Cloud (project `ppsg7ml5`); its default workspace is `/test`. Without auth the workspaces show "Signed out" / "Choose login provider". To authenticate, put the injected `STUDIO_AUTH_TOKEN` in the URL hash — Sanity consumes it on load and strips it from the address bar:
   - Build the URL: `node -e "console.log('http://localhost:3333/test#token=' + encodeURIComponent(process.env.STUDIO_AUTH_TOKEN))"` (any workspace basePath works, e.g. `/test`).
   - Because the Read tool redacts the token, you cannot paste the URL into browser instructions directly. A reliable trick is a tiny local HTTP server that reads `STUDIO_AUTH_TOKEN` from env and serves an HTML page doing `location.replace(<studio-url-with-token>)`, then point the browser at that server (keeps the secret out of prompts/screenshots). After load you land authenticated in the workspace and can create/publish documents (e.g. an `Author`).
   - Most changes should still be verified with `pnpm build && pnpm test` (no auth needed); only use the studio for visual/manual verification.
 - **Seeding test documents for the `/test` workspace via API.** In local dev (non-staging), the `/test` workspace talks to the production API host, so `STUDIO_AUTH_TOKEN` works as a Bearer token against `https://ppsg7ml5.api.sanity.io/v2024-01-01/data/mutate/test` (it returns 401 "Session not found" on `api.sanity.work`). Caveat when testing history/review-changes features: documents created by raw API mutations (e.g. `createOrReplace` of a published id) do not produce publish events, so the Review changes inspector shows "There are no changes" / "Same revision selected". Instead, create only the draft (`drafts.<id>`) via the API, click Publish in the studio UI to create a real publish event, then edit fields in the form to create draft changes.
+- **Seeding releases for the `/test` workspace via API.** Releases and document versions are created through the actions endpoint (`POST https://ppsg7ml5.api.sanity.io/v2025-02-19/data/actions/test` with `{"actions": [...]}`, same Bearer token). Useful action types: `sanity.action.release.create`, `sanity.action.document.version.create` (pass `publishedId` plus a `document` with `_id: versions.<releaseId>.<publishedId>`), `sanity.action.document.version.unpublish`, `sanity.action.document.version.discard`, `sanity.action.release.archive`, `sanity.action.release.delete`. Note that a version created by the unpublish action alone is an empty tombstone carrying only `_system.delete: true` — to get a version with content, create the version first and then unpublish it. `/test` is a shared dataset, so archive and delete any release you seed once you are done.
 - **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.

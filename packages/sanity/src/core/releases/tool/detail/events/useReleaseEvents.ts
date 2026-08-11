@@ -22,6 +22,7 @@ export function useReleaseEvents(releaseId: string): ReleaseEvents {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const documentPreviewStore = useDocumentPreviewStore()
   const {state$: releasesState$} = useReleasesStore()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const eventsAPIEnabled = Boolean(source.beta?.eventsAPI?.releases)
 

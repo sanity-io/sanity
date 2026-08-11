@@ -3,9 +3,12 @@ import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {type SidebarTabsIds, useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {type SidebarTabsIds} from '../../context/navigation/types'
+import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
+import {useTasks} from '../../context/tasks/useTasks'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskStatus} from '../../types'
 
@@ -50,7 +53,7 @@ export function EmptyStatusListState({status}: {status: TaskStatus}) {
   const {t} = useTranslation(tasksLocaleNamespace)
   const {heading, text} = HEADING_BY_STATUS[status][activeTabId]
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Text size={1} weight="semibold">
         {t(heading)}
       </Text>

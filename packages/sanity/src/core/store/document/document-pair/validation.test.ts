@@ -15,8 +15,11 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
 import {getFallbackLocaleSource} from '../../../i18n/fallback'
-import {type DocumentAvailability, type DraftsModelDocumentAvailability} from '../../../preview'
-import {createSchema} from '../../../schema'
+import {
+  type DocumentAvailability,
+  type DraftsModelDocumentAvailability,
+} from '../../../preview/types'
+import {createSchema} from '../../../schema/createSchema'
 import {editState, type EditStateFor} from './editState'
 import {validation} from './validation'
 
@@ -87,9 +90,11 @@ function createSubscription(
     {publishedId: documentId, draftId: `drafts.${documentId}`},
     typeName,
     'draft',
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ).pipe(publish())
 
   // Publish and connect this for the tests
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ;(stream as ConnectableObservable<unknown>).connect()
 
   // Create a subject we can use to notify via `done.next()`
@@ -127,9 +132,11 @@ function createVersionSubscription(
     {publishedId: 'example-id', draftId: 'drafts.example-id', versionId},
     'movie',
     'version',
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ).pipe(publish())
 
   // Publish and connect this for the tests
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ;(stream as ConnectableObservable<unknown>).connect()
 
   // Create a subject we can use to notify via `done.next()`

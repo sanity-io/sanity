@@ -13,6 +13,7 @@ interface CalendarDayProps {
   onSelect: (date: Date) => void
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const CircleSvg = styled.svg(({theme}: {theme: Theme}) => {
   return css`
     bottom: 0;
@@ -22,7 +23,7 @@ const CircleSvg = styled.svg(({theme}: {theme: Theme}) => {
     top: 0;
 
     circle {
-      stroke: ${theme.sanity.color.card.enabled.border};
+      stroke: ${theme.sanity.color.card.enabled.border /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
       stroke-width: 3;
       fill: none;
     }

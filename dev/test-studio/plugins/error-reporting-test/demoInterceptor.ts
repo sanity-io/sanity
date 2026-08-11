@@ -260,9 +260,11 @@ export function makeDemoClient(baseClient: SanityClient): SanityClient {
   // and non-demo requests. The workspace handler owns the classification +
   // dialog pipeline; we just substitute its inner `defaultRequester`
   // callback for matched URLs.
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const workspaceHandler = (baseClient.config() as unknown as {_requestHandler?: RequestHandler})
     ._requestHandler
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const handler: RequestHandler = (req, defaultRequester, client) => {
     const synthRequester = (opts: RequestOptions & {url: string}) => {
       const synthetic = synthesize(opts)
@@ -277,6 +279,7 @@ export function makeDemoClient(baseClient: SanityClient): SanityClient {
   }
 
   return baseClient.withConfig({
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     _requestHandler: handler,
   })
 }

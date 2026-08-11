@@ -12,13 +12,10 @@ import {
   timeout,
 } from 'rxjs/operators'
 
-import {type DocumentPreviewStore} from '../../../preview'
-import {
-  RESOLVE_INITIAL_VALUE_TIMEOUT_MS,
-  resolveInitialValue,
-  type Template,
-} from '../../../templates'
-import {getDraftId, getPublishedId} from '../../../util'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
+import {RESOLVE_INITIAL_VALUE_TIMEOUT_MS, resolveInitialValue} from '../../../templates/resolve'
+import {type Template} from '../../../templates/types'
+import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {
   type InitialValueErrorMsg,
   type InitialValueLoadingMsg,
@@ -97,14 +94,12 @@ export function getInitialValueStream(
         // A resolver whose request is parked (network/CORS) never settles —
         // time it out so the failure surfaces rather than hanging the editor.
         timeout({first: RESOLVE_INITIAL_VALUE_TIMEOUT_MS}),
-        map(
-          (initialValue): InitialValueSuccessMsg => ({
-            type: 'success',
-            // The resolver returns an arbitrary record; by contract it's a
-            // document-like value (the template's `_type` was merged in).
-            value: initialValue as SanityDocumentLike,
-          }),
-        ),
+        map((initialValue): InitialValueSuccessMsg => ({
+          type: 'success',
+          // The resolver returns an arbitrary record; by contract it's a
+          // document-like value (the template's `_type` was merged in).
+          value: initialValue as SanityDocumentLike,
+        })),
         catchError((resolveError: Error) => {
           // oxlint-disable no-console
           console.group('Failed to resolve initial value')

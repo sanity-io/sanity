@@ -7,33 +7,27 @@ import {
   type ReferenceSchemaType,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {
-  type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
-  useCallback,
-  useEffectEvent,
-  useMemo,
-} from 'react'
+import {type ComponentProps, useCallback, useMemo, type RefAttributes} from 'react'
 import {combineLatest, from, of, throwError} from 'rxjs'
 import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
+import {useEffectEvent} from 'use-effect-event'
 
-import {useSchema} from '../../../../hooks'
+import {useSchema} from '../../../../hooks/useSchema'
 import {usePerspective} from '../../../../perspective/usePerspective'
-import {createSearch} from '../../../../search'
-import {useDocumentPreviewStore} from '../../../../store'
-import {useSource} from '../../../../studio'
+import {createSearch} from '../../../../search/search'
+import {useDocumentPreviewStore} from '../../../../store/datastores'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+import {useSource} from '../../../../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {isNonNullable} from '../../../../util'
+import {isNonNullable} from '../../../../util/isNonNullable'
 import {useFormValue} from '../../../contexts/FormValue'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
 import {
   type CreateReferenceOption,
   type EditReferenceEvent,
 } from '../../../inputs/ReferenceInput/types'
-import {type ObjectInputProps} from '../../../types'
-import {useReferenceInputOptions} from '../../contexts'
+import {type ObjectInputProps} from '../../../types/inputProps'
+import {useReferenceInputOptions} from '../../contexts/ReferenceInputOptions'
 import * as adapter from '../client-adapters/reference'
 import {resolveCreateTypeFilter} from './resolveCreateTypeFilter'
 import {resolveUserDefinedFilter} from './resolveUserDefinedFilter'
@@ -73,9 +67,10 @@ function getInvalidUserDefinedPerspectives(
  * @beta
  */
 export function StudioReferenceInput(props: StudioReferenceInputProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const searchClient = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
   const documentPreviewStore = useDocumentPreviewStore()
@@ -128,6 +123,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
           maxFieldDepth,
           strategy: searchStrategy,
           perspective: userDefinedFilterPerspective || perspectiveStack,
+          variant: selectedVariantName,
         }
 
         const search = createSearch(schemaType.to, searchClient, {
@@ -137,6 +133,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
 
         return search(searchString, {
           perspective: options.perspective,
+          variant: options.variant,
           // todo: consider using this to show a "More hits, please refine your search"-item at the end of the dropdown list
           limit: 101,
         }).pipe(
@@ -183,19 +180,20 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const template = props.value?._strengthenOnPublish?.template
   const EditReferenceLink = useMemo(
     () =>
-      forwardRef(function EditReferenceLink_(
-        _props: ComponentProps<NonNullable<typeof EditReferenceLinkComponent>>,
-        forwardedRef: ForwardedRef<'a'>,
+      function EditReferenceLink_(
+        _props: ComponentProps<NonNullable<typeof EditReferenceLinkComponent>> &
+          RefAttributes<HTMLAnchorElement>,
       ) {
+        const {ref: forwardedRef, ...rest} = _props
         return EditReferenceLinkComponent ? (
           <EditReferenceLinkComponent
-            {..._props}
+            {...rest}
             ref={forwardedRef}
             parentRefPath={path}
             template={template}
           />
         ) : null
-      }),
+      },
     [EditReferenceLinkComponent, path, template],
   )
 
@@ -256,8 +254,14 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
 
   const getReferenceInfo = useCallback(
     (id: string, _type: ReferenceSchemaType) =>
-      adapter.getReferenceInfo(documentPreviewStore, id, _type, perspectiveStack),
-    [documentPreviewStore, perspectiveStack],
+      adapter.getReferenceInfo(
+        documentPreviewStore,
+        id,
+        _type,
+        perspectiveStack,
+        selectedVariantName,
+      ),
+    [documentPreviewStore, perspectiveStack, selectedVariantName],
   )
 
   return (

@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import {type PreviewValue, type ValidationMarker} from '@sanity/types'
 
-import {useSchema} from '../../hooks'
+import {useSchema} from '../../hooks/useSchema'
 import {unstable_useValuePreview as useValuePreview} from '../../preview/useValuePreview'
 import {useReleaseDocuments} from '../../releases/tool/detail/useReleaseDocuments'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
@@ -34,6 +34,7 @@ export function useScheduledDraftDocument(
 
   const schemaType = firstDocument ? schema.get(firstDocument._type) : null
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {value: previewValue, isLoading: previewLoading} = useValuePreview({
     enabled: includePreview && !!firstDocument && !!schemaType,
     schemaType: schemaType || undefined,

@@ -13,10 +13,6 @@ import {
   Container,
   Flex,
   Grid,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Popover,
   PortalProvider,
   Select,
   Spinner,
@@ -27,6 +23,8 @@ import {
   Text,
   useClickOutsideEvent,
 } from '@sanity/ui'
+import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
+import {Popover} from '@sanity/ui/popover'
 import {ParentSize} from '@visx/responsive'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
@@ -111,12 +109,12 @@ function InfoButton(props: {text: string; label: string; sourceFile?: string; vi
       constrainSize
       content={
         <Box ref={setContentEl} padding={3} style={{maxWidth: 260}}>
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text size={1} muted>
               {props.text}
             </Text>
             {(props.vitalDoc || props.sourceFile) && (
-              <Stack space={2}>
+              <Stack gap={2}>
                 {/* Reference doc for the Web Vital itself (web.dev) */}
                 {props.vitalDoc && (
                   <Box
@@ -217,7 +215,7 @@ function BranchPicker(props: {
       constrainSize
       content={
         <Box ref={setContentEl} padding={2} style={{maxWidth: 280}}>
-          <Stack space={1}>
+          <Stack gap={1}>
             <Box paddingX={2} paddingY={1}>
               <Text size={0} muted>
                 Compare up to {MAX_COMPARE_BRANCHES} branches
@@ -350,7 +348,7 @@ function SeriesCard(props: {
       // A short pulsing ring when jumped-to / deep-linked (see FOCUS_PULSE_CSS)
       className={focused ? 'chart-focus-pulse' : undefined}
     >
-      <Stack space={3}>
+      <Stack gap={3}>
         {/* Center-aligned: the title + badge co-center with the value/menu/info
             cluster on the common single-line case, and the title wraps (no
             ellipsis) within its flex-1 box when it's too long to fit */}
@@ -383,12 +381,12 @@ function SeriesCard(props: {
               </Text>
             )}
             {badge && (
-              <Badge tone={badge.tone} fontSize={0} mode="default" style={{flexShrink: 0}}>
+              <Badge tone={badge.tone} fontSize={0} style={{flexShrink: 0}}>
                 {badge.label}
               </Badge>
             )}
             {!badge && silenced && (
-              <Badge tone="default" fontSize={0} mode="outline" style={{flexShrink: 0}}>
+              <Badge tone="default" fontSize={0} style={{flexShrink: 0}}>
                 acknowledged
               </Badge>
             )}
@@ -445,7 +443,7 @@ function ChartGrid(props: {
   onFocusMetric?: (seriesKey: string) => void
 }) {
   return (
-    <Grid columns={[1, 1, 2, 3]} gap={3}>
+    <Grid gridTemplateColumns={[1, 1, 2, 3]} gap={3}>
       {props.series.map((entry) => {
         const entryDrift = props.driftBySeries?.get(entry.key)
         const entrySilenced = props.silencedBySeries?.get(entry.key)
@@ -509,8 +507,8 @@ function SoakPanel(props: {
   if (!active) return null
 
   return (
-    <Stack space={3}>
-      <TabList space={1}>
+    <Stack gap={3}>
+      <TabList gap={1}>
         {views.map((v) => (
           <Tab
             key={v.id}
@@ -523,7 +521,7 @@ function SoakPanel(props: {
         ))}
       </TabList>
       <TabPanel id={`soak-panel-${active.id}`} aria-labelledby={`soak-tab-${active.id}`}>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text size={1} muted>
             {active.hint}
           </Text>
@@ -725,7 +723,7 @@ export function TrendsTool() {
       <style dangerouslySetInnerHTML={{__html: FOCUS_PULSE_CSS}} />
       <Card ref={setPortalElement} height="fill" overflow="auto">
         <Container width={3} padding={4}>
-          <Stack space={4}>
+          <Stack gap={4}>
             <Flex align="flex-start" justify="space-between" gap={3}>
               <Flex align="center" gap={2}>
                 <Text size={2} weight="semibold">
@@ -787,7 +785,7 @@ export function TrendsTool() {
                 of text, first-timers are one click away */}
             {showHelp && (
               <Card tone="primary" border padding={3} radius={2}>
-                <Stack space={3}>
+                <Stack gap={3}>
                   <Text size={1} muted>
                     One benchmark run per day of the studio built from <code>main</code>, measured
                     against a local API mock (no network, no real project) — see{' '}
@@ -831,8 +829,8 @@ export function TrendsTool() {
                 Each tab badges its count of active regressions (same drift
                 state as the feed, so they always agree). */}
             {activeTab && (
-              <Stack space={3}>
-                <TabList space={1}>
+              <Stack gap={3}>
+                <TabList gap={1}>
                   {tabs.map((tab) => {
                     const count = regressionsByGroup.get(tab.id) ?? 0
                     return (
@@ -847,7 +845,6 @@ export function TrendsTool() {
                               <Badge
                                 tone="caution"
                                 fontSize={0}
-                                mode="default"
                                 aria-label={`${count} metric${count === 1 ? '' : 's'} to review`}
                               >
                                 {count}
@@ -870,7 +867,7 @@ export function TrendsTool() {
                   id={`group-panel-${activeTab.id}`}
                   aria-labelledby={`group-tab-${activeTab.id}`}
                 >
-                  <Stack space={3}>
+                  <Stack gap={3}>
                     <Text size={1} muted>
                       {activeTab.description}
                     </Text>

@@ -4,8 +4,8 @@ import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, startWith, switchMap} from 'rxjs/operators'
 
-import {useClient} from '../../hooks'
-import {listenQuery} from '../../store'
+import {useClient} from '../../hooks/useClient'
+import {listenQuery} from '../../store/document/listenQuery'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../store/constants'
 import {type VariantStoreState} from '../store/reducer'
 import {useVariantsStore} from '../store/useVariantsStore'
@@ -96,18 +96,16 @@ function listenVariantsDocumentCounts(
     // using the raw perspective.
     {tag: 'variants-doc-counts.listen', perspective: 'raw'},
   ).pipe(
-    map(
-      (response: Record<string, number>): VariantsDocumentCountsState => ({
-        data: Object.fromEntries(
-          variantDocumentIds.map((variantDocumentId) => [
-            variantDocumentId,
-            response?.[variantDocumentId] ?? 0,
-          ]),
-        ),
-        loading: false,
-        error: null,
-      }),
-    ),
+    map((response: Record<string, number>): VariantsDocumentCountsState => ({
+      data: Object.fromEntries(
+        variantDocumentIds.map((variantDocumentId) => [
+          variantDocumentId,
+          response?.[variantDocumentId] ?? 0,
+        ]),
+      ),
+      loading: false,
+      error: null,
+    })),
     startWith(INITIAL_STATE),
     // catchError stays on this inner observable so the outer stream in
     // `getVariantsDocumentCounts` keeps reacting to variant list changes after a failure.

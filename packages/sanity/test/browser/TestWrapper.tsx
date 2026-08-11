@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
-import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {Card, LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
+import {ToastProvider} from '@sanity/ui/toast'
 import {clsx} from 'clsx'
 import memoize from 'lodash-es/memoize.js'
 import noop from 'lodash-es/noop.js'
@@ -22,9 +23,11 @@ import {
 
 import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/AssetLimitUpsellProvider'
 import {PerspectiveProvider} from '../../src/core/perspective/PerspectiveProvider'
-import {route} from '../../src/router'
+import {route} from '../../src/router/route'
 import {RouterProvider} from '../../src/router/RouterProvider'
-import {Pane, PaneContent, PaneLayout} from '../../src/structure/components/pane'
+import {Pane} from '../../src/structure/components/pane/Pane'
+import {PaneContent} from '../../src/structure/components/pane/PaneContent'
+import {PaneLayout} from '../../src/structure/components/pane/PaneLayout'
 import {createMockSanityClient} from '../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../test/testUtils/getMockWorkspaceFromConfig'
 import {changeConnectorRoot} from './TestWrapper.css'
@@ -42,7 +45,10 @@ function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorR
   return <ChangeConnectorRoot {...restProps} className={clsx(changeConnectorRoot, className)} />
 }
 
-const router = route.create('/')
+// Include intent routes so always-mounted Menu content (e.g. reference
+// "Open in new tab" IntentLinks kept mounted by @sanity/ui Activity) can
+// resolve hrefs without throwing during render.
+const router = route.create('/', [route.intents('/intent')])
 const getCachedMockWorkspace = memoize(
   (
     client: SanityClient,

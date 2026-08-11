@@ -33,12 +33,13 @@ import {
   type FocusEvent as ReactFocusEvent,
   type FocusEventHandler,
   type FormEventHandler,
-  type MutableRefObject,
+  type RefObject,
 } from 'react'
 import {type CSSProperties} from 'styled-components'
 
-import {type FormPatch, type PatchEvent} from '../patch'
-import {type FormFieldGroup} from '../store'
+import {type PatchEvent} from '../patch/PatchEvent'
+import {type FormPatch} from '../patch/types'
+import {type FormFieldGroup} from '../store/types/fieldGroup'
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
@@ -47,9 +48,9 @@ import {
   type ObjectFormNode,
   type StringFormNode,
 } from '../store/types/nodes'
-import {type UploaderResolver} from '../studio'
-import {type RenderBlockActionsCallback} from '../types'
+import {type UploaderResolver} from '../studio/uploads/types'
 import {
+  type RenderBlockActionsCallback,
   type ArrayInputFunctionsProps,
   type PortableTextMarker,
   type RenderCustomMarkers,
@@ -440,11 +441,12 @@ export interface PrimitiveInputElementProps {
   'readOnly': boolean
   'placeholder'?: string
   'autoComplete'?: string
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'onChange': FormEventHandler
   'onFocus': FocusEventHandler
   'onBlur': FocusEventHandler
   'onPaste'?: ClipboardEventHandler
-  'ref': MutableRefObject<any>
+  'ref': RefObject<any>
   'aria-describedby': string | undefined
   'style': Pick<CSSProperties, 'anchorName'>
 }
@@ -456,7 +458,7 @@ export interface ComplexElementProps {
   'id': string
   'onFocus': FocusEventHandler
   'onBlur': FocusEventHandler
-  'ref': MutableRefObject<any>
+  'ref': RefObject<any>
   'aria-describedby': string | undefined
   'autoComplete'?: string
   'style': Pick<CSSProperties, 'anchorName'>
@@ -536,7 +538,8 @@ export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
   /**
    * A React Ref that can reference the underlying editor instance
    */
-  editorRef?: React.MutableRefObject<PortableTextEditor | null>
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  editorRef?: React.RefObject<PortableTextEditor | null>
   /**
    * Option to hide the default toolbar
    */
@@ -559,10 +562,12 @@ export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
    * @deprecated will be removed in the next major version of Sanity Studio.
    * Use the `renderBlock` interface instead.
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   markers?: PortableTextMarker[]
   /**
    * Returns changes from the underlying editor
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onEditorChange?: (change: EditorChange, editor: PortableTextEditor) => void
   /**
    * Optional callback for when the editor goes into or out of full screen mode
@@ -583,12 +588,14 @@ export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
    * @deprecated will be removed in the next major version of Sanity Studio.
    * Use the `renderBlock` interface instead.
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderBlockActions?: RenderBlockActionsCallback
   /**
    * Function to render custom markers
    * @deprecated will be removed in the next major version of Sanity Studio.
    * Use the `renderBlock` interface instead.
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
   /**
    * Array of {@link RangeDecoration} that can be used to decorate the content.

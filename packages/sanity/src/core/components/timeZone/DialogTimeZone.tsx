@@ -1,9 +1,10 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
+import {Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
+import {Autocomplete} from '@sanity/ui/autocomplete'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Dialog} from '../../../ui-components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type NormalizedTimeZone} from '../../studio/timezones/types'
@@ -13,24 +14,27 @@ export interface DialogTimeZoneProps {
   timeZoneScope: TimeZoneScope
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const TimeZoneCitySpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
-    color: ${theme.sanity.color.base.fg};
+    color: ${theme.sanity.color.base.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     font-weight: 500;
     margin-left: 1em;
   `
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const TimeZoneOffsetSpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
-    color: ${theme.sanity.color.muted.default.enabled.fg};
+    color: ${theme.sanity.color.muted.default.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     font-weight: 500;
   `
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
   return css`
-    color: ${theme.sanity.color.input.default.readOnly.fg};
+    color: ${theme.sanity.color.input.default.readOnly.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     float: right;
   `
 })
@@ -138,11 +142,11 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
       onClose={onClose}
       width={1}
     >
-      <Stack padding={4} space={5}>
+      <Stack padding={4} gap={5}>
         <Text size={1}>{timeZoneScopeTypeToLabel[timeZoneScope.type]}</Text>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Flex align="center" justify="space-between">
-            <Inline space={2}>
+            <Inline gap={2}>
               <Text size={1} weight="semibold">
                 {t('time-zone.time-zone')}
               </Text>
@@ -175,8 +179,10 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             popover={{
               // Dialog is portaled to the document root, so its Autocomplete
               // popover should be bounded by document.body rather than any
-              // panel-scoped scroll container.
-              boundaryElement: document.body,
+              // panel-scoped scroll container. Set both boundaries to match the
+              // pre-v4 `boundaryElement` behavior.
+              floatingBoundary: document.body,
+              referenceBoundary: document.body,
               constrainSize: true,
               placement: 'bottom-start',
             }}

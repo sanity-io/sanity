@@ -1,6 +1,6 @@
 import {expect} from '@playwright/test'
 
-import {clearKeyValueKey} from '../../helpers'
+import {clearKeyValueKey} from '../../helpers/clearKeyValueKey'
 import {test} from '../../studio-test'
 
 const INSPECT_KEY = 'studio.structure-tool.inspect-view-mode'

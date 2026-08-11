@@ -5,12 +5,12 @@ import {
   Box,
   Button,
   Flex,
-  Popover,
   Stack,
   Text,
   useClickOutsideEvent,
   useGlobalKeyDown,
 } from '@sanity/ui'
+import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
 
@@ -77,7 +77,7 @@ export function RunDetailPopover(props: {
       referenceElement={referenceElement}
       content={
         <Box ref={setContentEl} padding={4} style={{width: 288, maxWidth: '92vw'}}>
-          <Stack space={4}>
+          <Stack gap={4}>
             {/* Header: series title as a quiet eyebrow, close button aligned */}
             <Flex align="flex-start" gap={3}>
               <Box flex={1} paddingTop={1}>
@@ -98,8 +98,8 @@ export function RunDetailPopover(props: {
 
             {/* The value is the headline; the when-line sits beneath it, and
                 the percentiles read as a labelled stat row rather than a run-on */}
-            <Stack space={3}>
-              <Stack space={2}>
+            <Stack gap={3}>
+              <Stack gap={2}>
                 <Text size={4} weight="semibold">
                   {formatValue(point.value, series.unit)}
                 </Text>
@@ -109,13 +109,13 @@ export function RunDetailPopover(props: {
               </Stack>
               {(point.p75 !== undefined || point.p90 !== undefined) && (
                 <Flex gap={4}>
-                  <Stack space={2}>
+                  <Stack gap={2}>
                     <Text size={0} muted>
                       p75
                     </Text>
                     <Text size={1}>{formatValue(point.p75 ?? point.value, series.unit)}</Text>
                   </Stack>
-                  <Stack space={2}>
+                  <Stack gap={2}>
                     <Text size={0} muted>
                       p90
                     </Text>
@@ -126,7 +126,7 @@ export function RunDetailPopover(props: {
             </Stack>
 
             {(backlinks.length > 0 || scenarioHref) && (
-              <Stack space={2}>
+              <Stack gap={2}>
                 <Text size={0} muted weight="medium">
                   Links
                 </Text>
@@ -165,7 +165,7 @@ export function RunDetailPopover(props: {
             {/* Divider before the footer action so it reads as a distinct row */}
             <Box style={{borderTop: '1px solid var(--card-border-color)'}} paddingTop={3}>
               <Flex align="center" justify="space-between" gap={2}>
-                <Badge tone="default" fontSize={0} mode="outline">
+                <Badge tone="default" fontSize={0}>
                   benchRun
                 </Badge>
                 <Button

@@ -1,9 +1,9 @@
 import {Box} from '@sanity/ui'
 import {useCallback} from 'react'
 
-import {useTranslation} from '../../../i18n'
-import {InvalidValueInput} from '../../inputs/InvalidValueInput'
-import {PatchEvent} from '../../patch'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {InvalidValueInput} from '../../inputs/InvalidValueInput/InvalidValueInput'
+import {PatchEvent} from '../../patch/PatchEvent'
 import {type FieldError} from '../../store/types/memberErrors'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {DuplicateKeysAlert} from './errors/DuplicateKeysAlert'

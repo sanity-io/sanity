@@ -2,7 +2,7 @@ import {Card, Heading, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {ChangeIndicatorsTracker, createPatchChannel, FormBuilder, useDocumentForm} from 'sanity'
 
-import {FORM_BUILDER_REPRO_TYPE} from './plugin'
+export const FORM_BUILDER_REPRO_TYPE = 'formBuilderReproDoc'
 
 /**
  * Reproduction for the `useDocumentDivergences` crash reported by plugin authors
@@ -67,7 +67,7 @@ export function FormBuilderRepro() {
 
   return (
     <Card padding={5}>
-      <Stack space={4}>
+      <Stack gap={4}>
         <Heading>FormBuilder repro</Heading>
         <Text muted size={1}>
           Renders `&lt;FormBuilder&gt;` outside `DocumentPaneProvider`. Without the FormBuilder

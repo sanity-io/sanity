@@ -1,8 +1,8 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
-import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+import {type HTMLProps, type RefAttributes} from 'react'
 
-import {useTranslation} from '../..'
-import {Button, type ButtonProps} from '../../../ui-components'
+import {Button, type ButtonProps} from '../../../ui-components/button/Button'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 
 type ContextMenuButtonProps = Pick<
   ButtonProps,
@@ -14,12 +14,12 @@ type ContextMenuButtonProps = Pick<
  *
  * @internal
  */
-export const ContextMenuButton = forwardRef(function ContextMenuButton(
+export function ContextMenuButton(
   props: ContextMenuButtonProps &
-    Pick<HTMLProps<HTMLButtonElement>, 'disabled' | 'hidden' | 'onClick'>,
-  ref: ForwardedRef<HTMLButtonElement>,
+    Pick<HTMLProps<HTMLButtonElement>, 'disabled' | 'hidden' | 'onClick'> &
+    RefAttributes<HTMLButtonElement>,
 ) {
-  const {mode = 'bleed', tooltipProps, tone, ...rest} = props
+  const {ref, mode = 'bleed', tooltipProps, tone, ...rest} = props
 
   const {t} = useTranslation()
 
@@ -36,4 +36,4 @@ export const ContextMenuButton = forwardRef(function ContextMenuButton(
       }}
     />
   )
-})
+}

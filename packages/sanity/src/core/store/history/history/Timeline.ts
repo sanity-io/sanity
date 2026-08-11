@@ -1,8 +1,9 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type Diff} from '@sanity/diff'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {applyPatch, incremental} from 'mendoza'
 
-import {type Annotation, type Chunk} from '../../../field'
+import {type Annotation, type Chunk} from '../../../field/types'
 import {chunkFromTransaction, mergeChunk} from './chunker'
 import {diffValue, type Meta} from './diffValue'
 import {type TraceEvent} from './replay'
@@ -15,11 +16,13 @@ import {
 import {getAttrs} from './utils'
 
 /**
+ * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
  * @hidden
  * @beta */
 export type ParsedTimeRef = Chunk | 'loading' | 'invalid'
 
 /**
+ * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
  * @hidden
  * @beta */
 export interface TimelineOptions {
@@ -36,6 +39,7 @@ export interface TimelineOptions {
  * but will only organize and structure the incoming translog entries.
  *
  *
+ * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
  * @hidden
  * @beta
  */

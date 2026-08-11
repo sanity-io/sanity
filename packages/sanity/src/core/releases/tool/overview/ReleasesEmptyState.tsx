@@ -1,7 +1,7 @@
 import {Flex, Inline, Text} from '@sanity/ui'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
@@ -28,7 +28,7 @@ export const ReleasesEmptyState = ({createReleaseButton}: ReleasesEmptyStateProp
         <Text size={1} muted style={{textAlign: 'center'}}>
           {t('overview.description')}
         </Text>
-        <Inline space={2}>
+        <Inline gap={2}>
           {createReleaseButton}
           <Button
             as="a"

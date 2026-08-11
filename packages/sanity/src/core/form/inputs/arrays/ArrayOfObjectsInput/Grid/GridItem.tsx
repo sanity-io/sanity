@@ -2,30 +2,31 @@ import {AddDocumentIcon} from '@sanity/icons/AddDocument'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type SchemaType, type UploadState} from '@sanity/types'
-import {Box, Card, type CardTone, Menu} from '@sanity/ui'
+import {Box, Card, type CardTone} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {MenuButton, MenuItem} from '../../../../../../ui-components'
-import {ChangeIndicator} from '../../../../../changeIndicators'
-import {ContextMenuButton} from '../../../../../components/contextMenuButton'
-import {LoadingBlock} from '../../../../../components/loadingBlock'
+import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../../ui-components/menuItem/MenuItem'
+import {ChangeIndicator} from '../../../../../changeIndicators/ChangeIndicator'
+import {ContextMenuButton} from '../../../../../components/contextMenuButton/ContextMenuButton'
+import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
 import {type FIXME} from '../../../../../FIXME'
-import {useTranslation} from '../../../../../i18n'
-import {FieldPresence} from '../../../../../presence'
-import {getSchemaTypeTitle} from '../../../../../schema'
-import {EnhancedObjectDialog, FormFieldValidationStatus} from '../../../../components'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {FieldPresence} from '../../../../../presence/FieldPresence'
+import {getSchemaTypeTitle} from '../../../../../schema/helpers'
 import {EditPortal} from '../../../../components/EditPortal'
+import {EnhancedObjectDialog} from '../../../../components/EnhancedObjectDialog'
+import {FormFieldValidationStatus} from '../../../../components/formField/FormFieldValidationStatus'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
-import {
-  EnhancedObjectDialogProvider,
-  useEnhancedObjectDialog,
-} from '../../../../studio/tree-editing'
+import {EnhancedObjectDialogProvider} from '../../../../studio/tree-editing/context/enabled/EnhancedObjectDialogProvider'
+import {useEnhancedObjectDialog} from '../../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
-import {type ObjectItem, type ObjectItemProps} from '../../../../types'
+import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
 import {regenerateKeys} from '../../../../utils/regenerateKeys'
 import {useArrayValidation} from '../../common/ArrayValidationContext'
 import {CellLayout} from '../../layouts/CellLayout'
@@ -94,6 +95,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   const maxReached = arrayValidation?.maxReached
   const maxReachedReason = arrayValidation?.maxReachedReason
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined
@@ -317,6 +319,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <EnhancedObjectDialogProvider>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         {item}

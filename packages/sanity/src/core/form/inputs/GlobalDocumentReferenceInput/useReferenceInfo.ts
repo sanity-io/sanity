@@ -1,5 +1,5 @@
 import {useCallback, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, startWith} from 'rxjs/operators'
 
@@ -74,5 +74,6 @@ export function useReferenceInfo(
       }),
     )
   }, [doc, getReferenceInfo, retry, retryAttempt])
-  return useObservable(referenceInfoObservable, INITIAL_LOADING_STATE)
+  // Do not defer: EMPTY_STATE is unsafe to show after the document id becomes set.
+  return useSyncObservable(referenceInfoObservable, INITIAL_LOADING_STATE)
 }

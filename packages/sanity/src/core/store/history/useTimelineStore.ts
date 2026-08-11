@@ -1,3 +1,4 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type ObjectDiff} from '@sanity/diff'
 import {useEffect, useMemo, useRef} from 'react'
 import deepEquals from 'react-fast-compare'
@@ -11,16 +12,13 @@ import {
   tap,
 } from 'rxjs'
 
-import {useClient} from '../../hooks'
-import {
-  type Annotation,
-  type Chunk,
-  type SelectionState,
-  type TimelineController,
-  useHistoryStore,
-} from '../../index'
+import {type Annotation, type Chunk} from '../../field/types'
+import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {remoteSnapshots, type RemoteSnapshotVersionEvent} from '../document'
+import {useHistoryStore} from '../datastores'
+import {type RemoteSnapshotVersionEvent} from '../document/document-pair/checkoutPair'
+import {remoteSnapshots} from '../document/document-pair/remoteSnapshots'
+import {type SelectionState, type TimelineController} from './history/TimelineController'
 
 interface UseTimelineControllerOpts {
   documentId: string
@@ -30,7 +28,10 @@ interface UseTimelineControllerOpts {
   since?: string
 }
 
-/** @internal */
+/**
+ * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
+ * @internal
+ */
 export interface TimelineState {
   chunks: Chunk[]
   diff: ObjectDiff<Annotation> | null
@@ -70,7 +71,10 @@ const INITIAL_TIMELINE_STATE: TimelineState = {
   timelineReady: false,
 }
 
-/** @internal */
+/**
+ * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
+ * @internal
+ */
 export interface TimelineStore {
   findRangeForRev: TimelineController['findRangeForNewRev']
   findRangeForSince: TimelineController['findRangeForNewSince']
@@ -87,7 +91,7 @@ export interface TimelineStore {
  * ranges and fetch more transactions. It can also be used with
  * `useSyncExternalStore` to subscribe to selected state changes.
  *
- * @deprecated Use events store instead, this will be removed in a future release
+ * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
  * @internal
  * */
 export function useTimelineStore({

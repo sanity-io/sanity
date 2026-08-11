@@ -1,5 +1,5 @@
 import {type BoxOverflow} from '@sanity/ui'
-import {type ElementType, type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+import {type ElementType, type HTMLProps, type RefAttributes} from 'react'
 
 import {Root} from './PaneContent.styles'
 import {usePane} from './usePane'
@@ -15,11 +15,12 @@ interface PaneContentProps {
  * @hidden
  * @internal
  */
-export const PaneContent = forwardRef(function PaneContent(
-  props: PaneContentProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
-  ref: ForwardedRef<HTMLDivElement>,
+export function PaneContent(
+  props: PaneContentProps &
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'> &
+    RefAttributes<HTMLDivElement>,
 ) {
-  const {as, children, overflow, padding, ...restProps} = props
+  const {ref, as, children, overflow, padding, ...restProps} = props
   const {collapsed} = usePane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
 
@@ -38,4 +39,4 @@ export const PaneContent = forwardRef(function PaneContent(
       {children}
     </Root>
   )
-})
+}

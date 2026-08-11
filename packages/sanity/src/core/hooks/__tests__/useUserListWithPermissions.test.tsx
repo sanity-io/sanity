@@ -4,20 +4,22 @@ import {renderHook, waitFor} from '@testing-library/react'
 import {of} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
-import {grantsPermissionOn, useProjectStore, useUserStore} from '../../store'
-import {type ProjectData, type ProjectStore} from '../../store/project'
-import {type UserStore} from '../../store/user'
+import {useProjectStore, useUserStore} from '../../store/datastores'
+import {grantsPermissionOn} from '../../store/grants/grantsStore'
+import {type ProjectData, type ProjectStore} from '../../store/project/types'
+import {type UserStore} from '../../store/user/userStore'
 import {getSystemGroups$} from '../../util/getSystemGroups$'
 import {useClient} from '../useClient'
 import {useUserListWithPermissions} from '../useUserListWithPermissions'
 
-vi.mock('../../store', () => {
-  return {
-    grantsPermissionOn: vi.fn(),
-    useProjectStore: vi.fn(),
-    useUserStore: vi.fn(),
-  }
-})
+vi.mock('../../store/grants/grantsStore', async (importOriginal) => ({
+  ...(await importOriginal()),
+  grantsPermissionOn: vi.fn(),
+}))
+vi.mock('../../store/datastores', () => ({
+  useProjectStore: vi.fn(),
+  useUserStore: vi.fn(),
+}))
 vi.mock('../../util/getSystemGroups$', () => ({getSystemGroups$: vi.fn()}))
 vi.mock('../useClient', () => ({useClient: vi.fn()}))
 
@@ -38,6 +40,7 @@ function setup() {
   vi.mocked(useUserStore).mockReturnValue({
     getUsers: vi.fn().mockResolvedValue(users),
   } as unknown as UserStore)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   vi.mocked(useClient).mockReturnValue({observable: {}} as SanityClient)
   vi.mocked(grantsPermissionOn).mockImplementation(async (_userId, grants) => {
     if (grants.some((grant) => grant.filter.includes('user::attributes()'))) {

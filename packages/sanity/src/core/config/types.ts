@@ -17,25 +17,28 @@ import {type ComponentType, type ErrorInfo, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 import {type Router, type RouterState} from 'sanity/router'
 
-import {type FormBuilderCustomMarkersComponent, type FormBuilderMarkersComponent} from '../form'
+import {
+  type FormBuilderCustomMarkersComponent,
+  type FormBuilderMarkersComponent,
+} from '../form/types/_transitional'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
-import {type AuthStore} from '../store'
+import {type AuthStore} from '../store/authStore/types'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
-import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
+import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
 import {type StudioTheme} from '../theme'
 import {type AuthConfig} from './auth/types'
+import {type DocumentActionComponent} from './document/actions'
+import {type DocumentBadgeComponent} from './document/badges'
 import {
-  type DocumentActionComponent,
-  type DocumentBadgeComponent,
   type DocumentFieldAction,
   type DocumentFieldActionsResolver,
   type DocumentFieldActionsResolverContext,
-  type DocumentInspector,
-} from './document'
-import {type FormComponents} from './form'
+} from './document/fieldActions/types'
+import {type DocumentInspector} from './document/inspector'
+import {type FormComponents} from './form/types'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
-import {type StudioComponents, type StudioComponentsPluginOptions} from './studio'
+import {type StudioComponents, type StudioComponentsPluginOptions} from './studio/types'
 
 /**
  * @hidden
@@ -86,6 +89,7 @@ export interface SanityFormConfig {
    * @beta
    */
   unstable?: {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     CustomMarkers?: FormBuilderCustomMarkersComponent
     Markers?: FormBuilderMarkersComponent
   }
@@ -635,6 +639,7 @@ export interface WorkspaceOptions extends SourceOptions {
    * @hidden
    * @beta
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme?: StudioTheme
 
   /**
@@ -970,6 +975,7 @@ export interface Source {
      * @beta
      */
     unstable?: {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       CustomMarkers?: FormBuilderCustomMarkersComponent
       Markers?: FormBuilderMarkersComponent
     }
@@ -1108,6 +1114,7 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
    * @internal
    */
   apiHost?: string
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: StudioTheme
   schema: Schema
   i18n: LocaleSource
@@ -1217,12 +1224,7 @@ export interface PreparedConfig {
   workspaces: WorkspaceSummary[]
 }
 
-export type {
-  AuthConfig,
-  AuthProvider,
-  CookielessCompatibleLoginMethod,
-  LoginMethod,
-} from './auth/types'
+export type {AuthConfig} from './auth/types'
 
 /** @beta */
 export type DefaultPluginsWorkspaceOptions = {
@@ -1329,6 +1331,10 @@ export interface BetaFeatures {
    * If it is not enabled, it will continue using the legacy Timeline.
    */
   eventsAPI?: {
+    /**
+     * @deprecated This option will be removed in the next major version, after which document
+     * history will always use the events API and the legacy Timeline will no longer be available.
+     */
     documents?: boolean
     releases?: boolean
   }

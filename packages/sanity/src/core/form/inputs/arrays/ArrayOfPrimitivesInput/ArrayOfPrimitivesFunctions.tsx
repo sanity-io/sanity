@@ -1,11 +1,15 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {type ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
-import {Grid, Menu} from '@sanity/ui'
+import {Grid} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useId, useMemo} from 'react'
 
-import {Button, MenuButton, MenuItem, Tooltip} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {type ArrayInputFunctionsProps} from '../../../types'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {type ArrayInputFunctionsProps} from '../../../types/_transitional'
 import {useArrayValidation} from '../common/ArrayValidationContext'
 
 /**

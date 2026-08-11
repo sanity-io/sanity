@@ -1,9 +1,8 @@
 import {useMemo} from 'react'
 
-import {useFeatureEnabled} from '../../hooks'
-import {FEATURES} from '../../hooks/useFeatureEnabled'
-import {useSource} from '../../studio'
-import {getPublishedId} from '../../util'
+import {useFeatureEnabled, FEATURES} from '../../hooks/useFeatureEnabled'
+import {useSource} from '../../studio/source'
+import {getPublishedId} from '../../util/draftUtils'
 import {type CommentsUIMode} from '../types'
 
 type ResolveCommentsEnabled =
@@ -28,6 +27,7 @@ export function useResolveCommentsEnabled(
   // Check if the projects plan has the feature enabled
   const {enabled: featureEnabled, isLoading, error} = useFeatureEnabled(FEATURES.studioComments)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled} = useSource().document.comments
   // Check if the feature is enabled for the current document in the config
   const enabledFromConfig = useMemo(

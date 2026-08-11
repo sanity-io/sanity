@@ -1,4 +1,5 @@
-import {Card, Code} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import isEqual from 'lodash-es/isEqual.js'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
@@ -11,9 +12,8 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import shallowEquals from 'shallow-equals'
 
-import {Pane} from '../../components/pane'
+import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
 import {assignId} from '../../structureResolvers/assignId'
@@ -30,6 +30,7 @@ import {
 } from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder, type StaticSortOrder} from './types'
+import {useShallowUnique} from './useShallowUnique'
 
 /**
  * Type for custom menu item state storage.
@@ -167,15 +168,6 @@ export const appendRestoreDefaultItems = (options: {
   ]
 }
 
-export function useShallowUnique<ValueType>(value: ValueType): ValueType {
-  const [previous, setPrevious] = useState<ValueType>(value)
-  if (!shallowEquals(previous, value)) {
-    setPrevious(value)
-    return value
-  }
-  return previous
-}
-
 /**
  * @internal
  */
@@ -183,6 +175,7 @@ export const PaneContainer = memo(function PaneContainer(
   props: BaseStructureToolPaneProps<'documentList'>,
 ) {
   const {index, isSelected, pane, paneKey} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {name: parentSourceName} = useSource()
 
   const {

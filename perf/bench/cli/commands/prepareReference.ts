@@ -73,6 +73,53 @@ function setOutput(key: string, value: string): void {
   }
 }
 
+/**
+ * Build the bench studio from `sha`'s packages with HEAD's committed
+ * perf/bench tree overlaid (same harness + scenarios — only product code
+ * differs), and copy the built dist to `targetDist`. Throws on any failure;
+ * callers decide whether that's a fallback (prepare-reference) or fatal
+ * (prepare-backfill).
+ */
+export function buildDistAtCommit(sha: string, targetDist: string): void {
+  // A unique temp dir, never a repo sibling: a fixed `../reference` could
+  // collide with an unrelated directory that the finally block would then
+  // `git worktree remove --force`. Not inside the repo either — the nested
+  // checkout would be picked up by test/build globs (e.g. vitest's
+  // `./**/__tests__/**`)
+  const worktree = fs.mkdtempSync(path.join(os.tmpdir(), 'bench-worktree-'))
+  try {
+    const headSha = git(['rev-parse', 'HEAD'], REPO_ROOT)
+    step('git', ['worktree', 'add', worktree, sha], REPO_ROOT)
+    // Bootstrap: the commit may predate perf/bench entirely
+    if (!fs.existsSync(path.join(worktree, 'perf/bench'))) {
+      throw new Error(`commit ${sha.slice(0, 10)} predates perf/bench`)
+    }
+    // Overlay HEAD's committed perf/bench tree onto the worktree;
+    // remove first so files deleted at HEAD don't linger
+    fs.rmSync(path.join(worktree, 'perf/bench'), {recursive: true, force: true})
+    step('git', ['checkout', headSha, '--', 'perf/bench'], worktree)
+    step('pnpm', ['install', '--no-frozen-lockfile'], worktree)
+    step('pnpm', ['turbo', 'run', 'build', '--filter=bench'], worktree)
+
+    const builtDist = path.join(worktree, 'perf/bench/dist')
+    if (!fs.existsSync(path.join(builtDist, 'index.html'))) {
+      throw new Error(
+        `build at ${sha.slice(0, 10)} produced no ${path.join(builtDist, 'index.html')}`,
+      )
+    }
+    fs.rmSync(targetDist, {recursive: true, force: true})
+    fs.mkdirSync(path.dirname(targetDist), {recursive: true})
+    fs.cpSync(builtDist, targetDist, {recursive: true})
+  } finally {
+    // CI runners are ephemeral; locally, don't leave the worktree behind
+    if (!process.env.CI) {
+      spawnSync('git', ['worktree', 'remove', '--force', worktree], {cwd: REPO_ROOT})
+      // If `worktree add` never ran (or `remove` refused), the temp dir remains
+      fs.rmSync(worktree, {recursive: true, force: true})
+    }
+  }
+}
+
 export function prepareReference(argv: PrepareReferenceArgs): void {
   const referenceDist = path.join(BENCH_ROOT, '.reference/dist')
   const mergeBase = git(['merge-base', 'HEAD', `origin/${argv.baseRef}`], REPO_ROOT)
@@ -86,33 +133,8 @@ export function prepareReference(argv: PrepareReferenceArgs): void {
     return
   }
 
-  // A unique temp dir, never a repo sibling: a fixed `../reference` could
-  // collide with an unrelated directory that the finally block would then
-  // `git worktree remove --force`. Not inside the repo either — the nested
-  // checkout would be picked up by test/build globs (e.g. vitest's
-  // `./**/__tests__/**`)
-  const worktree = fs.mkdtempSync(path.join(os.tmpdir(), 'bench-reference-'))
   try {
-    const headSha = git(['rev-parse', 'HEAD'], REPO_ROOT)
-    step('git', ['worktree', 'add', worktree, mergeBase], REPO_ROOT)
-    // Bootstrap: merge-base may predate perf/bench entirely
-    if (!fs.existsSync(path.join(worktree, 'perf/bench'))) {
-      throw new Error(`merge-base ${mergeBase.slice(0, 10)} predates perf/bench`)
-    }
-    // Overlay HEAD's committed perf/bench tree onto the merge-base worktree;
-    // remove first so files deleted at HEAD don't linger
-    fs.rmSync(path.join(worktree, 'perf/bench'), {recursive: true, force: true})
-    step('git', ['checkout', headSha, '--', 'perf/bench'], worktree)
-    step('pnpm', ['install', '--no-frozen-lockfile'], worktree)
-    step('pnpm', ['turbo', 'run', 'build', '--filter=bench'], worktree)
-
-    const builtDist = path.join(worktree, 'perf/bench/dist')
-    if (!fs.existsSync(path.join(builtDist, 'index.html'))) {
-      throw new Error(`reference build produced no ${path.join(builtDist, 'index.html')}`)
-    }
-    fs.rmSync(referenceDist, {recursive: true, force: true})
-    fs.mkdirSync(path.dirname(referenceDist), {recursive: true})
-    fs.cpSync(builtDist, referenceDist, {recursive: true})
+    buildDistAtCommit(mergeBase, referenceDist)
     setOutput('comparison', 'ab')
   } catch (error) {
     const reason = (error instanceof Error ? error.message : String(error)).replace(/\s+/g, ' ')
@@ -121,12 +143,5 @@ export function prepareReference(argv: PrepareReferenceArgs): void {
       `::warning::Reference build at merge-base failed or predates perf/bench - running in absolute mode (${reason})`,
     )
     setOutput('comparison', 'skipped')
-  } finally {
-    // CI runners are ephemeral; locally, don't leave the worktree behind
-    if (!process.env.CI) {
-      spawnSync('git', ['worktree', 'remove', '--force', worktree], {cwd: REPO_ROOT})
-      // If `worktree add` never ran (or `remove` refused), the temp dir remains
-      fs.rmSync(worktree, {recursive: true, force: true})
-    }
   }
 }

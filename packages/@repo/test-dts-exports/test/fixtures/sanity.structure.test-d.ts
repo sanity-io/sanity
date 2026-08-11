@@ -479,10 +479,10 @@ describe('sanity/structure', () => {
     expectTypeOf<typeof ORDER_BY_IDS_PARAM_FIELD>().not.toBeNever()
   })
   test('Pane', () => {
-    expectTypeOf<typeof Pane>().not.toBeNever()
+    expectTypeOf<typeof Pane>().toBeFunction()
   })
   test('PaneContent', () => {
-    expectTypeOf<typeof PaneContent>().not.toBeNever()
+    expectTypeOf<typeof PaneContent>().toBeFunction()
   })
   test('PaneLayout', () => {
     expectTypeOf<typeof PaneLayout>().toBeFunction()

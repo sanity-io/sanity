@@ -2,7 +2,10 @@ import {type Path} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
 import {type CommentDocument} from '../../types'
-import {buildRangeDecorationSelectionsFromComments, COMMENT_INDICATORS} from '../../utils'
+import {
+  buildRangeDecorationSelectionsFromComments,
+  COMMENT_INDICATORS,
+} from '../../utils/inline-comments/buildRangeDecorationSelectionsFromComments'
 
 const value = [
   {

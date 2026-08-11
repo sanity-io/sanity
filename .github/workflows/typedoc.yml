@@ -12,6 +12,7 @@ on:
       - "packages/sanity/typedoc.config.json"
       - "packages/sanity/tsconfig.docs.json"
       - "packages/sanity/package.json"
+      - "packages/@repo/typedoc/**"
       - ".github/workflows/typedoc.yml"
   # Manual trigger
   workflow_dispatch:
@@ -51,7 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@v6
 
       - uses: actions/setup-node@v6
         with:

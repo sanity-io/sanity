@@ -9,7 +9,7 @@ import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
 
 import {observeImageAssetStub} from '../../../../../../../test/fixtures/assetSourceMocks'
-import {renderImageInput} from '../../../../../../../test/form'
+import {renderImageInput} from '../../../../../../../test/form/renderImageInput'
 import {getDataTestIdPrefix} from '../../common/AssetSourceBrowser'
 import {BaseImageInput} from '../ImageInput'
 

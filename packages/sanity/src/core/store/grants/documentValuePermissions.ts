@@ -2,7 +2,8 @@ import isEqual from 'lodash-es/isEqual.js'
 import {useEffect, useReducer, useRef} from 'react'
 import {distinctUntilChanged, type Observable, type Subscription} from 'rxjs'
 
-import {type LoadingTuple, type PartialExcept} from '../../util'
+import {type LoadingTuple} from '../../util/createHookFromObservableFactory'
+import {type PartialExcept} from '../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
 import {type DocumentValuePermission, type GrantsStore, type PermissionCheckResult} from './types'
 
@@ -82,9 +83,15 @@ export function useDocumentValuePermissions({
 
   const [state, dispatch] = useReducer(stateReducer, INITIAL_STATE)
   const subscriptionRef = useRef<Subscription | null>(null)
+  const hasDispatchedInitialLoadingRef = useRef(false)
 
   useEffect(() => {
-    dispatch({type: 'loading'})
+    // Dispatch loading only on the first eval; re-dispatching it on per-keystroke re-runs keeps
+    // prevIsLoading true, which defeats the reducer's isEqual bailout and forces a re-render.
+    if (!hasDispatchedInitialLoadingRef.current) {
+      hasDispatchedInitialLoadingRef.current = true
+      dispatch({type: 'loading'})
+    }
 
     // Unsubscribe from any previous subscription
     if (subscriptionRef.current) {

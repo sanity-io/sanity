@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from './constants'
 import {createVariantOperationsStore} from './createVariantOperationsStore'
 

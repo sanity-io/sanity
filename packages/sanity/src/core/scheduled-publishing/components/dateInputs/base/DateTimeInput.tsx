@@ -9,13 +9,12 @@ import {
 } from '@sanity/ui'
 import {
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   useCallback,
   useImperativeHandle,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import FocusLock from 'react-focus-lock'
 
@@ -39,11 +38,9 @@ type Props = {
   timeZoneScope: TimeZoneScope
 }
 
-export const DateTimeInput = forwardRef(function DateTimeInput(
-  props: Props,
-  forwardedRef: ForwardedRef<HTMLInputElement>,
-) {
+export function DateTimeInput(props: Props & RefAttributes<HTMLInputElement>) {
   const {
+    ref: forwardedRef,
     value,
     inputValue,
     customValidation,
@@ -149,4 +146,4 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
       }
     />
   )
-})
+}

@@ -2,7 +2,8 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {LinkIcon} from '@sanity/icons/Link'
-import {Box, Card, Code, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useMemo, useState, type ComponentType} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'
 
@@ -55,7 +56,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
   return (
     <Box height="fill">
       <Box padding={4} paddingTop={0}>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text muted size={1} textOverflow="ellipsis">
             Random ID: <code>{randomId}</code>
           </Text>
@@ -66,7 +67,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
       </Box>
 
       <Card borderBottom padding={2}>
-        <Stack space={1}>
+        <Stack gap={1}>
           <Card
             as={ChildLink as ComponentType<Record<string, unknown>>}
             data-as="a"

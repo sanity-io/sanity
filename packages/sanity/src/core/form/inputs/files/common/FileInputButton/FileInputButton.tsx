@@ -1,13 +1,6 @@
-import {
-  type ChangeEvent,
-  type ForwardedRef,
-  forwardRef,
-  type HTMLProps,
-  useCallback,
-  useId,
-} from 'react'
+import {type ChangeEvent, type HTMLProps, useCallback, useId, type RefAttributes} from 'react'
 
-import {type ButtonProps} from '../../../../../../ui-components'
+import {type ButtonProps} from '../../../../../../ui-components/button/Button'
 import {FileButton} from './styles'
 
 export type FileInputButtonProps = ButtonProps & {
@@ -18,14 +11,23 @@ export type FileInputButtonProps = ButtonProps & {
   disabled?: boolean
 }
 
-export const FileInputButton = forwardRef(function FileInputButton(
+export function FileInputButton(
   props: FileInputButtonProps &
-    Omit<HTMLProps<HTMLButtonElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
-  forwardedRef: ForwardedRef<HTMLInputElement>,
+    Omit<HTMLProps<HTMLButtonElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'> &
+    RefAttributes<HTMLInputElement>,
 ) {
   // `text` and `icon` stay in `rest` so the ButtonWithText | IconButton union
   // stays correlated when spread onto the styled component.
-  const {id: idProp, accept, capture, multiple, onSelect, disabled, ...rest} = props
+  const {
+    ref: forwardedRef,
+    id: idProp,
+    accept,
+    capture,
+    multiple,
+    onSelect,
+    disabled,
+    ...rest
+  } = props
   const id = `${idProp || ''}-${useId()}`
 
   const handleChange = useCallback(
@@ -54,4 +56,4 @@ export const FileInputButton = forwardRef(function FileInputButton(
       />
     </FileButton>
   )
-})
+}

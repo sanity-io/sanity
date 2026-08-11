@@ -2,14 +2,14 @@ import {type ObjectSchemaType} from '@sanity/types'
 import {Badge, Box, Inline} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {type PreviewLayoutKey} from '../../../components'
-import {DocumentStatus} from '../../../components/documentStatus'
-import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator'
-import {DocumentPreviewPresence} from '../../../presence'
+import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
+import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator/DocumentStatusIndicator'
+import {type PreviewLayoutKey} from '../../../components/previews/types'
+import {DocumentPreviewPresence} from '../../../presence/DocumentPreviewPresence'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
 import {getDocumentVersionInfoFromVersions} from '../../../releases/util/getDocumentVersionInfoFromVersions'
-import {useDocumentPresence} from '../../../store'
-import {type RenderPreviewCallback} from '../../types'
+import {useDocumentPresence} from '../../../store/presence/useDocumentPresence'
+import {type RenderPreviewCallback} from '../../types/renderCallback'
 
 /**
  * Used to preview a referenced type
@@ -38,8 +38,8 @@ export function ReferencePreview(props: {
     () => ({
       children: (
         <Box paddingLeft={3}>
-          <Inline space={3}>
-            {showTypeLabel && <Badge mode="outline">{refType.title}</Badge>}
+          <Inline gap={3}>
+            {showTypeLabel && <Badge>{refType.title}</Badge>}
 
             {documentPresence && documentPresence.length > 0 && (
               <DocumentPreviewPresence presence={documentPresence} />
