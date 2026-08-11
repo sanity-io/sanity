@@ -3,7 +3,7 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@portabletext/to-html": "^5.0.2",
+    "@portabletext/to-html": "^5.0.3",
     "@sanity/client": "^7.26.2",
     "@sanity/functions": "^1.4.0"
   },
