@@ -216,7 +216,7 @@ export const Preview = memo(function PreviewComponent(
     const timeout = setTimeout(() => {
       setLoadTimedOut(true)
       console.error(
-        `The preview iframe hasn't finished loading after ${MAX_TIME_TO_IFRAME_LOAD}ms. If the preview keeps reloading itself, note that Next.js dev servers older than 16.3.0 enter an infinite reload loop in Firefox when embedded cross-origin (https://github.com/vercel/next.js/pull/94128) — upgrade Next.js, or set 'experimental.reactDebugChannel: false' in next.config as a workaround.`,
+        `The preview iframe hasn't finished loading after ${MAX_TIME_TO_IFRAME_LOAD}ms. If the preview keeps reloading itself, note that Next.js dev servers older than 16.3.0 enter an infinite reload loop in Firefox when embedded cross-origin (https://github.com/vercel/next.js/pull/94128) — upgrade Next.js, or add \`experimental: {reactDebugChannel: false}\` to your Next.js config as a workaround.`,
       )
     }, MAX_TIME_TO_IFRAME_LOAD)
     return () => clearTimeout(timeout)
@@ -557,7 +557,8 @@ export const Preview = memo(function PreviewComponent(
                     </Text>
                   </Flex>
                 </MotionFlex>
-              ) : (somethingIsWrong || loadTimedOut) && !continueAnyway ? (
+              ) : (somethingIsWrong || (loadTimedOut && (isLoading || isRefreshing))) &&
+                !continueAnyway ? (
                 <MotionFlex
                   initial="initial"
                   animate="animate"
