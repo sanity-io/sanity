@@ -28,7 +28,7 @@
     "@types/lodash-es": "^4.17.12",
     "@types/node": "catalog:",
     "esbuild": "0.28.1",
-    "tsx": "^4.23.11",
+    "tsx": "^4.23.12",
     "vite": "catalog:",
     "vitest": "catalog:"
   }
