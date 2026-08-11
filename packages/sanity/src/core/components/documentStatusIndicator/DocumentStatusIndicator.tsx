@@ -76,26 +76,8 @@ function VariantIcon() {
   )
 }
 
-/**
- * Yellow draft ring followed by the green published disc.
- *
- * When `allowDraftOnly` is false (system perspective), a document that has never been published
- * gets no status icons. When true (selected variant), a draft-only document still shows the yellow
- * ring — matching the Studio Patterns status stack.
- */
-function StatusDots({
-  draft,
-  published,
-  allowDraftOnly = false,
-}: {
-  draft: boolean
-  published: boolean
-  allowDraftOnly?: boolean
-}) {
-  if (!published && !(allowDraftOnly && draft)) {
-    return null
-  }
-
+/** Yellow draft ring followed by the green published disc. */
+function StatusDots({draft, published}: {draft: boolean; published: boolean}) {
   const statuses: Status[] = []
   if (draft) statuses.push('draft')
   if (published) statuses.push('published')
@@ -112,56 +94,65 @@ function StatusDots({
 }
 
 /**
- * Renders icons describing the document's status in the selected perspective and variant. Icons
+ * Renders icons describing the document's status in the selected perspective and variant. The
+ * perspective decides what the icons describe, and the selected variant then narrows it. Icons
  * appear in a fixed order: the rhombus (variant), the release icon, the yellow draft ring, then the
  * green published disc. At most three render at once.
  *
- * Variant: none | Perspective: system (published or drafts)
- *   - Published: green disc.
- *   - Published & draft: yellow ring and green disc.
- *   - Draft only (not published yet): nothing.
+ * Perspective: system (published or drafts) — describes publish state.
+ *   - Variant: none — describes the default documents:
+ *     - Published: green disc.
+ *     - Published & draft: yellow ring and green disc.
+ *     - Draft only (not published yet): nothing.
+ *   - Variant: selected — describes the variant's own documents, and takes over only when the
+ *     document exists in the variant:
+ *     - Not in the variant: falls back to the default documents above.
+ *     - Published: rhombus and green disc.
+ *     - Published & draft: rhombus, yellow ring and green disc.
+ *     - Draft only (not published yet): rhombus and yellow ring.
  *
- * Variant: selected | Perspective: system (published or drafts)
- *   - Has document in the variant (in either system bundle)?
- *     - No: falls back to the default variant icons above.
- *     - Yes: rhombus icon, plus the dots for the variant's own published and draft documents
- *       (draft-only variants still show the yellow ring).
- *
- * Variant: none | Perspective: a release or agent bundle
- *   - Has document in the selected release: release icon (bolt, clock, or dot by release type;
- *     agent bundles get a suggest-toned dot).
- *   - Otherwise: nothing.
- *
- * Variant: selected | Perspective: a release or agent bundle
- *   - Has document in the variant within the release: rhombus icon.
- *   - Has document in the release itself: release icon.
- *   - Both: rhombus icon and release icon.
- *   - Neither: nothing.
+ * Perspective: a release or agent bundle — describes membership only, since versions in a release
+ * have no publish state of their own.
+ *   - Variant: none:
+ *     - In the release: release icon (bolt, clock, or dot by release type; agent bundles get a
+ *       suggest-toned dot).
+ *     - Otherwise: nothing.
+ *   - Variant: selected — a version scoped to the variant belongs to the release as much as a
+ *     default one does, so the release icon still leads and the rhombus is only ever added on top of
+ *     it, never shown alone:
+ *     - In the release for the variant: rhombus and release icon, whether or not the release also
+ *       holds a default version.
+ *     - In the release for the default documents only: release icon.
+ *     - Not in the release: nothing.
  *
  * @internal
  */
 export function DocumentStatusIndicator({documentVersions}: DocumentStatusProps) {
   const {bundle, selectedPerspective, selectedVariant} = usePerspective()
 
-  // `undefined` while the variants store resolves, which degrades to the default variant.
   const variantId = selectedVariant?._id
 
   if (!isSystemBundle(bundle)) {
     const inVariant = variantId
       ? getTargetDocument({bundle, variant: variantId, documentVersions})
       : undefined
-    const inPerspective = getTargetDocument({bundle, variant: undefined, documentVersions})
+    const inDefault = getTargetDocument({bundle, variant: undefined, documentVersions})
+
+    // Membership of the release is what the perspective dictates, so it gates the whole indicator. A
+    // version scoped to the selected variant is a member of the release as much as a default one is,
+    // so either grants the release icon and the rhombus is added on top.
+    if (!inVariant && !inDefault) {
+      return null
+    }
 
     return (
       <Flex align="center">
         {inVariant ? <VariantIcon /> : null}
-        {inPerspective ? (
-          <IconSlot>
-            <Text size={0}>
-              <ReleaseAvatarIcon release={selectedPerspective} />
-            </Text>
-          </IconSlot>
-        ) : null}
+        <IconSlot>
+          <Text size={0}>
+            <ReleaseAvatarIcon release={selectedPerspective} />
+          </Text>
+        </IconSlot>
       </Flex>
     )
   }
@@ -179,7 +170,6 @@ export function DocumentStatusIndicator({documentVersions}: DocumentStatusProps)
       <Flex align="center">
         <VariantIcon />
         <StatusDots
-          allowDraftOnly
           draft={Boolean(variantTarget.draft)}
           published={Boolean(variantTarget.published)}
         />
@@ -187,14 +177,21 @@ export function DocumentStatusIndicator({documentVersions}: DocumentStatusProps)
     )
   }
 
+  const published = Boolean(
+    getTargetDocument({bundle: 'published', variant: undefined, documentVersions}),
+  )
+
+  // For the default documents the draft ring reads as "unpublished changes", so it only means
+  // something next to the published disc: a document that has never been published gets no icons at
+  // all. A draft-only variant does keep its ring, because the rhombus already establishes that the
+  // variant exists.
+  const draft =
+    published &&
+    Boolean(getTargetDocument({bundle: 'drafts', variant: undefined, documentVersions}))
+
   return (
     <Flex align="center">
-      <StatusDots
-        draft={Boolean(getTargetDocument({bundle: 'drafts', variant: undefined, documentVersions}))}
-        published={Boolean(
-          getTargetDocument({bundle: 'published', variant: undefined, documentVersions}),
-        )}
-      />
+      <StatusDots draft={draft} published={published} />
     </Flex>
   )
 }

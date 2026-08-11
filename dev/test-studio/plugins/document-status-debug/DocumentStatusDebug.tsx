@@ -12,7 +12,7 @@ const BUTTON_CARD_STYLE = {width: '100%', textAlign: 'left'} as const
 const ROWS_CARD_STYLE = {maxWidth: 350} as const
 
 /**
- * Renders every state `DocumentStatusIndicator` can produce, using fabricated documents. Only the
+ * Renders every case documented on `DocumentStatusIndicator`, using fabricated documents. Only the
  * version metadata the indicator actually reads is real, so nothing here needs to exist in the
  * dataset.
  */
@@ -35,7 +35,7 @@ export function DocumentStatusDebug() {
           <Stack flex={1} gap={3}>
             <Heading size={1}>Document status indicator</Heading>
             <Text muted size={1}>
-              Every state the indicator can render, grouped by what is selected in the perspective
+              Every case documented on the indicator, grouped by what is selected in the perspective
               bar. Hover a row to see the hover state, click it to toggle selected.
             </Text>
           </Stack>

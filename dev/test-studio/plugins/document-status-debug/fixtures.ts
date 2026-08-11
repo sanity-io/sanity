@@ -150,65 +150,49 @@ const agentPerspective: PerspectiveContextValue = {
 }
 
 const systemRows: DebugRow[] = [
-  {title: 'Draft only, never published', expected: 'Nothing', versions: [draft]},
-  {title: 'Published, no edits', expected: 'Published disc', versions: [published]},
+  {title: 'Published', expected: 'Green disc', versions: [published]},
   {
-    title: 'Published with draft edits',
-    expected: 'Draft ring, published disc',
+    title: 'Published & draft',
+    expected: 'Yellow ring and green disc',
     versions: [draft, published],
   },
-  {
-    title: 'Only exists in a variant',
-    expected: 'Nothing (variants are ignored unless one is selected)',
-    versions: [draftVariant, publishedVariant],
-  },
+  {title: 'Draft only (not published yet)', expected: 'Nothing', versions: [draft]},
 ]
 
 const systemVariantRows: DebugRow[] = [
   {
-    title: 'Variant draft only, never published',
-    expected: 'Rhombus, draft ring',
-    versions: [draftVariant],
+    title: 'Not in the variant (the default is published, with draft edits)',
+    expected: 'Falls back to the default documents: yellow ring and green disc',
+    versions: [draft, published],
   },
   {
-    title: 'Variant published, no edits',
-    expected: 'Rhombus, published disc',
+    title: 'Variant published',
+    expected: 'Rhombus and green disc',
     versions: [publishedVariant],
   },
   {
-    title: 'Variant published with draft edits',
-    expected: 'Rhombus, draft ring, published disc',
+    title: 'Variant published & draft',
+    expected: 'Rhombus, yellow ring and green disc',
     versions: [draftVariant, publishedVariant],
   },
   {
-    title: 'Variant draft, default also published',
-    expected: 'Rhombus, draft ring (the variant wins)',
+    title: 'Variant draft only (not published yet, but the default is published)',
+    expected: 'Rhombus and yellow ring: the variant takes over',
     versions: [draft, published, draftVariant],
-  },
-  {
-    title: 'Not in the variant, default published with edits',
-    expected: 'Draft ring, published disc (falls back to the default)',
-    versions: [draft, published],
   },
 ]
 
 function bundleRows(bundleId: string, label: string): DebugRow[] {
   return [
-    {title: `In ${label}`, expected: `${label} icon`, versions: [inBundle(bundleId)]},
     {
-      title: `In ${label}, also published with edits`,
-      expected: `${label} icon only`,
+      title: `In ${label} (and published, with draft edits)`,
+      expected: `${label} icon`,
       versions: [draft, published, inBundle(bundleId)],
     },
     {
-      title: `Not in ${label}, published with edits`,
+      title: `Not in ${label} (published, with draft edits)`,
       expected: 'Nothing',
       versions: [draft, published],
-    },
-    {
-      title: `Only a variant of ${label}`,
-      expected: 'Nothing (variants are ignored unless one is selected)',
-      versions: [inBundleVariant(bundleId)],
     },
   ]
 }
@@ -216,22 +200,17 @@ function bundleRows(bundleId: string, label: string): DebugRow[] {
 function bundleVariantRows(bundleId: string, label: string): DebugRow[] {
   return [
     {
-      title: `In ${label} and in the variant`,
-      expected: `Rhombus, ${label} icon`,
-      versions: [inBundle(bundleId), inBundleVariant(bundleId)],
-    },
-    {
-      title: 'In the variant only',
-      expected: 'Rhombus',
+      title: `In ${label} for the variant`,
+      expected: `Rhombus and ${label} icon: a variant version belongs to the release too`,
       versions: [inBundleVariant(bundleId)],
     },
     {
-      title: `In ${label} only`,
+      title: `In ${label} for the default documents only`,
       expected: `${label} icon`,
       versions: [inBundle(bundleId)],
     },
     {
-      title: `In neither, published with edits`,
+      title: `Not in ${label} (published, with draft edits)`,
       expected: 'Nothing',
       versions: [draft, published],
     },
@@ -242,7 +221,8 @@ export const scenarios: DebugScenario[] = [
   {
     id: 'drafts',
     title: 'Drafts perspective, no variant',
-    description: 'The default studio view. Only the draft and published documents are described.',
+    description:
+      'The default studio view. A system bundle describes publish state, and without a variant selected that means the publish state of the default documents.',
     perspective: basePerspective,
     rows: systemRows,
   },
@@ -257,7 +237,7 @@ export const scenarios: DebugScenario[] = [
     id: 'drafts-variant',
     title: 'Drafts perspective, variant selected',
     description:
-      'The variant takes over the indicator when the document exists in it, otherwise the default documents are described. Draft-only variants keep the draft ring.',
+      "Describes the publish state of the variant's own documents, and takes over only when the document exists in the variant. Otherwise the default documents are described.",
     perspective: withVariant(basePerspective),
     rows: systemVariantRows,
   },
@@ -271,21 +251,23 @@ export const scenarios: DebugScenario[] = [
   {
     id: 'asap',
     title: 'ASAP release, no variant',
-    description: 'Only membership of the release matters. The bolt is in caution tone.',
+    description:
+      'A release describes membership only, since versions in a release have no publish state of their own. The bolt is in caution tone.',
     perspective: releasePerspective(asapRelease),
     rows: bundleRows(asapRelease.name, 'the ASAP release'),
   },
   {
     id: 'scheduled',
     title: 'Scheduled release, no variant',
-    description: 'The clock is in primary tone.',
+    description: 'Membership only, as above. The clock is in primary tone.',
     perspective: releasePerspective(scheduledRelease),
     rows: bundleRows(scheduledRelease.name, 'the scheduled release'),
   },
   {
     id: 'undecided',
     title: 'Undecided release, no variant',
-    description: 'Releases without a release type get the dot, in explore tone.',
+    description:
+      'Membership only, as above. Releases without a release type get the dot, in explore tone.',
     perspective: releasePerspective(undecidedRelease),
     rows: bundleRows(undecidedRelease.name, 'the undecided release'),
   },
@@ -308,7 +290,7 @@ export const scenarios: DebugScenario[] = [
     id: 'asap-variant',
     title: 'ASAP release, variant selected',
     description:
-      'Membership of the release and of the variant within it are described independently. No status dots here: release versions have no publish state of their own.',
+      'A version scoped to the variant belongs to the release as much as a default one does, so it gets the release icon too. The rhombus is only ever added on top of the release icon, never shown alone.',
     perspective: withVariant(releasePerspective(asapRelease)),
     rows: bundleVariantRows(asapRelease.name, 'the ASAP release'),
   },
