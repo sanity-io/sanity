@@ -195,7 +195,7 @@ function RequestAccessFormContent(
         resourceType,
         resourceId,
         note: note.trim() || undefined,
-        requestUrl: typeof window === 'undefined' ? undefined : window.location.href,
+        requestUrl: getRequestUrl(),
       })
       setSubmitResult(result)
       if (result.type === 'submitted') onRequestSubmitted?.()
@@ -321,6 +321,15 @@ function RequestAccessFormContent(
       ) : null}
     </Flex>
   )
+}
+
+// The URL fragment can carry auth tokens (e.g. the #token= login handoff),
+// so it must never reach the Access API's logs.
+function getRequestUrl(): string | undefined {
+  if (typeof window === 'undefined') return undefined
+  const url = new URL(window.location.href)
+  url.hash = ''
+  return url.toString()
 }
 
 function getInitials(user: AccessUser): string | undefined {

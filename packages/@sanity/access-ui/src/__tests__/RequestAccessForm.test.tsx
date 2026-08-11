@@ -113,11 +113,19 @@ describe('RequestAccessForm', () => {
     const client = createClientStub({
       submit: () => Promise.resolve(createAccessRequest()),
     })
+    window.location.hash = '#token=secret'
     await renderForm({client, onRequestSubmitted})
     await submitRequest()
 
     expect(await screen.findByText('Access request sent')).toBeInTheDocument()
     expect(onRequestSubmitted).toHaveBeenCalledTimes(1)
+    // The fragment can carry auth tokens and must not reach the API.
+    expect(client.request).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: 'post',
+        body: expect.objectContaining({requestUrl: expect.not.stringContaining('#')}),
+      }),
+    )
   })
 
   it('keeps the form up with an inline error when submission fails unexpectedly', async () => {
