@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.9.2](https://github.com/sanity-io/sanity/compare/v6.9.1...v6.9.2) (2026-08-11)
+
+### Bug Fixes
+
+* allow revert confirm popover to flip above the button ([#13936](https://github.com/sanity-io/sanity/issues/13936)) ([f92d42c](https://github.com/sanity-io/sanity/commit/f92d42c56d327273ee08bd5c2d2c0fb521953257))
+* **comments:** enable click-outside handler when comment popover is open ([#12695](https://github.com/sanity-io/sanity/issues/12695)) ([e84ea82](https://github.com/sanity-io/sanity/commit/e84ea826f30a3ad923b85da2216a48fcd6b8601c))
+* **comments:** keep mention menu sized in oneLine PTE fields ([#13888](https://github.com/sanity-io/sanity/issues/13888)) ([e8293a9](https://github.com/sanity-io/sanity/commit/e8293a9c9e0a655348b2b57beeaeea1eebbb49f2))
+* **core:** keep an open object dialog open when focus lands on the item itself ([#13924](https://github.com/sanity-io/sanity/issues/13924)) ([5f7d3af](https://github.com/sanity-io/sanity/commit/5f7d3afa465e5efcd897e77c9da70b52d93eb2ed))
+* **core:** lock in intended publish date when scheduling a release ([#13824](https://github.com/sanity-io/sanity/issues/13824)) ([b37fa23](https://github.com/sanity-io/sanity/commit/b37fa2395d7b242f049a52bf45bd4d9d583a957d))
+* **core:** rename document inventory button to manage versions ([#13930](https://github.com/sanity-io/sanity/issues/13930)) ([2997089](https://github.com/sanity-io/sanity/commit/29970898c14967ad0728f66c0b8156f6559522a5))
+* **core:** resolve circular import warnings reported by tsdown ([#13753](https://github.com/sanity-io/sanity/issues/13753)) ([696f04f](https://github.com/sanity-io/sanity/commit/696f04fc856bffdb04d5ff05474901c783b92c3e))
+* **core:** retain claimed project banner across refresh ([#13879](https://github.com/sanity-io/sanity/issues/13879)) ([14cebf8](https://github.com/sanity-io/sanity/commit/14cebf8f8e28f021c9b6a420977f88941f5e6f76))
+* **deps:** update dependency @sanity/comlink to ^4.0.3 ([#13913](https://github.com/sanity-io/sanity/issues/13913)) ([4e98e00](https://github.com/sanity-io/sanity/commit/4e98e0027b6c50f5a0bdc598a6220edd9736866f))
+* **deps:** update dependency @sanity/presentation-comlink to ^2.2.2 ([#13914](https://github.com/sanity-io/sanity/issues/13914)) ([c3946e1](https://github.com/sanity-io/sanity/commit/c3946e1949f2909bd2c27b8ef57f53e1d6ad23e1))
+* **deps:** update dependency @sanity/preview-url-secret to ^4.1.3 ([#13965](https://github.com/sanity-io/sanity/issues/13965)) ([11e3abf](https://github.com/sanity-io/sanity/commit/11e3abf47a81198773397913d641564cc5b316e0))
+* **deps:** update dependency motion to v13 ([#13975](https://github.com/sanity-io/sanity/issues/13975)) ([caecbc7](https://github.com/sanity-io/sanity/commit/caecbc7ba03b2f69cce7d1689dce2bcfaad8b07e))
+* **deps:** update portabletext ([#13874](https://github.com/sanity-io/sanity/issues/13874)) ([b83b4c7](https://github.com/sanity-io/sanity/commit/b83b4c755d645bb15a90c57cf37eafeb3a1ffc34))
+* **deps:** update portabletext ([#13951](https://github.com/sanity-io/sanity/issues/13951)) ([9526f72](https://github.com/sanity-io/sanity/commit/9526f72d0ac82ec80c240c80b790c22551324e45))
+* redirect hidden workspace urls to the first visible workspace ([#13934](https://github.com/sanity-io/sanity/issues/13934)) ([47bcb97](https://github.com/sanity-io/sanity/commit/47bcb9721cd93018b0a7e2e70c6e19f684c87a90))
+* **releases:** preview the draft for documents unpublished by a published release ([#13889](https://github.com/sanity-io/sanity/issues/13889)) ([e206129](https://github.com/sanity-io/sanity/commit/e2061294dd6476360e652799b552fa6da7439389))
+* **structure:** make delete dialog copy count-aware ([#13010](https://github.com/sanity-io/sanity/issues/13010)) ([41aeaee](https://github.com/sanity-io/sanity/commit/41aeaee8603c1c5dabc7d07b26e456d6d99b2711))
 ## [6.9.1](https://github.com/sanity-io/sanity/compare/v6.9.0...v6.9.1) (2026-08-06)
 
 ### Bug Fixes
