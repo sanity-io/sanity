@@ -125,11 +125,95 @@ const article = {
   },
 }
 
+// Plain baseline articles (no variant treatments) — exist purely so the home
+// page reads like a real section front rather than a single-story demo.
+const SECTION_FRONT_ARTICLE_IDS = [
+  'politico-article-shutdown',
+  'politico-article-cloud-antitrust',
+  'politico-article-fed-rates',
+] as const
+
+const sectionFrontArticles = [
+  {
+    _id: 'politico-article-shutdown',
+    _type: 'politicoArticle',
+    title: 'Stopgap funding bill (baseline)',
+    slug: {_type: 'slug', current: 'congress-stopgap-funding-bill'},
+    section: 'Congress',
+    byline: 'By Jake Chen, POLITICO Congress',
+    publishedAt: '2026-08-07T14:00:00Z',
+    kicker: i18nString({en: 'CONGRESS'}),
+    headline: i18nString({
+      en: 'Congress passes stopgap funding bill, averting Friday shutdown deadline',
+    }),
+    dek: i18nString({
+      en: 'The measure funds the government through mid-November, but sets up another fight over spending levels in the fall.',
+    }),
+    body: i18nText({
+      en: [
+        'The House and Senate passed a short-term funding bill Wednesday night, averting a government shutdown that would have begun at midnight Friday.',
+        'The stopgap measure, known as a continuing resolution, keeps federal agencies funded at current levels through Nov. 21, giving appropriators roughly six more weeks to negotiate a longer-term spending deal.',
+        'Leadership in both chambers said they expect another contentious round of negotiations before the new deadline, with disputes over defense spending levels still unresolved.',
+      ].join('\n\n'),
+    }),
+  },
+  {
+    _id: 'politico-article-cloud-antitrust',
+    _type: 'politicoArticle',
+    title: 'Cloud antitrust inquiry (baseline)',
+    slug: {_type: 'slug', current: 'doj-cloud-computing-antitrust-inquiry'},
+    section: 'Technology',
+    byline: 'By Priya Raman, POLITICO Technology',
+    publishedAt: '2026-08-05T11:30:00Z',
+    kicker: i18nString({en: 'TECH ANTITRUST'}),
+    headline: i18nString({
+      en: 'DOJ opens new antitrust inquiry into cloud computing pricing practices',
+    }),
+    dek: i18nString({
+      en: 'Investigators are examining whether the three largest cloud providers used exclusivity agreements to lock out smaller competitors.',
+    }),
+    body: i18nText({
+      en: [
+        'The Justice Department has opened a preliminary inquiry into pricing practices at the three largest cloud computing providers, according to two people familiar with the matter.',
+        'Investigators are focused on whether long-term contracts with steep early-termination penalties effectively locked enterprise customers into a single provider, discouraging competition from smaller cloud firms.',
+        'The inquiry is in its early stages and may not result in formal charges, the people cautioned, but it marks the latest sign of antitrust scrutiny of the cloud sector following similar probes in the EU and UK.',
+      ].join('\n\n'),
+    }),
+  },
+  {
+    _id: 'politico-article-fed-rates',
+    _type: 'politicoArticle',
+    title: 'Fed holds rates steady (baseline)',
+    slug: {_type: 'slug', current: 'fed-holds-rates-steady'},
+    section: 'Economy',
+    byline: 'By Owen Fitzgerald, POLITICO Economy',
+    publishedAt: '2026-08-04T18:15:00Z',
+    kicker: i18nString({en: 'FEDERAL RESERVE'}),
+    headline: i18nString({
+      en: 'Fed holds interest rates steady, signals patience on future cuts',
+    }),
+    dek: i18nString({
+      en: 'Chair says the central bank wants to see several more months of cooling inflation data before considering another reduction.',
+    }),
+    body: i18nText({
+      en: [
+        'The Federal Reserve held its benchmark interest rate steady Wednesday, extending a pause that began earlier this year as policymakers assess whether inflation is durably returning to their 2 percent target.',
+        'In a press conference following the decision, the Fed chair said officials want to see "several more months" of consistent data before considering another rate cut, tempering market expectations for near-term easing.',
+        'Stocks dipped slightly following the announcement, as traders had priced in slightly more dovish signals ahead of the meeting.',
+      ].join('\n\n'),
+    }),
+  },
+]
+
 const homePage = {
   _id: HOME_ID,
   _type: 'politicoHomePage',
   title: 'POLITICO — Content Variants Demo',
-  featuredArticles: [{_type: 'reference', _key: 'a1', _ref: ARTICLE_ID}],
+  featuredArticles: [ARTICLE_ID, ...SECTION_FRONT_ARTICLE_IDS].map((ref, i) => ({
+    _type: 'reference',
+    _key: `a${i + 1}`,
+    _ref: ref,
+  })),
 }
 
 interface VariantDefinitionSpec {
@@ -254,12 +338,24 @@ async function findVariantScopedDocId(publishedId: string, variantId: string): P
 }
 
 async function seedBaseContent(): Promise<void> {
-  const documents: IdentifiedSanityDocumentStub[] = [sponsor, article, homePage]
+  const documents: IdentifiedSanityDocumentStub[] = [
+    sponsor,
+    article,
+    ...sectionFrontArticles,
+    homePage,
+  ]
   let transaction = client.transaction()
   for (const doc of documents) {
     transaction = transaction.createIfNotExists(doc)
   }
   await transaction.commit({visibility: 'sync'})
+  // createIfNotExists is a no-op if homePage already exists from a prior run —
+  // patch featuredArticles explicitly so re-running this script after adding
+  // new section-front articles actually picks them up.
+  await client
+    .patch(HOME_ID)
+    .set({featuredArticles: homePage.featuredArticles})
+    .commit({visibility: 'sync'})
   console.log('base content seeded')
 }
 
