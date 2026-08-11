@@ -1,7 +1,7 @@
 // oxlint-disable-next-line import/no-unassigned-import
-import '@vitest/coverage-v8'
+import "@vitest/coverage-v8";
 
-import {defineConfig} from 'vitest/config'
+import { defineConfig } from "vitest/config";
 
 // Node 25+ enables the Web Storage API by default, shadowing the `localStorage`
 // global provided by jsdom (vitest's `populateGlobal` skips keys that already
@@ -10,7 +10,7 @@ import {defineConfig} from 'vitest/config'
 // Storage isn't enabled. See https://github.com/vitest-dev/vitest/issues/8757.
 // Use the canonical `--no-experimental-webstorage` alias since the shorter
 // `--no-webstorage` only exists on Node 26+.
-const workerExecArgv = ['--no-experimental-webstorage']
+const workerExecArgv = ["--no-experimental-webstorage"];
 
 export default defineConfig({
   test: {
@@ -24,50 +24,51 @@ export default defineConfig({
       },
     },
     forceRerunTriggers: [
-      '**/package.json/**',
-      '**/vitest.config.*/**',
-      '**/vite.config.*/**',
-      '**/pnpm-workspace.yaml',
-      '**/pnpm-lock.yaml',
-      '**/turbo.json',
-      '**/.github/workflows/test.yml',
+      "**/package.json/**",
+      "**/vitest.config.*/**",
+      "**/vite.config.*/**",
+      "**/pnpm-workspace.yaml",
+      "**/pnpm-lock.yaml",
+      "**/turbo.json",
+      "**/.github/workflows/test.yml",
     ],
     projects: [
-      'packages/@sanity/mutator',
-      'packages/@sanity/schema',
-      'packages/@sanity/types',
-      'packages/@sanity/util',
-      'packages/@sanity/vision',
-      'packages/sanity',
+      "packages/@sanity/access-ui",
+      "packages/@sanity/mutator",
+      "packages/@sanity/schema",
+      "packages/@sanity/types",
+      "packages/@sanity/util",
+      "packages/@sanity/vision",
+      "packages/sanity",
       // NOTE: the browser-mode project (packages/sanity/vitest.browser.config.mts)
       // is intentionally NOT registered here. It runs in a real browser via
       // `pnpm --filter sanity test:browser` (see .github/workflows/browser-tests.yml).
       // Including it in the default multi-project run makes the regular (forks
       // pool) test run try to execute *.browser.test.* files, which fails with
       // "vitest/browser can be imported only inside the Browser Mode".
-      'perf/tests',
+      "perf/tests",
       // The mock-contract tests are the drift detector for the bench mock —
       // they must run on every PR, not only label-gated bench runs
-      'perf/bench',
+      "perf/bench",
       // The dashboard's drift/ack math — pure modules, plain node environment
-      'dev/metrics-studio',
-      'packages/@repo/debug-proxy',
-      'packages/@repo/release-notes',
-      'packages/@repo/bundle-manager',
-      'packages/@repo/package.bundle',
-      'packages/@repo/utils',
+      "dev/metrics-studio",
+      "packages/@repo/debug-proxy",
+      "packages/@repo/release-notes",
+      "packages/@repo/bundle-manager",
+      "packages/@repo/package.bundle",
+      "packages/@repo/utils",
     ],
     coverage: {
-      provider: 'v8',
-      reporter: ['html', 'json', 'json-summary'],
-      include: ['packages/**/src/**'],
+      provider: "v8",
+      reporter: ["html", "json", "json-summary"],
+      include: ["packages/**/src/**"],
       exclude: [
         // exclude telemetry definitions
-        '**/__telemetry__/**',
+        "**/__telemetry__/**",
         // exclude internal
-        'packages/@repo/**',
+        "packages/@repo/**",
         // exclude non-source files that the v8 coverage provider can't parse
-        '**/*.md',
+        "**/*.md",
       ],
       reportOnFailure: true,
       clean: true,
@@ -78,4 +79,4 @@ export default defineConfig({
       ignoreSourceErrors: true,
     },
   },
-})
+});
