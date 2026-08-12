@@ -58,7 +58,7 @@
     "devtools:test-studio:build": "pnpm build && ENABLE_VITE_DEVTOOLS=true pnpm --filter sanity-test-studio sanity:build",
     "docs:typedocs:cleanup": "pnpm --filter @repo/typedoc cleanup",
     "docs:typedocs:generate": "pnpm --filter @repo/typedoc generate",
-    "doctor": "npx react-doctor@latest",
+    "doctor": "react-doctor",
     "e2e:build": "turbo run build --filter=studio-e2e-testing",
     "e2e:cleanup": "tsx -r dotenv-flow/config e2e/scripts/cleanupDatasets",
     "e2e:codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",

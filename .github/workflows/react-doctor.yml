@@ -37,4 +37,4 @@ jobs:
           else
             BASE="HEAD~1"
           fi
-          pnpm doctor -- --yes --no-score --blocking none --scope changed --base "$BASE" --project sanity
+          pnpm run doctor --yes --no-score --blocking none --scope changed --base "$BASE" --project sanity

@@ -95,8 +95,8 @@ export const EventsTimeline = ({
       setExpandedParents((prev) => {
         const next = new Set(prev)
 
-        if (prev.has(parentId)) next.delete(parentId)
-        else next.add(parentId)
+        if (isExpanding) next.add(parentId)
+        else next.delete(parentId)
 
         return next
       })
