@@ -1,4 +1,5 @@
 import {CloseIcon} from '@sanity/icons/Close'
+import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {
   Badge,
@@ -15,7 +16,9 @@ import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
 
 import {formatValue, type TrendPoint, type TrendSeries} from './data'
-import {backlinksFor, sourceFileUrl} from './links'
+import {abDispatchCommand, backlinksFor, sourceFileUrl} from './links'
+
+const FULL_SHA = /^[0-9a-f]{40}$/i
 
 /**
  * Details for one run, shown in a popover anchored at the clicked point.
@@ -28,11 +31,21 @@ import {backlinksFor, sourceFileUrl} from './links'
 export function RunDetailPopover(props: {
   series: TrendSeries
   point: TrendPoint
+  /** Sha of the nearest earlier distinct commit on the same line, if any. */
+  previousSha?: string
   referenceElement: HTMLElement | null
   onClose: () => void
 }) {
-  const {series, point, referenceElement, onClose} = props
+  const {series, point, previousSha, referenceElement, onClose} = props
   const [contentEl, setContentEl] = useState<HTMLDivElement | null>(null)
+  const [abCopyState, setAbCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
+  // The bench workflow's ab_from/ab_to inputs require full shas, and GitHub
+  // has no URL that prefills a workflow_dispatch form — so the affordance is
+  // a copyable command, previous point as reference, this point as experiment
+  const abCommand =
+    previousSha && FULL_SHA.test(previousSha) && FULL_SHA.test(point.sha)
+      ? abDispatchCommand(previousSha, point.sha)
+      : undefined
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const documentLink = useIntentLink({
     intent: 'edit',
@@ -159,6 +172,37 @@ export function RunDetailPopover(props: {
                     />
                   )}
                 </Flex>
+              </Stack>
+            )}
+
+            {abCommand && (
+              <Stack gap={2}>
+                <Text size={0} muted weight="medium">
+                  Suspect a change at this point?
+                </Text>
+                <Button
+                  mode="ghost"
+                  fontSize={1}
+                  icon={CopyIcon}
+                  text={
+                    abCopyState === 'copied'
+                      ? 'Copied — paste in a terminal'
+                      : abCopyState === 'failed'
+                        ? 'Copy failed — command in tooltip'
+                        : 'Copy A/B vs previous run'
+                  }
+                  title={abCommand}
+                  aria-label="Copy the gh command dispatching an A/B bench comparison of this commit against the previous point's commit"
+                  onClick={() => {
+                    // Only claim success on success: clipboard access can be
+                    // denied (permissions, non-secure context) and the title
+                    // attribute is the manual fallback either way
+                    navigator.clipboard.writeText(abCommand).then(
+                      () => setAbCopyState('copied'),
+                      () => setAbCopyState('failed'),
+                    )
+                  }}
+                />
               </Stack>
             )}
 

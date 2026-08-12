@@ -25,6 +25,20 @@ export function ciRunUrl(runId: string, attempt?: number): string {
   return attempt && attempt > 1 ? `${base}/attempts/${attempt}` : base
 }
 
+/**
+ * `gh` command dispatching an A/B bench run that compares two commits
+ * (bench.yml `ab_from`/`ab_to` inputs). A command to copy rather than a link:
+ * GitHub has no URL that prefills workflow_dispatch inputs.
+ */
+export function abDispatchCommand(fromSha: string, toSha: string): string {
+  return `gh workflow run bench.yml -R ${REPO} -f ab_from=${fromSha} -f ab_to=${toSha}`
+}
+
+/** The dispatched-runs list, for watching an A/B comparison after copying. */
+export function dispatchRunsUrl(): string {
+  return `https://github.com/${REPO}/actions/workflows/bench.yml?query=event%3Aworkflow_dispatch`
+}
+
 /** Link a scenario's source file on the branch it was measured on (or main). */
 export function sourceFileUrl(path: string, branch = 'main'): string {
   return `https://github.com/${REPO}/blob/${branch}/${path}`
