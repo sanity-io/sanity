@@ -409,12 +409,11 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       : [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
 
     // oxlint-disable-next-line react/react-compiler -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
-    return immutableReconcile(previousRangeDecorations.current, result)
+    const reconciled = immutableReconcile(previousRangeDecorations.current, result)
+    // oxlint-disable-next-line react/react-compiler -- see above
+    previousRangeDecorations.current = reconciled
+    return reconciled
   }, [diffRangeDecorations, displayInlineChanges, presenceCursorDecorations, rangeDecorationsProp])
-
-  useEffect(() => {
-    previousRangeDecorations.current = rangeDecorations
-  }, [rangeDecorations])
 
   return (
     <Box>

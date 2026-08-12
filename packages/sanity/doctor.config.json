@@ -21,9 +21,19 @@
           "src/structure/panes/document/documentPanel/header/hook/useChipScrollPosition.tsx"
         ],
         "rules": ["react-doctor/effect-needs-cleanup"]
+      },
+      {
+        "files": [
+          "src/core/form/inputs/PortableText/PortableTextInput.tsx",
+          "src/core/form/inputs/PortableText/hooks/useMemberValidation.tsx",
+          "src/core/form/inputs/PortableText/hooks/usePortableTextMembers.tsx",
+          "src/core/form/studio/contexts/Presence.tsx"
+        ],
+        "rules": ["react-doctor/no-ref-current-in-render"]
       }
     ]
   },
+
   "rules": {
     "react-doctor/require-reduced-motion": "off",
     "react-doctor/no-layout-property-animation": "warn"

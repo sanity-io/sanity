@@ -2,7 +2,6 @@ import {type Path} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {
-  type KeyboardEvent,
   type ReactNode,
   type SyntheticEvent,
   useCallback,
@@ -15,7 +14,6 @@ import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {useZIndex} from '../components/zOffsets/useZIndex'
 import {pathToString} from '../field/paths/helpers'
-import {useTranslation} from '../i18n/hooks/useTranslation'
 import {DEBUG} from './constants'
 import {useChangeIndicatorsReporter} from './tracker'
 
@@ -31,7 +29,6 @@ export const ChangeFieldWrapper = (props: {
 }) => {
   const {path, hasRevertHover} = props
   const {onSetFocus} = useContext(ReviewChangesContext)
-  const {t} = useTranslation()
   const zIndex = useZIndex()
   const [hasHover, setHover] = useState(false)
 
@@ -74,26 +71,12 @@ export const ChangeFieldWrapper = (props: {
     [onSetFocus, path],
   )
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault()
-        setFocusWithStopPropagation(event, onSetFocus, path)
-      }
-    },
-    [onSetFocus, path],
-  )
-
   return (
     <div
       ref={setElement}
-      aria-label={t('changes.field.focus-in-editor')}
       onClick={handleClick}
-      onKeyDown={handleKeyDown}
       onMouseLeave={onMouseLeave}
       onMouseEnter={onMouseEnter}
-      role="button"
-      tabIndex={0}
     >
       {DEBUG && (
         <Text weight="medium" size={1}>

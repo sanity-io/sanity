@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
-import {type ReactNode, useContext, useEffect, useRef} from 'react'
+import {type ReactNode, useContext, useRef} from 'react'
 import {PresenceContext} from 'sanity/_singletons'
 
 import {type FormNodePresence} from '../../../presence/types'
@@ -36,10 +36,7 @@ export function useChildPresence(path: Path, inclusive?: boolean): FormNodePrese
       (item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path)),
     ),
   )
-
-  useEffect(() => {
-    prev.current = next
-  }, [next])
-
+  // oxlint-disable-next-line react/react-compiler -- see above
+  prev.current = next
   return next
 }

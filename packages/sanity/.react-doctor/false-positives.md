@@ -35,6 +35,10 @@ Documented suppressions / rejections for the `sanity` package scan. Each entry l
 
 **Observation / intentional.** Small enter/exit width animations for UI chrome (perspective label, release activity panel, calendar date filter chip). Per rule guidance, bounded intrinsic-size enter/exit is an allowed exception; replacing with `scale` would distort text and hit targets. Severity lowered to `warn` in `doctor.config.json`.
 
+## `react-doctor/no-ref-current-in-render` @ Portable Text / Presence reconcile caches
+
+**Waived with evidence.** These refs cache the previous reconciled value for `immutableReconcile` / member identity reuse. Updating them during the same computation is required so a subsequent render in the same commit sees the prior identity. Moving writes into `useEffect` broke the chain (Bugbot) and regressed eFPS article-body typing latency (~+161%). Matched by `doctor.config.json` ignore override.
+
 ## `import/no-cycle` @ `src/core/field/diff/**`
 
 **Deferred (confirmed architectural cycle).** Cycle shape:
