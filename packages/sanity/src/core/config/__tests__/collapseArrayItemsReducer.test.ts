@@ -4,15 +4,17 @@ import {collapseArrayItemsReducer, initialCollapseArrayItems} from '../configPro
 import {type PluginOptions} from '../types'
 
 describe('collapseArrayItemsReducer', () => {
-  it('returns the initial value when no config is provided', () => {
+  it('defaults to four items for lists and eight for grids', () => {
     const config: PluginOptions = {name: 'test'}
 
     const result = collapseArrayItemsReducer({config, initialValue: initialCollapseArrayItems})
 
-    expect(result).toEqual({enabled: true, limit: 4})
+    expect(result).toEqual({enabled: true, limit: 4, gridLimit: 8})
   })
 
-  it('returns the value set by the root config', () => {
+  // The roomier grid default only exists because a grid row holds several items. Once someone
+  // configures a limit they mean that number, so it applies to both layouts.
+  it('applies a configured limit to grids as well as lists', () => {
     const config: PluginOptions = {
       name: 'test',
       form: {arrays: {collapseItems: {enabled: false, limit: 10}}},
@@ -20,7 +22,18 @@ describe('collapseArrayItemsReducer', () => {
 
     const result = collapseArrayItemsReducer({config, initialValue: initialCollapseArrayItems})
 
-    expect(result).toEqual({enabled: false, limit: 10})
+    expect(result).toEqual({enabled: false, limit: 10, gridLimit: 10})
+  })
+
+  it('keeps the grid default when only enabled is configured', () => {
+    const config: PluginOptions = {
+      name: 'test',
+      form: {arrays: {collapseItems: {enabled: false}}},
+    }
+
+    const result = collapseArrayItemsReducer({config, initialValue: initialCollapseArrayItems})
+
+    expect(result).toEqual({enabled: false, limit: 4, gridLimit: 8})
   })
 
   it('keeps the properties that a config does not set', () => {
@@ -31,7 +44,7 @@ describe('collapseArrayItemsReducer', () => {
 
     const result = collapseArrayItemsReducer({config, initialValue: initialCollapseArrayItems})
 
-    expect(result).toEqual({enabled: true, limit: 8})
+    expect(result).toEqual({enabled: true, limit: 8, gridLimit: 8})
   })
 
   it('returns the value set by a plugin', () => {
@@ -42,7 +55,7 @@ describe('collapseArrayItemsReducer', () => {
 
     const result = collapseArrayItemsReducer({config, initialValue: initialCollapseArrayItems})
 
-    expect(result).toEqual({enabled: false, limit: 4})
+    expect(result).toEqual({enabled: false, limit: 4, gridLimit: 8})
   })
 
   it('lets the root config override a plugin', () => {
@@ -54,7 +67,7 @@ describe('collapseArrayItemsReducer', () => {
 
     const result = collapseArrayItemsReducer({config, initialValue: initialCollapseArrayItems})
 
-    expect(result).toEqual({enabled: true, limit: 6})
+    expect(result).toEqual({enabled: true, limit: 6, gridLimit: 6})
   })
 
   it('throws when the namespace is not an object', () => {

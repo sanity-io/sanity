@@ -278,6 +278,11 @@ export const directUploadsReducer = (opts: {
 export interface CollapseArrayItemsConfig {
   enabled: boolean
   limit: number
+  /**
+   * Grid layouts fit several items per row, so they get a roomier default than lists. There is no
+   * separate option for it: a configured `limit` replaces both, so one number means one thing.
+   */
+  gridLimit: number
 }
 
 /**
@@ -286,6 +291,7 @@ export interface CollapseArrayItemsConfig {
 export const initialCollapseArrayItems: CollapseArrayItemsConfig = {
   enabled: true,
   limit: 4,
+  gridLimit: 8,
 }
 
 /**
@@ -340,6 +346,7 @@ export const collapseArrayItemsReducer = (opts: {
     return {
       enabled: enabled ?? acc.enabled,
       limit: limit ?? acc.limit,
+      gridLimit: limit ?? acc.gridLimit,
     }
   }, initialValue)
 }
