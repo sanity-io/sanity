@@ -123,6 +123,8 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
   const {postMessage, setIframe} = usePluginPostMessage(appHost, handlePluginMessage)
 
   useEffect(() => {
+    let subscription: {unsubscribe: () => void} | undefined
+
     if (open && uploader) {
       if (pageReadyForUploads) {
         if (
@@ -137,8 +139,8 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
           setPageReadyForUploads(false)
         }
       }
-      const subscribe = () => {
-        return uploader.subscribe((event) => {
+      subscription = {
+        unsubscribe: uploader.subscribe((event) => {
           if (event.type === 'all-complete') {
             const existingFiles = event.files.filter((file) => file.status === 'alreadyExists')
             existingFiles.forEach((file) => {
@@ -165,15 +167,20 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
               ],
             })
           }
-        })
+        }),
       }
       uploaderRef.current = {
         uploader,
-        unsubscribe: subscribe(),
+        unsubscribe: subscription.unsubscribe,
       }
-      return uploaderRef.current.unsubscribe
+    } else {
+      uploaderRef.current?.unsubscribe()
+      uploaderRef.current = null
     }
-    return uploaderRef.current?.unsubscribe()
+
+    return () => {
+      subscription?.unsubscribe()
+    }
   }, [open, pageReadyForUploads, postMessage, t, toast, uploader, uploaderRef])
 
   if (!open) {

@@ -231,7 +231,7 @@ export default function PresentationTool(props: {
       }),
     )
 
-    comlink.on('visual-editing/focus', (data) => {
+    const unsubscribeFocus = comlink.on('visual-editing/focus', (data) => {
       if (!('id' in data)) return
       handleNavigate({
         state: {
@@ -242,7 +242,7 @@ export default function PresentationTool(props: {
       })
     })
 
-    comlink.on('visual-editing/navigate', (data) => {
+    const unsubscribeNavigate = comlink.on('visual-editing/navigate', (data) => {
       const {title} = data
       let url = data.url
       /**
@@ -279,15 +279,15 @@ export default function PresentationTool(props: {
       frameStateRef.current = {title, url}
     })
 
-    comlink.on('visual-editing/meta', (data) => {
+    const unsubscribeMeta = comlink.on('visual-editing/meta', (data) => {
       frameStateRef.current.title = data.title
     })
 
-    comlink.on('visual-editing/toggle', (data) => {
+    const unsubscribeToggle = comlink.on('visual-editing/toggle', (data) => {
       presentationRef.send({type: 'toggle visual editing overlays', enabled: data.enabled})
     })
 
-    comlink.on('visual-editing/documents', (data) => {
+    const unsubscribeDocuments = comlink.on('visual-editing/documents', (data) => {
       setDocumentsOnPage(
         'visual-editing',
         // oxlint-disable-next-line no-explicit-any
@@ -297,7 +297,7 @@ export default function PresentationTool(props: {
     })
 
     // @todo This won't work for multiple window contexts?
-    comlink.on('visual-editing/refreshing', (data) => {
+    const unsubscribeRefreshing = comlink.on('visual-editing/refreshing', (data) => {
       if (data.source === 'manual') {
         clearTimeout(refreshRef.current)
       } else if (data.source === 'mutation') {
@@ -305,17 +305,24 @@ export default function PresentationTool(props: {
       }
     })
 
-    comlink.on('visual-editing/refreshed', () => {
+    const unsubscribeRefreshed = comlink.on('visual-editing/refreshed', () => {
       presentationRef.send({type: 'iframe loaded'})
     })
 
     comlink.onStatus(setOverlaysConnection)
 
-    const stop = comlink.start()
+    const stopConnection = comlink.start()
     // oxlint-disable-next-line react/react-compiler
     setVisualEditingComlink(comlink)
     return () => {
-      stop()
+      unsubscribeFocus()
+      unsubscribeNavigate()
+      unsubscribeMeta()
+      unsubscribeToggle()
+      unsubscribeDocuments()
+      unsubscribeRefreshing()
+      unsubscribeRefreshed()
+      stopConnection()
       setVisualEditingComlink(null)
     }
   }, [controller, presentationRef, setDocumentsOnPage, setOverlaysConnection, targetOrigin])
@@ -334,8 +341,7 @@ export default function PresentationTool(props: {
     )
 
     comlink.onStatus(setPreviewKitConnection)
-
-    comlink.on('preview-kit/documents', (data) => {
+    const unsubscribeDocuments = comlink.on('preview-kit/documents', (data) => {
       if (data.projectId === projectId && data.dataset === dataset) {
         setDocumentsOnPage(
           'preview-kit',
@@ -346,7 +352,11 @@ export default function PresentationTool(props: {
       }
     })
 
-    return comlink.start()
+    const stopConnection = comlink.start()
+    return () => {
+      unsubscribeDocuments()
+      stopConnection()
+    }
   }, [controller, dataset, projectId, setDocumentsOnPage, setPreviewKitConnection, targetOrigin])
 
   const handleFocusPath = useMemo(

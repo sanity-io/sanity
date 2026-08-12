@@ -14,7 +14,8 @@ export function useComlinkRouteHandler(): void {
   const {navigateUrl} = useRouter()
 
   useEffect(() => {
-    return node?.on<PathChangeMessage['type'], PathChangeMessage>(
+    if (!node) return undefined
+    const unsubscribe = node.on<PathChangeMessage['type'], PathChangeMessage>(
       'dashboard/v1/history/change-path',
       ({path}) => {
         navigateUrl({
@@ -24,6 +25,9 @@ export function useComlinkRouteHandler(): void {
         return undefined
       },
     )
+    return () => {
+      unsubscribe()
+    }
   }, [navigateUrl, node])
 }
 

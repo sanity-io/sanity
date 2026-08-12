@@ -85,8 +85,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
       setComlink(nextComlink)
 
       nextComlink.onStatus(onLoadersConnection)
-
-      nextComlink.on('loader/documents', (data) => {
+      const unsubscribeDocuments = nextComlink.on('loader/documents', (data) => {
         if (data.projectId === projectId && data.dataset === dataset) {
           onDocumentsOnPage(
             'loaders',
@@ -96,8 +95,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
           )
         }
       })
-
-      nextComlink.on('loader/query-listen', (data) => {
+      const unsubscribeQueryListen = nextComlink.on('loader/query-listen', (data) => {
         if (data.projectId === projectId && data.dataset === dataset) {
           if (
             typeof data.heartbeat === 'number' &&
@@ -123,7 +121,12 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
         }
       })
 
-      return nextComlink.start()
+      const stopConnection = nextComlink.start()
+      return () => {
+        unsubscribeDocuments()
+        unsubscribeQueryListen()
+        stopConnection()
+      }
     }
     return () => undefined
   }, [controller, dataset, liveQueriesDispatch, onDocumentsOnPage, onLoadersConnection, projectId])
