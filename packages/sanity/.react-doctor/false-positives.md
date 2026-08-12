@@ -35,6 +35,16 @@ Documented suppressions / rejections for the `sanity` package scan. Each entry l
 
 **Observation / intentional.** Small enter/exit width animations for UI chrome (perspective label, release activity panel, calendar date filter chip). Per rule guidance, bounded intrinsic-size enter/exit is an allowed exception; replacing with `scale` would distort text and hit targets. Severity lowered to `warn` in `doctor.config.json`.
 
+## `jsx-a11y/click-events-have-key-events` @ change/diff wrappers
+
+**Rejected (intentional).** `src/core/changeIndicators/ChangeFieldWrapper.tsx` and
+`src/core/field/types/portableText/diff/components/Block.tsx` wrap rendered field diffs, which
+contain their own interactive controls (the revert button, diff tooltips) and, for portable text,
+nest inside each other. Making the wrappers `role="button"` with a keydown handler hid those
+controls from assistive technology (button role has presentational children) and cancelled the
+nested revert button's Space/Enter activation. The click handler stays a pointer-only shortcut for
+focusing the field in the editor.
+
 ## `import/no-cycle` @ `src/core/field/diff/**`
 
 **Deferred (confirmed architectural cycle).** Cycle shape:

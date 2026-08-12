@@ -1,5 +1,5 @@
 import {type FormNodeValidation} from '@sanity/types'
-import {useEffect, useMemo, useRef} from 'react'
+import {useMemo, useRef} from 'react'
 
 import {EMPTY_ARRAY} from '../../../../util/empty'
 import {type BaseFormNode} from '../../../store/types/nodes'
@@ -35,10 +35,10 @@ export function useMemberValidation(member: BaseFormNode | undefined) {
 
   // oxlint-disable-next-line react/react-compiler -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
   const reconciled = immutableReconcile(prev.current, validation)
-
-  useEffect(() => {
-    prev.current = reconciled
-  }, [reconciled])
+  // Recorded during the computation (not in an effect) so a subsequent reconcile reuses the
+  // identities from the latest result rather than the last committed one.
+  // oxlint-disable-next-line react/react-compiler -- see above
+  prev.current = reconciled
 
   return useMemo(() => {
     return {
