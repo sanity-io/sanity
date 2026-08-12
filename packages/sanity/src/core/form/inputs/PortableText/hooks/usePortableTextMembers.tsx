@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {isEqual, pathFor} from '@sanity/util/paths'
-import {type ReactNode, type RefObject, useContext, useMemo, useRef} from 'react'
+import {type ReactNode, type RefObject, useContext, useEffect, useMemo, useRef} from 'react'
 import {PortableTextMemberItemsContext} from 'sanity/_singletons'
 
 import {pathToString} from '../../../../field/paths/helpers'
@@ -55,7 +55,7 @@ export function usePortableTextMemberItemsFromProps(
   } = props
 
   const portableTextMemberItemsRef: RefObject<PortableTextMemberItem[]> = useRef([])
-  return useMemo(() => {
+  const items = useMemo(() => {
     const result: {
       kind: PortableTextMemberItem['kind']
       member: ArrayOfObjectsItemMember
@@ -129,7 +129,7 @@ export function usePortableTextMemberItemsFromProps(
     }
 
     // oxlint-disable-next-line react/react-compiler -- @todo this should be fixed but it's difficult and needs research
-    const items: PortableTextMemberItem[] = result.map((item) => {
+    const mappedItems: PortableTextMemberItem[] = result.map((item) => {
       const key = pathToString(item.node.path)
       // oxlint-disable-next-line react/react-compiler
       const existingItem = portableTextMemberItemsRef.current.find((refItem) => refItem.key === key)
@@ -218,10 +218,7 @@ export function usePortableTextMemberItemsFromProps(
       }
     })
 
-    // oxlint-disable-next-line react/react-compiler -- @todo this should be fixed but it's difficult and needs research
-    portableTextMemberItemsRef.current = items
-
-    return items
+    return mappedItems
   }, [
     members,
     onPathFocus,
@@ -235,4 +232,10 @@ export function usePortableTextMemberItemsFromProps(
     renderPreview,
     schemaType,
   ])
+
+  useEffect(() => {
+    portableTextMemberItemsRef.current = items
+  }, [items])
+
+  return items
 }
