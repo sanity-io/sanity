@@ -179,6 +179,25 @@ describe('useUnclaimedProject', () => {
     })
   })
 
+  it('keeps the generic claimed state when claimant lookup fails', async () => {
+    mockRequest.mockImplementation(({uri}: {uri: string}) => {
+      if (uri === `/projects/${PROJECT_ID}`) {
+        return Promise.resolve({
+          createdAt: CREATED_AT,
+          organizationId: 'oReal',
+          members: [{id: 'claimant', isRobot: false}],
+        })
+      }
+      return Promise.reject(new Error('user lookup unavailable'))
+    })
+    writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
+
+    const {result} = renderHook(() => useUnclaimedProject())
+
+    await waitFor(() => expect(mockRequest).toHaveBeenCalledTimes(2))
+    expect(result.current).toEqual({status: 'claimed'})
+  })
+
   it('stays quiet for a regular robot-token session on a claimed project', async () => {
     mockRequest.mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
 
@@ -273,16 +292,19 @@ describe('useUnclaimedProject', () => {
     expect(readUnclaimedProjectRecord(PROJECT_ID)).toEqual({claimUrl: CLAIM_URL})
   })
 
-  it('stays quiet and keeps the record on a transient org read failure', async () => {
-    mockRequest.mockRejectedValue({statusCode: 500})
-    writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
+  it.each([429, 500])(
+    'stays quiet and keeps the record on a transient org read failure (%i)',
+    async (statusCode) => {
+      mockRequest.mockRejectedValue({statusCode})
+      writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
 
-    const {result} = renderHook(() => useUnclaimedProject())
+      const {result} = renderHook(() => useUnclaimedProject())
 
-    await waitFor(() => expect(mockRequest).toHaveBeenCalled())
-    expect(result.current).toBeUndefined()
-    expect(readUnclaimedProjectRecord(PROJECT_ID)).toEqual({claimUrl: CLAIM_URL})
-  })
+      await waitFor(() => expect(mockRequest).toHaveBeenCalled())
+      expect(result.current).toBeUndefined()
+      expect(readUnclaimedProjectRecord(PROJECT_ID)).toEqual({claimUrl: CLAIM_URL})
+    },
+  )
 
   it('never expires on a transient failure, even past the recorded deadline', async () => {
     mockRequest.mockRejectedValue(new TypeError('network error'))
@@ -414,6 +436,76 @@ describe('useUnclaimedProject', () => {
 
     await waitFor(() => expect(mockFetch).toHaveBeenCalled())
     expect(result.current?.status).toBe('unclaimed')
+  })
+
+  it.each([
+    ['the network fails', () => mockFetch.mockRejectedValue(new TypeError('network unavailable'))],
+    ['the service returns 500', () => mockFetch.mockResolvedValue(lookupResponse(500))],
+    [
+      'the response is not valid JSON',
+      () =>
+        mockFetch.mockResolvedValue({
+          ...lookupResponse(200),
+          json: () => Promise.reject(new SyntaxError('invalid JSON')),
+        }),
+    ],
+    [
+      'the success body has an unknown state',
+      () => mockFetch.mockResolvedValue(lookupResponse(200, {state: 'future-state'})),
+    ],
+    [
+      'claimable has an invalid expiry',
+      () =>
+        mockFetch.mockResolvedValue(
+          lookupResponse(200, {state: 'claimable', expiresAt: 'not-a-date'}),
+        ),
+    ],
+  ])('keeps the countdown and claim link when %s', async (_, arrangeLookup) => {
+    writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
+    arrangeLookup()
+
+    const {result} = renderHook(() => useUnclaimedProject())
+
+    await waitFor(() => expect(mockFetch).toHaveBeenCalled())
+    expect(result.current).toMatchObject({
+      status: 'unclaimed',
+      claimUrl: CLAIM_URL,
+      claimLinkSpent: false,
+    })
+    expect(readUnclaimedProjectRecord(PROJECT_ID)).toMatchObject({claimUrl: CLAIM_URL})
+  })
+
+  it('requires a confirmed lookup 404 before retiring an unexpired claim link', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-07-25T00:00:00.000Z'))
+    try {
+      writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
+      mockFetch.mockResolvedValue(lookupResponse(404))
+
+      const {result} = renderHook(() => useUnclaimedProject())
+      await act(() => vi.advanceTimersByTimeAsync(0))
+
+      expect(mockFetch).toHaveBeenCalledOnce()
+      expect(result.current).toMatchObject({
+        status: 'unclaimed',
+        claimUrl: CLAIM_URL,
+        claimLinkSpent: false,
+      })
+
+      await act(() => vi.advanceTimersByTimeAsync(30 * 60_000))
+      await act(() => window.dispatchEvent(new Event('focus')))
+      await act(() => vi.advanceTimersByTimeAsync(0))
+
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+      expect(result.current).toMatchObject({
+        status: 'unclaimed',
+        claimUrl: undefined,
+        claimLinkSpent: true,
+      })
+      expect(readUnclaimedProjectRecord(PROJECT_ID)).toBeUndefined()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('retires the claim link when the lookup says expired, but never the session', async () => {
