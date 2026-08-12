@@ -4,6 +4,7 @@ import {Autocomplete} from '@sanity/ui/autocomplete'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
+import {Button} from '../../../ui-components/button/Button'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -157,11 +158,11 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
               )}
             </Inline>
             {!isLocalTzSelected && (
-              <Text size={1} weight="medium">
-                <a onClick={handleTimeZoneSelectLocal} style={{cursor: 'pointer'}}>
-                  {t('time-zone.action.select-local-time-zone')}
-                </a>
-              </Text>
+              <Button
+                mode="bleed"
+                onClick={handleTimeZoneSelectLocal}
+                text={t('time-zone.action.select-local-time-zone')}
+              />
             )}
           </Flex>
 

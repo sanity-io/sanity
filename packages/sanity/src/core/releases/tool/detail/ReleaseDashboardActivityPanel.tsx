@@ -117,9 +117,11 @@ export function ReleaseDashboardActivityPanel({
             direct keyed motion children). */}
         <AnimatePresence>
           {show && (
-            <motion.div
+            <motion.button
               key="activity-overlay-scrim"
+              aria-label={t('activity.panel.close')}
               onClick={onClose}
+              type="button"
               initial={{opacity: 0}}
               animate={{opacity: 1}}
               exit={{opacity: 0}}
@@ -129,6 +131,9 @@ export function ReleaseDashboardActivityPanel({
                 inset: 0,
                 zIndex: 199,
                 background: 'rgba(0, 0, 0, 0.45)',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
               }}
             />
           )}

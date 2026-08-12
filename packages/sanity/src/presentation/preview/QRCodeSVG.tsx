@@ -242,7 +242,7 @@ function QRCodeSVGComponent(props: QRProps) {
   const fgPath = generatePath(cellsToDraw, margin)
 
   return (
-    <svg height={size} width={size} viewBox={`0 0 ${numCells} ${numCells}`} role="img">
+    <svg height={size} width={size} viewBox={`0 0 ${numCells} ${numCells}`}>
       {!!title && <title>{title}</title>}
       <motion.path
         fill={color}

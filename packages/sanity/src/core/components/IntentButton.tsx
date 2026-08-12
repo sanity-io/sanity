@@ -12,7 +12,7 @@ export function IntentButton(
   props: IntentLinkProps & ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'ref' | 'size' | 'as'>,
 ) {
   return props.disabled ? (
-    <Button {...props} as="a" role="link" aria-disabled="true" />
+    <Button {...props} disabled aria-disabled="true" />
   ) : (
     <Button {...props} as={IntentLink} />
   )
