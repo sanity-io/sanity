@@ -28,8 +28,13 @@ test('searching creates unique saved searches', async ({
   }
 
   // Set the title via API with sync visibility so search can see it without
-  // racing UI mutate debounce / endpoint shape (mutate vs actions).
-  await sanityClient.patch(draftId).set({title: uniqueTitle}).commit({visibility: 'sync'})
+  // racing UI mutate debounce / endpoint shape (mutate vs actions). The draft
+  // only exists locally in the studio until an edit is made, so it has to be
+  // created here rather than patched.
+  await sanityClient.createOrReplace(
+    {_id: draftId, _type: 'book', title: uniqueTitle},
+    {visibility: 'sync'},
+  )
 
   // Reload so the studio session picks up cleared recent searches + title.
   await page.reload({waitUntil: 'load'})
