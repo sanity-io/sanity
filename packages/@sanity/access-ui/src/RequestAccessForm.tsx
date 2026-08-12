@@ -7,7 +7,6 @@ import {
   Suspense,
   use,
   useId,
-  useMemo,
   useState,
   useTransition,
 } from 'react'
@@ -43,9 +42,15 @@ export interface RequestAccessFormProps {
    */
   onSignOut?: () => void
   /** Called after a request is successfully submitted, e.g. for analytics. */
-  onRequestSubmitted?: () => void
+  onRequestSubmitted?: (details: {note?: string}) => void
   /** Optional slot rendered above the title, e.g. a resource preview. */
   preview?: ReactNode
+  /**
+   * Renders an optional action area at the bottom of the card's content, e.g.
+   * a navigation CTA. Called with the current view so the action can differ
+   * per state (or be omitted for some); return null to render nothing.
+   */
+  renderAction?: (context: {view: RequestAccessView}) => ReactNode
   /** Label overrides for hosts with their own i18n stack. */
   labels?: Partial<RequestAccessLabels>
 }
@@ -84,6 +89,13 @@ export function RequestAccessForm(props: RequestAccessFormProps) {
     </Card>
   )
 }
+
+/**
+ * The view the request-access card is currently showing.
+ *
+ * @public
+ */
+export type RequestAccessView = 'form' | 'sent' | 'pending' | 'blocked' | 'sso-enforced'
 
 type ViewState =
   | {view: 'form'; expired: boolean}
@@ -151,10 +163,11 @@ function RequestAccessFormContent(
     onSignOut,
     onRequestSubmitted,
     preview,
+    renderAction,
     requestsPromise,
   } = props
 
-  const labels = useMemo(() => ({...defaultLabels, ...props.labels}), [props.labels])
+  const labels = {...defaultLabels, ...props.labels}
   const fetchedRequests = use(requestsPromise)
   const titleId = useId()
 
@@ -190,15 +203,16 @@ function RequestAccessFormContent(
     event.preventDefault()
     if (isSubmitting) return
     startSubmit(async () => {
+      const trimmedNote = note.trim() || undefined
       const result = await submitAccessRequest({
         client,
         resourceType,
         resourceId,
-        note: note.trim() || undefined,
+        note: trimmedNote,
         requestUrl: getRequestUrl(),
       })
       setSubmitResult(result)
-      if (result.type === 'submitted') onRequestSubmitted?.()
+      if (result.type === 'submitted') onRequestSubmitted?.({note: trimmedNote})
     })
   }
 
@@ -289,6 +303,8 @@ function RequestAccessFormContent(
             />
           </Stack>
         ) : null}
+
+        {renderAction?.({view: state.view})}
       </Flex>
 
       {currentUser ? (

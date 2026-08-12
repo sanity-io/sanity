@@ -6,7 +6,11 @@ export {
 export {deriveAccessRequestState} from './deriveAccessRequestState'
 export {type RequestAccessLabels} from './labels'
 export {getProviderTitle} from './providerTitle'
-export {RequestAccessForm, type RequestAccessFormProps} from './RequestAccessForm'
+export {
+  RequestAccessForm,
+  type RequestAccessFormProps,
+  type RequestAccessView,
+} from './RequestAccessForm'
 export {
   type AccessRequest,
   type AccessRequestState,
