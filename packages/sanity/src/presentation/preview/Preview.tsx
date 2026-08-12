@@ -413,12 +413,13 @@ export const Preview = memo(function PreviewComponent(
       }),
     )
 
-    comlink.on('visual-editing/navigate', (data) => {
+    const unsubscribeNavigate = comlink.on('visual-editing/navigate', (data) => {
       navigateEvent(data.url)
     })
     const stop = comlink.start()
 
     return () => {
+      unsubscribeNavigate()
       stop()
       controller.destroy()
     }

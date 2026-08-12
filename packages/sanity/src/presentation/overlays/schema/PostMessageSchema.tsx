@@ -55,7 +55,10 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
        */
       comlink.post('presentation/schema', {schema})
 
-      return comlink.on('visual-editing/schema', () => ({schema}))
+      const unsubscribe = comlink.on('visual-editing/schema', () => ({schema}))
+      return () => {
+        unsubscribe()
+      }
     } catch {
       return undefined
     }
@@ -72,7 +75,7 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
 
   // Resolve union types from an array of unresolved paths
   useEffect(() => {
-    return comlink.on('visual-editing/schema-union-types', async (data) => {
+    const unsubscribe = comlink.on('visual-editing/schema-union-types', async (data) => {
       const documentPathArray = getDocumentPathArray(data.paths)
       const unionTypes = await Promise.all(
         documentPathArray.map(async ([id, paths]) => {
@@ -107,6 +110,9 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
       })
       return {types: newState}
     })
+    return () => {
+      unsubscribe()
+    }
   }, [comlink, client, perspective, variant])
 
   return null

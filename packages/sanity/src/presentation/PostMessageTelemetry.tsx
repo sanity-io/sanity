@@ -13,13 +13,16 @@ const PostMessageTelemetry: FC<PostMessageTelemetryProps> = (props) => {
   const telemetry = useTelemetry()
 
   useEffect(() => {
-    return comlink.on('visual-editing/telemetry-log', (message) => {
+    const unsubscribe = comlink.on('visual-editing/telemetry-log', (message) => {
       const {event, data} = message
 
       // SANITY_STUDIO_DEBUG_TELEMETRY ensures noop/in-browser logging for telemetry events
       // oxlint-disable-next-line no-unused-expressions
       data ? telemetry.log(event, data) : telemetry.log(event)
     })
+    return () => {
+      unsubscribe()
+    }
   }, [comlink, telemetry])
 
   return null

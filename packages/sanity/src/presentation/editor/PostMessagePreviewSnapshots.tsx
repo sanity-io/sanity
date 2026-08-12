@@ -108,9 +108,12 @@ const PostMessagePreviews: FC<PostMessagePreviewsProps> = (props) => {
   // always suffice as the previews$ subscriber will not be called if the app
   // reloads but Presentation does not.
   useEffect(() => {
-    return comlink.on('visual-editing/preview-snapshots', () => ({
+    const unsubscribe = comlink.on('visual-editing/preview-snapshots', () => ({
       snapshots: lastSnapshots.current,
     }))
+    return () => {
+      unsubscribe()
+    }
   }, [comlink])
 
   useEffect(() => {
