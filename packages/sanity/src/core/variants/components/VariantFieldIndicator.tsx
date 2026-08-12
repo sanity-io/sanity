@@ -36,7 +36,7 @@ export const VariantFieldIndicator: ComponentType<VariantFieldIndicatorProps> = 
 
   return (
     <Container $path={path} initial={{opacity: 0}} exit={{opacity: 0}} animate={{opacity: 1}}>
-      <Button
+      <IndicatorButton
         aria-label={label}
         disabled={!onReviewChanges}
         icon={RhombusFillIcon}
@@ -49,6 +49,26 @@ export const VariantFieldIndicator: ComponentType<VariantFieldIndicatorProps> = 
     </Container>
   )
 }
+
+/** Diamond size, in px. */
+const MARK_SIZE = 13
+/** Size of the control the diamond sits in, in px. */
+const HIT_AREA_SIZE = 25
+
+const IndicatorButton = styled(Button)`
+  /*
+    A 13px diamond centred in a 25px control, per the indicator pattern in the Studio Patterns
+    library. Two things are pinned deliberately: the icon is sized in absolute pixels rather than
+    inheriting the button's text size, because the mark is a fixed-size glyph and not text; and the
+    control keeps its own size, so shrinking the mark does not shrink the hit target with it.
+  */
+  block-size: ${HIT_AREA_SIZE}px;
+  inline-size: ${HIT_AREA_SIZE}px;
+
+  svg[data-sanity-icon] {
+    font-size: ${MARK_SIZE}px;
+  }
+`
 
 const Container = styled(motion.div)<{$path: Path}>`
   @supports (position-anchor: --anchor) {
