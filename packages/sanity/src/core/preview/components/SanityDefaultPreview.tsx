@@ -97,7 +97,7 @@ function SanityDefaultMedia({
 
   return (
     <img
-      alt={typeof title === 'string' ? title : undefined}
+      alt={typeof title === 'string' ? title : ''}
       onError={handleError}
       referrerPolicy="strict-origin-when-cross-origin"
       src={url}
@@ -178,7 +178,7 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
       return (
         <img
           src={imageUrl}
-          alt={isString(title) ? title : undefined}
+          alt={isString(title) ? title : ''}
           referrerPolicy="strict-origin-when-cross-origin"
         />
       )

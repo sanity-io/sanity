@@ -58,11 +58,7 @@ export function useRetryCountdown(claim: {retryAfterSeconds?: number}): number {
     startTransition(() => setSecondsLeft(initial))
     if (initial <= 0) return undefined
     const id = setInterval(() => {
-      setSecondsLeft((current) => {
-        const next = Math.max(0, current - 1)
-        if (next === 0) clearInterval(id)
-        return next
-      })
+      setSecondsLeft((current) => Math.max(0, current - 1))
     }, 1000)
     return () => clearInterval(id)
   }, [claim])
