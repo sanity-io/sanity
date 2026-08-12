@@ -34,7 +34,7 @@ export function IntentButton(
   }, [intent])
 
   return props.disabled ? (
-    <Button {...restProps} as="a" role="link" aria-disabled="true" />
+    <Button {...restProps} disabled aria-disabled="true" />
   ) : (
     <Button {...restProps} as={Link} data-as="a" ref={ref} />
   )

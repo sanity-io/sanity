@@ -28,7 +28,6 @@ export function CalendarDay(props: CalendarDayProps) {
         __unstable_focusRing
         data-weekday
         data-focused={focused ? 'true' : ''}
-        role="button"
         tabIndex={-1}
         disabled={isPastDisabled && !isToday && isPast(date)}
         onClick={handleClick}

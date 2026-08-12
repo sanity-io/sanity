@@ -40,7 +40,6 @@ export function CalendarDay(props: CalendarDayProps) {
         data-weekday
         data-focused={focused ? 'true' : ''}
         disabled={!isValid}
-        role="button"
         tabIndex={-1}
         onClick={handleClick}
         padding={3}

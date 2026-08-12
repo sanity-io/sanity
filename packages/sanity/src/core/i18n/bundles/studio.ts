@@ -350,6 +350,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.array.item-removed-from-position': 'Removed from position {{position}}',
   /** Accessibility label for the "change bar" shown when there are edits on a field-level */
   'changes.change-bar.aria-label': 'Review changes',
+  /** Accessibility label for clickable change fields in the review changes pane */
+  'changes.field.focus-in-editor': 'Focus change in editor',
   /** Label for when the action of the change was _not_ an add/remove, eg a text field changed value, an image was changed from one asset to another or similar */
   'changes.changed-label': 'Changed',
   /** Label and text for tooltip that indicates the authors of the changes */

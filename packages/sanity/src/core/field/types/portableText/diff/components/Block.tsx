@@ -1,6 +1,6 @@
 import {type Path, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Card, Stack, Text} from '@sanity/ui'
-import {type MouseEvent, useCallback, useContext} from 'react'
+import {type KeyboardEvent, type MouseEvent, useCallback, useContext} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
@@ -33,6 +33,20 @@ export function Block(props: {
 
       if (!isRemoved) {
         onSetFocus(fullPath)
+      }
+    },
+    [fullPath, isRemoved, onSetFocus],
+  )
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        event.stopPropagation()
+
+        if (!isRemoved) {
+          onSetFocus(fullPath)
+        }
       }
     },
     [fullPath, isRemoved, onSetFocus],
@@ -84,9 +98,13 @@ export function Block(props: {
 
   return (
     <div
+      aria-label={t('changes.field.focus-in-editor')}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       data-diff-block-action={diff.action}
       data-block-note={`changed_from_style_${fromStyle || 'undefined'}`}
+      role="button"
+      tabIndex={0}
     >
       {returned}
     </div>
