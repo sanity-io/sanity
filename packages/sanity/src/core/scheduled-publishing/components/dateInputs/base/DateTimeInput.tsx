@@ -1,6 +1,5 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
   LayerProvider,
@@ -17,6 +16,7 @@ import {
   type RefAttributes,
 } from 'react'
 import FocusLock from 'react-focus-lock'
+import {Box} from 'ui5'
 
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {LazyTextInput} from '../../../../components/inputs/DateInputs/LazyTextInput'
