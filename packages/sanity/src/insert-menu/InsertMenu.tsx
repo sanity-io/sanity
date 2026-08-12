@@ -283,6 +283,7 @@ function GridMenuItem(props: GridMenuItemProps) {
           ) : null}
           {hasPreviewImage ? (
             <img
+              alt=""
               src={props.previewImageUrl}
               style={{
                 objectFit: 'contain',
