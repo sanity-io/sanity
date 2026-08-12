@@ -967,6 +967,9 @@ export interface Source {
 
         /** The number of items rendered before the remaining items are collapsed. */
         limit: number
+
+        /** The same, for arrays using the grid layout. Follows `limit` when one is configured. */
+        gridLimit: number
       }
     }
 

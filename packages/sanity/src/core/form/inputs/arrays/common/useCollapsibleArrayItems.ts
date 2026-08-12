@@ -4,12 +4,6 @@ import {SourceContext} from 'sanity/_singletons'
 
 import {initialCollapseArrayItems} from '../../../../config/configPropertyReducers'
 
-/**
- * Grid layouts fit several items per row, so the configured limit, which reads as a number of
- * list rows, would otherwise collapse a grid after a single row.
- */
-const GRID_LIMIT_MULTIPLIER = 2
-
 /** Stands in for the limit when collapsing is switched off, so nothing is ever hidden. */
 const NO_LIMIT = Number.POSITIVE_INFINITY
 
@@ -41,11 +35,11 @@ function useItemLimit(schemaType: ArraySchemaType, layout: 'list' | 'grid'): num
   const collapseItems = source?.form?.arrays?.collapseItems ?? initialCollapseArrayItems
   const fieldLimit = schemaType.options?.collapseItemsAfter
 
-  // An explicit per-field limit is taken literally, including for grids.
+  // A per-field limit is taken literally, including for grids.
   if (typeof fieldLimit === 'number') return fieldLimit > 0 ? fieldLimit : NO_LIMIT
   if (fieldLimit === false || !collapseItems.enabled) return NO_LIMIT
 
-  return layout === 'grid' ? collapseItems.limit * GRID_LIMIT_MULTIPLIER : collapseItems.limit
+  return layout === 'grid' ? collapseItems.gridLimit : collapseItems.limit
 }
 
 /**
