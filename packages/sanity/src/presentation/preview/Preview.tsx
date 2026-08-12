@@ -197,6 +197,11 @@ export const Preview = memo(function PreviewComponent(
   const [somethingIsWrong, setSomethingIsWrong] = useState(false)
   const iframeIsBusy = isLoading || isRefreshing || overlaysConnection === 'connecting'
 
+  const [continueAnyway, setContinueAnyway] = useState(false)
+  const handleContinueAnyway = useCallback(() => {
+    setContinueAnyway(true)
+  }, [])
+
   /**
    * If the iframe never fires its `load` event — for example when the preview is stuck in a
    * reload loop, like Next.js dev servers before 16.3.0 get in Firefox when embedded cross-origin
@@ -205,9 +210,20 @@ export const Preview = memo(function PreviewComponent(
    */
   const [loadTimedOut, setLoadTimedOut] = useState(false)
   useEffect(() => {
-    if (!isLoading && !isRefreshing) {
+    /**
+     * Only `loading` waits on the iframe `load` event. `refreshing` waits for a
+     * `visual-editing/refreshed` ack from an already loaded preview, so it must not arm this
+     * deadline — a slow mutation or manual refresh is not a failed load.
+     */
+    if (!isLoading) {
       // oxlint-disable-next-line react/react-compiler
       setLoadTimedOut(false)
+      /**
+       * `continueAnyway` is otherwise only cleared once the overlays reconnect, which never
+       * happens when the user dismissed a load timeout. Leaving it set would suppress the
+       * loading and error UI for the rest of the session.
+       */
+      setContinueAnyway(false)
       return undefined
     }
     if (loadTimedOut) {
@@ -220,7 +236,7 @@ export const Preview = memo(function PreviewComponent(
       )
     }, MAX_TIME_TO_IFRAME_LOAD)
     return () => clearTimeout(timeout)
-  }, [isLoading, isRefreshing, loadTimedOut])
+  }, [isLoading, loadTimedOut])
 
   const handleRetry = useCallback(() => {
     if (!ref.current) {
@@ -233,10 +249,6 @@ export const Preview = memo(function PreviewComponent(
     presentationRef.send({type: 'iframe reload'})
   }, [presentationRef, previewUrl])
 
-  const [continueAnyway, setContinueAnyway] = useState(false)
-  const handleContinueAnyway = useCallback(() => {
-    setContinueAnyway(true)
-  }, [])
   const [showOverlaysConnectionStatus, setShowOverlaysConnectionState] = useState(false)
   useEffect(() => {
     if (isLoading || isRefreshing) {
@@ -557,8 +569,7 @@ export const Preview = memo(function PreviewComponent(
                     </Text>
                   </Flex>
                 </MotionFlex>
-              ) : (somethingIsWrong || (loadTimedOut && (isLoading || isRefreshing))) &&
-                !continueAnyway ? (
+              ) : (somethingIsWrong || (loadTimedOut && isLoading)) && !continueAnyway ? (
                 <MotionFlex
                   initial="initial"
                   animate="animate"
