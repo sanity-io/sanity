@@ -2,13 +2,13 @@ import {AddIcon} from '@sanity/icons/Add'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {CloseIcon} from '@sanity/icons/Close'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button as UIButton,
   Flex,
   Text,
 } from '@sanity/ui'
 import {useCallback} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'

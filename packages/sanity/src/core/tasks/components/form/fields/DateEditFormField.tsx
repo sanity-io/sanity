@@ -1,9 +1,10 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {type Path} from '@sanity/types'
-import {Box, Flex, useClickOutsideEvent} from '@sanity/ui'
+import {Flex, useClickOutsideEvent} from '@sanity/ui'
 import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../ui-components/popover/Popover'

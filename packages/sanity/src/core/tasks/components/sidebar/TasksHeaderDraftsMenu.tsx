@@ -1,9 +1,10 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
