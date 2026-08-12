@@ -58,14 +58,34 @@ const HIT_AREA_SIZE = 25
 const IndicatorButton = styled(Button)`
   /*
     A 13px diamond centred in a 25px control, per the indicator pattern in the Studio Patterns
-    library. Two things are pinned deliberately: the icon is sized in absolute pixels rather than
-    inheriting the button's text size, because the mark is a fixed-size glyph and not text; and the
-    control keeps its own size, so shrinking the mark does not shrink the hit target with it.
+    library. The control keeps its own size so the small mark does not shrink the hit target with
+    it, and it centres its own content.
   */
   block-size: ${HIT_AREA_SIZE}px;
   inline-size: ${HIT_AREA_SIZE}px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
+  /*
+    Collapse the layout wrappers the button puts around its icon so the glyph becomes a direct child
+    of the line above and is centred on the control.
+
+    Without this the glyph is laid out as text: it sits on a baseline inside a 19px line box, and
+    inherits the 5px downward nudge the text wrapper applies to align text optically. Both are right
+    for text and wrong for a fixed-size glyph — together they pushed the diamond 4px below centre,
+    which is invisible at the button's default 21px icon size and obvious at 13px.
+  */
+  [data-ui='Box'],
+  [data-ui='Flex'],
+  [data-ui='Text'],
+  [data-ui='Text'] > span {
+    display: contents;
+  }
+
+  /* Sized in absolute pixels: the mark is a fixed-size glyph, not text that should scale. */
   svg[data-sanity-icon] {
+    display: block;
     font-size: ${MARK_SIZE}px;
   }
 `
