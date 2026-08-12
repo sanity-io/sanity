@@ -47,6 +47,7 @@ import {
   useTargetDocumentState,
   useUnique,
   useWorkspace,
+  VariantDiffProvider,
 } from 'sanity'
 import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
@@ -767,18 +768,29 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       ? {enabled: true, upstreamEditState, editState, subjectId: value._id, schemaType, formState}
       : {enabled: false}
 
+  // Gate on the raw sticky param, which is available synchronously: `selectedVariant` is
+  // `undefined` both while definitions load and when nothing is selected, so it cannot tell the two
+  // apart. Reserving the gutters from the first render keeps a diamond from shifting the layout
+  // when the diff resolves a beat later.
+  const variantDiffProps: ComponentProps<typeof VariantDiffProvider> =
+    perspective.selectedVariantName && schemaType
+      ? {enabled: true, editState, schemaType, onReviewChanges: handleHistoryOpen}
+      : {enabled: false}
+
   return (
     <DocumentPaneInfoContext.Provider value={documentPaneInfo}>
       <DocumentPaneContext.Provider value={documentPane}>
         <DivergencesProvider {...divergencesProps}>
-          <DivergenceAutofocus onProgrammaticFocus={onProgrammaticFocus} />
-          <DocumentTitle
-            isDeleted={isDeleted}
-            displayed={displayed}
-            ready={ready}
-            schemaType={schemaType}
-          />
-          <ParseErrorsProvider>{children}</ParseErrorsProvider>
+          <VariantDiffProvider {...variantDiffProps}>
+            <DivergenceAutofocus onProgrammaticFocus={onProgrammaticFocus} />
+            <DocumentTitle
+              isDeleted={isDeleted}
+              displayed={displayed}
+              ready={ready}
+              schemaType={schemaType}
+            />
+            <ParseErrorsProvider>{children}</ParseErrorsProvider>
+          </VariantDiffProvider>
         </DivergencesProvider>
       </DocumentPaneContext.Provider>
     </DocumentPaneInfoContext.Provider>

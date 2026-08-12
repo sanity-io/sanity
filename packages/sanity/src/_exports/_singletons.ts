@@ -173,6 +173,10 @@ export {TasksUpsellContext} from '../_singletons/context/TasksUpsellContext'
 export {UserApplicationCacheContext} from '../_singletons/context/UserApplicationCacheContext'
 export {UserColorManagerContext} from '../_singletons/context/UserColorManagerContext'
 export {ValidationContext} from '../_singletons/context/ValidationContext'
+export {
+  VariantDiffContext,
+  type VariantDiffContextValue,
+} from '../_singletons/context/VariantDiffContext'
 export {VirtualizerScrollInstanceContext} from '../_singletons/context/VirtualizerScrollInstanceContext'
 export {VisibleWorkspacesContext} from '../_singletons/context/VisibleWorkspacesContext'
 export {WorkspaceContext} from '../_singletons/context/WorkspaceContext'

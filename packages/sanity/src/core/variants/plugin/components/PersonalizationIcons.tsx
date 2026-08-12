@@ -23,6 +23,32 @@ export function RhombusIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSV
   )
 }
 
+export function RhombusFillIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
+  const {ref, ...rest} = props
+  return (
+    <svg
+      data-sanity-icon="rhombus-fill"
+      width="1em"
+      height="1em"
+      viewBox="0 0 21 21"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...rest}
+      ref={ref}
+    >
+      <rect
+        x="10.5"
+        y="3"
+        width="10.5"
+        height="10.5"
+        rx="2"
+        transform="rotate(45 10.5 3)"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
 export const CreateVariantIcon: ComponentType = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

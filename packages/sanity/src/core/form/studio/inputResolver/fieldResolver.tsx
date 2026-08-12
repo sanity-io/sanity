@@ -9,9 +9,9 @@ import {type ComponentType, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
-import {FormDivergenceIndicator} from '../../components/FormDivergenceIndicator'
 import {FormField} from '../../components/formField/FormField'
 import {FormFieldSet} from '../../components/formField/FormFieldSet'
+import {FormFieldGutterIndicator} from '../../components/FormFieldGutterIndicator'
 import {FormNodeDivergenceDetail} from '../../components/FormNodeDivergenceDetail'
 import {FormRow} from '../../components/layout/FormRow'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
@@ -35,7 +35,7 @@ function BooleanField(field: FieldProps) {
   // rendered here.
   return (
     <FormNodeDivergenceDetail path={field.path} readOnly={field.inputProps.readOnly}>
-      <FormRow gutterStartCell={<FormDivergenceIndicator path={field.path} />}>
+      <FormRow gutterStartCell={<FormFieldGutterIndicator path={field.path} />}>
         {documentId && field.actions && field.actions.length > 0 && (
           <FieldActionsResolver
             actions={field.actions}
@@ -82,7 +82,7 @@ function DateTimeField(field: FieldProps) {
   // rendered here.
   return (
     <FormNodeDivergenceDetail path={field.path} readOnly={field.inputProps.readOnly}>
-      <FormRow gutterStartCell={<FormDivergenceIndicator path={field.path} />}>
+      <FormRow gutterStartCell={<FormFieldGutterIndicator path={field.path} />}>
         {documentId && field.actions && field.actions.length > 0 && (
           <FieldActionsResolver
             actions={field.actions}
