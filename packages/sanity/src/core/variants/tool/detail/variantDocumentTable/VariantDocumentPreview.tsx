@@ -1,7 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {type PreviewLayoutKey} from '../../../../components/previews/types'
 import {DocumentPreviewPresence} from '../../../../presence/DocumentPreviewPresence'
@@ -35,7 +36,7 @@ function PrimaryBundleIcon({
   if (!primary) return null
 
   return (
-    <Box flex="none">
+    <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
       <Text size={1}>
         {primary.kind === 'published' ? (
           // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

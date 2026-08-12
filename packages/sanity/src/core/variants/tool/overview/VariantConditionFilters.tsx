@@ -3,8 +3,9 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
 import {FilterIcon} from '@sanity/icons/Filter'
 import {SearchIcon} from '@sanity/icons/Search'
-import {Box, Card, Flex, Stack, Text, TextInput, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Flex, Stack, Text, TextInput, useClickOutsideEvent} from '@sanity/ui'
 import {type ComponentType, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -253,7 +254,8 @@ function ActiveChips({
 
   return (
     <Box
-      flex={1}
+      flexBasis="0%"
+      flexGrow={1}
       ref={containerRef}
       style={{minWidth: 0, overflow: 'hidden', position: 'relative'}}
     >
