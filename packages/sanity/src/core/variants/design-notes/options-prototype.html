@@ -1,0 +1,1242 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Review Changes — compare axis options</title>
+    <style>
+      :root {
+        --font: Inter, -apple-system, 'system-ui', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        --panel-w: 292px;
+
+        --page-bg: #f6f6f8;
+        --panel-bg: #ffffff;
+        --fg: #232635;
+        --fg-muted: #6b7185;
+        --fg-faint: #8f94a8;
+        --border: #e3e4e9;
+        --border-strong: #d3d5dd;
+        --chip-bg: #f2f3f5;
+        --tab-selected-bg: #eeeef1;
+        --suggest-fg: #7953b6;
+        --suggest-bg: #f4effb;
+        --suggest-border: #ded0f4;
+        --del-fg: #8f94a8;
+        --ins-bg: #ece5f8;
+        --rule: #ecedf1;
+        --note-bg: #fbfbfc;
+      }
+
+      html[data-theme='dark'] {
+        --page-bg: #0d0e12;
+        --panel-bg: #13141a;
+        --fg: #f2f3f7;
+        --fg-muted: #9ba1b5;
+        --fg-faint: #6f7488;
+        --border: #2a2c36;
+        --border-strong: #3a3d4a;
+        --chip-bg: #1c1e26;
+        --tab-selected-bg: #262933;
+        --suggest-fg: #b491e8;
+        --suggest-bg: #241a38;
+        --suggest-border: #3d2f5c;
+        --del-fg: #7b8095;
+        --ins-bg: #2c2145;
+        --rule: #23252e;
+        --note-bg: #16171d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--font);
+        background: var(--page-bg);
+        color: var(--fg);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      header {
+        padding: 28px 32px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+      header h1 {
+        font-size: 19px;
+        margin: 0 0 6px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      header p {
+        margin: 0;
+        color: var(--fg-muted);
+        font-size: 13px;
+        max-width: 62ch;
+        line-height: 1.55;
+      }
+      .spacer {
+        flex: 1;
+      }
+
+      .toggle {
+        font: inherit;
+        font-size: 12px;
+        padding: 7px 13px;
+        border-radius: 999px;
+        border: 1px solid var(--border-strong);
+        background: var(--panel-bg);
+        color: var(--fg);
+        cursor: pointer;
+      }
+      .toggle:hover {
+        border-color: var(--fg-faint);
+      }
+
+      .board {
+        display: flex;
+        gap: 22px;
+        padding: 28px 32px 56px;
+        align-items: flex-start;
+        overflow-x: auto;
+      }
+
+      .col {
+        width: var(--panel-w);
+        flex: 0 0 var(--panel-w);
+      }
+
+      .col > h2 {
+        font-size: 13px;
+        margin: 0 0 3px;
+        font-weight: 600;
+      }
+      .col > .sub {
+        font-size: 11.5px;
+        color: var(--fg-muted);
+        margin: 0 0 12px;
+        line-height: 1.5;
+        min-height: 34px;
+      }
+      .col.baseline > h2 {
+        color: var(--fg-muted);
+      }
+
+      /* ---- panel chrome, matching the review-changes inspector ---- */
+      .panel {
+        background: var(--panel-bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .panel-tabs {
+        display: flex;
+        gap: 4px;
+        padding: 10px 10px 8px;
+        align-items: center;
+      }
+      .tab {
+        font: inherit;
+        font-size: 12px;
+        padding: 5px 9px;
+        border-radius: 3px;
+        border: 0;
+        background: transparent;
+        color: var(--fg-muted);
+        cursor: default;
+        white-space: nowrap;
+      }
+      .tab[data-selected] {
+        background: var(--tab-selected-bg);
+        color: var(--fg);
+      }
+      .tab.close {
+        margin-left: auto;
+        color: var(--fg-faint);
+      }
+
+      .banner {
+        margin: 0 10px 10px;
+        padding: 7px 9px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        font-size: 11px;
+        color: var(--fg-muted);
+        background: var(--note-bg);
+        line-height: 1.45;
+      }
+
+      .body {
+        padding: 2px 12px 14px;
+      }
+
+      /* ---- chooser bits ---- */
+      .question {
+        font-size: 11.5px;
+        color: var(--fg-muted);
+        margin: 6px 0 8px;
+      }
+
+      .fromto {
+        display: grid;
+        grid-template-columns: 40px 1fr;
+        align-items: center;
+        gap: 5px 6px;
+        margin-bottom: 12px;
+      }
+      .fromto .lbl {
+        font-size: 11.5px;
+        color: var(--fg-muted);
+      }
+
+      .control {
+        border: 1px solid var(--border-strong);
+        background: var(--chip-bg);
+        border-radius: 4px;
+        padding: 6px 8px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+      }
+      .control .val {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .control .caret {
+        margin-left: auto;
+        color: var(--fg-faint);
+        font-size: 10px;
+      }
+      .control.static {
+        background: transparent;
+        border-style: dashed;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 5px 11px 5px 9px;
+        font-size: 12px;
+        background: var(--chip-bg);
+        border: 1px solid transparent;
+        min-width: 0;
+      }
+      .pill .val {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .pill.variant {
+        background: var(--suggest-bg);
+        border-color: var(--suggest-border);
+        color: var(--suggest-fg);
+      }
+      .pill .caret {
+        color: var(--fg-faint);
+        font-size: 10px;
+      }
+
+      .rhombus {
+        width: 9px;
+        height: 9px;
+        flex: 0 0 9px;
+        background: currentColor;
+        transform: rotate(45deg);
+        border-radius: 1.5px;
+      }
+      .rhombus.muted {
+        background: var(--fg-faint);
+      }
+
+      .pillrow {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin: 8px 0 14px;
+      }
+      .pillrow .arrow {
+        color: var(--fg-faint);
+        flex: 0 0 auto;
+        font-size: 13px;
+      }
+
+      .inlinenote {
+        font-size: 11.5px;
+        color: var(--fg-muted);
+        margin: 6px 0 12px;
+        line-height: 1.5;
+      }
+      .linkbtn {
+        color: var(--suggest-fg);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        cursor: pointer;
+      }
+      .linkbtn:hover {
+        border-bottom-color: currentColor;
+      }
+
+      /* ---- the diff, identical in every column so only the chrome differs ---- */
+      .diff {
+        border-top: 1px solid var(--rule);
+        padding-top: 12px;
+      }
+      .diff .field {
+        font-size: 11.5px;
+        color: var(--fg-muted);
+        margin-bottom: 4px;
+      }
+      .diff .text {
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .diff del {
+        color: var(--del-fg);
+        text-decoration: line-through;
+      }
+      .diff ins {
+        background: var(--ins-bg);
+        text-decoration: none;
+      }
+      .diff .revert {
+        margin-top: 6px;
+        color: var(--fg-faint);
+        font-size: 13px;
+      }
+
+      /* ---- secondary miniature: the same option in time mode ---- */
+      .alt {
+        margin-top: 14px;
+        border: 1px dashed var(--border-strong);
+        border-radius: 6px;
+        padding: 10px 12px 12px;
+        background: transparent;
+      }
+      .alt h3 {
+        margin: 0 0 8px;
+        font-size: 10.5px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--fg-faint);
+        font-weight: 600;
+      }
+
+      .meta {
+        margin-top: 14px;
+        font-size: 11.5px;
+        line-height: 1.6;
+        color: var(--fg-muted);
+      }
+      .meta dt {
+        font-weight: 600;
+        color: var(--fg);
+        display: inline;
+      }
+      .meta dd {
+        display: inline;
+        margin: 0;
+      }
+      .meta div {
+        margin-bottom: 3px;
+      }
+      .count {
+        display: inline-block;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ---- section divider for option E ---- */
+      .section-head {
+        padding: 8px 32px 0;
+        border-top: 1px solid var(--border);
+        margin-top: 4px;
+        padding-top: 26px;
+      }
+      .section-head h2 {
+        font-size: 16px;
+        margin: 0 0 6px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .section-head p {
+        margin: 0;
+        color: var(--fg-muted);
+        font-size: 13px;
+        max-width: 74ch;
+        line-height: 1.55;
+      }
+
+      /* ---- E: segmented control, one word per option ---- */
+      .segmented {
+        display: inline-flex;
+        gap: 2px;
+        padding: 2px;
+        border-radius: 5px;
+        background: var(--chip-bg);
+        margin: 6px 0 10px;
+      }
+      .seg {
+        font: inherit;
+        font-size: 12px;
+        padding: 4px 12px;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: var(--fg-muted);
+        cursor: default;
+      }
+      .seg[data-selected] {
+        background: var(--panel-bg);
+        color: var(--fg);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.09);
+      }
+      html[data-theme='dark'] .seg[data-selected] {
+        box-shadow: none;
+        background: var(--tab-selected-bg);
+      }
+
+      .againstrow {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin: 0 0 14px;
+        min-width: 0;
+      }
+      .against {
+        font-size: 11.5px;
+        color: var(--fg-muted);
+        flex: 0 0 auto;
+      }
+
+      /* ---- F / G: the timeline picker ---- */
+      .tlist {
+        margin: 2px 0 4px;
+      }
+      .tlist-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 9px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: var(--fg);
+        min-width: 0;
+      }
+      .tlist-item .when {
+        margin-left: auto;
+        color: var(--fg-faint);
+        font-size: 11px;
+        flex: 0 0 auto;
+      }
+      .tlist-item[data-selected] {
+        background: var(--suggest-bg);
+        color: var(--suggest-fg);
+      }
+      .tlist-item[data-selected] .when {
+        color: var(--suggest-fg);
+        opacity: 0.8;
+      }
+      .tlist-item.event[data-selected] {
+        background: var(--tab-selected-bg);
+        color: var(--fg);
+      }
+      .tlist-item.event[data-selected] .when {
+        color: var(--fg-muted);
+      }
+      .tlist-divider {
+        height: 1px;
+        background: var(--rule);
+        margin: 6px 9px;
+      }
+      .tlist-more {
+        padding: 6px 9px;
+        font-size: 11.5px;
+        color: var(--fg-faint);
+      }
+
+      .stackedlabel {
+        font-size: 10.5px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--fg-faint);
+        font-weight: 600;
+        margin: 14px 0 6px;
+      }
+      .col.wide {
+        width: 320px;
+        flex: 0 0 320px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>Review Changes — four ways to surface the comparison axis</h1>
+        <p>
+          Throwaway spike. Every column shows the same panel at its real width (292px) with the same
+          diff, so the only thing varying is the chrome above it. The dashed box under each shows
+          that option in <em>time</em> mode — the case we must not regress.
+        </p>
+      </div>
+      <div class="spacer"></div>
+      <button class="toggle" id="themeToggle" type="button">Switch to dark</button>
+    </header>
+
+    <div class="board">
+      <!-- BASELINE -->
+      <section class="col baseline">
+        <h2>Current spike — baseline</h2>
+        <p class="sub">What we built. 7 text elements over 4 rows before the diff.</p>
+        <div class="panel">
+          <div class="panel-tabs">
+            <button class="tab" type="button">History</button>
+            <button class="tab" data-selected type="button">Review changes</button>
+            <span class="tab close">✕</span>
+          </div>
+          <div class="banner">
+            Showing the history for the <b>Draft</b> version of this document.
+          </div>
+          <div class="body">
+            <div class="question">What do you want to compare?</div>
+            <div style="display: flex; gap: 4px; margin-bottom: 10px">
+              <button class="tab" data-selected type="button">This variant to its base</button>
+              <button class="tab" type="button">A moment in time</button>
+            </div>
+            <div class="fromto">
+              <span class="lbl">From</span>
+              <div class="control"><span class="val">Default audience</span></div>
+              <span class="lbl">To</span>
+              <div class="control"><span class="val">VIP Customers</span></div>
+            </div>
+            <div class="diff">
+              <div class="field">Title</div>
+              <div class="text">
+                <del>Book Test Base</del><ins>Foo new book (6) is a variant</ins>
+              </div>
+              <div class="revert">↩</div>
+            </div>
+          </div>
+        </div>
+        <dl class="meta">
+          <div>
+            <dt>Reuses</dt>
+            <dd>— Tab, EventsTimelineMenu</dd>
+          </div>
+          <div>
+            <dt>New</dt>
+            <dd>— none</dd>
+          </div>
+          <div>
+            <dt>Text</dt>
+            <dd>— <span class="count">7</span> elements</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- OPTION A -->
+      <section class="col">
+        <h2>A · Third tab</h2>
+        <p class="sub">The axis becomes a peer of the two views already in the tab row.</p>
+        <div class="panel">
+          <div class="panel-tabs">
+            <button class="tab" type="button">History</button>
+            <button class="tab" type="button">Changes</button>
+            <button class="tab" data-selected type="button">Default</button>
+            <span class="tab close">✕</span>
+          </div>
+          <div class="banner">
+            Showing the history for the <b>Draft</b> version of this document.
+          </div>
+          <div class="body">
+            <div class="diff" style="border-top: 0; padding-top: 8px">
+              <div class="field">Title</div>
+              <div class="text">
+                <del>Book Test Base</del><ins>Foo new book (6) is a variant</ins>
+              </div>
+              <div class="revert">↩</div>
+            </div>
+          </div>
+        </div>
+        <div class="alt">
+          <h3>Time mode</h3>
+          <div class="panel-tabs" style="padding: 0 0 8px">
+            <button class="tab" type="button">History</button>
+            <button class="tab" data-selected type="button">Changes</button>
+            <button class="tab" type="button">Default</button>
+          </div>
+          <div class="fromto" style="margin-bottom: 0">
+            <span class="lbl">From</span>
+            <div class="control">
+              <span class="val">Version created: Jul 31…</span><span class="caret">▾</span>
+            </div>
+            <span class="lbl">To</span>
+            <div class="control">
+              <span class="val">Edited: Aug 12, 5:28 PM</span><span class="caret">▾</span>
+            </div>
+          </div>
+        </div>
+        <dl class="meta">
+          <div>
+            <dt>Reuses</dt>
+            <dd>— Tab, TabList</dd>
+          </div>
+          <div>
+            <dt>New</dt>
+            <dd>— none</dd>
+          </div>
+          <div>
+            <dt>Text</dt>
+            <dd>— <span class="count">3</span> elements</dd>
+          </div>
+          <div>
+            <dt>Watch</dt>
+            <dd>— three tabs in 292px; two nouns and a relation</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- OPTION B -->
+      <section class="col">
+        <h2>B · From carries it</h2>
+        <p class="sub">One grouped menu offers versions and revisions. Picking implies the axis.</p>
+        <div class="panel">
+          <div class="panel-tabs">
+            <button class="tab" type="button">History</button>
+            <button class="tab" data-selected type="button">Review changes</button>
+            <span class="tab close">✕</span>
+          </div>
+          <div class="banner">
+            Showing the history for the <b>Draft</b> version of this document.
+          </div>
+          <div class="body">
+            <div class="fromto">
+              <span class="lbl">From</span>
+              <div class="control">
+                <span class="rhombus muted"></span>
+                <span class="val">Default audience</span><span class="caret">▾</span>
+              </div>
+              <span class="lbl">To</span>
+              <div class="control static"><span class="val">VIP Customers</span></div>
+            </div>
+            <div class="diff">
+              <div class="field">Title</div>
+              <div class="text">
+                <del>Book Test Base</del><ins>Foo new book (6) is a variant</ins>
+              </div>
+              <div class="revert">↩</div>
+            </div>
+          </div>
+        </div>
+        <div class="alt">
+          <h3>The From menu, open</h3>
+          <div style="border: 1px solid var(--border); border-radius: 5px; overflow: hidden">
+            <div
+              style="
+                font-size: 10px;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--fg-faint);
+                padding: 7px 10px 4px;
+              "
+            >
+              Versions
+            </div>
+            <div
+              style="
+                padding: 6px 10px;
+                font-size: 12px;
+                background: var(--tab-selected-bg);
+                display: flex;
+                gap: 6px;
+                align-items: center;
+              "
+            >
+              <span class="rhombus muted"></span> Default audience
+            </div>
+            <div
+              style="
+                font-size: 10px;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--fg-faint);
+                padding: 8px 10px 4px;
+                border-top: 1px solid var(--rule);
+              "
+            >
+              History
+            </div>
+            <div style="padding: 6px 10px; font-size: 12px">Version created: Jul 31…</div>
+            <div style="padding: 6px 10px 8px; font-size: 12px">Edited: Aug 12, 5:28 PM</div>
+          </div>
+        </div>
+        <dl class="meta">
+          <div>
+            <dt>Reuses</dt>
+            <dd>— EventsTimelineMenu + MenuGroup</dd>
+          </div>
+          <div>
+            <dt>New</dt>
+            <dd>— none</dd>
+          </div>
+          <div>
+            <dt>Text</dt>
+            <dd>— <span class="count">3</span> elements</dd>
+          </div>
+          <div>
+            <dt>Watch</dt>
+            <dd>— one menu mixing versions and moments</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- OPTION C -->
+      <section class="col">
+        <h2>C · Compare-versions header</h2>
+        <p class="sub">
+          Lifts the two-pill + arrow pattern the Studio already uses for “compare A to B”.
+        </p>
+        <div class="panel">
+          <div class="panel-tabs">
+            <button class="tab" type="button">History</button>
+            <button class="tab" data-selected type="button">Review changes</button>
+            <span class="tab close">✕</span>
+          </div>
+          <div class="banner">
+            Showing the history for the <b>Draft</b> version of this document.
+          </div>
+          <div class="body">
+            <div class="pillrow">
+              <span class="pill"
+                ><span class="rhombus muted"></span><span class="val">Default</span></span
+              >
+              <span class="arrow">→</span>
+              <span class="pill variant"
+                ><span class="rhombus"></span><span class="val">VIP Customers</span
+                ><span class="caret">▾</span></span
+              >
+            </div>
+            <div class="diff">
+              <div class="field">Title</div>
+              <div class="text">
+                <del>Book Test Base</del><ins>Foo new book (6) is a variant</ins>
+              </div>
+              <div class="revert">↩</div>
+            </div>
+          </div>
+        </div>
+        <div class="alt">
+          <h3>Time mode — same layout</h3>
+          <div class="pillrow" style="margin: 0">
+            <span class="pill"
+              ><span class="val">Jul 31, 10:04</span><span class="caret">▾</span></span
+            >
+            <span class="arrow">→</span>
+            <span class="pill"
+              ><span class="val">Aug 12, 5:28 PM</span><span class="caret">▾</span></span
+            >
+          </div>
+        </div>
+        <dl class="meta">
+          <div>
+            <dt>Reuses</dt>
+            <dd>— VersionMenu pill, TransferIcon</dd>
+          </div>
+          <div>
+            <dt>New</dt>
+            <dd>— one layout wrapper (or lift the existing one)</dd>
+          </div>
+          <div>
+            <dt>Text</dt>
+            <dd>— <span class="count">2</span> elements</dd>
+          </div>
+          <div>
+            <dt>Watch</dt>
+            <dd>— width; long variant names must truncate</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- OPTION D -->
+      <section class="col">
+        <h2>D · Entry point decides</h2>
+        <p class="sub">No chooser. The diamond opens variant mode; one link crosses over.</p>
+        <div class="panel">
+          <div class="panel-tabs">
+            <button class="tab" type="button">History</button>
+            <button class="tab" data-selected type="button">Review changes</button>
+            <span class="tab close">✕</span>
+          </div>
+          <div class="banner">
+            Showing the history for the <b>Draft</b> version of this document.
+          </div>
+          <div class="body">
+            <div class="inlinenote">
+              Comparing to the <b>default audience</b>.
+              <span class="linkbtn">Use history instead</span>
+            </div>
+            <div class="diff">
+              <div class="field">Title</div>
+              <div class="text">
+                <del>Book Test Base</del><ins>Foo new book (6) is a variant</ins>
+              </div>
+              <div class="revert">↩</div>
+            </div>
+          </div>
+        </div>
+        <div class="alt">
+          <h3>Time mode</h3>
+          <div class="inlinenote" style="margin: 0 0 10px">
+            Comparing two moments. <span class="linkbtn">Compare to the default audience</span>
+          </div>
+          <div class="fromto" style="margin-bottom: 0">
+            <span class="lbl">From</span>
+            <div class="control">
+              <span class="val">Version created: Jul 31…</span><span class="caret">▾</span>
+            </div>
+            <span class="lbl">To</span>
+            <div class="control">
+              <span class="val">Edited: Aug 12, 5:28 PM</span><span class="caret">▾</span>
+            </div>
+          </div>
+        </div>
+        <dl class="meta">
+          <div>
+            <dt>Reuses</dt>
+            <dd>— Button mode=bleed</dd>
+          </div>
+          <div>
+            <dt>New</dt>
+            <dd>— none</dd>
+          </div>
+          <div>
+            <dt>Text</dt>
+            <dd>— <span class="count">1</span> line</dd>
+          </div>
+          <div>
+            <dt>Watch</dt>
+            <dd>— second axis is undiscoverable until used</dd>
+          </div>
+        </dl>
+      </section>
+    </div>
+
+    <div class="section-head">
+      <h2>Option E — keep the switch, lose the words</h2>
+      <p>
+        A, B and C traded the mode switch away to save text; D reduced it to a link. E puts an
+        explicit switch back, as a segmented control with <b>one-word</b> labels, and varies only
+        how much it says about the two things being compared. Both states shown for each.
+      </p>
+    </div>
+
+    <div class="board">
+      <!-- E1 -->
+      <section class="col">
+        <h2>E1 · Switch + pills</h2>
+        <p class="sub">Switch and both operands always visible. The most explicit of the three.</p>
+        <div class="panel">
+          <div class="panel-tabs">
+            <button class="tab" type="button">History</button>
+            <button class="tab" data-selected type="button">Review changes</button>
+            <span class="tab close">✕</span>
+          </div>
+          <div class="banner">
+            Showing the history for the <b>Draft</b> version of this document.
+          </div>
+          <div class="body">
+            <div class="segmented">
+              <button class="seg" data-selected type="button">Default</button>
+              <button class="seg" type="button">History</button>
+            </div>
+            <div class="pillrow">
+              <span class="pill"
+                ><span class="rhombus muted"></span><span class="val">Default</span></span
+              >
+              <span class="arrow">→</span>
+              <span class="pill variant"
+                ><span class="rhombus"></span><span class="val">VIP Customers</span></span
+              >
+            </div>
+            <div class="diff">
+              <div class="field">Title</div>
+              <div class="text">
+                <del>Book Test Base</del><ins>Foo new book (6) is a variant</ins>
+              </div>
+              <div class="revert">↩</div>
+            </div>
+          </div>
+        </div>
+        <div class="alt">
+          <h3>History selected</h3>
+          <div class="segmented" style="margin-top: 0">
+            <button class="seg" type="button">Default</button>
+            <button class="seg" data-selected type="button">History</button>
+          </div>
+          <div class="pillrow" style="margin-bottom: 0">
+            <span class="pill"
+              ><span class="val">Jul 31, 10:04</span><span class="caret">▾</span></span
+            >
+            <span class="arrow">→</span>
+            <span class="pill"
+              ><span class="val">Aug 12, 5:28 PM</span><span class="caret">▾</span></span
+            >
+          </div>
+        </div>
+        <dl class="meta">
+          <div>
+            <dt>Reuses</dt>
+            <dd>— Tab, VersionMenu pill, TransferIcon</dd>
+          </div>
+          <div>
+            <dt>New</dt>
+            <dd>— none</dd>
+          </div>
+          <div>
+            <dt>Text</dt>
+            <dd>— <span class="count">4</span> elements, 2 rows</dd>
+          </div>
+          <div>
+            <dt>Watch</dt>
+            <dd>— “Default” appears twice in the same view</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- E2 -->
+      <section class="col">
+        <h2>E2 · Switch + one pill</h2>
+        <p class="sub">
+          The right operand is always the document you are editing, so only the left one is named.
+        </p>
+        <div class="panel">
+          <div class="panel-tabs">
+            <button class="tab" type="button">History</button>
+            <button class="tab" data-selected type="button">Review changes</button>
+            <span class="tab close">✕</span>
+          </div>
+          <div class="banner">
+            Showing the history for the <b>Draft</b> version of this document.
+          </div>
+          <div class="body">
+            <div class="segmented">
+              <button class="seg" data-selected type="button">Default</button>
+              <button class="seg" type="button">History</button>
+            </div>
+            <div class="againstrow">
+              <span class="against">against</span>
+              <span class="pill"
+                ><span class="rhombus muted"></span><span class="val">Default audience</span></span
+              >
+            </div>
+            <div class="diff">
+              <div class="field">Title</div>
+              <div class="text">
+                <del>Book Test Base</del><ins>Foo new book (6) is a variant</ins>
+              </div>
+              <div class="revert">↩</div>
+            </div>
+          </div>
+        </div>
+        <div class="alt">
+          <h3>History selected</h3>
+          <div class="segmented" style="margin-top: 0">
+            <button class="seg" type="button">Default</button>
+            <button class="seg" data-selected type="button">History</button>
+          </div>
+          <div class="againstrow" style="margin-bottom: 0">
+            <span class="against">against</span>
+            <span class="pill"
+              ><span class="val">Jul 31, 10:04</span><span class="caret">▾</span></span
+            >
+          </div>
+        </div>
+        <dl class="meta">
+          <div>
+            <dt>Reuses</dt>
+            <dd>— Tab, VersionMenu pill</dd>
+          </div>
+          <div>
+            <dt>New</dt>
+            <dd>— none</dd>
+          </div>
+          <div>
+            <dt>Text</dt>
+            <dd>— <span class="count">3</span> elements, 2 rows</dd>
+          </div>
+          <div>
+            <dt>Watch</dt>
+            <dd>— drops “To”, which was never a real choice anyway</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- E3 -->
+      <section class="col">
+        <h2>E3 · Switch only</h2>
+        <p class="sub">The switch names the axis; the diff names the fields. Nothing else.</p>
+        <div class="panel">
+          <div class="panel-tabs">
+            <button class="tab" type="button">History</button>
+            <button class="tab" data-selected type="button">Review changes</button>
+            <span class="tab close">✕</span>
+          </div>
+          <div class="banner">
+            Showing the history for the <b>Draft</b> version of this document.
+          </div>
+          <div class="body">
+            <div class="segmented">
+              <button class="seg" data-selected type="button">Default</button>
+              <button class="seg" type="button">History</button>
+            </div>
+            <div class="diff" style="margin-top: 12px">
+              <div class="field">Title</div>
+              <div class="text">
+                <del>Book Test Base</del><ins>Foo new book (6) is a variant</ins>
+              </div>
+              <div class="revert">↩</div>
+            </div>
+          </div>
+        </div>
+        <div class="alt">
+          <h3>History selected — pickers return</h3>
+          <div class="segmented" style="margin-top: 0">
+            <button class="seg" type="button">Default</button>
+            <button class="seg" data-selected type="button">History</button>
+          </div>
+          <div class="fromto" style="margin-bottom: 0; margin-top: 10px">
+            <span class="lbl">From</span>
+            <div class="control">
+              <span class="val">Version created: Jul 31…</span><span class="caret">▾</span>
+            </div>
+            <span class="lbl">To</span>
+            <div class="control">
+              <span class="val">Edited: Aug 12, 5:28 PM</span><span class="caret">▾</span>
+            </div>
+          </div>
+        </div>
+        <dl class="meta">
+          <div>
+            <dt>Reuses</dt>
+            <dd>— Tab only</dd>
+          </div>
+          <div>
+            <dt>New</dt>
+            <dd>— none</dd>
+          </div>
+          <div>
+            <dt>Text</dt>
+            <dd>— <span class="count">2</span> elements, 1 row</dd>
+          </div>
+          <div>
+            <dt>Watch</dt>
+            <dd>— in Default mode nothing names the base document</dd>
+          </div>
+        </dl>
+      </section>
+    </div>
+
+    <div class="section-head">
+      <h2>F and G — rename the outer tabs</h2>
+      <p>
+        The tab called <b>History</b> is not an archive: it is a paginated event list whose rows set
+        the <code>since</code>/<code>rev</code> range the diff renders. It is a <em>picker</em>, and
+        the component behind it is already named <code>EventsTimeline</code>. Both options below
+        rename the outer pair to <b>Timeline · Compare</b>. They differ on whether the version axis
+        lives in the diff (F) or in the picker (G).
+      </p>
+    </div>
+
+    <div class="board">
+      <!-- F -->
+      <section class="col">
+        <h2>F · Rename + inner switch</h2>
+        <p class="sub">E2 with a truer outer pair. The axis is still chosen inside the diff.</p>
+        <div class="panel">
+          <div class="panel-tabs">
+            <button class="tab" type="button">Timeline</button>
+            <button class="tab" data-selected type="button">Compare</button>
+            <span class="tab close">✕</span>
+          </div>
+          <div class="banner">
+            Showing the history for the <b>Draft</b> version of this document.
+          </div>
+          <div class="body">
+            <div class="segmented">
+              <button class="seg" data-selected type="button">Versions</button>
+              <button class="seg" type="button">Revisions</button>
+            </div>
+            <div class="againstrow">
+              <span class="against">against</span>
+              <span class="pill"
+                ><span class="rhombus muted"></span><span class="val">Default audience</span></span
+              >
+            </div>
+            <div class="diff">
+              <div class="field">Title</div>
+              <div class="text">
+                <del>Book Test Base</del><ins>Foo new book (6) is a variant</ins>
+              </div>
+              <div class="revert">↩</div>
+            </div>
+          </div>
+        </div>
+        <div class="alt">
+          <h3>Revisions selected</h3>
+          <div class="segmented" style="margin-top: 0">
+            <button class="seg" type="button">Versions</button>
+            <button class="seg" data-selected type="button">Revisions</button>
+          </div>
+          <div class="againstrow" style="margin-bottom: 0">
+            <span class="against">against</span>
+            <span class="pill"
+              ><span class="val">Jul 31, 10:04</span><span class="caret">▾</span></span
+            >
+          </div>
+        </div>
+        <dl class="meta">
+          <div>
+            <dt>Reuses</dt>
+            <dd>— Tab, VersionMenu pill</dd>
+          </div>
+          <div>
+            <dt>New</dt>
+            <dd>— none</dd>
+          </div>
+          <div>
+            <dt>Strings</dt>
+            <dd>— 1 renamed (<code>changes.tab.history</code>)</dd>
+          </div>
+          <div>
+            <dt>Text</dt>
+            <dd>— <span class="count">3</span> elements</dd>
+          </div>
+          <div>
+            <dt>Watch</dt>
+            <dd>— Versions / Revisions look alike at 12px</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- G -->
+      <section class="col wide">
+        <h2>G · Pinned picker — no inner switch</h2>
+        <p class="sub">
+          The version axis moves into the list that was already built for picking. One picker, one
+          diff, no second set of labels.
+        </p>
+
+        <div class="stackedlabel">1 · Timeline — pick what to compare against</div>
+        <div class="panel">
+          <div class="panel-tabs">
+            <button class="tab" data-selected type="button">Timeline</button>
+            <button class="tab" type="button">Compare</button>
+            <span class="tab close">✕</span>
+          </div>
+          <div class="body" style="padding-top: 8px">
+            <div class="tlist">
+              <div class="tlist-item" data-selected>
+                <span class="rhombus"></span><span>Default audience</span>
+              </div>
+              <div class="tlist-divider"></div>
+              <div class="tlist-item event">
+                <span>Edited</span><span class="when">Aug 12, 5:28 PM</span>
+              </div>
+              <div class="tlist-item event">
+                <span>Edited</span><span class="when">Aug 12, 5:21 PM</span>
+              </div>
+              <div class="tlist-item event">
+                <span>Published</span><span class="when">Jul 31, 10:04</span>
+              </div>
+              <div class="tlist-item event">
+                <span>Created</span><span class="when">Jul 31, 09:58</span>
+              </div>
+              <div class="tlist-more">Load more…</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stackedlabel">2 · Compare — the diff for that pick</div>
+        <div class="panel">
+          <div class="panel-tabs">
+            <button class="tab" type="button">Timeline</button>
+            <button class="tab" data-selected type="button">Compare</button>
+            <span class="tab close">✕</span>
+          </div>
+          <div class="body" style="padding-top: 10px">
+            <div class="againstrow">
+              <span class="against">against</span>
+              <span class="pill"
+                ><span class="rhombus muted"></span><span class="val">Default audience</span></span
+              >
+            </div>
+            <div class="diff">
+              <div class="field">Title</div>
+              <div class="text">
+                <del>Book Test Base</del><ins>Foo new book (6) is a variant</ins>
+              </div>
+              <div class="revert">↩</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alt">
+          <h3>Pick an event instead — same panel, same shape</h3>
+          <div class="tlist" style="margin-bottom: 8px">
+            <div class="tlist-item">
+              <span class="rhombus muted"></span><span>Default audience</span>
+            </div>
+            <div class="tlist-divider"></div>
+            <div class="tlist-item event" data-selected>
+              <span>Published</span><span class="when">Jul 31, 10:04</span>
+            </div>
+          </div>
+          <div class="againstrow" style="margin-bottom: 0">
+            <span class="against">against</span>
+            <span class="pill"><span class="val">Jul 31, 10:04</span></span>
+          </div>
+        </div>
+
+        <dl class="meta">
+          <div>
+            <dt>Reuses</dt>
+            <dd>— EventsTimeline, VersionMenu pill</dd>
+          </div>
+          <div>
+            <dt>New</dt>
+            <dd>— a pinned row + divider in the event list</dd>
+          </div>
+          <div>
+            <dt>Strings</dt>
+            <dd>— 1 renamed, 1 added</dd>
+          </div>
+          <div>
+            <dt>Text</dt>
+            <dd>— <span class="count">2</span> elements in Compare</dd>
+          </div>
+          <div>
+            <dt>Watch</dt>
+            <dd>— a non-event pinned at the top of an event list</dd>
+          </div>
+        </dl>
+      </section>
+    </div>
+
+    <script>
+      const root = document.documentElement
+      const btn = document.getElementById('themeToggle')
+      btn.addEventListener('click', () => {
+        const next = root.dataset.theme === 'dark' ? 'light' : 'dark'
+        root.dataset.theme = next
+        btn.textContent = next === 'dark' ? 'Switch to light' : 'Switch to dark'
+      })
+    </script>
+  </body>
+</html>
