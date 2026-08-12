@@ -1,5 +1,4 @@
 import {defineCliConfig} from 'sanity/cli'
-import {type UserConfig} from 'vite'
 
 export default defineCliConfig({
   api: {
@@ -7,23 +6,19 @@ export default defineCliConfig({
     dataset: 'page-building',
   },
   reactCompiler: {target: '19'},
-  vite(viteConfig: UserConfig): UserConfig {
-    return {
-      ...viteConfig,
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      esbuild: {
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        ...viteConfig.esbuild,
-        minifyIdentifiers: false,
-      },
-      resolve: {
-        ...viteConfig.resolve,
-        alias: {
-          // oxlint-disable-next-line no-misused-spread
-          ...viteConfig.resolve?.alias,
-          'react-dom/client': require.resolve('react-dom/profiling'),
+  vite: {
+    // Aliasing to react-dom/profiling is necessary so React can run the profiler
+    resolve: {alias: {'react-dom/client': require.resolve('react-dom/profiling')}},
+    build: {
+      rolldownOptions: {
+        output: {
+          // Disabling `mangle` (while keeping compression and whitespace removal) ensures that
+          // the React DevTools components inspector has readable component names.
+          // This overrides the `build.minify: 'oxc'` default set by `sanity build`, replacing
+          // `esbuild: {minifyIdentifiers: false}` which the rolldown-powered Vite silently ignores.
+          minify: {compress: true, mangle: false, codegen: true},
         },
       },
-    }
+    },
   },
 })

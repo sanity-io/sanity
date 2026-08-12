@@ -1,7 +1,9 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useEffectEvent, useState} from 'react'
+import {Box, Flex, Switch, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
+import {useCallback, useEffect, useState} from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {set} from '../../../../form/patch/patch'
@@ -68,7 +70,6 @@ export function FormCreate(props: ObjectInputProps) {
     // This useEffect takes care of closing the form when a task entered the "creation" state.
     // That action is async and we don't have access to the promise, once the value is updated in the form we will close the form.
     if (creating && savedTask?.createdByUser) {
-      // oxlint-disable-next-line react/react-compiler
       handleCreatingSuccess()
     }
   }, [creating, savedTask?.createdByUser])

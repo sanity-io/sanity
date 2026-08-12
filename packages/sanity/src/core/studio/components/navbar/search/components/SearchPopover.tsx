@@ -31,6 +31,10 @@ export interface SearchPopoverProps {
   onItemSelect?: ItemSelectHandler
   previewPerspective?: StackablePerspective[]
   /**
+   * The variant the result previews are resolved in, as a bare variant id.
+   */
+  previewVariant?: string
+  /**
    * If provided, will trigger to open the search popover when user types hotkey + k
    */
   onOpen?: () => void
@@ -86,6 +90,7 @@ export function SearchPopover({
   onItemSelect,
   onOpen,
   previewPerspective,
+  previewVariant,
   open,
 }: SearchPopoverProps) {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
@@ -147,6 +152,7 @@ export function SearchPopover({
                     onItemSelect={onItemSelect}
                     disableIntentLink={disableIntentLink}
                     previewPerspective={previewPerspective}
+                    previewVariant={previewVariant}
                   />
                 ) : (
                   <RecentSearches inputElement={inputElement} />

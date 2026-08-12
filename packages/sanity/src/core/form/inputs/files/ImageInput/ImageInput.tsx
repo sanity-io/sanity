@@ -5,7 +5,8 @@ import {
   type ImageAsset,
   type UploadState,
 } from '@sanity/types'
-import {Stack, useToast} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import get from 'lodash-es/get.js'
 import {Fragment, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'

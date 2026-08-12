@@ -15,21 +15,22 @@ import {getSpan} from '@portabletext/editor/traversal'
 import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path, type PortableTextBlock} from '@sanity/types'
-import {Box, useToast} from '@sanity/ui'
+import {Box} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {randomKey} from '@sanity/util/content'
 import {fromString, startsWith} from '@sanity/util/paths'
 import {
-  forwardRef,
   type ReactNode,
   startTransition,
   useCallback,
   useEffect,
-  useEffectEvent,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util/empty'
@@ -72,27 +73,29 @@ function keyGenerator() {
  * the public `editorRef` prop's contract.
  */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const LegacyEditorRefPlugin = forwardRef<PortableTextEditor | null>((_, ref) => {
+const LegacyEditorRefPlugin = (props: RefAttributes<PortableTextEditor | null>) => {
+  const {ref} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const portableTextEditor = usePortableTextEditor()
 
   useImperativeHandle(ref, () => portableTextEditor, [portableTextEditor])
 
   return null
-})
+}
 LegacyEditorRefPlugin.displayName = 'LegacyEditorRefPlugin'
 
 /**
  * Captures the editor instance so callbacks defined outside
  * `EditorProvider` can take snapshots.
  */
-const EditorRefPlugin = forwardRef<Editor | null>((_, ref) => {
+const EditorRefPlugin = (props: RefAttributes<Editor | null>) => {
+  const {ref} = props
   const editor = useEditor()
 
   useImperativeHandle(ref, () => editor, [editor])
 
   return null
-})
+}
 EditorRefPlugin.displayName = 'EditorRefPlugin'
 
 /** @internal */
@@ -244,7 +247,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const focusedDivergence = divergenceNavigator.enabled
     ? divergenceNavigator.state.focusedDivergence
     : undefined
-  // oxlint-disable-next-line react/react-compiler
   useEffect(() => controlImplicitExpandedState(), [focusedDivergence])
 
   const toast = useToast()

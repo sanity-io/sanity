@@ -10,12 +10,14 @@ import {
   type ButtonProps,
   type ButtonTone,
   Flex,
-  Menu,
-  // oxlint-disable-next-line no-restricted-imports -- the `VersionModeHeader` component needs more control over how the `MenuItem` component is rendered
-  MenuItem,
   Stack,
   Text,
 } from '@sanity/ui'
+import {
+  Menu,
+  // oxlint-disable-next-line no-restricted-imports -- the `VersionModeHeader` component needs more control over how the `MenuItem` component is rendered
+  MenuItem,
+} from '@sanity/ui/menu'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {type ComponentType, useMemo} from 'react'

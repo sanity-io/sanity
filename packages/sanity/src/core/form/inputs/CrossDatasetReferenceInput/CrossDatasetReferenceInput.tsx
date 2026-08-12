@@ -1,7 +1,9 @@
 import {ResetIcon as ClearIcon} from '@sanity/icons/Reset'
 import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Card, Flex, Inline, Stack, useClickOutsideEvent} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {
   type FocusEvent,
   type KeyboardEvent,

@@ -1,4 +1,5 @@
-import '@sanity-labs/ui-poc/styles.css'
+import 'ui5/styles.css'
+import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
 
@@ -407,6 +408,7 @@ export {ChangeList, type ChangeListProps} from '../core/field/diff/components/Ch
 export {
   ChangeResolver,
   type ChangeResolverProps,
+  GroupChange,
 } from '../core/field/diff/components/ChangeResolver'
 export {ChangesError} from '../core/field/diff/components/ChangesError'
 export {ChangeTitleSegment} from '../core/field/diff/components/ChangeTitleSegment'
@@ -433,7 +435,6 @@ export {FallbackDiff} from '../core/field/diff/components/FallbackDiff'
 export {FieldChange} from '../core/field/diff/components/FieldChange'
 export {FromTo, type FromToProps} from '../core/field/diff/components/FromTo'
 export {FromToArrow, type FromToArrowDirection} from '../core/field/diff/components/FromToArrow'
-export {GroupChange} from '../core/field/diff/components/GroupChange'
 export {MetaInfo, type MetaInfoProps} from '../core/field/diff/components/MetaInfo'
 export {NoChanges} from '../core/field/diff/components/NoChanges'
 export {RevertChangesButton} from '../core/field/diff/components/RevertChangesButton'
@@ -1155,7 +1156,7 @@ export {
   createMockAuthStore,
   type MockAuthStoreOptions,
 } from '../core/store/authStore/createMockAuthStore'
-export {getProviderTitle} from '../core/store/authStore/providerTitle'
+export {getProviderTitle} from '@sanity/access-ui'
 export {
   type AuthProbeResult,
   type AuthState,
@@ -1359,6 +1360,7 @@ export {
   type HistoryStoreOptions,
   removeMissingReferences,
 } from '../core/store/history/createHistoryStore'
+/* oxlint-disable no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major */
 export {
   type ParsedTimeRef,
   Timeline,
@@ -1378,9 +1380,9 @@ export {useTimelineSelector} from '../core/store/history/useTimelineSelector'
 export {
   type TimelineState,
   type TimelineStore,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
+/* oxlint-enable no-deprecated */
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 export {
@@ -1544,11 +1546,8 @@ export {
   isValidAnnouncementAudience,
   isValidAnnouncementRole,
 } from '../core/studio/studioAnnouncements/utils'
-export {
-  type NavbarContextValue,
-  StudioLayout,
-  StudioLayoutComponent,
-} from '../core/studio/StudioLayout'
+export {type NavbarContextValue, StudioLayout} from '../core/studio/StudioLayout'
+export {StudioLayoutComponent} from '../core/studio/StudioLayoutComponent'
 export {StudioProvider, type StudioProviderProps} from '../core/studio/StudioProvider'
 export {useTelemetryConsent} from '../core/studio/telemetry/useTelemetryConsent'
 export {

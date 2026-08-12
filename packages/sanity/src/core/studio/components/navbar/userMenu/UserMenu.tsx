@@ -1,15 +1,16 @@
+import {getProviderTitle} from '@sanity/access-ui'
 import {LeaveIcon} from '@sanity/icons/Leave'
 import {
   Box,
   // oxlint-disable-next-line no-restricted-imports
-  Button, // Button with specific styling, user avatar .
+  Button,
+  // Button with specific styling, user avatar.
   Card,
   Flex,
-  Menu,
-  MenuDivider,
   Stack,
   Text,
 } from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -18,7 +19,6 @@ import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {getProviderTitle} from '../../../../store/authStore/providerTitle'
 import {useColorSchemeSetValue, useColorSchemeValue} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {AppearanceMenu} from './ApperanceMenu'

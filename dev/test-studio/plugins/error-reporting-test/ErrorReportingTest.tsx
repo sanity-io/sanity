@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Card,
-  Code,
   Container,
   Flex,
   Heading,
@@ -13,6 +12,7 @@ import {
   TabPanel,
   Text,
 } from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {lazy, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CorsOriginErrorScreen, useClient, useProjectId, useStudioErrorHandler} from 'sanity'
 import {useRouter} from 'sanity/router'

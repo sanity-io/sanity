@@ -2,7 +2,8 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {ShareIcon} from '@sanity/icons/Share'
 import {TargetIcon} from '@sanity/icons/Target'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, useToast} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 import {
   getDraftId,

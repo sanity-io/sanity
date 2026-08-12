@@ -3,8 +3,6 @@ import {Box, Card, Flex, LayerProvider, Text, useClickOutsideEvent, useLayer} fr
 import {isPast} from 'date-fns/isPast'
 import {
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   type ReactNode,
   useCallback,
@@ -13,6 +11,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import FocusLock from 'react-focus-lock'
 
@@ -62,11 +61,9 @@ function DatePickerPopoverContent({
   return <>{children}</>
 }
 
-export const DateTimeInput = forwardRef(function DateTimeInput(
-  props: DateTimeInputProps,
-  forwardedRef: ForwardedRef<HTMLInputElement>,
-) {
+export function DateTimeInput(props: DateTimeInputProps & RefAttributes<HTMLInputElement>) {
   const {
+    ref: forwardedRef,
     value,
     inputValue,
     onInputChange,
@@ -227,4 +224,4 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
       )}
     </>
   )
-})
+}

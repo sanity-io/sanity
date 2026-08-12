@@ -1,6 +1,7 @@
 import {type ReferenceValue, type SchemaType} from '@sanity/types'
-import {Autocomplete, Box, Flex, Text} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useCallback, useId, useMemo, useRef, useState} from 'react'
+import {Box, Flex, Text} from '@sanity/ui'
+import {Autocomplete} from '@sanity/ui/autocomplete'
+import {useCallback, useId, useMemo, useRef, useState, type Ref, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../../../../../ui-components/popover/Popover'
@@ -36,10 +37,12 @@ const StyledText = styled(Text)`
   word-break: break-word;
 `
 
-export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
-  {onSelect, types = [], value}: ReferenceAutocompleteProps,
-  ref: ForwardedRef<HTMLInputElement>,
-) {
+export function ReferenceAutocomplete({
+  ref,
+  onSelect,
+  types = [],
+  value,
+}: ReferenceAutocompleteProps & RefAttributes<HTMLInputElement>) {
   const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
 
   const schema = useSchema()
@@ -145,7 +148,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   }, [])
 
   const renderPopover = useCallback(
-    (props: PopoverContentProps, contentRef: ForwardedRef<HTMLDivElement>) => {
+    (props: PopoverContentProps, contentRef: Ref<HTMLDivElement>) => {
       const {content, hidden, onMouseEnter, onMouseLeave} = props
       const hasResults = hits && hits.length > 0
       return (
@@ -206,4 +209,4 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
       />
     </div>
   )
-})
+}

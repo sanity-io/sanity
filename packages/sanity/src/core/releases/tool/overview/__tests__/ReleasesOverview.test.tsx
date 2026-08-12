@@ -697,7 +697,9 @@ describe('ReleasesOverview', () => {
       })
 
       it('hides the timezone text and shows only the icon', () => {
-        expect(screen.queryByText('SCT (Sanity/Oslo)')).not.toBeInTheDocument()
+        // Narrow viewports move the label into a tooltip, and tooltip content stays mounted
+        // (hidden) while the tooltip is closed.
+        expect(screen.getByText('SCT (Sanity/Oslo)')).not.toBeVisible()
       })
     })
 

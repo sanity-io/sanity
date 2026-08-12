@@ -1,15 +1,16 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import deburr from 'lodash-es/deburr.js'
 import {
-  forwardRef,
   type Ref,
   useCallback,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {CommandList} from '../../../components/commandList/CommandList'
 import {type CommandListHandle} from '../../../components/commandList/types'
@@ -43,12 +44,9 @@ interface MentionsMenuProps {
   options: UserWithPermission[] | null
 }
 
-export const MentionsMenu = forwardRef(function MentionsMenu(
-  props: MentionsMenuProps,
-  ref: Ref<MentionsMenuHandle>,
-) {
+export function MentionsMenu(props: MentionsMenuProps & RefAttributes<MentionsMenuHandle>) {
   const {t} = useTranslation(commentsLocaleNamespace)
-  const {loading, onSelect, options = [], inputElement} = props
+  const {ref, loading, onSelect, options = [], inputElement} = props
   const [searchTerm, setSearchTerm] = useState<string>('')
   const commandListRef = useRef<CommandListHandle>(null)
 
@@ -144,4 +142,4 @@ export const MentionsMenu = forwardRef(function MentionsMenu(
       )}
     </Flex>
   )
-})
+}

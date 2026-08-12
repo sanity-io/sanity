@@ -2,6 +2,7 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
 import {schemaTypes} from './schemaTypes'
+import {comparisonsTool} from './tools/comparisons'
 import {trendsTool} from './tools/trends'
 
 export default defineConfig({
@@ -10,7 +11,7 @@ export default defineConfig({
   projectId: 'mhfozd0z',
   dataset: 'bench',
   // Trends first: it's the dashboard and the studio's default view
-  tools: (prev) => [trendsTool, ...prev],
+  tools: (prev) => [trendsTool, comparisonsTool, ...prev],
   plugins: [
     structureTool({
       structure: (S) =>

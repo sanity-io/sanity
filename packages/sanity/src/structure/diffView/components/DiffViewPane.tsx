@@ -10,12 +10,12 @@ import noop from 'lodash-es/noop.js'
 import {
   type ComponentType,
   type CSSProperties,
-  forwardRef,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {
   ChangeIndicatorsTracker,
@@ -64,10 +64,15 @@ interface DiffViewPaneProps {
   }
 }
 
-export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(function DiffViewPane(
-  {role, documentType, documentId, scrollElement, syncChannel, compareDocument},
+export function DiffViewPane({
   ref,
-) {
+  role,
+  documentType,
+  documentId,
+  scrollElement,
+  syncChannel,
+  compareDocument,
+}: DiffViewPaneProps & RefAttributes<HTMLDivElement>) {
   const containerElement = useRef<HTMLDivElement | null>(null)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
@@ -139,7 +144,7 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
       </ChangeIndicatorsTracker>
     </ReviewChangesContext.Provider>
   )
-})
+}
 
 const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
   role,

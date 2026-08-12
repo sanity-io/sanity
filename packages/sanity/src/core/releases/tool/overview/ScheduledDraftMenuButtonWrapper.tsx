@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
-import {Menu, Spinner, useClickOutsideEvent} from '@sanity/ui'
+import {Spinner, useClickOutsideEvent} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 

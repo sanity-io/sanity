@@ -1,11 +1,11 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {Text} from '@sanity/ui'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
   MenuItem,
-  Text,
-} from '@sanity/ui'
+} from '@sanity/ui/menu'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 

@@ -6,6 +6,7 @@ import {useRouter} from 'sanity/router'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useWorkspace} from '../../../studio/workspace'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
@@ -27,6 +28,8 @@ export function ReleaseDetail() {
   const router = useRouter()
   const [inspector, setInspector] = useState<ReleaseInspector | undefined>(undefined)
   const {t} = useTranslation(releasesLocaleNamespace)
+  // Behind beta.variants the action cluster moves to the top rail and the footer is dropped.
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const {releaseId: releaseIdRaw}: ReleasesRouterState = router.state
   const releaseId = decodeURIComponent(releaseIdRaw || '')
   const {data, loading} = useActiveReleases()
@@ -101,9 +104,19 @@ export function ReleaseDetail() {
 
   if (releaseInDetail) {
     return (
-      <Flex direction="column" flex={1} height="fill" overflow="hidden">
-        <Card flex="none" padding={3}>
+      // position:relative anchors the beta activity overlay to the whole detail pane, so the
+      // right-anchored drawer covers the top action rail (Run release + menu) too — not just the
+      // content below it.
+      <Flex
+        direction="column"
+        flex={1}
+        height="fill"
+        overflow="hidden"
+        style={{position: 'relative'}}
+      >
+        <Card flex="none">
           <ReleaseDashboardHeader
+            documents={results}
             release={releaseInDetail}
             inspector={inspector}
             setInspector={setInspector}
@@ -113,23 +126,47 @@ export function ReleaseDetail() {
         <Flex flex={1}>
           <Flex direction="column" flex={1} height="fill">
             <Card flex={1} overflow="auto">
-              <ReleaseDashboardDetails release={releaseInDetail} documents={results} />
+              <ReleaseDashboardDetails
+                release={releaseInDetail}
+                documents={results}
+                events={releaseEvents.events}
+                loading={documentsLoading}
+              />
               {detailContent}
             </Card>
 
-            <ReleaseDashboardFooter
-              documents={results}
-              release={releaseInDetail}
-              events={releaseEvents.events}
-            />
+            {/* In beta the footer's action cluster moved to the top rail and its Created status
+                moved into the properties panel, so the footer is dropped entirely. */}
+            {!variantsEnabled && (
+              <ReleaseDashboardFooter
+                documents={results}
+                release={releaseInDetail}
+                events={releaseEvents.events}
+              />
+            )}
           </Flex>
 
+          {/* Production: activity is an in-flow panel that pushes the content column aside. */}
+          {!variantsEnabled && (
+            <ReleaseDashboardActivityPanel
+              events={releaseEvents}
+              release={releaseInDetail}
+              show={inspector === 'activity'}
+            />
+          )}
+        </Flex>
+
+        {/* Beta: activity floats as a right-anchored drawer over the entire pane (covering the
+            rail), rather than pushing the layout. */}
+        {variantsEnabled && (
           <ReleaseDashboardActivityPanel
             events={releaseEvents}
             release={releaseInDetail}
             show={inspector === 'activity'}
+            overlay
+            onClose={() => setInspector(undefined)}
           />
-        </Flex>
+        )}
       </Flex>
     )
   }

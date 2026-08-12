@@ -7,14 +7,13 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {
-  type ForwardedRef,
-  forwardRef,
   memo,
   useCallback,
   useDeferredValue,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {
   FieldPresenceInner,
@@ -94,270 +93,266 @@ const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
   `
 })
 
-export const DocumentPanelHeader = memo(
-  forwardRef(function DocumentPanelHeader(
-    _props: DocumentPanelHeaderProps,
-    ref: ForwardedRef<HTMLDivElement>,
-  ) {
-    const {menuItems} = _props
-    const {
-      editState,
-      onMenuAction,
-      onPaneClose,
-      onPaneSplit,
-      onSetMaximizedPane,
-      menuItemGroups,
-      schemaType,
-      connectionState,
-      views,
-      unstable_languageFilter,
-      documentId,
-    } = useDocumentPane()
-    const {features} = useStructureTool()
-    const {beta} = useWorkspace()
-    const {index, BackLink, hasGroupSiblings} = usePaneRouter()
-    const {maximizedPane} = useResolvedPanesList()
-    const {actions: fieldActions} = useFieldActions()
-    const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
-    const scrollContainerRef = useRef<HTMLDivElement>(null)
-    const showGradient = useChipScrollPosition(scrollContainerRef)
-    const telemetry = useTelemetry()
-    const zIndex = useZIndex()
-    const paneHeaderZIndex = Array.isArray(zIndex.paneHeader)
-      ? zIndex.paneHeader[1]
-      : zIndex.paneHeader
+export const DocumentPanelHeader = memo(function DocumentPanelHeader(
+  _props: DocumentPanelHeaderProps & RefAttributes<HTMLDivElement>,
+) {
+  const {ref, menuItems} = _props
+  const {
+    editState,
+    onMenuAction,
+    onPaneClose,
+    onPaneSplit,
+    onSetMaximizedPane,
+    menuItemGroups,
+    schemaType,
+    connectionState,
+    views,
+    unstable_languageFilter,
+    documentId,
+  } = useDocumentPane()
+  const {features} = useStructureTool()
+  const {beta} = useWorkspace()
+  const {index, BackLink, hasGroupSiblings} = usePaneRouter()
+  const {maximizedPane} = useResolvedPanesList()
+  const {actions: fieldActions} = useFieldActions()
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const showGradient = useChipScrollPosition(scrollContainerRef)
+  const telemetry = useTelemetry()
+  const zIndex = useZIndex()
+  const paneHeaderZIndex = Array.isArray(zIndex.paneHeader)
+    ? zIndex.paneHeader[1]
+    : zIndex.paneHeader
 
-    const menuNodes = useMemo(
-      () =>
-        resolveMenuNodes({actionHandler: onMenuAction, fieldActions, menuItems, menuItemGroups}),
-      [onMenuAction, fieldActions, menuItemGroups, menuItems],
-    )
+  const menuNodes = useMemo(
+    () => resolveMenuNodes({actionHandler: onMenuAction, fieldActions, menuItems, menuItemGroups}),
+    [onMenuAction, fieldActions, menuItemGroups, menuItems],
+  )
 
-    const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
-    const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
-    const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
+  const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
+  const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
+  const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
 
-    const {collapsed, isLast} = usePane()
-    // Prevent focus if this is the last (non-collapsed) pane.
-    const tabIndex = isLast && !collapsed ? -1 : 0
+  const {collapsed, isLast} = usePane()
+  // Prevent focus if this is the last (non-collapsed) pane.
+  const tabIndex = isLast && !collapsed ? -1 : 0
 
-    // there are three kinds of buttons possible:
-    //
-    // 1. split pane - creates a new split pane
-    // 2. close split pane — closes the current split pane
-    // 3. close pane group — closes the current pane group
+  // there are three kinds of buttons possible:
+  //
+  // 1. split pane - creates a new split pane
+  // 2. close split pane — closes the current split pane
+  // 3. close pane group — closes the current pane group
 
-    // show the split pane button if they're enabled and there is more than one
-    // view available to use to create a split view
-    const showSplitPaneButton = features.splitViews && onPaneSplit && views.length > 1
+  // show the split pane button if they're enabled and there is more than one
+  // view available to use to create a split view
+  const showSplitPaneButton = features.splitViews && onPaneSplit && views.length > 1
 
-    // show the split pane button close button if the split button is showing
-    // and there is more than one split pane open (aka has-siblings)
-    const showSplitPaneCloseButton = showSplitPaneButton && hasGroupSiblings
+  // show the split pane button close button if the split button is showing
+  // and there is more than one split pane open (aka has-siblings)
+  const showSplitPaneCloseButton = showSplitPaneButton && hasGroupSiblings
 
-    // show the back button if both the feature is enabled and the current pane
-    // is not the first
-    const showBackButton = features.backButton && index > 0
+  // show the back button if both the feature is enabled and the current pane
+  // is not the first
+  const showBackButton = features.backButton && index > 0
 
-    // show the pane group close button if the `showSplitPaneCloseButton` is
-    // _not_ showing (the split pane button replaces the group close button)
-    // and if the back button is not showing (the back button and the close
-    // button do the same thing and shouldn't be shown at the same time)
-    // and if a BackLink component was provided
-    const showPaneGroupCloseButton = !showSplitPaneCloseButton && !showBackButton && !!BackLink
+  // show the pane group close button if the `showSplitPaneCloseButton` is
+  // _not_ showing (the split pane button replaces the group close button)
+  // and if the back button is not showing (the back button and the close
+  // button do the same thing and shouldn't be shown at the same time)
+  // and if a BackLink component was provided
+  const showPaneGroupCloseButton = !showSplitPaneCloseButton && !showBackButton && !!BackLink
 
-    const {t} = useTranslation(structureLocaleNamespace)
-    const presence = useDocumentPresence(documentId)
-    const documentLevelPresence = useMemo(
-      () => presence.filter((p) => p.path.length === 0),
-      [presence],
-    )
+  const {t} = useTranslation(structureLocaleNamespace)
+  const presence = useDocumentPresence(documentId)
+  const documentLevelPresence = useMemo(
+    () => presence.filter((p) => p.path.length === 0),
+    [presence],
+  )
 
-    const isMaximizedPane = useMemo(() => {
-      return (
-        maximizedPane?.pane &&
-        typeof maximizedPane.pane === 'object' &&
-        maximizedPane.pane.type === 'document' &&
-        maximizedPane.pane.options.id === documentId
-      )
-    }, [maximizedPane, documentId])
-
-    const handleFocusPane = useCallback(() => {
-      onSetMaximizedPane?.()
-
-      if (isMaximizedPane) {
-        telemetry.log(DocumentPaneCollapsed)
-      } else {
-        telemetry.log(DocumentPaneMaximized)
-      }
-    }, [onSetMaximizedPane, isMaximizedPane, telemetry])
-
-    const title = useMemo(() => <DocumentHeaderTitle />, [])
-    const backButton = useMemo(
-      () =>
-        showBackButton && (
-          <Button
-            as={BackLink}
-            data-as="a"
-            icon={ArrowLeftIcon}
-            mode="bleed"
-            tooltipProps={{content: t('pane-header.back-button.text')}}
-          />
-        ),
-      [BackLink, showBackButton, t],
-    )
-
+  const isMaximizedPane = useMemo(() => {
     return (
-      <TooltipDelayGroupProvider>
-        {collapsed ? (
-          <PaneHeader
-            border
-            ref={ref}
-            loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
-            title={title}
-            tabIndex={tabIndex}
-            backButton={backButton}
-          />
-        ) : (
-          <Card
-            hidden={collapsed}
-            style={{lineHeight: 0, position: 'relative', zIndex: paneHeaderZIndex}}
-            borderBottom
-          >
-            <Flex gap={3} paddingY={3} justify="space-between" align="center">
-              {!hasDocumentGroupInventory && (
-                <HorizontalScroller $showGradient={showGradient}>
-                  <Flex
-                    flex={1}
-                    gap={1}
-                    overflow="auto"
-                    paddingX={3}
-                    data-testid="document-perspective-list"
-                    ref={scrollContainerRef}
-                  >
-                    <DocumentPerspectiveList />
-                  </Flex>
-                </HorizontalScroller>
-              )}
-              {hasDocumentGroupInventory && (
-                <HorizontalScroller $showGradient={false}>
-                  <Flex
-                    flex={1}
-                    gap={2}
-                    align="center"
-                    overflow="auto"
-                    paddingX={3}
-                    data-testid="document-target-badges"
-                    style={{minWidth: 0}}
-                  >
-                    <Box flex="none">
-                      <DocumentTargetBadges />
-                    </Box>
-                    <Box flex="none">
-                      <DocumentGroupInventoryHint />
-                    </Box>
-                  </Flex>
-                </HorizontalScroller>
-              )}
-
-              <Box flex="none" paddingRight={3}>
-                <Flex align="center" gap={1}>
-                  {documentLevelPresence.length > 0 && (
-                    <Box data-testid="document-level-presence" marginRight={2}>
-                      <FieldPresenceInner presence={documentLevelPresence} stack />
-                    </Box>
-                  )}
-                  {unstable_languageFilter.length > 0 && (
-                    <>
-                      {unstable_languageFilter.map((LanguageFilterComponent, idx) => {
-                        return (
-                          <LanguageFilterComponent
-                            key={`language-filter-${idx}`}
-                            schemaType={schemaType}
-                          />
-                        )
-                      })}
-                    </>
-                  )}
-
-                  <CopyDocumentActions />
-                  {menuButtonNodes.map((item) => (
-                    <PaneHeaderActionButton key={item.key} node={item} />
-                  ))}
-                  {editState && (
-                    <RenderActionCollectionState group="paneActions">
-                      {({states}) => (
-                        <DocumentPanelHeaderActionDialogDeferred
-                          contextMenuNodes={contextMenuNodes}
-                          setReferenceElement={setReferenceElement}
-                          referenceElement={referenceElement}
-                          states={states}
-                        />
-                      )}
-                    </RenderActionCollectionState>
-                  )}
-
-                  {showSplitPaneButton && (
-                    <Button
-                      key="split-pane-button"
-                      aria-label={t('buttons.split-pane-button.aria-label')}
-                      icon={SplitVerticalIcon}
-                      mode="bleed"
-                      onClick={onPaneSplit}
-                      tooltipProps={{content: t('buttons.split-pane-button.tooltip')}}
-                    />
-                  )}
-
-                  {onSetMaximizedPane && (
-                    <Button
-                      key="focus-pane-button"
-                      aria-label={
-                        isMaximizedPane
-                          ? t('buttons.focus-pane-button.aria-label.collapse')
-                          : t('buttons.focus-pane-button.aria-label.focus')
-                      }
-                      icon={isMaximizedPane ? CollapseIcon : ExpandIcon}
-                      mode="bleed"
-                      onClick={handleFocusPane}
-                      tooltipProps={{
-                        content: isMaximizedPane
-                          ? t('buttons.focus-pane-button.tooltip.collapse')
-                          : t('buttons.focus-pane-button.tooltip.focus'),
-                      }}
-                      data-testid={
-                        isMaximizedPane ? 'focus-pane-button-collapse' : 'focus-pane-button-focus'
-                      }
-                    />
-                  )}
-
-                  {showSplitPaneCloseButton && (
-                    <Button
-                      key="close-view-button"
-                      icon={CloseIcon}
-                      mode="bleed"
-                      onClick={onPaneClose}
-                      tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
-                    />
-                  )}
-
-                  {showPaneGroupCloseButton && (
-                    <Button
-                      key="close-view-button"
-                      icon={CloseIcon}
-                      mode="bleed"
-                      tooltipProps={{content: t('buttons.split-pane-close-group-button.title')}}
-                      as={BackLink}
-                    />
-                  )}
-                </Flex>
-              </Box>
-            </Flex>
-          </Card>
-        )}
-      </TooltipDelayGroupProvider>
+      maximizedPane?.pane &&
+      typeof maximizedPane.pane === 'object' &&
+      maximizedPane.pane.type === 'document' &&
+      maximizedPane.pane.options.id === documentId
     )
-  }),
-)
+  }, [maximizedPane, documentId])
+
+  const handleFocusPane = useCallback(() => {
+    onSetMaximizedPane?.()
+
+    if (isMaximizedPane) {
+      telemetry.log(DocumentPaneCollapsed)
+    } else {
+      telemetry.log(DocumentPaneMaximized)
+    }
+  }, [onSetMaximizedPane, isMaximizedPane, telemetry])
+
+  const title = useMemo(() => <DocumentHeaderTitle />, [])
+  const backButton = useMemo(
+    () =>
+      showBackButton && (
+        <Button
+          as={BackLink}
+          data-as="a"
+          icon={ArrowLeftIcon}
+          mode="bleed"
+          tooltipProps={{content: t('pane-header.back-button.text')}}
+        />
+      ),
+    [BackLink, showBackButton, t],
+  )
+
+  return (
+    <TooltipDelayGroupProvider>
+      {collapsed ? (
+        <PaneHeader
+          border
+          ref={ref}
+          loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
+          title={title}
+          tabIndex={tabIndex}
+          backButton={backButton}
+        />
+      ) : (
+        <Card
+          hidden={collapsed}
+          style={{lineHeight: 0, position: 'relative', zIndex: paneHeaderZIndex}}
+          borderBottom
+        >
+          <Flex gap={3} paddingY={3} justify="space-between" align="center">
+            {!hasDocumentGroupInventory && (
+              <HorizontalScroller $showGradient={showGradient}>
+                <Flex
+                  flex={1}
+                  gap={1}
+                  overflow="auto"
+                  paddingX={3}
+                  data-testid="document-perspective-list"
+                  ref={scrollContainerRef}
+                >
+                  <DocumentPerspectiveList />
+                </Flex>
+              </HorizontalScroller>
+            )}
+            {hasDocumentGroupInventory && (
+              <HorizontalScroller $showGradient={false}>
+                <Flex
+                  flex={1}
+                  gap={2}
+                  align="center"
+                  overflow="auto"
+                  paddingX={3}
+                  data-testid="document-target-badges"
+                  style={{minWidth: 0}}
+                >
+                  <Box flex="none">
+                    <DocumentTargetBadges />
+                  </Box>
+                  <Box flex="none">
+                    <DocumentGroupInventoryHint />
+                  </Box>
+                </Flex>
+              </HorizontalScroller>
+            )}
+
+            <Box flex="none" paddingRight={3}>
+              <Flex align="center" gap={1}>
+                {documentLevelPresence.length > 0 && (
+                  <Box data-testid="document-level-presence" marginRight={2}>
+                    <FieldPresenceInner presence={documentLevelPresence} stack />
+                  </Box>
+                )}
+                {unstable_languageFilter.length > 0 && (
+                  <>
+                    {unstable_languageFilter.map((LanguageFilterComponent, idx) => {
+                      return (
+                        <LanguageFilterComponent
+                          key={`language-filter-${idx}`}
+                          schemaType={schemaType}
+                        />
+                      )
+                    })}
+                  </>
+                )}
+
+                <CopyDocumentActions />
+                {menuButtonNodes.map((item) => (
+                  <PaneHeaderActionButton key={item.key} node={item} />
+                ))}
+                {editState && (
+                  <RenderActionCollectionState group="paneActions">
+                    {({states}) => (
+                      <DocumentPanelHeaderActionDialogDeferred
+                        contextMenuNodes={contextMenuNodes}
+                        setReferenceElement={setReferenceElement}
+                        referenceElement={referenceElement}
+                        states={states}
+                      />
+                    )}
+                  </RenderActionCollectionState>
+                )}
+
+                {showSplitPaneButton && (
+                  <Button
+                    key="split-pane-button"
+                    aria-label={t('buttons.split-pane-button.aria-label')}
+                    icon={SplitVerticalIcon}
+                    mode="bleed"
+                    onClick={onPaneSplit}
+                    tooltipProps={{content: t('buttons.split-pane-button.tooltip')}}
+                  />
+                )}
+
+                {onSetMaximizedPane && (
+                  <Button
+                    key="focus-pane-button"
+                    aria-label={
+                      isMaximizedPane
+                        ? t('buttons.focus-pane-button.aria-label.collapse')
+                        : t('buttons.focus-pane-button.aria-label.focus')
+                    }
+                    icon={isMaximizedPane ? CollapseIcon : ExpandIcon}
+                    mode="bleed"
+                    onClick={handleFocusPane}
+                    tooltipProps={{
+                      content: isMaximizedPane
+                        ? t('buttons.focus-pane-button.tooltip.collapse')
+                        : t('buttons.focus-pane-button.tooltip.focus'),
+                    }}
+                    data-testid={
+                      isMaximizedPane ? 'focus-pane-button-collapse' : 'focus-pane-button-focus'
+                    }
+                  />
+                )}
+
+                {showSplitPaneCloseButton && (
+                  <Button
+                    key="close-view-button"
+                    icon={CloseIcon}
+                    mode="bleed"
+                    onClick={onPaneClose}
+                    tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
+                  />
+                )}
+
+                {showPaneGroupCloseButton && (
+                  <Button
+                    key="close-view-button"
+                    icon={CloseIcon}
+                    mode="bleed"
+                    tooltipProps={{content: t('buttons.split-pane-close-group-button.title')}}
+                    as={BackLink}
+                  />
+                )}
+              </Flex>
+            </Box>
+          </Flex>
+        </Card>
+      )}
+    </TooltipDelayGroupProvider>
+  )
+})
 
 const DocumentPanelHeaderActionDialogDeferred = memo(
   function DocumentPanelHeaderActionDialogDeferred(props: {

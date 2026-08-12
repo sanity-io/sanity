@@ -1,7 +1,8 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
 import {SelectIcon} from '@sanity/icons/Select'
-import {Box, Flex, Menu} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {format} from 'date-fns/format'
 import {useRouter} from 'sanity/router'
 

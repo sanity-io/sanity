@@ -1,14 +1,7 @@
-import {
-  type ComponentType,
-  forwardRef,
-  type ForwardRefExoticComponent,
-  type RefAttributes,
-  type SVGProps,
-} from 'react'
+import {type ComponentType, type RefAttributes, type SVGProps} from 'react'
 
-export const RhombusIcon: ForwardRefExoticComponent<
-  Omit<SVGProps<SVGSVGElement>, 'ref'> & RefAttributes<SVGSVGElement>
-> = forwardRef(function RhombusIcon(props, ref) {
+export function RhombusIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
+  const {ref, ...rest} = props
   return (
     <svg
       data-sanity-icon="rhombus"
@@ -17,7 +10,7 @@ export const RhombusIcon: ForwardRefExoticComponent<
       viewBox="0 0 21 21"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...props}
+      {...rest}
       ref={ref}
     >
       <path
@@ -28,7 +21,7 @@ export const RhombusIcon: ForwardRefExoticComponent<
       />
     </svg>
   )
-})
+}
 
 export const CreateVariantIcon: ComponentType = (props) => (
   <svg

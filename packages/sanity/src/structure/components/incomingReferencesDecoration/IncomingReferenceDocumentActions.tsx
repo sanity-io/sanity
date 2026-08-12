@@ -1,4 +1,5 @@
-import {Box, Menu} from '@sanity/ui'
+import {Box} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
 import {
   ContextMenuButton,

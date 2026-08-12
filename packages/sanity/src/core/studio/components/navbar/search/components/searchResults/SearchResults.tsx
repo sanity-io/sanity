@@ -32,6 +32,10 @@ interface SearchResultsProps {
   inputElement: HTMLInputElement | null
   onItemSelect?: ItemSelectHandler
   previewPerspective?: StackablePerspective[]
+  /**
+   * The variant the result previews are resolved in, as a bare variant id.
+   */
+  previewVariant?: string
 }
 
 export function SearchResults({
@@ -39,6 +43,7 @@ export function SearchResults({
   inputElement,
   onItemSelect,
   previewPerspective,
+  previewVariant,
 }: SearchResultsProps) {
   const {
     dispatch,
@@ -89,13 +94,21 @@ export function SearchResults({
             onClick={handleSearchResultClick}
             onItemSelect={onItemSelect}
             previewPerspective={previewPerspective}
+            previewVariant={previewVariant}
             paddingY={1}
           />
           {debug && <DebugOverlay data={item} />}
         </>
       )
     },
-    [debug, disableIntentLink, handleSearchResultClick, onItemSelect, previewPerspective],
+    [
+      debug,
+      disableIntentLink,
+      handleSearchResultClick,
+      onItemSelect,
+      previewPerspective,
+      previewVariant,
+    ],
   )
 
   return (

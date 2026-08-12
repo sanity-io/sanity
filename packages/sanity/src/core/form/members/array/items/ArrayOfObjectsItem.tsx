@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useRef} from 'react'
 import {tap} from 'rxjs/operators'
 
@@ -18,10 +18,9 @@ import {type ArrayOfObjectsItemMember} from '../../../store/types/members'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {
-  CreateAppendedObject,
-  CreatePrependedObject,
-  NavigatedToViaArrayList,
-  RemovedObject,
+  ObjectCreated,
+  ObjectEdited,
+  ObjectRemoved,
 } from '../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {type ArrayInputCopyEvent, type ArrayInputInsertEvent} from '../../../types/event'
@@ -100,7 +99,8 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   })
 
   const onRemove = useCallback(() => {
-    telemetry.log(RemovedObject, {
+    telemetry.log(ObjectRemoved, {
+      location: 'array_list',
       path: pathToString(member.item.path),
       origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })
@@ -119,17 +119,12 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const telemetryInsertSiblingsTelemetry = useCallback(
     (event: Omit<ArrayInputInsertEvent<ObjectItem>, 'referenceItem'>) => {
-      if (event.position === 'before') {
-        telemetry.log(CreatePrependedObject, {
-          path: pathToString(member.item.path),
-          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-        })
-      } else {
-        telemetry.log(CreateAppendedObject, {
-          path: pathToString(member.item.path),
-          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-        })
-      }
+      telemetry.log(ObjectCreated, {
+        location: 'array_list',
+        position: event.position === 'before' ? 'prepended' : 'appended',
+        path: pathToString(member.item.path),
+        origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+      })
     },
     [enhancedObjectDialogEnabled, member.item.path, telemetry],
   )
@@ -278,7 +273,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   )
 
   const handleOpen = useCallback(() => {
-    telemetry.log(NavigatedToViaArrayList, {
+    telemetry.log(ObjectEdited, {
+      location: 'array_list',
+      position: 'nested',
       path: pathToString(member.item.path),
       origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })

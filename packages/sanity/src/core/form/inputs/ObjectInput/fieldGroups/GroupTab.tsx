@@ -1,4 +1,4 @@
-import {type ComponentType, forwardRef, type Ref, useCallback} from 'react'
+import {type ComponentType, useCallback, type RefAttributes} from 'react'
 
 import {Tab} from '../../../../../ui-components/tab/Tab'
 
@@ -14,29 +14,28 @@ interface GroupType {
   'iconRight'?: React.ReactNode
 }
 
-export const GroupTab = forwardRef(function GroupTab(
-  props: GroupType,
-  ref: Ref<HTMLButtonElement>,
-) {
+export function GroupTab(props: GroupType & RefAttributes<HTMLButtonElement>) {
   // Separate props for resolving conditional hidden groups
-  const {onClick} = props
+  const {ref, onClick, name, title, ...rest} = props
 
   // Here goes the content of our component
   const handleClick = useCallback(() => {
-    onClick?.(props.name)
-  }, [props.name, onClick])
+    onClick?.(name)
+  }, [name, onClick])
 
   return (
     <Tab
-      data-testid={`group-tab-${props.name}`}
-      id={`${props.name}-tab`}
-      label={props.title}
+      data-testid={`group-tab-${name}`}
+      id={`${name}-tab`}
+      label={title}
       ref={ref}
-      {...props}
+      {...rest}
+      name={name}
+      title={title}
       onClick={handleClick}
     />
   )
-})
+}
 
 export const GroupOption = (props: Omit<GroupType, 'onClick' | 'autoFocus'>) => {
   const {name, title, ...rest} = props

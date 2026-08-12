@@ -7,14 +7,13 @@ import {setHours} from 'date-fns/setHours'
 import {setMinutes} from 'date-fns/setMinutes'
 import {
   type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -50,11 +49,9 @@ const PRESERVE_FOCUS_ELEMENT = (
   />
 )
 
-export const CalendarFilter = forwardRef(function Calendar(
-  props: CalendarProps,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
+export function CalendarFilter(props: CalendarProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref: forwardedRef,
     focusedDate: providedFocusedDate,
     onFocusedDateChange: handleOnFocusedDateChange,
     onSelect,
@@ -244,4 +241,4 @@ export const CalendarFilter = forwardRef(function Calendar(
       </Box>
     </Box>
   )
-})
+}

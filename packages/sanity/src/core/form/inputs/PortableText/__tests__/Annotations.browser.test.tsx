@@ -82,8 +82,9 @@ describe('Portable Text Input', () => {
       await new Promise((r) => setTimeout(r, 1000))
       await userEvent.keyboard('{Escape}')
       await new Promise((r) => setTimeout(r, 1000))
-      // Assertion: escape closes the toolbar popover
-      await expect.element($toolbarPopover).not.toBeInTheDocument()
+      // Assertion: escape closes the toolbar popover. Popovers keep their content mounted while
+      // closed, so this asserts on visibility rather than on the element being removed.
+      await expect.element($toolbarPopover).not.toBeVisible()
     })
 
     it(

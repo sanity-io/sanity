@@ -24,7 +24,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
-import {useToolMenuComponent} from '../../studio-components-hooks/componentHooks'
+import {useToolMenuComponent} from '../../studio-components-hooks/useToolMenuComponent'
 import {useWorkspace} from '../../workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
 import {FreeTrial} from './free-trial/FreeTrial'
@@ -87,7 +87,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchOpen,
   } = useContext(NavbarContext)
 
-  const {selectedPerspective, perspectiveStack} = usePerspective()
+  const {selectedPerspective, perspectiveStack, selectedVariantName} = usePerspective()
 
   const ToolMenu = useToolMenuComponent()
 
@@ -259,6 +259,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                             onClose={handleCloseSearchFullscreen}
                             onOpen={handleOpenSearchFullscreen}
                             open={searchFullscreenOpen}
+                            previewPerspective={perspectiveStack}
+                            previewVariant={selectedVariantName}
                           />
                         </PortalProvider>
                       ) : (
@@ -267,6 +269,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                           onOpen={handleOpenSearch}
                           open={searchOpen}
                           previewPerspective={perspectiveStack}
+                          previewVariant={selectedVariantName}
                         />
                       )}
                     </BoundaryElementProvider>

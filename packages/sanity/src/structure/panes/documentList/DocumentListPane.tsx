@@ -31,9 +31,9 @@ import {
 } from './DocumentListPaneSearchOrdering'
 import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
 import {isOrderByIdsParam, reorderItemsByIdsParam} from './orderByIdsParam'
-import {useShallowUnique} from './PaneContainer'
 import {type LoadingVariant, type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
+import {useShallowUnique} from './useShallowUnique'
 
 /**
  * @internal
@@ -88,7 +88,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
   const releases = useActiveReleases()
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -183,6 +183,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     client,
     filter,
     perspective: perspectiveStack,
+    variant: selectedVariantName,
     params,
     searchQuery: trimmedSearchQuery,
     sortOrder: effectiveSortOrder,

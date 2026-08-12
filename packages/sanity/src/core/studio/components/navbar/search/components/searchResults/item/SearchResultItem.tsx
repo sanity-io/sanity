@@ -28,6 +28,10 @@ interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePadding
   onClick?: (e: MouseEvent<HTMLElement>) => void
   onItemSelect?: ItemSelectHandler
   previewPerspective?: StackablePerspective[]
+  /**
+   * The variant the result previews are resolved in, as a bare variant id.
+   */
+  previewVariant?: string
 }
 
 export function SearchResultItem({
@@ -38,6 +42,7 @@ export function SearchResultItem({
   onClick,
   onItemSelect,
   previewPerspective,
+  previewVariant,
   ...rest
 }: SearchResultItemProps) {
   const schema = useSchema()
@@ -85,6 +90,8 @@ export function SearchResultItem({
     enabled: true,
     schemaType: type,
     value: documentStub,
+    perspectiveStack: previewPerspective,
+    variant: previewVariant,
   })
 
   const handleClick = useCallback(
@@ -120,6 +127,7 @@ export function SearchResultItem({
           documentType={documentType}
           layout={layout}
           perspective={previewPerspective}
+          variant={previewVariant}
           presence={documentPresence}
           schemaType={type}
         />

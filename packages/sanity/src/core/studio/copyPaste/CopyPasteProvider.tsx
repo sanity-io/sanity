@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isIndexSegment, isKeySegment, type Path, type PathSegment} from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import * as PathUtils from '@sanity/util/paths'
 import flatten from 'lodash-es/flatten.js'
 import isEqual from 'lodash-es/isEqual.js'

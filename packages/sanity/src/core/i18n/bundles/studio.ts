@@ -522,6 +522,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** The label shown when dismissing the document group inventory */
   'document-group-inventory.action.cancel': 'Cancel',
+  /** The label for the button that opens the document group inventory */
+  'document-group-inventory.action.manage-versions': 'Manage versions',
   /** The label used in the feedback dialog asking how easy the document group inventory is to use */
   'document-group-inventory.feedback.sentiment-label':
     'How easy or difficult is the new version inventory to use?',
@@ -1550,6 +1552,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.discard-version': 'Discard version',
   /** Description for toast when version discarding failed */
   'release.action.discard-version.failure': 'Failed to discard version',
+  /** Tooltip/label for the action that opens the release edit dialog on the detail page */
+  'release.action.edit-details': 'Edit details',
   /** Action message for editing the schedule of a scheduled publish */
   'release.action.edit-schedule': 'Edit schedule',
   /** Action message for when a new release is created off an existing version, draft or published document */
@@ -1636,6 +1640,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.dialog.create.confirm': 'Create release',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'New release',
+  /** Label for the save action in the edit release dialog */
+  'release.dialog.edit.confirm': 'Save',
+  /** Field label for the release description in the edit release dialog */
+  'release.dialog.edit.description-label': 'Description',
+  /** Title for the edit release dialog */
+  'release.dialog.edit.title': 'Edit release',
+  /** Field label for the release title in the edit release dialog */
+  'release.dialog.edit.title-label': 'Title',
   /** Body text when deleting scheduled draft and draft is already up to date */
   'release.dialog.delete-schedule-draft.body-already-current':
     'Delete this scheduled draft? Your draft is already up to date.',
@@ -1710,6 +1722,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.toast.archived-release.title': "The '{{title}}' release was archived",
   /** The toast title that will be shown the creating a release fails */
   'release.toast.create-release-error.title': 'Failed to create release',
+  /** The toast title shown when saving edits to a release's details fails */
+  'release.toast.edit-release-error.title': 'Failed to save release details',
   /** Error toast for deleting a scheduled draft */
   'release.toast.delete-schedule-draft.error':
     'Failed to delete the scheduled draft document <strong>{{title}}</strong>: {{error}}',

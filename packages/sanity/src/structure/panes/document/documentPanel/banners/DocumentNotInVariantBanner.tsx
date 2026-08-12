@@ -1,4 +1,5 @@
-import {Text, useToast} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {
   getVariantTitle,

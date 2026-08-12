@@ -10,7 +10,8 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {Box, Card, Flex, useTheme, useToast} from '@sanity/ui'
+import {Box, Card, Flex, useTheme} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'

@@ -1,11 +1,14 @@
 import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
 import {useCallback, useEffect, useRef, useState} from 'react'
 
+import {DetailIdentity} from '../../../components/detailLayout'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useWorkspace} from '../../../studio/workspace'
 import {getIsReleaseOpen, TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 
-export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): React.JSX.Element {
+function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): React.JSX.Element {
   const {updateRelease} = useReleaseOperations()
   const [timer, setTimer] = useState<NodeJS.Timeout | undefined>(undefined)
 
@@ -53,4 +56,37 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): Rea
       disabled={Boolean(!hasUpdatePermission)}
     />
   )
+}
+
+/**
+ * The release identity (title + description) as a read-only display surface built on the shared
+ * `DetailIdentity` spine.
+ *
+ * Editing is an explicit action, never inline. Behind `beta.variants` the pencil is dropped in
+ * favour of a defined "Edit details" action in the top action rail (a defined button is discoverable
+ * and keyboard/screen-reader accessible in a way a hover-only affordance is not).
+ */
+function ReleaseDetailsEditorVariants({release}: {release: ReleaseDocument}): React.JSX.Element {
+  const {t} = useTranslation()
+
+  return (
+    <DetailIdentity
+      title={release.metadata.title}
+      titleAs="h1"
+      titlePlaceholder={t('release.placeholder-untitled-release')}
+      description={release.metadata.description}
+      titleTestId="release-title-display"
+      descriptionTestId="release-description-display"
+    />
+  )
+}
+
+export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): React.JSX.Element {
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+
+  if (variantsEnabled) {
+    return <ReleaseDetailsEditorVariants release={release} />
+  }
+
+  return <ReleaseDetailsEditorProduction release={release} />
 }

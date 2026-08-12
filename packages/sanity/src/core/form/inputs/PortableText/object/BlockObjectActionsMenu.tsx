@@ -4,12 +4,13 @@ import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {isReference, type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, Menu, useGlobalKeyDown} from '@sanity/ui'
+import {Box, Flex, useGlobalKeyDown} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {
-  forwardRef,
+  type ComponentPropsWithoutRef,
   type MouseEvent,
   type PropsWithChildren,
-  type Ref,
+  type RefAttributes,
   useCallback,
   useEffect,
   useId,
@@ -49,9 +50,12 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
   const referenceLink = useMemo(
     () =>
       isReference(value)
-        ? forwardRef(function ReferenceLink(linkProps, ref: Ref<HTMLAnchorElement> | undefined) {
-            return <IntentLink {...linkProps} intent="edit" params={{id: value._ref}} ref={ref} />
-          })
+        ? function ReferenceLink(
+            linkProps: ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>,
+          ) {
+            const {ref, ...rest} = linkProps
+            return <IntentLink {...rest} intent="edit" params={{id: value._ref}} ref={ref} />
+          }
         : undefined,
     [value],
   )

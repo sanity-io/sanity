@@ -279,6 +279,46 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 
 `options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
 
+### Effect events: use `use-effect-event`, not React's native hook
+
+Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
+returns first-render values when the calling component is wrapped in `forwardRef` or `memo`
+([facebook/react#34818](https://github.com/facebook/react/issues/34818), fixed in 19.3 canaries).
+`eslint/no-restricted-imports` in `.oxlintrc.json` enforces this. The bug reaches any dependency that
+wraps the native hook, so check the implementation before trusting one — `react-rx` is safe on both
+v4 and v5 because `useObservableEvent` builds on the same `use-effect-event` ponyfill.
+
+### Refs: use `props.ref`, not `forwardRef`
+
+React 19 passes `ref` as a regular prop. Do not use `forwardRef` — destructure `ref` from props
+(so it is not left in a `...rest` spread) and forward it like any other prop.
+`eslint/no-restricted-imports` bans importing `forwardRef` from `react`.
+
+Prefer a named function declaration over `const X = function …` / arrow wrappers:
+
+```ts
+// preferred
+export function MyComponent(props: Props & RefAttributes<HTMLDivElement>) {
+  const {ref, ...rest} = props
+  return <div ref={ref} {...rest} />
+}
+
+// avoid
+export const MyComponent = function MyComponent(props: …) { … }
+export const MyComponent = (props: …) => { … }
+```
+
+When wrapping with `memo`, declare the component as a function first, then memoize:
+
+```ts
+function MyComponent(props: …) { … }
+export const MyComponentMemo = memo(MyComponent)
+```
+
+For typings, include `ref` on the props type: stop omitting `'ref'` from `HTMLProps` /
+`ComponentProps`, or intersect with `RefAttributes<T>`. Avoid `PropsWithRef` — in `@types/react`
+19 it is a deprecated identity alias and trips `typescript/no-deprecated`.
+
 ## Testing
 
 ### Unit Tests (Vitest)
@@ -331,6 +371,37 @@ Conventions that follow from this:
   throws "Styles were unable to be assigned to a file". `disableRuntimeStyles` only skips style
   injection, not the transform.
 
+#### @sanity/ui overlays stay mounted when closed
+
+From `@sanity/ui` v4, Tooltip/Popover/Menu keep their content mounted via React `<Activity>`
+while closed (hidden with `display: none`). Consequences for tests:
+
+- Plain text / test-id queries can match **closed** overlay content. Prefer scoping to the
+  visible element under test (or assert visibility) instead of `getByText` / `getByTestId` on
+  the whole document.
+- In jsdom, asserting that closed content is hidden works (`expect(...).not.toBeVisible()`), but
+  selecting the **open** overlay by visibility does not. Runtime styles are disabled there, so
+  nothing overrides the `hidden` attribute `@sanity/ui` puts on an open popover, and
+  `getByRole` (which skips inaccessible nodes) finds neither the open nor the closed copy. Pick
+  the open one by the absence of the `display: none` that `<Activity>` applies to closed
+  overlays, rather than by index:
+
+  ```ts
+  const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
+    (popover) => popover.style.display !== 'none',
+  )
+  const item = within(openMenu).getByRole('menuitem', {name: 'Discard version', hidden: true})
+  ```
+
+  Selecting with `getAllByText(...)[0]` also works, but silently depends on portal ordering.
+  Visibility-based selection belongs in the browser-mode suite, where real styles apply and
+  `checkVisibility()` is meaningful.
+
+- Test routers must include intent routes (`route.create('/', [route.intents('/intent')])`).
+  Reference item menus render `IntentLink` ("Open in new tab") even while closed; without
+  intent routes, `resolveIntentLink` throws during render and the form subtree disappears.
+  See `packages/sanity/test/browser/TestWrapper.tsx` and `test/testUtils/TestProvider.tsx`.
+
 ### E2E Tests (Playwright)
 
 ```bash
@@ -344,7 +415,7 @@ pnpm test:e2e --ui          # Interactive mode
 Lefthook runs on commit (see `lefthook.yml`), which:
 
 1. Runs oxfmt on staged files
-2. Runs oxlint `--fix` on staged `.js/.ts/.tsx` files
+2. Runs oxlint `--fix` on staged `.js/.ts/.tsx` files (with `--no-error-on-unmatched-pattern` so packages in oxlint `ignorePatterns`, e.g. `@repo/test-dts-exports`, can still be committed)
 
 If the hook fails, run `pnpm lint:fix` to fix issues.
 
@@ -572,5 +643,6 @@ No Docker, databases, or other local services are required for unit tests, lint,
   - Because the Read tool redacts the token, you cannot paste the URL into browser instructions directly. A reliable trick is a tiny local HTTP server that reads `STUDIO_AUTH_TOKEN` from env and serves an HTML page doing `location.replace(<studio-url-with-token>)`, then point the browser at that server (keeps the secret out of prompts/screenshots). After load you land authenticated in the workspace and can create/publish documents (e.g. an `Author`).
   - Most changes should still be verified with `pnpm build && pnpm test` (no auth needed); only use the studio for visual/manual verification.
 - **Seeding test documents for the `/test` workspace via API.** In local dev (non-staging), the `/test` workspace talks to the production API host, so `STUDIO_AUTH_TOKEN` works as a Bearer token against `https://ppsg7ml5.api.sanity.io/v2024-01-01/data/mutate/test` (it returns 401 "Session not found" on `api.sanity.work`). Caveat when testing history/review-changes features: documents created by raw API mutations (e.g. `createOrReplace` of a published id) do not produce publish events, so the Review changes inspector shows "There are no changes" / "Same revision selected". Instead, create only the draft (`drafts.<id>`) via the API, click Publish in the studio UI to create a real publish event, then edit fields in the form to create draft changes.
+- **Seeding releases for the `/test` workspace via API.** Releases and document versions are created through the actions endpoint (`POST https://ppsg7ml5.api.sanity.io/v2025-02-19/data/actions/test` with `{"actions": [...]}`, same Bearer token). Useful action types: `sanity.action.release.create`, `sanity.action.document.version.create` (pass `publishedId` plus a `document` with `_id: versions.<releaseId>.<publishedId>`), `sanity.action.document.version.unpublish`, `sanity.action.document.version.discard`, `sanity.action.release.archive`, `sanity.action.release.delete`. Note that a version created by the unpublish action alone is an empty tombstone carrying only `_system.delete: true` — to get a version with content, create the version first and then unpublish it. `/test` is a shared dataset, so archive and delete any release you seed once you are done.
 - **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.

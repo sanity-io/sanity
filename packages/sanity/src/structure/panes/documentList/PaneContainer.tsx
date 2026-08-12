@@ -1,4 +1,5 @@
-import {Card, Code} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import isEqual from 'lodash-es/isEqual.js'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
@@ -11,7 +12,6 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import shallowEquals from 'shallow-equals'
 
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
@@ -30,6 +30,7 @@ import {
 } from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder, type StaticSortOrder} from './types'
+import {useShallowUnique} from './useShallowUnique'
 
 /**
  * Type for custom menu item state storage.
@@ -165,15 +166,6 @@ export const appendRestoreDefaultItems = (options: {
     ...(hasSortItems ? [restoreDefaultSortOrderItem] : []),
     ...(hasLayoutItems ? [restoreDefaultLayoutItem] : []),
   ]
-}
-
-export function useShallowUnique<ValueType>(value: ValueType): ValueType {
-  const [previous, setPrevious] = useState<ValueType>(value)
-  if (!shallowEquals(previous, value)) {
-    setPrevious(value)
-    return value
-  }
-  return previous
 }
 
 /**

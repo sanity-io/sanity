@@ -4,7 +4,7 @@ import {
   type FileSchemaType,
   type ImageSchemaType,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'

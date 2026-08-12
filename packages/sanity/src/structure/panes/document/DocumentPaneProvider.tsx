@@ -11,7 +11,6 @@ import {
   type ComponentType,
   useCallback,
   useEffect,
-  useEffectEvent,
   useMemo,
   useRef,
   useState,
@@ -51,6 +50,7 @@ import {
 } from 'sanity'
 import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
+import {useEffectEvent} from 'use-effect-event'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentTitle} from '../../components/structureTool/StructureTitle'
@@ -96,6 +96,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     historyStore,
   } = props
   const {
+    // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
     store: timelineStore,
     error: timelineError,
     ready: timelineReady,
@@ -602,6 +603,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         setIsDocumentGroupInventoryActive,
         isDeleted,
         timelineError,
+        // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
         timelineStore,
         title,
         value,

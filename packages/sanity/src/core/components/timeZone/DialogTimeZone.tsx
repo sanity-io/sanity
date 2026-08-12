@@ -1,5 +1,6 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
+import {Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
+import {Autocomplete} from '@sanity/ui/autocomplete'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -178,9 +179,10 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             popover={{
               // Dialog is portaled to the document root, so its Autocomplete
               // popover should be bounded by document.body rather than any
-              // panel-scoped scroll container.
-              // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-              boundaryElement: document.body,
+              // panel-scoped scroll container. Set both boundaries to match the
+              // pre-v4 `boundaryElement` behavior.
+              floatingBoundary: document.body,
+              referenceBoundary: document.body,
               constrainSize: true,
               placement: 'bottom-start',
             }}

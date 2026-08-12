@@ -13,10 +13,6 @@ import {
   Container,
   Flex,
   Grid,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Popover,
   PortalProvider,
   Select,
   Spinner,
@@ -27,6 +23,8 @@ import {
   Text,
   useClickOutsideEvent,
 } from '@sanity/ui'
+import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
+import {Popover} from '@sanity/ui/popover'
 import {ParentSize} from '@visx/responsive'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'

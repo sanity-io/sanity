@@ -2,7 +2,6 @@ import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
 import {
   type AvatarSize,
-  Box,
   Card,
   Flex,
   Stack,
@@ -14,6 +13,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
@@ -356,7 +356,9 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
               flex={1}
             >
               <Flex align="flex-end" gap={2}>
-                <Box flex={1}>{name}</Box>
+                <Box flexBasis="0%" flexGrow={1}>
+                  {name}
+                </Box>
 
                 {!displayError && (
                   <Flex align="center" gap={1}>
@@ -379,7 +381,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
             </Flex>
 
             {intent && (
-              <Box flex={1}>
+              <Box flexBasis="0%" flexGrow={1}>
                 <IntentText muted size={0} textOverflow="ellipsis">
                   <Translate
                     t={t}
