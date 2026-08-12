@@ -60,15 +60,7 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
 
   if (variant.isLoading) {
     return (
-      <Box
-        {...cellProps}
-        flexBasis="0%"
-        flexGrow={1}
-        paddingLeft={3}
-        paddingRight={2}
-        paddingY={2}
-        style={{boxSizing: 'border-box'}}
-      >
+      <Box {...cellProps} flexBasis="0%" flexGrow={1} paddingLeft={3} paddingRight={2} paddingY={2}>
         <Stack gap={2}>
           <Text size={1} weight="medium">
             <Skeleton animated radius={1} style={{width: '16ch'}} />
@@ -84,15 +76,7 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
   const conditionsText = getVariantConditionsText(variant.conditions)
 
   return (
-    <Box
-      {...cellProps}
-      flexBasis="0%"
-      flexGrow={1}
-      paddingLeft={3}
-      paddingRight={2}
-      paddingY={1}
-      style={{boxSizing: 'border-box'}}
-    >
+    <Box {...cellProps} flexBasis="0%" flexGrow={1} paddingLeft={3} paddingRight={2} paddingY={1}>
       <Flex align="center" gap={3}>
         <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
           <Flex align="center" gap={3}>
