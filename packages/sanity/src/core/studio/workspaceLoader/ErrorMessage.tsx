@@ -1,9 +1,10 @@
 /* oxlint-disable i18next/no-literal-string */
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import startCase from 'lodash-es/startCase.js'
 import {useEffect} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 const ListItem = styled(Flex)``
 
