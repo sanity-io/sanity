@@ -33,6 +33,7 @@ export default defineConfig({
       '**/.github/workflows/test.yml',
     ],
     projects: [
+      'packages/@sanity/access-ui',
       'packages/@sanity/mutator',
       'packages/@sanity/schema',
       'packages/@sanity/types',

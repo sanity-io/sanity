@@ -50,7 +50,10 @@ export interface TrendRun {
     | null
 }
 
-export const TREND_QUERY = `*[_type == "benchRun"] | order(coalesce(git.committedAt, startedAt) asc) {
+// Absolute-mode only: A/B dispatch runs store mode:'ab' comparison documents
+// (two builds measured against each other) whose numbers are not points on
+// any branch's series — they'd inject a historical commit into the main line.
+export const TREND_QUERY = `*[_type == "benchRun" && mode == "absolute"] | order(coalesce(git.committedAt, startedAt) asc) {
   _id,
   startedAt,
   mode,

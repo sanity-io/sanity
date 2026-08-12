@@ -11,6 +11,23 @@ import {RunDetailPopover} from './RunDetailPopover'
 
 const MARGIN = {top: 8, right: 8, bottom: 22, left: 44}
 
+/**
+ * The nearest earlier point on the selected point's own line that measured a
+ * *different* commit — the natural `ab_from` for an A/B comparison against
+ * this point. Same-sha neighbours (weekend crons, shard repeats) are skipped:
+ * a commit can't be compared against itself. Undefined when there is no
+ * earlier distinct commit (first point, soak minutes, local runs).
+ */
+function previousShaFor(lines: TrendLine[], selected: TrendPoint): string | undefined {
+  const line = lines.find((candidate) => candidate.points.includes(selected))
+  if (!line) return undefined
+  for (let i = line.points.indexOf(selected) - 1; i >= 0; i--) {
+    const {sha} = line.points[i]
+    if (sha !== selected.sha && sha !== 'unknown') return sha
+  }
+  return undefined
+}
+
 /** Theme-aware colors via the studio's CSS custom properties. */
 export const COLOR = {
   line: 'var(--card-accent-fg-color, #556bfc)',
@@ -402,8 +419,10 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
             }}
           />
           <RunDetailPopover
+            key={selected.runId}
             series={series}
             point={selected}
+            previousSha={previousShaFor(lines, selected)}
             referenceElement={anchorEl}
             onClose={() => {
               setSelected(null)
