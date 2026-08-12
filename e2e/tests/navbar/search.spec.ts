@@ -15,6 +15,7 @@ test('searching creates unique saved searches', async ({
   const documentId = await createDraftDocument('/content/book')
   // Unique title avoids colliding with other parallel shards / leftover docs.
   const uniqueTitle = `A searchable title ${uuid().slice(0, 8)}`
+  const draftId = `drafts.${documentId}`
 
   // Clear any existing recent searches to ensure a clean test state
   try {
@@ -26,32 +27,24 @@ test('searching creates unique saved searches', async ({
     // Key doesn't exist, which is fine - we want a clean state anyway
   }
 
-  // Reload the page to ensure the browser picks up the cleared state
+  // Set the title via API with sync visibility so search can see it without
+  // racing UI mutate debounce / endpoint shape (mutate vs actions).
+  await sanityClient.patch(draftId).set({title: uniqueTitle}).commit({visibility: 'sync'})
+
+  // Reload so the studio session picks up cleared recent searches + title.
   await page.reload({waitUntil: 'load'})
 
-  // create a document with a searchable title and wait for it to be saved
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
   await expect(titleInput).toBeVisible({timeout: 30_000})
-  await expect(titleInput).toBeEnabled()
+  await expect(titleInput).toHaveValue(uniqueTitle)
 
-  const mutateRequest = page.waitForResponse(
-    (response) =>
-      response.url().includes('/data/mutate/') &&
-      response.request().method() === 'POST' &&
-      response.ok(),
-    {timeout: 30_000},
-  )
-  await titleInput.fill(uniqueTitle)
-  await mutateRequest
-
-  // Wait until the draft is queryable with the new title (search lag after mutate).
+  // Confirm the draft is queryable before opening search.
   await expect
     .poll(
-      async () => {
-        return sanityClient.fetch<string | null>(`*[_id == $id][0].title`, {
-          id: `drafts.${documentId}`,
-        })
-      },
+      async () =>
+        sanityClient.fetch<string | null>(`*[_id == $id][0].title`, {
+          id: draftId,
+        }),
       {timeout: 30_000, intervals: [250, 500, 1_000]},
     )
     .toBe(uniqueTitle)
@@ -61,14 +54,13 @@ test('searching creates unique saved searches', async ({
   const searchResults = page.getByTestId('search-results')
 
   // Helper to perform a search and click a result
-  async function performSearch(query: string, optionName: string | RegExp) {
+  async function performSearch(query: string) {
     await expect(studioSearch).toBeVisible()
     await studioSearch.click({force: true})
     await expect(searchInput).toBeVisible()
     await searchInput.fill(query)
     await expect(searchResults).toBeVisible()
-    const option = searchResults.getByRole('option', {name: optionName}).first()
-    // Search indexing can lag behind mutate visibility; poll the option.
+    const option = searchResults.getByRole('option', {name: uniqueTitle}).first()
     await expect(option).toBeVisible({timeout: 30_000})
     await option.click({force: true})
     // Wait for search dialog to close
@@ -85,7 +77,7 @@ test('searching creates unique saved searches', async ({
 
   // First search: "A se"
   const keyValueRequest = waitForKeyValuePut()
-  await performSearch('A se', /A searchable title/i)
+  await performSearch('A se')
   const responseBody = await (await keyValueRequest).json()
 
   // Verify the search was saved - check key and that most recent search is "A se"
@@ -94,16 +86,16 @@ test('searching creates unique saved searches', async ({
 
   // search queries should stack, most recent first
   const keyValueRequest2 = waitForKeyValuePut()
-  await performSearch('A search', /A searchable title/i)
+  await performSearch('A search')
   await keyValueRequest2
 
   const keyValueRequest3 = waitForKeyValuePut()
-  await performSearch('A searchable', /A searchable title/i)
+  await performSearch('A searchable')
   await keyValueRequest3
 
   // Duplicate search
   const keyValueRequest4 = waitForKeyValuePut()
-  await performSearch('A searchable', /A searchable title/i)
+  await performSearch('A searchable')
   const finalResponse = await (await keyValueRequest4).json()
   const {recentSearches} = finalResponse[0].value
 
