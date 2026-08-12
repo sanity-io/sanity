@@ -48,12 +48,9 @@ test('searching creates unique saved searches', async ({
   await expect
     .poll(
       async () => {
-        const title = await sanityClient.fetch<string | null>(
-          `*[_id == $id][0].title`,
-          {id: `drafts.${documentId}`},
-          {tag: 'e2e.navbar-search.title'},
-        )
-        return title
+        return sanityClient.fetch<string | null>(`*[_id == $id][0].title`, {
+          id: `drafts.${documentId}`,
+        })
       },
       {timeout: 30_000, intervals: [250, 500, 1_000]},
     )
