@@ -1,3 +1,4 @@
+import {getProviderTitle} from '@sanity/access-ui'
 import {LeaveIcon} from '@sanity/icons/Leave'
 import {
   Box,
@@ -18,7 +19,6 @@ import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {getProviderTitle} from '../../../../store/authStore/providerTitle'
 import {useColorSchemeSetValue, useColorSchemeValue} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {AppearanceMenu} from './ApperanceMenu'

@@ -1156,7 +1156,7 @@ export {
   createMockAuthStore,
   type MockAuthStoreOptions,
 } from '../core/store/authStore/createMockAuthStore'
-export {getProviderTitle} from '../core/store/authStore/providerTitle'
+export {getProviderTitle} from '@sanity/access-ui'
 export {
   type AuthProbeResult,
   type AuthState,

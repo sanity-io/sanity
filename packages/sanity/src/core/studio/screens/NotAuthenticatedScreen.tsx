@@ -1,10 +1,10 @@
+import {getProviderTitle} from '@sanity/access-ui'
 /* oxlint-disable i18next/no-literal-string */
 import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useObservable} from 'react-rx'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
-import {getProviderTitle} from '../../store/authStore/providerTitle'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 
 export function NotAuthenticatedScreen() {
