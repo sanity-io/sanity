@@ -5,6 +5,22 @@
       {
         "files": ["src/_singletons/**"],
         "rules": ["import/consistent-type-specifier-style"]
+      },
+      {
+        "files": [
+          "src/core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizedArrayList.tsx",
+          "src/core/form/inputs/files/common/useAssetSourceUploader.ts",
+          "src/core/form/members/array/items/ArrayOfObjectsItem.tsx",
+          "src/core/form/members/object/fields/ArrayOfObjectsField.tsx",
+          "src/core/form/studio/assetSourceDataset/file/AssetRow.tsx",
+          "src/core/form/studio/assetSourceMediaLibrary/shared/UploadAssetDialog.tsx",
+          "src/core/perspective/navbar/useScrollIndicatorVisibility.ts",
+          "src/core/presence/overlay/WithIntersection.tsx",
+          "src/core/releases/tool/detail/documentTable/DocumentTableColumnDefs.tsx",
+          "src/presentation/overlays/PostMessageDocuments.tsx",
+          "src/structure/panes/document/documentPanel/header/hook/useChipScrollPosition.tsx"
+        ],
+        "rules": ["react-doctor/effect-needs-cleanup"]
       }
     ]
   },
