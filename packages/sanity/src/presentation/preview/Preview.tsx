@@ -197,11 +197,6 @@ export const Preview = memo(function PreviewComponent(
   const [somethingIsWrong, setSomethingIsWrong] = useState(false)
   const iframeIsBusy = isLoading || isRefreshing || overlaysConnection === 'connecting'
 
-  const [continueAnyway, setContinueAnyway] = useState(false)
-  const handleContinueAnyway = useCallback(() => {
-    setContinueAnyway(true)
-  }, [])
-
   /**
    * If the iframe never fires its `load` event — for example when the preview is stuck in a
    * reload loop, like Next.js dev servers before 16.3.0 get in Firefox when embedded cross-origin
@@ -209,6 +204,18 @@ export const Preview = memo(function PreviewComponent(
    * connection error UI after a deadline instead of spinning indefinitely.
    */
   const [loadTimedOut, setLoadTimedOut] = useState(false)
+
+  const [continueAnyway, setContinueAnyway] = useState(false)
+  /**
+   * Whether the current `continueAnyway` dismissal was for a load timeout, as opposed to an
+   * overlays connection error. The two are cleared at different times.
+   */
+  const dismissedLoadTimeoutRef = useRef(false)
+  const handleContinueAnyway = useCallback(() => {
+    dismissedLoadTimeoutRef.current = loadTimedOut
+    setContinueAnyway(true)
+  }, [loadTimedOut])
+
   useEffect(() => {
     /**
      * Only `loading` waits on the iframe `load` event. `refreshing` waits for a
@@ -219,11 +226,13 @@ export const Preview = memo(function PreviewComponent(
       // oxlint-disable-next-line react/react-compiler
       setLoadTimedOut(false)
       /**
-       * `continueAnyway` is otherwise only cleared once the overlays reconnect, which never
-       * happens when the user dismissed a load timeout. Leaving it set would suppress the
-       * loading and error UI for the rest of the session.
+       * A load-timeout dismissal has to be cleared here, since `continueAnyway` is otherwise only
+       * reset once the overlays reconnect — which never happens in this scenario, leaving the
+       * loading and error UI suppressed for the rest of the session. Only clear our own dismissal:
+       * an overlays-error dismissal must survive reloads until the overlays reconnect.
        */
-      setContinueAnyway(false)
+      setContinueAnyway((prev) => (dismissedLoadTimeoutRef.current ? false : prev))
+      dismissedLoadTimeoutRef.current = false
       return undefined
     }
     if (loadTimedOut) {
