@@ -91,6 +91,7 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
       paddingX={3}
       paddingY={2}
       radius={2}
+      role="button"
       selected={isSelected || isStartDate || isEndDate}
       tabIndex={-1}
       tone={isWithinRange ? 'primary' : 'default'}

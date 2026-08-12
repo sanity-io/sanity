@@ -128,12 +128,11 @@ export function StudioAnnouncementsCard({
       content={
         <Root data-ui="whats-new-root">
           <Card
-            as="button"
             data-ui="whats-new-card"
             padding={3}
             radius={3}
             onClick={onCardClick}
-            type="button"
+            role="button"
             aria-label={t('announcement.floating-button.open-label')}
           >
             <Stack gap={3}>
