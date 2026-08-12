@@ -37,4 +37,8 @@ Documented suppressions / rejections for the `sanity` package scan. Each entry l
 
 ## `import/no-cycle` @ `src/core/field/diff/**`
 
-**Needs evidence / deferred.** Cycles between `defaultComponents` / `resolveDiffComponent` and concrete field diff components (`FileFieldDiff`, `ImageFieldDiff`, `PTDiff`, portable text pieces). Fixing requires extracting shared modules across the diff package; tracked separately from this install/fix pass.
+**Deferred (confirmed architectural cycle).** Cycle shape:
+
+`defaultComponents` → `FileFieldDiff` / `ImageFieldDiff` / `PTDiff` → `ChangeList` → `buildChangeList` → `resolveDiffComponent` → `defaultComponents`
+
+Nested field diffs intentionally re-enter `ChangeList` for nested fields. Breaking this needs a lazy/registry refactor (not a local import tweak). Left as remaining errors so the debt stays visible.
