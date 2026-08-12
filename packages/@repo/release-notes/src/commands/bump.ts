@@ -39,7 +39,10 @@ function readGitInfo(): GitInfo {
     encoding: 'utf-8',
   }).trim()
 
-  const tagInfo = execSync('git describe --tags --long --first-parent', {
+  // scope to release tags (getVersionBump uses the same `v` prefix) so stray non-release tags
+  // on main history can't reset the commit count. Must stay in sync with the `git describe`
+  // in .github/workflows/release-next.yml.
+  const tagInfo = execSync('git describe --tags --long --first-parent --match "v*"', {
     cwd: MONOREPO_ROOT,
     encoding: 'utf-8',
   }).trim()
