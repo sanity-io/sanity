@@ -533,6 +533,18 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The description for the document unfavorite action */
   'document.favorites.remove-from-favorites': 'Remove from favorites',
 
+  /** SPIKE — label above the control that picks what the review tab compares. */
+  'changes.compare-by.label': 'What do you want to compare?',
+
+  /** SPIKE — compare option: two points in this document's own history. */
+  'changes.compare-by.time': 'A moment in time',
+
+  /** SPIKE — compare option: this variant against the default audience it is based on. */
+  'changes.compare-by.variant': 'This variant to its base',
+
+  /** SPIKE — the base side of a variant comparison, shown where a revision would otherwise be. */
+  'changes.compare-version.base': 'Default audience',
+
   /** SPIKE — description for the section comparing a variant against the default audience. */
   'events.compare-with-base-audience.description':
     'How this variant differs from what the <strong>default audience</strong> sees in the same perspective. These are the fields marked in the form.',

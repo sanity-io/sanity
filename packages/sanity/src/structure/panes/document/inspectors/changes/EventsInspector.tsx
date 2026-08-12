@@ -1,5 +1,5 @@
 import {diffInput, wrap} from '@sanity/diff'
-import {BoundaryElementProvider, Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Box, Card, Flex, Spinner, Stack, TabList, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type ReactElement, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
@@ -14,6 +14,7 @@ import {
   NoChanges,
   type ObjectDiff,
   type ObjectSchemaType,
+  getVariantTitle,
   ScrollContainer,
   selectVariantBaseDocument,
   Translate,
@@ -25,6 +26,7 @@ import {
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
+import {Tab} from '../../../../../ui-components/tab/Tab'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -57,12 +59,30 @@ const DIFF_INITIAL_VALUE = {
   error: null,
 }
 
+/** SPIKE — which axis the review tab compares along. */
+type CompareMode = 'time' | 'variant'
+
+/**
+ * SPIKE — a fixed side of a comparison, shown where a revision picker would otherwise sit. Reads as
+ * a sibling of `EventsTimelineMenu` but has nothing to choose: comparing a variant to its base is a
+ * comparison of two versions, not of two moments.
+ */
+function VersionChip({label, tone}: {label: string; tone?: 'suggest'}) {
+  return (
+    <Card border padding={2} radius={2} tone={tone}>
+      <Text size={1} textOverflow="ellipsis">
+        {label}
+      </Text>
+    </Card>
+  )
+}
+
 /**
  * SPIKE — the comparison the field indicator actually reports: this variant against the default
  * audience, in the same perspective. Deliberately reuses `selectVariantBaseDocument`, the function
  * that decides which fields get a diamond, so the panel and the marks can never disagree.
  */
-const CompareWithBaseAudienceView = () => {
+const CompareWithBaseAudienceView = ({hideHeading}: {hideHeading?: boolean}) => {
   const {documentId, documentType, schemaType, displayed, targetDocumentState} = useDocumentPane()
   const {bundle, selectedReleaseId} = usePerspective()
   const {t} = useTranslation(structureLocaleNamespace)
@@ -88,16 +108,18 @@ const CompareWithBaseAudienceView = () => {
 
   return (
     <Stack gap={2} marginBottom={3}>
-      <Card borderBottom paddingBottom={3}>
-        <Stack gap={3} paddingTop={1}>
-          <Text size={1} weight="medium">
-            {t('events.compare-with-base-audience.title')}
-          </Text>
-          <Text size={1} muted>
-            <Translate i18nKey="events.compare-with-base-audience.description" t={t} />
-          </Text>
-        </Stack>
-      </Card>
+      {!hideHeading && (
+        <Card borderBottom paddingBottom={3}>
+          <Stack gap={3} paddingTop={1}>
+            <Text size={1} weight="medium">
+              {t('events.compare-with-base-audience.title')}
+            </Text>
+            <Text size={1} muted>
+              <Translate i18nKey="events.compare-with-base-audience.description" t={t} />
+            </Text>
+          </Stack>
+        </Card>
+      )}
       <DocumentChangeContext.Provider
         value={{
           documentId,
@@ -197,8 +219,22 @@ const CompareWithPublishedView = () => {
   )
 }
 export function EventsInspector({showChanges}: {showChanges: boolean}): ReactElement {
-  const {documentId, schemaType, timelineError, value, formState} = useDocumentPane()
+  const {documentId, schemaType, timelineError, value, formState, targetDocumentState} =
+    useDocumentPane()
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
+
+  // SPIKE — comparison axis.
+  const {t: tStructure} = useTranslation(structureLocaleNamespace)
+  const {selectedVariant} = usePerspective()
+  const canCompareToBase =
+    targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
+  const [userCompareMode, setUserCompareMode] = useState<CompareMode | null>(null)
+  // Derived rather than stored, so the default follows the variant selection resolving without an
+  // effect, and an explicit choice still wins.
+  const compareMode: CompareMode = canCompareToBase ? (userCompareMode ?? 'variant') : 'time'
+  const selectedVariantLabel = selectedVariant
+    ? getVariantTitle(selectedVariant)
+    : tStructure('changes.compare-version.base')
 
   const {events, revision, sinceRevision, getChangesList} = useEvents()
 
@@ -268,25 +304,62 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   return (
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
       <Box padding={3} style={{position: 'relative'}}>
+        {/*
+          SPIKE — make the comparison axis an explicit choice instead of an implicit one. The
+          timeline answers "what changed in this document over time"; a variant also has a second,
+          more useful axis: "how does this differ from the audience it is based on". Only offered
+          when a variant is actually selected.
+        */}
+        {canCompareToBase && (
+          <Stack gap={3} paddingX={2} paddingBottom={3}>
+            <Text size={1} muted>
+              {tStructure('changes.compare-by.label')}
+            </Text>
+            <TabList gap={1}>
+              <Tab
+                aria-controls="review-panel"
+                id="compare-by-variant"
+                label={tStructure('changes.compare-by.variant')}
+                onClick={() => setUserCompareMode('variant')}
+                selected={compareMode === 'variant'}
+              />
+              <Tab
+                aria-controls="review-panel"
+                id="compare-by-time"
+                label={tStructure('changes.compare-by.time')}
+                onClick={() => setUserCompareMode('time')}
+                selected={compareMode === 'time'}
+              />
+            </TabList>
+          </Stack>
+        )}
         <Grid paddingX={2} paddingBottom={2}>
           <Text size={1} muted>
             {t('changes.inspector.from-label')}
           </Text>
-          <EventsTimelineMenu
-            event={sinceEvent || null}
-            events={sinceEvents}
-            mode="since"
-            placement="bottom-start"
-          />
+          {compareMode === 'variant' ? (
+            <VersionChip label={tStructure('changes.compare-version.base')} />
+          ) : (
+            <EventsTimelineMenu
+              event={sinceEvent || null}
+              events={sinceEvents}
+              mode="since"
+              placement="bottom-start"
+            />
+          )}
           <Text size={1} muted>
             {t('changes.inspector.to-label')}
           </Text>
-          <EventsTimelineMenu
-            event={toEvent || null}
-            events={events}
-            mode="rev"
-            placement="bottom-end"
-          />
+          {compareMode === 'variant' ? (
+            <VersionChip label={selectedVariantLabel} tone="suggest" />
+          ) : (
+            <EventsTimelineMenu
+              event={toEvent || null}
+              events={events}
+              mode="rev"
+              placement="bottom-end"
+            />
+          )}
         </Grid>
         {diffLoading && (
           <motion.div
@@ -308,16 +381,20 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
         <BoundaryElementProvider element={scrollRef}>
           <Scroller data-ui="Scroller" ref={setScrollRef}>
             <Box flex={1} paddingX={3} height="fill">
-              {showChanges && (
-                <Content
-                  documentContext={documentContext}
-                  error={timelineError || diffError}
-                  loading={revision?.loading || sinceRevision?.loading || false}
-                  schemaType={schemaType}
-                  sameRevisionSelected={sinceEvent?.id === toEvent?.id}
-                  sinceEvent={sinceEvent}
-                />
-              )}
+              {showChanges &&
+                (compareMode === 'variant' ? (
+                  // The From/To rows already name both sides, so the section carries no heading.
+                  <CompareWithBaseAudienceView hideHeading />
+                ) : (
+                  <Content
+                    documentContext={documentContext}
+                    error={timelineError || diffError}
+                    loading={revision?.loading || sinceRevision?.loading || false}
+                    schemaType={schemaType}
+                    sameRevisionSelected={sinceEvent?.id === toEvent?.id}
+                    sinceEvent={sinceEvent}
+                  />
+                ))}
             </Box>
           </Scroller>
         </BoundaryElementProvider>
@@ -326,25 +403,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   )
 }
 
-function Content(props: {
-  error?: Error | null
-  documentContext: DocumentChangeContextInstance
-  loading: boolean
-  schemaType: ObjectSchemaType
-  sameRevisionSelected: boolean
-  sinceEvent: DocumentGroupEvent | null
-}) {
-  // SPIKE — the variant-vs-default comparison leads, because that is the question the field
-  // indicator sends the editor here to answer. The document's own history follows it.
-  return (
-    <>
-      <CompareWithBaseAudienceView />
-      <HistoryContent {...props} />
-    </>
-  )
-}
-
-function HistoryContent({
+function Content({
   error,
   documentContext,
   loading,
