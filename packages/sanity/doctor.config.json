@@ -1,0 +1,15 @@
+{
+  "$schema": "https://react.doctor/schema/config.json",
+  "ignore": {
+    "overrides": [
+      {
+        "files": ["src/_singletons/**"],
+        "rules": ["import/consistent-type-specifier-style"]
+      }
+    ]
+  },
+  "rules": {
+    "react-doctor/require-reduced-motion": "off",
+    "react-doctor/no-layout-property-animation": "warn"
+  }
+}
