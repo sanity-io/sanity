@@ -27,9 +27,16 @@ test('searching creates unique saved searches', async ({
     // Key doesn't exist, which is fine - we want a clean state anyway
   }
 
-  // Set the title via API with sync visibility so search can see it without
-  // racing UI mutate debounce / endpoint shape (mutate vs actions).
-  await sanityClient.patch(draftId).set({title: uniqueTitle}).commit({visibility: 'sync'})
+  // createDraftDocument only navigates to a new id; the draft is not persisted until
+  // the first mutation. Create it via API so search indexing does not race UI debounce.
+  await sanityClient.createOrReplace(
+    {
+      _id: draftId,
+      _type: 'book',
+      title: uniqueTitle,
+    },
+    {visibility: 'sync'},
+  )
 
   // Reload so the studio session picks up cleared recent searches + title.
   await page.reload({waitUntil: 'load'})
@@ -37,17 +44,6 @@ test('searching creates unique saved searches', async ({
   const titleInput = page.getByTestId('field-title').getByTestId('string-input')
   await expect(titleInput).toBeVisible({timeout: 30_000})
   await expect(titleInput).toHaveValue(uniqueTitle)
-
-  // Confirm the draft is queryable before opening search.
-  await expect
-    .poll(
-      async () =>
-        sanityClient.fetch<string | null>(`*[_id == $id][0].title`, {
-          id: draftId,
-        }),
-      {timeout: 30_000, intervals: [250, 500, 1_000]},
-    )
-    .toBe(uniqueTitle)
 
   const studioSearch = page.getByTestId('studio-search')
   const searchInput = page.getByPlaceholder('Search', {exact: true})
