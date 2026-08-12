@@ -533,6 +533,13 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The description for the document unfavorite action */
   'document.favorites.remove-from-favorites': 'Remove from favorites',
 
+  /** SPIKE — description for the section comparing a variant against the default audience. */
+  'events.compare-with-base-audience.description':
+    'How this variant differs from what the <strong>default audience</strong> sees in the same perspective. These are the fields marked in the form.',
+
+  /** SPIKE — title for the section comparing a variant against the default audience. */
+  'events.compare-with-base-audience.title': 'Different from the default audience',
+
   /** The description for the events inspector when we can't load the document so we default to compare with published */
   'events.compare-with-published.description':
     "We're unable to load the changes for this document, probably due to history retention policy of your plan, this shows you how the <strong>{{version}}</strong> version compares to the <strong>published</strong> version.",

@@ -15,6 +15,7 @@ import {
   type ObjectDiff,
   type ObjectSchemaType,
   ScrollContainer,
+  selectVariantBaseDocument,
   Translate,
   useEditState,
   useEvents,
@@ -54,6 +55,66 @@ const DIFF_INITIAL_VALUE = {
   diff: null,
   loading: true,
   error: null,
+}
+
+/**
+ * SPIKE — the comparison the field indicator actually reports: this variant against the default
+ * audience, in the same perspective. Deliberately reuses `selectVariantBaseDocument`, the function
+ * that decides which fields get a diamond, so the panel and the marks can never disagree.
+ */
+const CompareWithBaseAudienceView = () => {
+  const {documentId, documentType, schemaType, displayed, targetDocumentState} = useDocumentPane()
+  const {bundle, selectedReleaseId} = usePerspective()
+  const {t} = useTranslation(structureLocaleNamespace)
+
+  const isVariantTarget =
+    targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
+
+  // Same resolution the marks use: the base pair, plus the base's own release version inside a
+  // release.
+  const baseEditState = useEditState(documentId, documentType, 'low', selectedReleaseId)
+  const baseDocument = selectVariantBaseDocument(baseEditState, bundle)
+
+  const rootDiff = useMemo(() => {
+    return diffInput(
+      wrap(baseDocument ?? {}, {author: ''}),
+      wrap(displayed ?? {}, {author: ''}),
+    ) as ObjectDiff
+  }, [baseDocument, displayed])
+
+  if (!isVariantTarget || !baseDocument || !displayed) {
+    return null
+  }
+
+  return (
+    <Stack gap={2} marginBottom={3}>
+      <Card borderBottom paddingBottom={3}>
+        <Stack gap={3} paddingTop={1}>
+          <Text size={1} weight="medium">
+            {t('events.compare-with-base-audience.title')}
+          </Text>
+          <Text size={1} muted>
+            <Translate i18nKey="events.compare-with-base-audience.description" t={t} />
+          </Text>
+        </Stack>
+      </Card>
+      <DocumentChangeContext.Provider
+        value={{
+          documentId,
+          schemaType,
+          rootDiff,
+          isComparingCurrent: true,
+          FieldWrapper: (props) => props.children,
+          value: displayed,
+          showFromValue: true,
+        }}
+      >
+        <Box paddingY={1}>
+          <ChangeList diff={rootDiff} schemaType={schemaType} />
+        </Box>
+      </DocumentChangeContext.Provider>
+    </Stack>
+  )
 }
 
 const CompareWithPublishedView = () => {
@@ -265,7 +326,25 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   )
 }
 
-function Content({
+function Content(props: {
+  error?: Error | null
+  documentContext: DocumentChangeContextInstance
+  loading: boolean
+  schemaType: ObjectSchemaType
+  sameRevisionSelected: boolean
+  sinceEvent: DocumentGroupEvent | null
+}) {
+  // SPIKE — the variant-vs-default comparison leads, because that is the question the field
+  // indicator sends the editor here to answer. The document's own history follows it.
+  return (
+    <>
+      <CompareWithBaseAudienceView />
+      <HistoryContent {...props} />
+    </>
+  )
+}
+
+function HistoryContent({
   error,
   documentContext,
   loading,
