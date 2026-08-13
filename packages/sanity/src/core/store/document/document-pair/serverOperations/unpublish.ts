@@ -1,3 +1,4 @@
+import {isGoingToUnpublish} from '../../../../releases/util/isGoingToUnpublish'
 import {getVariantVersionInfo} from '../../../../variants/documents/getVariantVersionInfo'
 import {type OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
@@ -5,10 +6,10 @@ import {assertNotVariantVersion} from '../utils/assertNotVariantVersion'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {variantActionsApiClient} from '../utils/variantActionsApiClient'
 
-type DisabledReason = 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'
+type DisabledReason = 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED' | 'ALREADY_UNPUBLISHED'
 
 export const unpublish: OperationImpl<[], DisabledReason> = {
-  disabled: ({schema, snapshots, typeName}) => {
+  disabled: ({schema, snapshots, typeName, idPair}) => {
     if (isLiveEditEnabled(schema, typeName)) {
       return 'LIVE_EDIT_ENABLED'
     }
@@ -20,6 +21,13 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
       // - a release-scoped variant, which is soft-unpublished as part of its release
       // A drafts-scoped variant has nothing published in its slot to unpublish.
       return variantVersion.bundleId !== 'drafts' ? false : 'NOT_PUBLISHED'
+    }
+
+    // A release version already carrying the unpublish marker would be a no-op: the release
+    // publish will remove the published document either way. Reverting it is a separate
+    // operation (`revertUnpublishVersion`), not a repeated unpublish.
+    if (idPair.versionId && snapshots.version && isGoingToUnpublish(snapshots.version)) {
+      return 'ALREADY_UNPUBLISHED'
     }
 
     return snapshots.published ? false : 'NOT_PUBLISHED'
@@ -51,6 +59,24 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
     }
 
     assertNotVariantVersion(snapshots.version, 'unpublish')
+
+    if (idPair.versionId) {
+      // Unpublishing inside a release is a soft unpublish: the backend marks the release version
+      // with `_system.delete: true` and removes the published document when the release is
+      // published. The base draft is deliberately absent from the payload — unlike the base
+      // unpublish below, nothing is written back into `drafts.<id>`.
+      return actionsApiClient(client, idPair).observable.action(
+        {
+          actionType: 'sanity.action.document.version.unpublish',
+          versionId: idPair.versionId,
+          publishedId: idPair.publishedId,
+        },
+        {
+          tag: 'document.unpublish',
+          skipCrossDatasetReferenceValidation: true,
+        },
+      )
+    }
 
     return actionsApiClient(client, idPair).observable.action(
       {

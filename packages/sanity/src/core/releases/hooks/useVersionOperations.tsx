@@ -23,6 +23,11 @@ export interface VersionOperationsValue {
     options?: CreateVersionOptions,
   ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<SingleActionResult>
+  /**
+   * Prefer `useDocumentOperation(publishedId, type, releaseId).unpublish`, which routes release
+   * versions through the same operation pipeline as draft and published edits. Kept for
+   * backwards compatibility; no studio code calls it any more.
+   */
   unpublishVersion: (documentId: string) => Promise<SingleActionResult>
   revertUnpublishVersion: (documentId: string) => Promise<SingleActionResult>
 }
