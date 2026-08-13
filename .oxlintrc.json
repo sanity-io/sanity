@@ -77,6 +77,8 @@
     "**/lib/*",
     "**/node_modules/*",
     "**/dist/*",
+    // Storybook build output (dev/storybook)
+    "**/storybook-static/*",
     "*.json",
     "*.css",
     "*.snap",
