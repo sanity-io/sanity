@@ -2,13 +2,14 @@ import {type ReleaseState} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Badge, Box, Card, Flex, Skeleton, Text} from '@sanity/ui'
+import {Badge, Card, Flex, Skeleton, Text} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {type CSSProperties, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -370,7 +371,7 @@ export const getDocumentTableColumnDefs: (
           <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
         ),
       cell: ({cellProps, datum}) => (
-        <Box {...cellProps} flex={1} padding={1} paddingRight={2} sizing="border">
+        <Box {...cellProps} flexBasis="0%" flexGrow={1} padding={1} paddingRight={2}>
           {datum.isPending || datum.isLoading ? (
             <SanityDefaultPreview isPlaceholder />
           ) : (

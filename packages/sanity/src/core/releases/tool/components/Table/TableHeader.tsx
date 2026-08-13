@@ -1,9 +1,10 @@
 import {ArrowUpIcon} from '@sanity/icons/ArrowUp'
 import {SearchIcon} from '@sanity/icons/Search'
-import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type CSSProperties, useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'

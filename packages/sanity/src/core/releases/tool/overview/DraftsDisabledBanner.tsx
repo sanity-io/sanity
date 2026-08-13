@@ -1,7 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
