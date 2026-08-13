@@ -84,6 +84,9 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const publishedRevisionId = isVariantTarget
     ? targetDocumentState.publishedSibling?._rev
     : undefined
+  // A variant publish writes into the variant-of-published sibling, which is in no pair slot and
+  // whose scope id is opaque — the permission check can only address it if we hand over the id.
+  const publishedVariantId = isVariantTarget ? targetDocumentState.publishedSibling?._id : undefined
 
   const {publish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const validationStatus = useValidationStatus(value._id, type, !release)
@@ -103,6 +106,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     id,
     type,
     version: scopeId,
+    publishedVariantId,
     permission: 'publish',
   })
 

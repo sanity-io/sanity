@@ -8,8 +8,12 @@ import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
-import {getDraftId, getPublishedId, getIdPair} from '../../util/draftUtils'
+import {getDraftId, getPublishedId, getIdPair, getVersionFromId} from '../../util/draftUtils'
 import {type PartialExcept} from '../../util/PartialExcept'
+import {
+  getVariantVersionInfo,
+  type VariantVersionInfo,
+} from '../../variants/documents/getVariantVersionInfo'
 import {useGrantsStore} from '../datastores'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {type DocumentStoreExtraOptions} from '../document/getPairListener'
@@ -31,6 +35,139 @@ function getSchemaType(schema: Schema, typeName: string): SchemaType {
   return type
 }
 
+/**
+ * A stand-in document for the variant sibling that a publish or unpublish writes to: the
+ * checked-out variant document's content, re-identified as the sibling.
+ *
+ * Sibling scope ids are opaque, server-generated hashes that occupy no pair slot, so the real
+ * `_id` is only available when the caller resolved it (`publishedVariantId`) or the version
+ * advertises it (`_system.draft`). On a first publish the sibling does not exist yet and its id
+ * cannot be derived — the version's own id stands in. The two differ only in that scope segment,
+ * which is unknowable to whoever authors a grant filter; everything a filter can meaningfully
+ * match on (the `versions.` path shape, `_type`, `_system.variant`, and `_system.bundleId`, which
+ * is rewritten here) describes the sibling accurately.
+ */
+function asVariantSibling(
+  version: SanityDocument,
+  siblingId: string | undefined,
+  bundleId: 'drafts' | undefined,
+): SanityDocument {
+  return {
+    ...version,
+    _id: siblingId ?? version._id,
+    _system: {
+      // The sibling is the same variant of the same group in a different bundle, so only the
+      // fields that say so are carried over — `release`, `delete` and `draft` describe the
+      // checked-out document, not its sibling. `bundleId` is left unset for the
+      // variant-of-published, which is exactly how the real document represents itself.
+      group: version._system?.group,
+      variant: version._system?.variant,
+      bundleId,
+      scopeId: siblingId === undefined ? undefined : getVersionFromId(siblingId),
+    },
+  }
+}
+
+/**
+ * Permission templates for a variant target, where the checked-out `version` is a variant
+ * document (`versions.<opaqueScopeId>.<groupId>`).
+ *
+ * Variant operations never touch the base draft/published pair — they go to the
+ * `sanity.action.document.variant.*` actions addressed by `{publishedId, variantId, bundleId}`
+ * (see `serverOperations/{publish,unpublish,discardChanges}.ts`). Running the base templates for
+ * these would evaluate grants against `<groupId>` / `drafts.<groupId>`, making a user's access to
+ * a variant follow their access to the base document. Every check below addresses the
+ * variant-scoped documents the mutation actually reads and writes.
+ *
+ * Returns `undefined` for the permissions that stay group-level even under a variant selection,
+ * so the caller falls through to the base templates.
+ */
+function getVariantPairPermissions({
+  grantsStore,
+  permission,
+  version,
+  variantVersion,
+  publishedVariantId,
+}: {
+  grantsStore: GrantsStore
+  permission: DocumentPermission
+  version: SanityDocument
+  variantVersion: VariantVersionInfo
+  publishedVariantId: string | undefined
+}): Array<[string, Observable<PermissionCheckResult>]> | undefined {
+  const {checkDocumentPermission} = grantsStore
+
+  switch (permission) {
+    case 'update': {
+      return [['update variant document', checkDocumentPermission('update', version)]]
+    }
+
+    case 'discardDraft':
+    case 'discardVersion': {
+      // Discarding a variant deletes the variant document in its own bundle
+      // (`sanity.action.document.variant.delete`); the base draft is untouched.
+      return [['delete variant document', checkDocumentPermission('update', version)]]
+    }
+
+    case 'publish': {
+      // Publishes the drafts-bundle variant into its variant-of-published sibling.
+      const publishedVariant = asVariantSibling(version, publishedVariantId, undefined)
+
+      return [
+        // precondition
+        [
+          'update published variant at its current state',
+          // Only a check against an existing sibling is meaningful: on a first publish there is
+          // no published variant to update, exactly as the base template passes a `null`
+          // published document through.
+          checkDocumentPermission('update', publishedVariantId ? publishedVariant : null),
+        ],
+
+        // post condition
+        ['delete draft variant document', checkDocumentPermission('update', version)],
+        [
+          'create published variant from draft variant',
+          checkDocumentPermission('create', publishedVariant),
+        ],
+      ]
+    }
+
+    case 'unpublish': {
+      // A release-scoped variant is soft-unpublished: the backend marks it with
+      // `_system.delete`, so the only document involved is the variant itself.
+      if (variantVersion.bundleId !== 'published') {
+        return [['update release variant document', checkDocumentPermission('update', version)]]
+      }
+
+      // Hard unpublish of the variant-of-published: it is deleted and its content recreated as
+      // the drafts-bundle variant, whose id the version advertises on `_system.draft`.
+      const draftVariant = asVariantSibling(version, version._system?.draft?._ref, 'drafts')
+
+      return [
+        // precondition
+        [
+          'update draft variant at its current state',
+          checkDocumentPermission('create', draftVariant),
+        ],
+
+        // post condition
+        ['delete published variant document', checkDocumentPermission('update', version)],
+        [
+          'create draft variant from published variant',
+          checkDocumentPermission('create', draftVariant),
+        ],
+      ]
+    }
+
+    default: {
+      // `delete` destroys the whole document group (base published, base draft and every
+      // version), and `duplicate` creates a new *base* draft from the variant's content. Both are
+      // group-level by design, so the base templates — which check the base pair — are correct.
+      return undefined
+    }
+  }
+}
+
 interface PairPermissionsOptions {
   grantsStore: GrantsStore
   permission: DocumentPermission
@@ -38,6 +175,7 @@ interface PairPermissionsOptions {
   version: SanityDocument | null
   published: SanityDocument | null
   liveEdit: boolean
+  publishedVariantId: string | undefined
 }
 
 function getPairPermissions({
@@ -47,7 +185,22 @@ function getPairPermissions({
   version,
   published,
   liveEdit,
+  publishedVariantId,
 }: PairPermissionsOptions): Array<[string, Observable<PermissionCheckResult>]> {
+  // Variant-ness is read off the checked-out version snapshot's `_system`, the same
+  // single discriminator the operations route on — never off the perspective.
+  const variantVersion = getVariantVersionInfo(version)
+  if (version && variantVersion) {
+    const variantPermissions = getVariantPairPermissions({
+      grantsStore,
+      permission,
+      version,
+      variantVersion,
+      publishedVariantId,
+    })
+    if (variantPermissions) return variantPermissions
+  }
+
   // this was introduced because we ran into a bug where a user with publish
   // access was marked as not allowed to duplicate a document unless it had a
   // draft variant. this would happen in non-live edit cases where the document
@@ -184,6 +337,14 @@ export interface DocumentPairPermissionsOptions {
   version?: string
   permission: DocumentPermission
   /**
+   * Id of the variant-of-published sibling (`versions.<opaqueScopeId>.<groupId>`) of a variant
+   * target, resolved by the caller from `targetDocumentState.publishedSibling`. It is the
+   * document a variant publish writes to, and it lives in no pair slot — its scope id is an
+   * opaque, server-generated hash that can never be derived here. Only relevant for the
+   * `publish` permission on a variant target; ignored otherwise.
+   */
+  publishedVariantId?: string
+  /**
    * Identity of the current user. Included in the memoization key so that an
    * in-place user switch (same project, no reload) does not replay a previous
    * user's grants from the module-level memo cache.
@@ -212,6 +373,7 @@ function getDocumentPairPermissionsUncached({
   permission,
   type,
   version: v,
+  publishedVariantId,
   pairListenerOptions,
 }: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> {
   // this case was added to fix a crash that would occur if the `schemaType` was
@@ -247,6 +409,7 @@ function getDocumentPairPermissionsUncached({
         version,
         published,
         liveEdit,
+        publishedVariantId,
       }).map(([label, observable]) =>
         observable.pipe(
           map(({granted, reason}) => ({
@@ -286,6 +449,7 @@ export const getDocumentPairPermissions = memoize(
     id,
     type,
     version,
+    publishedVariantId,
     permission,
     userId,
   }: DocumentPairPermissionsOptions): string => {
@@ -303,6 +467,7 @@ export const getDocumentPairPermissions = memoize(
       projectId,
       getPublishedId(id),
       version ?? '',
+      publishedVariantId ?? '',
       userId ?? '',
       type,
       permission,
@@ -344,6 +509,7 @@ export function useDocumentPairPermissions({
   id,
   type,
   version,
+  publishedVariantId,
   permission,
   client: overrideClient,
   schema: overrideSchema,
@@ -376,9 +542,21 @@ export function useDocumentPairPermissions({
         type,
         pairListenerOptions,
         version,
+        publishedVariantId,
         userId,
       }),
-      [client, schema, grantsStore, id, permission, type, pairListenerOptions, version, userId],
+      [
+        client,
+        schema,
+        grantsStore,
+        id,
+        permission,
+        type,
+        pairListenerOptions,
+        version,
+        publishedVariantId,
+        userId,
+      ],
     ),
   )
 }

@@ -187,12 +187,29 @@ The pair holds only the variant document for the _current_ bundle. Everything th
 
 - **`PublishAction`** — already-published tooltip timestamps and publish-completion tracking read the sibling. (Completion is detected by the published `_rev` changing; the base `_rev` never changes on a variant publish, so without this every successful variant publish reported failure.) For variant targets the sibling `_rev` is passed to `publish.execute` as `publishedRevisionId` (mapped to `ifPublishedVariantRevisionId`); base draft publish does not pass the option. The base "already published" shortcut is skipped whenever a variant is selected.
 - **`UnpublishAction` / `UnpublishVersionAction`** — "is there anything published to unpublish" comes from sibling existence, not `editState.published`.
+- **`documentPairPermissions`** — a variant publish is granted against the variant-of-published sibling, so `PublishAction` passes its id as `publishedVariantId` (§9.1).
 - **`DiscardChangesAction`** — the confirm-dialog copy ("revert to published" vs "delete document") switches on the sibling.
 - **`CompareWithPublishedView`** (review changes) — diffs the displayed variant against the variant-of-published _document_, checked out via the sibling's scope id through `useEditState` (the one place a second pair listener is justified); hidden when the variant has never been published.
 - **`DocumentEventsPane`** — history events are fetched for `targetDocumentState.targetDocument._id`. The old derivation `getVersionId(id, perspectiveName)` can never produce a variant id (the perspective name is not the scope hash).
 - **History restore** — `serverOperations/restore.ts` targets `idPair.versionId`; `createHistoryStore` derives its actions client from the _target_ id (this also fixed a latent bug where release restores used the wrong API version).
 - **`getEditEvents`** — attribution fails soft for variants: `releaseId` carries the opaque hash, which can never collide with a real release name (regression-tested).
 - `useDocumentIdStack` is **unchanged**: variants are resolved by a separate API parameter and do not participate in the perspective stack.
+
+### 9.1 Permissions
+
+Grants are GROQ filters evaluated against a document value, so a permission check is only as correct as the `_id` (and `_system`) it is handed. Because the base `publishedId`/`draftId` slots of the pair stay filled with the **base** documents under a variant target, anything that reached for them decided variant access by the user's access to the base document.
+
+Both permission APIs now address variant-scoped documents:
+
+- **`useDocumentValuePermissions` via `useDocumentForm`** (edit access) — `targetDocumentId` is the resolved stub's `_id`, or the server-advertised id for a creatable draft variant. Bundle-derived base ids are only used when no variant document is involved.
+- **`useDocumentPairPermissions`** (publish/unpublish/discard/update) — `getVariantPairPermissions` in [`store/grants/documentPairPermissions.ts`](../store/grants/documentPairPermissions.ts) supplies variant templates whenever the checked-out version snapshot carries `_system.variant`, mirroring what the variant actions actually mutate: publish reads and writes the two variant siblings, unpublish the variant-of-published and its advertised draft, discard the variant document alone.
+
+Two things follow from scope ids being opaque:
+
+- The **sibling** a publish or unpublish writes to is in no pair slot. Unpublish reads it from the version's own `_system.draft` advertisement; publish takes it from `PublishAction`, which passes `targetDocumentState.publishedSibling?._id` as `publishedVariantId`. Neither derives it.
+- On a **first** publish the variant-of-published does not exist and its id cannot be known, so the create check falls back to the draft variant's own id. Only the opaque scope segment differs, and that segment is equally unknowable to whoever authors a grant filter; the filter-visible properties (`versions.` path shape, `_type`, `_system.variant`, `_system.bundleId`) are rewritten to describe the sibling.
+
+`delete` and `duplicate` deliberately stay on the base templates: deleting destroys the whole group including the base pair, and duplicating creates a new **base** draft.
 
 ## 10. Invariants — the "never do" list
 
@@ -206,10 +223,11 @@ These are the rules that keep the system correct. Violating any of them reintrod
 6. **Read variant publish state from `publishedSibling`, not `editState.published`.** The base published document says nothing about the variant.
 7. **Infer loading from `loading` flags, never from stub presence.** `useDocumentVersions` emits `{loading: true, versions: []}` while fetching.
 8. **Declare targets to the store.** New operation call sites must pass `getPairTarget(targetDocumentState)`, not a bare scope id, or they lose the `unresolved`/`target-missing` guards.
+9. **Never judge variant access by a base-derived id.** A new permission check under a variant target must address the variant document (§9.1); the base `published`/`draft` pair slots answer a different question.
 
 ## 11. What is not done yet
 
-- **Permissions**: `documentPairPermissions` does not yet accept a target kind; variant grants are still checked against base-derived ids. The grants-engine match on `versions.<hash>.*` paths needs early manual verification.
+- **Permissions**: the grants-engine match on `versions.<hash>.*` paths still needs manual verification against real dataset ACLs. `useDocumentValuePermissions` and `useDocumentPairPermissions` address variant ids (§9.1), but the "Add to variant" create CTA in `DocumentNotInVariantBanner` is ungated, and a `variant-missing` target with no creatable id has no document to check at all — the form is read-only there, so its verdict is unused, but the id it passes is still base-derived.
 - **Peripheral subsystems**: comments scoping, presence scoping (group-level vs variant), UI truthfulness gates keyed on `!draft && !published`, Presentation/scheduled-publishing guards.
 - **Optimistic locks**: `ifPublishedVariantRevisionId` is wired from `publishedSibling._rev` via `PublishOptions.publishedRevisionId` on `publish.execute`. `ifSourceRevisionId` remains blocked on the deployed action accepting that field.
 
@@ -225,4 +243,5 @@ These are the rules that keep the system correct. Violating any of them reintrod
 | Operation routing | `variants/documents/getVariantVersionInfo.ts`, `document-pair/serverOperations/{publish,unpublish,discardChanges}.ts`, `document-pair/utils/{assertNotVariantVersion,variantActionsApiClient}.ts`, `variants/store/variantsClient.ts`, `variants/ACTIONS.md` |
 | Creation          | `variants/documents/createVariantScopedDocument.ts`, `variants/hooks/useVariantDocumentOperations.ts`                                                                                                                                                        |
 | Publish-state UI  | `structure/documentActions/{PublishAction,UnpublishAction,DiscardChangesAction}.tsx`, `releases/plugin/documentActions/UnpublishVersionAction.tsx`                                                                                                           |
+| Permissions       | `store/grants/documentPairPermissions.ts` (`getVariantPairPermissions`), `core/form/useDocumentForm.ts` (`targetDocumentId`)                                                                                                                                 |
 | Diffs & history   | `structure/panes/document/inspectors/changes/EventsInspector.tsx`, `structure/panes/document/DocumentEventsPane.tsx`, `store/events/getEditEvents.ts`, `store/history/createHistoryStore.ts`, `document-pair/serverOperations/restore.ts`                    |

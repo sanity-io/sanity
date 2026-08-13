@@ -106,7 +106,8 @@ Replaces the current pattern of threading `useTargetDocument()` into ~12 files w
 
 ### WS5 — Permissions
 
-- [ ] `store/grants/documentPairPermissions.ts`: accept target kind; for variant targets the `publish`/`unpublish` templates must check grants against the variant ids (sibling stub id), not `getPublishedId(draft._id)` / `getDraftId(published._id)`.
+- [x] `store/grants/documentPairPermissions.ts`: variant templates (`getVariantPairPermissions`) branch off the checked-out version snapshot's `_system.variant` — the same discriminator the operations route on — rather than a caller-declared target kind. `publish`/`unpublish`/`discardDraft`/`discardVersion`/`update` check the variant documents instead of `getPublishedId(draft._id)` / `getDraftId(published._id)`. The sibling a publish or unpublish writes to comes from the version's `_system.draft` advertisement (unpublish) or from `PublishAction` via the new `publishedVariantId` option (publish); it is never derived. `delete` and `duplicate` stay group-level by design. Covered by `store/grants/__tests__/documentPairPermissions.variants.test.ts`; `form/useDocumentForm.variants.test.tsx` pins the edit-access side.
+- [ ] Gate the "Add to variant" CTA in `DocumentNotInVariantBanner` — creating a variant document is currently ungated.
 - [ ] Verify the grants engine matches `versions.<hash>.*` paths against real dataset ACLs (manual, dev studio) — do this early; a mismatch could invalidate parts of the design.
 
 ### WS6 — Peripheral subsystems
