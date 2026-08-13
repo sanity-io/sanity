@@ -133,29 +133,32 @@ function getVariantPairPermissions({
     }
 
     case 'unpublish': {
-      // A release-scoped variant is soft-unpublished: the backend marks it with
-      // `_system.delete`, so the only document involved is the variant itself.
-      if (variantVersion.bundleId !== 'published') {
-        return [['update release variant document', checkDocumentPermission('update', version)]]
+      // The variant-of-published is hard-unpublished: it is deleted and its content recreated as
+      // the drafts-bundle variant, whose id the version advertises on `_system.draft`.
+      if (variantVersion.bundleId === 'published') {
+        const draftVariant = asVariantSibling(version, version._system?.draft?._ref, 'drafts')
+
+        return [
+          // precondition
+          [
+            'update draft variant at its current state',
+            checkDocumentPermission('create', draftVariant),
+          ],
+
+          // post condition
+          ['delete published variant document', checkDocumentPermission('update', version)],
+          [
+            'create draft variant from published variant',
+            checkDocumentPermission('create', draftVariant),
+          ],
+        ]
       }
 
-      // Hard unpublish of the variant-of-published: it is deleted and its content recreated as
-      // the drafts-bundle variant, whose id the version advertises on `_system.draft`.
-      const draftVariant = asVariantSibling(version, version._system?.draft?._ref, 'drafts')
-
+      // Every other bundle is a soft unpublish, which only marks the variant itself with
+      // `_system.delete`. (A drafts-scoped variant has nothing published to unpublish; the
+      // operation is disabled with `NOT_PUBLISHED` before it gets this far.)
       return [
-        // precondition
-        [
-          'update draft variant at its current state',
-          checkDocumentPermission('create', draftVariant),
-        ],
-
-        // post condition
-        ['delete published variant document', checkDocumentPermission('update', version)],
-        [
-          'create draft variant from published variant',
-          checkDocumentPermission('create', draftVariant),
-        ],
+        ['mark variant document for unpublishing', checkDocumentPermission('update', version)],
       ]
     }
 
