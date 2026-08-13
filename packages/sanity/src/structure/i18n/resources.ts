@@ -718,6 +718,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text when an unpublish operation succeeded  */
   'panes.document-operation-results.operation-success_unpublish':
     '<Strong>{{title}}</Strong> was unpublished. A draft has been created from the latest published revision.',
+  /** The text when an unpublish operation succeeded for a document in a release */
+  'panes.document-operation-results.operation-success_unpublishVersion':
+    'Version will be unpublished when the release is published',
   /** The document title shown when document title is "undefined" in operation message */
   'panes.document-operation-results.operation-undefined-title': 'Untitled',
   /** The loading message for the document not found pane */
