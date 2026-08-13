@@ -109,6 +109,10 @@ function WorkspaceLoader({
         key={workspace.name}
         projectId={workspace.projectId}
         dataset={workspace.dataset}
+        // Without an explicit apiHost the SDK builds `https://<projectId>.api.sanity.io`
+        // for every request — a studio configured against another host (staging,
+        // custom CNAMEs) would leak its SDK traffic to production
+        auth={workspace.apiHost ? {apiHost: workspace.apiHost} : undefined}
         studio={{
           authenticated: workspace.authenticated,
           auth: workspace.auth.token ? {token: workspace.auth.token} : undefined,

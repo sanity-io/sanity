@@ -1172,6 +1172,15 @@ export interface ScheduledPublishingPluginOptions {
 export interface Workspace extends Omit<Source, 'type'> {
   type: 'workspace'
   /**
+   * API hostname used for requests, when the workspace config sets a custom
+   * one (staging, custom CNAMEs). Undefined for the default production host.
+   * Carried over from the workspace summary at runtime — typed here so
+   * consumers (e.g. the embedded SDK instance) don't have to re-derive it
+   * from a client.
+   * @internal
+   */
+  apiHost?: string
+  /**
    * URL base path to use, for instance `/myWorkspace`
    * Note that this will be prepended with any _studio_ base path, eg `/studio/myWorkspace`,
    * and is a client-side routing feature. If you're looking to serve your studio from a subpath,
