@@ -8,7 +8,7 @@ import {Box} from 'ui5'
 
 const ListItem = styled(Flex)``
 
-const ErrorMessageRoot = styled(Box).attrs({padding: 4})``
+const ErrorMessageRoot = styled(Flex).attrs({padding: 4})``
 
 /**
  * @internal
@@ -31,7 +31,7 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
   const last = path[path.length - 1]
 
   return (
-    <ErrorMessageRoot forwardedAs={Flex} direction="column" gap={4}>
+    <ErrorMessageRoot direction="column" gap={4}>
       <Flex direction="column" gap={2}>
         <Text weight="medium" size={3}>
           {startCase(last.type)} Error
