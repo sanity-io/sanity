@@ -6,7 +6,6 @@ import {Box} from 'ui5'
 import {type FieldPreviewComponent} from '../../../preview/types'
 
 const DatetimeWrapper = styled.div`
-  display: inline-block;
   word-wrap: break-word;
 `
 

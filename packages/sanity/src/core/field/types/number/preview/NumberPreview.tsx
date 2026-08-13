@@ -4,7 +4,6 @@ import {Box} from 'ui5'
 import {type FieldPreviewComponent} from '../../../preview/types'
 
 const NumberWrapper = styled.div`
-  display: inline-block;
   word-break: break-all;
 `
 
