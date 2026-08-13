@@ -1,9 +1,10 @@
 import {AddUserIcon} from '@sanity/icons/AddUser'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Box, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'

@@ -1,10 +1,8 @@
 import {getProviderTitle} from '@sanity/access-ui'
 import {LeaveIcon} from '@sanity/icons/Leave'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
-  Button,
-  // Button with specific styling, user avatar.
+  Button, // Button with specific styling, user avatar.
   Card,
   Flex,
   Stack,
@@ -13,6 +11,7 @@ import {
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
