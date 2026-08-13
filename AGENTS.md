@@ -98,7 +98,7 @@ sanity/
 
 - **Package Manager**: pnpm (version 10.x, enforced via `preinstall`)
 - **Build Orchestration**: Turbo (caches builds)
-- **Versioning**: Lerna-lite with conventional commits
+- **Versioning**: Custom tooling (`@repo/release-notes bump`) with conventional commits. Published packages version in lockstep with the root `package.json` version; the bump tool selects packages by `version === rootVersion`, so a package whose version lags the root is **silently excluded** from releases (stable and `next`). When creating a new package, set its version to the current root version, and if a release train passes while the PR is in flight, resync the version before or right after merge.
 
 ### Build Commands
 
