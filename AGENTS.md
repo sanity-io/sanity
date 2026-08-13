@@ -532,12 +532,13 @@ gh pr ready
 
 ### Useful PR Labels
 
-| Label                | When to use                                                                          |
-| -------------------- | ------------------------------------------------------------------------------------ |
-| `🤖 bot`             | **Required** on every AI-agent PR                                                    |
-| `trigger: preview`   | Publishes preview packages via [`pkg.pr.new`](https://pkg.pr.new) (maintainer-gated) |
-| `trigger:perf-bench` | Runs the `perf/bench` suite on the PR (maintainer-gated)                             |
-| `full-test-suite`    | Forces the full unit test suite to run                                               |
+| Label                   | When to use                                                                                                           |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `🤖 bot`                | **Required** on every AI-agent PR                                                                                     |
+| `trigger: preview`      | Publishes preview packages via [`pkg.pr.new`](https://pkg.pr.new) (maintainer-gated)                                  |
+| `trigger:perf-bench`    | Runs the `perf/bench` suite on the PR (maintainer-gated)                                                              |
+| `trigger: next-release` | On the `ci/release-main` release PR only: dispatches an on-demand `next` release from current main (maintainer-gated) |
+| `full-test-suite`       | Forces the full unit test suite to run                                                                                |
 
 Do **not** apply `trigger:*` labels unless the prompter or a maintainer asks — they kick off expensive or publish workflows.
 

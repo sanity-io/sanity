@@ -7,6 +7,13 @@ on:
   # Manual trigger for an on-demand next release between scheduled runs. Publishing is still
   # skipped if the current HEAD of main has already been published.
   workflow_dispatch:
+  # Adding the `trigger: next-release` label to the release PR (ci/release-main) also starts an
+  # on-demand run. The release PR is used as the trigger surface because it always exists and
+  # always reflects the current state of main — main itself has no PR to label. The label is
+  # removed again by the check job, so it works as a repeatable button.
+  pull_request:
+    types: [labeled]
+    branches: [main]
 
 permissions:
   contents: read # for checkout
@@ -18,9 +25,17 @@ concurrency:
 jobs:
   check:
     # scheduled runs always use the default branch, but workflow_dispatch can be pointed at any
-    # ref — never publish next releases from anything but main
-    if: github.ref == 'refs/heads/main'
+    # ref — never publish next releases from anything but main. Label events only count when the
+    # trigger label lands on the release PR.
+    if: >
+      (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' &&
+       github.event.label.name == 'trigger: next-release' &&
+       github.event.pull_request.head.ref == 'ci/release-main')
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # to remove the trigger label after a label-triggered run
     outputs:
       publish: ${{ steps.decide.outputs.publish }}
       version: ${{ steps.decide.outputs.version }}
@@ -28,6 +43,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          # explicit ref so label-triggered runs check main rather than the PR merge ref (whose
+          # head commit is the release commit itself and would always hit the skip below)
+          ref: refs/heads/main
           fetch-depth: 0
           persist-credentials: false
 
@@ -81,6 +99,14 @@ jobs:
             echo "Failed to check the npm registry for sanity@$version (HTTP $http_status)"
             exit 1
           fi
+
+      - name: Remove trigger label
+        if: github.event_name == 'pull_request' && !cancelled()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          TRIGGER_LABEL: "trigger: next-release"
+        run: gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --remove-label "$TRIGGER_LABEL"
 
   release-next:
     needs: [check]
