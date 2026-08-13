@@ -48,6 +48,11 @@
       "entry": ["**/*.{ts,tsx}"],
       "project": ["**/*.{ts,tsx}"],
       "playwright": false,
+      "ignoreDependencies": [
+        // CLI invoked as `pnpm --filter e2e exec chromatic --playwright` in
+        // .github/workflows/e2e.yml, which knip can't trace
+        "chromatic",
+      ],
     },
     "packages/sanity": {
       "entry": ["src/_exports/*.ts", "bin/sanity", "mock-browser-env-stub-loader.mjs"],
