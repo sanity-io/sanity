@@ -133,6 +133,7 @@ export function TestForm(props: TestFormProps) {
   }, [focusPathFromProps])
 
   useEffect(() => {
+    windowWithDocumentState.documentState = document
     patchChannel.publish({
       type: 'mutation',
       patches: [],
@@ -207,11 +208,7 @@ export function TestForm(props: TestFormProps) {
   }, [setFocusPath])
 
   const patchRef = useRef<(event: PatchEvent) => void>((event: PatchEvent) => {
-    setDocument((currentDocumentValue) => {
-      const result = applyAll(currentDocumentValue, event.patches)
-      windowWithDocumentState.documentState = result
-      return result
-    })
+    setDocument((currentDocumentValue) => applyAll(currentDocumentValue, event.patches))
   })
 
   const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])

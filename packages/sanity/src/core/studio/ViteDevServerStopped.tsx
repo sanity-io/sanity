@@ -27,7 +27,11 @@ const useDetectViteDevServerStopped = () => {
     // no early return to optimize tree-shaking
     if (isViteServer(serverHot)) {
       serverHot.on('vite:ws:disconnect', markDevServerStopped)
+      return () => {
+        serverHot.off('vite:ws:disconnect', markDevServerStopped)
+      }
     }
+    return undefined
   }, [markDevServerStopped])
 
   return {devServerStopped}
