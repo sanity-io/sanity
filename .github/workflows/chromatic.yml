@@ -1,0 +1,170 @@
+name: Chromatic
+permissions: {}
+
+# Visual regression testing with Chromatic (https://www.chromatic.com).
+#
+# Two jobs, one per Chromatic project:
+#
+# - `storybook`: builds dev/storybook (whose stories reuse the vitest
+#   browser-mode test harnesses) and uploads it to the `sanity` Chromatic
+#   project for snapshotting.
+# - `vitest-visual`: re-runs the vitest browser-mode suite (chromium only)
+#   with the @chromatic-com/vitest plugin enabled, archiving each test's end
+#   state, and uploads the archives to the Chromatic Vitest project.
+#   @chromatic-com/vitest is in early access, so this job is DORMANT until the
+#   CHROMATIC_PROJECT_TOKEN_VITEST repository secret is added — the moment it
+#   exists the job starts running, with no code changes needed.
+#
+# Both jobs are non-gating during burn-in (`--exit-zero-on-changes`): visual
+# changes are reported on the Chromatic build for review but do not fail CI.
+# Merges to `main` auto-accept the new baselines.
+
+on:
+  # Build on pushes branches that have a PR (including drafts)
+  pull_request:
+  # Keep baselines up to date on the default branch
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  storybook:
+    name: Storybook visual tests
+    timeout-minutes: 30
+    runs-on: ubuntu-8core
+    permissions:
+      contents: read
+    # Chromatic project tokens are repository secrets, which are unavailable
+    # on PRs from forks — skip instead of failing.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Chromatic needs full git history to find baseline builds and to
+          # trace changed files for TurboSnap.
+          fetch-depth: 0
+
+      - uses: ./.github/actions/detect-code-changes
+        id: changes
+
+      - uses: ./.github/actions/setup
+        if: steps.changes.outputs.has_changes == 'true'
+
+      - name: Build packages
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Build Storybook
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm build:storybook --output-logs=full --log-order=grouped
+
+      - name: Run Chromatic
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: chromaui/action@14cfaef73576e69f95f47f60058063f46ca38719 # v18.1.0
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_STORYBOOK }}
+          workingDir: dev/storybook
+          storybookBuildDir: storybook-static
+          # TurboSnap: only snapshot stories whose dependency graph changed
+          onlyChanged: true
+          # Non-gating during burn-in: report changes without failing the check
+          exitZeroOnChanges: true
+          # Merges to main become the new baselines without manual review
+          autoAcceptChanges: main
+
+  vitest-visual:
+    name: Vitest browser visual tests
+    timeout-minutes: 30
+    runs-on: ubuntu-8core
+    permissions:
+      contents: read
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      # Secrets cannot be read in job-level `if` expressions, so a guard step
+      # exports whether the (early access) Vitest project token exists. Every
+      # later step keys off this output; the job reports success while dormant.
+      - name: Check for Chromatic Vitest project token
+        id: token
+        env:
+          CHROMATIC_PROJECT_TOKEN_VITEST: ${{ secrets.CHROMATIC_PROJECT_TOKEN_VITEST }}
+        run: |
+          if [ -n "$CHROMATIC_PROJECT_TOKEN_VITEST" ]; then
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+            echo "CHROMATIC_PROJECT_TOKEN_VITEST is not set — skipping (Chromatic for Vitest is in early access)."
+          fi
+
+      - uses: actions/checkout@v7
+        if: steps.token.outputs.has_token == 'true'
+        with:
+          # Chromatic needs full git history to find baseline builds and to
+          # trace changed files for TurboSnap.
+          fetch-depth: 0
+
+      - uses: ./.github/actions/detect-code-changes
+        if: steps.token.outputs.has_token == 'true'
+        id: changes
+
+      - uses: ./.github/actions/setup
+        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+
+      - name: Store Playwright's Version
+        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        id: cache-playwright-browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          # Same per-browser key as browser-tests.yml so the two workflows
+          # share the chromium cache.
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium
+
+      # System dependencies live outside ~/.cache/ms-playwright and are not
+      # restored by the cache, so always install them (see browser-tests.yml).
+      - name: Install Playwright system dependencies
+        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        run: pnpm exec playwright install-deps chromium
+
+      - name: Install Playwright Browsers
+        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install chromium
+
+      - name: Build packages
+        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Run browser tests with Chromatic archiving
+        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
+          # Enables the @chromatic-com/vitest plugin in
+          # packages/sanity/vitest.browser.config.mts. Chromatic re-renders
+          # archives in a standardized cloud browser, so capturing from
+          # chromium alone is sufficient (and required by the plugin).
+          CHROMATIC: 1
+          SANITY_VITEST_BROWSER: chromium
+        run: pnpm --filter sanity test:browser
+
+      - name: Upload archives to Chromatic
+        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN_VITEST }}
+        # Same flag semantics as the storybook job above.
+        run: pnpm --filter sanity exec chromatic --vitest --only-changed --exit-zero-on-changes --auto-accept-changes main

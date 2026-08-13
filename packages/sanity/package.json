@@ -241,6 +241,7 @@
     "xstate": "^5.32.5"
   },
   "devDependencies": {
+    "@chromatic-com/vitest": "0.1.8",
     "@repo/package.bundle": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
@@ -270,6 +271,7 @@
     "@vitest/expect": "^4.1.10",
     "babel-plugin-react-compiler": "catalog:",
     "blob-polyfill": "^9.0.20240710",
+    "chromatic": "^18.1.0",
     "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
