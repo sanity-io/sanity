@@ -14,6 +14,13 @@ import {test as studioTest} from './studio-test'
  * CDP — unaffected). Scoping it to the snapshot specs keeps the blast radius
  * to the pages we intentionally archive.
  *
+ * ⚠️ Known limitation: specs that edit documents (`createDraftDocument` waits
+ * for the form to become editable) hang under this fixture for the same
+ * reason — stick to page chrome and read-only states. Document form states
+ * are already visually covered by the Storybook harness stories
+ * (dev/storybook), so e2e snapshots should focus on what Storybook can't
+ * render: full-studio page chrome against a real deployment.
+ *
  * Automatic end-of-test snapshots are disabled globally (`disableAutoSnapshot`
  * in playwright.config.ts): the e2e suite runs against per-PR staging datasets
  * with live timestamps and presence, so snapshots are explicit opt-in.
