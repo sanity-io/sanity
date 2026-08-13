@@ -27,7 +27,7 @@ interface DocumentStatusProps {
  *
  * Example: `**Published Oct 16 2023** Edited 8m ago`
  *
- * @internal
+ * @deprecated use DocumentVersionsStatus instead
  */
 export function DocumentStatus({draft, published, versions, singleLine}: DocumentStatusProps) {
   const {data: releases} = useActiveReleases()
@@ -67,6 +67,7 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
         if (!snapshot) {
           return null
         }
+        const version = versions?.[versionName]
         const release = releases?.find(
           (r) => getReleaseIdFromReleaseDocumentId(r._id) === versionName,
         )
@@ -80,6 +81,7 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
             title={release?.metadata.title || t('release.placeholder-untitled-release')}
             timestamp={snapshot?._updatedAt}
             release={release}
+            version={version}
           />
         )
       })}
@@ -101,11 +103,13 @@ const VersionStatus = ({
   timestamp,
   mode,
   release,
+  version,
 }: {
   title: string
   mode: Mode
   timestamp?: string
   release: TargetPerspective
+  version?: VersionInfoDocumentStub
 }) => {
   const {t} = useTranslation()
 
@@ -116,13 +120,14 @@ const VersionStatus = ({
 
   return (
     <Flex align="center" gap={2}>
-      <ReleaseAvatar release={release} padding={0} />
       <Text size={1}>
         {title} -{' '}
         <span style={{color: 'var(--card-muted-fg-color)'}}>
           {t(labels[mode], {date: relativeTime})}
         </span>
       </Text>
+      <ReleaseAvatar release={release} padding={0} />
+      {version?._system.variant?._ref && <Text size={1}>{version._system.variant?._ref}</Text>}
     </Flex>
   )
 }

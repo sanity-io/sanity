@@ -102,7 +102,9 @@ export {
 } from '../core/components/commandList/types'
 export {ContextMenuButton} from '../core/components/contextMenuButton/ContextMenuButton'
 export {Delay} from '../core/components/Delay'
+// oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
+export {DocumentVersionsStatus} from '../core/components/documentStatus/DocumentVersionsStatus'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
 export {DocumentVersionsStatusIndicator} from '../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
