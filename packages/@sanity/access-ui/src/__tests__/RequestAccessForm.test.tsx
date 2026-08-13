@@ -115,10 +115,11 @@ describe('RequestAccessForm', () => {
     })
     window.location.hash = '#token=secret'
     await renderForm({client, onRequestSubmitted})
+    await userEvent.type(screen.getByRole('textbox', {name: 'Message'}), 'please')
     await submitRequest()
 
     expect(await screen.findByText('Access request sent')).toBeInTheDocument()
-    expect(onRequestSubmitted).toHaveBeenCalledTimes(1)
+    expect(onRequestSubmitted).toHaveBeenCalledExactlyOnceWith({note: 'please'})
     // The fragment can carry auth tokens and must not reach the API.
     expect(client.request).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -137,6 +138,22 @@ describe('RequestAccessForm', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/problem submitting your request/)
     expect(screen.getByRole('form', {name: 'Request access'})).toBeInTheDocument()
+  })
+
+  it('lets renderAction vary the action per view', async () => {
+    const client = createClientStub({
+      submit: () => Promise.resolve(createAccessRequest()),
+    })
+    await renderForm({
+      client,
+      renderAction: ({view}) => (view === 'sent' ? <a href="/orgs">View organizations</a> : null),
+    })
+
+    expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
+    expect(screen.queryByRole('link', {name: 'View organizations'})).not.toBeInTheDocument()
+
+    await submitRequest()
+    expect(await screen.findByRole('link', {name: 'View organizations'})).toBeInTheDocument()
   })
 
   it('renders the sign-out action only when onSignOut is provided', async () => {

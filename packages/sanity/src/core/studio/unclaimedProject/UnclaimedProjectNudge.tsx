@@ -150,7 +150,13 @@ function UnclaimedProjectNudgeInner({
               mode="default"
               tone={critical ? 'critical' : 'primary'}
               size="default"
-              iconRight={LaunchIcon}
+              iconRight={
+                <LaunchIcon
+                  aria-hidden="true"
+                  data-testid="unclaimed-project-launch-icon"
+                  focusable="false"
+                />
+              }
               text={copy.toast.claimButtonText}
               onClick={onClaim}
             />
@@ -162,7 +168,7 @@ function UnclaimedProjectNudgeInner({
             paddingY={1}
             text={copy.toast.snoozeButtonText}
             onClick={handleSnooze}
-            style={{fontSize: '0.6875rem', opacity: 0.6}}
+            style={{fontSize: '0.6875rem'}}
           />
         </Flex>
       </Stack>
@@ -244,7 +250,13 @@ function UnclaimedProjectNudgeInner({
             mode="default"
             tone={critical ? 'critical' : 'primary'}
             size="default"
-            iconRight={LaunchIcon}
+            iconRight={
+              <LaunchIcon
+                aria-hidden="true"
+                data-testid="unclaimed-project-launch-icon"
+                focusable="false"
+              />
+            }
             text={copy.banner.claimButtonText}
             onClick={onClaim}
           />

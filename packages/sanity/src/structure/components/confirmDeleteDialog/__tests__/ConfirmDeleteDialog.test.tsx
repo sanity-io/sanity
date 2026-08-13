@@ -111,4 +111,28 @@ describe('ConfirmDeleteDialog', () => {
     expect(screen.queryByText('Delete all versions')).not.toBeInTheDocument()
     expect(screen.queryByText('Delete all versions anyway')).not.toBeInTheDocument()
   })
+
+  it('skips incoming ref validations on versions and shows a simple unpublish confirm when incoming refs are disabled', async () => {
+    mockUseDocumentVersions.mockReturnValue(withVersions(1))
+    const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
+
+    render(
+      <ConfirmDeleteDialog
+        id="doc1"
+        type="post"
+        action="unpublish"
+        checkIncomingReferences={false}
+        onCancel={vi.fn()}
+        onConfirm={vi.fn()}
+      />,
+      {wrapper},
+    )
+
+    expect(mockUseReferringDocuments).toHaveBeenCalledWith('doc1', {enabled: false})
+    expect(await screen.findByText('Unpublish now')).toBeInTheDocument()
+    expect(screen.queryByText('Unpublish anyway')).not.toBeInTheDocument()
+    expect(screen.getByRole('dialog')).toHaveTextContent(
+      'Are you sure you want to unpublish “Doc title”?',
+    )
+  })
 })

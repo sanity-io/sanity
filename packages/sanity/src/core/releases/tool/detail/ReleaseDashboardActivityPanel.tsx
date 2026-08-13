@@ -1,10 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CloseIcon} from '@sanity/icons/Close'
-import {Box, Card, Flex, Layer, Text, useLayer} from '@sanity/ui'
+import {Card, Flex, Layer, Text, useLayer} from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {useEffect} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
