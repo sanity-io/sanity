@@ -1037,6 +1037,149 @@ describe('useCopyPaste', () => {
     )
   })
 
+  it('should record a resolvable schema type name when copying fields nested inside arrays', async () => {
+    const result = await setupUseCopyPaste()
+
+    setupClipboard()
+
+    act(() => {
+      result.current.setDocumentMeta({
+        documentId: 'doc1',
+        documentType: 'editor',
+        schemaType: schema.get('editor')! as ObjectSchemaType,
+        onChange: mockOnChange,
+      })
+    })
+
+    await act(async () => {
+      await result.current.onCopy(
+        ['arrayOfPredefinedOptions', {_key: 'blue'}, 'title'],
+        {
+          _type: 'editor',
+          _id: 'doc1',
+          arrayOfPredefinedOptions: [{_type: 'color', _key: 'blue', title: 'Blue', name: 'blue'}],
+        },
+        {
+          context: {source: 'fieldAction'},
+        },
+      )
+    })
+
+    expect(await getClipboardItem()).toEqual({
+      type: 'sanityClipboardItem',
+      documentId: 'doc1',
+      documentType: 'editor',
+      isDocument: false,
+      schemaTypeName: 'string',
+      valuePath: ['arrayOfPredefinedOptions', {_key: 'blue'}, 'title'],
+      value: 'Blue',
+      patchType: 'replace',
+    })
+  })
+
+  it('should record the nearest registered type name when copying items of inline array member types', async () => {
+    const result = await setupUseCopyPaste()
+
+    setupClipboard()
+
+    act(() => {
+      result.current.setDocumentMeta({
+        documentId: 'doc1',
+        documentType: 'editor',
+        schemaType: schema.get('editor')! as ObjectSchemaType,
+        onChange: mockOnChange,
+      })
+    })
+
+    await act(async () => {
+      await result.current.onCopy(
+        ['arrayOfPredefinedOptions', {_key: 'blue'}],
+        {
+          _type: 'editor',
+          _id: 'doc1',
+          arrayOfPredefinedOptions: [{_type: 'color', _key: 'blue', title: 'Blue', name: 'blue'}],
+        },
+        {
+          context: {source: 'arrayItem'},
+        },
+      )
+    })
+
+    // The `color` member type is declared inline on the array, so its name is not
+    // resolvable through `schema.get()` (and could even collide with an unrelated
+    // registered type of the same name) — the nearest registered parent type is
+    // recorded instead
+    expect(await getClipboardItem()).toEqual({
+      type: 'sanityClipboardItem',
+      documentId: 'doc1',
+      documentType: 'editor',
+      isDocument: false,
+      schemaTypeName: 'object',
+      valuePath: ['arrayOfPredefinedOptions'],
+      value: [{_type: 'color', _key: 'blue', title: 'Blue', name: 'blue'}],
+      patchType: 'append',
+    })
+  })
+
+  it('should handle pasting a field nested inside an array item into another document', async () => {
+    const result = await setupUseCopyPaste()
+
+    // Copied from doc1, where the array item has _key 'source-key'. That key does not
+    // exist in the target document, which used to break source schema type resolution
+    // on paste (https://github.com/sanity-io/sanity/issues/13983)
+    const mockClipboardItem: SanityClipboardItem = {
+      type: 'sanityClipboardItem',
+      documentId: 'doc1',
+      documentType: 'editor',
+      isDocument: false,
+      schemaTypeName: 'string',
+      valuePath: ['arrayOfPredefinedOptions', {_key: 'source-key'}, 'title'],
+      value: 'Red',
+      patchType: 'replace',
+    }
+
+    await setupMockClipboardRead(mockClipboardItem)
+
+    act(() => {
+      result.current.setDocumentMeta({
+        documentId: 'doc2',
+        documentType: 'editor',
+        schemaType: schema.get('editor')! as ObjectSchemaType,
+        onChange: mockOnChange,
+      })
+    })
+
+    await act(async () => {
+      await result.current.onPaste(
+        ['arrayOfPredefinedOptions', {_key: 'target-key'}, 'title'],
+        {
+          _type: 'editor',
+          _id: 'doc2',
+          arrayOfPredefinedOptions: [
+            {_type: 'color', _key: 'target-key', title: 'Blue', name: 'blue'},
+          ],
+        },
+        {
+          context: {source: 'fieldAction'},
+        },
+      )
+    })
+
+    expect(mockToast.push).not.toHaveBeenCalledWith(expect.objectContaining({status: 'error'}))
+    expect(mockOnChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        patches: [
+          expect.objectContaining({
+            type: 'set',
+            patchType: expect.any(Symbol),
+            path: ['arrayOfPredefinedOptions', {_key: 'target-key'}, 'title'],
+            value: 'Red',
+          }),
+        ],
+      }),
+    )
+  })
+
   it('should handle pasting between incompatible types', async () => {
     const result = await setupUseCopyPaste()
 
