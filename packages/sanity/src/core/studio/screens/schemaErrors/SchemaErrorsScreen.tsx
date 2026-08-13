@@ -1,5 +1,6 @@
 import {type Schema} from '@sanity/types'
-import {Card, Code, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
 import {useEffect} from 'react'
 
@@ -94,9 +95,9 @@ export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
           </Flex>
           {context && (
             <Card padding={4} radius={2} shadow={1} tone="caution">
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text weight="semibold">{t('schema-errors.source-info.title')}</Text>
-                <Stack space={2}>
+                <Stack gap={2}>
                   <Text size={1}>
                     <strong>{t('schema-errors.source-info.source')}</strong>{' '}
                     <Code size={1}>{context.sourceName}</Code>
