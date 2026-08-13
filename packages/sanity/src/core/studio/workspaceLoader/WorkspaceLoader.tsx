@@ -7,6 +7,7 @@ import {catchError, map} from 'rxjs/operators'
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {ConfigResolutionError} from '../../config/ConfigResolutionError'
 import {type Source, type Workspace, type WorkspaceSummary} from '../../config/types'
+import {isStaging} from '../../environment/isStaging'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 import {SourceProvider} from '../source'
 import {WorkspaceProvider} from '../workspace'
@@ -109,10 +110,18 @@ function WorkspaceLoader({
         key={workspace.name}
         projectId={workspace.projectId}
         dataset={workspace.dataset}
-        // Without an explicit apiHost the SDK builds `https://<projectId>.api.sanity.io`
-        // for every request — a studio configured against another host (staging,
-        // custom CNAMEs) would leak its SDK traffic to production
-        auth={workspace.apiHost ? {apiHost: workspace.apiHost} : undefined}
+        // Without an effective apiHost the SDK builds `https://<projectId>.api.sanity.io`
+        // for every request — a studio on another host (staging, custom CNAMEs)
+        // would leak its SDK traffic to production. Mirrors createAuthStore's
+        // resolution: explicit workspace config wins, then the staging
+        // environment default. The staging arm matters because the SDK's own
+        // detection only sees the build-time flag, while isStaging also covers
+        // the runtime global and import-map signals of auto-updating studios.
+        auth={
+          workspace.apiHost || isStaging
+            ? {apiHost: workspace.apiHost ?? 'https://api.sanity.work'}
+            : undefined
+        }
         studio={{
           authenticated: workspace.authenticated,
           auth: workspace.auth.token ? {token: workspace.auth.token} : undefined,

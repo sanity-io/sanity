@@ -1172,10 +1172,12 @@ export interface ScheduledPublishingPluginOptions {
 export interface Workspace extends Omit<Source, 'type'> {
   type: 'workspace'
   /**
-   * API hostname used for requests, when the workspace config sets a custom
-   * one (staging, custom CNAMEs). Undefined for the default production host.
-   * Carried over from the workspace summary at runtime — typed here so
-   * consumers (e.g. the embedded SDK instance) don't have to re-derive it
+   * The API hostname *explicitly configured* on the workspace (custom CNAMEs,
+   * non-default environments). Undefined when the config sets none — note the
+   * effective host may still differ from the production default in that case
+   * (e.g. staging inferred via `isStaging`); environment defaults are applied
+   * where clients are created, not here. Carried over from the workspace
+   * summary at runtime; typed here so consumers don't have to re-derive it
    * from a client.
    * @internal
    */
