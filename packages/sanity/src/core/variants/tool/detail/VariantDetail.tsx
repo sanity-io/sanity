@@ -2,9 +2,10 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
 import {SortIcon} from '@sanity/icons/Sort'
 import {UserIcon} from '@sanity/icons/User'
-import {Box, Card, Container, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Container, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {
   DetailBackButton,
@@ -234,7 +235,7 @@ export function VariantDetail() {
                 </Flex>
               </Flex>
               <Flex align="flex-start" gap={4} wrap="wrap">
-                <Box flex={1} style={{minWidth: 280}}>
+                <Box flexBasis="0%" flexGrow={1} style={{minWidth: 280}}>
                   <DetailIdentity
                     description={description || undefined}
                     descriptionTestId="variant-description-display"
