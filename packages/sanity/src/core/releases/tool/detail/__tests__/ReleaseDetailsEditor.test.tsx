@@ -5,6 +5,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {ReleaseDescriptionSet} from '../../../__telemetry__/releases.telemetry'
 import {
   mockUseReleasePermissions,
   useReleasePermissionsMockReturn,
@@ -13,6 +14,12 @@ import {
 } from '../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {ReleaseDetailsEditor} from '../ReleaseDetailsEditor'
+
+const mockTelemetryLog = vi.fn<(event: unknown, payload?: unknown) => void>()
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => ({log: mockTelemetryLog})),
+}))
 
 // Mock the dependencies
 vi.mock('../../../store/useReleaseOperations', () => ({
@@ -34,6 +41,26 @@ const initialRelease = {
     intendedPublishAt: undefined,
   },
 } as ReleaseDocument
+
+const otherRelease = {
+  _id: 'release2',
+  metadata: {
+    title: 'Other Title',
+    description: 'Another description',
+    releaseType: 'asap',
+    intendedPublishAt: undefined,
+  },
+} as ReleaseDocument
+
+function getDescriptionTelemetryPayloads(): unknown[] {
+  return mockTelemetryLog.mock.calls
+    .filter(([event]) => event === ReleaseDescriptionSet)
+    .map(([, payload]) => payload)
+}
+
+function getUpdateReleaseMock(): Mock {
+  return (useReleaseOperations as unknown as Mock).mock.results[0]?.value.updateRelease
+}
 
 describe('ReleaseDetailsEditor', () => {
   describe('production (inline editing)', () => {
@@ -57,9 +84,6 @@ describe('ReleaseDetailsEditor', () => {
       render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
       await flushMicrotasksThisIsACodeSmell()
 
-      const updateReleaseMock = (useReleaseOperations as unknown as Mock).mock.results[0]?.value
-        .updateRelease
-
       const titleInput = screen.getByTestId('release-form-title') as HTMLTextAreaElement
       await userEvent.clear(titleInput)
       await userEvent.type(titleInput, 'New Title')
@@ -67,11 +91,115 @@ describe('ReleaseDetailsEditor', () => {
       await vi.advanceTimersByTimeAsync(250)
 
       await waitFor(() => {
-        expect(updateReleaseMock).toHaveBeenCalledWith(
+        expect(getUpdateReleaseMock()).toHaveBeenCalledWith(
           expect.objectContaining({
             metadata: expect.objectContaining({title: 'New Title'}),
           }),
         )
+      })
+      vi.useRealTimers()
+    })
+
+    it('logs release description telemetry when the description changes', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
+
+      const nextDescription = 'See https://sanity.io'
+      const descriptionInput = screen.getByTestId('release-form-description') as HTMLTextAreaElement
+      await userEvent.clear(descriptionInput)
+      await userEvent.type(descriptionInput, nextDescription, {delay: null})
+
+      await vi.advanceTimersByTimeAsync(250)
+
+      await waitFor(() => {
+        expect(getDescriptionTelemetryPayloads()).toEqual([
+          {
+            action: 'edit',
+            characterCount: nextDescription.length,
+            containsUrl: true,
+          },
+        ])
+      })
+      expect(JSON.stringify(getDescriptionTelemetryPayloads())).not.toContain(nextDescription)
+      vi.useRealTimers()
+    })
+
+    it('does not log release description telemetry when only the title changes', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
+
+      const titleInput = screen.getByTestId('release-form-title') as HTMLTextAreaElement
+      await userEvent.clear(titleInput)
+      await userEvent.type(titleInput, 'New Title', {delay: null})
+
+      await vi.advanceTimersByTimeAsync(250)
+
+      await waitFor(() => {
+        expect(getUpdateReleaseMock()).toHaveBeenCalledWith(
+          expect.objectContaining({
+            metadata: expect.objectContaining({title: 'New Title'}),
+          }),
+        )
+      })
+      expect(getDescriptionTelemetryPayloads()).toEqual([])
+      vi.useRealTimers()
+    })
+
+    it('does not log release description telemetry for a title edit after switching release', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      const wrapper = await createTestProvider()
+      // No key: the same component instance has to survive the release switch for this regression.
+      const {rerender} = render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
+
+      rerender(<ReleaseDetailsEditor release={otherRelease} />)
+      await flushMicrotasksThisIsACodeSmell()
+
+      const titleInput = screen.getByTestId('release-form-title') as HTMLTextAreaElement
+      await userEvent.clear(titleInput)
+      await userEvent.type(titleInput, 'Renamed Title', {delay: null})
+
+      await vi.advanceTimersByTimeAsync(250)
+
+      await waitFor(() => {
+        expect(getUpdateReleaseMock()).toHaveBeenCalledWith(
+          expect.objectContaining({
+            metadata: expect.objectContaining({title: 'Renamed Title'}),
+          }),
+        )
+      })
+      expect(getDescriptionTelemetryPayloads()).toEqual([])
+      vi.useRealTimers()
+    })
+
+    it('logs release description telemetry for a description edit after switching release', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      const wrapper = await createTestProvider()
+      const {rerender} = render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+      await flushMicrotasksThisIsACodeSmell()
+
+      rerender(<ReleaseDetailsEditor release={otherRelease} />)
+      await flushMicrotasksThisIsACodeSmell()
+
+      const nextDescription = 'Reworded'
+      const descriptionInput = screen.getByTestId('release-form-description') as HTMLTextAreaElement
+      await userEvent.clear(descriptionInput)
+      await userEvent.type(descriptionInput, nextDescription, {delay: null})
+
+      await vi.advanceTimersByTimeAsync(250)
+
+      await waitFor(() => {
+        expect(getDescriptionTelemetryPayloads()).toEqual([
+          {
+            action: 'edit',
+            characterCount: nextDescription.length,
+            containsUrl: false,
+          },
+        ])
       })
       vi.useRealTimers()
     })
