@@ -113,6 +113,7 @@ jobs:
     if: needs.check.outputs.publish == 'true'
     permissions:
       id-token: write # to enable use of OIDC for npm provenance
+      pull-requests: write # to comment on the release PR after publishing
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -181,6 +182,28 @@ jobs:
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
         run: pnpm bundle-manager publish --tag=next
+
+      # The release PR (ci/release-main) collects everything unreleased on main, so it's the
+      # natural place to surface which next snapshot contains those changes. Scheduled runs have
+      # no PR in their event payload, so look it up — and skip quietly when none is open. The
+      # published version is the computed one minus the +hash build metadata, which npm strips.
+      - name: Find the release PR
+        id: release-pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.check.outputs.version }}
+        run: |
+          echo "number=$(gh pr list --repo "$GITHUB_REPOSITORY" --head ci/release-main --base main --state open --json number --jq '.[0].number // empty')" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION%%+*}" >> "$GITHUB_OUTPUT"
+
+      - name: Comment on the release PR
+        if: steps.release-pr.outputs.number != ''
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        with:
+          pr-number: ${{ steps.release-pr.outputs.number }}
+          comment-tag: "next-release"
+          message: |
+            The changes in this PR up to ${{ needs.check.outputs.sha }} are available on npm as [`sanity@${{ steps.release-pr.outputs.version }}`](https://www.npmjs.com/package/sanity/v/${{ steps.release-pr.outputs.version }}) (`npm install sanity@next`).
 
   notify-on-failure:
     needs: [check, release-next]
