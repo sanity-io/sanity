@@ -35,6 +35,7 @@ import {
   getCreatableVariantTarget,
   getPairTarget,
   getTargetScopeId,
+  getVariantTargetDocumentId,
   useTargetDocumentState,
 } from '../hooks/useTargetDocumentState'
 import {useValidationStatus} from '../hooks/useValidationStatus'
@@ -342,10 +343,17 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return comparisonValueRaw
   }, [comparisonValueRaw, upstreamEditState])
 
+  // The document presence is reported at and read from. For variant targets this must be the
+  // resolved variant-scoped version rather than `value._id`: the latter falls back to the
+  // published group id while the version snapshot loads, and stays there for a creatable draft
+  // variant until the first keystroke creates the document. Reporting at the group id puts
+  // editors of different variants — and of the base document — in the same place.
+  const presenceDocumentId = getVariantTargetDocumentId(targetDocumentState) ?? value._id
+
   const presence$ = useMemo(
     () =>
       presenceStore
-        .documentPresence(value._id, {excludeVersions: true})
+        .documentPresence(presenceDocumentId, {excludeVersions: true})
         .pipe(
           distinctUntilChanged(
             (prev, next) =>
@@ -358,7 +366,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
               ),
           ),
         ),
-    [presenceStore, value._id],
+    [presenceStore, presenceDocumentId],
   )
   const presence = useObservable(presence$, [])
 
@@ -656,14 +664,14 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       presenceStore.setLocation([
         {
           type: 'document',
-          documentId: value._id,
+          documentId: presenceDocumentId,
           path: nextFocusPath,
           lastActiveAt: new Date().toISOString(),
           selection: payload?.selection,
         },
       ])
     },
-    [presenceStore, value._id],
+    [presenceStore, presenceDocumentId],
   )
 
   // Announce presence on the document root when the form mounts

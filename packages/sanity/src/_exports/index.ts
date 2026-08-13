@@ -1735,6 +1735,11 @@ export {validateDocument, type ValidateDocumentOptions} from '../core/validation
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
+export {
+  filterPresenceByVariant,
+  getVariantScopeIds,
+} from '../core/variants/presence/filterPresenceByVariant'
+export {useVariantScopedDocumentPresence} from '../core/variants/presence/useVariantScopedDocumentPresence'
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
 export {getVariantTitle} from '../core/variants/tool/util'

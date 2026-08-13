@@ -7,6 +7,7 @@ import {
   getPairTarget,
   getTargetDocumentState,
   getTargetScopeId,
+  getVariantTargetDocumentId,
 } from '../useTargetDocumentState'
 
 const PUBLISHED_ID = 'article-1'
@@ -302,6 +303,51 @@ describe('getCreatableVariantTarget', () => {
     expect(getCreatableVariantTarget(getTargetDocumentState(baseOptions))).toBeUndefined()
     expect(
       getCreatableVariantTarget(
+        getTargetDocumentState({
+          ...variantOptions,
+          versions: [publishedBase, draftBase, publishedAlphaVariant],
+        }),
+      ),
+    ).toBeUndefined()
+  })
+})
+
+describe('getVariantTargetDocumentId', () => {
+  it('returns the resolved variant-scoped version id', () => {
+    expect(getVariantTargetDocumentId(getTargetDocumentState(variantOptions))).toBe(
+      draftAlphaVariant._id,
+    )
+  })
+
+  it('returns the advertised id of a creatable draft variant', () => {
+    // The document doesn't exist yet, but presence and permission checks must still address the
+    // id it will occupy rather than the published group id.
+    expect(
+      getVariantTargetDocumentId(
+        getTargetDocumentState({
+          ...variantOptions,
+          versions: [publishedBase, draftBase, publishedAlphaVariantAdvertisingDraft],
+        }),
+      ),
+    ).toBe(DRAFT_SIBLING_ID)
+  })
+
+  it('returns undefined when no variant target applies', () => {
+    // Base pair.
+    expect(getVariantTargetDocumentId(getTargetDocumentState(baseOptions))).toBeUndefined()
+    // Release version, no variant selected.
+    expect(
+      getVariantTargetDocumentId(getTargetDocumentState({...baseOptions, bundle: RELEASE_ID})),
+    ).toBeUndefined()
+    // Still resolving.
+    expect(
+      getVariantTargetDocumentId(
+        getTargetDocumentState({...variantOptions, versionsLoading: true}),
+      ),
+    ).toBeUndefined()
+    // Variant missing and not creatable.
+    expect(
+      getVariantTargetDocumentId(
         getTargetDocumentState({
           ...variantOptions,
           versions: [publishedBase, draftBase, publishedAlphaVariant],

@@ -18,9 +18,9 @@ import {
 import {
   FieldPresenceInner,
   type DocumentActionDescription,
-  useDocumentPresence,
   useFieldActions,
   useTranslation,
+  useVariantScopedDocumentPresence,
   useZIndex,
   useWorkspace,
 } from 'sanity'
@@ -163,7 +163,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
   const showPaneGroupCloseButton = !showSplitPaneCloseButton && !showBackButton && !!BackLink
 
   const {t} = useTranslation(structureLocaleNamespace)
-  const presence = useDocumentPresence(documentId)
+  const presence = useVariantScopedDocumentPresence(documentId)
   const documentLevelPresence = useMemo(
     () => presence.filter((p) => p.path.length === 0),
     [presence],

@@ -194,7 +194,20 @@ The pair holds only the variant document for the _current_ bundle. Everything th
 - **`getEditEvents`** — attribution fails soft for variants: `releaseId` carries the opaque hash, which can never collide with a real release name (regression-tested).
 - `useDocumentIdStack` is **unchanged**: variants are resolved by a separate API parameter and do not participate in the perspective stack.
 
-## 10. Invariants — the "never do" list
+## 10. Collaboration surfaces: comments and presence
+
+Both attach to a document group, so both need an explicit answer to "which variant is this about?".
+
+**Comments** are stored against the published id (`target.document._ref`) plus a scope in `target.documentVersionId`. `CommentsWrapper` fills that scope from `getTargetScopeId(targetDocumentState)`, so a variant target stores (and queries by) the variant's opaque scope hash the same way a release target stores the release id. Comments written on one variant are therefore invisible on another, and on the base document.
+
+**Presence** is variant-partitioned, and this took two parts:
+
+- **Reporting.** `useDocumentForm` reports at `getVariantTargetDocumentId(targetDocumentState) ?? value._id`. `value._id` alone is wrong for variants: it falls back to the published group id while the version snapshot loads, and stays there for a creatable draft variant until the first keystroke creates the document — so editors of _different_ variants would both announce themselves on the group document.
+- **Subscribing.** `useDocumentPresence(documentId)` aggregates the whole group by design (`documentIdEquals`), which is what you want across draft/published/release versions of one document — they are the same content at different points in its lifecycle. Variants are not: they are different content sharing a group. `useVariantScopedDocumentPresence` narrows the group list to the selected variant by attributing each presence location's scope id to a variant via the group's version stubs (`getVariantScopeIds`) — scope hashes are opaque, so this attribution can only be discovered, never computed. A scope the client has no stub for is treated as non-variant, which degrades to the old group-level behavior rather than hiding someone. `FormView` (overlay, Portable Text cursors) and `DocumentPanelHeader` (document-level avatars) use it; the form's own field-level presence is already exact-id matched (`excludeVersions: true`).
+
+Presence surfaces outside the document pane (search results, reference previews, list panes, the navbar presence menu) remain group-level: they identify a document group, not a variant of it.
+
+## 11. Invariants — the "never do" list
 
 These are the rules that keep the system correct. Violating any of them reintroduces a failure mode that was deliberately engineered away:
 
@@ -207,22 +220,23 @@ These are the rules that keep the system correct. Violating any of them reintrod
 7. **Infer loading from `loading` flags, never from stub presence.** `useDocumentVersions` emits `{loading: true, versions: []}` while fetching.
 8. **Declare targets to the store.** New operation call sites must pass `getPairTarget(targetDocumentState)`, not a bare scope id, or they lose the `unresolved`/`target-missing` guards.
 
-## 11. What is not done yet
+## 12. What is not done yet
 
 - **Permissions**: `documentPairPermissions` does not yet accept a target kind; variant grants are still checked against base-derived ids. The grants-engine match on `versions.<hash>.*` paths needs early manual verification.
-- **Peripheral subsystems**: comments scoping, presence scoping (group-level vs variant), UI truthfulness gates keyed on `!draft && !published`, Presentation/scheduled-publishing guards.
+- **Peripheral subsystems**: UI truthfulness gates keyed on `!draft && !published`, Presentation/scheduled-publishing guards.
 - **Optimistic locks**: `ifPublishedVariantRevisionId` is wired from `publishedSibling._rev` via `PublishOptions.publishedRevisionId` on `publish.execute`. `ifSourceRevisionId` remains blocked on the deployed action accepting that field.
 
-## 12. Map of key files
+## 13. Map of key files
 
-| Area              | Files                                                                                                                                                                                                                                                        |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Types & constants | `variants/types.ts`, `variants/store/constants.ts`, `@sanity/types` `DocumentSystem`                                                                                                                                                                         |
-| Selection         | `perspective/PerspectiveProvider.tsx`, `perspective/useSetVariant.tsx`, `variants/store/useAllVariants.ts`                                                                                                                                                   |
-| Resolution        | `hooks/useTargetDocumentState.ts`, `util/getTargetDocument.ts`, `releases/hooks/useDocumentVersions.tsx`, `releases/util/temporarilyBuildDocumentSystem.ts`                                                                                                  |
-| Pane wiring       | `structure/panes/document/DocumentPane.tsx` (mount gate + keying), `DocumentPaneProvider.tsx`, `documentPanel/banners/DocumentNotInVariantBanner.tsx`, `VariantDefinitionNotFoundBanner.tsx`, `core/form/useDocumentForm.ts`                                 |
-| Store & guards    | `store/document/document-store.ts`, `store/document/types.ts` (`DocumentPairTarget`), `document-pair/editState.ts`, `document-pair/operations/helpers.ts` (`GUARDED`, `TARGET_NOT_FOUND_OPERATIONS`, self-derived guard), `hooks/useDocumentOperation.ts`    |
-| Operation routing | `variants/documents/getVariantVersionInfo.ts`, `document-pair/serverOperations/{publish,unpublish,discardChanges}.ts`, `document-pair/utils/{assertNotVariantVersion,variantActionsApiClient}.ts`, `variants/store/variantsClient.ts`, `variants/ACTIONS.md` |
-| Creation          | `variants/documents/createVariantScopedDocument.ts`, `variants/hooks/useVariantDocumentOperations.ts`                                                                                                                                                        |
-| Publish-state UI  | `structure/documentActions/{PublishAction,UnpublishAction,DiscardChangesAction}.tsx`, `releases/plugin/documentActions/UnpublishVersionAction.tsx`                                                                                                           |
-| Diffs & history   | `structure/panes/document/inspectors/changes/EventsInspector.tsx`, `structure/panes/document/DocumentEventsPane.tsx`, `store/events/getEditEvents.ts`, `store/history/createHistoryStore.ts`, `document-pair/serverOperations/restore.ts`                    |
+| Area                | Files                                                                                                                                                                                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Types & constants   | `variants/types.ts`, `variants/store/constants.ts`, `@sanity/types` `DocumentSystem`                                                                                                                                                                         |
+| Selection           | `perspective/PerspectiveProvider.tsx`, `perspective/useSetVariant.tsx`, `variants/store/useAllVariants.ts`                                                                                                                                                   |
+| Resolution          | `hooks/useTargetDocumentState.ts`, `util/getTargetDocument.ts`, `releases/hooks/useDocumentVersions.tsx`, `releases/util/temporarilyBuildDocumentSystem.ts`                                                                                                  |
+| Pane wiring         | `structure/panes/document/DocumentPane.tsx` (mount gate + keying), `DocumentPaneProvider.tsx`, `documentPanel/banners/DocumentNotInVariantBanner.tsx`, `VariantDefinitionNotFoundBanner.tsx`, `core/form/useDocumentForm.ts`                                 |
+| Store & guards      | `store/document/document-store.ts`, `store/document/types.ts` (`DocumentPairTarget`), `document-pair/editState.ts`, `document-pair/operations/helpers.ts` (`GUARDED`, `TARGET_NOT_FOUND_OPERATIONS`, self-derived guard), `hooks/useDocumentOperation.ts`    |
+| Operation routing   | `variants/documents/getVariantVersionInfo.ts`, `document-pair/serverOperations/{publish,unpublish,discardChanges}.ts`, `document-pair/utils/{assertNotVariantVersion,variantActionsApiClient}.ts`, `variants/store/variantsClient.ts`, `variants/ACTIONS.md` |
+| Creation            | `variants/documents/createVariantScopedDocument.ts`, `variants/hooks/useVariantDocumentOperations.ts`                                                                                                                                                        |
+| Publish-state UI    | `structure/documentActions/{PublishAction,UnpublishAction,DiscardChangesAction}.tsx`, `releases/plugin/documentActions/UnpublishVersionAction.tsx`                                                                                                           |
+| Comments & presence | `structure/panes/document/comments/CommentsWrapper.tsx`, `variants/presence/{filterPresenceByVariant,useVariantScopedDocumentPresence}.ts`, `core/form/useDocumentForm.ts`                                                                                   |
+| Diffs & history     | `structure/panes/document/inspectors/changes/EventsInspector.tsx`, `structure/panes/document/DocumentEventsPane.tsx`, `store/events/getEditEvents.ts`, `store/history/createHistoryStore.ts`, `document-pair/serverOperations/restore.ts`                    |

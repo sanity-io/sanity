@@ -111,8 +111,8 @@ Replaces the current pattern of threading `useTargetDocument()` into ~12 files w
 
 ### WS6 — Peripheral subsystems
 
-- [ ] Comments: thread `scopeId` through `CommentsWrapper` → `CommentsProvider` (currently `selectedReleaseId` only) so `documentValue`/revision attach to the variant.
-- [ ] Presence: `FormView` subscribes on the base `documentId` while the form reports on `value._id`. Decide group-level vs variant-scoped presence; group-level is acceptable short-term, but make it a decision.
+- [x] Comments: `CommentsWrapper` passes `getTargetScopeId(targetDocumentState)` to `CommentsProvider`, so a variant target stores and queries `target.documentVersionId` as the variant scope hash (`useCommentsStore`, `createOperation`) and `documentValue`/revision come from the variant's version slot.
+- [x] Presence: decided **variant-scoped**. `useDocumentForm` reports at `getVariantTargetDocumentId(targetDocumentState) ?? value._id` (`value._id` is the published group id while the version loads, and for a creatable draft variant until it exists), and `FormView` / `DocumentPanelHeader` subscribe through `useVariantScopedDocumentPresence`, which attributes each location's scope id to a variant via the group's stubs. Presence outside the document pane stays group-level.
 - [ ] UI truthfulness: loading gates keyed on `!draft && !published` (`DocumentPanelHeader`, `DocumentPanelSubHeader`, `DocumentHeaderTabs`, `FormView` spinner) must count the version; `hasObsoleteDraft` skips under variant targets; `isNewDocument` / `mustChooseNewDocumentDestination` get per-target semantics; `DocumentStatusLine` fallback timestamps prefer the version under a variant.
 - [ ] Presentation (`PostMessageRefreshMutations`) and scheduled publishing (SAPP-3986 / SAPP-3987 TODOs): explicit out-of-scope guards rather than silent base behavior.
 
@@ -133,5 +133,4 @@ Each workstream carries its own unit tests (operation payload tests like the exi
 ## Open decisions
 
 - Duplicate semantics for variant documents (WS3).
-- Presence scoping: group-level vs variant-scoped (WS6).
 - Whether `variant-missing` read-only state should offer creation inline (current `DocumentNotInVariantBanner` CTA) for release-bundle variants once `sanity.action.document.variant.create` supports release `bundleId`s.

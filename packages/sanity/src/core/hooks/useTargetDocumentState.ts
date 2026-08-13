@@ -136,6 +136,28 @@ export function getTargetScopeId(state: TargetDocumentState): string | undefined
 }
 
 /**
+ * The id of the document a variant target resolves to: the variant-scoped version itself, or the
+ * (server-advertised) id a creatable draft variant will occupy once typing creates it.
+ *
+ * `undefined` for every state that isn't a variant target — the base draft/published pair, a
+ * release version, and a missing or unresolved variant that can't be created. Unlike
+ * {@link getTargetScopeId} this is a full document id, for consumers that address the document
+ * directly rather than checking out a pair (presence, permission checks).
+ *
+ * @internal
+ * @beta
+ */
+export function getVariantTargetDocumentId(state: TargetDocumentState): string | undefined {
+  if (state.status === 'ready') {
+    return state.variant ? state.targetDocument?._id : undefined
+  }
+  if (state.status === 'variant-missing') {
+    return state.creatableTarget?.id
+  }
+  return undefined
+}
+
+/**
  * The creatable draft variant of a `variant-missing` state, or `undefined` for every other
  * state. Present when the missing target can be created by typing at a server-advertised id
  * (see {@link CreatableTargetDocument}); consumers use it to exempt the state from the

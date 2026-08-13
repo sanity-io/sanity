@@ -15,10 +15,10 @@ import {
   type PatchMsg,
   PresenceOverlay,
   useConditionalToast,
-  useDocumentPresence,
   useDocumentStore,
   usePerspective,
   useTranslation,
+  useVariantScopedDocumentPresence,
 } from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
 
@@ -70,7 +70,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
   // The scope of the document targeted by the selected perspective (undefined while the target is
   // resolving or when the draft/published pair applies).
   const scopeId = getTargetScopeId(targetDocumentState)
-  const presence = useDocumentPresence(documentId)
+  const presence = useVariantScopedDocumentPresence(documentId)
   const {title} = useDocumentTitle()
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
   // nodes about both remote and local patches.
