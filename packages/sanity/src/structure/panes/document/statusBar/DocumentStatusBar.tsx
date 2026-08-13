@@ -58,6 +58,14 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
       return false
     }
 
+    // Prefer `targetDocument` so published / release variants (which are not always present on
+    // `editState.published`) still render the footer.
+    const hasTargetDocument =
+      targetDocumentState.status === 'ready' && Boolean(targetDocumentState.targetDocument)
+    if (hasTargetDocument) {
+      return isReady
+    }
+
     if (selectedPerspective) {
       if (isPublishedPerspective(selectedPerspective)) {
         return isReady && Boolean(editState?.published)
@@ -66,6 +74,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
         return isReady && Boolean(editState?.version)
       }
     }
+
     return isReady
   }, [collapsed, editState, selectedPerspective, selectedVariantName, targetDocumentState])
 

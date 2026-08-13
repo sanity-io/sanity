@@ -48,6 +48,11 @@
       "entry": ["**/*.{ts,tsx}"],
       "project": ["**/*.{ts,tsx}"],
       "playwright": false,
+      "ignoreDependencies": [
+        // CLI invoked as `pnpm --filter e2e exec chromatic --playwright` in
+        // .github/workflows/e2e.yml, which knip can't trace
+        "chromatic",
+      ],
     },
     "packages/sanity": {
       "entry": ["src/_exports/*.ts", "bin/sanity", "mock-browser-env-stub-loader.mjs"],
@@ -56,7 +61,12 @@
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
       ],
       "ignoreBinaries": ["tzutil"],
-      "ignoreDependencies": ["@vitest/expect"],
+      "ignoreDependencies": [
+        "@vitest/expect",
+        // CLI invoked as `pnpm --filter sanity exec chromatic --vitest` in
+        // .github/workflows/chromatic.yml, which knip can't trace
+        "chromatic",
+      ],
     },
     "packages/@repo/debug-proxy": {
       "project": ["src/**/*.ts"],

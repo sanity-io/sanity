@@ -4,9 +4,10 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Path} from '@sanity/mutate'
 import {type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, Inline, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Flex, Inline, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -335,7 +336,7 @@ export function VariantForm(props: {
             return (
               <Stack key={row.id} gap={2}>
                 <Flex align="center" gap={2}>
-                  <Box flex={1}>
+                  <Box flexBasis="0%" flexGrow={1}>
                     <ConditionAutocompleteInput
                       autoFocus={index > 0}
                       ariaLabel={t('dialog.create.condition-key.label')}
@@ -348,7 +349,7 @@ export function VariantForm(props: {
                       value={row.key}
                     />
                   </Box>
-                  <Box flex={1}>
+                  <Box flexBasis="0%" flexGrow={1}>
                     <ConditionAutocompleteInput
                       ariaLabel={t('dialog.create.condition-value.label')}
                       customValidity={valueValidation ? t(valueValidation) : undefined}

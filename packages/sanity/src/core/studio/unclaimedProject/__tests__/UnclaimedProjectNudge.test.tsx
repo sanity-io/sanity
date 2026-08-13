@@ -178,6 +178,14 @@ describe('UnclaimedProjectNudge', () => {
     expect(claimLink).toHaveAttribute('href', claimUrl)
     expect(claimLink).toHaveAttribute('target', '_blank')
     expect(claimLink).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(screen.getByTestId('unclaimed-project-launch-icon')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    )
+    expect(screen.getByTestId('unclaimed-project-launch-icon')).toHaveAttribute(
+      'focusable',
+      'false',
+    )
     expect(latestToast()).toMatchObject({enabled: true, status: 'warning'})
   })
 

@@ -1,9 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
 // oxlint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
-import {Box, Button, Text} from '@sanity/ui'
+import {Button, Text} from '@sanity/ui'
 import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseTitle} from '../../releases/components/ReleaseTitle'

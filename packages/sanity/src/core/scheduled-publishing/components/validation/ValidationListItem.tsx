@@ -2,11 +2,12 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type Path, type ValidationMarker} from '@sanity/types'
-import {Box, type ButtonTone, Flex, Stack, Text} from '@sanity/ui'
+import {type ButtonTone, Flex, Stack, Text} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports
 import {MenuItem} from '@sanity/ui/menu'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 const StyledText = styled(Text)`
   white-space: initial;
