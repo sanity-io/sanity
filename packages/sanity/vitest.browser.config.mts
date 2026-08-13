@@ -22,7 +22,8 @@ const chromaticEnabled = Boolean(process.env.CHROMATIC)
 // SANITY_VITEST_BROWSER to a single browser name to run only that instance;
 // unset runs all three (the default for local runs) — except for Chromatic
 // capture runs, which default to chromium.
-const selectedBrowser = process.env.SANITY_VITEST_BROWSER ?? (chromaticEnabled ? 'chromium' : undefined)
+const selectedBrowser =
+  process.env.SANITY_VITEST_BROWSER ?? (chromaticEnabled ? 'chromium' : undefined)
 const browsers = selectedBrowser
   ? ALL_BROWSERS.filter((name) => name === selectedBrowser)
   : ALL_BROWSERS
