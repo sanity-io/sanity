@@ -59,26 +59,32 @@ pnpm vercel login
 #    - Set up and deploy? yes
 #    - Scope: sanity-sandbox
 #    - Project name: studio-storybook
-#    - "In which directory is your code located?" -> ./dev/storybook
-#    - Framework: Storybook (build "storybook build", output "storybook-static")
-pnpm vercel --scope sanity-sandbox
+#    - "Code directory?" -> ./dev/storybook
+#    - Vercel misdetects the framework as Vite; that doesn't matter, because
+#      vercel.json pins buildCommand/outputDirectory and overrides it.
+#    - Connect the detected Git repository when prompted (origin).
+#    - The monorepo exceeds Vercel's 15k-file upload limit, hence --archive=tgz.
+pnpm vercel --scope sanity-sandbox --archive=tgz
 
 # 3. Verify a production deploy
-pnpm vercel --prod --scope sanity-sandbox
+pnpm vercel --prod --scope sanity-sandbox --archive=tgz
 
 # 4. Point the production domain at the project
 pnpm vercel domains add studio-storybook.sanity.dev studio-storybook --scope sanity-sandbox
-
-# 5. Connect the Git repo for automatic PR previews + production deploys on main
-pnpm vercel git connect --scope sanity-sandbox
 ```
 
 Notes:
 
-- The first-deploy prompt is what persists the Root Directory (`dev/storybook`) on the project.
-  Subsequent Git-integration builds clone the monorepo, install the pnpm workspace from the root
-  (so `workspace:*` and `catalog:` protocols resolve), and let turbo scope the build to
-  `sanity-storybook` — the same behavior as the `test-studio-preview-iframe` project.
+- The first-deploy prompt is what persists the Root Directory (`dev/storybook`) on the project,
+  and connecting the Git repository during setup enables automatic PR previews + production
+  deploys on `main` (no separate `vercel git connect` needed if done during setup).
+- [vercel.json](vercel.json) pins the build: `cd ../.. && pnpm exec turbo run build
+--filter=sanity-storybook` with output `storybook-static`, so upstream workspace packages are
+  built first and the project's detected framework preset is irrelevant. Git-integration builds
+  clone the monorepo and install the pnpm workspace from the root (so `workspace:*` and
+  `catalog:` protocols resolve) — the same behavior as the `test-studio-preview-iframe` project.
+- Until this package lands on `main`, production deploys triggered by pushes to `main` fail with
+  a missing-root-directory error — expected noise that stops once the PR merges.
 - `.vercel/` link metadata is gitignored, same as the other dev apps.
 - Optional (dashboard-only setting): set the project's Ignored Build Step to
   `npx turbo-ignore sanity-storybook` so commits that can't affect the Storybook skip deploys.

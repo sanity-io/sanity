@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "buildCommand": "cd ../.. && pnpm exec turbo run build --filter=sanity-storybook",
+  "outputDirectory": "storybook-static",
   "routes": [
     {
       "handle": "filesystem"
