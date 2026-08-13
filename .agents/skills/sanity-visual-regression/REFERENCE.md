@@ -55,12 +55,22 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
 
 ## Playwright e2e snapshots
 
-- `e2e/studio-test.ts` imports `test`/`expect` from `@chromatic-com/playwright` and sets
-  `disableAutoSnapshot: true` globally. Every existing spec keeps working unchanged; nothing is
-  snapshotted unless a spec calls `takeSnapshot(page, 'name', testInfo)`.
-- Only snapshot deterministic states: seeded fixture documents, chrome (navbar, panes) without
-  live data, and never anything showing relative timestamps ("2 minutes ago"), presence from
-  other CI runs, or dataset-dependent lists.
+- Specs that take visual snapshots use `e2e/studio-visual-test.ts`, which composes the studio
+  fixtures with the Chromatic archive fixture via `mergeTests` and exports
+  `takeChromaticSnapshot(page, 'name', testInfo)` (chromium-only, one snapshot per state).
+  ⚠️ Do NOT apply the Chromatic fixture suite-wide (e.g. in `studio-test.ts`): it instruments
+  pages over CDP to archive resources, which broke the studio's streaming connections on every
+  chromium shard when tried (firefox, having no CDP, was unaffected). Scope it to snapshot specs
+  only.
+- `disableAutoSnapshot: true` in `playwright.config.ts` keeps even those specs from snapshotting
+  automatically at test end — snapshots happen only at explicit `takeChromaticSnapshot` calls.
+- Specs that edit documents hang under the fixture for the same CDP reason
+  (`createDraftDocument`'s editable-form wait times out), so e2e snapshots are for **page chrome
+  and read-only states** — document form states are covered by the Storybook harness stories
+  instead.
+- Only snapshot deterministic states: chrome (navbar, panes) without live data, and never
+  anything showing relative timestamps ("2 minutes ago"), presence from other CI runs, or
+  dataset-dependent lists.
 - Archives are written into the Playwright output dir during the run; the `e2e.yml` workflow
   merges shard artifacts and uploads once with `chromatic --playwright` using
   `CHROMATIC_PROJECT_TOKEN_E2E`.
