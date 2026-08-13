@@ -56,13 +56,13 @@ jobs:
       - uses: ./.github/actions/setup
         if: steps.changes.outputs.has_changes == 'true'
 
+      # Builds the workspace packages dev/storybook depends on. The Storybook
+      # itself is built by the Chromatic action below (not via turbo): TurboSnap
+      # needs the preview-stats.json that Chromatic's own build invocation
+      # generates, and a prebuilt storybookBuildDir has no stats to trace.
       - name: Build packages
         if: steps.changes.outputs.has_changes == 'true'
         run: pnpm build --output-logs=full --log-order=grouped
-
-      - name: Build Storybook
-        if: steps.changes.outputs.has_changes == 'true'
-        run: pnpm build:storybook --output-logs=full --log-order=grouped
 
       - name: Run Chromatic
         if: steps.changes.outputs.has_changes == 'true'
@@ -70,7 +70,7 @@ jobs:
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_STORYBOOK }}
           workingDir: dev/storybook
-          storybookBuildDir: storybook-static
+          buildScriptName: build
           # TurboSnap: only snapshot stories whose dependency graph changed
           onlyChanged: true
           # Non-gating during burn-in: report changes without failing the check
