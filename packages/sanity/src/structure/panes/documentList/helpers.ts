@@ -219,7 +219,6 @@ export function fieldExtendsType(field: ObjectField | ObjectFieldType, ofType: s
  * Recursively extract static `_type`s from GROQ filter expressions. If the
  * types can't be statically determined then it will return `null`.
  */
-// eslint-disable-next-line complexity
 function findTypes(node: ExprNode): Set<string> | null {
   switch (node.type) {
     case 'OpCall': {

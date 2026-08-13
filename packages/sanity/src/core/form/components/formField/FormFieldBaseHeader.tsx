@@ -2,18 +2,20 @@ import {Box, Card, Flex} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {type DocumentFieldActionNode} from '../../../config'
-import {FieldPresence, type FormNodePresence} from '../../../presence'
+import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
+import {FieldPresence} from '../../../presence/FieldPresence'
+import {type FormNodePresence} from '../../../presence/types'
 import {calcAvatarStackWidth} from '../../../presence/utils'
-import {FieldActionMenu} from '../../field'
-import {type FieldCommentsProps} from '../../types'
+import {FieldActionMenu} from '../../field/actions/FieldActionMenu'
+import {type FieldCommentsProps} from '../../types/fieldProps'
 
 const Root = styled(Flex)<{
   $floatingCardWidth: number
   $slotWidth: number
   $floatingCardVisible: boolean
 }>(({theme, $floatingCardWidth, $slotWidth, $floatingCardVisible}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = theme.sanity
   return css`
     /* Prevent buttons from taking up extra vertical space */
@@ -41,6 +43,7 @@ const Root = styled(Flex)<{
 const ContentBox = styled(Box)<{
   $presenceMaxWidth: number
 }>(({theme, $presenceMaxWidth}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = theme.sanity
   return css`
     max-width: calc(100% - ${$presenceMaxWidth + space[1]}px);
@@ -52,6 +55,7 @@ const SlotBox = styled(Box)<{
   $right: number
   $fieldActionsVisible: boolean
 }>(({theme, $right, $fieldActionsVisible}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = theme.sanity
   const right = $fieldActionsVisible ? $right + space[1] : $right
   return css`
@@ -131,6 +135,7 @@ const FieldActionsFlex = styled(Flex)`
 const MAX_AVATARS = 4
 
 interface FormFieldBaseHeaderProps {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   __internal_comments?: FieldCommentsProps // DO NOT USE
   __internal_slot?: ReactNode // ONLY USED BY AI ASSIST PLUGIN
   actions?: DocumentFieldActionNode[]
@@ -205,6 +210,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
 
   // Calculate floating card's width
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     handleSetFloatingCardElementWidth()
   }, [handleSetFloatingCardElementWidth, showFieldActions])
 
@@ -212,6 +218,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   useEffect(() => {
     if (slotElement) {
       const {width} = slotElement.getBoundingClientRect()
+      // oxlint-disable-next-line react/react-compiler
       setSlotWidth(width || 0)
     }
   }, [slotElement])

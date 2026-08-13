@@ -11,13 +11,16 @@ describe('resolveUploadAssetSources', () => {
 
   const mockAssetSourceWithUploader: AssetSource = {
     name: 'source-with-uploader',
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     title: 'Source With Uploader',
     component: vi.fn(),
+    // @ts-expect-error -- pre-existing, fix later
     Uploader: MockUploader,
   }
 
   const mockAssetSourceWithoutUploader: AssetSource = {
     name: 'source-without-uploader',
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     title: 'Source Without Uploader',
     component: vi.fn(),
   }
@@ -283,8 +286,10 @@ describe('resolveUploadAssetSources', () => {
 
       const anotherSourceWithUploader: AssetSource = {
         name: 'another-source-with-uploader',
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         title: 'Another Source With Uploader',
         component: vi.fn(),
+        // @ts-expect-error -- pre-existing, fix later
         Uploader: AnotherMockUploader,
       }
 

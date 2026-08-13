@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import type {FullResult, Reporter, TestCase} from '@playwright/test/reporter'
+import {type FullResult, type Reporter, type TestCase} from '@playwright/test/reporter'
 
 /**
  * Custom Playwright reporter that outputs a JSON summary of test results.

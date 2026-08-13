@@ -1,8 +1,9 @@
 import {type Path} from '@sanity/types'
-import {useCallback, useMemo, useState} from 'react'
+import {use, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {ScrollContext} from 'sanity/_singletons'
+import {useEffectEvent} from 'use-effect-event'
 
-import {type Reported} from '../../components/react-track-elements'
-import {useOnScroll} from '../../components/scroll'
+import {type Reported} from '../../components/react-track-elements/types'
 import {useReviewChanges} from '../../hooks/useReviewChanges'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
@@ -13,7 +14,6 @@ import {type TrackedArea, type TrackedChange, useChangeIndicatorsReportedValues}
 import {Connector} from './Connector'
 import {SvgWrapper} from './ConnectorsOverlay.styled'
 import {DebugLayers} from './DebugLayers'
-import {useResizeObserver} from './useResizeObserver'
 
 export interface Rect {
   height: number
@@ -22,15 +22,14 @@ export interface Rect {
   left: number
 }
 
-interface State {
-  connectors: {
-    field: TrackedChange & {id: string; rect: Rect; bounds: Rect}
-    change: TrackedChange & {id: string; rect: Rect; bounds: Rect}
-    hasFocus: boolean
-    hasHover: boolean
-    hasRevertHover: boolean
-  }[]
-  isHoverConnector: boolean
+type ConnectorEndpoint = TrackedChange & {id: string; rect: Rect; bounds: Rect}
+
+interface ConnectorPair {
+  field: ConnectorEndpoint
+  change: ConnectorEndpoint
+  hasFocus: boolean
+  hasHover: boolean
+  hasRevertHover: boolean
 }
 
 interface ConnectorsOverlayProps {
@@ -38,12 +37,48 @@ interface ConnectorsOverlayProps {
   onSetFocus: (nextFocusPath: Path) => void
 }
 
-function getState(
+const EMPTY_CONNECTORS: ConnectorPair[] = []
+
+function rectsAreEqual(current: Rect, next: Rect): boolean {
+  return (
+    current.top === next.top &&
+    current.left === next.left &&
+    current.width === next.width &&
+    current.height === next.height
+  )
+}
+
+// Compare only the fields the rendered connector and click handler read (id, element, zIndex,
+// rect, bounds). hasHover/hasFocus/hasRevertHover are computed upstream but never drawn, so a
+// change to them alone must not redraw. id derives from the field path, so id equality identifies
+// the pair.
+function connectorsAreEqual(current: ConnectorPair[], next: ConnectorPair[]): boolean {
+  if (current.length !== next.length) {
+    return false
+  }
+
+  return current.every((currentPair, index) => {
+    const nextPair = next[index]
+    return (
+      currentPair.field.id === nextPair.field.id &&
+      currentPair.field.element === nextPair.field.element &&
+      currentPair.change.element === nextPair.change.element &&
+      currentPair.field.zIndex === nextPair.field.zIndex &&
+      currentPair.change.zIndex === nextPair.change.zIndex &&
+      rectsAreEqual(currentPair.field.rect, nextPair.field.rect) &&
+      rectsAreEqual(currentPair.field.bounds, nextPair.field.bounds) &&
+      rectsAreEqual(currentPair.change.rect, nextPair.change.rect) &&
+      rectsAreEqual(currentPair.change.bounds, nextPair.change.bounds)
+    )
+  })
+}
+
+function getConnectors(
   allReportedValues: Reported<TrackedChange | TrackedArea>[],
   hovered: string | null,
   byId: Map<string, TrackedChange | TrackedArea>,
   rootElement: HTMLElement,
-): State {
+): ConnectorPair[] {
   const changeBarsWithHover: Reported<TrackedChange>[] = []
   const changeBarsWithFocus: Reported<TrackedChange>[] = []
 
@@ -70,11 +105,9 @@ function getState(
     }
   }
 
-  const isHoverConnector = changeBarsWithHover.length > 0
+  const changeBars = changeBarsWithHover.length > 0 ? changeBarsWithHover : changeBarsWithFocus
 
-  const changeBars = isHoverConnector ? changeBarsWithHover : changeBarsWithFocus
-
-  const connectors = changeBars
+  return changeBars
     .map(([id]) => {
       const field = findMostSpecificTarget('field', id, byId)
       const change = findMostSpecificTarget('change', id, byId)
@@ -94,8 +127,6 @@ function getState(
       field: {...field, ...getOffsetsTo(field.element!, rootElement)},
       change: {...change, ...getOffsetsTo(change.element!, rootElement)},
     }))
-
-  return {connectors, isHoverConnector}
 }
 
 export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
@@ -108,31 +139,78 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
     [allReportedValues],
   )
 
-  const [{connectors}, setState] = useState<State>(() =>
-    getState(allReportedValues, hovered, byId, rootElement),
-  )
+  const [connectors, setConnectors] = useState<ConnectorPair[]>(EMPTY_CONNECTORS)
 
-  const visibleConnector = useMemo(
-    () =>
-      // Get the connector with longest path, it will be the one that is most specific
-      connectors.sort((a, b) => b.field.id.length - a.field.id.length)[0],
-    [connectors],
-  )
+  const updateConnectors = useEffectEvent(() => {
+    // Connectors are only shown while the review changes panel is open. Clearing them when
+    // it closes ensures no stale connector lines linger on screen.
+    const next = isReviewChangesOpen
+      ? getConnectors(allReportedValues, hovered, byId, rootElement)
+      : EMPTY_CONNECTORS
+    // Reuse EMPTY_CONNECTORS so React can bail out of re-rendering while there are no
+    // connectors to draw.
+    const nextConnectors = next.length === 0 ? EMPTY_CONNECTORS : next
+    setConnectors((current) =>
+      connectorsAreEqual(current, nextConnectors) ? current : nextConnectors,
+    )
+  })
 
-  const handleScrollOrResize = useCallback(() => {
-    // Only update the state if the review changes panel is open
-    // Otherwise we don't need to show the connectors.
-    if (isReviewChangesOpen) {
-      setState(getState(allReportedValues, hovered, byId, rootElement))
+  const frameRef = useRef<number | null>(null)
+
+  // Deferring the layout read to rAF avoids the forced reflow of measuring right after the
+  // previous frame's DOM write, and coalesces the value/scroll/resize paths onto one frame.
+  const scheduleUpdate = useEffectEvent(() => {
+    if (frameRef.current !== null) {
+      return
     }
-  }, [byId, allReportedValues, hovered, rootElement, isReviewChangesOpen])
+    frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = null
+      updateConnectors()
+    })
+  })
 
-  useResizeObserver(rootElement, handleScrollOrResize)
-  useOnScroll(handleScrollOrResize)
+  useEffect(() => {
+    scheduleUpdate()
+  }, [allReportedValues, hovered, isReviewChangesOpen, rootElement])
+
+  useEffect(() => {
+    return () => {
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current)
+        frameRef.current = null
+      }
+    }
+  }, [])
+
+  // The scheduler is called inline rather than passed, as an effect event cannot be handed to a hook.
+  useEffect(() => {
+    const observer = new ResizeObserver(() => scheduleUpdate())
+    observer.observe(rootElement)
+    return () => observer.disconnect()
+  }, [rootElement])
+
+  const scrollContext = use(ScrollContext)
+  useEffect(() => {
+    return scrollContext?.subscribe(() => scheduleUpdate())
+  }, [scrollContext])
+
+  const visibleConnector = useMemo(() => {
+    // Get the connector with the longest id, it will be the one that is most specific
+    let mostSpecific: ConnectorPair | undefined
+    for (const connector of connectors) {
+      if (!mostSpecific || connector.field.id.length > mostSpecific.field.id.length) {
+        mostSpecific = connector
+      }
+    }
+    return mostSpecific
+  }, [connectors])
 
   return (
-    <SvgWrapper style={{zIndex: visibleConnector && visibleConnector.field.zIndex}}>
-      {visibleConnector?.change && (
+    <SvgWrapper
+      data-testid="change-connectors-overlay"
+      style={{zIndex: visibleConnector && visibleConnector.field.zIndex}}
+    >
+      {isReviewChangesOpen && visibleConnector?.change && (
         <ConnectorGroup
           key={visibleConnector.field.id}
           field={visibleConnector.field}
@@ -146,8 +224,8 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
 }
 
 interface ConnectorGroupProps {
-  field: TrackedChange & {id: string; rect: Rect; bounds: Rect}
-  change: TrackedChange & {id: string; rect: Rect; bounds: Rect}
+  field: ConnectorEndpoint
+  change: ConnectorEndpoint
   setHovered: (id: string | null) => void
   onSetFocus: (path: Path) => void
 }

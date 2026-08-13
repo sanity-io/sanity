@@ -5,12 +5,13 @@ import {
   type ImageSchemaType,
   type SchemaType,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useState} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
-import {PatchEvent, set, unset} from '../../../patch'
+import {set, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {type FormPatch} from '../../../patch/types'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {createInitialUploadPatches} from '../../../studio/uploads/utils'

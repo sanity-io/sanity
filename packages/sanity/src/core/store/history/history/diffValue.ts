@@ -9,7 +9,7 @@ import {
 } from '@sanity/diff'
 import {type incremental} from 'mendoza'
 
-import {type Annotation, type Chunk} from '../../../field'
+import {type Annotation, type Chunk} from '../../../field/types'
 import {type Timeline} from './Timeline'
 import {isSameAnnotation} from './utils'
 
@@ -185,6 +185,7 @@ export function wrapValue<T>(
 }
 
 function extractAnnotationForFromInput(
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   timeline: Timeline,
   firstChunk: Chunk | null,
   meta: Meta,
@@ -199,6 +200,7 @@ function extractAnnotationForFromInput(
   return null
 }
 
+// oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
 function extractAnnotationForToInput(timeline: Timeline, meta: Meta): Annotation {
   if (meta) {
     return annotationForTransactionIndex(timeline, meta.transactionIndex, meta.chunk.index)
@@ -207,6 +209,7 @@ function extractAnnotationForToInput(timeline: Timeline, meta: Meta): Annotation
   return null
 }
 
+// oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
 function annotationForTransactionIndex(timeline: Timeline, idx: number, chunkIdx?: number) {
   const tx = timeline.transactionByIndex(idx)
   if (!tx) return null
@@ -221,8 +224,8 @@ function annotationForTransactionIndex(timeline: Timeline, idx: number, chunkIdx
   }
 }
 
-// eslint-disable-next-line max-params
 export function diffValue(
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   timeline: Timeline,
   firstChunk: Chunk | null,
   from: incremental.Value<Meta>,

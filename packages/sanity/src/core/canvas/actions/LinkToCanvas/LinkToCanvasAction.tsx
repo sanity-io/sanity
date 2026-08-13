@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
-import {ComposeSparklesIcon} from '@sanity/icons'
+import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {
@@ -76,6 +76,7 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
 
   useEffect(() => {
     if (isLinked) {
+      // oxlint-disable-next-line react/react-compiler
       handleCloseDialog()
     }
   }, [isLinked, handleCloseDialog])

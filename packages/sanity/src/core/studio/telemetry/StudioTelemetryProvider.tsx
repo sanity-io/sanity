@@ -15,13 +15,16 @@ import {
 import {useRouterState} from 'sanity/router'
 
 import {isProd} from '../../environment'
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {useProjectOrganizationId} from '../../store/project/useProjectOrganizationId'
 import {SANITY_VERSION} from '../../version'
-import {WorkspaceFeaturesObserved} from '../__telemetry__/featureAvailability.telemetry'
+import {
+  collectWorkspaceFeatures,
+  WorkspaceFeaturesObserved,
+} from '../__telemetry__/featureAvailability.telemetry'
 import {StudioLoaded} from '../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../workspace'
-import {useWorkspaces} from '../workspaces'
+import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
 import {debugLoggingStore} from './utils/debugLoggingStore'
@@ -181,7 +184,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
 
   // The storeOptions callbacks access contextRef.current, but only when called
   // asynchronously (on flush), not during render. Suppress the lint warning.
-  // eslint-disable-next-line react-hooks/refs
+  // oxlint-disable-next-line react/react-compiler
   const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
 
   // Per-instance guard so StrictMode's double-invoked mount effect logs StudioLoaded once.
@@ -203,13 +206,19 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
     })
   }, [store.logger])
 
-  const advancedVersionControlEnabled = workspace.advancedVersionControl?.enabled ?? false
+  const workspaceFeatures = useMemo(() => collectWorkspaceFeatures(workspace), [workspace])
   // Why: this component creates the TelemetryProvider, so `useTelemetry()` is
-  // unavailable here. Log through `store.logger` directly.
+  // unavailable here. Log through `store.logger` directly. The ref dedupes
+  // StrictMode's double-invoked mount effect per workspace while still
+  // re-emitting when the active workspace changes.
+  const observedFeaturesKeyRef = useRef<string | null>(null)
   useEffect(() => {
     if (!isClient) return
-    store.logger.log(WorkspaceFeaturesObserved, {advancedVersionControlEnabled})
-  }, [store.logger, workspace.name, workspace.projectId, advancedVersionControlEnabled])
+    const workspaceKey = `${workspace.projectId}:${workspace.name}`
+    if (observedFeaturesKeyRef.current === workspaceKey) return
+    observedFeaturesKeyRef.current = workspaceKey
+    store.logger.log(WorkspaceFeaturesObserved, workspaceFeatures)
+  }, [store.logger, workspace.name, workspace.projectId, workspaceFeatures])
 
   return (
     <TelemetryProvider store={store}>

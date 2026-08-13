@@ -1,13 +1,13 @@
-/* eslint-disable i18next/no-literal-string */
-import {WarningOutlineIcon} from '@sanity/icons'
+/* oxlint-disable i18next/no-literal-string */
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useId, useState} from 'react'
 
-import {Dialog} from '../../../../../ui-components'
-import {StatusButton} from '../../../../components'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {StatusButton} from '../../../../components/StatusButton'
 import {getCollectedConfigWarnings} from '../../../../config/configWarnings'
-import {useSchema} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'
 
@@ -66,8 +66,8 @@ export function ConfigIssuesButton() {
           scheme={scheme}
           id={dialogId}
         >
-          <Stack space={4}>
-            <Stack space={3}>
+          <Stack gap={4}>
+            <Stack gap={3}>
               <Text as="h2" size={1} weight="medium">
                 Found {totalWarnings} configuration warning{totalWarnings === 1 ? '' : 's'}
               </Text>{' '}
@@ -78,7 +78,7 @@ export function ConfigIssuesButton() {
             </Stack>
 
             {configWarnings.length > 0 && (
-              <Stack space={3}>
+              <Stack gap={3}>
                 {configWarnings.map((warning, index) => (
                   <Card
                     key={`${warning.type}-${warning.projectId}-${index}`}
@@ -87,7 +87,7 @@ export function ConfigIssuesButton() {
                     shadow={1}
                     tone="caution"
                   >
-                    <Stack space={2}>
+                    <Stack gap={2}>
                       <Text size={1} weight="medium">
                         Divergent auth config
                       </Text>

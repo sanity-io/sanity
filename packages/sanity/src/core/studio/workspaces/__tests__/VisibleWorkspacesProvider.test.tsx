@@ -16,6 +16,7 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
       id: 'u1',
       name: 'User',
       email: 'u@example.com',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       role: '',
       roles: [],
       profileImage: '',
@@ -133,6 +134,7 @@ describe('VisibleWorkspacesProvider', () => {
             id: 'editor',
             name: 'Editor',
             email: 'editor@example.com',
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             role: 'editor',
             roles: [{name: 'editor', title: 'Editor'}],
             profileImage: '',

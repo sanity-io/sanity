@@ -1,10 +1,10 @@
-/* eslint-disable no-restricted-imports */
+/* oxlint-disable no-restricted-imports */
 import {
   MenuButton as UIMenuButton,
   type MenuButtonProps as UIMenuButtonProps,
-  type PopoverProps,
-} from '@sanity/ui'
-import {type ForwardedRef, forwardRef} from 'react'
+} from '@sanity/ui/menu'
+import {type PopoverProps} from '@sanity/ui/popover'
+import {type RefAttributes} from 'react'
 
 /** @internal */
 export type MenuButtonProps = Omit<UIMenuButtonProps, 'popover'> & {
@@ -16,13 +16,11 @@ export type MenuButtonProps = Omit<UIMenuButtonProps, 'popover'> & {
  *
  * @internal
  */
-export const MenuButton = forwardRef(function MenuButton(
-  props: MenuButtonProps,
-  ref: ForwardedRef<HTMLButtonElement>,
-) {
+export function MenuButton(props: MenuButtonProps & RefAttributes<HTMLButtonElement>) {
+  const {ref, ...rest} = props
   return (
     <UIMenuButton
-      {...props}
+      {...rest}
       ref={ref}
       popover={{
         ...props.popover,
@@ -30,4 +28,4 @@ export const MenuButton = forwardRef(function MenuButton(
       }}
     />
   )
-})
+}

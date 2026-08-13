@@ -1,7 +1,5 @@
 import {
   type BlockDecoratorRenderProps,
-  type BlockListItemRenderProps,
-  type BlockStyleRenderProps,
   type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
@@ -10,26 +8,21 @@ import {
   type PortableTextEditableProps,
   type RangeDecoration,
   type RenderAnnotationFunction,
-  type RenderBlockFunction,
-  type RenderChildFunction,
 } from '@portabletext/editor'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useFormBuilder} from '../../useFormBuilder'
 import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useSpellCheck} from './hooks/useSpellCheck'
-import {Decorator} from './text'
-import {ListItem} from './text/ListItem'
-import {Style} from './text/Style'
-import {Toolbar} from './toolbar'
+import {Decorator} from './text/Decorator'
+import {Toolbar} from './toolbar/Toolbar'
 
 const noOutlineStyle = {outline: 'none'} as const
 
@@ -60,8 +53,6 @@ interface EditorProps {
   readOnly?: boolean
   rangeDecorations?: RangeDecoration[]
   renderAnnotation: RenderAnnotationFunction
-  renderBlock: RenderBlockFunction
-  renderChild: RenderChildFunction
   scrollElement: HTMLElement | null
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
   setScrollElement: (scrollElement: HTMLElement | null) => void
@@ -88,8 +79,6 @@ export function Editor(props: EditorProps): ReactNode {
     readOnly,
     rangeDecorations,
     renderAnnotation,
-    renderBlock,
-    renderChild,
     scrollElement,
     setPortalElement,
     setScrollElement,
@@ -130,14 +119,6 @@ export function Editor(props: EditorProps): ReactNode {
     return <Decorator {...decoratorProps} />
   }, [])
 
-  const renderStyle = useCallback((styleProps: BlockStyleRenderProps) => {
-    return <Style {...styleProps} />
-  }, [])
-
-  const renderListItem = useCallback((listItemProps: BlockListItemRenderProps) => {
-    return <ListItem {...listItemProps} />
-  }, [])
-
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
   const editable = useMemo(() => {
@@ -149,12 +130,8 @@ export function Editor(props: EditorProps): ReactNode {
       rangeDecorations,
       'ref': elementRef,
       renderAnnotation,
-      renderBlock,
-      renderChild,
       renderDecorator,
-      renderListItem,
       renderPlaceholder,
-      renderStyle,
       scrollSelectionIntoView,
       'selection': initialSelection,
       spellCheck,
@@ -171,12 +148,8 @@ export function Editor(props: EditorProps): ReactNode {
     onPaste,
     rangeDecorations,
     renderAnnotation,
-    renderBlock,
-    renderChild,
     renderDecorator,
-    renderListItem,
     renderPlaceholder,
-    renderStyle,
     scrollSelectionIntoView,
     spellCheck,
   ])

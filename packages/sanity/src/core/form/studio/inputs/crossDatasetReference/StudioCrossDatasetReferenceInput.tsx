@@ -11,16 +11,16 @@ import {useCallback, useMemo} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 
-import {type Source} from '../../../../config'
+import {type Source} from '../../../../config/types'
 import {type FIXME} from '../../../../FIXME'
-import {useDocumentPreviewStore} from '../../../../store'
-import {useSource} from '../../../../studio'
+import {useDocumentPreviewStore} from '../../../../store/datastores'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+import {useSource} from '../../../../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
 import {useFormValue} from '../../../contexts/FormValue'
-import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
-import {type ObjectInputProps} from '../../../types'
+import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput/CrossDatasetReferenceInput'
+import {type ObjectInputProps} from '../../../types/inputProps'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 import {search} from './datastores/search'
 
@@ -79,6 +79,7 @@ type SearchError = {
  */
 export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetReferenceInputProps) {
   const {path, schemaType, readOnly} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const client = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentPreviewStore = useDocumentPreviewStore()
@@ -121,6 +122,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
           if (schemaType.options?.filter && isQueryError) {
             err.message = `Invalid reference filter, please check the custom "filter" option`
           }
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           return throwError(err)
         }),
       ),

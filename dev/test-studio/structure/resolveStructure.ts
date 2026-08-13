@@ -1,20 +1,18 @@
-import {
-  BinaryDocumentIcon,
-  CheckmarkCircleIcon,
-  CogIcon,
-  DocumentIcon,
-  EarthGlobeIcon,
-  EditIcon,
-  EmptyIcon,
-  FilterIcon,
-  ImagesIcon,
-  PlugIcon,
-  RocketIcon,
-  SyncIcon,
-  TerminalIcon,
-  UsersIcon,
-  WarningFilledIcon,
-} from '@sanity/icons'
+import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {CogIcon} from '@sanity/icons/Cog'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
+import {EditIcon} from '@sanity/icons/Edit'
+import {EmptyIcon} from '@sanity/icons/Empty'
+import {FilterIcon} from '@sanity/icons/Filter'
+import {ImagesIcon} from '@sanity/icons/Images'
+import {PlugIcon} from '@sanity/icons/Plug'
+import {RocketIcon} from '@sanity/icons/Rocket'
+import {SyncIcon} from '@sanity/icons/Sync'
+import {TerminalIcon} from '@sanity/icons/Terminal'
+import {UsersIcon} from '@sanity/icons/Users'
+import {WarningFilledIcon} from '@sanity/icons/WarningFilled'
 import {uuid} from '@sanity/uuid'
 import {type Observable, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
@@ -26,7 +24,7 @@ import {
   type StructureResolver,
 } from 'sanity/structure'
 
-import {DebugPane} from '../components/panes/debug'
+import {DebugPane} from '../components/panes/debug/DebugPane'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
 import {PerspectiveExample} from '../components/PerspectiveExample'
 import {TranslateExample} from '../components/TranslateExample'
@@ -45,7 +43,7 @@ import {typesInOptionGroup} from './groupByOption'
 
 export const structure: StructureResolver = (
   S,
-  {schema, documentStore, i18n, perspectiveStack},
+  {schema, documentStore, i18n, perspectiveStack, selectedVariantName},
 ) => {
   const {t} = i18n
   return S.list()
@@ -61,9 +59,11 @@ export const structure: StructureResolver = (
             {},
             {
               perspective: perspectiveStack,
+              variant: selectedVariantName,
             },
           )
 
+          // @ts-expect-error -- pre-existing, fix later
           return S.component(PerspectiveExample).id('sections-by-perspective').options({doc$})
         }),
       S.listItem()
@@ -177,7 +177,6 @@ export const structure: StructureResolver = (
                         }),
                       S.menuItem()
                         .title('Test 1')
-                        // eslint-disable-next-line no-alert
                         .action(() => alert('you clicked!'))
                         .showAsAction(true),
                       S.menuItem()
@@ -281,6 +280,7 @@ export const structure: StructureResolver = (
                 .title('GRRM')
                 .schemaType('author')
                 .child(
+                  // @ts-expect-error -- pre-existing, fix later
                   S.component(JsonDocumentDump)
                     .id('json-dump')
                     .title('GRRM')
@@ -491,7 +491,6 @@ export const structure: StructureResolver = (
               S.menuItem()
                 .title('Alert action')
                 .icon(WarningFilledIcon)
-                // eslint-disable-next-line no-alert
                 .action(() => alert('you clicked!')),
 
               S.menuItem()

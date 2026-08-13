@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Stack, Text, useToast} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type CSSProperties, useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
@@ -7,8 +8,8 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
-import {useValuePreview} from '../../../preview'
 import {Preview} from '../../../preview/components/Preview'
+import {useValuePreview} from '../../../preview/useValuePreview'
 import {getVersionFromId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -101,7 +102,7 @@ export function UnpublishVersionDialog(props: {
         },
       }}
     >
-      <Stack space={4} paddingX={4} paddingBottom={4}>
+      <Stack gap={4} paddingX={4} paddingBottom={4}>
         {schemaType ? (
           <Preview value={{_id: documentVersionId}} schemaType={schemaType} />
         ) : (

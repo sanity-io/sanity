@@ -51,7 +51,7 @@ jobs:
       EXPECTED_NPM_USER: sanity-svc.npm
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Set publishing config
@@ -61,7 +61,7 @@ jobs:
 
       - name: Check valid token
         run: |
-          WHOAMI_RESULT=$(pnpm whoami)
+          WHOAMI_RESULT=$(pnpm --silent whoami)
           echo "pnpm whoami result: $WHOAMI_RESULT"
           if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
             echo "Error: pnpm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
@@ -96,7 +96,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Update manifest with latest tag (staging)

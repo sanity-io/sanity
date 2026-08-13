@@ -1,5 +1,6 @@
-import {CopyIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Grid, Inline, Select, Stack, TextInput, Tooltip} from '@sanity/ui'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {Box, Button, Card, Flex, Grid, Inline, Select, Stack, TextInput} from '@sanity/ui'
+import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type ChangeEvent,
   type ComponentType,
@@ -86,6 +87,7 @@ export function VisionGuiHeader({
 
     try {
       el.select()
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       document.execCommand('copy')
     } catch {
       console.error('Unable to copy to clipboard :(')
@@ -94,9 +96,9 @@ export function VisionGuiHeader({
 
   return (
     <Header paddingX={3} paddingY={2}>
-      <Grid columns={[1, 4, 8, 12]}>
+      <Grid gridTemplateColumns={[1, 4, 8, 12]}>
         {/* Dataset selector */}
-        <Box padding={1} column={[1, 2]}>
+        <Box padding={1} gridColumn={[1, 2]}>
           <Stack>
             <Card paddingTop={2} paddingBottom={3}>
               <StyledLabel>{t('settings.dataset-label')}</StyledLabel>
@@ -110,7 +112,7 @@ export function VisionGuiHeader({
         </Box>
 
         {/* API version selector */}
-        <Box padding={1} column={[1, 2]}>
+        <Box padding={1} gridColumn={[1, 2]}>
           <Stack>
             <Card paddingTop={2} paddingBottom={3}>
               <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
@@ -132,7 +134,7 @@ export function VisionGuiHeader({
 
         {/* Custom API version input */}
         {customApiVersion !== false && (
-          <Box padding={1} column={[1, 2]}>
+          <Box padding={1} gridColumn={[1, 2]}>
             <Stack>
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel textOverflow="ellipsis">
@@ -154,10 +156,10 @@ export function VisionGuiHeader({
         )}
 
         {/* Perspective selector */}
-        <Box padding={1} column={[1, 2]}>
+        <Box padding={1} gridColumn={[1, 2]}>
           <Stack>
             <Card paddingBottom={1}>
-              <Inline space={1}>
+              <Inline gap={1}>
                 <Box>
                   <StyledLabel>{t('settings.perspective-label')}</StyledLabel>
                 </Box>
@@ -196,12 +198,19 @@ export function VisionGuiHeader({
 
         {/* Query URL (for copying) */}
         {typeof url === 'string' ? (
-          <Box padding={1} flex={1} column={[1, customApiVersion === false ? 6 : 4]}>
+          <Box padding={1} flex={1} gridColumn={[1, customApiVersion === false ? 6 : 4]}>
             <Stack>
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel>
                   {t('query.url')}&nbsp;
-                  <QueryCopyLink onClick={handleCopyUrl}>
+                  <QueryCopyLink
+                    href={url}
+                    onClick={(event) => {
+                      // This is a copy-to-clipboard action, not a navigation
+                      event.preventDefault()
+                      handleCopyUrl()
+                    }}
+                  >
                     [{t('action.copy-url-to-clipboard')}]
                   </QueryCopyLink>
                 </StyledLabel>

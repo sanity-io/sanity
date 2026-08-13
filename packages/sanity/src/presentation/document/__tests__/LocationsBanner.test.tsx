@@ -1,4 +1,6 @@
-import {EnvelopeIcon, MobileDeviceIcon, PresentationIcon} from '@sanity/icons'
+import {EnvelopeIcon} from '@sanity/icons/Envelope'
+import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
+import {PresentationIcon} from '@sanity/icons/Presentation'
 import {render, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'

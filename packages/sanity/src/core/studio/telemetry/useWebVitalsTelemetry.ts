@@ -81,9 +81,14 @@ export function useWebVitalsTelemetry(): void {
     // Measures responsiveness - the worst interaction latency
     // This runs alongside the existing INP hook during migration
     // Attribution: interactionTarget, inputDelay, processingDuration, etc.
-    onINP((metric) => {
-      telemetry.log(PerformanceINPMeasuredV2, metric)
-    })
+    // v6 defaults includeProcessedEventEntries to false; opt in to keep
+    // processedEventEntries in attribution (same coverage as v5).
+    onINP(
+      (metric) => {
+        telemetry.log(PerformanceINPMeasuredV2, metric)
+      },
+      {includeProcessedEventEntries: true},
+    )
 
     // No cleanup function needed:
     // - web-vitals manages its own PerformanceObserver lifecycle

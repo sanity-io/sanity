@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
+// oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 
 import {Headers} from '../components/Table/TableHeader'

@@ -1,4 +1,4 @@
-import {RocketIcon} from '@sanity/icons'
+import {RocketIcon} from '@sanity/icons/Rocket'
 import range from 'lodash-es/range.js'
 
 import {CustomInputWithDefaultPresence} from './components/CustomInputWithDefaultPresence'

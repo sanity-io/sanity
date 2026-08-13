@@ -2,7 +2,7 @@ import {type Path} from '@sanity/types'
 import {
   Badge,
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button,
   Flex,
   Text,
@@ -11,10 +11,13 @@ import {
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {Tooltip} from '../../../../../../ui-components'
-import {type FormPatch, type PatchEvent, set, useFormValue} from '../../../../../form'
-import {useTranslation} from '../../../../../i18n'
-import {useMentionUser} from '../../../../context'
+import {Tooltip} from '../../../../../../ui-components/tooltip/Tooltip'
+import {useFormValue} from '../../../../../form/contexts/FormValue'
+import {set} from '../../../../../form/patch/patch'
+import {type PatchEvent} from '../../../../../form/patch/PatchEvent'
+import {type FormPatch} from '../../../../../form/patch/types'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
@@ -82,9 +85,7 @@ export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
               </Flex>
 
               {value && mentionedUser && !mentionedUser.granted && (
-                <Badge fontSize={1} mode="outline">
-                  {t('form.input.assignee.unauthorized.text')}
-                </Badge>
+                <Badge fontSize={1}>{t('form.input.assignee.unauthorized.text')}</Badge>
               )}
             </Flex>
           </Tooltip>

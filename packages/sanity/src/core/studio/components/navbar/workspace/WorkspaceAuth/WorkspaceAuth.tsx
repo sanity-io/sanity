@@ -1,14 +1,14 @@
-import {AddIcon, ArrowLeftIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {Box, Container, Flex, rem, Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../../../ui-components'
-import {useTranslation} from '../../../../../i18n'
-import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher'
-import {useVisibleWorkspaces} from '../../../../workspaces'
+import {Button} from '../../../../../../ui-components/button/Button'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher/useActiveWorkspace'
+import {useVisibleWorkspaces} from '../../../../workspaces/useVisibleWorkspaces'
 import {WORKSPACES_DOCS_URL} from '../constants'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
@@ -59,7 +59,7 @@ export function WorkspaceAuth() {
   if (LoginComponent && selectedWorkspace && !showChooser) {
     return (
       <Container width={0}>
-        <Stack space={2}>
+        <Stack gap={2}>
           {canChooseAnotherWorkspace && (
             <Flex>
               <Button
@@ -124,7 +124,7 @@ export function WorkspaceAuth() {
           </Stack>
         }
       >
-        <Stack space={1} paddingX={1} paddingY={2}>
+        <Stack gap={1} paddingX={1} paddingY={2}>
           {visibleWorkspaces.map((workspace) => (
             <WorkspaceAuthCard
               key={workspace.name}

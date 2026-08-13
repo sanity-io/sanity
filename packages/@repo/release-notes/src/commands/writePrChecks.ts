@@ -11,7 +11,6 @@ export async function writePrChecks() {
   // get the 100 most recently updated PRs
   const {data: prs} = await getOctokit().pulls.list({
     ...REPO,
-    // eslint-disable-next-line camelcase
     per_page: 100,
     state: 'open',
     sort: 'updated',

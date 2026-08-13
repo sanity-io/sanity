@@ -5,7 +5,7 @@ import {useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'
 
-import {supportsTouch} from '../../../../../util'
+import {supportsTouch} from '../../../../../util/supportsTouch'
 import {
   POPOVER_INPUT_PADDING,
   POPOVER_MAX_HEIGHT,
@@ -30,6 +30,10 @@ export interface SearchPopoverProps {
   onClose: () => void
   onItemSelect?: ItemSelectHandler
   previewPerspective?: StackablePerspective[]
+  /**
+   * The variant the result previews are resolved in, as a bare variant id.
+   */
+  previewVariant?: string
   /**
    * If provided, will trigger to open the search popover when user types hotkey + k
    */
@@ -86,6 +90,7 @@ export function SearchPopover({
   onItemSelect,
   onOpen,
   previewPerspective,
+  previewVariant,
   open,
 }: SearchPopoverProps) {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
@@ -147,6 +152,7 @@ export function SearchPopover({
                     onItemSelect={onItemSelect}
                     disableIntentLink={disableIntentLink}
                     previewPerspective={previewPerspective}
+                    previewVariant={previewVariant}
                   />
                 ) : (
                   <RecentSearches inputElement={inputElement} />

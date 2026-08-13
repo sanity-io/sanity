@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renderMarkdownReport > renders the full A/B report 1`] = `
+"### ⚡ Studio performance benchmark
+
+🔴 **1 regression(s)** detected (1 inconclusive — CI too wide to decide)
+
+- \`singleString · stringField\` +8.0ms [+6.0ms, +10.0ms]
+
+\`\`\`mermaid
+xychart-beta
+  title "Regression Δ (ms slower than reference)"
+  x-axis ["…eString · stringField"]
+  y-axis "ms" 0 --> 10
+  bar [8.0]
+\`\`\`
+
+[📊 View on the trends dashboard](https://studio-metrics.sanity.dev/trends?branches=main%2Cperf-bench) for the full tables, percentiles, and history.
+"
+`;

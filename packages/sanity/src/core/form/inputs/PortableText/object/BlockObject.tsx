@@ -18,27 +18,30 @@ import {
   useState,
 } from 'react'
 
-import {Tooltip} from '../../../../../ui-components'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
-import {pathToString} from '../../../../field'
-import {useTranslation} from '../../../../i18n'
-import {EMPTY_ARRAY} from '../../../../util'
-import {useFormCallbacks} from '../../../studio'
+import {pathToString} from '../../../../field/paths/helpers'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {EMPTY_ARRAY} from '../../../../util/empty'
+import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {
-  type BlockProps,
+  type RenderCustomMarkers,
+  type RenderBlockActionsCallback,
+} from '../../../types/_transitional'
+import {type BlockProps} from '../../../types/blockProps'
+import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
-  type RenderCustomMarkers,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
-import {type RenderBlockActionsCallback} from '../../../types/_transitional'
+} from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
+import {ReviewChangesHighlightBlock} from '../_common/ReviewChangesHighlightBlock'
+import {StyledChangeIndicatorWithProvidedFullPath} from '../_common/StyledChangeIndicatorWithProvidedFullPath'
 import {BlockActions} from '../BlockActions'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
@@ -72,7 +75,9 @@ interface BlockObjectProps extends PropsWithChildren {
   relativePath: Path
   renderAnnotation?: RenderAnnotationCallback
   renderBlock?: RenderBlockCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderBlockActions?: RenderBlockActionsCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
   renderField: RenderFieldCallback
   renderInlineBlock?: RenderBlockCallback
@@ -111,13 +116,17 @@ export function BlockObject(props: BlockObjectProps) {
     setElementRef,
     value,
   } = props
+  // A path deeper than the root array means the block is nested in a container.
+  const nested = relativePath.length > 1
   const {onChange} = useFormCallbacks()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {Markers} = useFormBuilder().__internal.components
   const hoveredChange = useHoveredChange()
   const changeHovered =
     hoveredChange && pathToString(hoveredChange.path).startsWith(pathToString(path))
 
   const markers = usePortableTextMarkers(path)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
@@ -135,6 +144,7 @@ export function BlockObject(props: BlockObjectProps) {
   const onOpen = useCallback(() => {
     if (memberItem) {
       // Take focus away from the editor so that it doesn't propagate a new focusPath and interfere here.
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       PortableTextEditor.blur(editor)
       onItemOpen(memberItem.node.path)
     }
@@ -142,7 +152,9 @@ export function BlockObject(props: BlockObjectProps) {
 
   const onClose = useCallback(() => {
     onItemClose()
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.select(editor, selfSelection)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [onItemClose, editor, selfSelection])
 
@@ -152,6 +164,7 @@ export function BlockObject(props: BlockObjectProps) {
       return
     }
     try {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       PortableTextEditor.delete(editor, selfSelection, {mode: 'blocks'})
     } catch (err) {
       console.error(err)
@@ -165,6 +178,7 @@ export function BlockObject(props: BlockObjectProps) {
   useEffect(
     () => () => {
       if (isDeleting.current) {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.focus(editor)
       }
     },
@@ -172,6 +186,12 @@ export function BlockObject(props: BlockObjectProps) {
   )
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+    if (nested) {
+      // A nested block sits inside a container that owns horizontal spacing
+      // (e.g. a table cell's padding), so the root gutter is dropped.
+      return {paddingX: 0}
+    }
+
     if (isFullscreen && !renderBlockActions) {
       return {paddingX: 5}
     }
@@ -188,7 +208,7 @@ export function BlockObject(props: BlockObjectProps) {
     }
 
     return {paddingX: 3}
-  }, [isFullscreen, renderBlockActions])
+  }, [isFullscreen, renderBlockActions, nested])
 
   const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.node)
   const parentSchemaType = schemaTypes.portableText
@@ -290,7 +310,7 @@ export function BlockObject(props: BlockObjectProps) {
   const setRef = useCallback(
     (elm: HTMLDivElement) => {
       if (memberItem) {
-        setElementRef({key: memberItem.member.key, elementRef: elm})
+        setElementRef({key: memberItem.key, elementRef: elm})
       }
       setDivElement(elm) // update state here so the reference element is available on first render
     },
@@ -364,6 +384,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     __unstable_referenceElement,
     children,
     focused,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     markers,
     onClose,
     onOpen,

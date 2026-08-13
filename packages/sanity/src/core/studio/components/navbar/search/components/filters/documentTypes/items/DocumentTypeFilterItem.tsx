@@ -1,9 +1,9 @@
-import {CheckmarkIcon} from '@sanity/icons'
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {type SchemaType} from '@sanity/types'
 import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
 import {memo, useCallback} from 'react'
 
-import {Button} from '../../../../../../../../../ui-components'
+import {Button} from '../../../../../../../../../ui-components/button/Button'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 
 interface DocumentTypeFilterItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {

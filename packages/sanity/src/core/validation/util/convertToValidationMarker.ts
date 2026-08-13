@@ -38,7 +38,6 @@ export function convertToValidationMarker(
     )
   }
 
-  // eslint-disable-next-line camelcase
   const {message, __internal_metadata} = validatorResult
 
   const normalizedPaths: Path[] = []
@@ -47,6 +46,7 @@ export function convertToValidationMarker(
   }
 
   // legacy support for `paths`
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   for (const path of validatorResult.paths || []) {
     normalizedPaths.push(path)
   }
@@ -57,10 +57,10 @@ export function convertToValidationMarker(
     return [
       {
         level: level || 'error',
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         item: {message},
         message,
         path: context.path || [],
-        // eslint-disable-next-line camelcase
         __internal_metadata,
       },
     ]
@@ -74,7 +74,6 @@ export function convertToValidationMarker(
     level: level || 'error',
     item: {message},
     message,
-    // eslint-disable-next-line camelcase
     __internal_metadata,
   }))
 }

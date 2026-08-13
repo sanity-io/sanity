@@ -1,9 +1,9 @@
 import {Stack} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {forwardRef, type Ref, useMemo} from 'react'
+import {useMemo, type RefAttributes} from 'react'
 
-import {Button} from '../../../../../ui-components'
-import {type Tool} from '../../../../config'
+import {Button} from '../../../../../ui-components/button/Button'
+import {type Tool} from '../../../../config/types'
 import {ToolLink, type ToolLinkProps} from './ToolLink'
 
 interface ToolVerticalMenuProps {
@@ -17,20 +17,18 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
 
   return useMemo(
     () => (
-      <Stack as="ul" space={1}>
+      <Stack as="ul" gap={1}>
         {tools.map((tool) => {
           const title = tool?.title || startCase(tool.name)
 
-          const Link = forwardRef(function Link(
-            linkProps: ToolLinkProps,
-            ref: Ref<HTMLAnchorElement>,
-          ) {
+          function Link(linkProps: ToolLinkProps & RefAttributes<HTMLAnchorElement>) {
+            const {ref, ...rest} = linkProps
             return (
-              <ToolLink {...linkProps} ref={ref} name={tool.name}>
+              <ToolLink {...rest} ref={ref} name={tool.name}>
                 {linkProps.children}
               </ToolLink>
             )
-          })
+          }
 
           return (
             <Stack key={tool.name} as="li">

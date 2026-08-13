@@ -4,7 +4,7 @@ import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 
-import {useSource} from '../studio'
+import {useSource} from '../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {useClient} from './useClient'
 
@@ -66,6 +66,7 @@ function getFeatures({
 /** @internal */
 export function useFeatureEnabled(featureKey: keyof typeof FEATURES): Features {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {projectId} = useSource()
 
   const req = getFeatures({projectId, versionedClient})

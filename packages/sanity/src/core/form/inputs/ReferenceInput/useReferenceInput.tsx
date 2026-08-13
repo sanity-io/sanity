@@ -1,14 +1,14 @@
 import {type Path, type Reference, type ReferenceSchemaType} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
+import {type ComponentProps, useCallback, useMemo, type RefAttributes} from 'react'
 
 import {type FIXME} from '../../../FIXME'
-import {useSchema} from '../../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {useDocumentPreviewStore} from '../../../store'
-import {isNonNullable} from '../../../util'
+import {useDocumentPreviewStore} from '../../../store/datastores'
+import {isNonNullable} from '../../../util/isNonNullable'
 import {useFormValue} from '../../contexts/FormValue'
-import {useReferenceInputOptions} from '../../studio'
+import {useReferenceInputOptions} from '../../studio/contexts/ReferenceInputOptions'
 import * as adapter from '../../studio/inputs/client-adapters/reference'
 import {type EditReferenceEvent} from './types'
 
@@ -44,19 +44,20 @@ export function useReferenceInput(options: Options) {
   const template = options.value?._strengthenOnPublish?.template
   const EditReferenceLink = useMemo(
     () =>
-      forwardRef(function EditReferenceLink_(
-        _props: ComponentProps<NonNullable<typeof EditReferenceLinkComponent>>,
-        forwardedRef: ForwardedRef<'a'>,
+      function EditReferenceLink_(
+        _props: ComponentProps<NonNullable<typeof EditReferenceLinkComponent>> &
+          RefAttributes<HTMLAnchorElement>,
       ) {
+        const {ref: forwardedRef, ...rest} = _props
         return EditReferenceLinkComponent ? (
           <EditReferenceLinkComponent
-            {..._props}
+            {...rest}
             ref={forwardedRef}
             parentRefPath={path}
             template={template}
           />
         ) : null
-      }),
+      },
     [EditReferenceLinkComponent, path, template],
   )
 
@@ -104,8 +105,19 @@ export function useReferenceInput(options: Options) {
 
   const getReferenceInfo = useCallback(
     (id: string) =>
-      adapter.getReferenceInfo(documentPreviewStore, id, schemaType, perspective.perspectiveStack),
-    [documentPreviewStore, schemaType, perspective.perspectiveStack],
+      adapter.getReferenceInfo(
+        documentPreviewStore,
+        id,
+        schemaType,
+        perspective.perspectiveStack,
+        perspective.selectedVariantName,
+      ),
+    [
+      documentPreviewStore,
+      schemaType,
+      perspective.perspectiveStack,
+      perspective.selectedVariantName,
+    ],
   )
 
   return {

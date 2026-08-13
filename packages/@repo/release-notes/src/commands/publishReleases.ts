@@ -1,4 +1,3 @@
-/* oxlint-disable no-console */
 import {DocumentId, getPublishedId, getVersionNameFromId, isVersionId} from '@sanity/id-utils'
 
 import {getClient} from '../client'
@@ -71,7 +70,6 @@ ${changelogDocument.changelog
   const createGithubReleasePayload = {
     owner: 'sanity-io',
     repo: 'sanity',
-    // eslint-disable-next-line camelcase
     tag_name: `v${options.targetVersion}`,
     name: `v${options.targetVersion}`,
     body: ghReleaseTemplate({

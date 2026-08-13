@@ -105,6 +105,7 @@ import type {
   MenuItemGroupBuilder,
   MenuItemParamsType,
   menuItemsFromInitialValueTemplateItems,
+  ORDER_BY_IDS_PARAM_FIELD,
   Pane,
   PaneContent,
   PaneLayout,
@@ -474,11 +475,14 @@ describe('sanity/structure', () => {
   test('menuItemsFromInitialValueTemplateItems', () => {
     expectTypeOf<typeof menuItemsFromInitialValueTemplateItems>().toBeFunction()
   })
+  test('ORDER_BY_IDS_PARAM_FIELD', () => {
+    expectTypeOf<typeof ORDER_BY_IDS_PARAM_FIELD>().not.toBeNever()
+  })
   test('Pane', () => {
-    expectTypeOf<typeof Pane>().not.toBeNever()
+    expectTypeOf<typeof Pane>().toBeFunction()
   })
   test('PaneContent', () => {
-    expectTypeOf<typeof PaneContent>().not.toBeNever()
+    expectTypeOf<typeof PaneContent>().toBeFunction()
   })
   test('PaneLayout', () => {
     expectTypeOf<typeof PaneLayout>().toBeFunction()

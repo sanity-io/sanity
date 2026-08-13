@@ -5,10 +5,6 @@
       "handle": "filesystem"
     },
     {
-      "src": "/preview/(.*)",
-      "dest": "/preview/index.html"
-    },
-    {
       "src": "/(.*)",
       "dest": "/index.html"
     }

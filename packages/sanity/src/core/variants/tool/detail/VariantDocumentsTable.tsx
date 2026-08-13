@@ -1,165 +1,112 @@
-import {type SanityDocument} from '@sanity/client'
-import {Box, Card, Flex, Text} from '@sanity/ui'
-import {type CSSProperties, memo, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 
-import {RelativeTime} from '../../../components/RelativeTime'
-import {useSchema} from '../../../hooks'
-import {type UseTranslationResponse, useTranslation} from '../../../i18n'
-import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
-import {Table} from '../../../releases/tool/components/Table/Table'
-import {Headers} from '../../../releases/tool/components/Table/TableHeader'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useActiveReleases} from '../../../releases/store/useActiveReleases'
+import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
 import {type Column} from '../../../releases/tool/components/Table/types'
+import {searchDocumentRelease} from '../../../releases/tool/detail/documentTable/searchDocumentRelease'
 import {variantsLocaleNamespace} from '../../i18n'
+import {computeReleaseLaneSegments, RELEASE_LANE_ALL, rowMatchesLane} from './releaseLane'
+import {type DocumentInVariantGroup} from './types'
+import {VariantDocumentActions} from './variantDocumentTable/VariantDocumentActions'
+import {getVariantDocumentTableColumnDefs} from './variantDocumentTable/VariantDocumentTableColumnDefs'
+import {VariantReleaseLane} from './VariantReleaseLane'
 
-interface VariantDocumentRow {
-  document: SanityDocument
-}
-
-const TABLE_CARD_STYLE: CSSProperties = {
-  height: '100%',
-  overflow: 'auto',
-}
-
-function getDocumentPreviewTitle(document: SanityDocument): string {
-  const title = document.title || document.name
-
-  return typeof title === 'string' && title.trim() ? title : document._id
-}
-
-const MemoDocumentType = memo(
-  function DocumentType({type}: {type: string}) {
-    const schema = useSchema()
-    const schemaType = schema.get(type)
-
-    return <Text size={1}>{schemaType?.title || type}</Text>
-  },
-  (prev, next) => prev.type === next.type,
-)
-
-function getVariantDocumentColumnDefs(
-  t: UseTranslationResponse<'variants', undefined>['t'],
-): Column<VariantDocumentRow>[] {
-  return [
-    {
-      id: 'version',
-      width: null,
-      style: {minWidth: 100},
-      sorting: false,
-      header: (props) => (
-        <Flex {...props.headerProps} paddingY={3} sizing="border">
-          <Headers.BasicHeader text={t('detail.documents.table.version')} />
-        </Flex>
-      ),
-      cell: ({cellProps}) => (
-        <Flex align="center" {...cellProps}>
-          <Box paddingX={2}>
-            <Text muted size={1}>
-              -
-            </Text>
-          </Box>
-        </Flex>
-      ),
-    },
-    {
-      id: 'document._type',
-      width: null,
-      style: {minWidth: 100},
-      sorting: true,
-      header: (props) => (
-        <Flex {...props.headerProps} paddingY={3} sizing="border">
-          <Headers.SortHeaderButton text={t('detail.documents.table.type')} {...props} />
-        </Flex>
-      ),
-      cell: ({cellProps, datum}) => (
-        <Flex align="center" {...cellProps}>
-          <Box paddingX={2}>
-            {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
-          </Box>
-        </Flex>
-      ),
-    },
-    {
-      id: 'search',
-      width: null,
-      style: {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
-      sortTransform: ({document}) => getDocumentPreviewTitle(document).toLowerCase(),
-      header: (props) => (
-        <Headers.TableHeaderSearch
-          {...props}
-          placeholder={t('detail.documents.table.search-placeholder')}
-        />
-      ),
-      cell: ({cellProps, datum}) => (
-        <Box {...cellProps} flex={1} padding={1} paddingRight={2} sizing="border">
-          {datum.isLoading ? (
-            <SanityDefaultPreview isPlaceholder />
-          ) : (
-            <SanityDefaultPreview
-              title={getDocumentPreviewTitle(datum.document)}
-              subtitle={datum.document._id}
-            />
-          )}
-        </Box>
-      ),
-    },
-    {
-      id: 'document._updatedAt',
-      sorting: true,
-      width: 130,
-      header: (props) => (
-        <Flex {...props.headerProps} paddingY={3} sizing="border">
-          <Headers.SortHeaderButton text={t('detail.documents.table.edited')} {...props} />
-        </Flex>
-      ),
-      cell: ({cellProps, datum}) => (
-        <Flex {...cellProps} align="center" paddingX={2} paddingY={3} style={{minWidth: 130}}>
-          {!datum.isLoading && datum.document._updatedAt && (
-            <Text muted size={1}>
-              <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
-            </Text>
-          )}
-        </Flex>
-      ),
-    },
-  ]
-}
-
-function filterDocuments(rows: VariantDocumentRow[], searchTerm: string): VariantDocumentRow[] {
-  const normalizedSearchTerm = searchTerm.trim().toLowerCase()
-
-  if (!normalizedSearchTerm) {
-    return rows
-  }
-
-  return rows.filter(({document}) =>
-    [getDocumentPreviewTitle(document), document._id, document._type].some((value) =>
-      value.toLowerCase().includes(normalizedSearchTerm),
-    ),
-  )
+function searchVariantDocument(row: DocumentInVariantGroup, searchTerm: string): boolean {
+  return searchDocumentRelease(row.document, searchTerm)
 }
 
 export function VariantDocumentsTable({
-  documents,
+  rows,
+  loading = false,
+  variantId,
 }: {
-  documents: SanityDocument[]
+  rows: DocumentInVariantGroup[]
+  loading?: boolean
+  variantId?: string
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
-  const columnDefs = useMemo(() => getVariantDocumentColumnDefs(t), [t])
-  const rows = useMemo(() => documents.map((document) => ({document})), [documents])
+  const [activeLane, setActiveLane] = useState<string>(RELEASE_LANE_ALL)
+  const {data: releases} = useActiveReleases()
+  const releasesById = useMemo(
+    () => new Map(releases.map((release) => [release._id, release])),
+    [releases],
+  )
+
+  const segments = useMemo(
+    () => computeReleaseLaneSegments(rows, releasesById),
+    [rows, releasesById],
+  )
+
+  const activeLaneIsValid =
+    activeLane === RELEASE_LANE_ALL || segments.some((segment) => segment.id === activeLane)
+
+  // If the active release lane disappears (e.g. its documents move), fall back to "All" and
+  // clear state so a later reappearance of that bundle does not resurrect the stale filter.
+  if (!activeLaneIsValid) {
+    setActiveLane(RELEASE_LANE_ALL)
+  }
+
+  const resolvedActiveLane = activeLaneIsValid ? activeLane : RELEASE_LANE_ALL
+
+  // Filter tabs are the one way to scope by bundle (grouping was removed: filtering preserves
+  // column sorting, which grouping cannot). A selected tab filters the flat, always-sortable list;
+  // the shared DocumentTable applies free-text search on top of these lane-filtered rows.
+  const laneRows = useMemo(() => {
+    const filtered =
+      resolvedActiveLane === RELEASE_LANE_ALL
+        ? rows
+        : rows.filter((row) => rowMatchesLane(row, resolvedActiveLane, releasesById))
+    return filtered.map((row) => ({...row, rowKey: row.groupId}))
+  }, [rows, resolvedActiveLane, releasesById])
+
+  const handleSelectLane = useCallback((laneId: string) => {
+    // Clicking the already-active segment clears the filter back to "All".
+    setActiveLane((previous) => (previous === laneId ? RELEASE_LANE_ALL : laneId))
+  }, [])
+
+  const renderRowActions = useCallback(
+    ({datum}: {datum: unknown}) => (
+      <VariantDocumentActions row={datum as DocumentInVariantGroup} t={t} />
+    ),
+    [t],
+  )
+
+  const hasReleaseControls = !loading && rows.length > 0 && segments.length > 1
+
+  const columnDefs = useMemo<Column<DocumentInVariantGroup>[]>(
+    () => getVariantDocumentTableColumnDefs(t, variantId, releasesById),
+    [t, variantId, releasesById],
+  )
 
   return (
-    <Card flex={1} ref={setScrollContainerRef} style={TABLE_CARD_STYLE}>
-      <Table<VariantDocumentRow>
-        columnDefs={columnDefs}
-        data={rows}
-        defaultSort={{column: 'search', direction: 'asc'}}
-        emptyState={t('detail.documents.no-documents')}
-        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-        rowId="document._id"
-        scrollContainerRef={scrollContainerRef}
-        searchFilter={filterDocuments}
-      />
-    </Card>
+    <DocumentTable<DocumentInVariantGroup>
+      // Keep the command lane (search + filter tabs) mounted during load so it doesn't pop in when
+      // rows arrive — matching the release detail table and avoiding a layout jump.
+      alwaysShowCommandLane
+      columnDefs={columnDefs}
+      defaultSort={{column: 'documentGroup', direction: 'asc'}}
+      emptyState={t('detail.documents.no-documents')}
+      filterTabs={
+        hasReleaseControls ? (
+          <VariantReleaseLane
+            activeLane={resolvedActiveLane}
+            onSelectLane={handleSelectLane}
+            segments={segments}
+            totalCount={rows.length}
+          />
+        ) : undefined
+      }
+      getRowKey={(row) => row.groupId}
+      id="variant-documents-table"
+      loading={loading}
+      rowActions={renderRowActions}
+      rows={laneRows}
+      // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+      rowId="rowKey"
+      searchPlaceholder={t('detail.documents.table.search-placeholder')}
+      searchPredicate={searchVariantDocument}
+      searchTestId="variant-documents-search"
+    />
   )
 }

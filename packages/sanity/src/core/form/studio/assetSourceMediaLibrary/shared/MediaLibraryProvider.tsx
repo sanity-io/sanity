@@ -1,9 +1,9 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {MediaLibraryIdsContext} from 'sanity/_singletons'
 
-import {ErrorBoundary} from '../../../../../ui-components/errorBoundary'
+import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {EnsureMediaLibrary} from './EnsureMediaLibrary'
 
@@ -63,7 +63,7 @@ export function MediaLibraryProvider({
           <Text size={1}>
             <ErrorOutlineIcon />
           </Text>
-          <Stack space={4} data-testid="MEDIA_LIBRARY_ERROR_UNEXPECTED">
+          <Stack gap={4} data-testid="MEDIA_LIBRARY_ERROR_UNEXPECTED">
             <Text size={1} weight="semibold">
               {unexpectedError.message ||
                 t('asset-sources.media-library.error.library-could-not-be-resolved')}

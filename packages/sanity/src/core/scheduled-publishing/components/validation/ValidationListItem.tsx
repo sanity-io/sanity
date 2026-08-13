@@ -1,9 +1,13 @@
-import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type Path, type ValidationMarker} from '@sanity/types'
-// eslint-disable-next-line no-restricted-imports
-import {Box, type ButtonTone, Flex, MenuItem, Stack, Text} from '@sanity/ui'
+import {type ButtonTone, Flex, Stack, Text} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports
+import {MenuItem} from '@sanity/ui/menu'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 const StyledText = styled(Text)`
   white-space: initial;
@@ -38,6 +42,7 @@ export function ValidationListItem(props: ValidationListItemProps) {
   }, [marker.path, onClick])
 
   const menuItemTone = MENU_ITEM_TONES[marker?.level] || undefined
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const message = marker.message ?? marker.item?.message
   const children = (
     <Flex>
@@ -49,7 +54,7 @@ export function ValidationListItem(props: ValidationListItemProps) {
         </Text>
       </Box>
 
-      <Stack space={2} flex={1} paddingLeft={3}>
+      <Stack gap={2} flex={1} paddingLeft={3}>
         {path && (
           <StyledText size={1} weight="semibold">
             {path}

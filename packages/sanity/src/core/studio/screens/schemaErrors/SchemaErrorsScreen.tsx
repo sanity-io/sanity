@@ -1,10 +1,11 @@
 import {type Schema} from '@sanity/types'
-import {Card, Code, Container, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
+import {Card, Code, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useEffect} from 'react'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type SchemaErrorContext} from '../../../config/SchemaError'
-import {useTranslation} from '../../../i18n'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {formatSchemaErrorsToMarkdown} from './formatSchemaErrorsToMarkdown'
 import {reportWarnings} from './reportWarnings'
@@ -80,7 +81,7 @@ export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
       sizing="border"
     >
       <Container width={1}>
-        <Stack space={5}>
+        <Stack gap={5}>
           <Flex justify="space-between" align="center" gap={2}>
             <Heading as="h1">{t('schema-errors.title')}</Heading>
             <Button

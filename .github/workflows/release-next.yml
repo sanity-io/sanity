@@ -31,14 +31,14 @@ jobs:
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
 
       # Publish packages to npm under the `next` tag on new commits to main.
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - uses: ./.github/actions/setup
 
       - name: Bump next versions
-        run: pnpm --silent release-notes bump --preid=next --suffixType=commits-ahead
+        run: pnpm --silent release-notes bump --preid=next --suffix-type=commits-ahead
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -50,7 +50,7 @@ jobs:
 
       - name: Check valid token
         run: |
-          WHOAMI_RESULT=$(pnpm whoami)
+          WHOAMI_RESULT=$(pnpm --silent whoami)
           echo "pnpm whoami result: $WHOAMI_RESULT"
           if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
             echo "Error: pnpm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
@@ -89,7 +89,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
-        uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3.0.1
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
           webhook-type: incoming-webhook

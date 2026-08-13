@@ -22,6 +22,7 @@ interface FullscreenPTEProviderProps {
 export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): React.JSX.Element {
   const [fullscreenPaths, setFullscreenPaths] = useState<string[]>([])
   const telemetry = useTelemetry()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   const getFullscreenPath = useCallback(
@@ -42,7 +43,6 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
           telemetry.log(NestedDialogEditorOpened, {
             path: pathString,
             origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-            // eslint-disable-next-line camelcase
             editor_type: 'pte',
             fullscreen: true,
             location: 'nested_object_dialog',
@@ -53,7 +53,6 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
         telemetry.log(NestedDialogEditorClosed, {
           path: pathString,
           origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-          // eslint-disable-next-line camelcase
           editor_type: 'pte',
           fullscreen: true,
           location: 'nested_object_dialog',

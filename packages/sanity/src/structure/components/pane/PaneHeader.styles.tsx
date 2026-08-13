@@ -32,7 +32,9 @@ export const Layout = styled(Flex)`
   }
 `
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const TitleCard = styled(Card)(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {fg, bg} = theme.sanity.color.card.enabled
 
   // Disable color updates on hover

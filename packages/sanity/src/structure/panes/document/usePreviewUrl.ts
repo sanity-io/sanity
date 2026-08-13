@@ -9,6 +9,7 @@ const isSanityDocument = (value: unknown): value is SanityDocument =>
   isRecord(value) && typeof value._id === 'string' && typeof value._type === 'string'
 
 export function usePreviewUrl(value: Partial<SanityDocument> | undefined): string | undefined {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {resolveProductionUrl} = useSource().document
   const subject = useMemo(
     () => new BehaviorSubject<Partial<SanityDocument> | undefined>(undefined),

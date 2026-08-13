@@ -1,6 +1,7 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Flex, Text, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useState} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -25,13 +26,13 @@ import {ReleaseAvatar} from '../../ReleaseAvatar'
 
 export function CopyToNewReleaseDialog(props: {
   onClose: () => void
-  documentId: string
+  versionId: string
   documentType: string
   release: TargetPerspective
   title: string
   onCreateVersion: (releaseId: string) => void
 }): React.JSX.Element {
-  const {onClose, documentId, documentType, release: sourceRelease, title, onCreateVersion} = props
+  const {onClose, versionId, documentType, release: sourceRelease, title, onCreateVersion} = props
   const {t} = useTranslation()
   const toast = useToast()
   const createReleaseMetadata = useCreateReleaseMetadata()
@@ -139,7 +140,7 @@ export function CopyToNewReleaseDialog(props: {
       >
         <Flex align="center" padding={4} paddingTop={1} justify="space-between">
           {schemaType ? (
-            <Preview value={{_id: documentId}} schemaType={schemaType} />
+            <Preview value={{_id: versionId}} schemaType={schemaType} />
           ) : (
             <LoadingBlock />
           )}
@@ -173,7 +174,7 @@ export function CopyToNewReleaseDialog(props: {
         )}
         <ReleaseForm onChange={handleOnChange} value={release} />
 
-        <Flex width="full" gap={3} justify="flex-end" paddingTop={3} align="center">
+        <Flex gap={3} justify="flex-end" paddingTop={3} align="center">
           <Button
             disabled={isSubmitting}
             text={t('common.dialog.cancel-button.text')}

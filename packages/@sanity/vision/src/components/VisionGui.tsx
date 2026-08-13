@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import {SplitPane} from '@rexxars/react-split-pane'
 import {
   type ClientPerspective,
@@ -7,18 +6,12 @@ import {
   type ReleaseDocument,
   type StackablePerspective,
 } from '@sanity/client'
-import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Button, Flex, useToast} from '@sanity/ui'
+import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {Box, Button, Flex} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {isHotkey} from 'is-hotkey-esm'
-import {
-  type ChangeEvent,
-  useCallback,
-  useEffect,
-  useEffectEvent,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
@@ -31,6 +24,7 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {groqExtensions} from '../codemirror/extensions'
@@ -54,6 +48,8 @@ import {usePaneSize} from './usePaneSize'
 import {
   InputBackgroundContainerLeft,
   InputContainer,
+  QueryRecallPaneContainer,
+  QueryRecallPaneWrapper,
   Root,
   SplitpaneContainer,
   StyledLabel,
@@ -67,7 +63,6 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
     return false
   }
 
-  // eslint-disable-next-line no-bitwise
   return node === other || !!(node.compareDocumentPosition(other as Node) & 16)
 }
 
@@ -675,7 +670,7 @@ export function VisionGui(props: VisionGuiProps) {
           <Box height="stretch" flex={1}>
             <SplitPane
               className="sidebarPanes"
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+              // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
               split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
               minSize={300}
             >
@@ -738,7 +733,7 @@ export function VisionGui(props: VisionGuiProps) {
               />
             </SplitPane>
           </Box>
-          <Box style={{position: 'relative', height: '100%'}}>
+          <QueryRecallPaneContainer>
             <Button
               mode="ghost"
               padding={2}
@@ -756,15 +751,17 @@ export function VisionGui(props: VisionGuiProps) {
                 {isQueryRecallCollapsed ? <ChevronLeftIcon /> : <ChevronRightIcon />}
               </div>
             </Button>
-            <QueryRecall
-              url={url}
-              getStateFromUrl={getStateFromUrl}
-              setStateFromParsedUrl={setStateFromParsedUrl}
-              currentQuery={query}
-              currentParams={params.parsed || {}}
-              generateUrl={generateUrl}
-            />
-          </Box>
+            <QueryRecallPaneWrapper>
+              <QueryRecall
+                url={url}
+                getStateFromUrl={getStateFromUrl}
+                setStateFromParsedUrl={setStateFromParsedUrl}
+                currentQuery={query}
+                currentParams={params.parsed || {}}
+                generateUrl={generateUrl}
+              />
+            </QueryRecallPaneWrapper>
+          </QueryRecallPaneContainer>
         </SplitPane>
       </SplitpaneContainer>
     </Root>

@@ -1,13 +1,16 @@
-import {ChevronDownIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
-import {Box, Button, Menu, MenuDivider, Text, TextInput} from '@sanity/ui'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+// oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
+import {Box, Button, Text, TextInput} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {oversizedButtonStyle} from '../../../perspective/styles'
+import {useSetVariant} from '../../../perspective/useSetVariant'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {
@@ -43,6 +46,7 @@ const OversizedButton = styled(Button)`
 export function VariantsMenu(): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const router = useRouter()
+  const setVariant = useSetVariant()
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
 
@@ -62,28 +66,17 @@ export function VariantsMenu(): React.JSX.Element {
     [filterQuery, variants],
   )
 
-  const setVariantSelection = useCallback(
-    (variant: SystemVariant | undefined) => {
-      router.navigate({
-        stickyParams: {
-          variant: variant ? getVariantId(variant._id) : null,
-        },
-      })
-    },
-    [router],
-  )
-
   const handleSelectDefault = useCallback(() => {
-    setVariantSelection(undefined)
+    setVariant({variantId: undefined})
     setFilterQuery('')
-  }, [setVariantSelection])
+  }, [setVariant])
 
   const handleSelectVariant = useCallback(
     (variant: SystemVariant) => {
-      setVariantSelection(variant)
+      setVariant({variantId: variant._id})
       setFilterQuery('')
     },
-    [setVariantSelection],
+    [setVariant],
   )
 
   const handleFilterChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,4 +1,4 @@
-import {HelpCircleIcon} from '@sanity/icons'
+import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {
   Badge,
   Box,
@@ -6,25 +6,28 @@ import {
   Card,
   type CardTone,
   Inline,
-  Popover,
   Stack,
   Text,
   useClickOutsideEvent,
 } from '@sanity/ui'
-import {useCallback, useRef, useState} from 'react'
+import {Popover} from '@sanity/ui/popover'
+import {type ComponentProps, useCallback, useRef, useState} from 'react'
 import {Translate, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 
 import {visionLocaleNamespace} from '../i18n'
-import {PerspectivePopoverContent, PerspectivePopoverLink} from './PerspectivePopover.styled'
+import {dot, perspectivePopoverContent, perspectivePopoverLink} from './PerspectivePopover.css'
 
-const Dot = styled.div<{$tone: CardTone}>`
-  width: 4px;
-  height: 4px;
-  border-radius: 3px;
-  box-shadow: 0 0 0 1px var(--card-bg-color);
-  background-color: ${({$tone}) => `var(--card-badge-${$tone}-dot-color)`};
-`
+function PerspectivePopoverContent(props: ComponentProps<typeof Box>) {
+  return <Box {...props} className={perspectivePopoverContent} />
+}
+
+function PerspectivePopoverLink(props: ComponentProps<'a'>) {
+  return <a {...props} className={perspectivePopoverLink} />
+}
+
+function Dot({tone}: {tone: CardTone}) {
+  return <div className={dot} style={{backgroundColor: `var(--card-badge-${tone}-dot-color)`}} />
+}
 
 const SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION = false
 
@@ -46,8 +49,8 @@ export function PerspectivePopover() {
     <Popover
       content={
         <PerspectivePopoverContent>
-          <Stack space={4}>
-            <Inline space={2}>
+          <Stack gap={4}>
+            <Inline gap={2}>
               <Text weight="medium">{t('settings.perspectives.title')}</Text>
             </Inline>
 
@@ -55,7 +58,7 @@ export function PerspectivePopover() {
               <Text muted>{t('settings.perspectives.description')}</Text>
             </Card>
             <Card>
-              <Stack space={2}>
+              <Stack gap={2}>
                 <Box>
                   <Badge tone="primary">{t('label.new')}</Badge>
                 </Box>
@@ -83,6 +86,7 @@ export function PerspectivePopover() {
                 <PerspectivePopoverLink
                   href="https://www.sanity.io/docs/perspectives"
                   target="_blank"
+                  rel="noopener noreferrer"
                 >
                   {t('settings.perspectives.action.docs-link')} &rarr;
                 </PerspectivePopoverLink>
@@ -108,7 +112,7 @@ export function PerspectivePopover() {
         onClick={handleClick}
         selected={open}
       >
-        <Dot $tone={SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION ? 'caution' : 'primary'} />
+        <Dot tone={SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION ? 'caution' : 'primary'} />
       </Button>
     </Popover>
   )

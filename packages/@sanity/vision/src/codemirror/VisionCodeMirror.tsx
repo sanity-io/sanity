@@ -1,29 +1,64 @@
 import {type Extension} from '@codemirror/state'
-import {useTheme} from '@sanity/ui'
+import {rem, useTheme} from '@sanity/ui'
 import CodeMirror, {
   EditorSelection,
   type ReactCodeMirrorProps,
   type ReactCodeMirrorRef,
 } from '@uiw/react-codemirror'
-import {forwardRef, useCallback, useImperativeHandle, useRef, useState} from 'react'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {
+  type ReactNode,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type RefAttributes,
+} from 'react'
 
 import {useCodemirrorTheme} from './useCodemirrorTheme'
-import {EditorRoot} from './VisionCodeMirror.styled'
+import {
+  contentBorderRightWidthVar,
+  contentPaddingTopVar,
+  editorRoot,
+  linePaddingLeftVar,
+} from './VisionCodeMirror.css'
+
+function EditorRoot({children}: {children: ReactNode}) {
+  const {sanity} = useTheme()
+
+  return (
+    <div
+      className={editorRoot}
+      style={assignInlineVars({
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        [linePaddingLeftVar]: `${rem(sanity.space[3])}`,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        [contentBorderRightWidthVar]: `${rem(sanity.space[4])}`,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        [contentPaddingTopVar]: `${rem(sanity.space[5])}`,
+      })}
+    >
+      {children}
+    </div>
+  )
+}
 
 export interface VisionCodeMirrorHandle {
   resetEditorContent: (newContent: string) => void
 }
 
-export const VisionCodeMirror = forwardRef<
-  VisionCodeMirrorHandle,
-  Pick<ReactCodeMirrorProps, 'onChange'> & {
-    initialValue: ReactCodeMirrorProps['value']
-    extensions: Extension[]
-  }
->((props, ref) => {
+export function VisionCodeMirror({
+  ref,
+  onChange,
+  initialValue: initialValueProp,
+  extensions,
+}: Pick<ReactCodeMirrorProps, 'onChange'> & {
+  initialValue: ReactCodeMirrorProps['value']
+  extensions: Extension[]
+} & RefAttributes<VisionCodeMirrorHandle>) {
   // The value prop is only passed for initial value, and is not updated when the parent component updates the value.
   // If you need to update the value, use the resetEditorContent function.
-  const [initialValue] = useState(props.initialValue)
+  const [initialValue] = useState(initialValueProp)
   const sanityTheme = useTheme()
   const theme = useCodemirrorTheme(sanityTheme)
   const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
@@ -55,13 +90,10 @@ export const VisionCodeMirror = forwardRef<
         ref={codeMirrorRef}
         basicSetup={false}
         theme={theme}
-        extensions={props.extensions}
+        extensions={extensions}
         value={initialValue}
-        onChange={props.onChange}
+        onChange={onChange}
       />
     </EditorRoot>
   )
-})
-
-// Add display name
-VisionCodeMirror.displayName = 'VisionCodeMirror'
+}

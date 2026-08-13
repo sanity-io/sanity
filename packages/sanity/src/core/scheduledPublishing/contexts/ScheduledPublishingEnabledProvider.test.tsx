@@ -2,8 +2,8 @@ import {renderHook} from '@testing-library/react'
 import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {useFeatureEnabled} from '../../hooks'
 import {useClient} from '../../hooks/useClient'
+import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useWorkspace} from '../../studio/workspace'
 import {cachedUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'
 import {
@@ -11,7 +11,8 @@ import {
   useScheduledPublishingEnabled,
 } from './ScheduledPublishingEnabledProvider'
 
-vi.mock('../../hooks')
+vi.mock('../../hooks/useClient')
+vi.mock('../../hooks/useFeatureEnabled')
 
 vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({}),
@@ -21,6 +22,7 @@ vi.mock('../../hooks/useClient', () => ({
   useClient: vi.fn(),
 }))
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const useClientMock = useClient as ReturnType<typeof vi.fn>
 const mockObservableRequest = vi.fn((schedules) => of({schedules}))
 const scheduleResponse = [
@@ -177,7 +179,6 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
     useWorkspaceMock.mockReturnValue({
       scheduledPublishing: {
         enabled: false,
-        // eslint-disable-next-line camelcase
         scheduledPublishing: {enabled: true, __internal__workspaceEnabled: false},
       },
     })
@@ -196,7 +197,6 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
   it('should not show if they have not used it before and have not opted in', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
     useWorkspaceMock.mockReturnValue({
-      // eslint-disable-next-line camelcase
       scheduledPublishing: {enabled: true, __internal__workspaceEnabled: false},
     })
 
@@ -214,7 +214,6 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
   it('should  show default mode if they have not used it before and opted in', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
     useWorkspaceMock.mockReturnValue({
-      // eslint-disable-next-line camelcase
       scheduledPublishing: {enabled: true, __internal__workspaceEnabled: true},
     })
 
@@ -232,7 +231,6 @@ describe('ScheduledPublishingEnabledProvider - not previously used', () => {
   it('should  show upsell mode if they have not used it before and opted in, and feature is not available (free plans)', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
     useWorkspaceMock.mockReturnValue({
-      // eslint-disable-next-line camelcase
       scheduledPublishing: {enabled: true, __internal__workspaceEnabled: true},
     })
 

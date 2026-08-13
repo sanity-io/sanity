@@ -23,17 +23,13 @@ vi.mock('../../../hooks/useSearch', () => ({
   useSearch: (props: unknown) => useSearchMock(props),
 }))
 
-vi.mock('../../../../../../../hooks', () => ({
-  useSchema: () => ({get: () => undefined}),
-}))
+vi.mock('../../../../../../../hooks/useSchema', () => ({useSchema: () => ({get: () => undefined})}))
 
 vi.mock('../../../../../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: () => ({data: []}),
 }))
 
-vi.mock('../../../../../../../store', () => ({
-  useCurrentUser: () => ({id: 'user-1'}),
-}))
+vi.mock('../../../../../../../store/user/hooks', () => ({useCurrentUser: () => ({id: 'user-1'})}))
 
 vi.mock('../../../../../../source', () => ({
   useSource: () => ({

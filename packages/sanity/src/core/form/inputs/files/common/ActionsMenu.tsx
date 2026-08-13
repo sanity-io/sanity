@@ -1,9 +1,13 @@
-import {CopyIcon, DownloadIcon, LaunchIcon, ResetIcon} from '@sanity/icons'
-import {MenuDivider, useToast} from '@sanity/ui'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {DownloadIcon} from '@sanity/icons/Download'
+import {LaunchIcon} from '@sanity/icons/Launch'
+import {ResetIcon} from '@sanity/icons/Reset'
+import {MenuDivider} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {type MouseEventHandler, type ReactNode, useCallback} from 'react'
 
-import {MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 interface Props {
   browse: ReactNode
@@ -45,6 +49,7 @@ export function ActionsMenu(props: Props) {
           icon={DownloadIcon}
           text={t('inputs.files.common.actions-menu.download.label')}
           href={downloadUrl}
+          target="_blank"
         />
       )}
       {copyUrl && (

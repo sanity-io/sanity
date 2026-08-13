@@ -29,7 +29,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -51,21 +51,21 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true'
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
         if: steps.changes.outputs.has_changes == 'true'
         id: cache-playwright-browsers
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
 
       - name: Install Playwright Browsers
         if: steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium firefox
+        run: pnpm exec playwright install --with-deps chromium firefox
 
   dataset-setup:
     timeout-minutes: 10
@@ -73,7 +73,7 @@ jobs:
     needs: [install]
     if: needs.install.outputs.has_code_changes == 'true'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup
 
@@ -85,8 +85,11 @@ jobs:
         run: |
           echo "Creating datasets: ${{ env.CHROMIUM_DATASET }} and ${{ env.FIREFOX_DATASET }}"
           SANITY_E2E_DATASET=${{ env.CHROMIUM_DATASET }} pnpm e2e:setup &
+          chromium_pid=$!
           SANITY_E2E_DATASET=${{ env.FIREFOX_DATASET }} pnpm e2e:setup &
-          wait
+          firefox_pid=$!
+          wait "$chromium_pid"
+          wait "$firefox_pid"
 
   deploy-preview:
     runs-on: ubuntu-8core
@@ -101,7 +104,7 @@ jobs:
     outputs:
       preview_url: ${{ steps.deploy.outputs.DEPLOY_URL }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Pull Vercel Environment Information
@@ -176,7 +179,7 @@ jobs:
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Echo the base URL
         run: echo "$SANITY_E2E_BASE_URL"
       - uses: ./.github/actions/setup
@@ -184,20 +187,20 @@ jobs:
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.project }}
+        run: pnpm exec playwright install --with-deps ${{ matrix.project }}
 
       - name: Run E2E tests
         env:
@@ -250,7 +253,7 @@ jobs:
       failed_files: ${{ steps.summary.outputs.failed_files }}
       failed_files_formatted: ${{ steps.summary.outputs.failed_files_formatted }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
@@ -261,7 +264,7 @@ jobs:
           path: all-blob-reports
 
       - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports/blob-report
+        run: pnpm exec playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports/blob-report
 
       - name: Extract test summary
         id: summary

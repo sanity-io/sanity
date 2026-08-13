@@ -1,6 +1,7 @@
-import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
+import {DialogProvider, type DialogProviderProps, Flex, useElementSize} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {isHotkey} from 'is-hotkey-esm'
-import {useCallback, useMemo, useState} from 'react'
+import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 import {
   ChangeConnectorRoot,
   type DocumentFieldActionNode,
@@ -15,9 +16,10 @@ import {
   useZIndex,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
 
-import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
+import {Pane} from '../../../components/pane/Pane'
+import {usePaneLayout} from '../../../components/pane/usePaneLayout'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {DocumentActionsProvider} from '../../../DocumentActionsProvider'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
@@ -28,11 +30,12 @@ import {
 } from '../constants'
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {DocumentOperationResults} from '../DocumentOperationResults'
-import {DocumentPanel} from '../documentPanel'
-import {DocumentPanelHeader} from '../documentPanel/header'
-import {DocumentActionShortcuts} from '../keyboardShortcuts'
+import {DocumentPanel} from '../documentPanel/DocumentPanel'
+import {DocumentPanelHeader} from '../documentPanel/header/DocumentPanelHeader'
+import {DocumentActionShortcuts} from '../keyboardShortcuts/DocumentActionShortcuts'
 import {getMenuItems} from '../menuItems'
 import {useDocumentPane} from '../useDocumentPane'
+import {changeConnectorRoot} from './DocumentLayout.css'
 import {DocumentLayoutError} from './DocumentLayoutError'
 import {DocumentLayoutFooter} from './DocumentLayoutFooter'
 
@@ -46,13 +49,11 @@ const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   'absolute',
 ]
 
-const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  min-width: 0;
-`
+function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorRoot>) {
+  const {className, ...restProps} = props
+
+  return <ChangeConnectorRoot {...restProps} className={clsx(changeConnectorRoot, className)} />
+}
 
 export function DocumentLayout() {
   const {
@@ -103,10 +104,10 @@ export function DocumentLayout() {
   const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
-  const footerRect = useElementRect(footerElement)
-  const headerRect = useElementRect(headerElement)
-  const footerHeight = footerRect?.height
-  const headerHeight = headerRect?.height
+  const footerSize = useElementSize(footerElement)
+  const headerSize = useElementSize(headerElement)
+  const footerHeight = footerSize?.border.height
+  const headerHeight = headerSize?.border.height
   const currentMinWidth =
     DOCUMENT_PANEL_INITIAL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
   const minWidth = DOCUMENT_PANEL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)

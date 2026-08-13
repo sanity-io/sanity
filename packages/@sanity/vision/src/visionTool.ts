@@ -1,7 +1,6 @@
-// oxlint-disable-next-line no-unassigned-import -- style import is effectful
 import './styles.css'
 
-import {EyeOpenIcon} from '@sanity/icons'
+import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {lazy} from 'react'
 import {definePlugin} from 'sanity'
 import {route} from 'sanity/router'

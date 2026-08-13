@@ -1,4 +1,4 @@
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {memo, useEffect, useMemo, useRef} from 'react'
 import {
   isDocumentLimitError,
@@ -8,7 +8,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
 import {useDocumentPaneInfo} from './useDocumentPaneInfo'
@@ -107,7 +107,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
 
     prevEvent.current = event
 
-    // eslint-disable-next-line consistent-return
+    // oxlint-disable-next-line consistent-return
     return () => clearTimeout(cleanupId)
   }, [event, paneRouter, pushToast, t, documentTitle, handleOpenDialog])
 

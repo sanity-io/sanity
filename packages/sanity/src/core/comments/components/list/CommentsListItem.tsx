@@ -1,4 +1,4 @@
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {type CurrentUser} from '@sanity/types'
 import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
 import {
@@ -12,12 +12,12 @@ import {
 } from 'react'
 import {css, styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
-import {type UserListWithPermissionsHookValue} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
-import {type CommentsSelectedPath} from '../../context'
+import {Button} from '../../../../ui-components/button/Button'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type CommentsSelectedPath} from '../../context/selected-path/types'
 import {commentIntentIfDiffers, hasCommentMessageValue} from '../../helpers'
-import {applyCommentIdAttr} from '../../hooks'
+import {applyCommentIdAttr} from '../../hooks/useCommentsScroll'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
   type CommentBaseCreatePayload,
@@ -28,8 +28,8 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
-import {SpacerAvatar} from '../avatars'
-import {CommentInput, type CommentInputHandle} from '../pte'
+import {SpacerAvatar} from '../avatars/SpacerAvatar'
+import {CommentInput, type CommentInputHandle} from '../pte/comment-input/CommentInput'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 
@@ -74,6 +74,7 @@ const StyledThreadCard = styled(ThreadCard)(() => {
 })
 
 const ExpandButton = styled(Button)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {medium} = theme.sanity.fonts.text.weights
 
   return css`
@@ -155,9 +156,9 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   const handleMouseEnter = () => setMouseOver(true)
   const handleMouseLeave = () => setMouseOver(false)
 
-  const handleReplySubmit = () => {
+  const handleReplySubmit = (nextValue: CommentMessage) => {
     const nextComment: CommentBaseCreatePayload = {
-      message: value,
+      message: nextValue,
       parentCommentId: parentComment._id,
       status: parentComment?.status || 'open',
       // Since this is a reply to an existing comment, we use the same thread ID as the parent
@@ -266,7 +267,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
         // Add some extra padding to the bottom if there is no reply input.
         // This is to make the UI look more balanced.
         paddingBottom={canReply ? undefined : 1}
-        space={4}
+        gap={4}
       >
         <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
           <CommentsListItemLayout

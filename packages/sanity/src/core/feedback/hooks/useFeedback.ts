@@ -4,6 +4,10 @@ import {FeedbackContext} from 'sanity/_singletons'
 import {sendFeedbackToSentry} from '../feedbackClient'
 import {type SendFeedbackOptions} from './useInStudioFeedback'
 
+// re-exported here so the public entry can surface the context without
+// depending on sanity/_singletons directly (boundaries policy)
+export {FeedbackContext}
+
 /** Extends {@link SendFeedbackOptions} with optional user identity for out-of-studio use. */
 export interface FeedbackOptions extends SendFeedbackOptions {
   /** User's name. Overrides the value from FeedbackContext when provided. */

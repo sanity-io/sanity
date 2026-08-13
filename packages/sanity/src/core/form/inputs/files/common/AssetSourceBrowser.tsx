@@ -1,10 +1,14 @@
-import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ImageIcon} from '@sanity/icons/Image'
+import {SearchIcon} from '@sanity/icons/Search'
 import {type AssetSource} from '@sanity/types'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useId} from 'react'
 
-import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {getAssetSourceDisplayName} from './assetSourceUtils'
 
 /** Derives data-testid prefix from schema type. e.g. file-object-input, image-object-input, video-object-input. */

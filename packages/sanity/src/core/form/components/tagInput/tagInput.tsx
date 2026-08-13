@@ -1,9 +1,8 @@
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
 import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
 import {
   type ChangeEvent,
   type FocusEvent,
-  forwardRef,
   type HTMLProps,
   type KeyboardEvent,
   type PointerEvent,
@@ -12,18 +11,23 @@ import {
   useImperativeHandle,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {css, type CSSObject, styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
   const {theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {focusRing, input, radius} = theme.sanity
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const color = theme.sanity.color.input
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const space = rem(theme.sanity.space[1])
 
   return {
@@ -80,11 +84,16 @@ const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
   }
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const Input = styled.input((props: {theme: Theme}): CSSObject => {
   const {theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const font = theme.sanity.fonts.text
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const color = theme.sanity.color.input
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const p = theme.sanity.space[2]
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const size = theme.sanity.fonts.text.sizes[2]
 
   return {
@@ -119,8 +128,10 @@ const Input = styled.input((props: {theme: Theme}): CSSObject => {
   }
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const Placeholder = styled(Box)((props: {theme: Theme}) => {
   const {theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const color = theme.sanity.color.input
 
   return css`
@@ -138,166 +149,161 @@ const TagBox = styled(Box)`
   max-width: 100%;
 `
 
-export const TagInput = forwardRef(
-  (
-    props: {
-      readOnly?: boolean
-      onChange?: (newValue: {value: string}[]) => void
-      onFocus?: (event: FocusEvent) => void
-      placeholder?: string
-      value?: {value: string}[]
-    } & Omit<HTMLProps<HTMLInputElement>, 'as' | 'onChange' | 'onFocus' | 'ref' | 'value'>,
-    forwardedRef: React.ForwardedRef<HTMLInputElement>,
-  ) => {
-    const {
-      disabled,
-      onChange,
-      onFocus,
-      placeholder: placeholderProp,
-      readOnly,
-      value = [],
-      ...restProps
-    } = props
+export function TagInput(
+  props: {
+    readOnly?: boolean
+    onChange?: (newValue: {value: string}[]) => void
+    onFocus?: (event: FocusEvent) => void
+    placeholder?: string
+    value?: {value: string}[]
+  } & Omit<HTMLProps<HTMLInputElement>, 'as' | 'onChange' | 'onFocus' | 'ref' | 'value'> &
+    RefAttributes<HTMLInputElement>,
+) {
+  const {
+    ref: forwardedRef,
+    disabled,
+    onChange,
+    onFocus,
+    placeholder: placeholderProp,
+    readOnly,
+    value = [],
+    ...restProps
+  } = props
 
-    const {t} = useTranslation(studioLocaleNamespace)
-    const [inputValue, setInputValue] = useState('')
-    const enabled = !disabled && !readOnly
-    const [focused, setFocused] = useState(false)
-    const ref = useRef<HTMLInputElement | null>(null)
-    const rootRef = useRef<HTMLDivElement | null>(null)
+  const {t} = useTranslation(studioLocaleNamespace)
+  const [inputValue, setInputValue] = useState('')
+  const enabled = !disabled && !readOnly
+  const [focused, setFocused] = useState(false)
+  const ref = useRef<HTMLInputElement | null>(null)
+  const rootRef = useRef<HTMLDivElement | null>(null)
 
-    useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
-      forwardedRef,
-      () => ref.current,
-    )
+  useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
+    forwardedRef,
+    () => ref.current,
+  )
 
-    const handleRootPointerDown = useCallback((event: PointerEvent<HTMLDivElement>) => {
-      const isTagElement = isHTMLElement(event.target) && event.target.closest('[data-ui="Tag"]')
+  const handleRootPointerDown = useCallback((event: PointerEvent<HTMLDivElement>) => {
+    const isTagElement = isHTMLElement(event.target) && event.target.closest('[data-ui="Tag"]')
 
-      if (isTagElement) return
+    if (isTagElement) return
 
-      const inputElement = ref.current
+    const inputElement = ref.current
 
-      if (inputElement) {
-        setTimeout(() => inputElement.focus(), 0)
-      }
-    }, [])
+    if (inputElement) {
+      setTimeout(() => inputElement.focus(), 0)
+    }
+  }, [])
 
-    const handleInputBlur = useCallback(() => {
-      setFocused(false)
-    }, [])
+  const handleInputBlur = useCallback(() => {
+    setFocused(false)
+  }, [])
 
-    const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-      setInputValue(event.currentTarget.value)
-    }, [])
+  const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.currentTarget.value)
+  }, [])
 
-    const handleInputFocus = useCallback(
-      (event: FocusEvent) => {
-        setFocused(true)
-        if (onFocus) onFocus(event)
-      },
-      [onFocus],
-    )
+  const handleInputFocus = useCallback(
+    (event: FocusEvent) => {
+      setFocused(true)
+      if (onFocus) onFocus(event)
+    },
+    [onFocus],
+  )
 
-    const handleInputKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-          event.preventDefault()
-          event.stopPropagation()
+  const handleInputKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === 'Enter') {
+        event.preventDefault()
+        event.stopPropagation()
 
-          if (onChange && inputValue) {
-            const newValue = value.concat([{value: inputValue}])
+        if (onChange && inputValue) {
+          const newValue = value.concat([{value: inputValue}])
 
-            setInputValue('')
+          setInputValue('')
 
-            if (onChange) onChange(newValue)
-          }
+          if (onChange) onChange(newValue)
         }
-      },
-      [inputValue, onChange, value],
-    )
-
-    const handleTagRemove = useCallback(
-      (index: number) => {
-        if (!onChange) return
-
-        const newValue = value.slice(0)
-
-        newValue.splice(index, 1)
-
-        onChange(newValue)
-      },
-      [onChange, value],
-    )
-
-    useEffect(() => {
-      const inputElement = ref.current
-
-      if (inputElement) {
-        inputElement.style.width = '0'
-        inputElement.style.width = `calc(${inputElement.scrollWidth}px + 1rem)`
       }
-    }, [inputValue])
+    },
+    [inputValue, onChange, value],
+  )
 
-    return (
-      <Root
-        data-disabled={disabled ? '' : undefined}
-        data-focused={focused ? '' : undefined}
-        data-read-only={readOnly ? '' : undefined}
-        data-ui="TagInput"
-        onPointerDown={handleRootPointerDown}
-        overflow="auto"
-        padding={1}
-        ref={rootRef}
-      >
-        {enabled && (
-          <Placeholder hidden={Boolean(inputValue || value.length)} padding={3}>
-            <Text textOverflow="ellipsis">
-              {placeholderProp
-                ? placeholderProp
-                : t('inputs.tags.placeholder', {
-                    context:
-                      typeof window !== 'undefined' && 'ontouchstart' in window
-                        ? 'touch'
-                        : undefined,
-                  })}
-            </Text>
-          </Placeholder>
-        )}
+  const handleTagRemove = useCallback(
+    (index: number) => {
+      if (!onChange) return
 
-        <div className="content">
-          {value.map((tag, tagIndex) => (
-            <TagBox key={`tag-${tagIndex}`}>
-              <Tag
-                enabled={enabled}
-                index={tagIndex}
-                muted={!enabled}
-                onRemove={handleTagRemove}
-                tag={tag}
-              />
-            </TagBox>
-          ))}
+      const newValue = value.slice(0)
 
-          <div key="tag-input">
-            <Input
-              {...restProps}
-              disabled={!enabled}
-              onBlur={handleInputBlur}
-              onChange={handleInputChange}
-              onFocus={handleInputFocus}
-              onKeyDown={handleInputKeyDown}
-              ref={ref}
-              type="text"
-              value={inputValue}
+      newValue.splice(index, 1)
+
+      onChange(newValue)
+    },
+    [onChange, value],
+  )
+
+  useEffect(() => {
+    const inputElement = ref.current
+
+    if (inputElement) {
+      inputElement.style.width = '0'
+      inputElement.style.width = `calc(${inputElement.scrollWidth}px + 1rem)`
+    }
+  }, [inputValue])
+
+  return (
+    <Root
+      data-disabled={disabled ? '' : undefined}
+      data-focused={focused ? '' : undefined}
+      data-read-only={readOnly ? '' : undefined}
+      data-ui="TagInput"
+      onPointerDown={handleRootPointerDown}
+      overflow="auto"
+      padding={1}
+      ref={rootRef}
+    >
+      {enabled && (
+        <Placeholder hidden={Boolean(inputValue || value.length)} padding={3}>
+          <Text textOverflow="ellipsis">
+            {placeholderProp
+              ? placeholderProp
+              : t('inputs.tags.placeholder', {
+                  context:
+                    typeof window !== 'undefined' && 'ontouchstart' in window ? 'touch' : undefined,
+                })}
+          </Text>
+        </Placeholder>
+      )}
+
+      <div className="content">
+        {value.map((tag, tagIndex) => (
+          <TagBox key={`tag-${tagIndex}`}>
+            <Tag
+              enabled={enabled}
+              index={tagIndex}
+              muted={!enabled}
+              onRemove={handleTagRemove}
+              tag={tag}
             />
-          </div>
-        </div>
-      </Root>
-    )
-  },
-)
+          </TagBox>
+        ))}
 
-TagInput.displayName = 'ForwardRef(TagInput)'
+        <div key="tag-input">
+          <Input
+            {...restProps}
+            disabled={!enabled}
+            onBlur={handleInputBlur}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onKeyDown={handleInputKeyDown}
+            ref={ref}
+            type="text"
+            value={inputValue}
+          />
+        </div>
+      </div>
+    </Root>
+  )
+}
 
 function Tag(props: {
   enabled: boolean
@@ -315,7 +321,7 @@ function Tag(props: {
   return (
     <Card data-ui="Tag" radius={2} tone="transparent">
       <Flex align="center" gap={1}>
-        <Box flex={1} paddingY={2} paddingLeft={2}>
+        <Box flex={1} paddingY={2} paddingLeft={2} paddingRight={enabled ? undefined : 2}>
           <Text muted={muted} textOverflow="ellipsis">
             {tag.value}
           </Text>

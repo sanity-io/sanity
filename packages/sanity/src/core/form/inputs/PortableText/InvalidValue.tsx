@@ -2,17 +2,18 @@ import {type InvalidValueResolution} from '@portabletext/editor'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
-  Code,
   Grid,
   Stack,
   Text,
 } from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
 
-import {Translate, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {
   PortableTextInvalidValueIgnore,
   PortableTextInvalidValueResolve,
@@ -55,7 +56,7 @@ export function InvalidValue(props: InvalidValueProps) {
       suffix={
         <Stack padding={2}>
           {resolution.action && (
-            <Grid columns={[1, 2]} gap={1}>
+            <Grid gridTemplateColumns={[1, 2]} gap={1}>
               <Button
                 mode="ghost"
                 onClick={handleOnIgnore}
@@ -88,7 +89,7 @@ export function InvalidValue(props: InvalidValueProps) {
         </Stack>
       }
     >
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text as="p" muted size={1}>
           <Translate t={t} i18nKey={resolution.i18n.description} values={resolution.i18n.values} />
         </Text>

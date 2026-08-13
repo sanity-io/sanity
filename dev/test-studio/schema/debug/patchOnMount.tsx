@@ -12,7 +12,6 @@ export const patchOnMountDebug = defineType({
     },
   ],
   components: {
-    // eslint-disable-next-line func-name-matching
     input: function PatchOnMountInput(props) {
       const {onChange} = props
       const mounted = useRef(false)

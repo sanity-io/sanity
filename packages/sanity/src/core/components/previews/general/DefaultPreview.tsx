@@ -1,9 +1,9 @@
 import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
-import classNames from 'classnames'
+import {clsx} from 'clsx'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {LinearProgress} from '../../progress/LinearProgress'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
@@ -56,7 +56,7 @@ const SKELETON_DELAY = 300
 export function DefaultPreview(props: DefaultPreviewProps) {
   const {title, subtitle, media, status, isPlaceholder, children, styles, progress} = props
   const {t} = useTranslation()
-  const rootClassName = classNames(styles?.root, Boolean(subtitle) && styles?.hasSubtitle)
+  const rootClassName = clsx(styles?.root, Boolean(subtitle) && styles?.hasSubtitle)
   const isUploading = typeof progress === 'number' && progress > -1
 
   const statusNode = status && (
@@ -86,7 +86,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
             </Box>
           )}
 
-          <Stack data-testid="default-preview__heading" flex={1} space={2}>
+          <Stack data-testid="default-preview__heading" flex={1} gap={2}>
             <TitleSkeleton delay={SKELETON_DELAY} />
             <SubtitleSkeleton delay={SKELETON_DELAY} />
           </Stack>
@@ -119,7 +119,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
           </Box>
         )}
 
-        <Stack className={styles?.heading} data-testid="default-preview__header" flex={1} space={2}>
+        <Stack className={styles?.heading} data-testid="default-preview__header" flex={1} gap={2}>
           {isUploading && <LinearProgress value={progress} />}
           {!isUploading && (
             <>

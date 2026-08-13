@@ -1,4 +1,4 @@
-import {type ToastParams, useToast} from '@sanity/ui'
+import {type ToastParams, useToast} from '@sanity/ui/toast'
 import {startTransition, useEffect, useState} from 'react'
 /**
  * Workaround to support conditional toast (e.g. a toast that is visible as long as a condition holds true)
@@ -21,7 +21,7 @@ export function useConditionalToast(
   const enabled =
     enabledAt && params.enabled && now.getTime() - enabledAt.getTime() > (params?.delay ?? 0)
 
-  // eslint-disable-next-line consistent-return
+  // oxlint-disable-next-line consistent-return
   useEffect(() => {
     if (enabled) {
       toast.push({...params, duration: Infinity})

@@ -1,11 +1,12 @@
 import {Flex} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {forwardRef, type Ref, useMemo, useState} from 'react'
+import {useMemo, useState, type RefAttributes} from 'react'
 
-import {Button, type MenuButtonProps} from '../../../../../ui-components'
-import {useRovingFocus} from '../../../../components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTabList'
-import {type Tool} from '../../../../config'
+import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
+import {type Tool} from '../../../../config/types'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {ToolLink, type ToolLinkProps} from './ToolLink'
 
@@ -40,16 +41,14 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
       tools.map((tool, index) => {
         const title = tool?.title || startCase(tool.name)
 
-        const Link = forwardRef(function Link(
-          linkProps: ToolLinkProps,
-          ref: Ref<HTMLAnchorElement>,
-        ) {
+        function Link(linkProps: ToolLinkProps & RefAttributes<HTMLAnchorElement>) {
+          const {ref, ...rest} = linkProps
           return (
-            <ToolLink {...linkProps} ref={ref} name={tool.name}>
+            <ToolLink {...rest} ref={ref} name={tool.name}>
               {linkProps.children}
             </ToolLink>
           )
-        })
+        }
 
         return (
           <Button

@@ -1,4 +1,15 @@
 import {type ConventionalGitClient} from '@conventional-changelog/git-client'
+import createPreset from 'conventional-changelog-conventionalcommits'
+
+/**
+ * Parser options from the `conventionalcommits` preset (the same preset used
+ * for version bumping and CHANGELOG.md generation). Unlike the parser
+ * defaults, these handle the breaking-change marker (`feat!:`) and populate
+ * `notes` for it.
+ */
+export async function getParserOptions() {
+  return (await createPreset()).parser
+}
 
 export async function getSemverTags(gitClient: ConventionalGitClient, params?: {tags: string[]}) {
   const tags: string[] = []
@@ -31,15 +42,19 @@ export async function* getCommits(
   } else {
     reverseTags.unshift('')
   }
+  const parserOptions = await getParserOptions()
   const streams = []
   for (let i = 1, len = reverseTags.length; i < len; i++) {
     streams.push(
-      gitClient.getCommits({
-        ...params,
-        from: reverseTags[i - 1],
-        to: reverseTags[i],
-        path,
-      }),
+      gitClient.getCommits(
+        {
+          ...params,
+          from: reverseTags[i - 1],
+          to: reverseTags[i],
+          path,
+        },
+        parserOptions,
+      ),
     )
   }
   for (const stream of streams) {

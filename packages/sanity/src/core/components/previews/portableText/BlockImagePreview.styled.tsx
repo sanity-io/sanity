@@ -25,5 +25,5 @@ export const MediaCard = styled(Card)<{$ratio: number}>`
 `
 
 export const RootBox = styled(Box).attrs({overflow: 'hidden'})`
-  border-radius: ${({theme}) => theme.sanity.radius[1]}px;
+  border-radius: ${({theme}) => theme.sanity.radius[1] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
 `

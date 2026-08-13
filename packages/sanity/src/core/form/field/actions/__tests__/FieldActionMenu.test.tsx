@@ -1,10 +1,10 @@
-import {EllipsisHorizontalIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {type DocumentFieldActionNode} from '../../../../config'
+import {type DocumentFieldActionNode} from '../../../../config/document/fieldActions/types'
 import {FieldActionMenu} from '../FieldActionMenu'
 
 const mockNodes: DocumentFieldActionNode[] = [
@@ -43,7 +43,7 @@ describe('FieldActionMenu', () => {
 
     // Verify that pointerdown's default is prevented, which stops the browser
     // from performing focus-and-scroll behaviour when clicking the menu trigger.
-    // eslint-disable-next-line testing-library/prefer-user-event -- fireEvent is needed to check preventDefault return value
+    // oxlint-disable-next-line testing-library/prefer-user-event -- fireEvent is needed to check preventDefault return value
     const defaultPrevented = !fireEvent.pointerDown(trigger)
     expect(defaultPrevented).toBe(true)
   })
@@ -61,7 +61,7 @@ describe('FieldActionMenu', () => {
 
     // Click the trigger button — the click event should still work even though
     // pointerdown default is prevented.
-    // eslint-disable-next-line testing-library/prefer-user-event -- fireEvent used for consistency with pointerDown test
+    // oxlint-disable-next-line testing-library/prefer-user-event -- fireEvent used for consistency with pointerDown test
     fireEvent.click(trigger)
 
     // The menu should open

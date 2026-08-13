@@ -1,10 +1,5 @@
 import {_responsive, type CardTone, rem, type ThemeProps} from '@sanity/ui'
-import {
-  // eslint-disable-next-line camelcase
-  getTheme_v2,
-  type ThemeColorSchemeKey,
-  type ThemeFontWeightKey,
-} from '@sanity/ui/theme'
+import {getTheme_v2, type ThemeColorSchemeKey, type ThemeFontWeightKey} from '@sanity/ui/theme'
 import {css, type CSSObject} from 'styled-components'
 
 import {focusRingBorderStyle, focusRingStyle} from '../../../components/formField/styles'
@@ -171,18 +166,22 @@ export function textInputRepresentationStyle(
       /* focused */
       *:not(:disabled):focus + & {
         &[data-border] {
-          --input-box-shadow: ${$unstableDisableFocusRing
-            ? undefined
-            : focusRingStyle({
-                border: {color: color.input.default.enabled.border, width: input.border.width},
-                focusRing: input.text.focusRing,
-              })};
+          --input-box-shadow: ${
+            $unstableDisableFocusRing
+              ? undefined
+              : focusRingStyle({
+                  border: {color: color.input.default.enabled.border, width: input.border.width},
+                  focusRing: input.text.focusRing,
+                })
+          };
         }
 
         &:not([data-border]) {
-          --input-box-shadow: ${$unstableDisableFocusRing
-            ? undefined
-            : focusRingStyle({focusRing: input.text.focusRing})};
+          --input-box-shadow: ${
+            $unstableDisableFocusRing
+              ? undefined
+              : focusRingStyle({focusRing: input.text.focusRing})
+          };
         }
       }
 

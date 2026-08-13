@@ -109,6 +109,7 @@ export const allNativeInputComponents = defineType({
       type: 'image',
       name: 'image',
       components: {
+        // @ts-expect-error -- pre-existing, fix later
         input: DelegatedImageInput,
       },
     }),
@@ -135,7 +136,7 @@ export const allNativeInputComponents = defineType({
         {
           type: 'allNativeInputComponents',
           preview: {select: {title: 'title'}},
-          // eslint-disable-next-line camelcase
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           __experimental_search: [{path: 'title'}],
         },
       ],

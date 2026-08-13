@@ -3,10 +3,10 @@ import {
   type PortableTextComponents,
   type PortableTextTypeComponentProps,
 } from '@portabletext/react'
-import {Icon, LinkIcon} from '@sanity/icons'
+import {Icon} from '@sanity/icons'
+import {LinkIcon} from '@sanity/icons/Link'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
@@ -49,6 +49,7 @@ const AccentSpan = styled.span`
 `
 
 const SemiboldSpan = styled.span(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {weights} = theme.sanity.fonts.text
 
   return css`

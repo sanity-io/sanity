@@ -1,5 +1,5 @@
 import {render, waitFor} from '@testing-library/react'
-import {type MutableRefObject} from 'react'
+import {type RefObject} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type StudioToolMountTimeMeasured as StudioToolMountTimeMeasuredType} from '../__telemetry__/tools.telemetry'
@@ -9,7 +9,7 @@ vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
 }))
 
-function makeRef<T>(value: T): MutableRefObject<T> {
+function makeRef<T>(value: T): RefObject<T> {
   return {current: value}
 }
 

@@ -1,4 +1,4 @@
-import {ChevronRightIcon} from '@sanity/icons'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {Fragment} from 'react'
 
@@ -19,7 +19,7 @@ export function FilterDetails({filter}: FilterDetailsProps) {
   const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
 
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       {/* Path */}
       {fieldDefinition?.titlePath && fieldDefinition.titlePath?.length > 1 && (
         <Box marginLeft={4}>

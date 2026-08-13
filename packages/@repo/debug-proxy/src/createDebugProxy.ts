@@ -9,11 +9,9 @@ import {type Subscription} from 'rxjs'
 import {
   createRequestProxy,
   createSSEProxy,
-  type ProxyHeaders,
   type ProxyRequest,
   type ProxyResponse,
   type ProxyTarget,
-  type SSEEvent,
   writeResponseHead,
 } from './proxy'
 
@@ -89,6 +87,15 @@ export interface DebugProxyConfig {
    * pass-through proxy created with {@link createRequestProxy}.
    */
   defaultHandler?: ProxyHandler | undefined
+  /**
+   * Handler for WebSocket upgrade requests (e.g. the bifur client's
+   * `wss://…/socket/…`). Defaults to transparently tunneling the connection
+   * to the upstream. Override to answer upgrades locally — e.g. a mock server
+   * with no upstream accepting the handshake so clients don't error-loop.
+   */
+  upgradeHandler?:
+    | ((req: http.IncomingMessage, socket: net.Socket, head: Buffer) => void)
+    | undefined
 }
 
 export interface DebugProxyServer {
@@ -263,6 +270,23 @@ export function createDebugProxy(config: DebugProxyConfig = {}): DebugProxyServe
   // (Browsers send WebSocket upgrades over HTTP/1.1, which the h2 listener
   // accepts via its ALPN fallback.)
   server.on('upgrade', (req: http.IncomingMessage, clientSocket: net.Socket, head: Buffer) => {
+    if (config.upgradeHandler) {
+      // A throwing handler must not become an uncaught exception that takes
+      // down the whole proxy mid-run. The signature returns void, but
+      // `=> void` also admits async functions - capture any returned thenable
+      // so a rejection can't crash the process either.
+      try {
+        const result = config.upgradeHandler(req, clientSocket, head) as unknown
+        Promise.resolve(result).catch((error: unknown) => {
+          console.error('[debug-proxy] upgrade handler error:', error)
+          clientSocket.destroy()
+        })
+      } catch (error) {
+        console.error('[debug-proxy] upgrade handler error:', error)
+        clientSocket.destroy()
+      }
+      return
+    }
     const requestHost = req.headers.host
     const derived = requestHost ? deriveProjectId(requestHost) : {error: 'missing host'}
     let upstreamUrl: URL | undefined
@@ -334,5 +358,3 @@ export function createDebugProxy(config: DebugProxyConfig = {}): DebugProxyServe
 
   return api
 }
-
-export type {ProxyHeaders, ProxyRequest, ProxyResponse, ProxyTarget, SSEEvent}

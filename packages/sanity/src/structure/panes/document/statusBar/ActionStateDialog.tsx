@@ -2,7 +2,7 @@ import {PortalProvider, Text, usePortal} from '@sanity/ui'
 import {type ReactNode, useId} from 'react'
 import {type DocumentActionDialogProps} from 'sanity'
 
-import {Dialog} from '../../../../ui-components'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {ConfirmDialog} from './dialogs/ConfirmDialog'
 import {ModalDialog} from './dialogs/ModalDialog'
@@ -60,7 +60,6 @@ export function ActionStateDialog(props: ActionStateDialogProps) {
       width={1}
     >
       {unknownModal.content || (
-        // eslint-disable-next-line i18next/no-literal-string
         <Text size={1}>
           Unexpected modal type (<code>{unknownModal.type}</code>)
         </Text>

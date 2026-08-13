@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type ObjectSchemaType} from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {act, renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -14,9 +14,9 @@ import {createMockClient} from './mockClient'
 import {mockTypes, schema} from './schema'
 import {setupClipboard, writeItemsToClipboard} from './viClipboard'
 
-vi.mock('@sanity/ui', async () => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual = await vi.importActual<typeof import('@sanity/ui')>('@sanity/ui')
+vi.mock('@sanity/ui/toast', async () => {
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-imports
+  const actual = await vi.importActual<typeof import('@sanity/ui/toast')>('@sanity/ui/toast')
   return {
     ...actual,
     useToast: vi.fn(),

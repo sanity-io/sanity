@@ -5,11 +5,11 @@ import {describe, it} from 'vitest'
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
 import {
-  type BooleanDefinition,
   type FieldDefinition,
   type FieldDefinitionBase,
-  type StringDefinition,
-} from '../src/schema/definition'
+} from '../src/schema/definition/schemaDefinition'
+import {type BooleanDefinition} from '../src/schema/definition/type/boolean'
+import {type StringDefinition} from '../src/schema/definition/type/string'
 import {defineField, defineType} from '../src/schema/types'
 
 describe('string types', () => {

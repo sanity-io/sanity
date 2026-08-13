@@ -1,8 +1,9 @@
-import {ImageIcon, SearchIcon} from '@sanity/icons'
+import {ImageIcon} from '@sanity/icons/Image'
+import {SearchIcon} from '@sanity/icons/Search'
 import {type AssetSource} from '@sanity/types'
 import get from 'lodash-es/get.js'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {EMPTY} from 'rxjs'
 
 import {ActionsMenu} from '../../../core/form/inputs/files/common/ActionsMenu'
@@ -18,8 +19,8 @@ import {
 import {useUploadMenuItem} from '../../../core/form/inputs/files/common/useUploadMenuItem'
 import {sourceName as MEDIA_LIBRARY_SOURCE_NAME} from '../../../core/form/studio/assetSourceMediaLibrary'
 import {DEFAULT_API_VERSION} from '../../../core/form/studio/assetSourceMediaLibrary/constants'
-import {useClient} from '../../../core/hooks'
-import {useTranslation} from '../../../core/i18n'
+import {useClient} from '../../../core/hooks/useClient'
+import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {CUSTOM_DOMAIN_PRODUCTION, CUSTOM_DOMAIN_STAGING} from './constants'
 import {getPlaybackTokens, type VideoAssetInputProps} from './types'
@@ -131,7 +132,9 @@ export function VideoPreview(props: VideoAssetInputProps) {
     () => (documentId && observeAsset ? observeAsset(documentId) : EMPTY),
     [documentId, observeAsset],
   )
-  const resolvedAsset = useObservable(observable)
+  // Kept synchronous: a deferred snapshot could pair the previous asset with a
+  // newly selected reference, pointing open-in-source at the wrong asset.
+  const resolvedAsset = useSyncObservable(observable)
 
   const openInSourceResult = useMemo(() => {
     if (resolvedAsset) {

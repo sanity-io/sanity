@@ -133,6 +133,7 @@ export function useImageObjectUrl(url: string | undefined): UseImageObjectUrlRes
     // No cacheKey (i.e. no URL or token) means we can't fetch. Reset to idle state,
     // skipping the update if already in an idle state
     if (!cacheKey) {
+      // oxlint-disable-next-line react/react-compiler
       setState((prev) => (prev.objectUrl || prev.isLoading || prev.error ? IDLE_RESULT : prev))
       return undefined
     }

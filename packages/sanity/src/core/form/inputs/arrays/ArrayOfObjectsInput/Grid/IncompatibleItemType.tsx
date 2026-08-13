@@ -1,14 +1,17 @@
-import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
-import {Box, Card, Code, Stack, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
+import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
+import {UnknownIcon} from '@sanity/icons/Unknown'
+import {Box, Card, Stack, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Popover} from '../../../../../../ui-components'
-import {Translate, useTranslation} from '../../../../../i18n'
+import {Popover} from '../../../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../../i18n/Translate'
 
 const PopoverCard = styled(Card)`
-  max-width: ${({theme}: {theme: Theme}) => theme.sanity.container[1]}px;
+  max-width: ${({theme}: {theme: Theme}) => theme.sanity.container[1] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
 `
 
 interface Props {
@@ -50,7 +53,7 @@ export function IncompatibleItemType(props: Props) {
       tone="default"
       content={
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
-          <Stack space={4}>
+          <Stack gap={4}>
             <Box>
               <Text weight="medium">{t('inputs.array.error.type-is-incompatible-title')}</Text>
             </Box>
@@ -66,7 +69,7 @@ export function IncompatibleItemType(props: Props) {
                 <BulbOutlineIcon /> {t('inputs.array.error.can-delete-but-no-edit-description')}
               </Text>
             </Box>
-            <Stack space={2}>
+            <Stack gap={2}>
               <Text size={1} weight="medium">
                 {t('inputs.array.error.json-representation-description')}
               </Text>
@@ -94,7 +97,7 @@ export function IncompatibleItemType(props: Props) {
         __unstable_focusRing
         {...rest}
       >
-        <Stack space={4} marginTop={2}>
+        <Stack gap={4} marginTop={2}>
           <Box margin={1}>
             <Text align="center" size={4}>
               <UnknownIcon />
