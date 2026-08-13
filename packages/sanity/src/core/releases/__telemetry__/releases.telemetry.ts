@@ -27,6 +27,21 @@ export interface RevertInfo {
   revertType: 'immediate' | 'staged'
 }
 
+export interface ReleaseDescriptionInfo {
+  /**
+   * whether the description was set when creating the release, or edited on an existing release
+   */
+  action: 'create' | 'edit'
+  /**
+   * number of characters in the description - never the description content itself
+   */
+  characterCount: number
+  /**
+   * whether the description contains a URL
+   */
+  containsUrl: boolean
+}
+
 /**
  * When a document (version) is successfully added to a release
  */
@@ -118,4 +133,12 @@ export const ReleaseTitleCopied = defineEvent({
   name: 'Release Title Copied',
   version: 1,
   description: 'User copied release title to clipboard',
+})
+
+/** Records release description usage - set at creation or edited in Studio */
+export const ReleaseDescriptionSet = defineEvent<ReleaseDescriptionInfo>({
+  name: 'Release Description Set',
+  version: 1,
+  description:
+    'Whether a release description was set at creation or edited in Studio, with its character count (never the content itself)',
 })

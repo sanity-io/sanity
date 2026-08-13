@@ -402,6 +402,27 @@ while closed (hidden with `display: none`). Consequences for tests:
   intent routes, `resolveIntentLink` throws during render and the form subtree disappears.
   See `packages/sanity/test/browser/TestWrapper.tsx` and `test/testUtils/TestProvider.tsx`.
 
+### Visual Regression Tests (Chromatic + Storybook)
+
+Visual regression runs on Chromatic via `.github/workflows/chromatic.yml`. `dev/storybook`
+contains the stories — most reuse the vitest browser-mode test harnesses (`TestWrapper` +
+`*Story.tsx` components), plus authored migration sentinels for `ui-components` and
+vanilla-extract-migrated components.
+
+```bash
+pnpm dev:storybook                    # Storybook dev server at http://localhost:6006
+pnpm build:storybook                  # Static build via turbo (dev/storybook/storybook-static)
+pnpm --filter sanity-storybook test   # Run every story as a vitest browser-mode test
+CHROMATIC=1 pnpm --filter sanity test:browser   # Chromatic archive capture run (chromium only)
+```
+
+Repo secrets: `CHROMATIC_PROJECT_TOKEN_STORYBOOK` (active), `CHROMATIC_PROJECT_TOKEN_E2E`
+(active, used by e2e), `CHROMATIC_PROJECT_TOKEN_VITEST` (dormant until Chromatic's Vitest early
+access is enabled — the CI job self-activates when the secret is added). Checks are non-gating
+during burn-in. See the `sanity-visual-regression` skill
+(`.agents/skills/sanity-visual-regression/SKILL.md`) for how to add coverage, determinism rules,
+and the Vitest activation runbook.
+
 ### E2E Tests (Playwright)
 
 ```bash
@@ -632,6 +653,7 @@ These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The st
 | ------------------------------------------------- | ---- | ------------------------------------------------ |
 | Test studio (`pnpm dev` / `pnpm dev:test-studio`) | 3333 | Local Sanity Studio for manual verification      |
 | Preview iframe (`pnpm dev:preview-iframe`)        | 3334 | Cross-origin Presentation preview (vanilla Vite) |
+| Storybook (`pnpm dev:storybook`)                  | 6006 | Visual regression stories (Chromatic)            |
 
 No Docker, databases, or other local services are required for unit tests, lint, or build. CI-style verification (`pnpm lint`, `pnpm build`, `pnpm test`) runs entirely in-process.
 

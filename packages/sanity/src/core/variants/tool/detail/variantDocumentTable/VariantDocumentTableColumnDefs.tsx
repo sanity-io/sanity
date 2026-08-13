@@ -2,10 +2,11 @@ import {type ReleaseDocument} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {memo} from 'react'
+import {Box} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -236,7 +237,7 @@ export const getVariantDocumentTableColumnDefs = (
         paddingRight={2}
         sizing="border"
       >
-        <Box flex={1} style={{minWidth: 0}}>
+        <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
           {datum.isLoading ? (
             <SanityDefaultPreview isPlaceholder />
           ) : (

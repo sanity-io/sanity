@@ -1,6 +1,7 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {Badge, Box, Card, Checkbox, Container, Flex, TextInput, useMediaIndex} from '@sanity/ui'
+import {Badge, Card, Checkbox, Container, Flex, TextInput, useMediaIndex} from '@sanity/ui'
 import {type CSSProperties, type ReactNode, useCallback, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Table} from './Table'
@@ -28,7 +29,6 @@ const DEFAULT_COMMAND_LANE_MIN_HEIGHT = 33
 // Filter-tab strip: scrolls horizontally when the tabs outrun the width, with a subtle right-edge
 // fade cueing the overflow. When the tabs fit, the fade falls over empty space and is invisible.
 const FILTER_TABS_STYLE: CSSProperties = {
-  minWidth: 0,
   overflowX: 'auto',
   maskImage: 'linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%)',
   WebkitMaskImage: 'linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%)',
@@ -255,7 +255,7 @@ export function DocumentTable<Row extends object>({
                       onClick={clearSelection}
                       text={selection.labels.clear}
                     />
-                    <Box flex={1} />
+                    <Box flexBasis="0%" flexGrow={1} />
                     {selection.renderActions({
                       selectedKeys: selectedKeyList,
                       compact: compactBulkActions,
@@ -265,7 +265,11 @@ export function DocumentTable<Row extends object>({
                 ) : (
                   <>
                     {filterTabs && (
-                      <Box flex={1} style={filterTabsScroll ? FILTER_TABS_STYLE : {minWidth: 0}}>
+                      <Box
+                        flexBasis="0%"
+                        flexGrow={1}
+                        style={filterTabsScroll ? FILTER_TABS_STYLE : undefined}
+                      >
                         {filterTabs}
                       </Box>
                     )}
@@ -273,7 +277,9 @@ export function DocumentTable<Row extends object>({
                         lead from the left). Without them, it fills the lane so it doesn't strand a
                         wide empty gutter — e.g. the variants overview, which has no filter tabs. */}
                     <Box
-                      flex={filterTabs ? 'none' : 1}
+                      {...(filterTabs
+                        ? {flexBasis: 'auto', flexGrow: 0, flexShrink: 0}
+                        : {flexBasis: '0%', flexGrow: 1})}
                       style={filterTabs ? SEARCH_INPUT_STYLE : undefined}
                     >
                       <TextInput
@@ -288,7 +294,11 @@ export function DocumentTable<Row extends object>({
                         value={searchTerm}
                       />
                     </Box>
-                    {commandLaneActions ? <Box flex="none">{commandLaneActions}</Box> : null}
+                    {commandLaneActions ? (
+                      <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+                        {commandLaneActions}
+                      </Box>
+                    ) : null}
                   </>
                 )}
               </Flex>

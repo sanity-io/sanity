@@ -79,6 +79,9 @@ export const useUnpublishAction: DocumentActionComponent = ({
             id={draft?._id || id}
             type={type}
             action="unpublish"
+            // Published variants can always be unpublished — incoming refs point
+            // at the base published id, not the variant id.
+            checkIncomingReferences={!isVariantTarget}
             onCancel={handleCancel}
             onConfirm={handleConfirm}
           />
@@ -87,7 +90,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
     }
 
     return null
-  }, [draft, id, handleCancel, handleConfirm, isConfirmDialogOpen, type])
+  }, [draft, handleCancel, handleConfirm, id, isConfirmDialogOpen, isVariantTarget, type])
 
   return useMemo(() => {
     if (release || isDraft) {
