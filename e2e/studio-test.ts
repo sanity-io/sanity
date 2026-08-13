@@ -1,42 +1,9 @@
-// The Chromatic fixture wraps @playwright/test's `test`, archiving page state
-// for visual regression snapshots. Automatic end-of-test snapshots are
-// disabled globally (see `disableAutoSnapshot` in playwright.config.ts): the
-// e2e suite runs against per-PR staging datasets with live timestamps and
-// presence, so snapshots are curated opt-in via `takeChromaticSnapshot`.
-import {expect, takeSnapshot, test as baseTest} from '@chromatic-com/playwright'
-import {type Page, type TestInfo} from '@playwright/test'
+// oxlint-disable-next-line no-restricted-imports
+import {expect, test as baseTest} from '@playwright/test'
 import {createClient, type SanityClient, type SanityDocument} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 
 import {watchForStudioErrors} from './helpers/studioErrors'
-
-/**
- * Captures a Chromatic visual regression snapshot of the page's current state.
- *
- * Only snapshot deterministic states: freshly seeded fixture documents and
- * schema-driven chrome — never anything with relative timestamps, presence
- * from other sessions, or dataset-dependent document lists. Captures from the
- * chromium project only, so each state produces exactly one snapshot
- * (Chromatic re-renders archives in its own standardized browser).
- *
- * @example
- * ```ts
- * test('my test', async ({page}, testInfo) => {
- *   await expect(page.getByTestId('studio-navbar')).toBeVisible()
- *   await takeChromaticSnapshot(page, 'studio navbar', testInfo)
- * })
- * ```
- */
-export async function takeChromaticSnapshot(
-  page: Page,
-  name: string,
-  testInfo: TestInfo,
-): Promise<void> {
-  if (testInfo.project.name !== 'chromium') {
-    return
-  }
-  await takeSnapshot(page, name, testInfo)
-}
 
 class _TestSanityContext {
   documentIds: Set<string>

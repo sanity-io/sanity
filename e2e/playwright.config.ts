@@ -106,7 +106,8 @@ const playwrightConfig: PlaywrightTestConfig<ChromaticConfig> = {
     // The suite runs against per-PR staging datasets (live timestamps,
     // presence, parallel mutations), so automatic end-of-test Chromatic
     // snapshots would be diff noise. Visual snapshots are opt-in at
-    // deterministic moments via `takeChromaticSnapshot` from ./studio-test.
+    // deterministic moments via `takeChromaticSnapshot` in specs that use the
+    // Chromatic-composed fixtures from ./studio-visual-test.
     disableAutoSnapshot: true,
     actionTimeout: 10000,
     trace: 'on-first-retry',

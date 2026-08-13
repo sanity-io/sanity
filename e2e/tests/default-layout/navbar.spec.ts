@@ -1,6 +1,6 @@
 import {expect} from '@playwright/test'
 
-import {takeChromaticSnapshot, test} from '../../studio-test'
+import {takeChromaticSnapshot, test} from '../../studio-visual-test'
 
 test.describe('@sanity/default-layout: Navbar', () => {
   test.beforeEach(async ({page, baseURL}) => {
