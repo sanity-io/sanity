@@ -2,7 +2,8 @@ import {getProviderTitle} from '@sanity/access-ui'
 import {LeaveIcon} from '@sanity/icons/Leave'
 import {
   // oxlint-disable-next-line no-restricted-imports
-  Button, // Button with specific styling, user avatar.
+  Button,
+  // Button with specific styling, user avatar.
   Card,
   Flex,
   Stack,
