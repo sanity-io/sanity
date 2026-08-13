@@ -1,3 +1,4 @@
+import {type ChromaticConfig} from '@chromatic-com/playwright'
 import {defineConfig, devices} from '@playwright/test'
 
 const CI = process.env.CI === 'true'
@@ -19,7 +20,7 @@ const PORT = 3340
  *   pnpm build --filter=auth-test-studio...
  *   pnpm --filter auth-test-studio start --port 3340
  */
-export default defineConfig({
+export default defineConfig<ChromaticConfig>({
   testDir: './tests/auth',
   timeout: 60_000,
   fullyParallel: true,
@@ -30,6 +31,9 @@ export default defineConfig({
   retries: 1,
   reporter: [['list']],
   use: {
+    // Auth specs share the Chromatic-wrapped `test` from ./studio-test but
+    // are never uploaded to Chromatic — keep snapshotting off entirely.
+    disableAutoSnapshot: true,
     actionTimeout: 10_000,
     trace: 'on-first-retry',
     viewport: {width: 1728, height: 1000},
