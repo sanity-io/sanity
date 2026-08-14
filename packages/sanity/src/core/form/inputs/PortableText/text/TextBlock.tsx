@@ -42,7 +42,7 @@ import {
   BlockActionsOuter,
   ChangeIndicatorWrapper,
   ListPrefixWrapper,
-  TextBlockFlexWrapper,
+  TextBlockWrapper,
   TextFlex,
   TextRoot,
   TooltipBox,
@@ -333,7 +333,7 @@ export function TextBlock(props: TextBlockProps) {
       ref={setRef}
       style={debugRender()}
     >
-      <TextBlockFlexWrapper data-testid="text-block__wrapper">
+      <TextBlockWrapper data-testid="text-block__wrapper">
         <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
           <Flex flex={1} {...innerPaddingProps}>
             <Box flexBasis="0%" flexGrow={1} style={{anchorName: anchorIdent}}>
@@ -391,7 +391,7 @@ export function TextBlock(props: TextBlockProps) {
             )}
           </Flex>
         </FormNodeDivergenceDetail>
-      </TextBlockFlexWrapper>
+      </TextBlockWrapper>
     </Box>
   )
 }
