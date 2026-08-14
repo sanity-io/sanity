@@ -1,5 +1,4 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {LeaveIcon} from '@sanity/icons/Leave'
 import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
@@ -17,6 +16,7 @@ import {useToolMenuComponent} from '../../../studio-components-hooks/useToolMenu
 import {useWorkspace} from '../../../workspace'
 import {useWorkspaces} from '../../../workspaces/useWorkspaces'
 import {HomeButton} from '../home/HomeButton'
+import {UserMenuAuthAction} from '../userMenu/UserMenuAuthAction'
 import {WorkspaceMenuButton} from '../workspace/WorkspaceMenuButton'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
@@ -87,7 +87,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const {__internal_actions: actions, activeToolName, isOpen, onClose, tools} = props
 
   const setScheme = useColorSchemeSetValue()
-  const {auth, currentUser} = useWorkspace()
+  const {currentUser} = useWorkspace()
   const workspaces = useWorkspaces()
   const ToolMenu = useToolMenuComponent()
 
@@ -226,20 +226,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               </Flex>
 
               <CapabilityGate capability="globalUserMenu">
-                {auth.logout && (
-                  <Card flex="none" padding={2} borderTop>
-                    <Stack>
-                      <Button
-                        iconRight={LeaveIcon}
-                        justify="flex-start"
-                        mode="bleed"
-                        onClick={auth.logout}
-                        size="large"
-                        text={t('user-menu.action.sign-out')}
-                      />
-                    </Stack>
-                  </Card>
-                )}
+                <UserMenuAuthAction layout="drawer" />
               </CapabilityGate>
             </InnerCardMotion>
           </Root>
