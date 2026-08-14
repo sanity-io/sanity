@@ -688,3 +688,19 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
+
+### Running e2e (Playwright) tests in the VM
+
+The e2e suite normally runs against per-run staging datasets that only CI has credentials for, but a single spec can be exercised locally against the production `test` dataset of project `ppsg7ml5` using the injected `STUDIO_AUTH_TOKEN`:
+
+1. Install browsers (not preinstalled): `pnpm --filter e2e exec playwright install chromium firefox`.
+2. Build the packages: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH" && pnpm build`. Afterwards run `git checkout packages/sanity/package.json` — the build rewrites its `inlinedDependencies`.
+3. **Temporarily** (never commit this) change `apiHost` from `https://api.sanity.work` to `https://api.sanity.io` in `dev/studio-e2e-testing/sanity.config.ts` and in the `sanityClient` fixture in `e2e/studio-test.ts`. `STUDIO_AUTH_TOKEN` is a production token and gets 401 "Session not found" on the staging host.
+4. Start the studio (it serves on port 3339, which `playwright.config.ts` reuses instead of starting its own): `SANITY_E2E_PROJECT_ID=ppsg7ml5 SANITY_E2E_DATASET=test SANITY_AUTH_TOKEN=$STUDIO_AUTH_TOKEN pnpm --filter studio-e2e-testing dev`.
+5. Run a spec: `cd e2e && SANITY_E2E_PROJECT_ID=ppsg7ml5 SANITY_E2E_DATASET=test SANITY_E2E_SESSION_TOKEN=$STUDIO_AUTH_TOKEN pnpm exec playwright test --project=chromium tests/<spec> --retries=0`. Add `--repeat-each=N` when chasing flakiness, and keep `--retries=0` so a flake is visible.
+
+Notes:
+
+- `test` is a shared, well-populated dataset, so specs that assume a nearly empty dataset (search results, document lists) can fail locally for reasons unrelated to the change under test. Clean up anything a spec leaves behind.
+- The failure video is written to `e2e/results/<test>/video.webm`; frames can be extracted with the bundled ffmpeg: `~/.cache/ms-playwright/ffmpeg-*/ffmpeg-linux -i video.webm -r 1 /tmp/frame_%03d.png` (this build has no `-vf fps=` filter).
+- To reproduce load-related flakiness, throttle the browser from within the spec: `const cdp = await page.context().newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 8})` (chromium only). Stub a slow/eventually-consistent backend with `page.route('**/data/query/**', ...)`; the global search query is identifiable by its `findability-source: global` GROQ comment.
