@@ -1,9 +1,10 @@
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
-import {Box, rem} from '@sanity/ui'
+import {rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {motion, type Variants} from 'motion/react'
 import {useEffect, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {createPatchChannel} from '../../../../form/patch/PatchChannel'
