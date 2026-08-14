@@ -1,5 +1,4 @@
 import {useLayoutComponent} from './studio-components-hooks/useLayoutComponent'
-import {UnclaimedProjectProvider} from './unclaimedProject/UnclaimedProjectProvider'
 
 /** @internal */
 export interface NavbarContextValue {
@@ -36,10 +35,6 @@ export function StudioLayout() {
   // The default component is `StudioLayoutComponent`.
   const Layout = useLayoutComponent()
 
-  return (
-    <UnclaimedProjectProvider>
-      {/* oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work */}
-      <Layout />
-    </UnclaimedProjectProvider>
-  )
+  // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
+  return <Layout />
 }
