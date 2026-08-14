@@ -19,7 +19,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
-import {Box, type CardProps, Grid} from '@sanity/ui'
+import {Grid} from '@sanity/ui'
 import {
   type ComponentProps,
   memo,
@@ -31,6 +31,7 @@ import {
 } from 'react'
 import {ArrayItemRootElementContext, SortableItemIdContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
+import {Box, type BoxProps} from 'ui5'
 
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
 
@@ -199,7 +200,7 @@ interface ItemProps {
   'data-index'?: number
 }
 
-export function Item(props: ItemProps & CardProps & RefAttributes<HTMLDivElement>) {
+export function Item(props: ItemProps & BoxProps & RefAttributes<HTMLDivElement>) {
   const {ref, sortable, disableTransition, ...rest} = props
 
   // Tracks the item's root element so descendant inputs (e.g. reference inputs)

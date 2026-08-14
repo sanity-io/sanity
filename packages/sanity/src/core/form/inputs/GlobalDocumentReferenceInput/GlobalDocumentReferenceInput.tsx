@@ -5,7 +5,7 @@ import {
   type GlobalDocumentReferenceValue,
   isGlobalDocumentReference,
 } from '@sanity/types'
-import {Box, Card, Flex, Inline, Stack, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Flex, Inline, Stack, useClickOutsideEvent} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {
@@ -22,6 +22,7 @@ import {
 import {useObservableEvent} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'

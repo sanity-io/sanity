@@ -1,5 +1,5 @@
 import {isKeySegment} from '@sanity/types'
-import {Box, Card, Flex, Stack} from '@sanity/ui'
+import {Card, Flex, Stack} from '@sanity/ui'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
@@ -14,6 +14,7 @@ import {parseISO} from 'date-fns/parseISO'
 import {setMinutes} from 'date-fns/setMinutes'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
@@ -226,7 +227,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
       radius={2}
     >
       <Flex direction={'column'}>
-        <Box flex={1} paddingY={2}>
+        <Box flexBasis="0%" flexGrow={1} paddingY={2}>
           <FormFieldBaseHeader
             __internal_comments={comments}
             __internal_slot={slot}

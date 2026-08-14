@@ -1,7 +1,8 @@
 import {hues} from '@sanity/color'
-import {Box, Flex, type Theme} from '@sanity/ui'
+import {Flex, type Theme} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {DEBUG} from '../../../../changeIndicators/constants'
 import {TEXT_BULLET_MARKERS, TEXT_NUMBER_FORMATS} from './constants'

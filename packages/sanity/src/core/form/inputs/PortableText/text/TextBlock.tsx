@@ -1,8 +1,9 @@
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
+import {Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
+import {Box, type PaddingProps} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
@@ -221,7 +222,7 @@ export function TextBlock(props: TextBlockProps) {
     return {paddingX: 3}
   }, [isFullscreen, renderBlockActions, nested])
 
-  const outerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+  const outerPaddingProps: PaddingProps = useMemo(() => {
     if (value.listItem) {
       return {paddingY: 2}
     }
@@ -335,7 +336,7 @@ export function TextBlock(props: TextBlockProps) {
       <TextBlockFlexWrapper data-testid="text-block__wrapper">
         <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
           <Flex flex={1} {...innerPaddingProps}>
-            <Box flex={1} style={{anchorName: anchorIdent}}>
+            <Box flexBasis="0%" flexGrow={1} style={{anchorName: anchorIdent}}>
               <Tooltip
                 content={toolTipContent}
                 disabled={!tooltipEnabled}
