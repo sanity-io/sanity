@@ -40,12 +40,12 @@ export function UnpublishVersionDialog(props: {
   // The bundle to unpublish is the one encoded in the id, never the selected perspective: the
   // dialog is opened from the release tool's document table and from version chips, where the
   // selected perspective is frequently a different release.
-  const releaseId = getVersionFromId(documentVersionId)
-  const {unpublish} = useDocumentOperation(publishedId, documentType, releaseId)
+  const scopeId = getVersionFromId(documentVersionId)
+  const {unpublish} = useDocumentOperation(publishedId, documentType, scopeId)
   // Without a bundle segment in the id there is no release to unpublish within, and the operation
   // would target the draft/published pair and hard-unpublish the document instead. The version
   // operation this replaced threw in that case.
-  const canUnpublish = Boolean(releaseId) && !unpublish.disabled
+  const canUnpublish = Boolean(scopeId) && !unpublish.disabled
   const [isUnpublishing, setIsUnpublishing] = useState(false)
   const toast = useToast()
   const {data} = useActiveReleases()
@@ -53,7 +53,7 @@ export function UnpublishVersionDialog(props: {
 
   const release = data
     .concat(archivedReleases)
-    .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId)
+    .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === scopeId)
 
   const tone = getReleaseTone(release as ReleaseDocument)
   const schemaType = schema.get(documentType)

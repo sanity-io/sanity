@@ -24,7 +24,7 @@ import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 export const useUnpublishVersionAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
-  const {id, type, release, published, version} = props
+  const {id, type, release, published, version, liveEditSchemaType} = props
   const currentUser = useCurrentUser()
   const {t} = useTranslation(releasesLocaleNamespace)
   const isAlreadyUnpublished = version ? isGoingToUnpublish(version) : false
@@ -73,6 +73,10 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
   }, [isAlreadyUnpublished, version, revertUnpublishVersion, toast, coreT])
 
   if (!release || !version) return null
+
+  if (liveEditSchemaType) {
+    return null
+  }
 
   const insufficientPermissions = !isPermissionsLoading && !permissions?.granted
 
