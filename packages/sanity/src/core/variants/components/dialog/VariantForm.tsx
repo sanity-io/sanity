@@ -103,8 +103,6 @@ function getConditionRowsValidation(rows: ConditionRow[]): Map<number, Condition
 
     if ((key || isConditionRowEmpty(row)) && valueError === 'empty') {
       validation.value = 'dialog.create.condition-value.required'
-    } else if (valueError === 'invalid') {
-      validation.value = 'dialog.create.condition-value.invalid'
     }
 
     conditionRowsValidation.set(index, validation)

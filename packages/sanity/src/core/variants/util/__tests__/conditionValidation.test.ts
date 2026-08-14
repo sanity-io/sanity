@@ -34,15 +34,12 @@ describe('conditionValidation', () => {
   describe('getConditionValueValidationError', () => {
     it('accepts non-empty values', () => {
       expect(getConditionValueValidationError('loyal')).toBeUndefined()
+      expect(getConditionValueValidationError('loyal:customers')).toBeUndefined()
     })
 
     it('rejects empty values', () => {
       expect(getConditionValueValidationError('')).toBe('empty')
       expect(getConditionValueValidationError('   ')).toBe('empty')
-    })
-
-    it('rejects values with colons', () => {
-      expect(getConditionValueValidationError('loyal:customers')).toBe('invalid')
     })
   })
 })

@@ -211,7 +211,7 @@ describe('CreateVariantDialog', () => {
     expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
   })
 
-  it('shows an error for invalid condition values', async () => {
+  it('allows colons in condition values', async () => {
     const user = userEvent.setup()
 
     await renderDialog()
@@ -221,10 +221,13 @@ describe('CreateVariantDialog', () => {
     await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal:customers')
     await user.click(screen.getByTestId('submit-variant-button'))
 
-    expect(screen.getByTestId('variant-form-condition-value-error')).toHaveTextContent(
-      'Condition values cannot contain colons',
-    )
-    expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
+
+    expect(createdVariant.conditions).toEqual({audience: 'loyal:customers'})
   })
 
   it('requires a condition key before submitting a row with a value', async () => {

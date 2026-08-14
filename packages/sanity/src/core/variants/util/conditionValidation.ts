@@ -3,7 +3,7 @@ const CONDITION_SEPARATOR = ':'
 const RESERVED_KEY_PREFIXES = ['_', '$'] as const
 
 export type ConditionKeyValidationError = 'invalid' | 'reserved'
-export type ConditionValueValidationError = 'empty' | 'invalid'
+export type ConditionValueValidationError = 'empty'
 
 export function getConditionKeyValidationError(
   key: string,
@@ -32,10 +32,6 @@ export function getConditionValueValidationError(
 ): ConditionValueValidationError | undefined {
   if (!value.trim()) {
     return 'empty'
-  }
-
-  if (value.includes(CONDITION_SEPARATOR)) {
-    return 'invalid'
   }
 
   return undefined

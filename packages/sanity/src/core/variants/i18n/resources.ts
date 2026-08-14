@@ -170,8 +170,6 @@ const variantsLocaleStrings = {
   'dialog.create.condition-key.required': 'Condition key is required',
   /** Validation message when a condition value is missing. */
   'dialog.create.condition-value.required': 'Condition value is required',
-  /** Validation message when a condition value has an invalid format. */
-  'dialog.create.condition-value.invalid': 'Condition values cannot contain colons',
   /** Placeholder for the condition key field in the create variant dialog. */
   'dialog.create.condition-key.placeholder': 'e.g. audience',
   /** Label for the condition value field in the create variant dialog. */
