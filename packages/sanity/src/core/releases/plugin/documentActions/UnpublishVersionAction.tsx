@@ -74,10 +74,6 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
 
   if (!release || !version) return null
 
-  if (liveEditSchemaType) {
-    return null
-  }
-
   const insufficientPermissions = !isPermissionsLoading && !permissions?.granted
 
   if (insufficientPermissions) {

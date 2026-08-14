@@ -10,7 +10,7 @@ type DisabledReason = 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED' | 'ALREADY_UNPUBLISH
 
 export const unpublish: OperationImpl<[], DisabledReason> = {
   disabled: ({schema, snapshots, typeName, idPair}) => {
-    if (isLiveEditEnabled(schema, typeName)) {
+    if (isLiveEditEnabled(schema, typeName) && !idPair.versionId) {
       return 'LIVE_EDIT_ENABLED'
     }
 
