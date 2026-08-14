@@ -1,10 +1,11 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Box, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
+import {Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo, useState, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {FormFieldHeaderText} from '../../../../form/components/formField/FormFieldHeaderText'

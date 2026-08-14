@@ -1,6 +1,7 @@
-import {Box, Flex, Layer, useMediaIndex} from '@sanity/ui'
+import {Flex, Layer, useMediaIndex} from '@sanity/ui'
 import {AnimatePresence} from 'motion/react'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {type ActiveToolLayoutProps} from '../../config/studio/types'
 import {TasksStudioSidebar} from '../components/sidebar/TasksSidebar'
@@ -64,7 +65,7 @@ function TasksStudioActiveToolLayoutInner(props: ActiveToolLayoutProps) {
   const scrollLock = mediaIndex <= FULLSCREEN_MEDIA_INDEX && isOpen
   return (
     <RootFlex sizing="border" height="fill">
-      <Box flex={1} height="fill" overflow={scrollLock ? 'hidden' : 'auto'}>
+      <Box flexBasis="0%" flexGrow={1} height="100%" overflow={scrollLock ? 'hidden' : 'auto'}>
         {props.renderDefault(props)}
       </Box>
 

@@ -1,7 +1,8 @@
-import {Box, type BoxProps, Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {type ExecutionProps, styled} from 'styled-components'
+import {Box, type BoxProps} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {pathToString} from '../../paths/helpers'

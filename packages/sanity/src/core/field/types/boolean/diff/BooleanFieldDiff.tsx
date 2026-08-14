@@ -1,4 +1,5 @@
-import {Box, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
+import {Box} from 'ui5'
 
 import {useDiffAnnotationColor} from '../../../diff/annotations/hooks'
 import {DiffTooltip} from '../../../diff/components/DiffTooltip'

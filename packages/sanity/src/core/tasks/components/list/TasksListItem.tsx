@@ -1,5 +1,4 @@
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button as UIButton,
   Card,
@@ -11,6 +10,7 @@ import {isThisISOWeek} from 'date-fns/isThisISOWeek'
 import {isToday} from 'date-fns/isToday'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../hooks/useDateTimeFormat'
