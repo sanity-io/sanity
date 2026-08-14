@@ -123,15 +123,31 @@ export function buildDistAtCommit(sha: string, targetDist: string): void {
     linkHarnessModules({repoRoot: REPO_ROOT, worktree})
 
     // The overlaid harness manifest intentionally disagrees with the
-    // historical lockfile, which would trip pnpm's verify-deps-before-run
-    // staleness check when running scripts — silence it for the build; the
-    // real gate already ran on the frozen install above
-    step('pnpm', ['turbo', 'run', 'build', '--filter=bench'], worktree, {
-      // Both spellings: npm-style env config keys are dash/underscore-tolerant,
-      // but pnpm versions have differed on which they read
-      'npm_config_verify-deps-before-run': 'false',
-      'npm_config_verify_deps_before_run': 'false',
-    })
+    // historical lockfile, and pnpm's verify-deps-before-run check (on by
+    // default in pnpm 11) reacts to that by silently re-installing — a fresh
+    // registry resolution that both defeats the borrowed install and
+    // re-exposes the build to the supply-chain age gate. Turbo runs every
+    // task through `pnpm run`, so the check must be disabled via environment
+    // for the whole process tree. pnpm 11 only reads `pnpm_config_*` env
+    // keys, underscored (verified against v11.17/v11.21; `npm_config_*` and
+    // dashed spellings are ignored). Turbo is also invoked from .bin rather
+    // than through `pnpm turbo` so the outer wrapper never re-checks either.
+    step(
+      path.join(worktree, 'node_modules/.bin/turbo'),
+      ['run', 'build', '--filter=bench'],
+      worktree,
+      {pnpm_config_verify_deps_before_run: 'false'},
+    )
+
+    // Tripwire: if any pnpm invocation inside the build re-installed anyway
+    // (say, a turbo or pnpm version that filters the env override above), it
+    // re-resolved against the registry and rewrote the worktree lockfile.
+    // Fail loudly rather than measure a silently re-resolved harness.
+    if (git(['status', '--porcelain', '--', 'pnpm-lock.yaml'], worktree) !== '') {
+      throw new Error(
+        'the build modified the worktree lockfile — a nested pnpm install ran despite verify-deps-before-run being disabled',
+      )
+    }
 
     const builtDist = path.join(worktree, 'perf/bench/dist')
     if (!fs.existsSync(path.join(builtDist, 'index.html'))) {
