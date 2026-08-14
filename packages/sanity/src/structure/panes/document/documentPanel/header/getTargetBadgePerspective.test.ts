@@ -144,6 +144,16 @@ describe('getTargetBadgePerspective', () => {
     ).toBe('published')
   })
 
+  it('treats a live-edit document whose _system.bundleId is null as published', () => {
+    expect(
+      getTargetBadgePerspective({
+        isLiveEdit: true,
+        selectedPerspective: 'drafts',
+        document: {_system: {bundleId: null, group: groupRef}},
+      }),
+    ).toBe('published')
+  })
+
   it('does not override a selected release perspective', () => {
     expect(
       getTargetBadgePerspective({

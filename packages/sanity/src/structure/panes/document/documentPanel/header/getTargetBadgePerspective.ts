@@ -12,7 +12,10 @@ import {
  * distinguish published vs draft for live-edit badge labeling.
  */
 export type BadgeSystemDocument = {
-  _system?: Partial<DocumentSystem>
+  // The Content Lake may serialize published `_system.bundleId` as `null`.
+  _system?: Partial<Omit<DocumentSystem, 'bundleId'>> & {
+    bundleId?: DocumentSystem['bundleId'] | null
+  }
 }
 
 /**
@@ -65,7 +68,7 @@ export function getTargetBadgePerspective({
     return 'drafts'
   }
 
-  if (typeof bundleId === 'undefined') {
+  if (bundleId == null) {
     return 'published'
   }
 
