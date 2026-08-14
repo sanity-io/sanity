@@ -6,6 +6,7 @@ import {useVersionOperations, type VersionOperationsValue} from '../../useVersio
 export const useVersionOperationsReturn: Mocked<VersionOperationsValue> = {
   createVersion: vi.fn(),
   discardVersion: vi.fn(),
+  // oxlint-disable-next-line no-deprecated
   unpublishVersion: vi.fn(),
 }
 
