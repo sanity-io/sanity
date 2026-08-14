@@ -9,6 +9,7 @@ import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {isDev} from '../../../../environment'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useUnclaimedProject} from '../../../unclaimedProject/useUnclaimedProject'
+import {useUnclaimedProjectClock} from '../../../unclaimedProject/useUnclaimedProjectClock'
 import {useWorkspace} from '../../../workspace'
 
 interface UserMenuAuthActionProps {
@@ -28,7 +29,9 @@ function DevUserMenuAuthAction({layout}: UserMenuAuthActionProps) {
   const claimAttemptedAt =
     claimAttempt && claimAttempt.projectId === projectId ? claimAttempt.startedAt : undefined
   const state = useUnclaimedProject({claimAttemptedAt})
-  const claimUrl = state?.status === 'unclaimed' ? state.claimUrl : undefined
+  const unclaimed = state?.status === 'unclaimed' ? state : undefined
+  const now = useUnclaimedProjectClock(Boolean(unclaimed), unclaimed?.expiresAt)
+  const claimUrl = unclaimed && unclaimed.expiresAt.getTime() > now ? unclaimed.claimUrl : undefined
   const handleClaim = useCallback(
     () => setClaimAttempt({projectId, startedAt: Date.now()}),
     [projectId],

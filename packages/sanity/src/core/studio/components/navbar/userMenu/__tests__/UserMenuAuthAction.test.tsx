@@ -1,7 +1,7 @@
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {buildTheme} from '@sanity/ui/theme'
-import {render, screen} from '@testing-library/react'
+import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -61,6 +61,7 @@ describe('UserMenuAuthAction', () => {
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     vi.clearAllMocks()
   })
 
@@ -118,6 +119,24 @@ describe('UserMenuAuthAction', () => {
     renderAction('menu')
 
     expect(screen.getByRole('menuitem', {name: 'Sign out'})).toBeInTheDocument()
+    expect(screen.queryByText('Claim this project')).not.toBeInTheDocument()
+  })
+
+  it('replaces the claim action with sign out at the local expiry', async () => {
+    vi.useFakeTimers()
+    const now = new Date('2026-08-14T12:00:00.000Z')
+    vi.setSystemTime(now)
+    mockUseUnclaimedProject.mockReturnValue({
+      status: 'unclaimed',
+      claimUrl: CLAIM_URL,
+      expiresAt: new Date(now.getTime() + 1_000),
+    })
+    renderAction('drawer')
+    expect(screen.getByRole('link', {name: 'Claim this project'})).toBeInTheDocument()
+
+    await act(() => vi.advanceTimersByTimeAsync(1_000))
+
+    expect(screen.getByRole('button', {name: 'Sign out'})).toBeInTheDocument()
     expect(screen.queryByText('Claim this project')).not.toBeInTheDocument()
   })
 
