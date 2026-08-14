@@ -1,5 +1,5 @@
 import {type ResponseQueryOptions} from '@sanity/client'
-import {useEffect, useRef, useState} from 'react'
+import {use, useEffect, useRef, useState} from 'react'
 import {useClient, VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity'
 import {type RouterState, useRouter} from 'sanity/router'
 import {useEffectEvent} from 'use-effect-event'
@@ -56,6 +56,13 @@ function getParamsFromResult(
 
   return fnOrObj(resolver.params, context) ?? context.params
 }
+
+/**
+ * Route matching is backed by URLPattern, which needs a polyfill in runtimes without a native
+ * implementation. The promise is kept at module level so its identity is stable across render
+ * attempts, as `use()` requires.
+ */
+let urlPatternPolyfillPromise: Promise<unknown> | undefined
 
 /**
  * Compiling a URLPattern is not free and the route is resolved again on every preview URL change,
@@ -129,6 +136,20 @@ export function useMainDocument(props: {
     perspective,
     variant,
   } = props
+
+  /**
+   * Lazy load the URLPattern polyfill on-demand, if needed, the same way
+   * `actors/resolve-allow-patterns.ts` does — browsers with native support never pay the cost,
+   * and neither does a studio without `mainDocuments` resolvers. `use()` suspends rendering until
+   * the polyfill has loaded (caught by the studio's tool-level `Suspense` boundary, like the
+   * tool's own lazy chunk); resolving installs the `URLPattern` global, so the condition stops
+   * holding on the replay.
+   */
+  if (resolvers.length > 0 && typeof URLPattern === 'undefined') {
+    urlPatternPolyfillPromise ??= import('urlpattern-polyfill')
+    use(urlPatternPolyfillPromise)
+  }
+
   const {state: routerState} = useRouter()
   // Fetching with a variant requires the `vX` API version for now
   const client = useClient(variant ? VARIANTS_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION})
@@ -139,29 +160,6 @@ export function useMainDocument(props: {
     undefined,
   )
   const mainDocumentIdRef = useRef<string | undefined>(undefined)
-
-  /**
-   * Route matching is backed by URLPattern. Lazy load the polyfill on-demand, if needed, the same
-   * way `actors/resolve-allow-patterns.ts` does — browsers with native support never pay the cost,
-   * and neither does a studio without `mainDocuments` resolvers.
-   */
-  const needsURLPattern = resolvers.length > 0
-  const [urlPatternReady, setURLPatternReady] = useState(() => typeof URLPattern !== 'undefined')
-  useEffect(() => {
-    if (!needsURLPattern || urlPatternReady) return undefined
-    let cancelled = false
-    import('urlpattern-polyfill').then(
-      () => {
-        if (!cancelled) setURLPatternReady(true)
-      },
-      (error) => {
-        console.error('Failed to load the URLPattern polyfill', error)
-      },
-    )
-    return () => {
-      cancelled = true
-    }
-  }, [needsURLPattern, urlPatternReady])
 
   const handleResponse = useEffectEvent((doc: MainDocument | undefined, url: URL) => {
     if (!doc || mainDocumentIdRef.current !== doc._id) {
@@ -192,10 +190,6 @@ export function useMainDocument(props: {
     const url = new URL(relativeUrl, targetOrigin)
 
     if (resolvers.length) {
-      // Wait for the URLPattern polyfill when the runtime needs it — the effect runs again once
-      // it has loaded
-      if (!urlPatternReady) return undefined
-
       let result:
         | {
             context: DocumentResolverContext
@@ -240,7 +234,7 @@ export function useMainDocument(props: {
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined
-  }, [client, perspective, relativeUrl, resolvers, targetOrigin, urlPatternReady, variant])
+  }, [client, perspective, relativeUrl, resolvers, targetOrigin, variant])
 
   return mainDocumentState
 }
