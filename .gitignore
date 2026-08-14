@@ -13,6 +13,7 @@ pids
 
 # Vitest browser-mode artifacts (auto-captured screenshots / attachments)
 **/__browser-tests__/**/__screenshots__/
+**/__tests__/**/__screenshots__/
 .vitest-attachments
 
 # Chromatic archives captured by @chromatic-com/vitest (CHROMATIC=1 runs)
