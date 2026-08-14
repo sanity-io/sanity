@@ -1,9 +1,7 @@
 import {ClockIcon} from '@sanity/icons/Clock'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {EMPTY, fromEvent, map, merge, of, timer, timestamp} from 'rxjs'
+import {useCallback, useEffect, useState} from 'react'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
@@ -22,6 +20,7 @@ import {
   type UnclaimedProjectState,
   useUnclaimedProject,
 } from './useUnclaimedProject'
+import {useUnclaimedProjectClock} from './useUnclaimedProjectClock'
 import {useUnclaimedProjectCopy} from './useUnclaimedProjectCopy'
 
 /**
@@ -260,26 +259,4 @@ export function formatCountdown(expiresAt: Date, now: number): string {
   const seconds = totalSeconds % 60
 
   return [hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':')
-}
-
-/** Keeps all time-based nudge state on one clock, including resume after timer throttling. */
-function useUnclaimedProjectClock(enabled: boolean, expiresAt: Date | undefined): number {
-  const [initialNow] = useState(() => Date.now())
-  const expiresAtTime = expiresAt?.getTime()
-  const clock$ = useMemo(() => {
-    if (!enabled) return EMPTY
-
-    return merge(
-      of(undefined),
-      timer(60_000, 60_000),
-      expiresAtTime === undefined ? EMPTY : timer(new Date(expiresAtTime)),
-      fromEvent(window, 'focus'),
-      fromEvent(document, 'visibilitychange'),
-    ).pipe(
-      timestamp(),
-      map(({timestamp: now}) => now),
-    )
-  }, [enabled, expiresAtTime])
-
-  return useObservable(clock$, initialNow)
 }
