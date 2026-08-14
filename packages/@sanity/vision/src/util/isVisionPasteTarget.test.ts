@@ -2,8 +2,7 @@ import {describe, expect, it} from 'vitest'
 
 import {isVisionPasteTarget} from './isVisionPasteTarget'
 
-// `composedPath()` is only populated while an event is being dispatched, so the decision has to be
-// taken from a real listener rather than a hand-made event object.
+// `composedPath()` is only populated while an event is being dispatched.
 function pasteOn(target: Node, visionRoot: Node): boolean {
   const decisions: boolean[] = []
 
