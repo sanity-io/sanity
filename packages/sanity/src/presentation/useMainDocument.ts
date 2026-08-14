@@ -141,13 +141,19 @@ export function useMainDocument(props: {
    * Lazy load the URLPattern polyfill on-demand, if needed, the same way
    * `actors/resolve-allow-patterns.ts` does — browsers with native support never pay the cost,
    * and neither does a studio without `mainDocuments` resolvers. `use()` suspends rendering until
-   * the polyfill has loaded (caught by the studio's tool-level `Suspense` boundary, like the
-   * tool's own lazy chunk); resolving installs the `URLPattern` global, so the condition stops
-   * holding on the replay.
+   * the polyfill has loaded, caught by the studio's tool-level `Suspense` boundary, like the
+   * tool's own lazy chunk.
    */
-  if (resolvers.length > 0 && typeof URLPattern === 'undefined') {
-    urlPatternPolyfillPromise ??= import('urlpattern-polyfill')
-    use(urlPatternPolyfillPromise)
+  if (resolvers.length > 0) {
+    if (typeof URLPattern === 'undefined') {
+      urlPatternPolyfillPromise ??= import('urlpattern-polyfill')
+    }
+    // Once a load has started, keep unwrapping the same promise on every render: the resolved
+    // import installs the `URLPattern` global, so gating `use()` on the `typeof` check alone
+    // would change the hook sequence between the suspended attempt and React's replay of it
+    if (urlPatternPolyfillPromise !== undefined) {
+      use(urlPatternPolyfillPromise)
+    }
   }
 
   const {state: routerState} = useRouter()
