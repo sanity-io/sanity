@@ -156,6 +156,18 @@ describe('RequestAccessForm', () => {
     expect(await screen.findByRole('link', {name: 'View organizations'})).toBeInTheDocument()
   })
 
+  it('submits on mod+enter from the note field', async () => {
+    const client = createClientStub({
+      submit: () => Promise.resolve(createAccessRequest()),
+    })
+    await renderForm({client})
+
+    const note = await screen.findByRole('textbox', {name: 'Message'})
+    await userEvent.type(note, 'please{Meta>}{Enter}{/Meta}')
+
+    expect(await screen.findByRole('heading', {name: 'Access request sent'})).toBeInTheDocument()
+  })
+
   it('renders the sign-out action only when onSignOut is provided', async () => {
     const onSignOut = vi.fn()
     const {rerender} = await renderForm({onSignOut})

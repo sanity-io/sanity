@@ -277,6 +277,11 @@ function RequestAccessFormContent(
                 aria-label={labels.noteAriaLabel}
                 disabled={isSubmitting}
                 fontSize={1}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+                    event.currentTarget.form?.requestSubmit()
+                  }
+                }}
                 maxLength={MAX_ACCESS_REQUEST_NOTE_LENGTH}
                 onChange={(event) => setNote(event.currentTarget.value)}
                 placeholder={labels.notePlaceholder}
