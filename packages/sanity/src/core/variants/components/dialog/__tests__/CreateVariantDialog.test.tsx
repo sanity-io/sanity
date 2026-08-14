@@ -230,6 +230,22 @@ describe('CreateVariantDialog', () => {
     expect(createdVariant.conditions).toEqual({audience: 'loyal:customers'})
   })
 
+  it('shows an error for condition values that contain commas', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal,customers')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    expect(screen.getByTestId('variant-form-condition-value-error')).toHaveTextContent(
+      'Condition values cannot contain commas',
+    )
+    expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
+  })
+
   it('requires a condition key before submitting a row with a value', async () => {
     const user = userEvent.setup()
 

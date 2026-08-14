@@ -22,6 +22,7 @@ describe('conditionValidation', () => {
       expect(getConditionKeyValidationError('Audience')).toBe('invalid')
       expect(getConditionKeyValidationError('1audience')).toBe('invalid')
       expect(getConditionKeyValidationError('audience:segment')).toBe('invalid')
+      expect(getConditionKeyValidationError('audience,segment')).toBe('invalid')
       expect(getConditionKeyValidationError('a'.repeat(65))).toBe('invalid')
     })
 
@@ -40,6 +41,10 @@ describe('conditionValidation', () => {
     it('rejects empty values', () => {
       expect(getConditionValueValidationError('')).toBe('empty')
       expect(getConditionValueValidationError('   ')).toBe('empty')
+    })
+
+    it('rejects values with commas', () => {
+      expect(getConditionValueValidationError('loyal,customers')).toBe('invalid')
     })
   })
 })
