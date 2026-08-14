@@ -1,5 +1,4 @@
 import {type ResponseQueryOptions} from '@sanity/client'
-import {match} from 'path-to-regexp'
 import {useEffect, useRef, useState} from 'react'
 import {useClient, VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity'
 import {type RouterState, useRouter} from 'sanity/router'
@@ -14,6 +13,7 @@ import {
   type PresentationNavigate,
   type PresentationPerspective,
 } from './types'
+import {createRouteMatcher, type RouteMatch, type RouteMatcher} from './util/matchRoute'
 
 // Helper function to "unwrap" a result when it is either explicitly provided or
 // returned as the result of a passed function
@@ -57,6 +57,21 @@ function getParamsFromResult(
   return fnOrObj(resolver.params, context) ?? context.params
 }
 
+/**
+ * Compiling a URLPattern is not free and the route is resolved again on every preview URL change,
+ * so keep the compiled matchers around. Patterns come from studio config, so the set is small and
+ * fixed.
+ */
+const matchers = new Map<string, RouteMatcher>()
+
+function getMatcher(pattern: string): RouteMatcher {
+  const cached = matchers.get(pattern)
+  if (cached) return cached
+  const matcher = createRouteMatcher(pattern)
+  matchers.set(pattern, matcher)
+  return matcher
+}
+
 export function getRouteContext(
   route: DocumentResolver['route'],
   url: URL,
@@ -80,15 +95,17 @@ export function getRouteContext(
       // Ignore, as we assume a relative path
     }
 
+    let result: RouteMatch | undefined
     try {
-      const matcher = match<Record<string, string>>(path, {decode: decodeURIComponent})
-      const result = matcher(url.pathname)
-      if (result) {
-        const {params, path} = result
-        return {origin, params, path}
-      }
+      result = getMatcher(path)(url.pathname)
     } catch (e) {
       throw new Error(`"${path}" is not a valid route pattern`, {cause: e})
+    }
+    if (result) {
+      // Repeated params (`:path*`, `/*splat`) are arrays of segments at runtime, as they were
+      // with path-to-regexp — `DocumentResolverContext` predates this and only declares `string`.
+      const params = result.params as DocumentResolverContext['params']
+      return {origin, params, path: result.path}
     }
   }
   return undefined
@@ -123,6 +140,29 @@ export function useMainDocument(props: {
   )
   const mainDocumentIdRef = useRef<string | undefined>(undefined)
 
+  /**
+   * Route matching is backed by URLPattern. Lazy load the polyfill on-demand, if needed, the same
+   * way `actors/resolve-allow-patterns.ts` does — browsers with native support never pay the cost,
+   * and neither does a studio without `mainDocuments` resolvers.
+   */
+  const needsURLPattern = resolvers.length > 0
+  const [urlPatternReady, setURLPatternReady] = useState(() => typeof URLPattern !== 'undefined')
+  useEffect(() => {
+    if (!needsURLPattern || urlPatternReady) return undefined
+    let cancelled = false
+    import('urlpattern-polyfill').then(
+      () => {
+        if (!cancelled) setURLPatternReady(true)
+      },
+      (error) => {
+        console.error('Failed to load the URLPattern polyfill', error)
+      },
+    )
+    return () => {
+      cancelled = true
+    }
+  }, [needsURLPattern, urlPatternReady])
+
   const handleResponse = useEffectEvent((doc: MainDocument | undefined, url: URL) => {
     if (!doc || mainDocumentIdRef.current !== doc._id) {
       setMainDocumentState({
@@ -152,6 +192,10 @@ export function useMainDocument(props: {
     const url = new URL(relativeUrl, targetOrigin)
 
     if (resolvers.length) {
+      // Wait for the URLPattern polyfill when the runtime needs it — the effect runs again once
+      // it has loaded
+      if (!urlPatternReady) return undefined
+
       let result:
         | {
             context: DocumentResolverContext
@@ -196,7 +240,7 @@ export function useMainDocument(props: {
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined
-  }, [client, perspective, relativeUrl, resolvers, targetOrigin, variant])
+  }, [client, perspective, relativeUrl, resolvers, targetOrigin, urlPatternReady, variant])
 
   return mainDocumentState
 }
