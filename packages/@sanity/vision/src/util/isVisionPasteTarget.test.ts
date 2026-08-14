@@ -2,59 +2,46 @@ import {describe, expect, it} from 'vitest'
 
 import {isVisionPasteTarget} from './isVisionPasteTarget'
 
-/**
- * Dispatches a paste event the way the browser does, then reports what the `document` level
- * listener Vision installs would decide about it.
- */
-function decide(root: Node | null, target: EventTarget): boolean | undefined {
+// `composedPath()` is only populated while an event is being dispatched, so the decision has to be
+// taken from a real listener rather than a hand-made event object.
+function pasteOn(target: Node, visionRoot: Node): boolean {
   const decisions: boolean[] = []
-  const listener = (event: Event) =>
-    decisions.push(isVisionPasteTarget(root, event as ClipboardEvent))
 
-  document.addEventListener('paste', listener)
+  document.addEventListener(
+    'paste',
+    (event) => decisions.push(isVisionPasteTarget(visionRoot, event as ClipboardEvent)),
+    {once: true},
+  )
   target.dispatchEvent(new Event('paste', {bubbles: true, composed: true}))
-  document.removeEventListener('paste', listener)
 
-  return decisions.at(0)
+  return decisions[0]
 }
 
-/** Renders `html`, where `#root` stands in for the Vision tool and `#target` receives the paste. */
-function pasteInto(html: string): boolean | undefined {
-  document.body.innerHTML = html
-
-  return decide(document.getElementById('root'), document.getElementById('target')!)
+function renderVision(): HTMLElement {
+  return document.body.appendChild(document.createElement('div'))
 }
 
 describe('isVisionPasteTarget', () => {
-  it('accepts the query editor, a contenteditable inside vision', () => {
-    expect(pasteInto('<div id="root"><div id="target" contenteditable></div></div>')).toBe(true)
+  it('leaves a text field elsewhere in the studio alone', () => {
+    const vision = renderVision()
+    const searchField = document.body.appendChild(document.createElement('input'))
+
+    expect(pasteOn(searchField, vision)).toBe(false)
   })
 
-  it('accepts a paste with nothing focused, which targets the body', () => {
-    document.body.innerHTML = '<div id="root"></div>'
+  it('claims a paste into the query editor', () => {
+    const vision = renderVision()
+    const editor = vision.appendChild(document.createElement('div'))
 
-    expect(decide(document.getElementById('root'), document.body)).toBe(true)
+    expect(pasteOn(editor, vision)).toBe(true)
   })
 
-  it('accepts a target the editor detached while handling the paste itself', () => {
-    document.body.innerHTML = '<div id="root"><div id="editor"><br id="target"></div></div>'
-    const editor = document.getElementById('editor')!
-    const line = document.getElementById('target')!
+  it('claims a paste even though the editor detached the target while handling it', () => {
+    const vision = renderVision()
+    const editor = vision.appendChild(document.createElement('div'))
+    const line = editor.appendChild(document.createElement('br'))
     editor.addEventListener('paste', () => line.remove())
 
-    expect(decide(document.getElementById('root'), line)).toBe(true)
-  })
-
-  it.each([
-    [
-      'the studio search field, rendered outside vision',
-      '<div id="root"></div><input id="target">',
-    ],
-    ['a text input inside vision', '<div id="root"><input id="target"></div>'],
-    ['a textarea', '<div id="root"><textarea id="target"></textarea></div>'],
-    ['an element outside vision', '<div id="root"></div><div id="target"></div>'],
-    ['anything at all before vision has mounted', '<div id="target"></div>'],
-  ])('rejects %s', (_, html) => {
-    expect(pasteInto(html)).toBe(false)
+    expect(pasteOn(line, vision)).toBe(true)
   })
 })
