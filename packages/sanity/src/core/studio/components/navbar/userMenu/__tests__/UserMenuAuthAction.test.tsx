@@ -6,6 +6,7 @@ import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {UnclaimedProjectProvider} from '../../../../unclaimedProject/UnclaimedProjectProvider'
 import {UserMenuAuthAction} from '../UserMenuAuthAction'
 
 const {mockEnvironment, mockLogout, mockUseUnclaimedProject, mockUseWorkspace} = vi.hoisted(() => ({
@@ -22,7 +23,8 @@ vi.mock('../../../../../i18n/hooks/useTranslation', () => ({
       key === 'user-menu.action.claim-project' ? 'Claim this project' : 'Sign out',
   }),
 }))
-vi.mock('../../../../unclaimedProject/useUnclaimedProject', () => ({
+vi.mock('../../../../unclaimedProject/useUnclaimedProject', async (importOriginal) => ({
+  ...(await importOriginal()),
   useUnclaimedProject: mockUseUnclaimedProject,
 }))
 vi.mock('../../../../workspace', () => ({useWorkspace: mockUseWorkspace}))
@@ -33,7 +35,9 @@ const PROJECT_ID = 'test-project'
 const SECOND_PROJECT_ID = 'second-project'
 const wrapper = ({children}: {children: ReactNode}) => (
   <ThemeProvider theme={theme}>
-    <LayerProvider>{children}</LayerProvider>
+    <LayerProvider>
+      <UnclaimedProjectProvider>{children}</UnclaimedProjectProvider>
+    </LayerProvider>
   </ThemeProvider>
 )
 
@@ -56,6 +60,7 @@ describe('UserMenuAuthAction', () => {
     mockUseUnclaimedProject.mockReturnValue(undefined)
     mockUseWorkspace.mockReturnValue({
       auth: {logout: mockLogout},
+      currentUser: {provider: 'sanity-token'},
       projectId: PROJECT_ID,
     })
   })
@@ -170,6 +175,7 @@ describe('UserMenuAuthAction', () => {
 
     mockUseWorkspace.mockReturnValue({
       auth: {logout: mockLogout},
+      currentUser: {provider: 'sanity-token'},
       projectId: SECOND_PROJECT_ID,
     })
     await userEvent.click(claimAction)
@@ -195,6 +201,7 @@ describe('UserMenuAuthAction', () => {
   it('renders no action when neither claim nor sign out is available', () => {
     mockUseWorkspace.mockReturnValue({
       auth: {},
+      currentUser: {provider: 'sanity-token'},
       projectId: PROJECT_ID,
     })
 

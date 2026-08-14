@@ -2,13 +2,12 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {LeaveIcon} from '@sanity/icons/Leave'
 import {Card, Stack} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
-import {useCallback, useState} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {isDev} from '../../../../environment'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {useUnclaimedProject} from '../../../unclaimedProject/useUnclaimedProject'
+import {useUnclaimedProjectContext} from '../../../unclaimedProject/UnclaimedProjectProvider'
 import {useUnclaimedProjectClock} from '../../../unclaimedProject/useUnclaimedProjectClock'
 import {useWorkspace} from '../../../workspace'
 
@@ -24,20 +23,12 @@ export function UserMenuAuthAction({layout}: UserMenuAuthActionProps) {
 }
 
 function DevUserMenuAuthAction({layout}: UserMenuAuthActionProps) {
-  const {projectId} = useWorkspace()
-  const [claimAttempt, setClaimAttempt] = useState<{projectId: string; startedAt: number}>()
-  const claimAttemptedAt =
-    claimAttempt && claimAttempt.projectId === projectId ? claimAttempt.startedAt : undefined
-  const state = useUnclaimedProject({claimAttemptedAt})
+  const {onClaim, state} = useUnclaimedProjectContext()
   const unclaimed = state?.status === 'unclaimed' ? state : undefined
   const now = useUnclaimedProjectClock(Boolean(unclaimed), unclaimed?.expiresAt)
   const claimUrl = unclaimed && unclaimed.expiresAt.getTime() > now ? unclaimed.claimUrl : undefined
-  const handleClaim = useCallback(
-    () => setClaimAttempt({projectId, startedAt: Date.now()}),
-    [projectId],
-  )
 
-  return <UserMenuAuthActionInner claimUrl={claimUrl} layout={layout} onClaim={handleClaim} />
+  return <UserMenuAuthActionInner claimUrl={claimUrl} layout={layout} onClaim={onClaim} />
 }
 
 function UserMenuAuthActionInner({

@@ -15,11 +15,8 @@ import {
 } from '../../store/authStore/unclaimedProjectStorage'
 import {interpolateTemplate} from '../../util/interpolateTemplate'
 import {useWorkspace} from '../workspace'
-import {
-  ROBOT_PROVIDER,
-  type UnclaimedProjectState,
-  useUnclaimedProject,
-} from './useUnclaimedProject'
+import {useUnclaimedProjectContext} from './UnclaimedProjectProvider'
+import {ROBOT_PROVIDER, type UnclaimedProjectState} from './useUnclaimedProject'
 import {useUnclaimedProjectClock} from './useUnclaimedProjectClock'
 import {useUnclaimedProjectCopy} from './useUnclaimedProjectCopy'
 
@@ -51,19 +48,11 @@ function UnclaimedProjectNudgeAuthCheck() {
 }
 
 function UnclaimedProjectNudgeStateCheck() {
-  const {projectId} = useWorkspace()
-  const [claimAttempt, setClaimAttempt] = useState<{projectId: string; startedAt: number}>()
-  const claimAttemptedAt =
-    claimAttempt?.projectId === projectId ? claimAttempt.startedAt : undefined
-  const state = useUnclaimedProject({claimAttemptedAt})
-  const handleClaim = useCallback(
-    () => setClaimAttempt({projectId, startedAt: Date.now()}),
-    [projectId],
-  )
+  const {onClaim, state} = useUnclaimedProjectContext()
 
   if (!state) return null
 
-  return <UnclaimedProjectNudgeInner onClaim={handleClaim} state={state} />
+  return <UnclaimedProjectNudgeInner onClaim={onClaim} state={state} />
 }
 
 function UnclaimedProjectNudgeInner({
