@@ -1,7 +1,8 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
