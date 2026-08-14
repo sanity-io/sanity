@@ -200,8 +200,6 @@ function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
     state.action ? state.action !== useHistoryRestoreAction.action : true,
   )
 
-  if (states.length === 0) return null
-
   return (
     <DocumentStatusBarActionsInner
       // Use document ID as key to make sure that the actions state is reset when the document changes
