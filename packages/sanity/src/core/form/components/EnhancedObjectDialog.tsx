@@ -1,8 +1,9 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
-import {BoundaryElementProvider, Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
+import {BoundaryElementProvider, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {PopoverDialog} from '../../components/popoverDialog/PopoverDialog'

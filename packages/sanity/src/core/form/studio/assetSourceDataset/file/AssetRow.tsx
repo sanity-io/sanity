@@ -5,7 +5,6 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Asset as AssetType} from '@sanity/types'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
@@ -18,6 +17,7 @@ import {useToast} from '@sanity/ui/toast'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'

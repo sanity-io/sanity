@@ -1,8 +1,9 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, type CardProps, Flex} from '@sanity/ui'
+import {Card, type CardProps, Flex} from '@sanity/ui'
 import {type HTMLProps, type ReactNode} from 'react'
+import {Box} from 'ui5'
 
 import {Details} from './Details'
 
@@ -30,7 +31,7 @@ export function AlertStrip(props: AlertProps & Omit<HTMLProps<HTMLDivElement>, '
     <Card radius={2} tone={STATUS_TONES[status]} {...rest} data-ui="Alert">
       <Flex padding={1}>
         {children && (
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <Details icon={STATUS_ICONS[status]} title={title}>
               <Box marginLeft={3} marginTop={3}>
                 {children}
