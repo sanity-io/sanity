@@ -352,6 +352,25 @@ test('my test', async () => {
 }, 30000)
 ```
 
+#### Testing components that suspend via `use()`
+
+Two traps when unit testing a component or hook that suspends on a promise with React's `use()`
+(see `packages/sanity/src/presentation/__tests__/useMainDocumentPolyfill.test.tsx`):
+
+- **Mount inside an awaited async `act`.** `render`/`renderHook` wrap the mount in an internal
+  _synchronous_ `act`, and React refuses to resume work that suspended inside an unawaited `act`
+  scope — the suspended tree parks forever and `waitFor` times out. Wrap the mount yourself:
+  `await act(async () => { renderHook(...) })` (suppress `testing-library/no-unnecessary-act` on
+  that line; this is the exception the rule doesn't know about). A `Suspense` wrapper is also
+  required.
+- **Keep the `use()` call sequence stable across the replay.** After the promise settles, React
+  _replays_ the suspended render reusing the recorded hook state. If the awaited promise's side
+  effect flips the condition guarding a conditional `use()` (e.g. a polyfill import that installs
+  a global the condition checks), the replay skips the `use()` call, hook accounting breaks, and
+  React throws `Update hook called on initial render` as a recoverable error — which vitest can
+  catch as an unhandled error and fail the run. Once a load has started, keep calling `use()` on
+  the same cached promise on every render instead of re-checking the environment.
+
 #### Vanilla-extract in jsdom tests
 
 The `sanity` and `@sanity/vision` jsdom suites import
