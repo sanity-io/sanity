@@ -21,11 +21,25 @@ function renderVision(): HTMLElement {
 }
 
 describe('isVisionPasteTarget', () => {
-  it('leaves a text field elsewhere in the studio alone', () => {
+  it('leaves the studio search field alone', () => {
     const vision = renderVision()
     const searchField = document.body.appendChild(document.createElement('input'))
 
     expect(pasteOn(searchField, vision)).toBe(false)
+  })
+
+  it('leaves an element elsewhere in the studio alone', () => {
+    const vision = renderVision()
+    const dialog = document.body.appendChild(document.createElement('div'))
+
+    expect(pasteOn(dialog, vision)).toBe(false)
+  })
+
+  it('leaves vision own text inputs alone', () => {
+    const vision = renderVision()
+    const apiVersionField = vision.appendChild(document.createElement('input'))
+
+    expect(pasteOn(apiVersionField, vision)).toBe(false)
   })
 
   it('claims a paste into the query editor', () => {
@@ -42,5 +56,9 @@ describe('isVisionPasteTarget', () => {
     editor.addEventListener('paste', () => line.remove())
 
     expect(pasteOn(line, vision)).toBe(true)
+  })
+
+  it('claims a paste with nothing focused', () => {
+    expect(pasteOn(document.body, renderVision())).toBe(true)
   })
 })
