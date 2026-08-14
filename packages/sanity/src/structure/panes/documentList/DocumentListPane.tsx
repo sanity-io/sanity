@@ -1,6 +1,6 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
-import {Box, Stack, TextInput} from '@sanity/ui'
+import {Stack, TextInput} from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
@@ -18,6 +18,7 @@ import {
   useUnique,
 } from 'sanity'
 import {keyframes, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'

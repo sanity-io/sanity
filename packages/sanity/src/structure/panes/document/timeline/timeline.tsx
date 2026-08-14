@@ -1,4 +1,4 @@
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type Chunk,
@@ -7,6 +7,7 @@ import {
   LoadingBlock,
   useTranslation,
 } from 'sanity'
+import {Box} from 'ui5'
 
 import {TIMELINE_LIST_WRAPPER_ID} from '../constants'
 import {ExpandableTimelineItemButton} from './expandableTimelineItemButton'

@@ -1,4 +1,4 @@
-import {Box, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
+import {Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
 import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
 import {
@@ -20,6 +20,7 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
+import {Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../../../i18n'
