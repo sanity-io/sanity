@@ -1,5 +1,5 @@
 import {UserIcon} from '@sanity/icons/User'
-import {Badge, Box, Container, Flex, Text, TextInput, VirtualList} from '@sanity/ui'
+import {Badge, Container, Flex, Text, TextInput, VirtualList} from '@sanity/ui'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
@@ -8,6 +8,7 @@ import {
 import deburr from 'lodash-es/deburr.js'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
