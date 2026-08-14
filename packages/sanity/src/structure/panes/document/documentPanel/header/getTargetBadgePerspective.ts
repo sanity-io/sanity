@@ -74,8 +74,9 @@ export function getTargetBadgePerspective({
 
 /**
  * Whether the target badge should appear dimmed (document does not exist in the
- * selected perspective). Live-edit documents that fall back to a published
- * variant sibling are not treated as missing.
+ * selected perspective). Live-edit documents in a system bundle (`drafts` /
+ * `published`) that fall back to a published variant sibling are not treated as
+ * missing. Release and agent bundles still dim when the variant is absent.
  */
 export function isTargetBadgeMissing({
   isLiveEdit,
@@ -92,7 +93,7 @@ export function isTargetBadgeMissing({
     case 'variant-definition-document-not-found':
       return true
     case 'variant-missing':
-      return !(isLiveEdit && Boolean(state.publishedSibling))
+      return !(isLiveEdit && Boolean(state.publishedSibling) && isSystemBundle(bundle))
     case 'ready':
       return !state.targetDocument && !state.variant && !isSystemBundle(bundle)
     default:

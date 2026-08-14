@@ -87,10 +87,11 @@ const readyState = (
 
 const variantMissingState = (
   publishedSibling: VersionInfoDocumentStub | undefined,
+  bundle: 'drafts' | 'published' | (string & {}) = 'drafts',
 ): Extract<TargetDocumentState, {status: 'variant-missing'}> => ({
   status: 'variant-missing',
   variant: variantAlphaAudience,
-  bundle: 'drafts',
+  bundle,
   publishedSibling,
 })
 
@@ -199,6 +200,16 @@ describe('isTargetBadgeMissing', () => {
         state: variantMissingState(publishedVariant),
       }),
     ).toBe(false)
+  })
+
+  it('dims live-edit variant-missing in a release even when a published sibling exists', () => {
+    expect(
+      isTargetBadgeMissing({
+        isLiveEdit: true,
+        bundle: 'rSummer',
+        state: variantMissingState(publishedVariant, 'rSummer'),
+      }),
+    ).toBe(true)
   })
 
   it('dims variant-missing for non-live-edit documents', () => {
