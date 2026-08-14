@@ -63,6 +63,49 @@ describe('Comments', () => {
       await submitted
     })
 
+    it('Should keep typed text on both sides of a mention, and remove only the mention on backspace', async () => {
+      const {insertPortableText} = testHelpers()
+      void render(<CommentsInputStory />)
+      const $editable = page.getByTestId('comment-input-editable')
+      await expect.element($editable).toBeVisible()
+
+      await insertPortableText('before ', $editable)
+      await userEvent.keyboard('@')
+      const $mentionsMenu = page.getByTestId('comments-mentions-menu')
+      await expect.element($mentionsMenu).toBeVisible()
+      await userEvent.keyboard('{Enter}')
+      await expect.element(page.getByTestId('comment-mentions-loading-skeleton')).toBeVisible()
+
+      await userEvent.keyboard('foo')
+      await expect.element($editable).toHaveTextContent(/^before foo$/)
+
+      // The mention registration must render its `children`: they carry the
+      // editor's caret spacer, without which the caret cannot land on the
+      // mention.
+      await expect
+        .poll(() => $editable.element().querySelector('[data-pt-inline="object"] [data-pt-spacer]'))
+        .not.toBeNull()
+
+      // The mention's visible chip sits in a `draggable` wrapper: it makes
+      // the mention movable and, because a draggable element starts a drag
+      // instead of a text selection, keeps the mention text unselectable.
+      await expect
+        .poll(() =>
+          page
+            .getByTestId('comment-mentions-loading-skeleton')
+            .element()
+            .closest('[draggable="true"]'),
+        )
+        .not.toBeNull()
+
+      // 4 backspaces undo " foo", the 5th removes the mention itself.
+      await userEvent.keyboard('{Backspace}{Backspace}{Backspace}{Backspace}{Backspace}')
+      await expect
+        .element(page.getByTestId('comment-mentions-loading-skeleton'))
+        .not.toBeInTheDocument()
+      await expect.element($editable).toHaveTextContent(/^before$/)
+    })
+
     it('Should start the next comment empty after submitting the previous one', async () => {
       const {insertPortableText} = testHelpers()
       let resolve!: (value: PortableTextBlock[]) => void

@@ -1,4 +1,3 @@
-import {type RenderBlockFunction} from '@portabletext/editor'
 import {type CurrentUser} from '@sanity/types'
 import {type AvatarSize, Card, Flex, Stack} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
@@ -15,6 +14,7 @@ import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentsAvatar} from '../../avatars/CommentsAvatar'
 import {MentionIcon} from '../../icons/MentionIcon'
 import {SendIcon} from '../../icons/SendIcon'
+import {type CommentInputRenderBlock} from './CommentInput'
 import {Editable} from './Editable'
 import {useCommentInput} from './useCommentInput'
 
@@ -114,7 +114,7 @@ interface CommentInputInnerProps {
   onKeyDown?: (e: React.KeyboardEvent) => void
   onSubmit?: () => void
   placeholder?: React.ReactNode
-  renderBlock: RenderBlockFunction
+  renderBlock: CommentInputRenderBlock
   withAvatar?: boolean
 }
 
