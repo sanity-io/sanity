@@ -4,8 +4,8 @@ import {createRouteMatcher} from '../matchRoute'
 
 /**
  * Load the polyfill the way `useMainDocument` does when the runtime has no native URLPattern
- * (Node < 24, jsdom). Which implementation ends up exercised depends on the runtime, mirroring
- * what happens in browsers — the suite passes on both.
+ * (Node before 24, jsdom). Which implementation ends up exercised depends on the runtime,
+ * mirroring what happens in browsers — the suite passes on both.
  */
 const urlPatternImplementation = typeof URLPattern === 'undefined' ? 'polyfill' : 'native'
 if (typeof URLPattern === 'undefined') {

@@ -3,7 +3,7 @@
  * file's module registry has never evaluated `urlpattern-polyfill`: the polyfill installs its
  * global once per registry, and these tests need to observe the hook loading it on-demand.
  * `URLPattern` is stubbed away so the lazy path is exercised deterministically, also on runtimes
- * that ship a native implementation (Node >= 24).
+ * that ship a native implementation (Node 24 and later).
  */
 import {renderHook, waitFor} from '@testing-library/react'
 import {afterAll, beforeAll, beforeEach, describe, expect, test, vi} from 'vitest'
