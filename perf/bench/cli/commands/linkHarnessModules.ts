@@ -42,6 +42,11 @@ export function linkHarnessModules(options: {
   if (!fs.existsSync(sourceRoot)) {
     throw new Error(`no installed harness dependencies at ${sourceRoot} — run pnpm install first`)
   }
+  // Replace any pre-existing target wholesale so the function is idempotent —
+  // in the recipe the overlay checkout guarantees a clean slate, but a rerun
+  // against a reused worktree must not trip over stale links (EEXIST)
+  fs.rmSync(targetRoot, {recursive: true, force: true})
+
   // realpath the boundary once: entries are classified by where their
   // realpath lands, and the repo itself may live behind a symlink
   const realRepoRoot = fs.realpathSync(repoRoot)

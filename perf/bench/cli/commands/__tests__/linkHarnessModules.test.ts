@@ -87,6 +87,19 @@ describe('linkHarnessModules', () => {
     expect(() => linkHarnessModules({repoRoot, worktree})).toThrow(/does not exist at the measured/)
   })
 
+  it('replaces a stale target so reruns are deterministic', () => {
+    const stale = path.join(worktree, 'perf/bench/node_modules')
+    fs.mkdirSync(stale, {recursive: true})
+    fs.writeFileSync(path.join(stale, 'leftover.txt'), 'stale')
+
+    linkHarnessModules({repoRoot, worktree})
+    // Running twice must also work (EEXIST regression guard)
+    linkHarnessModules({repoRoot, worktree})
+
+    expect(fs.existsSync(path.join(stale, 'leftover.txt'))).toBe(false)
+    expect(fs.readFileSync(path.join(stale, 'chalk/index.js'), 'utf8')).toBe('store copy')
+  })
+
   it('throws when the head harness install is missing', () => {
     fs.rmSync(path.join(repoRoot, 'perf/bench/node_modules'), {recursive: true})
     expect(() => linkHarnessModules({repoRoot, worktree})).toThrow(/run pnpm install first/)
