@@ -1,6 +1,7 @@
-function isTextEntryElement(node: EventTarget | undefined): boolean {
-  const tagName = (node as Partial<Element> | undefined)?.tagName
-  return tagName === 'INPUT' || tagName === 'TEXTAREA'
+function acceptsNativePaste(node: EventTarget | undefined): boolean {
+  const element = node as Partial<HTMLInputElement | HTMLTextAreaElement> | undefined
+  const isTextField = element?.tagName === 'INPUT' || element?.tagName === 'TEXTAREA'
+  return isTextField && element?.readOnly === false
 }
 
 /**
@@ -14,8 +15,8 @@ export function isVisionPasteTarget(root: Node | null, event: ClipboardEvent): b
   const path = event.composedPath()
   const [target] = path
 
-  // Text fields paste natively; the query and params editors are `contenteditable`, not form fields
-  if (isTextEntryElement(target)) {
+  // A readonly field keeps focus after Copy URL but drops the paste, so Vision still claims it
+  if (acceptsNativePaste(target)) {
     return false
   }
 

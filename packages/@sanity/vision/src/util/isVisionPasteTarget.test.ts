@@ -42,6 +42,14 @@ describe('isVisionPasteTarget', () => {
     expect(pasteOn(apiVersionField, vision)).toBe(false)
   })
 
+  it('claims a paste while the readonly query url field holds focus', () => {
+    const vision = renderVision()
+    const queryUrlField = vision.appendChild(document.createElement('input'))
+    queryUrlField.readOnly = true
+
+    expect(pasteOn(queryUrlField, vision)).toBe(true)
+  })
+
   it('claims a paste into the query editor', () => {
     const vision = renderVision()
     const editor = vision.appendChild(document.createElement('div'))
