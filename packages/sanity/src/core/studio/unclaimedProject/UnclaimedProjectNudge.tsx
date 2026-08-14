@@ -1,7 +1,9 @@
 import {ClockIcon} from '@sanity/icons/Clock'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
-import {startTransition, useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
+import {EMPTY, fromEvent, map, merge, of, timer, timestamp} from 'rxjs'
 import {Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -30,7 +32,8 @@ import {
 /**
  * Persistent banner + snoozable toast nudging the user to claim a minted-but-unclaimed project
  * before it expires, flipping to an identity-aware login banner once it's claimed. Renders
- * nothing for anything not part of mint-and-claim — see {@link useUnclaimedProject}.
+ * nothing after the claim period or for anything not part of mint-and-claim — see
+ * {@link useUnclaimedProject}.
  *
  * @internal
  */
@@ -80,7 +83,8 @@ function UnclaimedProjectNudgeInner({
   const copy = useUnclaimedProjectCopy(true)
 
   const unclaimed = state?.status === 'unclaimed' ? state : undefined
-  const now = useMinuteTick(Boolean(unclaimed))
+  const now = useUnclaimedProjectClock(Boolean(unclaimed), unclaimed?.expiresAt)
+  const claimable = unclaimed && unclaimed.expiresAt.getTime() > now ? unclaimed : undefined
   const timeLeft = useRelativeTime(unclaimed?.expiresAt ?? '')
   const expiresAtFormatter = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
   const expiresAt = unclaimed ? expiresAtFormatter.format(unclaimed.expiresAt) : ''
@@ -103,11 +107,10 @@ function UnclaimedProjectNudgeInner({
   const isSnoozed = Boolean(
     snoozedAt && snoozeDurationMs && now - new Date(snoozedAt).getTime() < snoozeDurationMs,
   )
-
   const critical = Boolean(
     copy &&
-    unclaimed &&
-    unclaimed.expiresAt.getTime() - now <= copy.criticalThresholdHours * 3_600_000,
+    claimable &&
+    claimable.expiresAt.getTime() - now <= copy.criticalThresholdHours * 3_600_000,
   )
 
   // The claim URL is spent; keep its provenance while the robot token is active so this banner
@@ -122,7 +125,7 @@ function UnclaimedProjectNudgeInner({
   useConditionalToast({
     id: 'unclaimed-project-nudge',
     status: critical ? 'error' : 'warning',
-    enabled: Boolean(copy && unclaimed) && !isSnoozed,
+    enabled: Boolean(copy && claimable) && !isSnoozed,
     title: copy ? (
       <strong>
         {interpolateTemplate(
@@ -133,18 +136,18 @@ function UnclaimedProjectNudgeInner({
     ) : (
       ''
     ),
-    description: unclaimed && copy && (
+    description: claimable && copy && (
       <Stack gap={4} paddingY={2}>
         <Text size={1} weight="regular">
-          {unclaimed.claimUrl || unclaimed.claimLinkSpent
+          {claimable.claimUrl || claimable.claimLinkSpent
             ? copy.toast.description
             : copy.noClaimUrl.text}
         </Text>
         <Flex gap={3}>
-          {unclaimed.claimUrl && (
+          {claimable.claimUrl && (
             <Button
               as="a"
-              href={unclaimed.claimUrl}
+              href={claimable.claimUrl}
               target="_blank"
               rel="noopener noreferrer"
               mode="default"
@@ -219,7 +222,7 @@ function UnclaimedProjectNudgeInner({
     )
   }
 
-  if (!unclaimed) return null
+  if (!claimable) return null
 
   return (
     <Card
@@ -240,11 +243,11 @@ function UnclaimedProjectNudgeInner({
             )}
           </Text>
         </Flex>
-        <UnclaimedProjectCountdown expiresAt={unclaimed.expiresAt} critical={critical} />
-        {unclaimed.claimUrl ? (
+        <UnclaimedProjectCountdown expiresAt={claimable.expiresAt} critical={critical} />
+        {claimable.claimUrl ? (
           <Button
             as="a"
-            href={unclaimed.claimUrl}
+            href={claimable.claimUrl}
             target="_blank"
             rel="noopener noreferrer"
             mode="default"
@@ -260,9 +263,9 @@ function UnclaimedProjectNudgeInner({
             text={copy.banner.claimButtonText}
             onClick={onClaim}
           />
-        ) : unclaimed.claimLinkSpent ? null : (
+        ) : !claimable.claimLinkSpent ? (
           <Text size={1}>{copy.noClaimUrl.text}</Text>
-        )}
+        ) : null}
       </Flex>
     </Card>
   )
@@ -327,16 +330,24 @@ export function formatCountdown(expiresAt: Date, now: number): string {
   return [hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':')
 }
 
-/** Re-evaluates the snooze window and the critical flip once a minute while the nudge shows. */
-function useMinuteTick(enabled: boolean): number {
-  const [now, setNow] = useState(() => Date.now())
-  useEffect(() => {
-    if (!enabled) return undefined
-    // Refresh right away — the interval alone would serve a clock up to a minute stale after a
-    // stretch with the nudge hidden.
-    startTransition(() => setNow(Date.now()))
-    const id = setInterval(() => setNow(Date.now()), 60_000)
-    return () => clearInterval(id)
-  }, [enabled])
-  return now
+/** Keeps all time-based nudge state on one clock, including resume after timer throttling. */
+function useUnclaimedProjectClock(enabled: boolean, expiresAt: Date | undefined): number {
+  const [initialNow] = useState(() => Date.now())
+  const expiresAtTime = expiresAt?.getTime()
+  const clock$ = useMemo(() => {
+    if (!enabled) return EMPTY
+
+    return merge(
+      of(undefined),
+      timer(60_000, 60_000),
+      expiresAtTime === undefined ? EMPTY : timer(new Date(expiresAtTime)),
+      fromEvent(window, 'focus'),
+      fromEvent(document, 'visibilitychange'),
+    ).pipe(
+      timestamp(),
+      map(({timestamp: now}) => now),
+    )
+  }, [enabled, expiresAtTime])
+
+  return useObservable(clock$, initialNow)
 }

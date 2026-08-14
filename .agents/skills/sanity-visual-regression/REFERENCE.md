@@ -71,6 +71,8 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
 - Only snapshot deterministic states: chrome (navbar, panes) without live data, and never
   anything showing relative timestamps ("2 minutes ago"), presence from other CI runs, or
   dataset-dependent lists.
+- The e2e studio (`dev/studio-e2e-testing`) must set a workspace `icon`. The default
+  letter-mark hashes `projectId` + `dataset` into a color, and e2e datasets change per PR.
 - Archives are written into the Playwright output dir during the run; the `e2e.yml` workflow
   merges shard artifacts and uploads once with `chromatic --playwright` using
   `CHROMATIC_PROJECT_TOKEN_E2E`.

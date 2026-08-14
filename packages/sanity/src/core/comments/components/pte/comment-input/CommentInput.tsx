@@ -3,7 +3,6 @@ import {
   type EditorEmittedEvent,
   EditorProvider,
   keyGenerator,
-  type RenderBlockFunction,
   useEditor,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
@@ -27,8 +26,8 @@ import {
 } from 'react'
 
 import {type UserListWithPermissionsHookValue} from '../../../../hooks/useUserListWithPermissions'
+import {NormalBlock} from '../blocks/NormalBlock'
 import {editorSchemaType} from '../config'
-import {renderBlock as defaultRenderBlock} from '../render/renderBlock'
 import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
 import {CommentInputInner} from './CommentInputInner'
 import {CommentInputProvider} from './CommentInputProvider'
@@ -48,6 +47,15 @@ function EditorRefPlugin(props: RefAttributes<Editor | null>) {
 EditorRefPlugin.displayName = 'EditorRefPlugin'
 
 const EMPTY_ARRAY: [] = []
+
+const defaultRenderBlock = ({children}: {children: ReactNode}) => (
+  <NormalBlock>{children}</NormalBlock>
+)
+
+/**
+ * @internal
+ */
+export type CommentInputRenderBlock = (props: {children: React.ReactNode}) => React.JSX.Element
 
 const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
   behavior: 'smooth',
@@ -76,7 +84,7 @@ export interface CommentInputProps {
   onSubmit?: (value: PortableTextBlock[]) => void
   placeholder?: ReactNode
   readOnly?: boolean
-  renderBlock?: RenderBlockFunction
+  renderBlock?: CommentInputRenderBlock
   value: PortableTextBlock[] | null
   withAvatar?: boolean
   avatarSize?: AvatarSize
