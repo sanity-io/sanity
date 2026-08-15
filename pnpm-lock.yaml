@@ -104,6 +104,9 @@ catalogs:
 overrides:
   vitest: ^4.1.10
 
+patchedDependencies:
+  '@sanity/cli-build@5.1.0': a6eb790018ceffd4ece149ab3c97153f47417453f7cded717c668e103f049900
+
 importers:
 
   .:
@@ -18461,7 +18464,7 @@ snapshots:
 
   '@sanity/browserslist-config@1.0.5': {}
 
-  '@sanity/cli-build@5.1.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(yaml@2.9.0)':
+  '@sanity/cli-build@5.1.0(patch_hash=a6eb790018ceffd4ece149ab3c97153f47417453f7cded717c668e103f049900)(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(yaml@2.9.0)':
     dependencies:
       '@oclif/core': 4.13.3
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.3)(vite@8.2.1)
@@ -18559,7 +18562,7 @@ snapshots:
       '@oclif/core': 4.13.3
       '@oclif/plugin-help': 6.2.56
       '@oclif/plugin-not-found': 3.2.91(@types/node@24.13.3)
-      '@sanity/cli-build': 5.1.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(yaml@2.9.0)
+      '@sanity/cli-build': 5.1.0(patch_hash=a6eb790018ceffd4ece149ab3c97153f47417453f7cded717c668e103f049900)(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(yaml@2.9.0)
       '@sanity/cli-core': 2.8.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/client': 7.26.2
       '@sanity/codegen': 7.0.3(@oclif/core@4.13.3)(@sanity/cli-core@2.8.1)(oxfmt@0.63.0)(react@19.2.8)(supports-color@8.1.1)
@@ -18953,7 +18956,7 @@ snapshots:
       '@sanity-labs/design-tokens': 0.0.2-alpha.4
       '@sanity/blueprints': 0.23.2(vite@8.2.1)
       '@sanity/blueprints-parser': 0.4.0
-      '@sanity/cli-build': 5.1.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(yaml@2.9.0)
+      '@sanity/cli-build': 5.1.0(patch_hash=a6eb790018ceffd4ece149ab3c97153f47417453f7cded717c668e103f049900)(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(yaml@2.9.0)
       '@sanity/cli-core': 2.8.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/client': 7.26.2
       adm-zip: 0.6.0

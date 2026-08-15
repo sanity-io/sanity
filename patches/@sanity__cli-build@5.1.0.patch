@@ -1,0 +1,19 @@
+diff --git a/dist/actions/build/checkStudioDependencyVersions.js b/dist/actions/build/checkStudioDependencyVersions.js
+index 1ebf1c629d425471555332dde9cdd4ca93ca7f08..f113e60180a4bd13ded31d381d3842e9fc2b8f7a 100644
+--- a/dist/actions/build/checkStudioDependencyVersions.js
++++ b/dist/actions/build/checkStudioDependencyVersions.js
+@@ -26,11 +26,11 @@ const DEFAULT_PACKAGES = [
+         ]
+     },
+     {
+-        deprecatedBelow: '^3',
++        deprecatedBelow: '^4',
+         name: '@sanity/ui',
+         supported: [
+-            '^2',
+-            '^3'
++            '^3',
++            '^4'
+         ]
+     }
+ ];
