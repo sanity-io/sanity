@@ -1,22 +1,16 @@
-import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type DocumentInspector, useSource} from 'sanity'
-import {useEffectEvent} from 'use-effect-event'
 
 import {type PaneRouterContextValue} from '../../components/paneRouter/types'
 import {type PaneMenuItem} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
+import {type DocumentHistoryOpenPath} from './__telemetry__/documentPanes.telemetry'
 import {
-  DocumentHistoryInspectorOpened,
-  DocumentHistoryInspectorTabChanged,
-  type DocumentHistoryOpenPath,
-} from './__telemetry__/documentPanes.telemetry'
-import {
-  type ChangesInspectorTab,
   HISTORY_INSPECTOR_NAME,
   INSPECT_ACTION_PREFIX,
   resolveChangesInspectorTab,
 } from './constants'
+import {useDocumentHistoryTelemetry} from './useDocumentHistoryTelemetry'
 
 export function useDocumentPaneInspector({
   documentId,
@@ -30,7 +24,6 @@ export function useDocumentPaneInspector({
   setParams: (params: Record<string, string | undefined>) => void
 }) {
   const {features} = useStructureTool()
-  const telemetry = useTelemetry()
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const inspectorsResolver = source.document.inspectors
@@ -63,50 +56,7 @@ export function useDocumentPaneInspector({
   const changesOpen = currentInspector?.name === HISTORY_INSPECTOR_NAME
   const activeTab = resolveChangesInspectorTab(params.changesInspectorTab)
 
-  // Open handlers stash attribution here before flipping the inspector; the effect below reads it on
-  // the open transition, then clears it. An empty ref means no handler ran (the URL / deep-link case).
-  const openIntentRef = useRef<{path: DocumentHistoryOpenPath; tab?: ChangesInspectorTab} | null>(
-    null,
-  )
-  const wasChangesOpenRef = useRef(false)
-  const previousTabRef = useRef(activeTab)
-
-  const logHistoryInspectorOpened = useEffectEvent(() => {
-    const intent = openIntentRef.current
-    const openedTab = intent?.tab ?? activeTab
-
-    telemetry.log(DocumentHistoryInspectorOpened, {
-      tab: openedTab,
-      path: intent?.path ?? 'url',
-    })
-
-    // Seeded from the intent so the tab param landing a tick later is not read as a tab change.
-    previousTabRef.current = openedTab
-  })
-
-  const logHistoryInspectorTabChanged = useEffectEvent(() => {
-    telemetry.log(DocumentHistoryInspectorTabChanged, {
-      tab: activeTab,
-      previousTab: previousTabRef.current,
-    })
-  })
-
-  useEffect(() => {
-    const justOpened = changesOpen && !wasChangesOpenRef.current
-
-    if (justOpened) {
-      logHistoryInspectorOpened()
-    } else {
-      if (changesOpen && previousTabRef.current !== activeTab) {
-        logHistoryInspectorTabChanged()
-      }
-
-      previousTabRef.current = activeTab
-    }
-
-    openIntentRef.current = null
-    wasChangesOpenRef.current = changesOpen
-  }, [activeTab, changesOpen])
+  const {recordOpenIntent, recordOpenTab} = useDocumentHistoryTelemetry({changesOpen, activeTab})
 
   const closeInspector = useCallback(
     (closeInspectorName?: string) => {
@@ -180,15 +130,13 @@ export function useDocumentPaneInspector({
         inspect: nextInspector.name,
       }
 
-      // Pane-router params round-trip a macrotask later, so capture the tab this open writes; it is
-      // not always the tab that was showing beforehand.
-      if (openIntentRef.current && nextInspector.name === HISTORY_INSPECTOR_NAME) {
-        openIntentRef.current.tab = resolveChangesInspectorTab(nextParams.changesInspectorTab)
+      if (nextInspector.name === HISTORY_INSPECTOR_NAME) {
+        recordOpenTab(resolveChangesInspectorTab(nextParams.changesInspectorTab))
       }
 
       setParams(nextParams)
     },
-    [currentInspector, inspectors, params, setParams],
+    [currentInspector, inspectors, params, recordOpenTab, setParams],
   )
   const handleHistoryClose = useCallback(() => {
     if (historyInspector) {
@@ -197,17 +145,17 @@ export function useDocumentPaneInspector({
   }, [closeInspector, historyInspector])
 
   const handleHistoryOpen = useCallback(
-    (openPath: DocumentHistoryOpenPath = 'status_line') => {
+    (openPath: DocumentHistoryOpenPath) => {
       if (!features.reviewChanges) {
         return
       }
 
       if (historyInspector) {
-        openIntentRef.current = {path: openPath}
+        recordOpenIntent(openPath)
         openInspector(historyInspector.name, {changesInspectorTab: 'review'})
       }
     },
-    [features.reviewChanges, openInspector, historyInspector],
+    [features.reviewChanges, openInspector, historyInspector, recordOpenIntent],
   )
 
   const inspectOpen = params.inspect === 'on'
@@ -244,7 +192,7 @@ export function useDocumentPaneInspector({
           closeInspector(nextInspector.name)
         } else {
           if (nextInspector.name === HISTORY_INSPECTOR_NAME) {
-            openIntentRef.current = {path: 'pane_menu'}
+            recordOpenIntent('pane_menu')
           }
           openInspector(nextInspector.name)
         }
@@ -252,7 +200,14 @@ export function useDocumentPaneInspector({
       }
       return false
     },
-    [closeInspector, inspectorName, inspectors, openInspector, toggleLegacyInspect],
+    [
+      closeInspector,
+      inspectorName,
+      inspectors,
+      openInspector,
+      recordOpenIntent,
+      toggleLegacyInspect,
+    ],
   )
 
   return {

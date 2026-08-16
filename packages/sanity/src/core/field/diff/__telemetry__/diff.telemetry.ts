@@ -3,11 +3,16 @@ import {defineEvent} from '@sanity/telemetry'
 interface DocumentChangesRevertedInfo {
   /** Breadth of the revert: the whole document, a field group, or a single field */
   scope: 'all' | 'group' | 'field'
-  /** Number of field changes the revert covered; always 1 for the `field` scope */
+  /**
+   * Flat count of field changes the revert covered. Every scope measures at this depth, so the
+   * three compare directly. Runs ahead of the rows on screen, which collapse siblings into groups.
+   */
   changeCount: number
 }
 
-/** When changes are reverted from the review changes pane */
+/**
+ * @internal
+ */
 export const DocumentChangesReverted = defineEvent<DocumentChangesRevertedInfo>({
   name: 'Document Changes Reverted',
   version: 1,

@@ -60,7 +60,7 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   onChange: (event: PatchEvent) => void
   onFocus: (pathOrEvent: Path) => void
   onHistoryClose: () => void
-  onHistoryOpen: (path?: DocumentHistoryOpenPath) => void
+  onHistoryOpen: (path: DocumentHistoryOpenPath) => void
   onInspectClose: () => void
   onMenuAction: (item: PaneMenuItem) => void
   onPaneClose: () => void

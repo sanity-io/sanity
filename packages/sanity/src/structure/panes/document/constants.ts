@@ -26,10 +26,6 @@ const CHANGES_INSPECTOR_TABS = ['history', 'review'] as const
 
 export type ChangesInspectorTab = (typeof CHANGES_INSPECTOR_TABS)[number]
 
-function isValidChangesInspectorTab(tab: string | undefined): tab is ChangesInspectorTab {
-  return typeof tab === 'string' && (CHANGES_INSPECTOR_TABS as readonly string[]).includes(tab)
-}
-
 export function resolveChangesInspectorTab(tab: string | undefined): ChangesInspectorTab {
-  return isValidChangesInspectorTab(tab) ? tab : CHANGES_INSPECTOR_TABS[0]
+  return CHANGES_INSPECTOR_TABS.find((candidate) => candidate === tab) ?? CHANGES_INSPECTOR_TABS[0]
 }

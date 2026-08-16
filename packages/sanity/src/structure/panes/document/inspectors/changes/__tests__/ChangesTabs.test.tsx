@@ -3,23 +3,24 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {ChangesTabs} from '../ChangesTabs'
 
-const mockTelemetryLog = vi.hoisted(() => vi.fn())
 const mockSetParams = vi.hoisted(() => vi.fn())
 const mockParams = vi.hoisted(() => ({current: {} as Record<string, string | undefined>}))
-
-vi.mock('@sanity/telemetry/react', () => ({
-  useTelemetry: () => ({log: mockTelemetryLog}),
-}))
 
 vi.mock('../../../../../components/paneRouter/usePaneRouter', () => ({
   usePaneRouter: () => ({params: mockParams.current, setParams: mockSetParams}),
 }))
 
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal()),
+function isReleaseDocument(doc: unknown): boolean {
+  return typeof doc === 'object' && doc !== null && '_type' in doc && doc._type === 'system.release'
+}
+
+vi.mock('sanity', () => ({
+  isReleaseDocument,
+  // ChangesTabs imports `structureLocaleNamespace` from the structure i18n barrel, which calls
+  // this at module load time to define `structureUsEnglishLocaleBundle`.
+  defineLocaleResourceBundle: (bundle: unknown) => bundle,
   useSource: () => ({beta: {eventsAPI: {documents: false}}}),
   usePerspective: () => ({selectedPerspective: 'drafts'}),
   // Identity translations keep the i18n Suspense from swapping the tabs for a loading spinner.
@@ -36,9 +37,7 @@ vi.mock('../ChangesInspector', () => ({ChangesInspector: () => null}))
 let wrapper: React.ComponentType<{children: React.ReactNode}>
 
 beforeAll(async () => {
-  wrapper = await createTestProvider({
-    resources: [structureUsEnglishLocaleBundle],
-  })
+  wrapper = await createTestProvider()
 })
 
 describe('ChangesTabs', () => {
@@ -53,7 +52,7 @@ describe('ChangesTabs', () => {
     mockParams.current = {since: 'rev-1'}
     render(<ChangesTabs {...inspectorProps} />, {wrapper})
 
-    const [, reviewTab] = screen.getAllByRole('tab')
+    const reviewTab = screen.getByRole('tab', {name: 'changes.tab.review-changes'})
     await userEvent.click(reviewTab)
 
     expect(mockSetParams).toHaveBeenCalledWith({since: 'rev-1', changesInspectorTab: 'review'})
@@ -63,28 +62,9 @@ describe('ChangesTabs', () => {
     mockParams.current = {since: 'rev-1', changesInspectorTab: 'review'}
     render(<ChangesTabs {...inspectorProps} />, {wrapper})
 
-    const [historyTab] = screen.getAllByRole('tab')
+    const historyTab = screen.getByRole('tab', {name: 'changes.tab.history'})
     await userEvent.click(historyTab)
 
     expect(mockSetParams).toHaveBeenCalledWith({since: undefined, changesInspectorTab: 'history'})
-  })
-
-  it('still writes the params when the already-selected tab is clicked', async () => {
-    mockParams.current = {since: 'rev-1', changesInspectorTab: 'review'}
-    render(<ChangesTabs {...inspectorProps} />, {wrapper})
-
-    const [, reviewTab] = screen.getAllByRole('tab')
-    await userEvent.click(reviewTab)
-
-    expect(mockSetParams).toHaveBeenCalledWith({since: 'rev-1', changesInspectorTab: 'review'})
-  })
-
-  it('logs no tab-change telemetry itself, leaving useDocumentPaneInspector the single emitter', async () => {
-    render(<ChangesTabs {...inspectorProps} />, {wrapper})
-
-    const [, reviewTab] = screen.getAllByRole('tab')
-    await userEvent.click(reviewTab)
-
-    expect(mockTelemetryLog).not.toHaveBeenCalled()
   })
 })

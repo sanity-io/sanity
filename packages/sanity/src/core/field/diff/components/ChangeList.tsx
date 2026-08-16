@@ -19,6 +19,7 @@ import {useConditionalProperty} from '../../conditional-property/useConditionalP
 import {type ChangeNode, type ObjectDiff} from '../../types'
 import {DocumentChangesReverted} from '../__telemetry__/diff.telemetry'
 import {buildObjectChangeList} from '../changes/buildChangeList'
+import {flattenChangeNode} from '../changes/helpers'
 import {undoChange} from '../changes/undoChange'
 import {useDocumentChange} from '../hooks/useDocumentChange'
 import {ChangeListWrapper} from './ChangeList.styled'
@@ -95,10 +96,13 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
   const rootChange = allChanges[0]
 
   const revertAllChanges = useCallback(() => {
-    telemetry.log(DocumentChangesReverted, {scope: 'all', changeCount: changes.length})
+    telemetry.log(DocumentChangesReverted, {
+      scope: 'all',
+      changeCount: flattenChangeNode(rootChange).length,
+    })
     undoChange(rootChange, diff, docOperations)
     setConfirmRevertAllOpen(false)
-  }, [changes.length, rootChange, diff, docOperations, telemetry])
+  }, [rootChange, diff, docOperations, telemetry])
 
   const handleRevertAllChangesClick = useCallback(() => {
     setConfirmRevertAllOpen(true)

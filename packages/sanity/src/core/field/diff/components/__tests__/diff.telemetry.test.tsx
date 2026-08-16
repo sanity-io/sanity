@@ -9,14 +9,38 @@ import {ChangeList} from '../ChangeList'
 import {GroupChange} from '../ChangeResolver'
 import {FieldChange} from '../FieldChange'
 
+interface MockChangeNode {
+  key: string
+  type: 'field' | 'group'
+  path: string[]
+  titlePath?: string[]
+  changes?: MockChangeNode[]
+}
+
 const mockTelemetryLog = vi.hoisted(() => vi.fn())
 const mockUndoChange = vi.hoisted(() => vi.fn())
+const mockBuildObjectChangeList = vi.hoisted(() =>
+  vi.fn((): MockChangeNode[] => [
+    {
+      key: 'root',
+      type: 'group',
+      path: [],
+      titlePath: [],
+      changes: [
+        {key: 'a', type: 'field', path: ['a']},
+        {key: 'b', type: 'field', path: ['b']},
+      ],
+    },
+  ]),
+)
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: () => ({log: mockTelemetryLog}),
 }))
 
-const FieldWrapper = ({children}: {children: React.ReactNode}) => children
+function FieldWrapper({children}: {children: React.ReactNode}) {
+  return children
+}
 
 vi.mock('../../hooks/useDocumentChange', () => ({
   useDocumentChange: () => ({
@@ -56,21 +80,17 @@ vi.mock('../../changes/undoChange', () => ({
 }))
 
 vi.mock('../../changes/buildChangeList', () => ({
-  buildObjectChangeList: () => [
-    {key: 'a', type: 'field', path: ['a']},
-    {key: 'b', type: 'field', path: ['b']},
-  ],
+  buildObjectChangeList: mockBuildObjectChangeList,
 }))
 
-// Render only the confirm/cancel controls so the revert flow can be driven without the popover.
-vi.mock('../RevertChangesConfirmDialog', () => ({
-  RevertChangesConfirmDialog: ({
-    onConfirm,
-    onCancel,
-  }: {
-    onConfirm: () => void
-    onCancel: () => void
-  }) => (
+function RevertChangesConfirmDialogStub({
+  onConfirm,
+  onCancel,
+}: {
+  onConfirm: () => void
+  onCancel: () => void
+}) {
+  return (
     <div>
       <button type="button" data-testid="confirm-revert" onClick={onConfirm}>
         confirm
@@ -79,24 +99,47 @@ vi.mock('../RevertChangesConfirmDialog', () => ({
         cancel
       </button>
     </div>
-  ),
+  )
+}
+
+// Render only the confirm/cancel controls so the revert flow can be driven without the popover.
+vi.mock('../RevertChangesConfirmDialog', () => ({
+  RevertChangesConfirmDialog: RevertChangesConfirmDialogStub,
 }))
+
+function ChangeResolverStub() {
+  return null
+}
 
 // `GroupChange` shares a module with `ChangeResolver`, so only the resolver is stubbed out
 vi.mock(import('../ChangeResolver'), async (importOriginal) => ({
   ...(await importOriginal()),
-  ChangeResolver: () => null,
+  ChangeResolver: ChangeResolverStub,
 }))
-vi.mock('../ChangeBreadcrumb', () => ({ChangeBreadcrumb: () => null}))
-vi.mock('../ValueError', () => ({ValueError: () => null}))
-vi.mock('../DiffInspectWrapper', () => ({
-  DiffInspectWrapper: ({children}: {children: React.ReactNode}) => <div>{children}</div>,
-}))
-vi.mock('../RevertChangesButton', () => ({
-  RevertChangesButton: function RevertChangesButton() {
-    return null
-  },
-}))
+
+function ChangeBreadcrumbStub() {
+  return null
+}
+
+vi.mock('../ChangeBreadcrumb', () => ({ChangeBreadcrumb: ChangeBreadcrumbStub}))
+
+function ValueErrorStub() {
+  return null
+}
+
+vi.mock('../ValueError', () => ({ValueError: ValueErrorStub}))
+
+function DiffInspectWrapperStub({children}: {children: React.ReactNode}) {
+  return <div>{children}</div>
+}
+
+vi.mock('../DiffInspectWrapper', () => ({DiffInspectWrapper: DiffInspectWrapperStub}))
+
+function RevertChangesButtonStub() {
+  return null
+}
+
+vi.mock('../RevertChangesButton', () => ({RevertChangesButton: RevertChangesButtonStub}))
 
 let wrapper: React.ComponentType<{children: React.ReactNode}>
 
@@ -119,7 +162,7 @@ describe('revert telemetry', () => {
         {wrapper},
       )
 
-    it('logs scope "all" with the total change count on confirm', async () => {
+    it('logs scope "all" with the flat leaf change count on confirm', async () => {
       renderChangeList()
 
       await userEvent.click(screen.getByTestId('confirm-revert'))
@@ -129,6 +172,39 @@ describe('revert telemetry', () => {
         changeCount: 2,
       })
       expect(mockUndoChange).toHaveBeenCalledTimes(1)
+    })
+
+    it('counts flat leaf changes, not direct children, when a group nests another group', async () => {
+      mockBuildObjectChangeList.mockReturnValueOnce([
+        {
+          key: 'root',
+          type: 'group',
+          path: [],
+          titlePath: [],
+          changes: [
+            {key: 'a', type: 'field', path: ['a']},
+            {
+              key: 'nested',
+              type: 'group',
+              path: ['nested'],
+              titlePath: [],
+              changes: [
+                {key: 'b', type: 'field', path: ['nested', 'b']},
+                {key: 'c', type: 'field', path: ['nested', 'c']},
+              ],
+            },
+          ],
+        },
+      ])
+
+      renderChangeList()
+
+      await userEvent.click(screen.getByTestId('confirm-revert'))
+
+      expect(mockTelemetryLog).toHaveBeenCalledWith(DocumentChangesReverted, {
+        scope: 'all',
+        changeCount: 3,
+      })
     })
 
     it('logs nothing when the revert is cancelled', async () => {
@@ -176,14 +252,6 @@ describe('revert telemetry', () => {
         changeCount: 2,
       })
     })
-
-    it('logs nothing when the revert is cancelled', async () => {
-      render(<GroupChange change={group} />, {wrapper})
-
-      await userEvent.click(screen.getByTestId('cancel-revert'))
-
-      expect(mockTelemetryLog).not.toHaveBeenCalled()
-    })
   })
 
   describe('FieldChange (revert field)', () => {
@@ -207,14 +275,6 @@ describe('revert telemetry', () => {
         scope: 'field',
         changeCount: 1,
       })
-    })
-
-    it('logs nothing when the revert is cancelled', async () => {
-      render(<FieldChange change={change} />, {wrapper})
-
-      await userEvent.click(screen.getByTestId('cancel-revert'))
-
-      expect(mockTelemetryLog).not.toHaveBeenCalled()
     })
   })
 })

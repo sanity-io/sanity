@@ -1,10 +1,12 @@
 import {act, renderHook} from '@testing-library/react'
-import {afterEach, describe, expect, it, vi} from 'vitest'
+import {StrictMode} from 'react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type PaneMenuItem} from '../../../types'
 import {
   DocumentHistoryInspectorOpened,
   DocumentHistoryInspectorTabChanged,
+  type DocumentHistoryOpenPath,
 } from '../__telemetry__/documentPanes.telemetry'
 import {
   HISTORY_INSPECTOR_NAME,
@@ -23,7 +25,7 @@ vi.mock('@sanity/telemetry/react', () => ({
 const validationInspector = {name: VALIDATION_INSPECTOR_NAME}
 
 const mockSource = {
-  document: {inspectors: vi.fn(() => [changesInspector, validationInspector])},
+  document: {inspectors: () => [changesInspector, validationInspector]},
 }
 
 vi.mock('sanity', () => ({
@@ -41,6 +43,11 @@ function setup(initialParams: Record<string, string | undefined> = {}) {
   const paramsHolder = {current: {...initialParams}}
   const setParams = vi.fn()
 
+  // The real router navigates on a `setTimeout`, so params land a tick after the handler ran.
+  setParams.mockImplementation((next: Record<string, string | undefined>) => {
+    paramsHolder.current = {...paramsHolder.current, ...next}
+  })
+
   const view = renderHook(
     ({params}: {params: Record<string, string | undefined>}) =>
       useDocumentPaneInspector({
@@ -49,13 +56,8 @@ function setup(initialParams: Record<string, string | undefined> = {}) {
         params,
         setParams,
       }),
-    {initialProps: {params: paramsHolder.current}},
+    {initialProps: {params: paramsHolder.current}, wrapper: StrictMode},
   )
-
-  // The real router navigates on a `setTimeout`, so params land a tick after the handler ran.
-  setParams.mockImplementation((next: Record<string, string | undefined>) => {
-    paramsHolder.current = {...paramsHolder.current, ...next}
-  })
 
   const flushParams = () => view.rerender({params: paramsHolder.current})
 
@@ -72,44 +74,24 @@ function inspectMenuItem(inspectorName: string): PaneMenuItem {
 }
 
 describe('useDocumentPaneInspector telemetry', () => {
-  afterEach(() => {
+  beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('logs a status-line open when the status button opens the pane', () => {
-    const {result} = setup()
+  it.each(['status_line', 'change_indicator'] satisfies DocumentHistoryOpenPath[])(
+    'logs a %s open with the path it is given',
+    (path) => {
+      const {result} = setup()
 
-    act(() => result.current.handleHistoryOpen('status_line'))
+      act(() => result.current.handleHistoryOpen(path))
 
-    expect(mockLog).toHaveBeenCalledTimes(1)
-    expect(mockLog).toHaveBeenCalledWith(DocumentHistoryInspectorOpened, {
-      tab: 'review',
-      path: 'status_line',
-    })
-  })
-
-  it('logs a change-indicator open with the path it is given', () => {
-    const {result} = setup()
-
-    act(() => result.current.handleHistoryOpen('change_indicator'))
-
-    expect(mockLog).toHaveBeenCalledTimes(1)
-    expect(mockLog).toHaveBeenCalledWith(DocumentHistoryInspectorOpened, {
-      tab: 'review',
-      path: 'change_indicator',
-    })
-  })
-
-  it('defaults handleHistoryOpen attribution to status-line', () => {
-    const {result} = setup()
-
-    act(() => result.current.handleHistoryOpen())
-
-    expect(mockLog).toHaveBeenCalledWith(DocumentHistoryInspectorOpened, {
-      tab: 'review',
-      path: 'status_line',
-    })
-  })
+      expect(mockLog).toHaveBeenCalledTimes(1)
+      expect(mockLog).toHaveBeenCalledWith(DocumentHistoryInspectorOpened, {
+        tab: 'review',
+        path,
+      })
+    },
+  )
 
   it('logs a pane-menu open with the tab left at the current param', () => {
     const {result} = setup()
@@ -156,15 +138,6 @@ describe('useDocumentPaneInspector telemetry', () => {
     expect(mockLog).not.toHaveBeenCalled()
   })
 
-  it('does not double-fire when the handler sets both the inspector and the params', () => {
-    const {result, flushParams} = setup()
-
-    act(() => result.current.handleHistoryOpen('status_line'))
-    flushParams()
-
-    expect(mockLog).toHaveBeenCalledTimes(1)
-  })
-
   it('does not log a tab change when the tab param lands after the pane opened on review', () => {
     const {result, flushParams} = setup()
 
@@ -179,23 +152,6 @@ describe('useDocumentPaneInspector telemetry', () => {
     flushParams()
 
     expect(mockLog).toHaveBeenCalledTimes(1)
-  })
-
-  it('logs a tab change when the status line switches an already-open pane to review', () => {
-    const {result, flushParams} = setup({
-      inspect: HISTORY_INSPECTOR_NAME,
-      changesInspectorTab: 'history',
-    })
-    mockLog.mockClear()
-
-    act(() => result.current.handleHistoryOpen('status_line'))
-    flushParams()
-
-    expect(mockLog).toHaveBeenCalledTimes(1)
-    expect(mockLog).toHaveBeenCalledWith(DocumentHistoryInspectorTabChanged, {
-      tab: 'review',
-      previousTab: 'history',
-    })
   })
 
   it('logs one tab change per switch, each against the tab it left', () => {

@@ -131,6 +131,8 @@ How a navigation or open interaction was triggered.
 | `pane_menu`         | Via a document pane menu item                                      |
 | `url`               | Via a deep link, reload, or history navigation (no in-app control) |
 
+`Nested Dialog Opened` also carries a `path`, holding a serialized document field path rather than a value from this table. Filter by event name before grouping on `path`.
+
 ## How Events Are Sent
 
 ### React Hook
@@ -288,7 +290,9 @@ These events cover the history / review changes side pane. `Document History Ins
 | `Document History Inspector Tab Changed` | The active tab changes while the pane is open   | `{ tab, previousTab }`                                        |
 | `Document Changes Reverted`              | A revert is confirmed in the review changes tab | `{ scope: 'all' \| 'group' \| 'field', changeCount: number }` |
 
-`path` uses the shared [`path`](#path) vocabulary (`status_line`, `change_indicator`, `pane_menu`, `url`). To split opens by events-API rollout, join on `eventsApiDocumentsEnabled` from `Workspace Features Observed` via the envelope's `activeWorkspace`. `Document Changes Reverted` counts confirmed reverts; opening the confirmation dialog logs nothing.
+`path` uses the shared [`path`](#path) vocabulary (`status_line`, `change_indicator`, `pane_menu`, `url`). To split opens by events-API rollout, join on `eventsApiDocumentsEnabled` from `Workspace Features Observed` via the envelope's `activeWorkspace`.
+
+`Document Changes Reverted` counts confirmed reverts; opening the confirmation dialog logs nothing. `changeCount` is the flat count of field changes, so `all`, `group` and `field` measure at the same depth and compare directly. It runs ahead of the rows on screen, which collapse sibling changes into groups: a 20-block Portable Text edit is one row and 20 changes. One event covers one gesture, so the count will not reconcile against mutations - reverting a group issues a patch per field. Discard changes and release revert are separate events.
 
 `Tab Changed` fires from the same effect, watching the resolved tab, so it covers every switch including the ones that bypass the tab list, such as the status line jumping to review while the pane is already open on history. The two events never overlap: an open seeds the previous tab from the entry point, so the tab shown on open is reported by `Opened` alone.
 

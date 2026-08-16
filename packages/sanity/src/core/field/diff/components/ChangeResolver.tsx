@@ -26,6 +26,7 @@ import {pathsAreEqual} from '../../paths/helpers'
 import {type ChangeNode, type GroupChangeNode} from '../../types'
 import {isPTSchemaType} from '../../types/portableText/diff/helpers'
 import {DocumentChangesReverted} from '../__telemetry__/diff.telemetry'
+import {flattenChangeNode} from '../changes/helpers'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
 import {useDocumentChange} from '../hooks/useDocumentChange'
@@ -155,10 +156,13 @@ export function GroupChange(
   })
 
   const handleRevertChanges = useCallback(() => {
-    telemetry.log(DocumentChangesReverted, {scope: 'group', changeCount: changes.length})
+    telemetry.log(DocumentChangesReverted, {
+      scope: 'group',
+      changeCount: flattenChangeNode(group).length,
+    })
     undoChange(group, rootDiff, docOperations)
     setConfirmRevertOpen(false)
-  }, [changes.length, group, rootDiff, docOperations, telemetry])
+  }, [group, rootDiff, docOperations, telemetry])
 
   const handleRevertChangesConfirm = useCallback(() => {
     setConfirmRevertOpen(true)
