@@ -131,7 +131,19 @@ How a navigation or open interaction was triggered.
 | `pane_menu`         | Via a document pane menu item                                      |
 | `url`               | Via a deep link, reload, or history navigation (no in-app control) |
 
-`Nested Dialog Opened` also carries a `path`, holding a serialized document field path rather than a value from this table. Filter by event name before grouping on `path`.
+The nested object editing events - `Nested Dialog Opened`, `Object Created`, `Object Edited`, `Object Removed`, `Editor Opened` and `Editor Closed` - also carry a `path`, holding a serialized document field path rather than a value from this table. Those paths include array item `_key` values, so they are high cardinality. Filter by event name before grouping on `path`.
+
+### `context` (copy/paste only, not shared)
+
+`Field Copied` and `Field Pasted` carry a `context` describing the trigger. It is deliberately outside the shared vocabulary above and its values are camelCase, not snake_case. Do not "align" `keyboardShortcut` with `path`'s `keyboard_shortcut`: the value is emitted verbatim from `source` on the public `CopyOptions` / `PasteOptions` types, so renaming it breaks both plugin callers and the continuity of the existing time series. Group `context` only within these two events.
+
+| Value                 | Description                                                               |
+| --------------------- | ------------------------------------------------------------------------- |
+| `fieldAction`         | Via the field action menu                                                 |
+| `documentFieldAction` | Via a document-level field action (not currently emitted from the studio) |
+| `keyboardShortcut`    | Via Ctrl/Cmd+C or Ctrl/Cmd+V                                              |
+| `arrayItem`           | Via an array item menu                                                    |
+| `unknown`             | Fallback when the caller passed no source                                 |
 
 ## How Events Are Sent
 

@@ -175,7 +175,7 @@ export function useParams({
         type: current.type,
         path: current.path,
       } satisfies PresentationStateParams
-      const currentParams = Object.fromEntries(current._searchParams || []) as CombinedSearchParams
+      const currentParams: Record<string, string> = Object.fromEntries(current._searchParams || [])
 
       // If state is provided, replace the current state with the provided
       // state, otherwise maintain the current state
@@ -187,12 +187,13 @@ export function useParams({
         ...(isSameDocument(nextState) ? maintainOnSameDocument : []),
       ] satisfies (keyof CombinedSearchParams)[]
 
-      const maintainedParams = maintainedParamKeys.reduce((acc, key) => {
-        // @ts-expect-error changesInspectorTab union type doesn't play nicely
-        // here, if it were just a string it would be fine
-        acc[key] = currentParams[key]
-        return acc
-      }, {} as Partial<CombinedSearchParams>)
+      const maintainedParams = maintainedParamKeys.reduce<Record<string, string | undefined>>(
+        (acc, key) => {
+          acc[key] = currentParams[key]
+          return acc
+        },
+        {},
+      )
 
       // If params are provided, merge them with the maintained params
       const nextParams = {...maintainedParams, ...params}

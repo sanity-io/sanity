@@ -10,6 +10,7 @@ import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
 import {PresenceOverlay} from '../../presence/overlay/PresenceOverlay'
 import {isNativeEditableElement} from '../../studio/copyPaste/utils'
+import {EMPTY_ARRAY} from '../../util/empty'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {
   NestedDialogClosed,
@@ -109,14 +110,13 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
     setDocumentScrollElement(element)
   }, [])
 
-  // Log telemetry when the dialog opens
+  const currentPathString = pathToString(currentPath ?? EMPTY_ARRAY)
+
   useEffect(() => {
     if (stack.length === 0) {
-      telemetry.log(NestedDialogOpened, {
-        path: pathToString([]),
-      })
+      telemetry.log(NestedDialogOpened, {path: currentPathString})
     }
-  }, [stack, telemetry])
+  }, [currentPathString, stack.length, telemetry])
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>

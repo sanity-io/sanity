@@ -1,6 +1,7 @@
 import {defineEvent} from '@sanity/telemetry'
 
 interface NestedDialogOpenedInfo {
+  /** Serialized document field path of the object the interaction targets */
   path: string
 }
 
