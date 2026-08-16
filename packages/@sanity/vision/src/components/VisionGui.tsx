@@ -38,6 +38,7 @@ import {
 } from '../perspectives'
 import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
+import {isVisionPasteTarget} from '../util/isVisionPasteTarget'
 import {getLocalStorage} from '../util/localStorage'
 import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
 import {prefixApiVersion} from '../util/prefixApiVersion'
@@ -557,22 +558,25 @@ export function VisionGui(props: VisionGuiProps) {
 
   const handlePaste = useCallback(
     (evt: ClipboardEvent) => {
-      if (!evt.clipboardData) {
+      if (!evt.clipboardData || !isVisionPasteTarget(visionRootRef.current, evt)) {
         return
       }
 
-      const data = evt.clipboardData.getData('text/plain')
-      evt.preventDefault()
-      const urlState = getStateFromUrl(data)
-      if (urlState) {
-        setStateFromParsedUrl(urlState)
-        toast.push({
-          closable: true,
-          id: 'vision-paste',
-          status: 'info',
-          title: 'Parsed URL to query',
-        })
+      const urlState = getStateFromUrl(evt.clipboardData.getData('text/plain'))
+      if (!urlState) {
+        return
       }
+
+      // Only cancel the native paste once the clipboard is known to hold a query URL Vision can
+      // load, so unrelated content still pastes as usual.
+      evt.preventDefault()
+      setStateFromParsedUrl(urlState)
+      toast.push({
+        closable: true,
+        id: 'vision-paste',
+        status: 'info',
+        title: 'Parsed URL to query',
+      })
     },
     [getStateFromUrl, setStateFromParsedUrl, toast],
   )
