@@ -373,10 +373,9 @@ export function VisionGui(props: VisionGuiProps) {
     [localStorage, handleQueryExecution],
   )
 
-  const handleChangeApiVersion = useCallback(
-    (evt: ChangeEvent<HTMLSelectElement>) => {
-      const newApiVersion = evt.target.value
-      if (newApiVersion?.toLowerCase() === 'other') {
+  const changeApiVersion = useCallback(
+    (newApiVersion: string) => {
+      if (newApiVersion.toLowerCase() === 'other') {
         setCustomApiVersion('v')
         customApiVersionElementRef.current?.focus()
         return
@@ -388,6 +387,13 @@ export function VisionGui(props: VisionGuiProps) {
       handleQueryExecution({apiVersion: newApiVersion})
     },
     [localStorage, handleQueryExecution],
+  )
+
+  const handleChangeApiVersion = useCallback(
+    (evt: ChangeEvent<HTMLSelectElement>) => {
+      changeApiVersion(evt.target.value)
+    },
+    [changeApiVersion],
   )
 
   // Handle custom API version change
@@ -625,16 +631,18 @@ export function VisionGui(props: VisionGuiProps) {
     }
   }, [cancelQuerySubscription, cancelListenerSubscription])
 
+  const pinApiVersionForVariant = useEffectEvent(() => {
+    if (apiVersion === VARIANTS_API_VERSION && customApiVersion === false) {
+      return
+    }
+    changeApiVersion(VARIANTS_API_VERSION)
+  })
   useEffect(() => {
     if (!activeVariant) {
       return
     }
-    // Pin the dropdown to vX. Leave it there if the variant is later cleared.
-    // oxlint-disable-next-line react/react-compiler -- write through to apiVersion state so the selector keeps vX after the variant is cleared
-    setApiVersion(VARIANTS_API_VERSION)
-    setCustomApiVersion(false)
-    localStorage.set('apiVersion', VARIANTS_API_VERSION)
-  }, [activeVariant, localStorage])
+    pinApiVersionForVariant()
+  }, [activeVariant])
 
   const handleStudioPerspectiveChange = useEffectEvent((stack: StackablePerspective[]) => {
     if (stack.length > 0) {
