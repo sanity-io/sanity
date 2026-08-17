@@ -1,9 +1,10 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Layer, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {CapabilityGate} from '../../../../components/CapabilityGate'
@@ -168,7 +169,8 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                         <Flex flex={1} align="center">
                           <UserAvatar size={1} user="me" />
                           <Box
-                            flex={1}
+                            flexBasis="0%"
+                            flexGrow={1}
                             marginLeft={3}
                             title={currentUser?.name || currentUser?.email}
                           >

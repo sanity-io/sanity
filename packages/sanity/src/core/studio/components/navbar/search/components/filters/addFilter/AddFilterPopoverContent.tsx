@@ -1,5 +1,6 @@
-import {Box, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
 import {CommandList} from '../../../../../../../components/commandList/CommandList'
 import {

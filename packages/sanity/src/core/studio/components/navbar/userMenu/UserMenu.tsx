@@ -1,6 +1,5 @@
 import {getProviderTitle} from '@sanity/access-ui'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
   // Button with specific styling, user avatar.
@@ -12,6 +11,7 @@ import {
 import {Menu} from '@sanity/ui/menu'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
