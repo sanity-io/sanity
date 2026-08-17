@@ -47,7 +47,10 @@ export interface OperationsAPI {
     | Operation<[], 'NO_CHANGES' | 'NOT_PUBLISHED' | 'TARGET_NOT_FOUND'>
     | GuardedOperation
   unpublish:
-    | Operation<[], 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED' | 'TARGET_NOT_FOUND'>
+    | Operation<
+        [],
+        'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED' | 'ALREADY_UNPUBLISHED' | 'TARGET_NOT_FOUND'
+      >
     | GuardedOperation
   duplicate:
     | Operation<
