@@ -13,7 +13,7 @@ import {useStructureToolSetting} from '../../../useStructureToolSetting'
 import {useDocumentPane} from '../useDocumentPane'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
-import {JSONInspectorWrapper} from './InspectDialog.styles'
+import {ClampedTitle, JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
 
 interface InspectDialogProps {
@@ -53,15 +53,7 @@ export function InspectDialog(props: InspectDialogProps) {
       id={`${dialogIdPrefix}dialog`}
       header={
         isDocumentLike(value) ? (
-          // Clamp the header so a very long document title cannot fill the dialog
-          <span
-            style={{
-              display: '-webkit-box',
-              WebkitBoxOrient: 'vertical',
-              WebkitLineClamp: 2,
-              overflow: 'hidden',
-            }}
-          >
+          <ClampedTitle>
             <Translate
               t={t}
               i18nKey="document-inspector.dialog.title"
@@ -73,7 +65,7 @@ export function InspectDialog(props: InspectDialogProps) {
                 ),
               }}
             />
-          </span>
+          </ClampedTitle>
         ) : (
           <em>{t('document-inspector.dialog.title-no-value')}</em>
         )

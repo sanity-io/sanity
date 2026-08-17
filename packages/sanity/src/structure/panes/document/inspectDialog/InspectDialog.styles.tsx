@@ -1,6 +1,17 @@
 import {rem, type Theme} from '@sanity/ui'
 import {css, styled} from 'styled-components'
 
+// Clamps the dialog header so a very long document title cannot fill the whole dialog.
+// The clamp lives in CSS rather than an inline `style` object because the `-webkit-box-orient`
+// longhand is deprecated in React's typed CSS properties, and it's the same approach used by
+// the other clamped text in the codebase (see ClampedDescription in DetailIdentity).
+export const ClampedTitle = styled.span`
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+`
+
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const JSONInspectorWrapper = styled.div(({theme}: {theme: Theme}) => {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

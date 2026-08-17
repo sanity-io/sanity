@@ -6,12 +6,25 @@ import {invokePrepare, prepareForPreview} from './prepareForPreview'
 
 const LONG = 'a'.repeat(PREVIEW_STRING_MAX_LENGTH * 3)
 
+/**
+ * `prepareForPreview` only reads `name` and `preview` off the type, so the cases below
+ * declare just those two and cast. Building complete `SchemaType` values would add a lot
+ * of irrelevant fields without covering anything extra.
+ */
+const previewType = (mock: {
+  name: string
+  preview: {
+    select?: Record<string, string>
+    prepare?: (value: Record<string, unknown>) => Record<string, unknown>
+  }
+}): PreviewableType => mock as unknown as PreviewableType
+
 describe('prepareForPreview string truncation', () => {
   it('truncates a very long title from the default prepare path', () => {
-    const type: PreviewableType = {
+    const type = previewType({
       name: 'testDoc',
       preview: {select: {title: 'name'}},
-    }
+    })
 
     const result = prepareForPreview({name: LONG}, type)
 
@@ -21,7 +34,7 @@ describe('prepareForPreview string truncation', () => {
   })
 
   it('truncates long values returned from a custom prepare()', () => {
-    const type: PreviewableType = {
+    const type = previewType({
       name: 'testDoc',
       preview: {
         select: {name: 'name'},
@@ -31,7 +44,7 @@ describe('prepareForPreview string truncation', () => {
           description: value.name as string,
         }),
       },
-    }
+    })
 
     const result = prepareForPreview({name: LONG}, type)
 
@@ -42,10 +55,10 @@ describe('prepareForPreview string truncation', () => {
   })
 
   it('leaves short strings untouched', () => {
-    const type: PreviewableType = {
+    const type = previewType({
       name: 'testDoc',
       preview: {select: {title: 'name'}},
-    }
+    })
 
     const result = prepareForPreview({name: 'A short title'}, type)
 
@@ -54,18 +67,18 @@ describe('prepareForPreview string truncation', () => {
 
   it('does not truncate imageUrl, media or date values', () => {
     const longUrl = `https://example.com/image.png?signature=${'x'.repeat(PREVIEW_STRING_MAX_LENGTH * 2)}`
-    const type: PreviewableType = {
+    const type = previewType({
       name: 'testDoc',
       preview: {
         select: {name: 'name'},
-        prepare: (value) => ({
+        prepare: () => ({
           title: 'ok',
           imageUrl: longUrl,
           media: longUrl,
           date: longUrl,
         }),
       },
-    }
+    })
 
     const result = prepareForPreview({name: 'irrelevant'}, type) as Record<string, unknown>
 
@@ -77,10 +90,10 @@ describe('prepareForPreview string truncation', () => {
   it('does not split surrogate pairs at the truncation boundary', () => {
     // Fill so that a 2-code-unit emoji straddles the max length cut-off
     const value = `${'a'.repeat(PREVIEW_STRING_MAX_LENGTH - 1)}😀😀😀${'b'.repeat(PREVIEW_STRING_MAX_LENGTH)}`
-    const type: PreviewableType = {
+    const type = previewType({
       name: 'testDoc',
       preview: {select: {title: 'name'}},
-    }
+    })
 
     const result = prepareForPreview({name: value}, type)
     const title = result.title as string
@@ -93,10 +106,10 @@ describe('prepareForPreview string truncation', () => {
   })
 
   it('does not truncate a string within the code-point limit but over it in UTF-16 code units', () => {
-    const type: PreviewableType = {
+    const type = previewType({
       name: 'testDoc',
       preview: {select: {title: 'name'}},
-    }
+    })
     // 600 emoji = 600 code points but 1200 UTF-16 code units (each is a surrogate
     // pair). It's within PREVIEW_STRING_MAX_LENGTH (1024) code points yet over it
     // in code units, so it must pass through untouched (no ellipsis).
@@ -111,7 +124,7 @@ describe('prepareForPreview string truncation', () => {
   })
 
   it('truncates via invokePrepare directly (covers the no-select-paths branch)', () => {
-    const type: PreviewableType = {name: 'testDoc', preview: {}}
+    const type = previewType({name: 'testDoc', preview: {}})
 
     const {returnValue} = invokePrepare(type, {title: LONG})
 
