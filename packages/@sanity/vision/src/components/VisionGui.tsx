@@ -151,14 +151,20 @@ export function VisionGui(props: VisionGuiProps) {
     }
     return datasets[0]
   })
+  const [perspective, setPerspectiveState] = useState<SupportedPerspective | undefined>(
+    storedPerspective || 'raw',
+  )
+  const activeVariant = getActiveVariant(perspective, selectedVariantName)
+
   const [apiVersion, setApiVersion] = useState<string>(() =>
-    API_VERSIONS.includes(storedApiVersion) ? storedApiVersion : DEFAULT_API_VERSION,
+    activeVariant
+      ? VARIANTS_API_VERSION
+      : API_VERSIONS.includes(storedApiVersion)
+        ? storedApiVersion
+        : DEFAULT_API_VERSION,
   )
   const [customApiVersion, setCustomApiVersion] = useState<string | false>(() =>
     API_VERSIONS.includes(storedApiVersion) ? false : storedApiVersion,
-  )
-  const [perspective, setPerspectiveState] = useState<SupportedPerspective | undefined>(
-    storedPerspective || 'raw',
   )
   const isValidApiVersion = customApiVersion ? validateApiVersion(customApiVersion) : true
 
@@ -195,7 +201,6 @@ export function VisionGui(props: VisionGuiProps) {
     return [...releaseIds, ...defaultPerspective] as PerspectiveStack
   }, [releases, isDraftModelEnabled, isScheduledDraftsEnabled])
 
-  const activeVariant = getActiveVariant(perspective, selectedVariantName)
   const userApiVersion = isValidApiVersion && customApiVersion ? customApiVersion : apiVersion
 
   // Client  with memoized initial value
@@ -631,19 +636,22 @@ export function VisionGui(props: VisionGuiProps) {
     }
   }, [cancelQuerySubscription, cancelListenerSubscription])
 
-  const pinApiVersionForVariant = useEffectEvent(() => {
-    changeApiVersion(VARIANTS_API_VERSION)
-  })
-  const hadActiveVariantRef = useRef(false)
-  useEffect(() => {
-    const hadActiveVariant = hadActiveVariantRef.current
-    hadActiveVariantRef.current = Boolean(activeVariant)
-    // Only pin when a variant becomes active. Do not run (or restore) when it
-    // is later cleared — the API version should stay on vX.
-    if (!activeVariant || hadActiveVariant) {
+  const handleStudioVariantChange = useEffectEvent(() => {
+    if (perspective !== 'pinnedRelease') {
       return
     }
-    pinApiVersionForVariant()
+    changeApiVersion(VARIANTS_API_VERSION)
+    if (!query.trim()) {
+      return
+    }
+    handleQueryExecution()
+  })
+
+  useEffect(() => {
+    if (!activeVariant) {
+      return
+    }
+    handleStudioVariantChange()
   }, [activeVariant])
 
   const handleStudioPerspectiveChange = useEffectEvent((stack: StackablePerspective[]) => {
@@ -655,26 +663,6 @@ export function VisionGui(props: VisionGuiProps) {
   useEffect(() => {
     handleStudioPerspectiveChange(perspectiveStack)
   }, [perspectiveStack])
-
-  const handleStudioVariantChange = useEffectEvent(() => {
-    if (perspective !== 'pinnedRelease') {
-      return
-    }
-    if (!query.trim()) {
-      return
-    }
-    handleQueryExecution()
-  })
-  // Re-run pinned-release queries when the navbar variant changes, skipping the
-  // initial mount so we don't double-fetch with the perspective-stack effect.
-  const isFirstVariantEffectRef = useRef(true)
-  useEffect(() => {
-    if (isFirstVariantEffectRef.current) {
-      isFirstVariantEffectRef.current = false
-      return
-    }
-    handleStudioVariantChange()
-  }, [selectedVariantName])
 
   const generateUrl = useCallback(
     (queryString: string, queryParams: Record<string, unknown>) => {
