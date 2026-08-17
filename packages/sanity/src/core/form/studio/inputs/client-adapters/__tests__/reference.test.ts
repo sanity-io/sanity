@@ -2,7 +2,7 @@ import {type ReferenceSchemaType} from '@sanity/types'
 import {firstValueFrom, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
-import {type DocumentPreviewStore} from '../../../../../preview'
+import {type DocumentPreviewStore} from '../../../../../preview/documentPreviewStore'
 import {getReferenceInfo} from '../reference'
 
 // Availability constants matching preview/constants.tsx
@@ -24,10 +24,12 @@ function createMockDocumentPreviewStore(
     observePaths: vi.fn().mockReturnValue(of(null)),
     observeForPreview: vi.fn().mockReturnValue(of({snapshot: null})),
     observeDocumentTypeFromId: vi.fn().mockReturnValue(of(undefined)),
+    observeDocumentSystemFromId: vi.fn().mockReturnValue(of(undefined)),
     unstable_observeDocumentPairAvailability: vi.fn().mockReturnValue(of({})),
     unstable_observeDocumentStackAvailability: vi.fn().mockReturnValue(of([])),
     unstable_observePathsDocumentPair: vi.fn().mockReturnValue(of({})),
     unstable_observeDocumentIdSet: vi.fn().mockReturnValue(of({status: 'reconnecting'})),
+    unstable_observeVersionDocumentIds: vi.fn().mockReturnValue(of([])),
     unstable_observeDocument: vi.fn().mockReturnValue(of(undefined)),
     unstable_observeDocuments: vi.fn().mockReturnValue(of([])),
     ...overrides,
