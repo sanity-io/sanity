@@ -23,6 +23,7 @@ import {
   useScheduledDraftsEnabled,
   useTranslation,
   useWorkspace,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
 
@@ -32,6 +33,7 @@ import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/Visio
 import {visionLocaleNamespace} from '../i18n'
 import {
   getActivePerspective,
+  getActiveVariant,
   isSupportedPerspective,
   isVirtualPerspective,
   type SupportedPerspective,
@@ -112,7 +114,7 @@ export function VisionGui(props: VisionGuiProps) {
   const {datasets, config, projectId, defaultDataset} = props
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {data: releases = []} = useActiveReleases()
   const workspace = useWorkspace()
@@ -192,30 +194,36 @@ export function VisionGui(props: VisionGuiProps) {
     return [...releaseIds, ...defaultPerspective] as PerspectiveStack
   }, [releases, isDraftModelEnabled, isScheduledDraftsEnabled])
 
+  const userApiVersion = isValidApiVersion && customApiVersion ? customApiVersion : apiVersion
+  const activeVariant = getActiveVariant(perspective, selectedVariantName)
+  const effectiveApiVersion = activeVariant
+    ? prefixApiVersion(VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion)
+    : userApiVersion
+
   // Client  with memoized initial value
   const _client = useClient({
-    apiVersion: isValidApiVersion && customApiVersion ? customApiVersion : apiVersion,
+    apiVersion: effectiveApiVersion,
   })
   const client = useMemo(() => {
     return _client.withConfig({
-      apiVersion: isValidApiVersion && customApiVersion ? customApiVersion : apiVersion,
+      apiVersion: effectiveApiVersion,
       perspective: getActivePerspective({
         visionPerspective: perspective,
         perspectiveStack,
         scheduledDraftsStack,
       }),
       dataset,
+      variant: activeVariant,
       allowReconfigure: true,
     })
   }, [
     perspectiveStack,
     scheduledDraftsStack,
     perspective,
-    customApiVersion,
-    apiVersion,
+    effectiveApiVersion,
     dataset,
     _client,
-    isValidApiVersion,
+    activeVariant,
   ])
 
   const cancelQuerySubscription = useCallback(() => {
@@ -243,22 +251,30 @@ export function VisionGui(props: VisionGuiProps) {
         return
       }
 
+      const visionPerspective =
+        options && 'perspective' in options ? options.perspective : perspective
+      const queryVariant = getActiveVariant(visionPerspective, selectedVariantName)
+      const fallbackApiVersion =
+        options?.apiVersion ||
+        (customApiVersion && isValidApiVersion ? customApiVersion : apiVersion)
+
       const context: Required<Omit<QueryExecutionOptions, 'params' | 'perspective'>> & {
         params: Params
         perspective: ClientPerspective | undefined
+        variant: string | undefined
       } = {
         query: options?.query || query,
         dataset: options?.dataset || dataset,
         params: parseParams(JSON.stringify(options?.params || params.parsed, null, 2), t),
         perspective: getActivePerspective({
-          visionPerspective:
-            options && 'perspective' in options ? options.perspective : perspective,
+          visionPerspective,
           perspectiveStack,
           scheduledDraftsStack,
         }),
-        apiVersion:
-          options?.apiVersion ||
-          (customApiVersion && isValidApiVersion ? customApiVersion : apiVersion),
+        apiVersion: queryVariant
+          ? prefixApiVersion(VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion)
+          : fallbackApiVersion,
+        variant: queryVariant,
       }
 
       localStorage.set('query', context.query)
@@ -282,12 +298,14 @@ export function VisionGui(props: VisionGuiProps) {
 
       const urlQueryOpts: Record<string, string | string[]> = {
         perspective: context.perspective ?? [],
+        ...(context.variant ? {variant: context.variant} : {}),
       }
 
       const ctxClient = client.withConfig({
         apiVersion: context.apiVersion,
         dataset: context.dataset,
         perspective: context.perspective,
+        variant: context.variant,
       })
 
       const newUrl = ctxClient.getUrl(
@@ -325,6 +343,7 @@ export function VisionGui(props: VisionGuiProps) {
       perspective,
       perspectiveStack,
       scheduledDraftsStack,
+      selectedVariantName,
       customApiVersion,
       isValidApiVersion,
       apiVersion,
@@ -621,6 +640,26 @@ export function VisionGui(props: VisionGuiProps) {
     handleStudioPerspectiveChange(perspectiveStack)
   }, [perspectiveStack])
 
+  const handleStudioVariantChange = useEffectEvent(() => {
+    if (perspective !== 'pinnedRelease') {
+      return
+    }
+    if (!query.trim()) {
+      return
+    }
+    handleQueryExecution()
+  })
+  // Re-run pinned-release queries when the navbar variant changes, skipping the
+  // initial mount so we don't double-fetch with the perspective-stack effect.
+  const isFirstVariantEffectRef = useRef(true)
+  useEffect(() => {
+    if (isFirstVariantEffectRef.current) {
+      isFirstVariantEffectRef.current = false
+      return
+    }
+    handleStudioVariantChange()
+  }, [selectedVariantName])
+
   const generateUrl = useCallback(
     (queryString: string, queryParams: Record<string, unknown>) => {
       const urlQueryOpts: Record<string, string | string[]> = {
@@ -630,12 +669,13 @@ export function VisionGui(props: VisionGuiProps) {
             perspectiveStack,
             scheduledDraftsStack,
           }) ?? [],
+        ...(activeVariant ? {variant: activeVariant} : {}),
       }
       return client.getUrl(
         client.getDataUrl('query', encodeQueryString(queryString, queryParams, urlQueryOpts)),
       )
     },
-    [client, perspective, perspectiveStack, scheduledDraftsStack],
+    [activeVariant, client, perspective, perspectiveStack, scheduledDraftsStack],
   )
 
   return (
@@ -648,8 +688,8 @@ export function VisionGui(props: VisionGuiProps) {
       data-testid="vision-root"
     >
       <VisionGuiHeader
-        apiVersion={apiVersion}
-        customApiVersion={customApiVersion}
+        apiVersion={effectiveApiVersion}
+        customApiVersion={activeVariant ? false : customApiVersion}
         dataset={dataset}
         datasets={datasets}
         onChangeDataset={handleChangeDataset}
@@ -661,6 +701,7 @@ export function VisionGui(props: VisionGuiProps) {
         url={url}
         perspective={perspective}
         isScheduledDraftsEnabled={isScheduledDraftsEnabled}
+        isApiVersionLocked={Boolean(activeVariant)}
       />
 
       <SplitpaneContainer flex="auto">
