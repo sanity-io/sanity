@@ -1,6 +1,6 @@
-import {Box, type BoxProps} from '@sanity/ui'
 import {type ElementType, type HTMLProps, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box, type BoxProps} from 'ui5'
 
 import {Resizer} from './Resizer'
 
