@@ -50,14 +50,21 @@ export const runVisionQuery = async (
   query: string,
   params: Record<string, unknown>,
 ) => {
-  const {queryEditor, paramsEditor, resultRegion} = await getVisionRegions(page)
+  const {queryEditor, paramsEditor, paramsRegion, resultRegion} = await getVisionRegions(page)
 
   await queryEditor.click()
   await queryEditor.fill(query)
   await expect(queryEditor).toHaveText(query)
 
   const paramsInputText = JSON.stringify(params)
+  // Fill incomplete JSON first so the params error icon is forced on, then
+  // complete it. `toHaveText` on CodeMirror does not mean Vision has parsed
+  // `$id` yet — fetching immediately races that and the API returns
+  // "param $id referenced, but not provided".
+  await paramsEditor.fill(paramsInputText.slice(0, -2))
+  await expect(paramsRegion.locator('[data-sanity-icon="error-outline"]')).toBeVisible()
   await paramsEditor.fill(paramsInputText)
+  await expect(paramsRegion.locator('[data-sanity-icon="error-outline"]')).not.toBeVisible()
   await expect(paramsEditor).toHaveText(paramsInputText)
 
   const fetchButton = page.locator('button').filter({hasText: 'Fetch'})
@@ -112,19 +119,58 @@ export async function createVariantDocument(
   } as never)
 }
 
-export async function deleteVariantDefinition(
-  sanityClient: SanityClient,
-  variantId: string,
-): Promise<void> {
+function isIgnorableVariantCleanupError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error)
+  return (
+    message.includes('was not found') ||
+    message.includes('not found') ||
+    message.includes('referenced') ||
+    message.includes('still has')
+  )
+}
+
+async function ignoreVariantCleanupError(action: () => Promise<unknown>): Promise<void> {
   try {
-    await getVariantsClient(sanityClient).action({
-      actionType: 'sanity.action.variant.definition.delete',
-      variantId,
-    } as never)
+    await action()
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    if (!message.includes('was not found')) {
+    if (!isIgnorableVariantCleanupError(error)) {
       throw error
     }
   }
+}
+
+export async function deleteVariantDefinition(
+  sanityClient: SanityClient,
+  variantId: string,
+  options?: {publishedId?: string},
+): Promise<void> {
+  const client = getVariantsClient(sanityClient)
+
+  if (options?.publishedId) {
+    // Variant-of-published documents cannot be deleted directly; unpublish
+    // them first (which recreates a drafts-scoped variant), then delete that.
+    await ignoreVariantCleanupError(() =>
+      client.action({
+        actionType: 'sanity.action.document.variant.unpublish',
+        publishedId: options.publishedId,
+        variantId,
+        bundleId: undefined,
+      } as never),
+    )
+    await ignoreVariantCleanupError(() =>
+      client.action({
+        actionType: 'sanity.action.document.variant.delete',
+        publishedId: options.publishedId,
+        variantId,
+        bundleId: 'drafts',
+      } as never),
+    )
+  }
+
+  await ignoreVariantCleanupError(() =>
+    client.action({
+      actionType: 'sanity.action.variant.definition.delete',
+      variantId,
+    } as never),
+  )
 }

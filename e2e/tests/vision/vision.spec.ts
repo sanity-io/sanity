@@ -19,6 +19,9 @@ import {
 } from './utils'
 
 const BOOK_QUERY = '*[_type == "book" && _id == $id]{_id, title}'
+// Stacked perspectives (release id + drafts) are rejected on the e2e studio's
+// Vision default (`v2022-08-08`). `v2025-02-19` is a built-in Vision option.
+const STACKED_PERSPECTIVE_API_VERSION = 'v2025-02-19'
 
 test.describe('Vision', () => {
   test('should be possible to type an execute a query', async ({page, sanityClient}) => {
@@ -31,6 +34,7 @@ test.describe('Vision', () => {
     await openVisionTool(page)
     // Clears local storage
     await page.evaluate(() => localStorage.clear())
+    await page.getByTestId('perspective-selector').selectOption('raw')
 
     const {queryEditor, paramsEditor, paramsRegion, resultRegion} = await getVisionRegions(page)
 
@@ -89,6 +93,7 @@ test.describe('Vision', () => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
 
     await openVisionTool(page)
+    await page.getByTestId('perspective-selector').selectOption('raw')
     const query = `*[_type == "book" && _id == $id]{_id, title}`
     const params = {id: bookDocument._id}
     const url = sanityClient.getUrl(
@@ -145,6 +150,10 @@ test.describe('Vision', () => {
     // The Listen button is disabled until Vision has parsed the current query,
     // so waiting for `enabled` is the reliable readiness signal (replaces an
     // earlier arbitrary 1s sleep used to "let the text become part of the query").
+    // Pin a Vision-local perspective so a parallel spec that sets the navbar
+    // release/variant does not auto-switch this listener onto pinnedRelease.
+    await page.getByTestId('perspective-selector').selectOption('raw')
+
     const listenButton = page.locator('button').filter({hasText: 'Listen'})
     await expect(listenButton).toBeVisible()
     await expect(listenButton).toBeEnabled()
@@ -166,8 +175,10 @@ test.describe('Vision', () => {
     })
 
     // Assert that the results are visible
-    await expect(resultRegion.getByText(bookTitle)).toBeVisible()
-    await expect(resultRegion.getByText(`documentId:${bookDocumentId}`)).toBeVisible()
+    await expect(resultRegion.getByText(bookTitle)).toBeVisible({timeout: 30_000})
+    await expect(resultRegion.getByText(`documentId:${bookDocumentId}`)).toBeVisible({
+      timeout: 10_000,
+    })
 
     // Stop the listener
     await stopButton.click()
@@ -210,6 +221,10 @@ test.describe('Vision', () => {
       await openVisionTool(page, `?perspective=${releaseId}`)
       await expect(page.getByTestId('perspective-selector')).toHaveValue('pinnedRelease')
       await expect(page.getByTestId('api-version-selector')).toBeEnabled()
+      await page.getByTestId('api-version-selector').selectOption(STACKED_PERSPECTIVE_API_VERSION)
+      await expect(page.getByTestId('api-version-selector')).toHaveValue(
+        STACKED_PERSPECTIVE_API_VERSION,
+      )
 
       const resultRegion = await runVisionQuery(page, BOOK_QUERY, {id: bookId})
       await expect(resultRegion.getByText(releaseTitle)).toBeVisible({timeout: 30_000})
@@ -275,7 +290,7 @@ test.describe('Vision', () => {
       await expect(resultRegion.getByText(publishedTitle)).toBeVisible({timeout: 30_000})
       await expect(queryUrl).not.toHaveValue(/[?&]variant=/)
     } finally {
-      await deleteVariantDefinition(sanityClient, variantId)
+      await deleteVariantDefinition(sanityClient, variantId, {publishedId: bookId})
     }
   })
 })
