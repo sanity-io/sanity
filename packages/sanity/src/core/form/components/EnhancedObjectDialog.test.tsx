@@ -205,4 +205,18 @@ describe('EnhancedObjectDialog: open telemetry', () => {
 
     expect(log).toHaveBeenCalledTimes(1)
   })
+
+  it('logs once when the stack empties while the dialog stays mounted', () => {
+    const {rerender} = render(objectDialog({path: ['arr', {_key: 'k'}]}))
+
+    mockState.stack = [{id: 'dialog-1', path: ['arr', {_key: 'k'}]}]
+    rerender(objectDialog({path: ['arr', {_key: 'k'}]}))
+
+    // navigateTo filters out entries at or below the target depth, so selecting this dialog's own
+    // breadcrumb drops its entry and empties the stack without unmounting it.
+    mockState.stack = []
+    rerender(objectDialog({path: ['arr', {_key: 'k'}]}))
+
+    expect(log).toHaveBeenCalledTimes(1)
+  })
 })

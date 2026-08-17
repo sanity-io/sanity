@@ -48,9 +48,18 @@ export function useDocumentHistoryTelemetry({
   // The tab last reported to telemetry; null while the inspector is closed.
   const reportedTabRef = useRef<ChangesInspectorTab | null>(null)
 
-  const recordOpenIntent = useCallback((path: DocumentHistoryOpenPath) => {
-    openIntentRef.current = {path}
-  }, [])
+  // An intent recorded while the inspector is already open has no transition to be consumed by, so
+  // skipping it keeps a stale path from outliving the interaction that set it.
+  const recordOpenIntent = useCallback(
+    (path: DocumentHistoryOpenPath) => {
+      if (changesOpen) {
+        return
+      }
+
+      openIntentRef.current = {path}
+    },
+    [changesOpen],
+  )
 
   const recordOpenTab = useCallback((tab: ChangesInspectorTab) => {
     if (openIntentRef.current) {

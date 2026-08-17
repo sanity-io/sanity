@@ -28,8 +28,10 @@ const mockSource = {
   document: {inspectors: () => [changesInspector, validationInspector]},
 }
 
+// The real changesInspector is used below, and it reaches for useTranslation in its menu item.
 vi.mock('sanity', () => ({
   useSource: () => mockSource,
+  useTranslation: () => ({t: (key: string) => key}),
 }))
 
 vi.mock('../../../useStructureTool', () => ({

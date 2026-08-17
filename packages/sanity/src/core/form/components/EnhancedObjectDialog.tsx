@@ -112,10 +112,17 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
 
   const currentPathString = pathToString(currentPath ?? EMPTY_ARRAY)
 
+  // navigateTo drops entries at or below the target depth, so the stack can empty while this dialog
+  // stays mounted. Without the ref that reads as a second open.
+  const hasLoggedOpen = useRef(false)
+
   useEffect(() => {
-    if (stack.length === 0) {
-      telemetry.log(NestedDialogOpened, {path: currentPathString})
+    if (hasLoggedOpen.current || stack.length > 0) {
+      return
     }
+
+    hasLoggedOpen.current = true
+    telemetry.log(NestedDialogOpened, {path: currentPathString})
   }, [currentPathString, stack.length, telemetry])
 
   const contents = (

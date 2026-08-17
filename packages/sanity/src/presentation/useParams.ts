@@ -187,13 +187,12 @@ export function useParams({
         ...(isSameDocument(nextState) ? maintainOnSameDocument : []),
       ] satisfies (keyof CombinedSearchParams)[]
 
-      const maintainedParams = maintainedParamKeys.reduce<Record<string, string | undefined>>(
-        (acc, key) => {
-          acc[key] = currentParams[key]
-          return acc
-        },
-        {},
-      )
+      const maintainedParams = maintainedParamKeys.reduce<
+        Partial<Record<keyof CombinedSearchParams, string>>
+      >((acc, key) => {
+        acc[key] = currentParams[key]
+        return acc
+      }, {})
 
       // If params are provided, merge them with the maintained params
       const nextParams = {...maintainedParams, ...params}

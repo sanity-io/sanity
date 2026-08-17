@@ -294,7 +294,7 @@ Tracked automatically via `web-vitals/attribution` library:
 
 ### Document History and Changes
 
-These events cover the history / review changes side pane. `Document History Inspector Opened` fires from an effect watching the inspector transition open, so it captures every entry point, including deep links and reloads that arrive with the pane already open (`path: 'url'`). Treat `url` opens as views rather than intent, and filter them out when measuring engagement. There is no close event, so dwell time is not derivable.
+These events cover the history / review changes side pane. `Document History Inspector Opened` fires from an effect watching the inspector transition open, so it captures every entry point, including deep links and reloads that arrive with the pane already open (`path: 'url'`). `url` also covers any pane remount, such as switching perspective or release variant with the pane already open, since `DocumentPane` keys the provider on those. Treat `url` opens as views rather than intent, and filter them out when measuring engagement. There is no close event, so dwell time is not derivable.
 
 | Event                                    | When                                            | Payload                                                       |
 | ---------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------- |
