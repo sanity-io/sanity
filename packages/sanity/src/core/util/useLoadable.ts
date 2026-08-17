@@ -48,6 +48,10 @@ export function useLoadable<T>(
       : {isLoading: false, value: initialValue, error: null}
 
   const loadableObservable = useMemo(() => value$.pipe(asLoadable()), [value$])
+  // Deferred: react-rx v5's deferral is identity-coherent, so when callers
+  // key `value$` on identities like a document id the live loadable wins on
+  // an identity change — the previous identity's loaded value never returns
+  // under the new one.
   return useObservable(loadableObservable, initial)
 }
 
@@ -56,8 +60,8 @@ export function asLoadable<T>(): OperatorFunction<T, LoadableState<T>> {
   return (value$: Observable<T>) =>
     value$.pipe(
       map((value) => ({isLoading: false, value, error: null}) as const),
-      catchError(
-        (error): Observable<ErrorState> => of({isLoading: false, value: undefined, error}),
+      catchError((error): Observable<ErrorState> =>
+        of({isLoading: false, value: undefined, error}),
       ),
     )
 }

@@ -1,6 +1,7 @@
-import {Box, Card, Flex, Label} from '@sanity/ui'
+import {Card, Flex, Label} from '@sanity/ui'
 import {type VirtualItem, type Virtualizer} from '@tanstack/react-virtual'
 import {type CSSProperties, useEffect, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {ScheduleItem} from '../../components/scheduleItem'

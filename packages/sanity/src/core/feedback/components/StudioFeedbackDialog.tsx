@@ -1,7 +1,7 @@
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {feedbackLocaleNamespace} from '../../i18n/localeNamespaces'
 import {StudioFeedbackProvider} from '../../studio/feedback/StudioFeedbackProvider'
 import {FeedbackDialog, type FeedbackDialogProps} from './FeedbackDialog'

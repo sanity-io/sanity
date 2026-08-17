@@ -3,7 +3,7 @@ import {type AssetSourceUploadEvent, type SchemaType} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {describe, expect, it, vi, beforeEach, afterEach} from 'vitest'
 
-import {set} from '../../../patch'
+import {set} from '../../../patch/patch'
 import {UPLOAD_STATUS_KEY} from '../../uploads/constants'
 import {resolveUploader} from '../../uploads/resolveUploader'
 import {createDatasetUploader} from '../uploader'

@@ -1,10 +1,25 @@
-import {definePlugin} from '../../config'
+import {lazy} from 'react'
+
+import {definePlugin} from '../../config/definePlugin'
 import {commentsUsEnglishLocaleBundle} from '../i18n'
-import {CommentsDocumentLayout} from './document-layout'
-import {CommentsField} from './field'
-import {CommentsInput} from './input'
 import {commentsInspector} from './inspector'
-import {CommentsStudioLayout} from './studio-layout'
+
+const CommentsDocumentLayout = lazy(() =>
+  import('./document-layout/CommentsDocumentLayout').then((module) => ({
+    default: module.CommentsDocumentLayout,
+  })),
+)
+const CommentsField = lazy(() =>
+  import('./field/CommentsField').then((module) => ({default: module.CommentsField})),
+)
+const CommentsInput = lazy(() =>
+  import('./input/CommentsInput').then((module) => ({default: module.CommentsInput})),
+)
+const CommentsStudioLayout = lazy(() =>
+  import('./studio-layout/CommentsStudioLayout').then((module) => ({
+    default: module.CommentsStudioLayout,
+  })),
+)
 
 export const comments = definePlugin({
   name: 'sanity/comments',

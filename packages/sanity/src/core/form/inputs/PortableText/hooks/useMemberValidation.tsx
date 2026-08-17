@@ -1,8 +1,8 @@
 import {type FormNodeValidation} from '@sanity/types'
 import {useMemo, useRef} from 'react'
 
-import {EMPTY_ARRAY} from '../../../../util'
-import {type BaseFormNode} from '../../../store'
+import {EMPTY_ARRAY} from '../../../../util/empty'
+import {type BaseFormNode} from '../../../store/types/nodes'
 import {immutableReconcile} from '../../../store/utils/immutableReconcile'
 import {useChildValidation} from '../../../studio/contexts/Validation'
 import {isBlockType} from '../_helpers'
@@ -33,9 +33,9 @@ export function useMemberValidation(member: BaseFormNode | undefined) {
     [validation],
   )
 
-  // eslint-disable-next-line react-hooks/refs -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
+  // oxlint-disable-next-line react/react-compiler -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
   const reconciled = immutableReconcile(prev.current, validation)
-  // eslint-disable-next-line react-hooks/refs -- see above
+  // oxlint-disable-next-line react/react-compiler -- see above
   prev.current = reconciled
 
   return useMemo(() => {

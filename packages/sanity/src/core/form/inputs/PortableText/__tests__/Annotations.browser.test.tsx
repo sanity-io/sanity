@@ -82,8 +82,9 @@ describe('Portable Text Input', () => {
       await new Promise((r) => setTimeout(r, 1000))
       await userEvent.keyboard('{Escape}')
       await new Promise((r) => setTimeout(r, 1000))
-      // Assertion: escape closes the toolbar popover
-      await expect.element($toolbarPopover).not.toBeInTheDocument()
+      // Assertion: escape closes the toolbar popover. Popovers keep their content mounted while
+      // closed, so this asserts on visibility rather than on the element being removed.
+      await expect.element($toolbarPopover).not.toBeVisible()
     })
 
     it(
@@ -149,6 +150,26 @@ describe('Portable Text Input', () => {
         await expect.element($linkInputReopened).toHaveFocus()
       },
     )
+
+    it('Can edit a root-level annotation in fullscreen', {timeout: 30_000}, async () => {
+      const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+      void render(<AnnotationsStory />)
+      const $pte = await getFocusedPortableTextEditor('field-body')
+
+      await insertPortableText('Fullscreen link', $pte)
+      await userEvent.keyboard('{Shift>}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{/Shift}')
+      await page.getByRole('button', {name: 'Link'}).click()
+
+      const $linkInput = page.getByTestId('popover-edit-dialog').getByLabelText('Link')
+      await expect.element($linkInput).toBeVisible()
+      await $linkInput.fill('https://www.sanity.io')
+      await page.getByLabelText('Expand editor').click()
+
+      await expect.element(page.getByTestId('pt-editor')).toHaveAttribute('data-fullscreen', 'true')
+      await expect.element($linkInput).toBeVisible()
+      await $linkInput.element().focus()
+      await expect.element($linkInput).toHaveFocus()
+    })
 
     // Firefox has timing issues with PTE selection events (matches the original
     // Playwright `test.skip(browserName === 'firefox')`).

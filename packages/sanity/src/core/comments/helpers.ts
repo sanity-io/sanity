@@ -1,4 +1,5 @@
-import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
+import {isPortableTextSpan, isPortableTextTextBlock, type Path} from '@sanity/types'
+import * as PathUtils from '@sanity/util/paths'
 import isEqual from 'lodash-es/isEqual.js'
 import {useMemo, useState} from 'react'
 
@@ -42,6 +43,21 @@ export function commentIntentIfDiffers(
     return intent
   }
   return undefined
+}
+
+/**
+ * Parse a comment's persisted `fieldPath` string. Returns `undefined` for
+ * empty or unparseable values: `fieldPath` is stored data, and a corrupt
+ * comment must not crash rendering.
+ * @internal
+ */
+export function parseCommentFieldPath(fieldPath: string | null | undefined): Path | undefined {
+  if (!fieldPath) return undefined
+  try {
+    return PathUtils.fromString(fieldPath)
+  } catch {
+    return undefined
+  }
 }
 
 /**

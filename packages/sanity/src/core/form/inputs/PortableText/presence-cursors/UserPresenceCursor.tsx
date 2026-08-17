@@ -1,10 +1,7 @@
 import {type ColorTints} from '@sanity/color'
 import {type User} from '@sanity/types'
 import {Box, Text} from '@sanity/ui'
-import {
-  // eslint-disable-next-line camelcase
-  getTheme_v2,
-} from '@sanity/ui/theme'
+import {getTheme_v2} from '@sanity/ui/theme'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'

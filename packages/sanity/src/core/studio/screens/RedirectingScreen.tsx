@@ -1,4 +1,4 @@
-import {DoubleChevronRightIcon} from '@sanity/icons'
+import {DoubleChevronRightIcon} from '@sanity/icons/DoubleChevronRight'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 
 export function RedirectingScreen(props: {reason?: string}) {
@@ -15,7 +15,7 @@ export function RedirectingScreen(props: {reason?: string}) {
                   <DoubleChevronRightIcon />
                 </Text>
               </Box>
-              <Stack flex={1} marginLeft={3} space={3}>
+              <Stack flex={1} marginLeft={3} gap={3}>
                 <Text as="h1" size={1} weight="bold">
                   {reason}
                 </Text>

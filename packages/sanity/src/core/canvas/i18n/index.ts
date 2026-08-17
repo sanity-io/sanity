@@ -1,4 +1,4 @@
-import {type LocaleResourceBundle} from '../../i18n'
+import {type LocaleResourceBundle} from '../../i18n/types'
 
 /**
  * The locale namespace for the canvas integration plugin
@@ -17,11 +17,3 @@ export const canvasUsEnglishLocaleBundle: LocaleResourceBundle = {
   namespace: canvasLocaleNamespace,
   resources: () => import('./resources'),
 }
-
-/**
- * The locale resource keys for the canvas integration plugin.
- *
- * @alpha
- * @hidden
- */
-export type {CanvasLocaleResourceKeys} from './resources'

@@ -1,13 +1,13 @@
-import type {MutableRefObject} from 'react'
+import type {RefObject} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 /**
  * @internal
  */
 export interface ReferenceItemRef {
-  menuRef: MutableRefObject<HTMLDivElement | null>
-  menuButtonRef: MutableRefObject<HTMLButtonElement | null>
-  containerRef: MutableRefObject<HTMLDivElement | null>
+  menuRef: RefObject<HTMLDivElement | null>
+  menuButtonRef: RefObject<HTMLButtonElement | null>
+  containerRef: RefObject<HTMLDivElement | null>
 }
 
 /**

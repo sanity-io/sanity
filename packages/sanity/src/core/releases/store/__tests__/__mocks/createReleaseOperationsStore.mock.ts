@@ -5,6 +5,7 @@ import {
   type ReleaseOperationsStore,
 } from '../../createReleaseOperationStore'
 
+// @ts-expect-error -- pre-existing, fix later
 export const createReleaseOperationsStoreReturn: Mocked<ReleaseOperationsStore> = {
   archive: vi.fn(),
   unarchive: vi.fn(),

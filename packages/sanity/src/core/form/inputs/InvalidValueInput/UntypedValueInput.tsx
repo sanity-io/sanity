@@ -1,13 +1,16 @@
-import {Card, Code, Grid, Stack, Text} from '@sanity/ui'
+import {Card, Grid, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo} from 'react'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
-import {useSchema} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
+import {useSchema} from '../../../hooks/useSchema'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
-import {PatchEvent, setIfMissing, unset} from '../../patch'
+import {setIfMissing, unset} from '../../patch/patch'
+import {PatchEvent} from '../../patch/PatchEvent'
 
 interface UntypedValueInputProps {
   validTypes: string[]
@@ -92,7 +95,7 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
       }
     >
       <Details open={isDev} title={t('inputs.untyped-value.details.title')}>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text as="p" muted size={1}>
             <Translate t={t} i18nKey="inputs.untyped-value.description" />
           </Text>
@@ -110,7 +113,7 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
           )}
 
           {!isSingleValidType && (
-            <Stack as="ul" space={2}>
+            <Stack as="ul" gap={2}>
               {validTypes.map((validType) => (
                 <Text key={validType} as="li" muted size={1}>
                   <code>{validType}</code>
@@ -119,7 +122,7 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
             </Stack>
           )}
 
-          <Stack space={2}>
+          <Stack gap={2}>
             <Text as="h4" weight="medium" size={1}>
               {t('inputs.untyped-value.details.json-dump-prefix')}
             </Text>
@@ -129,7 +132,7 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
             </Card>
           </Stack>
 
-          <Grid columns={[1, 2, 2]} gap={1}>
+          <Grid gridTemplateColumns={[1, 2, 2]} gap={1}>
             {isSingleValidType && (
               <SetMissingTypeButton onChange={onChange} targetType={validTypes[0]} value={value} />
             )}

@@ -1,11 +1,15 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon, EditIcon, PublishIcon, TrashIcon} from '@sanity/icons'
-import {useToast} from '@sanity/ui'
+import {CalendarIcon} from '@sanity/icons/Calendar'
+import {EditIcon} from '@sanity/icons/Edit'
+import {PublishIcon} from '@sanity/icons/Publish'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {useToast} from '@sanity/ui/toast'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 
-import {type MenuItem} from '../../../ui-components/menuItem'
-import {Translate, useTranslation} from '../../i18n'
-import {getErrorMessage} from '../../util'
+import {type MenuItem} from '../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {Translate} from '../../i18n/Translate'
+import {getErrorMessage} from '../../util/getErrorMessage'
 import {DeleteScheduledDraftDialog} from '../components/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../components/PublishScheduledDraftDialog'
 import {ScheduleDraftDialog} from '../components/ScheduleDraftDialog'
@@ -24,6 +28,7 @@ export interface UseScheduledDraftMenuActionsOptions {
   documentId?: string
   disabled?: boolean
   onActionComplete?: () => void
+  onDeleteComplete?: () => void
 }
 
 interface ScheduledDraftActionProps {
@@ -53,7 +58,14 @@ export interface UseScheduledDraftMenuActionsReturn {
 export function useScheduledDraftMenuActions(
   options: UseScheduledDraftMenuActionsOptions,
 ): UseScheduledDraftMenuActionsReturn {
-  const {release, documentType, documentId, disabled = false, onActionComplete} = options
+  const {
+    release,
+    documentType,
+    documentId,
+    disabled = false,
+    onActionComplete,
+    onDeleteComplete,
+  } = options
 
   const {t} = useTranslation()
   const toast = useToast()
@@ -199,6 +211,7 @@ export function useScheduledDraftMenuActions(
             documentType={documentType}
             documentId={documentId}
             onClose={handleDialogClose}
+            onDeleteComplete={onDeleteComplete}
           />
         )
 
@@ -224,6 +237,7 @@ export function useScheduledDraftMenuActions(
     handleDialogClose,
     handleSchedulePublish,
     isScheduling,
+    onDeleteComplete,
   ])
 
   return {

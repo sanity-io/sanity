@@ -16,8 +16,8 @@ import {
 } from '@sanity/types'
 import {type ReactNode} from 'react'
 
-import {type DocumentFieldAction} from '../../config'
-import {type FormNodePresence} from '../../presence'
+import {type DocumentFieldAction} from '../../config/document/fieldActions/types'
+import {type FormNodePresence} from '../../presence/types'
 import {
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,
@@ -41,6 +41,7 @@ export interface BaseFieldProps {
   /** @beta */
   actions?: DocumentFieldAction[]
   /** @internal @deprecated DO NOT USE */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
   __internal_slot?: ReactNode

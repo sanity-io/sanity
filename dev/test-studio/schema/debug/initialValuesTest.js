@@ -1,4 +1,4 @@
-import {ArrowRightIcon} from '@sanity/icons'
+import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 

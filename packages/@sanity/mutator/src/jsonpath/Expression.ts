@@ -136,7 +136,7 @@ export class Expression {
       throw new Error('No LHS of expression')
     }
 
-    if (lhs.type !== 'attribute') {
+    if (lhs.type !== 'attribute' && lhs.type !== 'path') {
       throw new Error(`Constraint target ${lhs.type} not supported`)
     }
 
@@ -144,7 +144,41 @@ export class Expression {
       return false
     }
 
-    const lhsValue = probe.getAttribute(lhs.name)
+    // The LHS attribute chain: one name for a bare `attribute`, the dotted chain
+    // for a `path` LHS (`asset._ref`, see #5313).
+    const attrNames =
+      lhs.type === 'attribute'
+        ? [lhs.name]
+        : lhs.nodes.map((node) => {
+            // parseAttributePath() only emits attribute segments; anything else
+            // is a malformed AST upstream, so throw rather than mis-match.
+            if (node.type !== 'attribute') {
+              throw new Error(
+                `Constraint target path with non-attribute segment '${node.type}' not supported`,
+              )
+            }
+            return node.name
+          })
+
+    // A missing key or non-object container mid-walk is falsy, matching the
+    // behaviour for a missing single attribute.
+    let cursor: Probe = probe
+    for (let i = 0; i < attrNames.length - 1; i++) {
+      if (cursor.containerType() !== 'object') {
+        return false
+      }
+      const next = cursor.getAttribute(attrNames[i])
+      if (next === null) {
+        return false
+      }
+      cursor = next
+    }
+
+    if (cursor.containerType() !== 'object') {
+      return false
+    }
+
+    const lhsValue = cursor.getAttribute(attrNames[attrNames.length - 1])
     if (lhsValue === undefined || lhsValue === null || lhsValue.containerType() !== 'primitive') {
       // LHS is void and empty, or it is a collection
       return false

@@ -68,6 +68,7 @@ import type {
   CrossDatasetReferenceValue,
   CrossDatasetType,
   CurrentUser,
+  CurrentUserAttribute,
   CustomValidator,
   CustomValidatorResult,
   DashboardNotificationPayload,
@@ -92,6 +93,8 @@ import type {
   DocumentDefinition,
   DocumentOptions,
   DocumentRule,
+  DocumentSystem,
+  DocumentSystemRef,
   EmailDefinition,
   EmailOptions,
   EmailRule,
@@ -347,6 +350,8 @@ import type {
   UrlOptions,
   UrlRule,
   User,
+  UserAttributeType,
+  UserAttributeValue,
   ValidationBuilder,
   ValidationContext,
   ValidationError,
@@ -559,6 +564,9 @@ describe('@sanity/types', () => {
   test('CurrentUser', () => {
     expectTypeOf<CurrentUser>().toBeObject()
   })
+  test('CurrentUserAttribute', () => {
+    expectTypeOf<CurrentUserAttribute>().not.toBeNever()
+  })
   test('CustomValidator', () => {
     expectTypeOf<CustomValidator<any>>().toBeObject()
   })
@@ -630,6 +638,12 @@ describe('@sanity/types', () => {
   })
   test('DocumentRule', () => {
     expectTypeOf<DocumentRule>().toBeObject()
+  })
+  test('DocumentSystem', () => {
+    expectTypeOf<DocumentSystem>().toBeObject()
+  })
+  test('DocumentSystemRef', () => {
+    expectTypeOf<DocumentSystemRef>().toBeObject()
   })
   test('EmailDefinition', () => {
     expectTypeOf<EmailDefinition>().toBeObject()
@@ -1395,6 +1409,12 @@ describe('@sanity/types', () => {
   })
   test('User', () => {
     expectTypeOf<User>().toBeObject()
+  })
+  test('UserAttributeType', () => {
+    expectTypeOf<UserAttributeType>().not.toBeNever()
+  })
+  test('UserAttributeValue', () => {
+    expectTypeOf<UserAttributeValue>().not.toBeNever()
   })
   test('ValidationBuilder', () => {
     expectTypeOf<ValidationBuilder<any, any>>().not.toBeNever()

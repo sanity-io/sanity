@@ -3,7 +3,7 @@ import {describe, it} from 'vitest'
 describe('confirmDeleteDialog', () => {
   it.todo('works')
 })
-// // eslint-disable-next-line import/no-unassigned-import
+// // oxlint-disable-next-line import/no-unassigned-import
 // import React from 'react'
 // import {render, act} from '@testing-library/react'
 // import {ThemeProvider, ToastProvider, studioTheme} from '@sanity/ui'

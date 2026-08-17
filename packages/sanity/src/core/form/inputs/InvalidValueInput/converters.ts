@@ -20,7 +20,7 @@ function toLocalDate(input: Date) {
 function getTZName() {
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone
-  } catch {} // eslint-disable-line no-empty
+  } catch {}
   return null
 }
 

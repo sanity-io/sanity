@@ -3,7 +3,7 @@ import {type Dispatch} from 'react'
 import {catchError, concatWith, merge, type Observable, of, scan, shareReplay, Subject} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
-import {listenQuery} from '../../store'
+import {listenQuery} from '../../store/document/listenQuery'
 import {VARIANT_DOCUMENTS_PATH, VARIANT_DOCUMENT_TYPE} from './constants'
 import {variantStoreReducer, type VariantStoreAction, type VariantStoreState} from './reducer'
 
@@ -44,8 +44,25 @@ export interface VariantStore {
  * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
  * given the latest state upon subscription.
  */
-export function createVariantsStore(context: {client: SanityClient}): VariantStore {
-  const {client} = context
+export function createVariantsStore(context: {
+  client: SanityClient
+  enabled: boolean
+}): VariantStore {
+  const {client, enabled} = context
+
+  if (!enabled) {
+    const disabledState: VariantStoreState = {
+      variants: new Map(),
+      state: 'loaded' as const,
+    }
+
+    return {
+      state$: of(disabledState),
+      dispatch: () => {
+        // noop
+      },
+    }
+  }
 
   const dispatch$ = new Subject<VariantStoreAction>()
 

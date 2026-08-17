@@ -52,6 +52,7 @@ const clientOptions: BrowserOptions = {
 }
 
 const integrations = [
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   inboundFiltersIntegration(),
   functionToStringIntegration(),
   browserApiErrorsIntegration({eventTarget: false}),
@@ -305,8 +306,7 @@ function scrubPii<T extends ErrorEvent>(event: T): T {
   delete event.request
 
   // Prevent Sentry from inferring IP from the HTTP request
-  // oxlint-disable-next-line camelcase -- Sentry SDK field name
-  event.user = {ip_address: '0.0.0.0'} // eslint-disable-line camelcase
+  event.user = {ip_address: '0.0.0.0'}
 
   return event
 }

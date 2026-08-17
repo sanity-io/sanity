@@ -83,6 +83,7 @@ function usePopoverOffset(element: HTMLElement | null) {
 
   useEffect(() => {
     if (element) {
+      // oxlint-disable-next-line react/react-compiler
       setOffset(calcPopoverOffset(element))
     }
   }, [element])

@@ -1,7 +1,8 @@
-import {Box, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {memo} from 'react'
+import {Box} from 'ui5'
 
-import {Tooltip} from '../../../../ui-components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getChangeDetails, NoWrap, UserName, useUpdatedTimeAgo} from './helpers'
 import {type FieldChange} from './helpers/parseTransactions'
 

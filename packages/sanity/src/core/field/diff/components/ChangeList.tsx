@@ -1,16 +1,20 @@
 import {type SanityDocument} from '@sanity/client'
-import {RevertIcon} from '@sanity/icons'
+import {RevertIcon} from '@sanity/icons/Revert'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Card, Stack} from '@sanity/ui'
 import {startTransition, useCallback, useContext, useMemo, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
-import {Button} from '../../../../ui-components'
-import {useDocumentOperation} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
-import {usePerspective} from '../../../perspective/usePerspective'
-import {useDocumentPairPermissions} from '../../../store'
-import {useConditionalProperty} from '../../conditional-property'
+import {Button} from '../../../../ui-components/button/Button'
+import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
+import {
+  getPairTarget,
+  getTargetScopeId,
+  useTargetDocumentState,
+} from '../../../hooks/useTargetDocumentState'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
+import {useConditionalProperty} from '../../conditional-property/useConditionalProperty'
 import {type ChangeNode, type ObjectDiff} from '../../types'
 import {buildObjectChangeList} from '../changes/buildChangeList'
 import {undoChange} from '../changes/undoChange'
@@ -30,8 +34,17 @@ export interface ChangeListProps {
 /** @internal */
 export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.JSX.Element | null {
   const {documentId, isComparingCurrent, value} = useDocumentChange()
-  const {selectedReleaseId} = usePerspective()
-  const docOperations = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
+  const targetDocumentState = useTargetDocumentState(documentId)
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, reverting is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
+  const docOperations = useDocumentOperation(
+    documentId,
+    schemaType.name,
+    getPairTarget(targetDocumentState),
+  )
   const {path} = useContext(DiffContext)
   const isRoot = path.length === 0
   const [confirmRevertAllOpen, setConfirmRevertAllOpen] = useState(false)
@@ -62,6 +75,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
     type: schemaType.name,
+    version: scopeId,
     permission: 'update',
   })
 
@@ -106,8 +120,8 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
 
   return (
     <Card>
-      <Stack space={5}>
-        <Stack as={ChangeListWrapper} space={5}>
+      <Stack gap={5}>
+        <Stack as={ChangeListWrapper} gap={5}>
           {changes.map((change) => (
             <div key={change.key}>
               <ChangeResolver
@@ -134,7 +148,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
               onClick={handleRevertAllChangesClick}
               onMouseEnter={handleRevertAllChangesMouseEnter}
               onMouseLeave={handleRevertAllChangesMouseLeave}
-              disabled={isReadOnly}
+              disabled={isReadOnly || !isTargetReady}
               size="large"
               ref={setButtonElement}
             />

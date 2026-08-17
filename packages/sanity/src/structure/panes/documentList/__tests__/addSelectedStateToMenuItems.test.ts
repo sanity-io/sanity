@@ -3,7 +3,7 @@ import {type ObjectSchemaType} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
 import {type PaneMenuItem} from '../../../types'
-import {addSelectedStateToMenuItems} from '../PaneContainer'
+import {addSelectedStateToMenuItems, appendRestoreDefaultItems} from '../PaneContainer'
 
 const mockSchema = Schema.compile({
   name: 'default',
@@ -159,5 +159,105 @@ describe('addSelectedStateToMenuItems', () => {
       expect(result![0].selected).toBe(true)
       expect(result![0].disabled).toEqual({reason: 'Sort order invalid'})
     })
+  })
+})
+
+describe('appendRestoreDefaultItems', () => {
+  const restoreOptions = {
+    isSortDefault: false,
+    isLayoutDefault: false,
+    restoreSortDisabledReason: 'Already using the default sort order',
+    restoreLayoutDisabledReason: 'Already using the default view',
+  }
+
+  // Restore items are only attached to groups that already have items.
+  const baseMenuItems: PaneMenuItem[] = [
+    {id: 'sort', title: 'Sort', group: 'sorting', action: 'setSortOrder'},
+    {id: 'layout', title: 'Layout', group: 'layout', action: 'setLayout'},
+  ]
+
+  const restoreItemsOf = (items: PaneMenuItem[]) =>
+    items.filter(
+      (item) => item.action === 'restoreDefaultSortOrder' || item.action === 'restoreDefaultLayout',
+    )
+
+  test('appends a restore-default item to the sorting and layout groups', () => {
+    const result = appendRestoreDefaultItems({menuItems: baseMenuItems, ...restoreOptions})
+
+    expect(result).toHaveLength(4)
+    expect(result[0]).toBe(baseMenuItems[0])
+
+    const sortItem = result.find((item) => item.action === 'restoreDefaultSortOrder')
+    const layoutItem = result.find((item) => item.action === 'restoreDefaultLayout')
+
+    expect(sortItem).toMatchObject({group: 'sorting', action: 'restoreDefaultSortOrder'})
+    expect(layoutItem).toMatchObject({group: 'layout', action: 'restoreDefaultLayout'})
+  })
+
+  test('hides the selection indicator on both restore items', () => {
+    const result = restoreItemsOf(
+      appendRestoreDefaultItems({menuItems: baseMenuItems, ...restoreOptions}),
+    )
+
+    expect(result).toHaveLength(2)
+    expect(result.every((item) => item.params?.hideSelectionIndicator === true)).toBe(true)
+  })
+
+  test('restore items have no id so they do not trigger toggle-state tracking', () => {
+    const result = restoreItemsOf(
+      appendRestoreDefaultItems({menuItems: baseMenuItems, ...restoreOptions}),
+    )
+
+    expect(result.every((item) => item.id === undefined)).toBe(true)
+  })
+
+  test('restore items carry no icon', () => {
+    const result = restoreItemsOf(
+      appendRestoreDefaultItems({menuItems: baseMenuItems, ...restoreOptions}),
+    )
+
+    expect(result.every((item) => item.icon === undefined)).toBe(true)
+  })
+
+  test('appends nothing when there are no groups to attach to', () => {
+    const result = appendRestoreDefaultItems(restoreOptions)
+
+    expect(result).toHaveLength(0)
+  })
+
+  test('disables only the sort restore item when sort is already default', () => {
+    const result = appendRestoreDefaultItems({
+      menuItems: baseMenuItems,
+      ...restoreOptions,
+      isSortDefault: true,
+    })
+
+    const sortItem = result.find((item) => item.action === 'restoreDefaultSortOrder')
+    const layoutItem = result.find((item) => item.action === 'restoreDefaultLayout')
+
+    expect(sortItem!.disabled).toEqual({reason: 'Already using the default sort order'})
+    expect(layoutItem!.disabled).toBeUndefined()
+  })
+
+  test('disables only the layout restore item when layout is already default', () => {
+    const result = appendRestoreDefaultItems({
+      menuItems: baseMenuItems,
+      ...restoreOptions,
+      isLayoutDefault: true,
+    })
+
+    const sortItem = result.find((item) => item.action === 'restoreDefaultSortOrder')
+    const layoutItem = result.find((item) => item.action === 'restoreDefaultLayout')
+
+    expect(layoutItem!.disabled).toEqual({reason: 'Already using the default view'})
+    expect(sortItem!.disabled).toBeUndefined()
+  })
+
+  test('leaves both restore items enabled when neither setting is default', () => {
+    const result = restoreItemsOf(
+      appendRestoreDefaultItems({menuItems: baseMenuItems, ...restoreOptions}),
+    )
+
+    expect(result.every((item) => item.disabled === undefined)).toBe(true)
   })
 })

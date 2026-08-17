@@ -2,44 +2,49 @@ import {
   type EditorEmittedEvent,
   EditorProvider,
   type EditorSelection,
+  type EditorSnapshot,
   type Patch,
+  type Editor,
   PortableTextEditor,
   type RangeDecoration,
   useEditor,
   usePortableTextEditor,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
+import {getSpan} from '@portabletext/editor/traversal'
 import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
-import {Box, useToast} from '@sanity/ui'
+import {type Path, type PortableTextBlock} from '@sanity/types'
+import {Box} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {randomKey} from '@sanity/util/content'
 import {fromString, startsWith} from '@sanity/util/paths'
 import {
-  forwardRef,
   type ReactNode,
   startTransition,
   useCallback,
   useEffect,
-  useEffectEvent,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {usePerspective} from '../../../perspective/usePerspective'
-import {EMPTY_ARRAY} from '../../../util'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {pathToString} from '../../../validation/util/pathToString'
 import {
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
 } from '../../__telemetry__/form.telemetry'
 import {useDocumentDivergences} from '../../contexts/DivergencesProvider'
-import {SANITY_PATCH_TYPE} from '../../patch'
-import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
+import {SANITY_PATCH_TYPE} from '../../patch/patch'
+import {type ArrayOfObjectsItemMember} from '../../store/types/members'
+import {type ObjectFormNode} from '../../store/types/nodes'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
-import {type EditorChange, type PortableTextInputProps} from '../../types'
+import {type EditorChange, type PortableTextInputProps} from '../../types/inputProps'
 import {Compositor} from './Compositor'
 import {useFullscreenPTE} from './contexts/fullscreen'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
@@ -55,7 +60,7 @@ import {PortableTextEditorPlugins} from './object/Plugins'
 import {
   type PresenceCursorDecorationsHookProps,
   usePresenceCursorDecorations,
-} from './presence-cursors'
+} from './presence-cursors/usePresenceCursorDecorations'
 import {usePatches} from './usePatches'
 
 function keyGenerator() {
@@ -64,17 +69,33 @@ function keyGenerator() {
 
 /**
  * `EditorProvider` doesn't have a `ref` prop. This custom PTE plugin takes
- * care of imperatively forwarding that ref.
+ * care of imperatively forwarding the legacy `PortableTextEditor` instance,
+ * the public `editorRef` prop's contract.
  */
-const EditorRefPlugin = forwardRef<PortableTextEditor | null>((_, ref) => {
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+const LegacyEditorRefPlugin = (props: RefAttributes<PortableTextEditor | null>) => {
+  const {ref} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const portableTextEditor = usePortableTextEditor()
 
-  const portableTextEditorRef = useRef(portableTextEditor)
-
-  useImperativeHandle(ref, () => portableTextEditorRef.current, [])
+  useImperativeHandle(ref, () => portableTextEditor, [portableTextEditor])
 
   return null
-})
+}
+LegacyEditorRefPlugin.displayName = 'LegacyEditorRefPlugin'
+
+/**
+ * Captures the editor instance so callbacks defined outside
+ * `EditorProvider` can take snapshots.
+ */
+const EditorRefPlugin = (props: RefAttributes<Editor | null>) => {
+  const {ref} = props
+  const editor = useEditor()
+
+  useImperativeHandle(ref, () => editor, [editor])
+
+  return null
+}
 EditorRefPlugin.displayName = 'EditorRefPlugin'
 
 /** @internal */
@@ -105,6 +126,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     hotkeys,
     initialActive,
     initialFullscreen,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     markers = EMPTY_ARRAY,
     onChange,
     onCopy,
@@ -117,7 +139,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     path,
     readOnly,
     rangeDecorations: rangeDecorationsProp,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     renderBlockActions,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     renderCustomMarkers,
     schemaType,
     value,
@@ -125,8 +149,10 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   } = props
 
   const {onBlur, ref: elementRef} = elementProps
-  const defaultEditorRef = useRef<PortableTextEditor | null>(null)
-  const editorRef = editorRefProp || defaultEditorRef
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  const defaultLegacyEditorRef = useRef<PortableTextEditor | null>(null)
+  const editorRef = useRef<Editor | null>(null)
+  const legacyEditorRef = editorRefProp || defaultLegacyEditorRef
 
   const presenceCursorDecorations = usePresenceCursorDecorations(
     useMemo(
@@ -240,6 +266,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
     if (invalidValue && value !== invalidValue.value) {
+      // oxlint-disable-next-line react/react-compiler
       setInvalidValue(null)
     }
   }, [invalidValue, value])
@@ -249,28 +276,22 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   // Set active if focused within the editor
   useEffect(() => {
     if (hasFocusWithin) {
+      // oxlint-disable-next-line react/react-compiler
       setIsActive(true)
     }
   }, [hasFocusWithin])
 
   const setFocusPathFromEditorSelection = useCallback(
-    (nextSelection: EditorSelection) => {
+    (nextSelection: EditorSelection, snapshot: EditorSnapshot | null) => {
       const focusPath = nextSelection?.focus.path
       if (!focusPath) return
 
-      // Report focus on spans with `.text` appended to the reported focusPath.
-      // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
-      // The PT-input already supports these paths the other way around.
-      // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
-      // having to change the PTE's internals.
-      const isSpanPath =
-        focusPath.length === 3 && // A span path is always 3 segments long
-        focusPath[1] === 'children' && // Is a child of a block
-        isKeySegment(focusPath[2]) && // Contains the key of the child
-        !portableTextMemberItems.some(
-          (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
-        )
-      const nextFocusPath = isSpanPath ? focusPath.concat(['text']) : focusPath
+      // Spans report with `.text` appended, the path shape the Presentation
+      // tool uses to address text. `useTrackFocusPath` resolves such paths
+      // in the other direction through the same `getSpan` traversal, so
+      // both directions agree on what a span path is at any depth.
+      const nextFocusPath =
+        snapshot && getSpan(snapshot, focusPath) ? focusPath.concat(['text']) : focusPath
 
       // Must called in a transition useTrackFocusPath hook
       // will try to effectuate a focusPath that is different from what currently is the editor focusPath
@@ -280,18 +301,22 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         })
       })
     },
-    [onPathFocus, portableTextMemberItems],
+    [onPathFocus],
   )
 
   // Handle editor changes
   const handleEditorChange = useCallback(
+    // oxlint-disable-next-line react/react-compiler
     (change: EditorChange): void => {
       switch (change.type) {
         case 'mutation':
           onChange(toFormPatches(change.patches))
           break
         case 'selection':
-          setFocusPathFromEditorSelection(change.selection)
+          setFocusPathFromEditorSelection(
+            change.selection,
+            editorRef.current?.getSnapshot() ?? null,
+          )
           break
         case 'focus':
           setIsActive(true)
@@ -315,14 +340,23 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
           break
         default:
       }
-      if (editorRef.current && onEditorChange) {
-        onEditorChange(change, editorRef.current)
+      if (legacyEditorRef.current && onEditorChange) {
+        onEditorChange(change, legacyEditorRef.current)
       }
     },
-    [editorRef, onEditorChange, onChange, setFocusPathFromEditorSelection, onBlur, toast],
+    [
+      legacyEditorRef,
+      editorRef,
+      onEditorChange,
+      onChange,
+      setFocusPathFromEditorSelection,
+      onBlur,
+      toast,
+    ],
   )
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setIgnoreValidationError(false)
   }, [value])
 
@@ -346,14 +380,16 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     return null
   }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue, readOnly])
 
+  // oxlint-disable-next-line react/react-compiler
   const handleActivate = useCallback((): void => {
     if (!isActive) {
       setIsActive(true)
-      if (editorRef.current) {
-        PortableTextEditor.focus(editorRef.current)
+      if (legacyEditorRef.current) {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        PortableTextEditor.focus(legacyEditorRef.current)
       }
     }
-  }, [editorRef, isActive])
+  }, [legacyEditorRef, isActive])
 
   const previousRangeDecorations = useRef<RangeDecoration[]>([])
 
@@ -372,9 +408,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       ? diffRangeDecorations
       : [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
 
-    // eslint-disable-next-line react-hooks/refs -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
+    // oxlint-disable-next-line react/react-compiler -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
     const reconciled = immutableReconcile(previousRangeDecorations.current, result)
-    // eslint-disable-next-line react-hooks/refs -- see above
+    // oxlint-disable-next-line react/react-compiler -- see above
     previousRangeDecorations.current = reconciled
     return reconciled
   }, [diffRangeDecorations, displayInlineChanges, presenceCursorDecorations, rangeDecorationsProp])
@@ -398,6 +434,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                   onChange={handleEditorChange}
                   onOptimisticChange={onOptimisticChange}
                 />
+                <LegacyEditorRefPlugin ref={legacyEditorRef} />
                 <EditorRefPlugin ref={editorRef} />
                 <PatchesPlugin path={path} />
                 <UpdateReadOnlyPlugin readOnly={readOnly || !ready} />
@@ -442,6 +479,7 @@ function EditorChangePlugin(
 ) {
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       switch (event.type) {
         case 'blurred':
           props.onChange({

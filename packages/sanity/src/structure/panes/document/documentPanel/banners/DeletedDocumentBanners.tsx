@@ -1,4 +1,5 @@
-import {DocumentRemoveIcon, ReadOnlyIcon} from '@sanity/icons'
+import {DocumentRemoveIcon} from '@sanity/icons/DocumentRemove'
+import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
@@ -34,6 +35,8 @@ export function DeletedDocumentBanners() {
 
 function DeletedDocumentBanner() {
   const {documentId, documentType} = useDocumentPane()
+  // No `getTargetScopeId(useTargetDocumentState())` here: restoring a deleted document deliberately operates on
+  // the draft/published pair, so no version scope applies.
   const {restore} = useDocumentOperation(documentId, documentType)
   const {navigateIntent} = useRouter()
 

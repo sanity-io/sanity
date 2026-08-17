@@ -1,9 +1,10 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {Card, Flex, Text} from '@sanity/ui'
 import {Component, type ReactNode} from 'react'
+import {Box} from 'ui5'
 
 import {isDev} from '../../../environment'
-import {type TFunction} from '../../../i18n'
+import {type TFunction} from '../../../i18n/types'
 
 /** @internal */
 export interface DiffErrorBoundaryProps {
@@ -24,7 +25,6 @@ export class DiffErrorBoundary extends Component<DiffErrorBoundaryProps, DiffErr
 
   state: DiffErrorBoundaryState = {}
 
-  // eslint-disable-next-line class-methods-use-this
   componentDidCatch(error: Error) {
     console.error('Error rendering diff component: ')
     console.error(error)

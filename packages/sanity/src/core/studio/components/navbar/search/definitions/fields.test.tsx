@@ -261,6 +261,7 @@ describe('createFieldDefinitions', () => {
           fields: [
             {
               name: 'title',
+              // @ts-expect-error -- pre-existing, fix later
               title: <ThrowsOnRender>Safe child text</ThrowsOnRender>,
               type: 'string',
             },

@@ -1,10 +1,14 @@
-import {LaunchIcon} from '@sanity/icons'
-import {urlSearchParamPreviewPerspective} from '@sanity/preview-url-secret/constants'
+import {LaunchIcon} from '@sanity/icons/Launch'
+import {
+  urlSearchParamPreviewPerspective,
+  urlSearchParamPreviewVariant,
+} from '@sanity/preview-url-secret/constants'
 import {Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 
-import {Button, Tooltip} from '../../ui-components'
+import {Button} from '../../ui-components/button/Button'
+import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {presentationLocaleNamespace} from '../i18n'
 import {type PresentationPerspective} from '../types'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
@@ -16,18 +20,31 @@ export function OpenPreviewButton(
     previewLocationOrigin?: string
     previewLocationRoute: string
     perspective: PresentationPerspective
+    variant: string | undefined
     targetOrigin: string
   },
 ): React.ReactNode {
-  const {openPopup, previewLocationOrigin, previewLocationRoute, perspective, targetOrigin} = props
+  const {
+    openPopup,
+    previewLocationOrigin,
+    previewLocationRoute,
+    perspective,
+    variant,
+    targetOrigin,
+  } = props
 
   const openPreviewLink = useMemo(() => {
     const url = new URL(previewLocationRoute, previewLocationOrigin || targetOrigin)
     url.searchParams.set(urlSearchParamPreviewPerspective, encodeStudioPerspective(perspective))
+    if (variant) {
+      url.searchParams.set(urlSearchParamPreviewVariant, variant)
+    } else {
+      url.searchParams.delete(urlSearchParamPreviewVariant)
+    }
     const {pathname, search} = url
 
     return `${previewLocationOrigin}${pathname}${search}`
-  }, [perspective, previewLocationOrigin, previewLocationRoute, targetOrigin])
+  }, [perspective, previewLocationOrigin, previewLocationRoute, targetOrigin, variant])
 
   const {t} = useTranslation(presentationLocaleNamespace)
 

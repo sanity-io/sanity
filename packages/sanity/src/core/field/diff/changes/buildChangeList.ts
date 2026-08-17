@@ -7,7 +7,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 
-import {getItemKeySegment, pathsAreEqual, pathToString} from '../../paths'
+import {getItemKeySegment, pathsAreEqual, pathToString} from '../../paths/helpers'
 import {getArrayDiffItemType} from '../../schema/helpers'
 import {
   type ArrayDiff,

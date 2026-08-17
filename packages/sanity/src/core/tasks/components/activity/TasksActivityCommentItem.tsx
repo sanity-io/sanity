@@ -1,9 +1,11 @@
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
-import {CommentsListItem, type CommentsListItemProps} from '../../../comments/components'
-import {useTasksEnabled} from '../../context'
+import {
+  CommentsListItem,
+  type CommentsListItemProps,
+} from '../../../comments/components/list/CommentsListItem'
+import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
 import {ActivityItem} from './TasksActivityItem'
 
 const COMMENTS_LIST_ITEM_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = {
@@ -13,7 +15,6 @@ const COMMENTS_LIST_ITEM_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = 
   avatarSize: 0,
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface TasksActivityCommentItemProps extends Omit<CommentsListItemProps, 'mode' | 'isSelected'> {
   // ...
 }

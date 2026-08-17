@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Periodic cleanup of e2e datasets.
  *

@@ -29,15 +29,6 @@ vi.mock('../../../../../store/grants/documentPairPermissions', () => ({
   useDocumentPairPermissions: vi.fn(() => useDocumentPairPermissionsMockReturn),
 }))
 
-vi.mock('../../../../store/useDocumentVersionInfo', () => ({
-  useDocumentVersionInfo: vi.fn(() => ({
-    isLoading: false,
-    versions: {},
-    draft: undefined,
-    published: undefined,
-  })),
-}))
-
 describe('VersionContextMenu', () => {
   const mockReleases: ReleaseDocument[] = [
     {
@@ -71,11 +62,11 @@ describe('VersionContextMenu', () => {
   ]
 
   const defaultProps = {
-    documentId: 'versions.bundle.doc1',
+    documentGroupId: 'doc1',
+    versionId: 'versions.bundle.doc1',
     releases: mockReleases,
     releasesLoading: false,
     fromRelease: 'release1',
-    isVersion: true,
     onDiscard: vi.fn(),
     onCreateRelease: vi.fn(),
     onCopyToDrafts: vi.fn(),
@@ -133,8 +124,8 @@ describe('VersionContextMenu', () => {
     const wrapper = await createTestProvider()
     const publishedProps = {
       ...defaultProps,
-      documentId: 'testid',
-      isVersion: false,
+      documentGroupId: 'testid',
+      versionId: 'testid',
     }
 
     render(<VersionContextMenu {...publishedProps} />, {wrapper})

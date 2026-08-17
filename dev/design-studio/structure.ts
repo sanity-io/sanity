@@ -1,7 +1,7 @@
-import {CogIcon} from '@sanity/icons'
+import {CogIcon} from '@sanity/icons/Cog'
 import {type DefaultDocumentNodeResolver, type StructureResolver} from 'sanity/structure'
 
-import {CustomPane} from './components/CustomPane'
+import {CustomPane} from './components/CustomPane/CustomPane'
 import {IFrameView} from './components/IframeView'
 import {JSONPreviewDocumentView} from './components/jsonPreview'
 import {StyledTestView} from './schemaTypes/documentWithViews/view/styledTest'
@@ -73,10 +73,12 @@ export const structure: StructureResolver = (S) => {
             .title('Sort by title')
             .action('setSortOrder')
             .params({
-              by: {
-                field: 'title',
-                direction: 'asc',
-              },
+              by: [
+                {
+                  field: 'title',
+                  direction: 'asc',
+                },
+              ],
             }),
           // S.menuItem().title('No action'),
         ]),

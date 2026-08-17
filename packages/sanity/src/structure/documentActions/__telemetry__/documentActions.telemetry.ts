@@ -54,3 +54,28 @@ export const PublishButtonDisabledComplete = defineEvent<
   version: 1,
   description: 'Logs when the publish button becomes enabled again',
 })
+
+interface DocumentDeletedInfo {
+  /**
+   * Combines internal and cross-dataset references, and counts strong and weak
+   * references together; the API does not expose a strong/weak breakdown.
+   */
+  referenceCount: number
+  internalReferenceCount: number
+  crossDatasetReferenceCount: number
+}
+
+interface DeleteStageInfo {
+  /**
+   * `confirmed` fires on user intent regardless of outcome; a `failed` stage
+   * typically means incoming strong references blocked the deletion.
+   */
+  stage: 'confirmed' | 'deleted' | 'failed'
+}
+
+export const DocumentDeleted = defineEvent<DocumentIdInfo & DocumentDeletedInfo & DeleteStageInfo>({
+  name: 'Document Deleted',
+  version: 1,
+  description:
+    'Logs when a document delete is confirmed, completed, or failed, including how many documents referred to it',
+})

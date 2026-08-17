@@ -1,12 +1,12 @@
-import {EditIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports -- Indicator requires more fine-grained styling than Studio button
+import {EditIcon} from '@sanity/icons/Edit'
+// oxlint-disable-next-line no-restricted-imports -- Indicator requires more fine-grained styling than Studio button
 import {Button} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type ComponentType, type HTMLProps} from 'react'
 
 import {isPublishedId} from '../../../core/util/draftUtils'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TargetPerspective} from '../../perspective/types'
 
 /**

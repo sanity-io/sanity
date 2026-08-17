@@ -1,4 +1,5 @@
-import {ImageIcon, OlistIcon} from '@sanity/icons'
+import {ImageIcon} from '@sanity/icons/Image'
+import {OlistIcon} from '@sanity/icons/Olist'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const topLevelArrayType = defineType({
@@ -766,7 +767,6 @@ export default defineType({
       length: 'arrayOfStrings.length',
     },
     prepare({title, strings, firstItem, length}) {
-      // oxlint-disable-next-line no-console
       console.log('arraysTest preview.prepare', {
         strings,
         firstItem,

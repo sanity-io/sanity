@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
 import {asyncScheduler, defer, EMPTY, merge, type Observable, of, Subject, timer} from 'rxjs'
@@ -18,14 +17,13 @@ import {
   throttleTime,
 } from 'rxjs/operators'
 
-import {type HistoryStore} from '../../history'
+import {type HistoryStore} from '../../history/createHistoryStore'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {consistencyStatus} from './consistencyStatus'
 import {getOperationStoreKey} from './getOperationStoreKey'
 import {operationArgs} from './operationArgs'
-import {type OperationArgs, type OperationsAPI} from './operations'
 import {commit} from './operations/commit'
 import {del} from './operations/delete'
 import {discardChanges} from './operations/discardChanges'
@@ -33,6 +31,7 @@ import {duplicate} from './operations/duplicate'
 import {patch} from './operations/patch'
 import {publish} from './operations/publish'
 import {restore} from './operations/restore'
+import {type OperationArgs, type OperationsAPI} from './operations/types'
 import {unpublish} from './operations/unpublish'
 import {del as serverDel} from './serverOperations/delete'
 import {discardChanges as serverDiscardChanges} from './serverOperations/discardChanges'
@@ -183,8 +182,8 @@ export const operationEvents = memoize(
                 )
               }),
               map((): IntermediarySuccess => ({type: 'success', args})),
-              catchError(
-                (err): Observable<IntermediaryError> => of({type: 'error', args, error: err}),
+              catchError((err): Observable<IntermediaryError> =>
+                of({type: 'error', args, error: err}),
               ),
             ),
           ),
@@ -206,6 +205,7 @@ export const operationEvents = memoize(
       }),
     )
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY)))
   },
   (ctx) => {

@@ -1,8 +1,8 @@
 import {type ComponentType, type CSSProperties, useMemo, useState} from 'react'
 
-import {type PreviewProps} from '../../components'
-import {type RenderPreviewCallbackProps} from '../../form'
-import {useTranslation} from '../../i18n'
+import {type PreviewProps} from '../../components/previews/types'
+import {type RenderPreviewCallbackProps} from '../../form/types/renderCallback'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type PerspectiveStack} from '../../perspective/types'
 import {useValuePreview} from '../useValuePreview'
 import {useVisibility} from '../useVisibility'
@@ -21,6 +21,7 @@ export function PreviewLoader(
   props: RenderPreviewCallbackProps & {
     component: ComponentType<Omit<PreviewProps, 'renderDefault'>>
     perspectiveStack?: PerspectiveStack
+    variant?: string
   },
 ): React.JSX.Element {
   const {
@@ -31,6 +32,7 @@ export function PreviewLoader(
     schemaType,
     skipVisibilityCheck,
     perspectiveStack,
+    variant,
     ...restProps
   } = props
 
@@ -51,6 +53,7 @@ export function PreviewLoader(
     schemaType,
     value,
     perspectiveStack,
+    variant,
   })
 
   const style: CSSProperties = useMemo(

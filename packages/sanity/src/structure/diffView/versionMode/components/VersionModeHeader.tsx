@@ -1,20 +1,26 @@
-import {CloseIcon, LockIcon, TransferIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {LockIcon} from '@sanity/icons/Lock'
+import {TransferIcon} from '@sanity/icons/Transfer'
 import {
   Badge,
   Box,
-  // eslint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
+  // oxlint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
   Button,
+  // oxlint-disable-next-line no-restricted-imports -- the resolved menu button props are spread onto the `@sanity/ui` Button above
+  type ButtonProps,
   type ButtonTone,
   Flex,
-  Menu,
-  // eslint-disable-next-line no-restricted-imports -- the `VersionModeHeader` component needs more control over how the `MenuItem` component is rendered
-  MenuItem,
   Stack,
   Text,
 } from '@sanity/ui'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
+import {
+  Menu,
+  // oxlint-disable-next-line no-restricted-imports -- the `VersionModeHeader` component needs more control over how the `MenuItem` component is rendered
+  MenuItem,
+} from '@sanity/ui/menu'
+// oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {type ComponentProps, type ComponentType, useMemo} from 'react'
+import {type ComponentType, useMemo} from 'react'
 import {
   type DocumentLayoutProps,
   getDraftId,
@@ -180,6 +186,8 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
   documentId,
   document,
 }) => {
+  // No `getTargetScopeId(useTargetDocumentState())` here: this menu inspects the draft/published pair of the
+  // specific document selected for the diff pane, independent of the selected perspective.
   const {published, draft} = useEditState(getPublishedId(document.id), document.type)
   const selected = useMemo(() => findRelease(document.id, releases), [document.id, releases])
   const {t: tStructure} = useTranslation(structureLocaleNamespace)
@@ -309,7 +317,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} release={release} />
-        <Stack flex={1} paddingY={2} paddingRight={2} space={2} style={{minWidth: 0}}>
+        <Stack flex={1} paddingY={2} paddingRight={2} gap={2} style={{minWidth: 0}}>
           <ReleaseTitle
             title={release.metadata.title}
             fallback={tCore('release.placeholder-untitled-release')}
@@ -350,7 +358,7 @@ function getMenuButtonProps({
   selected?: TargetPerspective
   tCore: TFunction
   tStructure: TFunction
-}): Pick<ComponentProps<typeof Button>, 'text' | 'tone' | 'icon' | 'iconRight' | 'disabled'> {
+}): Pick<ButtonProps, 'text' | 'tone' | 'icon' | 'iconRight' | 'disabled'> {
   if (releasesState === 'pending') {
     return {
       text: tCore('common.loading'),
@@ -383,7 +391,7 @@ function getMenuButtonProps({
 
   return {
     text: selected,
-    // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+    // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
     icon: <ReleaseAvatar padding={1} releaseType="undecided" />,
     tone: 'neutral',
   }

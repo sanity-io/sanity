@@ -1,9 +1,6 @@
-/* eslint-disable no-loop-func */
-
 import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
 import {isArray, isRecord} from 'sanity'
 
-// eslint-disable-next-line max-statements
 export function getPathTitles(options: {
   path: Path
   schemaType: SchemaType

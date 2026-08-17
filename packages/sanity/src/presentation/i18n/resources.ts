@@ -1,10 +1,15 @@
 import {defineLocalesResources} from 'sanity'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export default defineLocalesResources('presentation', {
   /** The title shown above the document list */
   'document-list-pane.document-list.title': 'Documents on this page',
   /** The text shown if the document list is unable to render */
   'document-list-pane.error.text': 'Could not render the document list',
+  /** The label for the ordering that lists documents in the order they appear on the page */
+  'document-list-pane.ordering.by-appearance': 'By appearance',
+  /** The label for the ordering that lists documents by when they were last edited */
+  'document-list-pane.ordering.last-edited': 'Last edited',
   /** The status of the channel connection */
   'channel.status_connected': 'Connected',
   /** The status of the channel connection */

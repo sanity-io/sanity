@@ -1,10 +1,8 @@
-import {
-  ChevronRightIcon,
-  DesktopIcon,
-  ErrorOutlineIcon,
-  InfoOutlineIcon,
-  WarningOutlineIcon,
-} from '@sanity/icons'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {DesktopIcon} from '@sanity/icons/Desktop'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useCallback, useContext, useState} from 'react'
 import {type ObjectSchemaType, useTranslation} from 'sanity'
@@ -123,7 +121,7 @@ export function LocationsBanner(props: {
                 </Box>
               </Flex>
             </Card>
-            <Stack hidden={!expanded} marginTop={1} space={1}>
+            <Stack hidden={!expanded} marginTop={1} gap={1}>
               {locations.map((l) => {
                 let active = false
                 if (
@@ -202,7 +200,7 @@ function LocationItem(props: {
             <Icon />
           </Text>
         </Box>
-        <Stack flex={1} space={2}>
+        <Stack flex={1} gap={2}>
           <Text size={1} weight="medium">
             {node.title}
           </Text>

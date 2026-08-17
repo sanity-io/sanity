@@ -1,4 +1,4 @@
-import {startTransition, useEffect, useReducer} from 'react'
+import {startTransition, useEffect, useMemo, useReducer} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
@@ -15,5 +15,9 @@ export function useDocumentPresence(documentId: string): DocumentPresence[] {
   useEffect(() => startTransition(mount), [])
 
   const presenceStore = usePresenceStore()
-  return useObservable(mounted ? presenceStore.documentPresence(documentId) : fallback, initial)
+  const presence$ = useMemo(
+    () => (mounted ? presenceStore.documentPresence(documentId) : fallback),
+    [mounted, presenceStore, documentId],
+  )
+  return useObservable(presence$, initial)
 }

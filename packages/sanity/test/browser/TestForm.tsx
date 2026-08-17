@@ -32,7 +32,7 @@ import {css, styled} from 'styled-components'
 
 import {applyAll} from '../../src/core/form/patch/applyPatch'
 import {PresenceProvider} from '../../src/core/form/studio/contexts/Presence'
-import {type FormDocumentValue} from '../../src/core/form/types'
+import {type FormDocumentValue} from '../../src/core/form/types/formDocumentValue'
 import {createMockSanityClient} from './createMockSanityClient'
 
 const NOOP = () => null
@@ -107,6 +107,7 @@ export function TestForm(props: TestFormProps) {
 
   useEffect(() => {
     if (documentFromProps) {
+      // oxlint-disable-next-line react/react-compiler
       setDocument(documentFromProps)
       windowWithDocumentState.documentState = documentFromProps
     }
@@ -114,6 +115,7 @@ export function TestForm(props: TestFormProps) {
 
   useEffect(() => {
     if (focusPathFromProps) {
+      // oxlint-disable-next-line react/react-compiler
       setFocusPath(focusPathFromProps)
 
       const lastSegment = focusPathFromProps[focusPathFromProps.length - 1]
@@ -142,6 +144,7 @@ export function TestForm(props: TestFormProps) {
   const schemaType = workspace.schema.get('test')
   const {
     document: {unstable_fieldActions: fieldActionsResolver},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
 
   if (!schemaType) {
@@ -257,9 +260,7 @@ export function TestForm(props: TestFormProps) {
 
   const formBuilderProps: FormBuilderProps = useMemo(
     () => ({
-      // eslint-disable-next-line camelcase
       __internal_patchChannel: patchChannel,
-      // eslint-disable-next-line camelcase
       __internal_fieldActions: fieldActions,
       changed: false,
       changesOpen: false,
@@ -272,10 +273,12 @@ export function TestForm(props: TestFormProps) {
       id: idFromProps,
       level: formState?.level || 0,
       members: formState?.members || EMPTY_ARRAY,
+      // oxlint-disable-next-line react/react-compiler
       onChange: handleChange,
       onFieldGroupSelect: NOOP,
       onPathBlur: handleBlur,
       onPathFocus: handleFocus,
+      // oxlint-disable-next-line react/react-compiler
       onPathOpen: setOpenPath,
       onSelectFieldGroup: handleSetActiveFieldGroup,
       onSetFieldSetCollapsed: handleOnSetCollapsedFieldSet,
@@ -343,6 +346,7 @@ async function validateStaticDocument(
   const result = await validateDocument({
     document,
     workspace,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     getClient,
     getDocumentExists: () => Promise.resolve(true),
   })

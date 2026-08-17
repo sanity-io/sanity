@@ -1,5 +1,5 @@
-import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
+import {Box, Card, Flex, LayerProvider, useElementSize} from '@sanity/ui'
+import {type ReactNode, type RefAttributes, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 
 import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
@@ -26,11 +26,9 @@ export interface PaneHeaderProps {
  * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
-export const PaneHeader = forwardRef(function PaneHeader(
-  props: PaneHeaderProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
+export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref,
     actions,
     backButton,
     border,
@@ -43,13 +41,13 @@ export const PaneHeader = forwardRef(function PaneHeader(
     appendTitle,
   } = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
-  const paneRect = useElementRect(paneElement || null)
+  const paneSize = useElementSize(paneElement || null)
 
   const layoutStyle = useMemo(
     () => ({
-      width: collapsed ? paneRect?.height || window.innerHeight : undefined,
+      width: collapsed ? paneSize?.border.height || window.innerHeight : undefined,
     }),
-    [collapsed, paneRect],
+    [collapsed, paneSize],
   )
 
   const handleTitleClick = useCallback(() => {
@@ -132,4 +130,4 @@ export const PaneHeader = forwardRef(function PaneHeader(
       </Root>
     </LayerProvider>
   )
-})
+}

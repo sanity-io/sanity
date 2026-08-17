@@ -5,9 +5,9 @@ import {asyncScheduler, combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, throttleTime} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
-import {type SourceClientOptions} from '../../../config'
-import {type LocaleSource} from '../../../i18n'
-import {type DraftsModelDocumentAvailability} from '../../../preview'
+import {type SourceClientOptions} from '../../../config/types'
+import {type LocaleSource} from '../../../i18n/types'
+import {type DraftsModelDocumentAvailability} from '../../../preview/types'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
@@ -103,6 +103,10 @@ export const validation = memoize(
         : validationTarget === 'version'
           ? idPair.versionId
           : idPair.publishedId
-    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${validatePublishedReferences}`
+    // Include the user id so an in-place user switch gets its own cache entry;
+    // the module-level memo cache is never cleared, so without this a new user
+    // would replay the previous user's validation result.
+    const userId = ctx.currentUser?.id ?? ''
+    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${validatePublishedReferences}-${userId}`
   },
 )

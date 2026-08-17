@@ -1,4 +1,4 @@
-import {UserIcon as icon} from '@sanity/icons'
+import {UserIcon as icon} from '@sanity/icons/User'
 import {type StringRule} from '@sanity/types'
 import {defineField, defineType} from 'sanity'
 import {defineIncomingReferenceDecoration, isIncomingReferenceCreation} from 'sanity/structure'

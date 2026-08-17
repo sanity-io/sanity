@@ -9,8 +9,9 @@ import {
 } from '@tanstack/react-virtual'
 import {useCallback, useLayoutEffect, useRef, useState} from 'react'
 
-import {ArrayOfObjectsItem} from '../../../../members'
-import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
+import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
+import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import {type ObjectItem} from '../../../../types/itemProps'
 import {Item, List} from '../../common/list'
 import {ErrorItem} from './ErrorItem'
 import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'
@@ -70,6 +71,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
     tone,
   } = props
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = useTheme().sanity
   const {scrollElement, containerElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)

@@ -43,6 +43,6 @@ export const ProgressFlex = styled(Flex).attrs({align: 'center', justify: 'cente
   }
 `
 
-export const TooltipContentStack = styled(Stack).attrs({space: 2})`
+export const TooltipContentStack = styled(Stack).attrs({gap: 2})`
   max-width: ${rem(200)};
 `

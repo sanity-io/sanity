@@ -1,9 +1,10 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, Skeleton, Text} from '@sanity/ui'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {Card, Flex, Skeleton, Text} from '@sanity/ui'
+import {Box} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
-import {Tooltip} from '../../../../../ui-components/tooltip'
-import {useTranslation} from '../../../../i18n'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useScheduledDraftDocument} from '../../../../singleDocRelease/hooks/useScheduledDraftDocument'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
@@ -35,10 +36,10 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
     firstDocumentValidation?.filter((validation) => validation.level === 'error').length || 0
 
   return (
-    <Box {...cellProps} flex={1} padding={1} paddingLeft={2} paddingRight={2} sizing="border">
+    <Box {...cellProps} flexBasis="0%" flexGrow={1} padding={1} paddingLeft={2} paddingRight={2}>
       <Card tone={validationErrorCount ? 'critical' : 'inherit'} radius={2}>
         <Flex align="center" gap={2}>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <ReleaseDocumentPreview
               documentId={firstDocument._id}
               documentTypeName={firstDocument._type}

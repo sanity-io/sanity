@@ -230,6 +230,34 @@ describe('createHistoryStore', () => {
       })
     })
 
+    test('uses replaceDraft addressed at the version id for version targets (release or variant scoped)', async () => {
+      // Variant version ids carry an opaque scope hash as the bundle segment; the restore action
+      // must address the version document itself and use the versioned actions API client.
+      const variantVersionId = 'versions.a1b2c3d4e5.doc-id'
+      const client = buildClient()
+      const historyStore = createHistoryStore({client})
+
+      await new Promise<void>((resolve, reject) => {
+        historyStore
+          .restore('doc-id', variantVersionId, 'rev-1', {
+            fromDeleted: false,
+            useServerDocumentActions: true,
+          })
+          .subscribe({complete: resolve, error: reject})
+      })
+
+      expect(mockAction).toHaveBeenCalledTimes(1)
+      expect(mockCreateOrReplace).not.toHaveBeenCalled()
+      const [actions] = mockAction.mock.calls[0]
+      expect(actions).toMatchObject({
+        actionType: 'sanity.action.document.replaceDraft',
+        publishedId: 'doc-id',
+        attributes: expect.objectContaining({_id: variantVersionId}),
+      })
+      // The versioned actions API client is selected because the pair derives from the target id.
+      expect(client.withConfig).toHaveBeenCalledWith({apiVersion: 'v2025-02-19'})
+    })
+
     test('falls back to createOrReplace when useServerDocumentActions is not set', async () => {
       const client = buildClient()
       const historyStore = createHistoryStore({client})

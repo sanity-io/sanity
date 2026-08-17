@@ -1,4 +1,4 @@
-import {UnpublishIcon} from '@sanity/icons'
+import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {Stack, Text} from '@sanity/ui'
 import {
   getVersionInlineBadge,
@@ -31,7 +31,7 @@ export function UnpublishedDocumentBanner() {
       <Banner
         tone="critical"
         content={
-          <Stack space={2}>
+          <Stack gap={2}>
             <Text size={1}>
               <Translate
                 t={t}

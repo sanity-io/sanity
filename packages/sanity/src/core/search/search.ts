@@ -2,11 +2,12 @@ import {type SearchStrategy} from '@sanity/types'
 
 import {isReleasePerspective, RELEASES_STUDIO_CLIENT_OPTIONS} from '../releases/util/releasesClient'
 import {versionedClient} from '../studioClient'
+import {variantApiVersion} from '../variants/util/variantApiVersion'
 import {
   type Groq2024SearchResults,
   type SearchStrategyFactory,
   type WeightedSearchResults,
-} from './common'
+} from './common/types'
 import {createGroq2024Search} from './groq2024'
 import {createWeightedSearch} from './weighted'
 
@@ -28,11 +29,12 @@ export const createSearch: SearchStrategyFactory<WeightedSearchResults | Groq202
 ) => {
   const factory = searchStrategies[options.strategy ?? DEFAULT_SEARCH_STRATEGY]
 
-  return factory(
-    searchableTypes,
+  const apiVersion = variantApiVersion(
+    options?.variant,
     isReleasePerspective(options?.perspective)
-      ? versionedClient(client, RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion)
-      : client,
-    options,
+      ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion
+      : undefined,
   )
+
+  return factory(searchableTypes, versionedClient(client, apiVersion), options)
 }

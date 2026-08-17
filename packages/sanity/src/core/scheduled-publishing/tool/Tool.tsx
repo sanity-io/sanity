@@ -1,8 +1,9 @@
-import {Box, Card, Container, Flex, Text, useTheme} from '@sanity/ui'
+import {Card, Container, Text, useTheme} from '@sanity/ui'
 import {parse} from 'date-fns/parse'
 import {useEffect, useMemo, useRef} from 'react'
 import {Link, type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Box, Flex} from 'ui5'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
@@ -28,8 +29,7 @@ import {Schedules} from './schedules'
 import SchedulesContextMenu from './schedulesContextMenu/SchedulesContextMenu'
 import {ToolCalendar} from './toolCalendar'
 
-const Column = styled(Box)`
-  flex-direction: column;
+const Column = styled(Flex).attrs({flexDirection: 'column'})`
   &:not(:last-child) {
     border-right: 1px solid var(--card-border-color);
   }
@@ -46,8 +46,8 @@ function ScheduledDraftsBanner() {
 
   if (isScheduledDraftsEnabled) {
     return (
-      <Card padding={4} tone="caution" width="fill">
-        <Flex gap={3} align="center" justify="center">
+      <Card padding={4} tone="caution">
+        <Flex gap={3} alignItems="center" justifyContent="center">
           <Text size={1} weight="medium">
             Scheduled Drafts is enabled for this Studio. All new Scheduled Drafts will be{' '}
             <Link href={releasesUrl}>available here</Link>
@@ -133,11 +133,11 @@ export default function Tool() {
 
   return (
     <SchedulesProvider value={schedulesContext}>
-      <Flex direction="column" height="fill" flex={1} overflow="hidden">
-        <Flex flex={1} height="fill">
+      <Flex flexDirection="column" height="100%" flexBasis="0%" flexGrow={1} overflow="hidden">
+        <Flex flexBasis="0%" flexGrow={1} height="100%">
           {/* LHS Column */}
           <Column
-            display={['none', null, null, 'flex'] as any}
+            display={['none', null, null, 'flex']}
             style={{
               position: 'sticky',
               top: 0,
@@ -151,10 +151,11 @@ export default function Tool() {
             />
           </Column>
           {/* RHS Column */}
-          <Column display="flex" flex={1} overflow="hidden">
+          <Column flexBasis="0%" flexGrow={1} overflow="hidden">
             <ScheduledDraftsBanner />
             <TimeZoneButtonElementQuery
               style={{
+                // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                 background: theme.color.card.enabled.bg,
                 position: 'sticky',
                 top: 0,
@@ -163,7 +164,7 @@ export default function Tool() {
             >
               {/* Header */}
               <Flex
-                align="center"
+                alignItems="center"
                 paddingLeft={4}
                 paddingRight={3}
                 style={{
@@ -171,12 +172,17 @@ export default function Tool() {
                   minHeight: `${TOOL_HEADER_HEIGHT}px`,
                 }}
               >
-                <Flex align="center" flex={1} justify="space-between">
+                <Flex
+                  alignItems="center"
+                  flexBasis="0%"
+                  flexGrow={1}
+                  justifyContent="space-between"
+                >
                   {/* Filters */}
                   <ScheduleFilters onClearDate={handleClearDate} selectedDate={selectedDate} />
 
                   {/* Time zone select + context menu */}
-                  <Flex align="center" gap={1}>
+                  <Flex alignItems="center" gap={1}>
                     <TimeZoneButton
                       tooltipContent={t('time-zone.time-zone-tooltip-content-releases', {
                         alternativeName: timeZone.alternativeName,
@@ -190,7 +196,7 @@ export default function Tool() {
                 </Flex>
               </Flex>
             </TimeZoneButtonElementQuery>
-            <Flex direction="column" flex={1}>
+            <Flex flexDirection="column" flexBasis="0%" flexGrow={1}>
               {/* Error */}
               {error && (
                 <Box paddingTop={4} paddingX={4}>
@@ -201,7 +207,7 @@ export default function Tool() {
                 </Box>
               )}
 
-              <Box flex={1} overflow="auto">
+              <Box flexBasis="0%" flexGrow={1} overflow="auto">
                 {isInitialLoading ? (
                   <Box padding={4}>
                     <Text muted>Loading...</Text>

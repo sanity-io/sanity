@@ -1,9 +1,9 @@
 import {merge, of} from 'rxjs'
 import {map, scan, startWith} from 'rxjs/operators'
 
-import {type WorkspaceSummary} from '../../../../../config'
+import {type WorkspaceSummary} from '../../../../../config/types'
 import {type AuthState} from '../../../../../store/authStore/types'
-import {createHookFromObservableFactory} from '../../../../../util'
+import {createHookFromObservableFactory} from '../../../../../util/createHookFromObservableFactory'
 
 export type WorkspaceAuthStates = Record<string, AuthState | undefined>
 

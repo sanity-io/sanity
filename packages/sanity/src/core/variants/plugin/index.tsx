@@ -1,9 +1,17 @@
+import {lazy} from 'react'
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
 import {variantsUsEnglishLocaleBundle} from '../i18n'
-import {VariantsTool} from '../tool/VariantsTool'
-import {VariantsStudioNavbar} from './components/VariantsStudioNavbar'
+
+const VariantsTool = lazy(() =>
+  import('../tool/VariantsTool').then((module) => ({default: module.VariantsTool})),
+)
+const VariantsStudioNavbar = lazy(() =>
+  import('./components/VariantsStudioNavbar').then((module) => ({
+    default: module.VariantsStudioNavbar,
+  })),
+)
 
 /**
  * @internal

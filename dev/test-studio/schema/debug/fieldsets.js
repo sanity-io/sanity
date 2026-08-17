@@ -1,4 +1,6 @@
-import {BlockquoteIcon, CogIcon, EyeClosedIcon} from '@sanity/icons'
+import {BlockquoteIcon} from '@sanity/icons/Blockquote'
+import {CogIcon} from '@sanity/icons/Cog'
+import {EyeClosedIcon} from '@sanity/icons/EyeClosed'
 
 export default {
   name: 'fieldsetsTest',

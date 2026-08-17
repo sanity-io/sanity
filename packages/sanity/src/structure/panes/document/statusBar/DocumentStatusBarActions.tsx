@@ -1,21 +1,44 @@
-/* eslint-disable camelcase */
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
 import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  DocumentGroupInventory,
+  DocumentGroupInventoryAction,
+  type DocumentGroupInventoryProps,
   Hotkeys,
+  isGoingToUnpublish,
   isSanityDefinedAction,
+  useClient,
+  useDocumentStore,
   usePausedScheduledDraft,
   usePerspective,
   useSource,
 } from 'sanity'
 
-import {Button, Tooltip} from '../../../../ui-components'
-import {RenderActionCollectionState, type ResolvedAction, usePaneRouter} from '../../../components'
-import {useHistoryRestoreAction} from '../../../documentActions'
+import {Button} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {ReferencePreviewLink} from '../../../components/confirmDeleteDialog/ReferencePreviewLink'
+import {referringDocuments} from '../../../components/confirmDeleteDialog/useReferringDocuments'
+import {VersionsPreviewList} from '../../../components/confirmDeleteDialog/VersionsPreviewList'
+import {DocTitle} from '../../../components/DocTitle'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
+import {
+  RenderActionCollectionState,
+  type ResolvedAction,
+} from '../../../components/RenderActionCollectionState'
+import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
+import {useHistoryRestoreAction} from '../../../documentActions/HistoryRestoreAction'
+import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
+
+const documentGroupInventoryComponents: DocumentGroupInventoryProps['components'] = {
+  DocTitle,
+  ReferencePreviewLink,
+  VersionsPreviewList,
+}
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
@@ -26,15 +49,39 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, states} = props
-  const {__internal_tasks} = useSource()
-  const {editState} = useDocumentPane()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  const {__internal_tasks, beta} = useSource()
+
+  const {
+    displayed,
+    editState,
+    isDocumentGroupInventoryActive,
+    setIsDocumentGroupInventoryActive,
+    documentId,
+    documentType,
+  } = useDocumentPane()
   const {params} = usePaneRouter()
+
   const showingRevision = Boolean(params?.rev)
+
+  const perspectiveList = useDocumentPerspectiveList()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const documentStore = useDocumentStore()
+  const referringDocuments$ = useMemo(
+    () => referringDocuments({documentId, versionedClient: client, documentStore}),
+    [documentId, client, documentStore],
+  )
+
+  const requestDocumentGroupInventoryClose = useCallback(
+    () => setIsDocumentGroupInventoryActive(false),
+    [setIsDocumentGroupInventoryActive],
+  )
 
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const {isPaused} = usePausedScheduledDraft()
+  const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
 
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
@@ -74,9 +121,41 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       : [firstActionState, ...menuActionStates].filter(Boolean)
   }, [showFirstActionButton, firstActionState, menuActionStates])
 
+  // When a document is designated to be unpublished in a release, the published
+  // document is displayed instead.
+  //
+  // The document group inventory must always reflect the intended document id,
+  // even if the document pane decided to display a different document for some
+  // reason.
+  //
+  // In the future, this would be more robust if `DocumentPaneProvider`
+  // exposed both the displayed document and the original source document.
+  const targetDocumentId =
+    editState?.version && isGoingToUnpublish(editState?.version)
+      ? editState.version._id
+      : displayed?._id
+
   return (
-    <Flex align="center" gap={1}>
+    <Flex align="center" gap={3}>
       {__internal_tasks && __internal_tasks.footerAction}
+      {hasDocumentGroupInventory && typeof targetDocumentId !== 'undefined' && (
+        <DocumentGroupInventoryAction
+          documentId={targetDocumentId}
+          portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
+          isDocumentGroupInventoryActive={isDocumentGroupInventoryActive}
+          setIsDocumentGroupInventoryActive={setIsDocumentGroupInventoryActive}
+        >
+          <DocumentGroupInventory
+            documentId={targetDocumentId}
+            documentType={documentType}
+            portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
+            perspectiveList={perspectiveList}
+            referringDocuments$={referringDocuments$}
+            requestClose={requestDocumentGroupInventoryClose}
+            components={documentGroupInventoryComponents}
+          />
+        </DocumentGroupInventoryAction>
+      )}
       {showFirstActionButton && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
@@ -120,8 +199,6 @@ function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
   const states = props.states.filter((state) =>
     state.action ? state.action !== useHistoryRestoreAction.action : true,
   )
-
-  if (states.length === 0) return null
 
   return (
     <DocumentStatusBarActionsInner

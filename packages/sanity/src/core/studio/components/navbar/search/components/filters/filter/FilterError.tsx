@@ -1,8 +1,8 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Box, Flex, type ResponsivePaddingProps, Stack} from '@sanity/ui'
 
-import {TextWithTone} from '../../../../../../../components'
-import {useTranslation} from '../../../../../../../i18n'
+import {TextWithTone} from '../../../../../../../components/textWithTone/TextWithTone'
+import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 
 export function FilterError(props: ResponsivePaddingProps) {
   const {t} = useTranslation()
@@ -13,7 +13,7 @@ export function FilterError(props: ResponsivePaddingProps) {
         <TextWithTone tone="critical">
           <ErrorOutlineIcon />
         </TextWithTone>
-        <Stack space={4}>
+        <Stack gap={4}>
           <TextWithTone size={1} tone="critical" weight="medium">
             {t('search.error.display-filter-title')}
           </TextWithTone>

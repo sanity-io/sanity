@@ -1,10 +1,12 @@
 import {type Path, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {type MouseEvent, useCallback, useContext} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
+import {Box} from 'ui5'
 
-import {useTranslation} from '../../../../../i18n'
-import {DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useDiffAnnotationColor} from '../../../../diff/annotations/hooks'
+import {DiffTooltip} from '../../../../diff/components/DiffTooltip'
 import {isHeader} from '../helpers'
 import {type PortableTextDiff} from '../types'
 import {Blockquote} from './Blockquote'
@@ -66,7 +68,7 @@ export function Block(props: {
         diff-block-action={diff.action}
         data-block-note={`changed_from_style_${fromStyle || 'undefined'}`}
       >
-        <Stack space={2}>
+        <Stack gap={2}>
           <DiffTooltip
             annotations={[diff.origin.fields.style?.annotation]}
             diff={diff.origin.fields.style}

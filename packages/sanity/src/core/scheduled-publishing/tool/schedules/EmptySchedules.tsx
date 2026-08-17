@@ -51,9 +51,9 @@ const EmptySchedules = (props: Props) => {
 
   return (
     <Card paddingX={6} paddingBottom={8} paddingTop={7} radius={2} shadow={1}>
-      <Stack space={4}>
+      <Stack gap={4}>
         <Flex justify="center">{BigIcon && <BigIcon />}</Flex>
-        <Stack space={4}>
+        <Stack gap={4}>
           {heading && (
             <Heading align="center" size={1}>
               {heading}

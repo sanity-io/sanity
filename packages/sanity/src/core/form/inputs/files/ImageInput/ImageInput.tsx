@@ -5,21 +5,24 @@ import {
   type ImageAsset,
   type UploadState,
 } from '@sanity/types'
-import {Stack, useToast} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import get from 'lodash-es/get.js'
 import {Fragment, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/AssetLimitUpsellProvider'
-import {FormInput} from '../../../components'
-import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
+import {FormInput} from '../../../components/FormInput'
 import {MemberDecoration} from '../../../members/object/MemberDecoration'
+import {MemberField} from '../../../members/object/MemberField'
+import {MemberFieldError} from '../../../members/object/MemberFieldError'
+import {MemberFieldSet} from '../../../members/object/MemberFieldset'
 import {useRenderMembers} from '../../../members/object/useRenderMembers'
-import {setIfMissing, unset} from '../../../patch'
-import {type FieldMember} from '../../../store'
+import {setIfMissing, unset} from '../../../patch/patch'
+import {type FieldMember} from '../../../store/types/members'
 import {type Uploader, type UploadOptions} from '../../../studio/uploads/types'
-import {type InputProps} from '../../../types'
+import {type InputProps} from '../../../types/inputProps'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
 import {AssetSourceBrowser} from '../common/AssetSourceBrowser'
 import {AssetSourceDialog} from '../common/AssetSourceDialog'
@@ -448,7 +451,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   return (
     // The Stack space should match the space in ObjectInput
-    <Stack space={5} data-testid="image-input">
+    <Stack gap={5} data-testid="image-input">
       {renderedMembers.map((member) => {
         if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
           // we're rendering these separately

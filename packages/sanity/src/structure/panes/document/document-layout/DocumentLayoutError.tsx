@@ -1,4 +1,5 @@
-import {Card, Code, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {isDev, Translate, useTranslation} from 'sanity'
 
 import {ErrorPane} from '../../error'
@@ -30,7 +31,7 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
       }
       tone="caution"
     >
-      <Stack space={4}>
+      <Stack gap={4}>
         {documentType && (
           <Text as="p">
             <Translate
@@ -46,7 +47,7 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
         )}
 
         {isDev && value && (
-          /* eslint-disable i18next/no-literal-string */
+          /* oxlint-disable i18next/no-literal-string */
           <>
             <Text as="p">Here is the JSON representation of the document:</Text>
 
@@ -56,7 +57,7 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
               </Code>
             </Card>
           </>
-          /* eslint-enable i18next/no-literal-string */
+          /* oxlint-enable i18next/no-literal-string */
         )}
       </Stack>
     </ErrorPane>

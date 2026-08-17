@@ -71,6 +71,7 @@ describe('Portable Text Input', () => {
   describe('Editor Ref', () => {
     it('Editor can be controlled from outside the Input using the editorRef prop', async () => {
       const {getFocusedPortableTextEditor} = testHelpers()
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       let editorIstance: PortableTextEditor | undefined
       void render(
         <InputStory

@@ -3,8 +3,8 @@ import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
-import {TextWithTone} from '../../../components'
-import {useTranslation} from '../../../i18n'
+import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 
@@ -50,7 +50,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   const hasValidations = validation.length > 0
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Flex align="center" paddingY={1}>
         <Flex align="center">
           <Text as="label" htmlFor={inputId} weight="medium" size={1}>

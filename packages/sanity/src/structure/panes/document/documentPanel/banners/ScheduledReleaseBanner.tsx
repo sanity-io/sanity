@@ -1,4 +1,4 @@
-import {LockIcon} from '@sanity/icons'
+import {LockIcon} from '@sanity/icons/Lock'
 import {Text} from '@sanity/ui'
 import {
   getReleaseTone,

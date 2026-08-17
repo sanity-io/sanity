@@ -2,13 +2,15 @@ import {createImageUrlBuilder} from '@sanity/image-url'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import {Button, Spinner} from '@sanity/ui'
 import {
-  type ForwardedRef,
-  forwardRef,
-  useEffect,
+  type RefObject,
+  Suspense,
+  use,
   useImperativeHandle,
+  useMemo,
   useRef,
-  useState,
+  type RefAttributes,
 } from 'react'
+import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {type ObjectInputProps, set, setIfMissing, unset, useClient} from 'sanity'
 
 import styles from './AuthorReferenceInput.module.css'
@@ -21,38 +23,26 @@ interface AuthorReference {
   name: string
 }
 
-export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
-  props: ObjectInputProps<Reference, ReferenceSchemaType>,
-  ref: ForwardedRef<any>,
+export function AuthorReferenceInput(
+  props: ObjectInputProps<Reference, ReferenceSchemaType> & RefAttributes<any>,
 ) {
-  // @todo fix
-  const {inputProps, type, value} = props
-  const {readOnly} = inputProps
+  const {ref, schemaType, value, readOnly} = props
   const client = useClient({apiVersion: '2022-09-09'})
   const current = value && value._ref
   const imageBuilder = createImageUrlBuilder(client)
 
   const inputRef = useRef<HTMLButtonElement | null>(null)
 
-  const [state, setState] = useState<{
-    loading: boolean
-    authors: AuthorReference[]
-  }>({loading: true, authors: []})
-
-  const {loading, authors} = state
-
-  useEffect(() => {
-    const sub = client.observable
-      .fetch(
+  const authors$ = useMemo(
+    () =>
+      client.observable.fetch<AuthorReference[]>(
         // Select authors, with a defined image, which are published
         '*[_type == "author" && defined(image) && _id in path("*")][0...10] {_id, image, name}',
-      )
-      .subscribe((_authors: AuthorReference[]) => setState({authors: _authors, loading: false}))
+      ),
+    [client],
+  )
 
-    return () => {
-      sub.unsubscribe()
-    }
-  }, [client])
+  const authorsPromise = useObservablePromise(authors$)
 
   const handleChange = (item: AuthorReference) => {
     // Are we selecting the same value as previously selected?
@@ -62,16 +52,16 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
       return
     }
 
-    props.onChange(
+    props.onChange([
       // A reference is an object, so we need to initialize it before attempting to set subproperties
-      setIfMissing({_type: type.name, _ref: item._id}),
+      setIfMissing({_type: schemaType.name, _ref: item._id}),
 
       // Allow setting weak reference in schema options
-      type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
+      schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']),
 
       // Set the actual reference value
       set(item._id, ['_ref']),
-    )
+    ])
   }
 
   const handleClear = () => {
@@ -86,29 +76,53 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
 
   return (
     <div className={styles.authorGroup}>
-      {loading ? (
-        <Spinner
-        //  message="Loading authors..."
+      <Suspense fallback={<Spinner />}>
+        <AuthorOptions
+          authorsPromise={authorsPromise}
+          current={current}
+          imageBuilder={imageBuilder}
+          inputRef={inputRef}
+          onSelect={readOnly ? noop : handleChange}
         />
-      ) : (
-        authors.map((author, i) => (
-          <Button
-            key={author._id}
-            ref={i === 0 ? inputRef : undefined}
-            type="button"
-            // className={current === author._id ? styles.activeButton : styles.button}
-            onClick={readOnly ? noop : () => handleChange(author)}
-            selected={current === author._id}
-          >
-            <img
-              className={styles.authorImage}
-              title={author.name}
-              alt={`${author.name || 'Author'}.`}
-              src={imageBuilder.image(author.image).width(150).height(150).fit('crop').url()}
-            />
-          </Button>
-        ))
-      )}
+      </Suspense>
     </div>
   )
-})
+}
+
+function AuthorOptions({
+  authorsPromise,
+  current,
+  imageBuilder,
+  inputRef,
+  onSelect,
+}: {
+  authorsPromise: ObservablePromise<AuthorReference[]>
+  current: string | undefined
+  imageBuilder: ReturnType<typeof createImageUrlBuilder>
+  inputRef: RefObject<HTMLButtonElement | null>
+  onSelect: (item: AuthorReference) => void
+}) {
+  const authors = use(authorsPromise)
+
+  return (
+    <>
+      {authors.map((author, i) => (
+        <Button
+          key={author._id}
+          ref={i === 0 ? inputRef : undefined}
+          type="button"
+          // className={current === author._id ? styles.activeButton : styles.button}
+          onClick={() => onSelect(author)}
+          selected={current === author._id}
+        >
+          <img
+            className={styles.authorImage}
+            title={author.name}
+            alt={`${author.name || 'Author'}.`}
+            src={imageBuilder.image(author.image).width(150).height(150).fit('crop').url()}
+          />
+        </Button>
+      ))}
+    </>
+  )
+}

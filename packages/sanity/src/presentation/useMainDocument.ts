@@ -1,8 +1,8 @@
 import {type ResponseQueryOptions} from '@sanity/client'
-import {match, type Path} from 'path-to-regexp'
-import {useEffect, useEffectEvent, useRef, useState} from 'react'
-import {useClient} from 'sanity'
+import {use, useEffect, useRef, useState} from 'react'
+import {useClient, VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity'
 import {type RouterState, useRouter} from 'sanity/router'
+import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSION} from './constants'
 import {
@@ -13,6 +13,7 @@ import {
   type PresentationNavigate,
   type PresentationPerspective,
 } from './types'
+import {createRouteMatcher, type RouteMatch, type RouteMatcher} from './util/matchRoute'
 
 // Helper function to "unwrap" a result when it is either explicitly provided or
 // returned as the result of a passed function
@@ -56,37 +57,62 @@ function getParamsFromResult(
   return fnOrObj(resolver.params, context) ?? context.params
 }
 
-export function getRouteContext(route: Path, url: URL): DocumentResolverContext | undefined {
+/**
+ * Route matching is backed by URLPattern, which needs a polyfill in runtimes without a native
+ * implementation. The promise is kept at module level so its identity is stable across render
+ * attempts, as `use()` requires.
+ */
+let urlPatternPolyfillPromise: Promise<unknown> | undefined
+
+/**
+ * Compiling a URLPattern is not free and the route is resolved again on every preview URL change,
+ * so keep the compiled matchers around. Patterns come from studio config, so the set is small and
+ * fixed.
+ */
+const matchers = new Map<string, RouteMatcher>()
+
+function getMatcher(pattern: string): RouteMatcher {
+  const cached = matchers.get(pattern)
+  if (cached) return cached
+  const matcher = createRouteMatcher(pattern)
+  matchers.set(pattern, matcher)
+  return matcher
+}
+
+export function getRouteContext(
+  route: DocumentResolver['route'],
+  url: URL,
+): DocumentResolverContext | undefined {
   const routes = Array.isArray(route) ? route : [route]
 
-  for (route of routes) {
+  // `let` as the path is replaced with the pathname for absolute URLs
+  for (let path of routes) {
     let {origin} = url
-    let path = route
 
     // Handle absolute URLs
-    if (typeof route === 'string') {
-      try {
-        const absolute = new URL(route)
+    try {
+      const absolute = new URL(path)
 
-        // If we are dealing with an absolute URL, ensure the origins match
-        if (absolute.origin !== origin) continue
+      // If we are dealing with an absolute URL, ensure the origins match
+      if (absolute.origin !== origin) continue
 
-        origin = absolute.origin
-        path = absolute.pathname
-      } catch {
-        // Ignore, as we assume a relative path
-      }
+      origin = absolute.origin
+      path = absolute.pathname
+    } catch {
+      // Ignore, as we assume a relative path
     }
 
+    let result: RouteMatch | undefined
     try {
-      const matcher = match<Record<string, string>>(path, {decode: decodeURIComponent})
-      const result = matcher(url.pathname)
-      if (result) {
-        const {params, path} = result
-        return {origin, params, path}
-      }
+      result = getMatcher(path)(url.pathname)
     } catch (e) {
-      throw new Error(`"${route}" is not a valid route pattern`, {cause: e})
+      throw new Error(`"${path}" is not a valid route pattern`, {cause: e})
+    }
+    if (result) {
+      // Repeated params (`:path*`, `/*splat`) are arrays of segments at runtime, as they were
+      // with path-to-regexp — `DocumentResolverContext` predates this and only declares `string`.
+      const params = result.params as DocumentResolverContext['params']
+      return {origin, params, path: result.path}
     }
   }
   return undefined
@@ -99,10 +125,40 @@ export function useMainDocument(props: {
   targetOrigin: string
   resolvers?: DocumentResolver[]
   perspective: PresentationPerspective
+  variant: string | undefined
 }): MainDocumentState | undefined {
-  const {navigate, navigationHistory, path, targetOrigin, resolvers = [], perspective} = props
+  const {
+    navigate,
+    navigationHistory,
+    path,
+    targetOrigin,
+    resolvers = [],
+    perspective,
+    variant,
+  } = props
+
+  /**
+   * Lazy load the URLPattern polyfill on-demand, if needed, the same way
+   * `actors/resolve-allow-patterns.ts` does — browsers with native support never pay the cost,
+   * and neither does a studio without `mainDocuments` resolvers. `use()` suspends rendering until
+   * the polyfill has loaded, caught by the studio's tool-level `Suspense` boundary, like the
+   * tool's own lazy chunk.
+   */
+  if (resolvers.length > 0) {
+    if (typeof URLPattern === 'undefined') {
+      urlPatternPolyfillPromise ??= import('urlpattern-polyfill')
+    }
+    // Once a load has started, keep unwrapping the same promise on every render: the resolved
+    // import installs the `URLPattern` global, so gating `use()` on the `typeof` check alone
+    // would change the hook sequence between the suspended attempt and React's replay of it
+    if (urlPatternPolyfillPromise !== undefined) {
+      use(urlPatternPolyfillPromise)
+    }
+  }
+
   const {state: routerState} = useRouter()
-  const client = useClient({apiVersion: API_VERSION})
+  // Fetching with a variant requires the `vX` API version for now
+  const client = useClient(variant ? VARIANTS_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION})
   const relativeUrl =
     path || routerState._searchParams?.find(([key]) => key === 'preview')?.[1] || ''
 
@@ -161,6 +217,7 @@ export function useMainDocument(props: {
           const controller = new AbortController()
           const options: ResponseQueryOptions = {
             perspective: perspective,
+            variant,
             signal: controller.signal,
             tag: 'use-main-document',
           }
@@ -179,10 +236,11 @@ export function useMainDocument(props: {
         }
       }
     }
+    // oxlint-disable-next-line react/react-compiler
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined
-  }, [client, perspective, relativeUrl, resolvers, targetOrigin])
+  }, [client, perspective, relativeUrl, resolvers, targetOrigin, variant])
 
   return mainDocumentState
 }

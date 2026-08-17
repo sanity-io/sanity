@@ -1,6 +1,10 @@
 // Browser test setup - runs in a real browser, so no need for
 // IntersectionObserver/ResizeObserver/matchMedia mocks.
 
+// @sanity/ui ships its static styles as a stylesheet consumers import themselves, so load it here
+// the same way the studio entry point does.
+import '@sanity/ui/styles.css'
+
 import {afterEach} from 'vitest'
 import {cleanup} from 'vitest-browser-react'
 import {page} from 'vitest/browser'

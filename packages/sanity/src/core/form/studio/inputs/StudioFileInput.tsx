@@ -1,10 +1,10 @@
 import {type SchemaType} from '@sanity/types'
 import {useCallback} from 'react'
 
-import {useClient} from '../../../hooks'
-import {useDocumentPreviewStore} from '../../../store'
+import {useClient} from '../../../hooks/useClient'
+import {useDocumentPreviewStore} from '../../../store/datastores'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {BaseFileInput, type BaseFileInputProps} from '../../inputs/files/FileInput'
+import {BaseFileInput, type BaseFileInputProps} from '../../inputs/files/FileInput/FileInput'
 import {useFormBuilder} from '../../useFormBuilder'
 import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
 import {type FileLike} from '../uploads/types'
@@ -24,6 +24,7 @@ export type FileInputProps = Omit<
 export function StudioFileInput(props: FileInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {file: fileConfig} = useFormBuilder().__internal
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 

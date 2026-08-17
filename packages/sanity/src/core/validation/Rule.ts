@@ -69,18 +69,26 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
 
   clone(): Rule {
     const rule = new Rule()
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     rule._type = this._type
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     rule._message = this._message
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     rule._required = this._required
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     rule._rules = [...this._rules]
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     rule._level = this._level
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     rule._fieldRules = this._fieldRules
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     rule._typeDef = this._typeDef
     return rule
   }
 
   async validate(
     value: unknown,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     {__internal = {}, ...context}: Parameters<IRule['validate']>[1],
   ): Promise<ValidationMarker[]> {
     const {customValidationConcurrencyLimiter} = __internal
@@ -88,16 +96,21 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
     const valueIsEmpty = value === null || value === undefined
 
     // Short-circuit on optional, empty fields
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     if (valueIsEmpty && this._required === 'optional') {
       return EMPTY_ARRAY as ValidationMarker[]
     }
 
     const rules =
       // Run only the _custom_ functions if the rule is not set to required or optional
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       this._required === undefined && valueIsEmpty
-        ? this._rules.filter((curr) => curr.flag === 'custom')
-        : this._rules
+        ? // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+          this._rules.filter((curr) => curr.flag === 'custom')
+        : // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+          this._rules
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const validators = (this._type && typeValidators[this._type]) || genericValidators
 
     const results = await Promise.all(
@@ -108,6 +121,7 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
 
         const validator: Validator | undefined = validators[curr.flag]
         if (!validator) {
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           const forType = this._type ? `type "${this._type}"` : 'rule without declared type'
           throw new Error(`Validator for flag "${curr.flag}" not found for ${forType}`)
         }
@@ -133,12 +147,16 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           }
         }
 
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         const message = isLocalizedMessages(this._message)
-          ? localizeMessage(this._message, context.i18n)
-          : this._message
+          ? // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+            localizeMessage(this._message, context.i18n)
+          : // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+            this._message
 
         try {
           const result = await validator(specConstraint, value, message, context)
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           return convertToValidationMarker(result, this._level, context)
         } catch (err) {
           const errorMessage = `${pathToString(

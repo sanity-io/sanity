@@ -25,6 +25,7 @@ export function getCollapsedWithDefaults(
   options: ObjectSchemaTypeWithOptions['options'] = {},
   level: number,
 ): CollapsibleOptions {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   if (options?.collapsible === false || options?.collapsable === false) {
     return {collapsible: false, collapsed: false}
   }
@@ -37,6 +38,7 @@ export function getCollapsedWithDefaults(
         : undefined
 
   const collapsible =
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     options?.collapsible === true || options?.collapsable === true || collapsed === true
       ? true
       : undefined

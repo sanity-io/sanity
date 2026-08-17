@@ -5,17 +5,18 @@ import {extractSearchableText} from './extractSearchableText'
 /**
  * This is a temporary way of doing the search without the previews
  * until we have it moved to the server side
+ * Each document is searchable by title, name, and combined text of title and name, this could be different
+ * than the displayed title, given the displayed title is resolved by the preview prepare function, but we cannot use that one
+ * here because we will be over-fetching the documents, we will need to resolve the preview for hundreds of documents if we do that.
+ *
+ * So this is an intermediate solution to allow the search to work without the resolved preview values.
+ *
  *
  * @param document - The document to search
  * @param searchTerm - The search term
  * @returns True if the document matches the search term, false otherwise
  */
-export function searchDocumentRelease(
-  document: SanityDocument & {
-    publishedDocumentExists: boolean
-  },
-  searchTerm: string,
-) {
+export function searchDocumentRelease(document: SanityDocument, searchTerm: string) {
   // if there is no search term or the document has no title or name, return false
   if (!searchTerm || searchTerm.trim().length === 0 || (!document.title && !document.name)) {
     return false

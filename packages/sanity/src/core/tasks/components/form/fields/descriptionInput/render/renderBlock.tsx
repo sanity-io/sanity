@@ -1,9 +1,8 @@
-import {type RenderBlockFunction} from '@portabletext/editor'
+import {type CommentInputRenderBlock} from '../../../../../../comments/components/pte/comment-input/CommentInput'
+import {DescriptionInputBlock} from '../blocks/DescriptionInputBlock'
 
-import {DescriptionInputBlock} from '../blocks'
-
-export const renderBlock: RenderBlockFunction = (blockProps) => {
-  const {children} = blockProps
+export const renderBlock: CommentInputRenderBlock = (props) => {
+  const {children} = props
 
   return <DescriptionInputBlock>{children}</DescriptionInputBlock>
 }

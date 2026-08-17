@@ -1,15 +1,13 @@
-import {
-  BlockContentIcon,
-  CalendarIcon,
-  CheckmarkCircleIcon,
-  ChevronDownIcon,
-  DocumentIcon,
-  ImageIcon,
-  LinkIcon,
-  NumberIcon,
-  StringIcon,
-  UlistIcon,
-} from '@sanity/icons'
+import {BlockContentIcon} from '@sanity/icons/BlockContent'
+import {CalendarIcon} from '@sanity/icons/Calendar'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {ImageIcon} from '@sanity/icons/Image'
+import {LinkIcon} from '@sanity/icons/Link'
+import {NumberIcon} from '@sanity/icons/Number'
+import {StringIcon} from '@sanity/icons/String'
+import {UlistIcon} from '@sanity/icons/Ulist'
 
 import {defineSearchFilter, type SearchFilterDefinition} from './filters'
 

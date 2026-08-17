@@ -1,5 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useEffect, useMemo, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, map, of} from 'rxjs'
 
 import {
   UpsellDialogDismissed,
@@ -7,20 +9,23 @@ import {
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
-} from '../studio'
+} from '../studio/upsell/__telemetry__/upsell.telemetry'
 import {type UpsellData} from '../studio/upsell/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {interpolateTemplate} from '../util/interpolateTemplate'
-import {useClient, useProjectId} from './'
+import {useClient} from './useClient'
+import {useProjectId} from './useProjectId'
 
 interface UpsellDataProps {
   dataUri: string
   feature: string
 }
 
+type UpsellResult = {upsellData: UpsellData | null; hasError: boolean}
+
+const INITIAL_UPSELL_RESULT: UpsellResult = {upsellData: null, hasError: false}
+
 export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
-  const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
-  const [hasError, setHasError] = useState(false)
   const telemetry = useTelemetry()
   const projectId = useProjectId()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -77,41 +82,30 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
     [telemetry, feature],
   )
 
-  useEffect(() => {
-    const data$ = client.observable.request<UpsellData | null>({
-      uri: dataUri,
-    })
+  const upsellResult$ = useMemo(
+    () =>
+      client.observable.request<UpsellData | null>({uri: dataUri}).pipe(
+        map((data): UpsellResult => {
+          if (!data) {
+            return {upsellData: null, hasError: true}
+          }
+          try {
+            data.ctaButton.url = interpolateTemplate(data.ctaButton.url, {baseUrl, projectId})
+            data.secondaryButton.url = interpolateTemplate(data.secondaryButton.url, {
+              baseUrl,
+              projectId,
+            })
+            return {upsellData: data, hasError: false}
+          } catch {
+            return {upsellData: null, hasError: true}
+          }
+        }),
+        catchError(() => of({upsellData: null, hasError: true})),
+      ),
+    [client, projectId, baseUrl, dataUri],
+  )
 
-    const sub = data$.subscribe({
-      next: (data) => {
-        if (!data) {
-          setHasError(true)
-          setUpsellData(null)
-          return
-        }
-        try {
-          data.ctaButton.url = interpolateTemplate(data.ctaButton.url, {baseUrl, projectId})
-          data.secondaryButton.url = interpolateTemplate(data.secondaryButton.url, {
-            baseUrl,
-            projectId,
-          })
-          setUpsellData(data)
-          setHasError(false)
-        } catch {
-          setHasError(true)
-          setUpsellData(null)
-        }
-      },
-      error: (err) => {
-        setHasError(true)
-        setUpsellData(null)
-      },
-    })
-
-    return () => {
-      sub.unsubscribe()
-    }
-  }, [client, projectId, baseUrl, dataUri])
+  const {upsellData, hasError} = useObservable(upsellResult$, INITIAL_UPSELL_RESULT)
 
   return {upsellData, telemetryLogs, hasError}
 }

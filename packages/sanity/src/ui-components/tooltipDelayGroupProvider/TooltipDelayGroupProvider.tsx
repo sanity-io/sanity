@@ -1,8 +1,8 @@
-/* eslint-disable no-restricted-imports */
+/* oxlint-disable no-restricted-imports */
 import {
   TooltipDelayGroupProvider as UITooltipDelayGroupProvider,
   type TooltipDelayGroupProviderProps as UITooltipDelayGroupProviderProps,
-} from '@sanity/ui'
+} from '@sanity/ui/tooltip'
 
 import {TOOLTIP_DELAY_PROPS} from '../tooltip/constants'
 

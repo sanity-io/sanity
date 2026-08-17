@@ -1,11 +1,11 @@
-import {ChevronLeftIcon} from '@sanity/icons'
+import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {type MouseEvent, useCallback} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../i18n'
-import {TIMELINE_LIST_WRAPPER_ID} from './timeline'
+import {TIMELINE_LIST_WRAPPER_ID} from '../constants'
 
 /**
  * This is a hack to force the scrollbar to not appear when the list is expanding,

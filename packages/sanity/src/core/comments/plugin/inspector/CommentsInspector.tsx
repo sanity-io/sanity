@@ -1,29 +1,26 @@
-import {Flex, Layer, useClickOutsideEvent, useLayer, useToast} from '@sanity/ui'
+import {Flex, Layer, useClickOutsideEvent, useLayer} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import * as PathUtils from '@sanity/util/paths'
 import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {type DocumentInspectorProps} from '../../../config'
-import {useTranslation} from '../../../i18n'
-import {useCurrentUser} from '../../../store'
-import {useAddonDataset} from '../../../studio/addonDataset'
-import {
-  CommentDeleteDialog,
-  CommentsList,
-  CommentsOnboardingPopover,
-  CommentsUpsellPanel,
-} from '../../components'
-import {type CommentsSelectedPath} from '../../context'
+import {type DocumentInspectorProps} from '../../../config/document/inspector'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
+import {CommentDeleteDialog} from '../../components/CommentDeleteDialog'
+import {CommentsList} from '../../components/list/CommentsList'
+import {CommentsOnboardingPopover} from '../../components/onboarding/CommentsOnboardingPopover'
+import {CommentsUpsellPanel} from '../../components/upsell/CommentsUpsellPanel'
+import {type CommentsSelectedPath} from '../../context/selected-path/types'
 import {isTextSelectionComment} from '../../helpers'
-import {
-  useComments,
-  useCommentsEnabled,
-  useCommentsOnboarding,
-  useCommentsScroll,
-  useCommentsSelectedPath,
-  useCommentsTelemetry,
-  useCommentsUpsell,
-} from '../../hooks'
+import {useComments} from '../../hooks/useComments'
+import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
+import {useCommentsOnboarding} from '../../hooks/useCommentsOnboarding'
+import {useCommentsScroll} from '../../hooks/useCommentsScroll'
+import {useCommentsSelectedPath} from '../../hooks/useCommentsSelectedPath'
+import {useCommentsTelemetry} from '../../hooks/useCommentsTelemetry'
+import {useCommentsUpsell} from '../../hooks/useCommentsUpsell'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
   type CommentBaseCreatePayload,
@@ -315,7 +312,7 @@ function CommentsInspectorInner(
       // Clear the selected path when clicking outside the comments inspector.
       // We do this only when the comments inspector is the top layer.
       const isPTETarget =
-        event.target instanceof HTMLElement && event.target?.hasAttribute('data-slate-string')
+        event.target instanceof HTMLElement && event.target?.hasAttribute('data-pt-text')
 
       if (!isPTETarget) {
         handleDeselectPath()
@@ -327,6 +324,7 @@ function CommentsInspectorInner(
   const [loggedTelemetry, setLoggedTelemetry] = useState(false)
   useEffect(() => {
     if (loggedTelemetry || mode !== 'upsell') return undefined
+    // oxlint-disable-next-line react/react-compiler
     setLoggedTelemetry(true)
     if (selectedPath?.origin === 'form') {
       upsellTelemetryLogs.panelViewed('field_action')

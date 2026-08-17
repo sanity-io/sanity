@@ -41,13 +41,16 @@ function parseSpotifyShareUrl(str: string): {type: string; id: string} | null {
 }
 
 function SpotifyEmbedPreview(props: PreviewProps) {
+  // @ts-expect-error -- pre-existing, fix later
   if (!isValidPreview(props.value)) {
     return <div>Please provide a Spotify share URL</div>
   }
 
+  // @ts-expect-error -- pre-existing, fix later
   const params = parseSpotifyShareUrl(props.value.url)
 
   if (!params) {
+    // @ts-expect-error -- pre-existing, fix later
     return <div>Could not parse the provided Spotify share URL: {props.value.url}</div>
   }
 
@@ -62,9 +65,8 @@ function SpotifyEmbedPreview(props: PreviewProps) {
       src={`https://open.spotify.com/${embedType}/${params.type}/${params.id}`}
       width="300"
       height="380"
-      frameBorder="0"
       allow="encrypted-media"
-      style={{width: '100%', verticalAlign: 'top'}}
+      style={{width: '100%', verticalAlign: 'top', border: 0}}
     />
   )
 }

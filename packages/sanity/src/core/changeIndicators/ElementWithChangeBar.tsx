@@ -2,7 +2,7 @@ import {useLayer} from '@sanity/ui'
 import {type ReactNode, useContext, useMemo} from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
-import {Tooltip} from '../../ui-components'
+import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {
   ChangeBar,
@@ -36,7 +36,7 @@ export function ElementWithChangeBar(props: {
   const changeBar = useMemo(
     () =>
       disabled || !isChanged ? null : (
-        <ChangeBar data-testid="change-bar" $zIndex={zIndex}>
+        <ChangeBar data-testid="change-bar" zIndex={zIndex}>
           <ChangeBarMarker data-testid="change-bar__marker" />
           <Tooltip content={t('changes.change-bar.aria-label')} portal disabled={!isInteractive}>
             <ChangeBarButton
@@ -45,8 +45,8 @@ export function ElementWithChangeBar(props: {
               onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
               tabIndex={-1}
               type="button"
-              $withHoverEffect={withHoverEffect}
-              $isInteractive={isInteractive}
+              withHoverEffect={withHoverEffect}
+              isInteractive={isInteractive}
             />
           </Tooltip>
         </ChangeBar>
@@ -66,10 +66,10 @@ export function ElementWithChangeBar(props: {
   return (
     <ChangeBarWrapper
       data-testid="change-bar-wrapper"
-      $changed={isChanged}
-      $disabled={disabled}
-      $hasFocus={hasFocus}
-      $isReviewChangeOpen={isReviewChangesOpen}
+      changed={isChanged}
+      disabled={disabled}
+      hasFocus={hasFocus}
+      isReviewChangeOpen={isReviewChangesOpen}
     >
       <FieldWrapper data-testid="change-bar__field-wrapper">{children}</FieldWrapper>
       {changeBar}

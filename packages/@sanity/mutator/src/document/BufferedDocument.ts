@@ -236,6 +236,12 @@ export class BufferedDocument {
         docResponder.failure()
 
         // Todo: Need better error handling (i.e. propagate to user and provide means of retrying)
+        // Note: after 200 tries we stop retrying but the commit stays in
+        // `this.commits`, so `onConsistencyChanged(true)` is never called and
+        // the document remains permanently inconsistent (it never recovers
+        // without a reload). Consumers that lock editing on a stale
+        // consistency signal (see `useDocumentSyncState`) must not rely on
+        // this ever clearing on its own.
         if (commit.tries < 200) {
           setTimeout(() => this._cycleCommitter(), Math.min(commit.tries * 1000, ONE_MINUTE))
         }

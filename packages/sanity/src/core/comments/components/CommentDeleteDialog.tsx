@@ -1,9 +1,10 @@
 import {Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 
-import {Dialog} from '../../../ui-components'
-import {TextWithTone} from '../../components'
-import {type TFunction, useTranslation} from '../../i18n'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {TextWithTone} from '../../components/textWithTone/TextWithTone'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {type TFunction} from '../../i18n/types'
 import {commentsLocaleNamespace} from '../i18n'
 
 function getDialogCopy(
@@ -68,7 +69,7 @@ export function CommentDeleteDialog(props: CommentDeleteDialogProps) {
       onClose={onClose}
       width={0}
     >
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text size={1}>{body}</Text>
 
         {error && <TextWithTone tone="critical">{t('delete-dialog.error')}</TextWithTone>}

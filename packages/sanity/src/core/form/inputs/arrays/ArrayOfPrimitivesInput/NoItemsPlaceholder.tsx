@@ -1,7 +1,7 @@
 import {type ArraySchemaType, type FormNodeValidation} from '@sanity/types'
 import {Card, type CardTone, Text} from '@sanity/ui'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 /**
  * Shows a placeholder for an empty array of primitives.
@@ -23,6 +23,7 @@ export function NoItemsPlaceholder({
   return (
     <Card padding={3} border radius={2} tone={tone}>
       <Text align="center" muted size={1}>
+        {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
         {schemaType.placeholder || t('inputs.array.no-items-label')}
       </Text>
     </Card>

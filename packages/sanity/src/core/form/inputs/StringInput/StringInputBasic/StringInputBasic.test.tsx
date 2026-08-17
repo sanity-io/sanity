@@ -26,6 +26,21 @@ describe('StringInputBasic', () => {
     expect(input?.value).toBe('test')
   })
 
+  it('disables native autocomplete', async () => {
+    const {result} = await renderStringInput({
+      render: (inputProps) => <StringInputBasic {...inputProps} />,
+      fieldDefinition: {
+        type: 'string',
+        name: 'string',
+        title: 'String',
+      },
+    })
+
+    const input = result.container.querySelector('input')
+
+    expect(input?.getAttribute('autocomplete')).toBe('off')
+  })
+
   it('emits onFocus', async () => {
     const {onFocus, result} = await renderStringInput({
       render: (inputProps) => (

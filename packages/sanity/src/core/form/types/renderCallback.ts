@@ -1,7 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import {type ComponentType, type CSSProperties, type ReactNode} from 'react'
 
-import {type PreviewLayoutKey, type PreviewMediaDimensions} from '../../components'
+import {type PreviewLayoutKey, type PreviewMediaDimensions} from '../../components/previews/types'
 import {type BlockAnnotationProps, type BlockProps} from './blockProps'
 import {type FieldProps} from './fieldProps'
 import {type InputProps} from './inputProps'

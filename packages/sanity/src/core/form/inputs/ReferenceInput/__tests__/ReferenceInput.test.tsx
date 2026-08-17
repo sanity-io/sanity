@@ -1,9 +1,10 @@
 import {Schema} from '@sanity/schema'
 import {type Reference} from '@sanity/types'
-import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
+import {ToastProvider} from '@sanity/ui/toast'
 import {render, screen} from '@testing-library/react'
 import noop from 'lodash-es/noop.js'
-import {forwardRef, useImperativeHandle} from 'react'
+import {useImperativeHandle, type RefAttributes} from 'react'
 import {of} from 'rxjs'
 import {route, RouterProvider} from 'sanity/router'
 import {describe, expect, test, vi} from 'vitest'
@@ -27,12 +28,17 @@ const UNAVAILABLE_PERMISSION_DENIED = {
 } as const
 
 const infinityNoop: any = new Proxy<any>(() => infinityNoop, {get: () => infinityNoop})
-const StubComponent = forwardRef(
-  ({documentId, documentType}: {documentId: string; documentType: string}, ref) => {
-    useImperativeHandle(ref, () => infinityNoop, [])
-    return null
-  },
-)
+const StubComponent = ({
+  ref,
+  documentId,
+  documentType,
+}: {
+  documentId: string
+  documentType: string
+} & RefAttributes<any>) => {
+  useImperativeHandle(ref, () => infinityNoop, [])
+  return null
+}
 
 StubComponent.displayName = 'StubComponent'
 type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>
@@ -45,6 +51,7 @@ function ReferenceInputTester(
 
   return (
     <RouterProvider router={route.intents('/intents')} state={{}} onNavigate={noop}>
+      {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
       <ThemeProvider scheme="light" theme={studioTheme}>
         <ToastProvider>
           <LayerProvider>
@@ -113,6 +120,7 @@ describe.skip('if schema type is a strong reference', () => {
           type: 'actorReference',
           availability: AVAILABLE,
           preview: {
+            // @ts-expect-error -- pre-existing, fix later
             published: undefined,
             draft: DRAFT_PREVIEW as any,
           },
@@ -132,6 +140,7 @@ describe.skip('if schema type is a strong reference', () => {
           type: 'actorReference',
           availability: AVAILABLE,
           preview: {
+            // @ts-expect-error -- pre-existing, fix later
             published: undefined,
             draft: DRAFT_PREVIEW as any,
           },
@@ -154,6 +163,7 @@ describe.skip('if schema type is a weak reference', () => {
           type: 'actorReference',
           availability: UNAVAILABLE_NOT_FOUND,
           preview: {
+            // @ts-expect-error -- pre-existing, fix later
             published: PUBLISHED_PREVIEW as any,
             draft: DRAFT_PREVIEW as any,
           },
@@ -174,6 +184,7 @@ describe.skip('if schema type is a weak reference', () => {
           type: 'actorReference',
           availability: AVAILABLE,
           preview: {
+            // @ts-expect-error -- pre-existing, fix later
             published: PUBLISHED_PREVIEW as any,
             draft: DRAFT_PREVIEW as any,
           },

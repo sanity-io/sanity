@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string */
+/* oxlint-disable i18next/no-literal-string */
 import {Text} from '@sanity/ui'
 
 // This is the fallback marker renderer if the block editor didn't get the 'renderCustomMarkers' prop

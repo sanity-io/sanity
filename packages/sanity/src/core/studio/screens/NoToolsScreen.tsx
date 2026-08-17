@@ -1,5 +1,5 @@
-/* eslint-disable i18next/no-literal-string */
-import {WarningOutlineIcon} from '@sanity/icons'
+/* oxlint-disable i18next/no-literal-string */
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 
 export function NoToolsScreen() {
@@ -14,7 +14,7 @@ export function NoToolsScreen() {
                   <WarningOutlineIcon />
                 </Text>
               </Box>
-              <Stack flex={1} marginLeft={3} space={3}>
+              <Stack flex={1} marginLeft={3} gap={3}>
                 <Text as="h1" size={1} weight="medium">
                   No configured tools
                 </Text>

@@ -5,8 +5,9 @@ import {beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
-import {LocaleProviderBase, usEnglishLocale} from '../../../core/i18n'
+import {LocaleProviderBase} from '../../../core/i18n/components/LocaleProvider'
 import {prepareI18n} from '../../../core/i18n/i18nConfig'
+import {usEnglishLocale} from '../../../core/i18n/locales'
 import {ErrorBoundary} from '../ErrorBoundary'
 
 describe('ErrorBoundary', () => {
@@ -61,6 +62,7 @@ describe('ErrorBoundary', () => {
       })
 
       return (
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         <ThemeProvider theme={studioTheme}>
           <LocaleProviderBase
             projectId={'test'}

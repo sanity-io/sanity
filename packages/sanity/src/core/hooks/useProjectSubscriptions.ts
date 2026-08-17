@@ -4,7 +4,7 @@ import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 
-import {useSource} from '../studio'
+import {useSource} from '../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {useClient} from './useClient'
 
@@ -117,6 +117,7 @@ const cachedProjectSubscriptionsRequest = new Map<
 /** @internal */
 export function useProjectSubscriptions(): ProjectSubscriptions {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {projectId} = useSource()
 
   if (!cachedProjectSubscriptionsRequest.get(projectId)) {

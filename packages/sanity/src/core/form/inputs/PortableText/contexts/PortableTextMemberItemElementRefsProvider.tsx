@@ -1,5 +1,5 @@
 import {useCallback, useContext} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {
   type PortableTextEditorElement,
   PortableTextMemberItemElementRefsContext,
@@ -11,17 +11,20 @@ export type SetPortableTextMemberItemElementRef = ({
   key,
   elementRef,
 }: {
-  key: PortableTextMemberItem['member']['key']
+  key: PortableTextMemberItem['key']
   elementRef: PortableTextEditorElement | null
 }) => void
 
 export function usePortableTextMemberItemElementRefs(): Record<
-  PortableTextMemberItem['member']['key'],
+  PortableTextMemberItem['key'],
   PortableTextEditorElement | null | undefined
 > {
   const behaviorSubject = useContext(PortableTextMemberItemElementRefsContext)
 
-  return useObservable(behaviorSubject, {})
+  // Kept synchronous: these are live DOM refs read imperatively (annotation
+  // popover reference elements, focus/scroll tracking in layout effects) — a
+  // deferred snapshot could miss the mounted node right when it's needed.
+  return useSyncObservable(behaviorSubject, {})
 }
 
 export function useSetPortableTextMemberItemElementRef(): SetPortableTextMemberItemElementRef {

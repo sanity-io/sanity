@@ -1,9 +1,9 @@
 import {expect} from '@playwright/test'
 
+import {expectPublishedStatus} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
 
 test.describe('Array revert changes', () => {
-  // eslint-disable-next-line max-statements
   test('should revert deletion of middle array item without duplicate key error', async ({
     page,
     createDraftDocument,
@@ -90,34 +90,36 @@ test.describe('Array revert changes', () => {
     await closeButton.click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
-    /** publish */
+    /** publish — wait until published or review-changes compares the wrong revisions */
+    const documentStatus = page.getByTestId('pane-footer-document-status')
     await expect(page.getByTestId('action-publish')).toBeVisible()
     await expect(page.getByTestId('action-publish')).toBeEnabled()
     await page.getByTestId('action-publish').click()
+    await expectPublishedStatus(documentStatus)
 
     /** click to review history pane */
-    await expect(page.getByTestId('pane-footer-document-status')).toBeVisible()
-    await expect(page.getByTestId('pane-footer-document-status')).toBeEnabled()
-    await page.getByTestId('pane-footer-document-status').click()
-    await expect(page.getByTestId('review-changes-pane').nth(1)).toBeVisible()
+    await documentStatus.click()
+    const reviewPane = page.getByTestId('review-changes-pane').filter({visible: true}).last()
+    await expect(reviewPane).toBeVisible()
 
     /** delete middle item */
     await page.getByTestId('array-item-menu-button').nth(1).click()
-    await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
-    await page.getByRole('menuitem', {name: 'Remove'}).click()
+    const removeItem = page.getByRole('menuitem', {name: 'Remove'}).filter({visible: true})
+    await expect(removeItem).toBeVisible()
+    await removeItem.click()
 
     await expect(page.getByRole('button', {name: 'Item 2 description'})).not.toBeVisible()
 
-    /** revert changes */
-    const groupChangesButton = page.getByTestId(
+    /** revert changes — scope to the open review-changes pane (v4 keeps closed menus mounted) */
+    const groupChangesButton = reviewPane.getByTestId(
       /group-change-revert-button-inlineEditingArray\[.*\]/,
     )
 
     await expect(groupChangesButton).toBeVisible()
-    await expect(groupChangesButton).toBeVisible()
     await groupChangesButton.click()
-    await expect(page.getByTestId('confirm-popover-confirm-button')).toBeVisible()
-    await page.getByTestId('confirm-popover-confirm-button').click()
+    const confirmRevert = page.getByTestId('confirm-popover-confirm-button').filter({visible: true})
+    await expect(confirmRevert).toBeVisible()
+    await confirmRevert.click()
 
     /** check that the middle item has been restored after reverting the deletion */
     await expect(page.getByRole('button', {name: 'Item 1 description'})).toBeVisible()

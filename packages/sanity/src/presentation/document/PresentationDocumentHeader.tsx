@@ -1,5 +1,4 @@
 import {rem} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useContext} from 'react'
 import {FormRow, type ObjectSchemaType, type PublishedId} from 'sanity'
@@ -34,6 +33,7 @@ export function PresentationDocumentHeader(props: {
   const context = useContext(PresentationDocumentContext)
 
   const contextOptions = context?.options || []
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const resolvers = contextOptions.map((o) => o.resolve?.locations || o.locate)
   const hasResolvers = resolvers.some(Boolean)
 

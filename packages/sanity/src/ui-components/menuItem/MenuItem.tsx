@@ -1,19 +1,20 @@
-/* eslint-disable no-restricted-imports */
+/* oxlint-disable no-restricted-imports */
+import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
+import {MenuItem as UIMenuItem, type MenuItemProps as UIMenuItemProps} from '@sanity/ui/menu'
 import {
-  Badge,
-  Box,
-  Flex,
-  MenuItem as UIMenuItem,
-  type MenuItemProps as UIMenuItemProps,
-  Stack,
-  Text,
-} from '@sanity/ui'
-import {forwardRef, type HTMLProps, isValidElement, type ReactNode, type Ref, useMemo} from 'react'
+  type ElementType,
+  type HTMLProps,
+  isValidElement,
+  type ReactNode,
+  type Ref,
+  useMemo,
+  type RefAttributes,
+} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 
-import {Tooltip, type TooltipProps} from '..'
 import {Hotkeys} from '../../core/components/Hotkeys'
+import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0
@@ -25,7 +26,7 @@ const SubtitleText = styled(Text)`
 
 /** @internal */
 export type MenuItemProps = Pick<
-  UIMenuItemProps,
+  UIMenuItemProps<ElementType>,
   'as' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
 > & {
   badgeText?: string
@@ -72,25 +73,24 @@ const PreviewWrapper = styled(Box)`
  *
  * @internal
  */
-export const MenuItem = forwardRef(function MenuItem(
-  {
-    badgeText,
-    children: childrenProp,
-    disabled,
-    hotkeys,
-    icon: Icon,
-    iconRight: IconRight,
-    preview = null,
-    renderMenuItem,
-    text,
-    tooltipProps,
-    __unstable_subtitle,
-    __unstable_space,
-    ...rest
-  }: MenuItemProps &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'selected' | 'tabIndex' | 'size'>,
-  ref: Ref<HTMLDivElement>,
-) {
+export function MenuItem({
+  ref,
+  badgeText,
+  children: childrenProp,
+  disabled,
+  hotkeys,
+  icon: Icon,
+  iconRight: IconRight,
+  preview = null,
+  renderMenuItem,
+  text,
+  tooltipProps,
+  __unstable_subtitle,
+  __unstable_space,
+  ...rest
+}: MenuItemProps &
+  Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'selected' | 'tabIndex' | 'size'> &
+  RefAttributes<HTMLDivElement>) {
   const menuItemContent = useMemo(() => {
     return (
       <Flex align="center" gap={2}>
@@ -113,7 +113,7 @@ export const MenuItem = forwardRef(function MenuItem(
           </Box>
         )}
         {text && (
-          <Stack flex={1} space={__unstable_subtitle ? 1 : 2}>
+          <Stack flex={1} gap={__unstable_subtitle ? 1 : 2}>
             <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
               {text}
             </Text>
@@ -181,4 +181,4 @@ export const MenuItem = forwardRef(function MenuItem(
   }
 
   return children
-})
+}

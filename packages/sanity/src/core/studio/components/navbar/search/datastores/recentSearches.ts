@@ -3,8 +3,8 @@ import isEqual from 'lodash-es/isEqual.js'
 import omit from 'lodash-es/omit.js'
 import {useMemo} from 'react'
 
-import {useSchema} from '../../../../../hooks'
-import {type SearchTerms} from '../../../../../search'
+import {useSchema} from '../../../../../hooks/useSchema'
+import {type SearchTerms} from '../../../../../search/common/types'
 import {useSource} from '../../../../source'
 import {
   createFieldDefinitionDictionary,
@@ -68,6 +68,7 @@ export function useRecentSearchesStore(): RecentSearchesStore {
   const schema = useSchema()
   const {
     search: {operators, filters},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
 
   // Create field, filter and operator dictionaries
@@ -84,14 +85,12 @@ export function useRecentSearchesStore(): RecentSearchesStore {
      * Write a search term to Local Storage and return updated recent searches.
      */
     addSearch: (searchTerm: SearchTerms, searchFilters?: SearchFilter[]): RecentSearch[] => {
-      const storedFilters = (searchFilters || []).map(
-        (filter): SearchFilter => ({
-          fieldId: filter.fieldId,
-          filterName: filter.filterName,
-          operatorType: filter.operatorType,
-          value: filter.value,
-        }),
-      )
+      const storedFilters = (searchFilters || []).map((filter): SearchFilter => ({
+        fieldId: filter.fieldId,
+        filterName: filter.filterName,
+        operatorType: filter.operatorType,
+        value: filter.value,
+      }))
 
       // Remove any filters in 'incomplete' states prior to writing to local storage.
       const validStoredFilters = storedFilters.filter((filter) =>

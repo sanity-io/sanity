@@ -9,7 +9,7 @@ import {useWorkspace} from '../../studio/workspace'
 import {useDocumentDivergences} from '../contexts/DivergencesProvider'
 
 const canUseAnchorPositioning =
-  'CSS' in globalThis && typeof CSS.supports === 'function'
+  'CSS' in globalThis && typeof CSS !== 'undefined' && typeof CSS.supports === 'function'
     ? CSS.supports('(position-anchor: --anchor)')
     : false
 

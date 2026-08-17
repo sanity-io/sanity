@@ -2,8 +2,11 @@ import {type CurrentUser, type User} from '@sanity/types'
 import {useMemo} from 'react'
 import {from} from 'rxjs'
 
-import {useSource} from '../../studio'
-import {createHookFromObservableFactory, type LoadingTuple} from '../../util'
+import {useSource} from '../../studio/source'
+import {
+  createHookFromObservableFactory,
+  type LoadingTuple,
+} from '../../util/createHookFromObservableFactory'
 import {useUserStore} from '../datastores'
 import {type UserStore} from './userStore'
 
@@ -37,10 +40,12 @@ export function useUser(userId: string): LoadingTuple<User | null | undefined> {
  *
  * if (currentUser) {
  *  console.log('Logged in as', currentUser.name)
+ *  const department = currentUser.attributes?.find((attr) => attr.key === 'department')
  * }
  * ```
  */
 export function useCurrentUser(): CurrentUser | null {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {currentUser} = useSource()
   return currentUser
 }

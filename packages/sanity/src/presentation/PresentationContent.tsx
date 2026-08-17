@@ -23,6 +23,7 @@ import {
 export interface PresentationContentProps {
   documentId: PresentationParamsContextValue['id']
   documentsOnPage: {_id: string; _type: string}[]
+  visualOrderPublishedIds: string[]
   documentType: PresentationParamsContextValue['type']
   getCommentIntent: CommentIntentGetter
   /** Hide the document panel (narrow mode, another tab active). */
@@ -75,6 +76,7 @@ export const PresentationContent: FunctionComponent<PresentationContentProps> = 
   const {
     documentId,
     documentsOnPage,
+    visualOrderPublishedIds,
     documentType,
     getCommentIntent,
     hidden,
@@ -104,6 +106,7 @@ export const PresentationContent: FunctionComponent<PresentationContentProps> = 
         onFocusPath={onFocusPath}
         onStructureParams={onStructureParams}
         refs={documentsOnPage}
+        visualOrderPublishedIds={visualOrderPublishedIds}
         searchParams={searchParams}
         structureParams={structureParams}
       />

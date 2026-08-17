@@ -1,12 +1,10 @@
-import {
-  AddIcon,
-  CloseIcon,
-  EditIcon,
-  type IconComponent,
-  PublishIcon,
-  TrashIcon,
-  UnpublishIcon,
-} from '@sanity/icons'
+import {type IconComponent} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons/Add'
+import {CloseIcon} from '@sanity/icons/Close'
+import {EditIcon} from '@sanity/icons/Edit'
+import {PublishIcon} from '@sanity/icons/Publish'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {UnpublishIcon} from '@sanity/icons/Unpublish'
 
 export const TIMELINE_ICON_COMPONENTS: {[key: string]: IconComponent | undefined} = {
   create: AddIcon,

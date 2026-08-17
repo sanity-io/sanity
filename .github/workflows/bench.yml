@@ -1,0 +1,864 @@
+name: Studio Bench
+permissions: {}
+
+# Initial rollout is label-gated: PR jobs only run when the PR carries the
+# `trigger:perf-bench` label. Flipping to all code-change PRs later = replacing the
+# label condition with the detect-code-changes gate (already wired below).
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  schedule:
+    # Daily main-branch tracking: absolute-mode run stored to the
+    # studio-metrics project (time series / drift detection)
+    - cron: "0 5 * * *"
+    # Weekly self-test: compare a build against itself - every metric must
+    # report neutral, anything else is a harness bug (flake resistance rule 6)
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      run_suite:
+        description: "Run the full absolute-mode suite against main and store it (same as the daily cron)"
+        required: false
+        type: boolean
+        default: true
+      self_test:
+        description: "Compare the build against itself (harness self-test)"
+        required: false
+        type: boolean
+        default: false
+      backfill_sha:
+        description: "Backfill: build and measure this main-history commit instead of HEAD (full 40-char sha; requires run_suite, incompatible with self_test and ab_from/ab_to; result is stored under this sha, harness/scenarios come from HEAD)"
+        required: false
+        type: string
+      ab_from:
+        description: "A/B: reference commit to compare against (full 40-char sha; set together with ab_to; incompatible with backfill_sha and self_test; verdicts land in the run summary)"
+        required: false
+        type: string
+      ab_to:
+        description: "A/B: experiment commit to measure (full 40-char sha; set together with ab_from)"
+        required: false
+        type: string
+
+# One run per PR at a time so an older run finishing late can never
+# overwrite the PR comment with stale results; scheduled/dispatched runs get
+# a unique group (no cancellation). Adding an unrelated label must not cancel
+# an in-flight bench run (the new run's jobs all skip via their label guards,
+# which would leave no comment and no red check), so only cancel when the
+# trigger is a real bench trigger: any non-label event, or the
+# `trigger:perf-bench` label itself.
+concurrency:
+  group: bench-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench' }}
+
+jobs:
+  build:
+    # The labeled-event guard keeps unrelated label additions from re-running
+    # the whole suite (the label set still gates via contains())
+    if: >-
+      (github.event_name == 'pull_request' &&
+       contains(github.event.pull_request.labels.*.name, 'trigger:perf-bench') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench')) ||
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule'
+    runs-on: ubuntu-8core
+    # Headroom for the backfill path, which installs and builds a second
+    # worktree at the historical commit
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      # detect-code-changes (dorny/paths-filter) lists the PR's changed files
+      # via the API, which requires pull-requests read on pull_request events
+      pull-requests: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    outputs:
+      has_code_changes: ${{ steps.changes.outputs.has_changes }}
+      # Committer date of the backfilled commit (empty on non-backfill runs) —
+      # resolved by prepare-backfill, consumed as BENCH_GIT_COMMITTED_AT by the
+      # measuring jobs so stored documents land on the commit's date
+      backfill_committed_at: ${{ steps.build.outputs.committed_at }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          # Backfill and A/B builds add a worktree at a historical commit,
+          # which a depth-1 clone doesn't have (the inputs are empty on
+          # non-dispatch events)
+          fetch-depth: ${{ (inputs.backfill_sha != '' || inputs.ab_to != '') && '0' || '1' }}
+
+      - uses: ./.github/actions/detect-code-changes
+        id: changes
+
+      # paths-filter only has a PR diff to inspect on pull_request events -
+      # on schedule/workflow_dispatch it reflects whatever happened to land
+      # last on main, so those events always build
+      - uses: ./.github/actions/setup
+        if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
+
+      # A backfill dispatch only makes sense as "run the full suite against
+      # the historical build": without run_suite nothing consumes the dist
+      # (a green run that backfilled nothing), and self_test would compare
+      # the historical build against HEAD's reference config, reporting
+      # product diffs as harness drift
+      - name: Validate dispatch inputs
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          (inputs.backfill_sha != '' || inputs.ab_from != '' || inputs.ab_to != '')
+        env:
+          RUN_SUITE: ${{ inputs.run_suite }}
+          SELF_TEST: ${{ inputs.self_test }}
+          BACKFILL_SHA: ${{ inputs.backfill_sha }}
+          AB_FROM: ${{ inputs.ab_from }}
+          AB_TO: ${{ inputs.ab_to }}
+        run: |
+          # Explicit grouping: && and || share precedence in sh and associate
+          # left, so the ungrouped form silently passes when only ab_from is set
+          if { [ -n "$AB_FROM" ] && [ -z "$AB_TO" ]; } || { [ -z "$AB_FROM" ] && [ -n "$AB_TO" ]; }; then
+            echo "::error::ab_from and ab_to must be set together"
+            exit 1
+          fi
+          if [ -n "$AB_TO" ] && [ -n "$BACKFILL_SHA" ]; then
+            echo "::error::ab_from/ab_to cannot be combined with backfill_sha"
+            exit 1
+          fi
+          if [ -n "$AB_TO" ] && [ "$SELF_TEST" = "true" ]; then
+            echo "::error::ab_from/ab_to cannot be combined with self_test"
+            exit 1
+          fi
+          if [ -n "$BACKFILL_SHA" ]; then
+            if [ "$RUN_SUITE" != "true" ]; then
+              echo "::error::backfill_sha requires run_suite"
+              exit 1
+            fi
+            if [ "$SELF_TEST" = "true" ]; then
+              echo "::error::backfill_sha cannot be combined with self_test"
+              exit 1
+            fi
+          fi
+
+      # Backfill / A/B: build the experiment dist from the requested
+      # historical commit's packages (HEAD's harness overlaid) instead of
+      # HEAD's — backfill repairs holes in the daily time series, ab_to is
+      # the experiment side of an A/B dispatch. The downstream jobs run
+      # unchanged and, for backfill, store the result under that sha
+      # (BENCH_GIT_SHA below).
+      - name: Build packages and experiment studio
+        id: build
+        if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
+        env:
+          BACKFILL_SHA: ${{ inputs.backfill_sha }}
+          AB_TO: ${{ inputs.ab_to }}
+        run: |
+          HISTORICAL_SHA="${BACKFILL_SHA:-$AB_TO}"
+          if [ -n "$HISTORICAL_SHA" ]; then
+            pnpm bench prepare-backfill --sha "$HISTORICAL_SHA"
+          else
+            pnpm build:bench
+          fi
+
+      - uses: actions/upload-artifact@v7
+        if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
+        with:
+          name: bench-dist-experiment
+          path: perf/bench/dist
+          retention-days: 7
+
+  build-reference:
+    # PR path (label-gated, merge-base reference) or A/B dispatch (explicit
+    # reference commit via ab_from)
+    if: >-
+      (github.event_name == 'pull_request' &&
+       contains(github.event.pull_request.labels.*.name, 'trigger:perf-bench') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench')) ||
+      (github.event_name == 'workflow_dispatch' && inputs.ab_from != '')
+    runs-on: ubuntu-8core
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    outputs:
+      comparison: ${{ steps.reference.outputs.comparison }}
+      merge_base: ${{ steps.reference.outputs.merge_base }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      # Compute the merge-base explicitly so the cache is keyed on the commit
+      # the reference is actually built against. Keying on the base *tip*
+      # (pull_request.base.sha) is wrong: two PRs sharing a base tip but
+      # branched at different commits would collide and reuse each other's
+      # reference dist, comparing against the wrong baseline.
+      - name: Compute merge-base
+        id: merge-base
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: echo "sha=$(git merge-base HEAD "origin/$BASE_REF")" >> "$GITHUB_OUTPUT"
+
+      # Re-pushes to a PR usually share the merge-base: reuse the built
+      # reference outright (keyed on merge-base sha + harness sources).
+      # PR-only, like the merge-base step: A/B dispatches build an explicit
+      # commit and are rare enough not to warrant a cache.
+      - name: Restore reference dist cache
+        id: reference-cache
+        if: github.event_name == 'pull_request'
+        uses: actions/cache@v6
+        with:
+          path: perf/bench/.reference/dist
+          key: bench-reference-dist-v1-${{ steps.merge-base.outputs.sha }}-${{ hashFiles('perf/bench/**', '!perf/bench/dist/**', '!perf/bench/node_modules/**') }}
+
+      # Worktree/overlay/build/fallback logic lives in the CLI
+      # (perf/bench/cli/commands/prepareReference.ts) - it writes the
+      # merge_base and comparison outputs, and falls back to absolute mode
+      # (comparison=skipped) when the merge-base predates perf/bench or the
+      # reference build fails
+      - name: Build reference studio
+        id: reference
+        env:
+          CACHE_HIT: ${{ steps.reference-cache.outputs.cache-hit }}
+          # The reference build is the same harness + scenarios (checked out
+          # from HEAD) against the reference commit's packages - only product
+          # code differs. PRs resolve the merge-base; A/B dispatches pass the
+          # explicit ab_from commit via --at (fails loudly, no fallback).
+          SANITY_STUDIO_BENCH_API_HOST: https://localhost:4312
+          SANITY_STUDIO_BENCH_PROJECT_ID: benchref
+          BASE_REF: ${{ github.base_ref }}
+          AB_FROM: ${{ inputs.ab_from }}
+        run: |
+          if [ -n "$AB_FROM" ]; then
+            pnpm bench prepare-reference --at "$AB_FROM"
+          else
+            pnpm bench prepare-reference --base-ref "$BASE_REF"
+          fi
+
+      - uses: actions/upload-artifact@v7
+        if: steps.reference.outputs.comparison == 'ab'
+        with:
+          name: bench-dist-reference
+          path: perf/bench/.reference/dist
+          retention-days: 7
+
+  bench-interaction:
+    needs: [build, build-reference]
+    # Runs on the PR path (A/B vs the merge-base) and on the daily-tracking
+    # path (absolute — build-reference is PR-only and gets skipped, so
+    # COMPARISON is empty and the run step drops --reference-dist). Sharded per
+    # scenario either way, so the daily run's wall-clock is the slowest single
+    # scenario, not the sum. Only on triggers whose results are consumed by
+    # track-main — NOT the weekly self-test cron or a self_test-only dispatch,
+    # which run their own job and would otherwise launch these shards for
+    # nothing. The `!cancelled()` status function is required so the job still
+    # runs when build-reference is *skipped* (a plain custom if: would itself
+    # skip on a skipped need); guard on build succeeding.
+    # The ab_to clause requires build-reference success: on the PR path a
+    # broken reference falls back to absolute mode (comparison=skipped, job
+    # green), but `prepare-reference --at` fails the job instead — benching
+    # on regardless would produce a comparison-less run wearing an A/B label
+    if: >-
+      !cancelled() && needs.build.result == 'success' &&
+      (inputs.ab_to == '' || needs.build-reference.result == 'success') &&
+      ((github.event_name == 'pull_request' &&
+        needs.build.outputs.has_code_changes == 'true') ||
+       (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
+       (github.event_name == 'workflow_dispatch' && (inputs.run_suite || inputs.ab_to != '')))
+    runs-on: ubuntu-8core
+    # Headroom for a/b runs of the heavy scenarios (synthetic sessions cost
+    # ~90s each and run on both sides)
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      # Backfill runs measure a historical commit's build — stamp the run
+      # documents with that sha (empty on non-backfill events; see
+      # report/collect.ts)
+      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
+      BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # One shard per scenario: wall-clock = slowest single scenario
+        scenario: [singleString, arrayI18n, article, recipe, synthetic]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-all
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm playwright install --with-deps
+
+      # Chromium on Linux validates TLS against the NSS store; the SPKI
+      # allowlist launch flag used locally is not reliably honored here, and
+      # a bypassed-instead-of-valid cert disables the browser HTTP cache
+      # (breaking warm-load measurements) - so import the bench cert properly
+      - name: Trust the bench TLS certificate
+        run: |
+          command -v certutil >/dev/null || sudo apt-get install -y -qq libnss3-tools >/dev/null
+          CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
+          mkdir -p "$HOME/.pki/nssdb"
+          certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
+          certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: bench-dist-experiment
+          path: perf/bench/dist
+
+      - uses: actions/download-artifact@v8
+        if: needs.build-reference.outputs.comparison == 'ab'
+        with:
+          name: bench-dist-reference
+          path: perf/bench/.reference/dist
+
+      - name: Run interaction benchmark
+        env:
+          SCENARIO: ${{ matrix.scenario }}
+          COMPARISON: ${{ needs.build-reference.outputs.comparison }}
+          BENCH_MERGE_BASE: ${{ needs.build-reference.outputs.merge_base }}
+        run: |
+          REFERENCE_ARGS=""
+          if [ "$COMPARISON" = "ab" ]; then
+            REFERENCE_ARGS="--reference-dist $GITHUB_WORKSPACE/perf/bench/.reference/dist"
+          fi
+          # shellcheck disable=SC2086
+          pnpm bench run --mode interaction --scenario "$SCENARIO" \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__interaction-$SCENARIO.json" \
+            $REFERENCE_ARGS
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-results-interaction-${{ matrix.scenario }}
+          path: perf/bench/results/
+          overwrite: true
+          retention-days: 30
+
+  bench-pageload:
+    needs: [build, build-reference]
+    # See bench-interaction: PR path is A/B, daily/run_suite is absolute
+    # (build-reference skipped). Gated to the triggers track-main consumes, so
+    # the self-test path doesn't launch these shards for nothing. `!cancelled()`
+    # lets it run past the skipped build-reference need; guard on build.
+    # The ab_to clause requires build-reference success: on the PR path a
+    # broken reference falls back to absolute mode (comparison=skipped, job
+    # green), but `prepare-reference --at` fails the job instead — benching
+    # on regardless would produce a comparison-less run wearing an A/B label
+    if: >-
+      !cancelled() && needs.build.result == 'success' &&
+      (inputs.ab_to == '' || needs.build-reference.result == 'success') &&
+      ((github.event_name == 'pull_request' &&
+        needs.build.outputs.has_code_changes == 'true') ||
+       (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
+       (github.event_name == 'workflow_dispatch' && (inputs.run_suite || inputs.ab_to != '')))
+    runs-on: ubuntu-8core
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      # See bench-interaction: stamps backfill runs with the measured sha
+      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
+      BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # One shard per scenario (mirrors bench-interaction): wall-clock =
+        # one scenario's samples instead of both sequentially. Sessions are
+        # per-scenario: syntheticLarge takes ~55s per sample to become editable
+        # and runs both load conditions on both sides, so 8 sessions blows the
+        # 20-minute timeout — give it fewer (still enough for a p50).
+        include:
+          - scenario: singleString
+            sessions: 8
+          - scenario: syntheticLarge
+            sessions: 3
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-all
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm playwright install --with-deps
+
+      # Chromium on Linux validates TLS against the NSS store; the SPKI
+      # allowlist launch flag used locally is not reliably honored here, and
+      # a bypassed-instead-of-valid cert disables the browser HTTP cache
+      # (breaking warm-load measurements) - so import the bench cert properly
+      - name: Trust the bench TLS certificate
+        run: |
+          command -v certutil >/dev/null || sudo apt-get install -y -qq libnss3-tools >/dev/null
+          CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
+          mkdir -p "$HOME/.pki/nssdb"
+          certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
+          certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: bench-dist-experiment
+          path: perf/bench/dist
+
+      - uses: actions/download-artifact@v8
+        if: needs.build-reference.outputs.comparison == 'ab'
+        with:
+          name: bench-dist-reference
+          path: perf/bench/.reference/dist
+
+      - name: Run pageLoad benchmark
+        env:
+          SCENARIO: ${{ matrix.scenario }}
+          SESSIONS: ${{ matrix.sessions }}
+          COMPARISON: ${{ needs.build-reference.outputs.comparison }}
+          BENCH_MERGE_BASE: ${{ needs.build-reference.outputs.merge_base }}
+        run: |
+          REFERENCE_ARGS=""
+          if [ "$COMPARISON" = "ab" ]; then
+            REFERENCE_ARGS="--reference-dist $GITHUB_WORKSPACE/perf/bench/.reference/dist"
+          fi
+          # shellcheck disable=SC2086
+          pnpm bench run --mode pageload --scenario "$SCENARIO" \
+            --sessions "$SESSIONS" \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__pageload-$SCENARIO.json" \
+            $REFERENCE_ARGS
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-results-pageload-${{ matrix.scenario }}
+          path: perf/bench/results/
+          overwrite: true
+          retention-days: 30
+
+  report:
+    needs: [build-reference, bench-interaction, bench-pageload]
+    if: >-
+      !cancelled() &&
+      github.event_name == 'pull_request' &&
+      needs.bench-interaction.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write # for the PR comment
+    steps:
+      # This is the only job with a write scope and it runs PR-authored code
+      # (bench:report) - never leave the token in .git/config here
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Download shard results
+        uses: actions/download-artifact@v8
+        with:
+          pattern: bench-results-*
+          merge-multiple: true
+          path: perf/bench/results
+
+      - name: Write merged report
+        env:
+          # A failed shard uploads no result JSON; the report must say so
+          # instead of rendering a clean table with a scenario silently
+          # missing. Keep in sync with the bench-interaction matrix and the
+          # bench-pageload --scenario flags above.
+          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic
+          BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge
+        run: pnpm bench report
+
+      # Always posted/updated in place - all-neutral is information, silence
+      # is ambiguity. Non-gating during burn-in: this job never fails the
+      # check for perf verdicts. Same-repo PRs only: on fork-originated
+      # pull_request events GITHUB_TOKEN is read-only regardless of the
+      # permissions block, so commenting would 403 and turn a successful
+      # bench run red - fork PRs get the report as an artifact instead.
+      - name: PR comment with report
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        with:
+          comment-tag: "bench-report"
+          file-path: ${{ github.workspace }}/perf/bench/results/report.md
+
+      - name: Upload report for fork PRs (cannot comment)
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        uses: actions/upload-artifact@v7
+        with:
+          name: bench-report
+          path: perf/bench/results/report.md
+          retention-days: 30
+
+      # A shard that produced no results must fail the run. Job timeouts
+      # conclude as "cancelled" (not "failure"), so without this the whole
+      # workflow shows a shrug-grey "cancelled" and nothing goes red. Runs
+      # after the comment step so the missing scenarios are already named
+      # in the PR comment.
+      # Hand the absolute-mode variant to the store job as an artifact, so the
+      # token-bearing write never runs in this PR-code + write-scope job
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-merged-absolute
+          path: perf/bench/results/merged-absolute.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Fail on missing scenario results
+        run: |
+          if [ -f perf/bench/results/missing-scenarios.json ]; then
+            echo "::error::Benchmark shard(s) delivered no results: $(cat perf/bench/results/missing-scenarios.json | tr -d '\n')"
+            exit 1
+          fi
+
+  # A/B dispatch counterpart of `report`: a dispatched comparison has no PR to
+  # comment on, so the verdict table goes to the run's summary page instead —
+  # the natural landing spot for the "dispatch, then open the run" loop.
+  report-dispatch:
+    needs: [bench-interaction, bench-pageload]
+    if: >-
+      !cancelled() &&
+      github.event_name == 'workflow_dispatch' && inputs.ab_to != '' &&
+      needs.bench-interaction.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Download shard results
+        uses: actions/download-artifact@v8
+        with:
+          pattern: bench-results-*
+          merge-multiple: true
+          path: perf/bench/results
+
+      - name: Write merged report
+        env:
+          # Keep in sync with the report job / shard matrices above
+          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic
+          BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge
+        run: pnpm bench report
+
+      - name: Publish report to the run summary
+        run: cat perf/bench/results/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      # After the summary (so the missing scenarios are already named there)
+      # but BEFORE the store: a dead shard must fail the run, not persist an
+      # incomplete comparison — mirrors store-pr only running after `report`
+      # succeeds on the PR path
+      - name: Fail on missing scenario results
+        run: |
+          if [ -f perf/bench/results/missing-scenarios.json ]; then
+            echo "::error::Benchmark shard(s) delivered no results: $(cat perf/bench/results/missing-scenarios.json | tr -d '\n')"
+            exit 1
+          fi
+
+      # Persist the comparison as its own mode:'ab' document — an
+      # investigation record (git.sha = ab_to, mergeBaseSha = ab_from), not a
+      # time-series point; the trends dashboard only plots absolute-mode docs.
+      # Token here is safe: dispatch runs execute default-branch code, the
+      # same trust level as track-main.
+      - name: Store comparison document
+        env:
+          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+        run: pnpm bench store --ab "$GITHUB_WORKSPACE/perf/bench/results/merged.json"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-report
+          path: perf/bench/results/report.md
+          retention-days: 30
+
+  # Store the PR's experiment-side (absolute) result under its branch so the
+  # trends dashboard's branch comparison has real data. Separate from `report`
+  # so the metrics write token is never present in the write-scoped job that
+  # runs PR-authored report code. Same-repo PRs only: fork PRs receive no
+  # secrets, and the `trigger:perf-bench` label is maintainer-applied (triage-gated).
+  store-pr:
+    needs: [build-reference, report]
+    if: >-
+      !cancelled() &&
+      needs.report.result == 'success' &&
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      # Deliberately check out BASE-branch code, not the PR merge commit: this
+      # job holds BENCH_METRICS_WRITE_TOKEN, and the trigger:perf-bench label persists
+      # across pushes — checking out PR code would let any later push on a
+      # labeled PR run arbitrary code with the token. The PR's benchmark
+      # output is consumed purely as data via the artifact below. Do not
+      # "fix" this back to the default (merge) ref. Requires the bench CLI to
+      # exist on the base branch (true once perf/bench lands there); it runs
+      # from source via tsx, so no build step is needed here.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - uses: actions/download-artifact@v8
+        id: absolute
+        with:
+          name: bench-merged-absolute
+          path: perf/bench/results
+        continue-on-error: true # no artifact when the comparison was skipped
+
+      - name: Store PR run
+        if: steps.absolute.outcome == 'success'
+        env:
+          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+        run: pnpm bench store "$GITHUB_WORKSPACE/perf/bench/results/merged-absolute.json"
+
+  self-test:
+    # Same source on both sides - every metric must gate neutral; anything
+    # else is harness drift and fails this job loudly
+    if: >-
+      (github.event_name == 'schedule' && github.event.schedule == '0 6 * * 1') ||
+      (github.event_name == 'workflow_dispatch' && inputs.self_test)
+    needs: [build]
+    runs-on: ubuntu-8core
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-all
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm playwright install --with-deps
+
+      # Chromium on Linux validates TLS against the NSS store; the SPKI
+      # allowlist launch flag used locally is not reliably honored here, and
+      # a bypassed-instead-of-valid cert disables the browser HTTP cache
+      # (breaking warm-load measurements) - so import the bench cert properly
+      - name: Trust the bench TLS certificate
+        run: |
+          command -v certutil >/dev/null || sudo apt-get install -y -qq libnss3-tools >/dev/null
+          CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
+          mkdir -p "$HOME/.pki/nssdb"
+          certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
+          certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: bench-dist-experiment
+          path: perf/bench/dist
+
+      - name: Build reference-config studio from the same source
+        run: pnpm --filter bench build:reference-config
+
+      - name: Compare the build against itself
+        run: |
+          pnpm bench run --mode interaction \
+            --reference-dist "$GITHUB_WORKSPACE/perf/bench/.reference/dist" \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__self-test.json" \
+            --fail-on-verdict
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-results-self-test
+          path: perf/bench/results/
+          overwrite: true
+          retention-days: 30
+
+  track-main:
+    # Daily absolute-mode tracking (and the on-demand run_suite dispatch): soak
+    # and INP run here (daily-only modes), then this job gathers the interaction
+    # and pageLoad shard results (bench-interaction / bench-pageload, which run
+    # absolute on this trigger) and stores one merged benchRun doc to the
+    # studio-metrics project. Interaction/pageLoad moved to the sharded jobs so
+    # the daily run is parallel (was a single ~90-minute sequential job); soak
+    # (~10m) + INP (~10m) are cheap and stay together here.
+    #
+    # Fixed session counts across the board — comparability over speed, no
+    # dynamic-stopping shortcut across days.
+    # ab_to guard: an A/B dispatch measures a historical experiment build —
+    # storing its soak/INP as a daily main point would corrupt the series
+    if: >-
+      !cancelled() &&
+      needs.bench-interaction.result == 'success' &&
+      needs.bench-pageload.result == 'success' &&
+      ((github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
+       (github.event_name == 'workflow_dispatch' && inputs.run_suite && inputs.ab_to == ''))
+    needs: [build, bench-interaction, bench-pageload]
+    runs-on: ubuntu-8core
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      # See bench-interaction: stamps backfill runs (soak/INP here) with the
+      # measured sha
+      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
+      BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-all
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm playwright install --with-deps
+
+      # Chromium on Linux validates TLS against the NSS store; the SPKI
+      # allowlist launch flag used locally is not reliably honored here, and
+      # a bypassed-instead-of-valid cert disables the browser HTTP cache
+      # (breaking warm-load measurements) - so import the bench cert properly
+      - name: Trust the bench TLS certificate
+        run: |
+          command -v certutil >/dev/null || sudo apt-get install -y -qq libnss3-tools >/dev/null
+          CERT_PATH=$(pnpm --silent bench cert-path | tail -n 1)
+          mkdir -p "$HOME/.pki/nssdb"
+          certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
+          certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: bench-dist-experiment
+          path: perf/bench/dist
+
+      # Gather the interaction + pageLoad shard results into the shared results
+      # dir; soak and INP write their own JSON alongside, and `bench report`
+      # merges everything into one document (bench-results__*.json). Two
+      # explicit patterns (not a broad bench-results-*) so nothing unrelated —
+      # e.g. bench-results-self-test from a dispatch with both run_suite and
+      # self_test — leaks into the stored daily doc.
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: bench-results-interaction-*
+          merge-multiple: true
+          path: perf/bench/results
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: bench-results-pageload-*
+          merge-multiple: true
+          path: perf/bench/results
+
+      - name: Run soak check
+        run: |
+          pnpm bench run --mode soak --scenario singleString --minutes 10 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__soak.json"
+
+      - name: Run INP benchmarks
+        run: |
+          pnpm bench run --mode inp --scenario singleString --scenario article --sessions 4 \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__inp.json"
+
+      - name: Merge report
+        run: pnpm bench report
+
+      - name: Store benchRun document
+        env:
+          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+        run: pnpm bench store
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-results-track-main
+          path: perf/bench/results/
+          overwrite: true
+          retention-days: 30
+
+  # A failed scheduled run has no PR check to go red on and no human watching —
+  # a silent failure leaves a hole in the main-branch time series. Alert the
+  # CI channel instead of relying on someone opening the Actions tab.
+  # `cancelled` is included because job timeouts conclude as cancelled, not
+  # failure (see the report job's note).
+  alert-scheduled-failure:
+    needs: [build, bench-interaction, bench-pageload, self-test, track-main]
+    if: >-
+      always() && github.event_name == 'schedule' &&
+      (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":alert-dot: Scheduled \"${{ github.workflow }}\" run failed — daily tracking or the weekly self-test is broken (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
+            }

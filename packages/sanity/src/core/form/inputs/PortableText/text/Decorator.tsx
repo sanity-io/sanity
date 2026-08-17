@@ -3,11 +3,13 @@ import {type Theme} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
-import {type BlockDecoratorProps} from '../../../types'
+import {type BlockDecoratorProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {TEXT_DECORATOR_TAGS} from './constants'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const Root = styled.span(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const isDark = theme.sanity.color.dark
 
   return css`
@@ -22,10 +24,10 @@ const Root = styled.span(({theme}: {theme: Theme}) => {
 export function Decorator(props: BlockDecoratorRenderProps) {
   const {value, focused, selected, children, schemaType} = props
   const schemaTypes = usePortableTextMemberSchemaTypes()
-  const sanitySchemaType = schemaTypes.decorators.find((type) => type.value === schemaType.value)
+  const sanitySchemaType = schemaTypes.decorators.find((type) => type.value === schemaType.name)
   if (!sanitySchemaType) {
     // This should never happen
-    throw new Error(`Could not find Sanity schema type for decorator: ${schemaType.value}`)
+    throw new Error(`Could not find Sanity schema type for decorator: ${schemaType.name}`)
   }
   const tag = TEXT_DECORATOR_TAGS[value]
   const CustomComponent = sanitySchemaType.component
@@ -51,7 +53,7 @@ export function Decorator(props: BlockDecoratorRenderProps) {
     return CustomComponent ? (
       <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
-      // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
+      // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
   }, [CustomComponent, DefaultComponent, children, focused, sanitySchemaType, selected, value])
