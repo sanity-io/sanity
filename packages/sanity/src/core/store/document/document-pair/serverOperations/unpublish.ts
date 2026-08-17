@@ -14,6 +14,13 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
       return 'LIVE_EDIT_ENABLED'
     }
 
+    // A release version already carrying the unpublish marker would be a no-op: the release
+    // publish will remove the published document either way. Reverting it is a separate
+    // operation (`revertUnpublishVersion`), not a repeated unpublish.
+    if (idPair.versionId && snapshots.version && isGoingToUnpublish(snapshots.version)) {
+      return 'ALREADY_UNPUBLISHED'
+    }
+
     const variantVersion = getVariantVersionInfo(snapshots.version)
     if (variantVersion) {
       // Unpublishable variant versions:
@@ -21,13 +28,6 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
       // - a release-scoped variant, which is soft-unpublished as part of its release
       // A drafts-scoped variant has nothing published in its slot to unpublish.
       return variantVersion.bundleId !== 'drafts' ? false : 'NOT_PUBLISHED'
-    }
-
-    // A release version already carrying the unpublish marker would be a no-op: the release
-    // publish will remove the published document either way. Reverting it is a separate
-    // operation (`revertUnpublishVersion`), not a repeated unpublish.
-    if (idPair.versionId && snapshots.version && isGoingToUnpublish(snapshots.version)) {
-      return 'ALREADY_UNPUBLISHED'
     }
 
     return snapshots.published ? false : 'NOT_PUBLISHED'
