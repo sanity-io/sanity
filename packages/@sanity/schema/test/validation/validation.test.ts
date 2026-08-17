@@ -318,6 +318,60 @@ describe('Validation test', () => {
     expect(validationErrors).toHaveLength(0)
   })
 
+  test('accepts i18nTitleKey on styles, lists and decorators', () => {
+    const schemaDef = [
+      {
+        name: 'testBlock',
+        type: 'block',
+        styles: [
+          {title: 'Normal', value: 'normal', i18nTitleKey: 'inputs.portable-text.style.normal'},
+        ],
+        lists: [
+          {
+            title: 'Bulleted list',
+            value: 'bullet',
+            i18nTitleKey: 'inputs.portable-text.list-type.bullet',
+          },
+        ],
+        marks: {
+          decorators: [
+            {
+              title: 'Strong',
+              value: 'strong',
+              i18nTitleKey: 'inputs.portable-text.decorator.strong',
+            },
+          ],
+        },
+      },
+    ]
+
+    const validation = validateSchema(schemaDef).get('testBlock')
+    const validationErrors = validation._problems.filter(
+      (problem: any) => problem.severity === 'error',
+    )
+    expect(validationErrors).toHaveLength(0)
+  })
+
+  test('still reports genuinely unknown properties on styles and lists', () => {
+    const schemaDef = [
+      {
+        name: 'testBlock',
+        type: 'block',
+        styles: [{title: 'Normal', value: 'normal', nope: true}],
+        lists: [{title: 'Bulleted list', value: 'bullet', alsoNope: true}],
+      },
+    ]
+
+    const validation = validateSchema(schemaDef).get('testBlock')
+    const validationErrors = validation._problems.filter(
+      (problem: any) => problem.severity === 'error',
+    )
+    expect(validationErrors).toMatchObject([
+      {message: 'Found unknown properties for style normal: "nope"'},
+      {message: 'Found unknown properties for list bullet: "alsoNope"'},
+    ])
+  })
+
   describe('field type is a document type', () => {
     test('warns when a field type references a document type', () => {
       const schemaDef = [
