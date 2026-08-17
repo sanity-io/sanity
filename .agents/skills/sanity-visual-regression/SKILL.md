@@ -20,15 +20,16 @@ baselines. Review diffs on the Chromatic build linked from the PR check.
 
 ## Quick start: add visual coverage for a component
 
-1. Prefer a story in `dev/storybook/stories/`. Two patterns:
+1. Prefer a story in `dev/storybook/stories/`. Put render logic in a `*Story.tsx` harness inside
+   `packages/sanity` (see below) and keep the CSF file thin. Two patterns:
    - **Plain component states** (ui-components wrappers, tone/card sentinels): render variants
-     directly — see [Button.stories.tsx](../../../dev/storybook/stories/ui-components/Button.stories.tsx).
-     Put many variants in one story (a grid) to keep snapshot count low.
-   - **Studio-context states** (form inputs, anything needing workspace/i18n/layers): wrap in the
-     browser-test harness `TestWrapper` (+ `TestForm` for form inputs) — see
-     [Dialog.stories.tsx](../../../dev/storybook/stories/ui-components/Dialog.stories.tsx) and the
-     Portable Text stories. If a vitest browser test already has a `*Story.tsx` harness, reuse it
-     (never fork it): the harness stays shared between the test and the story.
+     in one harness (a grid) to keep snapshot count low — see
+     [TabStory.tsx](../../../packages/sanity/src/ui-components/tab/__tests__/TabStory.tsx).
+   - **Studio-context states** (form inputs, anything needing workspace/i18n/layers): wrap
+     `TestWrapper` (+ `TestForm` for form inputs) **inside the harness** — see
+     [ConfirmPopoverStory.tsx](../../../packages/sanity/src/ui-components/confirmPopover/__tests__/ConfirmPopoverStory.tsx)
+     and the Portable Text stories. If a vitest browser test already has a `*Story.tsx` harness,
+     reuse it (never fork it): the harness stays shared between the test and the story.
 2. Verify locally: `pnpm dev:storybook` (port 6006), then `pnpm --filter sanity-storybook test`
    (every story runs as a vitest browser-mode test via `@storybook/addon-vitest`).
 3. Push — the `Chromatic / Storybook visual tests` check snapshots only affected stories
@@ -37,6 +38,32 @@ baselines. Review diffs on the Chromatic build linked from the PR check.
 Migration priority: card and tone-related components first (tones cascade through everything),
 box primitives later. Snapshot the _wrapper_ components in `packages/sanity/src/ui-components`
 and vanilla-extract-migrated components (change indicators, `DocumentLayout`) as sentinels.
+
+## Avoiding cross-package boundary imports
+
+Storybook stories in `dev/storybook/stories/` should **not** import directly from component source
+files in `packages/sanity/src/`. Instead, create a `*Story.tsx` harness inside the package:
+
+1. **Create the harness** in a `__tests__/` directory near the component:
+   ```
+   packages/sanity/src/core/comments/components/__tests__/CommentBreadcrumbsStory.tsx
+   ```
+2. **Use relative imports** within the package (e.g., `../CommentBreadcrumbs`).
+3. **Wrap with `TestWrapper`** if the component needs studio context (i18n, workspace, layers).
+4. **Import the harness** from the Storybook story:
+   ```ts
+   // dev/storybook/stories/comments/CommentBreadcrumbs.stories.tsx
+   import {CommentBreadcrumbsStory} from '../../../../packages/sanity/src/core/comments/components/__tests__/CommentBreadcrumbsStory'
+   ```
+
+This pattern keeps story logic inside the `sanity` package and matches existing stories like
+`CommentInputStory`, `TableStory`, and all Portable Text stories. The harness can also be reused
+by vitest browser tests. Do not import production components from `dev/storybook` via relative
+paths into `packages/sanity/src/` — that is a cross-package boundary.
+
+A few older ui-components sentinels (`Button`, `Dialog`, `ToneIcon`) still import wrappers
+directly; leave those unless you are already touching the file. New coverage should use a
+harness.
 
 ## Determinism rules for stories
 

@@ -28,7 +28,7 @@ const config: StorybookConfig = {
       ],
       resolve: {
         conditions: ['monorepo', ...defaultClientConditions],
-        dedupe: ['react', 'react-dom', 'sanity', 'styled-components'],
+        dedupe: ['react', 'react-dom', 'sanity', 'styled-components', 'ui5'],
       },
     })
   },
