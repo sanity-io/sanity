@@ -18,7 +18,9 @@ import {
   runVisionQuery,
 } from './utils'
 
-const BOOK_QUERY = '*[_type == "book" && _id == $id]{_id, title}'
+// Variant overlay remaps `_id` to the published id, but a `_type == "book"`
+// filter does not match those overlaid documents. Query by `_id` only.
+const OVERLAY_QUERY = '*[_id == $id]{_id, title}'
 // Stacked perspectives (release id + drafts) are rejected on the e2e studio's
 // Vision default (`v2022-08-08`). `v2025-02-19` is a built-in Vision option.
 const STACKED_PERSPECTIVE_API_VERSION = 'v2025-02-19'
@@ -226,7 +228,7 @@ test.describe('Vision', () => {
         STACKED_PERSPECTIVE_API_VERSION,
       )
 
-      const resultRegion = await runVisionQuery(page, BOOK_QUERY, {id: bookId})
+      const resultRegion = await runVisionQuery(page, OVERLAY_QUERY, {id: bookId})
       await expect(resultRegion.getByText(releaseTitle)).toBeVisible({timeout: 30_000})
       await expect(resultRegion.getByText(publishedTitle)).toHaveCount(0)
 
@@ -277,7 +279,7 @@ test.describe('Vision', () => {
         page.getByText('When a variant is selected the API version needs to be vX'),
       ).toBeVisible()
 
-      const resultRegion = await runVisionQuery(page, BOOK_QUERY, {id: bookId})
+      const resultRegion = await runVisionQuery(page, OVERLAY_QUERY, {id: bookId})
       await expect(resultRegion.getByText(variantTitle)).toBeVisible({timeout: 30_000})
       await expect(resultRegion.getByText(publishedTitle)).toHaveCount(0)
 
