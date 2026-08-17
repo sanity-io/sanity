@@ -36,6 +36,7 @@ function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocum
 
 const BASE_PAIR = {draftId: 'drafts.my-id', publishedId: 'my-id'}
 const RELEASE_PAIR = {...BASE_PAIR, versionId: 'versions.rSummer.my-id'}
+const VARIANT_PAIR = {...BASE_PAIR, versionId: 'versions.varscope.my-id'}
 
 /** A plain (non-variant) release version snapshot. */
 function releaseVersion(options: {markedForUnpublish?: boolean} = {}): SanityDocument {
@@ -71,6 +72,7 @@ describe('unpublish', () => {
       expect(
         unpublish.disabled({
           typeName: 'blah',
+          idPair: VARIANT_PAIR,
           snapshots: {version: variantVersion(undefined)},
         } as unknown as OperationArgs),
       ).toBe(false)
@@ -80,6 +82,7 @@ describe('unpublish', () => {
       expect(
         unpublish.disabled({
           typeName: 'blah',
+          idPair: VARIANT_PAIR,
           snapshots: {version: variantVersion('rSummer')},
         } as unknown as OperationArgs),
       ).toBe(false)
@@ -89,10 +92,26 @@ describe('unpublish', () => {
       expect(
         unpublish.disabled({
           typeName: 'blah',
+          idPair: VARIANT_PAIR,
           // The base published existing says nothing about the VARIANT being published.
           snapshots: {version: variantVersion('drafts'), published: {} as SanityDocument},
         } as unknown as OperationArgs),
       ).toBe('NOT_PUBLISHED')
+    })
+
+    it('returns ALREADY_UNPUBLISHED for a release-scoped variant already marked for unpublish', () => {
+      const version = variantVersion('rSummer')
+
+      expect(
+        unpublish.disabled({
+          typeName: 'blah',
+          idPair: {...BASE_PAIR, versionId: version._id},
+          snapshots: {
+            version: {...version, _system: {...version._system, delete: true}},
+            published: {} as SanityDocument,
+          },
+        } as unknown as OperationArgs),
+      ).toBe('ALREADY_UNPUBLISHED')
     })
 
     it('is enabled for a release version of a published document', () => {
