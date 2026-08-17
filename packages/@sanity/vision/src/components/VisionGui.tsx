@@ -71,6 +71,7 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
 
 // Match Sanity API URLs with any domain (supports custom CDN domains like foolcdn.com)
 const sanityUrl = /\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
+const VARIANTS_API_VERSION = prefixApiVersion(VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion)
 
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
@@ -194,19 +195,16 @@ export function VisionGui(props: VisionGuiProps) {
     return [...releaseIds, ...defaultPerspective] as PerspectiveStack
   }, [releases, isDraftModelEnabled, isScheduledDraftsEnabled])
 
-  const userApiVersion = isValidApiVersion && customApiVersion ? customApiVersion : apiVersion
   const activeVariant = getActiveVariant(perspective, selectedVariantName)
-  const effectiveApiVersion = activeVariant
-    ? prefixApiVersion(VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion)
-    : userApiVersion
+  const userApiVersion = isValidApiVersion && customApiVersion ? customApiVersion : apiVersion
 
   // Client  with memoized initial value
   const _client = useClient({
-    apiVersion: effectiveApiVersion,
+    apiVersion: userApiVersion,
   })
   const client = useMemo(() => {
     return _client.withConfig({
-      apiVersion: effectiveApiVersion,
+      apiVersion: userApiVersion,
       perspective: getActivePerspective({
         visionPerspective: perspective,
         perspectiveStack,
@@ -220,7 +218,7 @@ export function VisionGui(props: VisionGuiProps) {
     perspectiveStack,
     scheduledDraftsStack,
     perspective,
-    effectiveApiVersion,
+    userApiVersion,
     dataset,
     _client,
     activeVariant,
@@ -254,9 +252,6 @@ export function VisionGui(props: VisionGuiProps) {
       const visionPerspective =
         options && 'perspective' in options ? options.perspective : perspective
       const queryVariant = getActiveVariant(visionPerspective, selectedVariantName)
-      const fallbackApiVersion =
-        options?.apiVersion ||
-        (customApiVersion && isValidApiVersion ? customApiVersion : apiVersion)
 
       const context: Required<Omit<QueryExecutionOptions, 'params' | 'perspective'>> & {
         params: Params
@@ -271,9 +266,9 @@ export function VisionGui(props: VisionGuiProps) {
           perspectiveStack,
           scheduledDraftsStack,
         }),
-        apiVersion: queryVariant
-          ? prefixApiVersion(VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion)
-          : fallbackApiVersion,
+        apiVersion:
+          options?.apiVersion ||
+          (customApiVersion && isValidApiVersion ? customApiVersion : apiVersion),
         variant: queryVariant,
       }
 
@@ -630,6 +625,17 @@ export function VisionGui(props: VisionGuiProps) {
     }
   }, [cancelQuerySubscription, cancelListenerSubscription])
 
+  useEffect(() => {
+    if (!activeVariant) {
+      return
+    }
+    // Pin the dropdown to vX. Leave it there if the variant is later cleared.
+    // oxlint-disable-next-line react/react-compiler -- write through to apiVersion state so the selector keeps vX after the variant is cleared
+    setApiVersion(VARIANTS_API_VERSION)
+    setCustomApiVersion(false)
+    localStorage.set('apiVersion', VARIANTS_API_VERSION)
+  }, [activeVariant, localStorage])
+
   const handleStudioPerspectiveChange = useEffectEvent((stack: StackablePerspective[]) => {
     if (stack.length > 0) {
       setPerspective('pinnedRelease')
@@ -688,8 +694,8 @@ export function VisionGui(props: VisionGuiProps) {
       data-testid="vision-root"
     >
       <VisionGuiHeader
-        apiVersion={effectiveApiVersion}
-        customApiVersion={activeVariant ? false : customApiVersion}
+        apiVersion={apiVersion}
+        customApiVersion={customApiVersion}
         dataset={dataset}
         datasets={datasets}
         onChangeDataset={handleChangeDataset}
@@ -701,7 +707,6 @@ export function VisionGui(props: VisionGuiProps) {
         url={url}
         perspective={perspective}
         isScheduledDraftsEnabled={isScheduledDraftsEnabled}
-        isApiVersionLocked={Boolean(activeVariant)}
       />
 
       <SplitpaneContainer flex="auto">

@@ -314,7 +314,9 @@ test.describe('Vision', () => {
 
       await page.getByTestId('perspective-selector').selectOption('raw')
       await expect(apiVersionSelector).toBeEnabled()
+      await expect(apiVersionSelector).toHaveValue('vX')
       await expect(resultRegion.getByText(publishedTitle)).toBeVisible({timeout: 30_000})
+      await expect(queryUrl).toHaveValue(/\/vX\//)
       await expect(queryUrl).not.toHaveValue(/[?&]variant=/)
     } finally {
       await deleteVariantDefinition(sanityClient, variantId, {publishedId: bookId})

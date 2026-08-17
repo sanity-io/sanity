@@ -21,6 +21,7 @@ import {
 import {API_VERSIONS} from '../apiVersions'
 import {visionLocaleNamespace} from '../i18n'
 import {
+  getActiveVariant,
   hasPinnedPerspective,
   SUPPORTED_PERSPECTIVES,
   type SupportedPerspective,
@@ -74,7 +75,6 @@ export interface VisionGuiHeaderProps {
   url?: string
   perspective?: SupportedPerspective
   isScheduledDraftsEnabled: boolean
-  isApiVersionLocked: boolean
 }
 
 export function VisionGuiHeader({
@@ -91,9 +91,11 @@ export function VisionGuiHeader({
   url,
   perspective,
   isScheduledDraftsEnabled,
-  isApiVersionLocked,
 }: VisionGuiHeaderProps) {
   const pinnedPerspective = usePerspective()
+  const isApiVersionLocked = Boolean(
+    getActiveVariant(perspective, pinnedPerspective.selectedVariantName),
+  )
   const {t} = useTranslation(visionLocaleNamespace)
   const operationUrlElement = useRef<HTMLInputElement | null>(null)
   const handleCopyUrl = useCallback(() => {
