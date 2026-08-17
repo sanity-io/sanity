@@ -171,7 +171,7 @@ export function buildDistAtCommit(sha: string, targetDist: string): void {
 export function prepareReference(argv: PrepareReferenceArgs): void {
   const referenceDist = path.join(BENCH_ROOT, '.reference/dist')
 
-  // Explicit reference commit (`ab_from`/`ab_to` dispatch): no merge-base, no
+  // Explicit reference commit (`ab_reference`/`ab_experiment` dispatch): no merge-base, no
   // cache, and no absolute-mode fallback — the comparison IS the run, so a
   // reference that cannot build must fail it (mirrors prepare-backfill).
   if (argv.at) {

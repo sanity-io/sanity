@@ -26,9 +26,9 @@ export interface ComparisonRun {
   _id: string
   startedAt: string
   git: {
-    /** The experiment commit (`ab_to`). */
+    /** The experiment commit (`ab_experiment`). */
     sha: string
-    /** The reference commit (`ab_from`). */
+    /** The reference commit (`ab_reference`). */
     mergeBaseSha?: string
     committedAt?: string | null
   } | null

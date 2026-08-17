@@ -27,15 +27,15 @@ on:
         type: boolean
         default: false
       backfill_sha:
-        description: "Backfill: build and measure this main-history commit instead of HEAD (full 40-char sha; requires run_suite, incompatible with self_test and ab_from/ab_to; result is stored under this sha, harness/scenarios come from HEAD)"
+        description: "Backfill: build and measure this main-history commit instead of HEAD (full 40-char sha; requires run_suite, incompatible with self_test and ab_reference/ab_experiment; result is stored under this sha, harness/scenarios come from HEAD)"
         required: false
         type: string
-      ab_from:
-        description: "A/B: reference commit to compare against (full 40-char sha; set together with ab_to; incompatible with backfill_sha and self_test; verdicts land in the run summary)"
+      ab_reference:
+        description: "A/B: the baseline commit. Compares exactly two builds — this against ab_experiment — not the commits in between. Full 40-char sha; set together with ab_experiment; incompatible with backfill_sha and self_test; verdicts land in the run summary"
         required: false
         type: string
-      ab_to:
-        description: "A/B: experiment commit to measure (full 40-char sha; set together with ab_from)"
+      ab_experiment:
+        description: "A/B: the commit under test, compared against ab_reference (full 40-char sha; set together with ab_reference)"
         required: false
         type: string
 
@@ -85,7 +85,7 @@ jobs:
           # Backfill and A/B builds add a worktree at a historical commit,
           # which a depth-1 clone doesn't have (the inputs are empty on
           # non-dispatch events)
-          fetch-depth: ${{ (inputs.backfill_sha != '' || inputs.ab_to != '') && '0' || '1' }}
+          fetch-depth: ${{ (inputs.backfill_sha != '' || inputs.ab_experiment != '') && '0' || '1' }}
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -104,26 +104,26 @@ jobs:
       - name: Validate dispatch inputs
         if: >-
           github.event_name == 'workflow_dispatch' &&
-          (inputs.backfill_sha != '' || inputs.ab_from != '' || inputs.ab_to != '')
+          (inputs.backfill_sha != '' || inputs.ab_reference != '' || inputs.ab_experiment != '')
         env:
           RUN_SUITE: ${{ inputs.run_suite }}
           SELF_TEST: ${{ inputs.self_test }}
           BACKFILL_SHA: ${{ inputs.backfill_sha }}
-          AB_FROM: ${{ inputs.ab_from }}
-          AB_TO: ${{ inputs.ab_to }}
+          AB_FROM: ${{ inputs.ab_reference }}
+          AB_TO: ${{ inputs.ab_experiment }}
         run: |
           # Explicit grouping: && and || share precedence in sh and associate
-          # left, so the ungrouped form silently passes when only ab_from is set
+          # left, so the ungrouped form silently passes when only ab_reference is set
           if { [ -n "$AB_FROM" ] && [ -z "$AB_TO" ]; } || { [ -z "$AB_FROM" ] && [ -n "$AB_TO" ]; }; then
-            echo "::error::ab_from and ab_to must be set together"
+            echo "::error::ab_reference and ab_experiment must be set together"
             exit 1
           fi
           if [ -n "$AB_TO" ] && [ -n "$BACKFILL_SHA" ]; then
-            echo "::error::ab_from/ab_to cannot be combined with backfill_sha"
+            echo "::error::ab_reference/ab_experiment cannot be combined with backfill_sha"
             exit 1
           fi
           if [ -n "$AB_TO" ] && [ "$SELF_TEST" = "true" ]; then
-            echo "::error::ab_from/ab_to cannot be combined with self_test"
+            echo "::error::ab_reference/ab_experiment cannot be combined with self_test"
             exit 1
           fi
           if [ -n "$BACKFILL_SHA" ]; then
@@ -139,7 +139,7 @@ jobs:
 
       # Backfill / A/B: build the experiment dist from the requested
       # historical commit's packages (HEAD's harness overlaid) instead of
-      # HEAD's — backfill repairs holes in the daily time series, ab_to is
+      # HEAD's — backfill repairs holes in the daily time series, ab_experiment is
       # the experiment side of an A/B dispatch. The downstream jobs run
       # unchanged and, for backfill, store the result under that sha
       # (BENCH_GIT_SHA below).
@@ -148,7 +148,7 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
         env:
           BACKFILL_SHA: ${{ inputs.backfill_sha }}
-          AB_TO: ${{ inputs.ab_to }}
+          AB_TO: ${{ inputs.ab_experiment }}
         run: |
           HISTORICAL_SHA="${BACKFILL_SHA:-$AB_TO}"
           if [ -n "$HISTORICAL_SHA" ]; then
@@ -166,12 +166,12 @@ jobs:
 
   build-reference:
     # PR path (label-gated, merge-base reference) or A/B dispatch (explicit
-    # reference commit via ab_from)
+    # reference commit via ab_reference)
     if: >-
       (github.event_name == 'pull_request' &&
        contains(github.event.pull_request.labels.*.name, 'trigger:perf-bench') &&
        (github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench')) ||
-      (github.event_name == 'workflow_dispatch' && inputs.ab_from != '')
+      (github.event_name == 'workflow_dispatch' && inputs.ab_reference != '')
     runs-on: ubuntu-8core
     timeout-minutes: 25
     permissions:
@@ -226,11 +226,11 @@ jobs:
           # The reference build is the same harness + scenarios (checked out
           # from HEAD) against the reference commit's packages - only product
           # code differs. PRs resolve the merge-base; A/B dispatches pass the
-          # explicit ab_from commit via --at (fails loudly, no fallback).
+          # explicit ab_reference commit via --at (fails loudly, no fallback).
           SANITY_STUDIO_BENCH_API_HOST: https://localhost:4312
           SANITY_STUDIO_BENCH_PROJECT_ID: benchref
           BASE_REF: ${{ github.base_ref }}
-          AB_FROM: ${{ inputs.ab_from }}
+          AB_FROM: ${{ inputs.ab_reference }}
         run: |
           if [ -n "$AB_FROM" ]; then
             pnpm bench prepare-reference --at "$AB_FROM"
@@ -257,17 +257,17 @@ jobs:
     # nothing. The `!cancelled()` status function is required so the job still
     # runs when build-reference is *skipped* (a plain custom if: would itself
     # skip on a skipped need); guard on build succeeding.
-    # The ab_to clause requires build-reference success: on the PR path a
+    # The ab_experiment clause requires build-reference success: on the PR path a
     # broken reference falls back to absolute mode (comparison=skipped, job
     # green), but `prepare-reference --at` fails the job instead — benching
     # on regardless would produce a comparison-less run wearing an A/B label
     if: >-
       !cancelled() && needs.build.result == 'success' &&
-      (inputs.ab_to == '' || needs.build-reference.result == 'success') &&
+      (inputs.ab_experiment == '' || needs.build-reference.result == 'success') &&
       ((github.event_name == 'pull_request' &&
         needs.build.outputs.has_code_changes == 'true') ||
        (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
-       (github.event_name == 'workflow_dispatch' && (inputs.run_suite || inputs.ab_to != '')))
+       (github.event_name == 'workflow_dispatch' && (inputs.run_suite || inputs.ab_experiment != '')))
     runs-on: ubuntu-8core
     # Headroom for a/b runs of the heavy scenarios (synthetic sessions cost
     # ~90s each and run on both sides)
@@ -280,7 +280,7 @@ jobs:
       # Backfill runs measure a historical commit's build — stamp the run
       # documents with that sha (empty on non-backfill events; see
       # report/collect.ts)
-      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
+      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_experiment }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
     strategy:
       fail-fast: false
@@ -362,17 +362,17 @@ jobs:
     # (build-reference skipped). Gated to the triggers track-main consumes, so
     # the self-test path doesn't launch these shards for nothing. `!cancelled()`
     # lets it run past the skipped build-reference need; guard on build.
-    # The ab_to clause requires build-reference success: on the PR path a
+    # The ab_experiment clause requires build-reference success: on the PR path a
     # broken reference falls back to absolute mode (comparison=skipped, job
     # green), but `prepare-reference --at` fails the job instead — benching
     # on regardless would produce a comparison-less run wearing an A/B label
     if: >-
       !cancelled() && needs.build.result == 'success' &&
-      (inputs.ab_to == '' || needs.build-reference.result == 'success') &&
+      (inputs.ab_experiment == '' || needs.build-reference.result == 'success') &&
       ((github.event_name == 'pull_request' &&
         needs.build.outputs.has_code_changes == 'true') ||
        (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
-       (github.event_name == 'workflow_dispatch' && (inputs.run_suite || inputs.ab_to != '')))
+       (github.event_name == 'workflow_dispatch' && (inputs.run_suite || inputs.ab_experiment != '')))
     runs-on: ubuntu-8core
     timeout-minutes: 20
     permissions:
@@ -381,7 +381,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       # See bench-interaction: stamps backfill runs with the measured sha
-      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
+      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_experiment }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
     strategy:
       fail-fast: false
@@ -553,7 +553,7 @@ jobs:
     needs: [bench-interaction, bench-pageload]
     if: >-
       !cancelled() &&
-      github.event_name == 'workflow_dispatch' && inputs.ab_to != '' &&
+      github.event_name == 'workflow_dispatch' && inputs.ab_experiment != '' &&
       needs.bench-interaction.result != 'skipped'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -594,7 +594,7 @@ jobs:
           fi
 
       # Persist the comparison as its own mode:'ab' document — an
-      # investigation record (git.sha = ab_to, mergeBaseSha = ab_from), not a
+      # investigation record (git.sha = ab_experiment, mergeBaseSha = ab_reference), not a
       # time-series point; the trends dashboard only plots absolute-mode docs.
       # Token here is safe: dispatch runs execute default-branch code, the
       # same trust level as track-main.
@@ -745,14 +745,14 @@ jobs:
     #
     # Fixed session counts across the board — comparability over speed, no
     # dynamic-stopping shortcut across days.
-    # ab_to guard: an A/B dispatch measures a historical experiment build —
+    # ab_experiment guard: an A/B dispatch measures a historical experiment build —
     # storing its soak/INP as a daily main point would corrupt the series
     if: >-
       !cancelled() &&
       needs.bench-interaction.result == 'success' &&
       needs.bench-pageload.result == 'success' &&
       ((github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
-       (github.event_name == 'workflow_dispatch' && inputs.run_suite && inputs.ab_to == ''))
+       (github.event_name == 'workflow_dispatch' && inputs.run_suite && inputs.ab_experiment == ''))
     needs: [build, bench-interaction, bench-pageload]
     runs-on: ubuntu-8core
     timeout-minutes: 45
@@ -763,7 +763,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       # See bench-interaction: stamps backfill runs (soak/INP here) with the
       # measured sha
-      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
+      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_experiment }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
     steps:
       - uses: actions/checkout@v7

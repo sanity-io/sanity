@@ -9,7 +9,7 @@
  * - a labeled PR stores its experiment-side build under the PR branch, one
  *   doc per PR (overwritten each push) so branch comparison has real data —
  *   absolute-mode only, since an A/B verdict isn't comparable to the series;
- * - an `ab_from`/`ab_to` dispatch stores its full comparison with `--ab` as a
+ * - an `ab_reference`/`ab_experiment` dispatch stores its full comparison with `--ab` as a
  *   `mode: 'ab'` document (git.sha = experiment, mergeBaseSha = reference) —
  *   an investigation record for the Comparisons tool, which the trends
  *   dashboard deliberately does not plot.

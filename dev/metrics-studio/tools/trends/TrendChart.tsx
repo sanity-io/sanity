@@ -13,7 +13,7 @@ const MARGIN = {top: 8, right: 8, bottom: 22, left: 44}
 
 /**
  * The nearest earlier point on the selected point's own line that measured a
- * *different* commit — the natural `ab_from` for an A/B comparison against
+ * *different* commit — the natural `ab_reference` for an A/B comparison against
  * this point. Same-sha neighbours (weekend crons, shard repeats) are skipped:
  * a commit can't be compared against itself. Undefined when there is no
  * earlier distinct commit (first point, soak minutes, local runs).

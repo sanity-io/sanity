@@ -39,7 +39,7 @@ export function RunDetailPopover(props: {
   const {series, point, previousSha, referenceElement, onClose} = props
   const [contentEl, setContentEl] = useState<HTMLDivElement | null>(null)
   const [abCopyState, setAbCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
-  // The bench workflow's ab_from/ab_to inputs require full shas, and GitHub
+  // The bench workflow's ab_reference/ab_experiment inputs require full shas, and GitHub
   // has no URL that prefills a workflow_dispatch form — so the affordance is
   // a copyable command, previous point as reference, this point as experiment
   const abCommand =

@@ -83,7 +83,9 @@ export function ComparisonsTool() {
             </Text>
             <Card padding={3} radius={2} tone="transparent" border>
               <Text size={1}>
-                <code>gh workflow run bench.yml -f ab_from=&lt;sha&gt; -f ab_to=&lt;sha&gt;</code>
+                <code>
+                  gh workflow run bench.yml -f ab_reference=&lt;sha&gt; -f ab_experiment=&lt;sha&gt;
+                </code>
               </Text>
             </Card>
           </Stack>
