@@ -1,7 +1,13 @@
 import {describe, expect, it} from 'vitest'
 
 import {bootstrapDiffOfMedians, type DiffInterval} from '../bootstrap'
-import {gate, INTERACTION_THRESHOLDS, PAGELOAD_THRESHOLDS, shouldStop} from '../gate'
+import {
+  gate,
+  INTERACTION_THRESHOLDS,
+  isDecidedVerdict,
+  PAGELOAD_THRESHOLDS,
+  shouldStop,
+} from '../gate'
 import {median, quantile, summarize} from '../quantiles'
 import {mulberry32, type Rng} from '../rng'
 
@@ -247,6 +253,26 @@ describe('gate', () => {
         }
       }
     }
+  })
+})
+
+describe('isDecidedVerdict (the --fail-on-verdict predicate)', () => {
+  it('only regression and improvement count as decided', () => {
+    expect(isDecidedVerdict('regression')).toBe(true)
+    expect(isDecidedVerdict('improvement')).toBe(true)
+    expect(isDecidedVerdict('neutral')).toBe(false)
+  })
+
+  it('inconclusive is NOT decided — a noisy run must not fail the self-test', () => {
+    // gate() treats inconclusive as neutral and the PR report counts it under
+    // "no regressions"; failing on it would turn budget exhaustion (flake
+    // resistance §2) into a red self-test. Regression guard: the predicate was
+    // once `verdict !== 'neutral'`, which failed on inconclusive.
+    expect(isDecidedVerdict('inconclusive')).toBe(false)
+  })
+
+  it('a metric with no comparison (absolute mode) is not decided', () => {
+    expect(isDecidedVerdict(undefined)).toBe(false)
   })
 })
 

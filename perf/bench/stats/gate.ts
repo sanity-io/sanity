@@ -56,6 +56,20 @@ export function gate(
 }
 
 /**
+ * Did the gate actually decide an effect? True only for `regression` and
+ * `improvement`.
+ *
+ * This is the predicate behind `--fail-on-verdict` (the self-test), and it
+ * deliberately excludes `inconclusive`: gate() treats inconclusive as neutral
+ * and the PR report counts it under "no regressions", so failing on it would
+ * make ordinary CI noise — the very thing inconclusive exists to absorb — read
+ * as harness drift.
+ */
+export function isDecidedVerdict(verdict: Verdict | undefined): boolean {
+  return verdict === 'regression' || verdict === 'improvement'
+}
+
+/**
  * Dynamic stopping: stop sampling once the CI is tight enough to decide —
  * the exact complement of gate()'s `inconclusive` boundary, so a run that
  * stopped as "converged" can never gate inconclusive.
