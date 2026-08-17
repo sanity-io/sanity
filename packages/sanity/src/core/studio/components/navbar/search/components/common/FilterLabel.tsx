@@ -1,6 +1,7 @@
-import {Box, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {TextWithTone} from '../../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'

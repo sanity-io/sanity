@@ -1,8 +1,9 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {type ComponentType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 export const STATE_TITLES = {
   'loading': 'Checking…',

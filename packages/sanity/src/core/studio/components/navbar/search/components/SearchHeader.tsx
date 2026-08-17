@@ -2,9 +2,10 @@ import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
-import {Box, Card, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useEffect, useRef, type RefAttributes} from 'react'
 import {keyframes, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {StatusButton} from '../../../../../components/StatusButton'
@@ -109,7 +110,7 @@ export function SearchHeader({
         )}
 
         {/* Search field */}
-        <Box flex={1}>
+        <Box flexBasis="0%" flexGrow={1}>
           <CustomTextInput
             __unstable_disableFocusRing
             $background={fullscreen}
