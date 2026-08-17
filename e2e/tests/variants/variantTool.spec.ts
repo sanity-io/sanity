@@ -2,18 +2,15 @@ import {expect, type Page, type TestInfo} from '@playwright/test'
 import {type SanityClient} from '@sanity/client'
 
 import {test} from '../../studio-test'
+import {
+  createVariantDefinition,
+  deleteVariantDefinition,
+  getVariantsClient,
+  isVariantNotFoundError,
+} from './utils'
 
 const VARIANT_DOCUMENTS_PATH = '_.variants'
 const VARIANT_DOCUMENT_TYPE = 'system.variant'
-
-// Variant definition actions are only routable on a newer API version than the
-// shared e2e client default (2021-08-31). This matches the version the studio
-// uses for these calls (VARIANTS_STUDIO_CLIENT_OPTIONS).
-const VARIANTS_API_VERSION = 'X'
-
-function getVariantsClient(sanityClient: SanityClient): SanityClient {
-  return sanityClient.withConfig({apiVersion: VARIANTS_API_VERSION})
-}
 
 const E2E_VARIANT_TITLE_RUN_ID = `${Date.now().toString(36)}${Math.random()
   .toString(36)
@@ -45,49 +42,6 @@ function createVariantTitlePrefix(testInfo: TestInfo = test.info()): string {
   return `E2E Variants ${E2E_VARIANT_TITLE_RUN_ID} ${projectName} worker ${testInfo.parallelIndex} retry ${testInfo.retry} ${testName}`
 }
 
-async function createVariantDefinition(
-  sanityClient: SanityClient,
-  options: {
-    variantId: string
-    conditions?: Record<string, string>
-    priority?: number
-    metadata?: VariantDocument['metadata']
-  },
-): Promise<void> {
-  // Variant definition actions are available at runtime, but their payloads are
-  // not yet typed on SanityClient.action(). The shape below matches the API
-  // contract in packages/sanity/src/core/variants/ACTIONS.md; remove `as never`
-  // once @sanity/client exports these action types.
-  await getVariantsClient(sanityClient).action({
-    actionType: 'sanity.action.variant.definition.create',
-    variantId: options.variantId,
-    conditions: options.conditions ?? {},
-    priority: options.priority ?? 0,
-    metadata: options.metadata,
-  } as never)
-}
-
-function isVariantNotFoundError(error: unknown): boolean {
-  if (typeof error !== 'object' || !error) return false
-
-  const err = error as {
-    statusCode?: unknown
-    response?: {statusCode?: unknown}
-    message?: unknown
-  }
-
-  const statusCode =
-    typeof err.statusCode === 'number'
-      ? err.statusCode
-      : typeof err.response?.statusCode === 'number'
-        ? err.response.statusCode
-        : undefined
-
-  return (
-    statusCode === 404 || (typeof err.message === 'string' && err.message.includes('was not found'))
-  )
-}
-
 async function deleteVariantDocuments(
   sanityClient: SanityClient,
   titlePrefix: string,
@@ -111,11 +65,7 @@ async function deleteVariantDocuments(
   // in the test body, or the query may return a stale read of a deleted doc.
   const results = await Promise.allSettled(
     documents.map((document) =>
-      // Same untyped-action workaround as createVariantDefinition above.
-      client.action({
-        actionType: 'sanity.action.variant.definition.delete',
-        variantId: getVariantShortId(document._id),
-      } as never),
+      deleteVariantDefinition(sanityClient, getVariantShortId(document._id)),
     ),
   )
 

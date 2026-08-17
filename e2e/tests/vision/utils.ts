@@ -1,11 +1,7 @@
 import {expect, type Page} from '@playwright/test'
 import {type SanityClient} from '@sanity/client'
 
-const VARIANTS_API_VERSION = 'X'
-
-function getVariantsClient(sanityClient: SanityClient): SanityClient {
-  return sanityClient.withConfig({apiVersion: VARIANTS_API_VERSION})
-}
+import {getVariantsClient} from '../variants/utils'
 
 export function encodeQueryString(
   query: string,
@@ -84,61 +80,6 @@ export const getVisionRegions = async (page: Page) => {
   return {queryEditorRegion, queryEditor, paramsRegion, paramsEditor, resultRegion}
 }
 
-export async function createVariantDefinition(
-  sanityClient: SanityClient,
-  options: {
-    variantId: string
-    conditions?: Record<string, string>
-    metadata?: {title?: string; [key: string]: unknown}
-  },
-): Promise<void> {
-  // Variant definition actions are available at runtime, but their payloads are
-  // not yet typed on SanityClient.action().
-  await getVariantsClient(sanityClient).action({
-    actionType: 'sanity.action.variant.definition.create',
-    variantId: options.variantId,
-    conditions: options.conditions ?? {},
-    priority: 0,
-    metadata: options.metadata,
-  } as never)
-}
-
-export async function createVariantDocument(
-  sanityClient: SanityClient,
-  options: {
-    variantId: string
-    publishedId: string
-    document: {_type: string; title: string}
-  },
-): Promise<void> {
-  await getVariantsClient(sanityClient).action({
-    actionType: 'sanity.action.document.variant.create',
-    variantId: options.variantId,
-    publishedId: options.publishedId,
-    document: options.document,
-  } as never)
-}
-
-function isIgnorableVariantCleanupError(error: unknown): boolean {
-  const message = error instanceof Error ? error.message : String(error)
-  return (
-    message.includes('was not found') ||
-    message.includes('not found') ||
-    message.includes('referenced') ||
-    message.includes('still has')
-  )
-}
-
-async function ignoreVariantCleanupError(action: () => Promise<unknown>): Promise<void> {
-  try {
-    await action()
-  } catch (error) {
-    if (!isIgnorableVariantCleanupError(error)) {
-      throw error
-    }
-  }
-}
-
 export async function fetchPublishedVariantOverlay(
   sanityClient: SanityClient,
   options: {publishedId: string; variantId: string},
@@ -149,40 +90,4 @@ export async function fetchPublishedVariantOverlay(
       variant: options.variantId,
     })
     .fetch('*[_id == $id]{_id, title}', {id: options.publishedId})
-}
-
-export async function deleteVariantDefinition(
-  sanityClient: SanityClient,
-  variantId: string,
-  options?: {publishedId?: string},
-): Promise<void> {
-  const client = getVariantsClient(sanityClient)
-
-  if (options?.publishedId) {
-    // Variant-of-published documents cannot be deleted directly; unpublish
-    // them first (which recreates a drafts-scoped variant), then delete that.
-    await ignoreVariantCleanupError(() =>
-      client.action({
-        actionType: 'sanity.action.document.variant.unpublish',
-        publishedId: options.publishedId,
-        variantId,
-        bundleId: undefined,
-      } as never),
-    )
-    await ignoreVariantCleanupError(() =>
-      client.action({
-        actionType: 'sanity.action.document.variant.delete',
-        publishedId: options.publishedId,
-        variantId,
-        bundleId: 'drafts',
-      } as never),
-    )
-  }
-
-  await ignoreVariantCleanupError(() =>
-    client.action({
-      actionType: 'sanity.action.variant.definition.delete',
-      variantId,
-    } as never),
-  )
 }

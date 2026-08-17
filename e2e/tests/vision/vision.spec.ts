@@ -12,6 +12,8 @@ import {
   createVariantDefinition,
   createVariantDocument,
   deleteVariantDefinition,
+} from '../variants/utils'
+import {
   encodeQueryString,
   fetchPublishedVariantOverlay,
   getVisionRegions,
