@@ -1,10 +1,11 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Box, Flex, type ResponsivePaddingProps, Stack} from '@sanity/ui'
+import {Flex, Stack} from '@sanity/ui'
+import {Box, type PaddingProps} from 'ui5'
 
 import {TextWithTone} from '../../../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 
-export function FilterError(props: ResponsivePaddingProps) {
+export function FilterError(props: PaddingProps) {
   const {t} = useTranslation()
 
   return (
