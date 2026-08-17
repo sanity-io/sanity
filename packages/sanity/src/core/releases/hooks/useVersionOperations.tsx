@@ -23,6 +23,12 @@ export interface VersionOperationsValue {
     options?: CreateVersionOptions,
   ) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<SingleActionResult>
+  /**
+   * @deprecated use `useDocumentOperation(publishedId, type, releaseId).unpublish` instead
+   * which routes release versions through the same operation pipeline as draft and published edits.
+   *
+   * Kept for backwards compatibility
+   */
   unpublishVersion: (documentId: string) => Promise<SingleActionResult>
   revertUnpublishVersion: (documentId: string) => Promise<SingleActionResult>
 }
@@ -62,6 +68,7 @@ export function useVersionOperations(): VersionOperationsValue {
   return {
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
+    // oxlint-disable-next-line no-deprecated
     unpublishVersion: handleUnpublishVersion,
     revertUnpublishVersion: handleRevertUnpublishVersion,
   }

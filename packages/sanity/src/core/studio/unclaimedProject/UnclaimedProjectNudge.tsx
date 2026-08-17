@@ -22,17 +22,13 @@ import {
   type UnclaimedProjectState,
   useUnclaimedProject,
 } from './useUnclaimedProject'
-import {
-  getClaimedIdentityText,
-  getClaimedIdentityTextParts,
-  useUnclaimedProjectCopy,
-} from './useUnclaimedProjectCopy'
+import {useUnclaimedProjectCopy} from './useUnclaimedProjectCopy'
 
 /**
  * Persistent banner + snoozable toast nudging the user to claim a minted-but-unclaimed project
- * before it expires, flipping to an identity-aware login banner once it's claimed. Renders
- * nothing after the claim period or for anything not part of mint-and-claim — see
- * {@link useUnclaimedProject}.
+ * before it expires. Once claimed, the robot session is cleared and the user is sent directly
+ * to login. Renders nothing after the claim period or for anything not part of mint-and-claim —
+ * see {@link useUnclaimedProject}.
  *
  * @internal
  */
@@ -78,7 +74,7 @@ function UnclaimedProjectNudgeInner({
   onClaim: () => void
   state: UnclaimedProjectState
 }) {
-  const {auth, projectId} = useWorkspace()
+  const {projectId} = useWorkspace()
   const copy = useUnclaimedProjectCopy(true)
 
   const unclaimed = state?.status === 'unclaimed' ? state : undefined
@@ -111,13 +107,6 @@ function UnclaimedProjectNudgeInner({
     claimable &&
     claimable.expiresAt.getTime() - now <= copy.criticalThresholdHours * 3_600_000,
   )
-
-  // The claim URL is spent; keep its provenance while the robot token is active so this banner
-  // survives refreshes. Clear it together with the token so a fresh session lands on login.
-  const handleSignIn = useCallback(() => {
-    clearUnclaimedProjectRecord(projectId)
-    void auth.logout?.()
-  }, [auth, projectId])
 
   // Dismissal happens through the snooze button: useConditionalToast re-pushes while enabled,
   // which would defeat a close control.
@@ -179,48 +168,6 @@ function UnclaimedProjectNudgeInner({
 
   if (!copy) return null
 
-  if (state?.status === 'claimed') {
-    return (
-      <Card data-testid="unclaimed-project-banner" tone="positive" padding={3} borderBottom>
-        <Box display={['block', 'block', 'none']}>
-          <Stack gap={3}>
-            <Flex align="center" gap={3} justify="space-between">
-              <Text size={1} weight="medium" style={{flex: 1, minWidth: 0}}>
-                {copy.claimed.text}
-              </Text>
-              <Button
-                mode="default"
-                tone="positive"
-                size="default"
-                text={copy.claimed.signInButtonText}
-                onClick={handleSignIn}
-                style={{flexShrink: 0}}
-              />
-            </Flex>
-            <Text size={1} weight="medium" style={{overflowWrap: 'anywhere'}}>
-              <ClaimedIdentityText text={copy.claimed.identityText} email={state.email} />
-            </Text>
-          </Stack>
-        </Box>
-        <Box display={['none', 'none', 'block']}>
-          <Flex align="center" gap={3} justify="center" wrap="wrap">
-            <Text size={1} weight="medium" style={{overflowWrap: 'anywhere'}}>
-              {copy.claimed.text}{' '}
-              <ClaimedIdentityText text={copy.claimed.identityText} email={state.email} />
-            </Text>
-            <Button
-              mode="default"
-              tone="positive"
-              size="default"
-              text={copy.claimed.signInButtonText}
-              onClick={handleSignIn}
-            />
-          </Flex>
-        </Box>
-      </Card>
-    )
-  }
-
   if (!claimable) return null
 
   return (
@@ -267,20 +214,6 @@ function UnclaimedProjectNudgeInner({
         ) : null}
       </Flex>
     </Card>
-  )
-}
-
-function ClaimedIdentityText({text, email}: {text: string; email?: string}) {
-  const parts = getClaimedIdentityTextParts(text, email)
-
-  return parts ? (
-    <>
-      {parts.before}
-      <strong>{parts.identity}</strong>
-      {parts.after}
-    </>
-  ) : (
-    getClaimedIdentityText(text, email)
   )
 }
 
