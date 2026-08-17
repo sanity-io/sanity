@@ -110,16 +110,24 @@ export function buildDistAtCommit(sha: string, targetDist: string): void {
     // and product dependencies are provably historical
     step('pnpm', ['install', '--frozen-lockfile'], worktree)
 
-    // Overlay HEAD's committed perf/bench tree onto the worktree;
-    // remove first so files deleted at HEAD don't linger (this also drops
-    // the historical harness node_modules — replaced below)
+    // Overlay HEAD's committed perf/bench tree onto the worktree; remove
+    // first so files deleted at HEAD don't linger. The historical harness
+    // node_modules is carried across the overlay: everything the historical
+    // install provides stays historical — dependencies that get bundled into
+    // the measured studio (react, plugins) are product, and their peer links
+    // already point correctly into the worktree. Nothing resolves through
+    // the stash while it's parked at a different depth.
+    const harnessModules = path.join(worktree, 'perf/bench/node_modules')
+    const stashedModules = path.join(worktree, '.bench-harness-node_modules')
+    if (fs.existsSync(harnessModules)) fs.renameSync(harnessModules, stashedModules)
     fs.rmSync(path.join(worktree, 'perf/bench'), {recursive: true, force: true})
     step('git', ['checkout', headSha, '--', 'perf/bench'], worktree)
+    if (fs.existsSync(stashedModules)) fs.renameSync(stashedModules, harnessModules)
 
-    // Borrow HEAD's installed harness dependencies instead of installing
-    // them (see linkHarnessModules.ts): no resolution, no lockfile edits —
-    // the toolchain is the very bytes HEAD's CI vetted, and workspace deps
-    // are remapped so the harness builds the historical product
+    // Fill only what history lacks — harness dependencies HEAD added since
+    // the measured commit — by borrowing them from the invoking repo's
+    // installed node_modules (see linkHarnessModules.ts): no resolution, no
+    // lockfile edits, and workspace links are remapped into the worktree
     linkHarnessModules({repoRoot: REPO_ROOT, worktree})
 
     // The overlaid harness manifest intentionally disagrees with the

@@ -87,17 +87,18 @@ describe('linkHarnessModules', () => {
     expect(() => linkHarnessModules({repoRoot, worktree})).toThrow(/does not exist at the measured/)
   })
 
-  it('replaces a stale target so reruns are deterministic', () => {
-    const stale = path.join(worktree, 'perf/bench/node_modules')
-    fs.mkdirSync(stale, {recursive: true})
-    fs.writeFileSync(path.join(stale, 'leftover.txt'), 'stale')
+  it('leaves entries the historical install already provides untouched', () => {
+    const existing = path.join(worktree, 'perf/bench/node_modules')
+    fs.mkdirSync(path.join(existing, 'chalk'), {recursive: true})
+    fs.writeFileSync(path.join(existing, 'chalk/index.js'), 'historical copy')
 
     linkHarnessModules({repoRoot, worktree})
     // Running twice must also work (EEXIST regression guard)
     linkHarnessModules({repoRoot, worktree})
 
-    expect(fs.existsSync(path.join(stale, 'leftover.txt'))).toBe(false)
-    expect(fs.readFileSync(path.join(stale, 'chalk/index.js'), 'utf8')).toBe('store copy')
+    expect(fs.readFileSync(path.join(existing, 'chalk/index.js'), 'utf8')).toBe('historical copy')
+    // Gaps still get filled from the head install
+    expect(fs.existsSync(path.join(existing, '@scope/pkg'))).toBe(true)
   })
 
   it('throws when the head harness install is missing', () => {

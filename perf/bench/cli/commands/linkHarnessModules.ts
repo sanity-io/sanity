@@ -9,18 +9,20 @@
  * the build happens to run (a recurring, timing-dependent failure class:
  * pnpm has no mature-version fallback).
  *
- * But HEAD's harness install already exists, fully materialized and vetted,
- * in the invoking repo: this recipe always runs from a HEAD checkout whose
- * `perf/bench/node_modules` is exactly what main's CI installs. So instead
- * of reconstructing it, borrow it — recreate the worktree harness's
- * node_modules as symlinks into the invoking repo's install:
+ * But almost everything the harness needs is already installed: the
+ * historical worktree install provides the harness dependencies of the
+ * measured commit (kept — dependencies bundled into the studio are product
+ * code, with peer links correctly inside the worktree), and the invoking
+ * repo's HEAD install provides anything the harness gained since. This
+ * function fills the gaps in the worktree's `perf/bench/node_modules` from
+ * the invoking repo's:
  *
+ * - entries the historical install already has are left untouched;
  * - workspace dependencies (`sanity`, `@repo/*`, …) are remapped into the
  *   worktree, so the harness builds the *historical* product;
  * - everything else links to the invoking repo's entry, whose realpath is
  *   HEAD's `.pnpm` store — the very bytes HEAD's CI vetted. Their own
- *   imports resolve at their physical location (Node follows realpaths), so
- *   the whole toolchain graph stays coherently HEAD's.
+ *   imports resolve at their physical location (Node follows realpaths).
  *
  * The worktree's own install runs *before* the overlay, `--frozen-lockfile`
  * on the pristine historical tree: a bit-exact replay of that commit's CI
@@ -42,11 +44,6 @@ export function linkHarnessModules(options: {
   if (!fs.existsSync(sourceRoot)) {
     throw new Error(`no installed harness dependencies at ${sourceRoot} — run pnpm install first`)
   }
-  // Replace any pre-existing target wholesale so the function is idempotent —
-  // in the recipe the overlay checkout guarantees a clean slate, but a rerun
-  // against a reused worktree must not trip over stale links (EEXIST)
-  fs.rmSync(targetRoot, {recursive: true, force: true})
-
   // realpath the boundary once: entries are classified by where their
   // realpath lands, and the repo itself may live behind a symlink
   const realRepoRoot = fs.realpathSync(repoRoot)
@@ -65,6 +62,14 @@ export function linkHarnessModules(options: {
         linkDirectory(sourcePath, targetPath)
         continue
       }
+
+      // Fill-only: entries the historical install already provides stay
+      // historical. Dependencies bundled into the measured studio (react,
+      // plugins) are product code, and their store-internal peer links
+      // already point into the worktree — a borrowed HEAD copy would carry
+      // peer links to HEAD's (possibly unbuilt) workspace packages instead.
+      // This also makes reruns idempotent (no EEXIST).
+      if (fs.lstatSync(targetPath, {throwIfNoEntry: false})) continue
 
       const real = fs.realpathSync(sourcePath)
       const repoRelative = path.relative(realRepoRoot, real)
