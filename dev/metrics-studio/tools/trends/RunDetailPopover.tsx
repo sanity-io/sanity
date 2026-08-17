@@ -1,19 +1,11 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {
-  Badge,
-  Box,
-  Button,
-  Flex,
-  Stack,
-  Text,
-  useClickOutsideEvent,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {Badge, Button, Flex, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {formatValue, type TrendPoint, type TrendSeries} from './data'
 import {abDispatchCommand, backlinksFor, sourceFileUrl} from './links'
@@ -93,7 +85,7 @@ export function RunDetailPopover(props: {
           <Stack gap={4}>
             {/* Header: series title as a quiet eyebrow, close button aligned */}
             <Flex align="flex-start" gap={3}>
-              <Box flex={1} paddingTop={1}>
+              <Box flexBasis="0%" flexGrow={1} paddingTop={1}>
                 <Text size={1} weight="medium" muted textOverflow="ellipsis">
                   {series.title}
                 </Text>

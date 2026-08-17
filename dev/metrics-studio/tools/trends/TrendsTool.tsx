@@ -7,7 +7,6 @@ import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {
   Badge,
-  Box,
   Button,
   Card,
   Container,
@@ -30,6 +29,7 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
+import {Box} from 'ui5'
 
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'

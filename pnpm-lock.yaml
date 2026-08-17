@@ -94,6 +94,9 @@ catalogs:
     typescript:
       specifier: ^7.0.2
       version: 7.0.2
+    ui5:
+      specifier: npm:@sanity/ui@alpha
+      version: 5.0.0-alpha.4
     vite:
       specifier: ^8.2.1
       version: 8.2.1
@@ -449,6 +452,9 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.5.1(react-dom@19.2.8)(react@19.2.8)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
       vite:
         specifier: 'catalog:'
         version: 8.2.1(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
@@ -538,6 +544,9 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.5.1(react-dom@19.2.8)(react@19.2.8)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@rolldown/plugin-babel':
         specifier: 'catalog:'
@@ -722,6 +731,9 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.5.1(react-dom@19.2.8)(react@19.2.8)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -877,6 +889,9 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.5.1(react-dom@19.2.8)(react@19.2.8)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
@@ -2051,8 +2066,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0(react@19.2.8)
       ui5:
-        specifier: npm:@sanity/ui@alpha
-        version: '@sanity/ui@5.0.0-alpha.3(react-dom@19.2.8)(react@19.2.8)'
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
       urlpattern-polyfill:
         specifier: 10.1.0
         version: 10.1.0
@@ -2272,7 +2287,7 @@ importers:
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
         specifier: ^5.1.26
-        version: 5.1.26(@sanity/assist@6.1.19)(@sanity/language-filter@5.0.15)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
+        version: 5.1.26(@sanity/assist@6.1.19)(@sanity/language-filter@5.0.16)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
       styled-components:
         specifier: 'catalog:'
         version: 6.5.1(react-dom@19.2.8)(react@19.2.8)
@@ -6573,14 +6588,6 @@ packages:
     resolution: {integrity: sha512-skhIX8gT/hLritEBkjfc7+TBlJNu/NLisyA8noKceCk28OatFK0wX7dIuFawkt3pfhTYVomVPykAYFcIm2OqJg==}
     engines: {node: '>=18.2'}
 
-  '@sanity/language-filter@5.0.15':
-    resolution: {integrity: sha512-uGSbws7h9UWO1z4/1+t5a9FOtkwTOxB9wLDsFo5+DHI5XOHs6Cf58/1Q1fU+3pMDfLkQNfBKRj85d/ShJ26M0w==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-    peerDependencies:
-      react: ^19.2
-      react-dom: ^19.2
-      sanity: ^5 || ^6.0.0-0
-
   '@sanity/language-filter@5.0.16':
     resolution: {integrity: sha512-O0uVnwNUewh5ofjhhIoX1ZCTudiRlSnxaOgdL7v0bYuIM/7X+/n7cy+jvxMdI38MsXPsYMMNE0DM6k7MGzjLrQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -6725,8 +6732,8 @@ packages:
       react-dom: ^19.2
       styled-components: ^6.1
 
-  '@sanity/ui@5.0.0-alpha.3':
-    resolution: {integrity: sha512-HON+yubVQfFfsipEtmlr6LrG+kcEw3pcBj5xIiDU8gZQI4tMwwRzJArBmVV1S1jcfcafkJA/kVmbcHZUb0SaIQ==}
+  '@sanity/ui@5.0.0-alpha.4':
+    resolution: {integrity: sha512-+YGO6vlZUOBqQ+2+UTkbutxiRhnM4EE0JKVfnsNDcye3JYNGf4ZcapdSCW6QKMOwIbBnLSjan+2th14whRLgWg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     hasBin: true
     peerDependencies:
@@ -15988,7 +15995,7 @@ snapshots:
   '@codemirror/lint@6.9.7':
     dependencies:
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.7
+      '@codemirror/view': 6.43.8
       crelt: 1.0.7
 
   '@codemirror/search@6.7.1':
@@ -16005,7 +16012,7 @@ snapshots:
     dependencies:
       '@codemirror/language': 6.12.4
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.7
+      '@codemirror/view': 6.43.8
       '@lezer/highlight': 1.2.3
 
   '@codemirror/view@6.43.7':
@@ -18949,18 +18956,6 @@ snapshots:
 
   '@sanity/json-match@1.0.5': {}
 
-  '@sanity/language-filter@5.0.15(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)':
-    dependencies:
-      '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/ui': 4.0.3(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
-      react-rx: 4.2.5(react@19.2.8)(rxjs@7.8.2)
-      rxjs: 7.8.2
-      sanity: link:packages/sanity
-    transitivePeerDependencies:
-      - styled-components
-
   '@sanity/language-filter@5.0.16(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)':
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
@@ -19245,7 +19240,7 @@ snapshots:
       styled-components: 6.5.1(react-dom@19.2.8)(react@19.2.8)
       use-effect-event: 2.0.3(react@19.2.8)
 
-  '@sanity/ui@5.0.0-alpha.3(react-dom@19.2.8)(react@19.2.8)':
+  '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)':
     dependencies:
       '@sanity-labs/design-tokens': 0.0.2-alpha.4
       '@sanity/icons': 3.8.0(react@19.2.8)
@@ -21597,7 +21592,7 @@ snapshots:
       '@codemirror/lint': 6.9.7
       '@codemirror/search': 6.7.1
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.7
+      '@codemirror/view': 6.43.8
 
   color-convert@2.0.1:
     dependencies:
@@ -25920,10 +25915,10 @@ snapshots:
       - '@types/react'
       - react-dom
 
-  sanity-plugin-internationalized-array@5.1.26(@sanity/assist@6.1.19)(@sanity/language-filter@5.0.15)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1):
+  sanity-plugin-internationalized-array@5.1.26(@sanity/assist@6.1.19)(@sanity/language-filter@5.0.16)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1):
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/language-filter': 5.0.15(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
+      '@sanity/language-filter': 5.0.16(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
       '@sanity/ui': 4.0.1(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
       '@sanity/util': link:packages/@sanity/util
       lodash-es: 4.18.1

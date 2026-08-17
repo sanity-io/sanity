@@ -24,7 +24,8 @@
     "react-dom": "catalog:",
     "react-refractor": "^4.0.0",
     "refractor": "^5.0.0",
-    "styled-components": "catalog:"
+    "styled-components": "catalog:",
+    "ui5": "catalog:"
   },
   "devDependencies": {
     "@rolldown/plugin-babel": "catalog:",

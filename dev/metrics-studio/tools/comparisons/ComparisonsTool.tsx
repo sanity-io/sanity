@@ -1,11 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, type BadgeTone, Box, Button, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, type BadgeTone, Button, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
+import {Box} from 'ui5'
 
 import {formatValue} from '../trends/data'
 import {ciRunUrl, commitUrl} from '../trends/links'
@@ -139,7 +140,7 @@ function ComparisonCard(props: {run: ComparisonRun; expanded: boolean; onToggle:
             aria-expanded={expanded}
             onClick={onToggle}
           />
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <Flex align="center" gap={2} wrap="wrap">
               <ShaLink sha={fromSha} />
               <Text size={1} muted>
