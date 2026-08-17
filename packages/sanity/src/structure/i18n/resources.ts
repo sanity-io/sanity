@@ -117,6 +117,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Default tooltip for the action */
   'action.restore.tooltip': 'Restore to this revision',
 
+  /** Tooltip when action is disabled because the version is already marked for unpublishing */
+  'action.unpublish.disabled.already-unpublished': 'This document is already set to be unpublished',
   /** Tooltip when action is disabled because the document is not already published */
   'action.unpublish.disabled.not-published': 'This document is not published',
   /** Tooltip when action is disabled because the operation is not ready   */
@@ -716,6 +718,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text when an unpublish operation succeeded  */
   'panes.document-operation-results.operation-success_unpublish':
     '<Strong>{{title}}</Strong> was unpublished. A draft has been created from the latest published revision.',
+  /** The text when an unpublish operation succeeded for a document in a release */
+  'panes.document-operation-results.operation-success_unpublishVersion':
+    'Version will be unpublished when the release is published',
   /** The document title shown when document title is "undefined" in operation message */
   'panes.document-operation-results.operation-undefined-title': 'Untitled',
   /** The loading message for the document not found pane */

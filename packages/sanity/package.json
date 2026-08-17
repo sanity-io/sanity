@@ -209,7 +209,6 @@
     "nano-pubsub": "^3.0.0",
     "nanoid": "^6.0.1",
     "observable-callback": "^1.0.3",
-    "path-to-regexp": "^8.4.2",
     "player.style": "^0.3.4",
     "polished": "^4.3.1",
     "quick-lru": "^7.3.0",

@@ -34,12 +34,35 @@ function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocum
   }
 }
 
+const BASE_PAIR = {draftId: 'drafts.my-id', publishedId: 'my-id'}
+const RELEASE_PAIR = {...BASE_PAIR, versionId: 'versions.rSummer.my-id'}
+const VARIANT_PAIR = {...BASE_PAIR, versionId: 'versions.varscope.my-id'}
+
+/** A plain (non-variant) release version snapshot. */
+function releaseVersion(options: {markedForUnpublish?: boolean} = {}): SanityDocument {
+  return {
+    _id: RELEASE_PAIR.versionId,
+    _type: 'example',
+    _rev: 'releaseRev',
+    _createdAt: '2021-09-14T22:48:02.303Z',
+    _updatedAt: '2021-09-14T22:48:02.303Z',
+    _system: {
+      bundleId: 'rSummer',
+      release: {_ref: '_.releases.rSummer', _weak: true},
+      group: {_ref: 'my-id', _weak: true},
+      scopeId: 'rSummer',
+      ...(options.markedForUnpublish ? {delete: true} : {}),
+    },
+  }
+}
+
 describe('unpublish', () => {
   describe('disabled', () => {
     it('returns NOT_PUBLISHED when there is no published document', () => {
       expect(
         unpublish.disabled({
           typeName: 'blah',
+          idPair: BASE_PAIR,
           snapshots: {draft: {} as SanityDocument, published: null},
         } as unknown as OperationArgs),
       ).toBe('NOT_PUBLISHED')
@@ -49,6 +72,7 @@ describe('unpublish', () => {
       expect(
         unpublish.disabled({
           typeName: 'blah',
+          idPair: VARIANT_PAIR,
           snapshots: {version: variantVersion(undefined)},
         } as unknown as OperationArgs),
       ).toBe(false)
@@ -58,6 +82,7 @@ describe('unpublish', () => {
       expect(
         unpublish.disabled({
           typeName: 'blah',
+          idPair: VARIANT_PAIR,
           snapshots: {version: variantVersion('rSummer')},
         } as unknown as OperationArgs),
       ).toBe(false)
@@ -67,10 +92,64 @@ describe('unpublish', () => {
       expect(
         unpublish.disabled({
           typeName: 'blah',
+          idPair: VARIANT_PAIR,
           // The base published existing says nothing about the VARIANT being published.
           snapshots: {version: variantVersion('drafts'), published: {} as SanityDocument},
         } as unknown as OperationArgs),
       ).toBe('NOT_PUBLISHED')
+    })
+
+    it('returns ALREADY_UNPUBLISHED for a release-scoped variant already marked for unpublish', () => {
+      const version = variantVersion('rSummer')
+
+      expect(
+        unpublish.disabled({
+          typeName: 'blah',
+          idPair: {...BASE_PAIR, versionId: version._id},
+          snapshots: {
+            version: {...version, _system: {...version._system, delete: true}},
+            published: {} as SanityDocument,
+          },
+        } as unknown as OperationArgs),
+      ).toBe('ALREADY_UNPUBLISHED')
+    })
+
+    it('is enabled for a release version of a published document', () => {
+      expect(
+        unpublish.disabled({
+          typeName: 'blah',
+          idPair: RELEASE_PAIR,
+          snapshots: {
+            draft: null,
+            published: {} as SanityDocument,
+            version: releaseVersion(),
+          },
+        } as unknown as OperationArgs),
+      ).toBe(false)
+    })
+
+    it('returns NOT_PUBLISHED for a release version with nothing published to unpublish', () => {
+      expect(
+        unpublish.disabled({
+          typeName: 'blah',
+          idPair: RELEASE_PAIR,
+          snapshots: {draft: null, published: null, version: releaseVersion()},
+        } as unknown as OperationArgs),
+      ).toBe('NOT_PUBLISHED')
+    })
+
+    it('returns ALREADY_UNPUBLISHED for a release version already marked for unpublish', () => {
+      expect(
+        unpublish.disabled({
+          typeName: 'blah',
+          idPair: RELEASE_PAIR,
+          snapshots: {
+            draft: null,
+            published: {} as SanityDocument,
+            version: releaseVersion({markedForUnpublish: true}),
+          },
+        } as unknown as OperationArgs),
+      ).toBe('ALREADY_UNPUBLISHED')
     })
   })
 
@@ -154,7 +233,7 @@ describe('unpublish', () => {
 
       unpublish.execute({
         client,
-        idPair: {draftId: 'drafts.my-id', publishedId: 'my-id'},
+        idPair: BASE_PAIR,
         snapshots: {published: {} as SanityDocument},
       } as unknown as OperationArgs)
 
@@ -168,6 +247,31 @@ describe('unpublish', () => {
           options: {tag: 'document.unpublish', skipCrossDatasetReferenceValidation: true},
         },
       ])
+    })
+
+    it('routes a release version to the version unpublish action', () => {
+      const client = createMockSanityClient()
+
+      unpublish.execute({
+        client,
+        idPair: RELEASE_PAIR,
+        snapshots: {published: {} as SanityDocument, version: releaseVersion()},
+      } as unknown as OperationArgs)
+
+      expect(client.$log.observable.action).toEqual([
+        {
+          actions: {
+            actionType: 'sanity.action.document.version.unpublish',
+            versionId: 'versions.rSummer.my-id',
+            publishedId: 'my-id',
+          },
+          options: {tag: 'document.unpublish', skipCrossDatasetReferenceValidation: true},
+        },
+      ])
+      // The release unpublish must not write into the base draft: including a `draftId` here
+      // would restore release content into `drafts.my-id`.
+      // @ts-expect-error - $log is not typed
+      expect(client.$log.observable.action[0].actions.draftId).toBeUndefined()
     })
   })
 })
