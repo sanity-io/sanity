@@ -1,9 +1,10 @@
 import {ClockIcon} from '@sanity/icons/Clock'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {EMPTY, fromEvent, map, merge, of, timer, timestamp} from 'rxjs'
+import {Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
