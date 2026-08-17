@@ -87,9 +87,10 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
   play) via portable stories. The project is intentionally NOT in the root `vitest.config.mts`
   multi-project list — same reason as `sanity-browser` (needs a real browser).
 - Story files: CSF3 with `satisfies Meta<typeof Component>`; titles group by area
-  (`Portable Text/…`, `UI Components/…`). Import harness components by relative path — they are
-  not part of the published `sanity` package exports, and lint boundaries only apply inside
-  `packages/sanity`.
+  (`Portable Text/…`, `UI Components/…`). For internal components, import a
+  `*Story.tsx` harness from `packages/sanity/src/.../__tests__/` — never the
+  implementation file. The harness uses relative imports and wraps `TestWrapper`
+  when it needs i18n/workspace. Public `sanity` exports are fine without a harness.
 - Icons: import per-icon subpaths (`@sanity/icons/Add`), never the barrel. `@sanity/ui` v4:
   `ToastProvider` comes from `@sanity/ui/toast`; `Stack`/`Grid` use `gap`/`gridTemplateColumns`.
 - Components that call `useTranslation` (directly or via `ui-components`) must render inside
