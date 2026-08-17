@@ -284,14 +284,27 @@ test.describe('Vision', () => {
       await expect(apiVersionSelector).toHaveValue('vX')
       await expect(apiVersionSelector).toBeDisabled()
 
+      const resultRegion = await runVisionQuery(page, OVERLAY_QUERY, {id: bookId})
+      const fetchButton = page.locator('button').filter({hasText: 'Fetch'})
+      await expect
+        .poll(
+          async () => {
+            if ((await resultRegion.getByText(variantTitle).count()) > 0) {
+              return true
+            }
+            await expect(fetchButton).toBeEnabled()
+            await fetchButton.click()
+            return false
+          },
+          {intervals: [500, 1_000, 2_000]},
+        )
+        .toBe(true)
+      await expect(resultRegion.getByText(publishedTitle)).toHaveCount(0)
+
       await page.getByTestId('api-version-selector-wrap').hover()
       await expect(
         page.getByText('When a variant is selected the API version needs to be vX'),
       ).toBeVisible()
-
-      const resultRegion = await runVisionQuery(page, OVERLAY_QUERY, {id: bookId})
-      await expect(resultRegion.getByText(variantTitle)).toBeVisible({timeout: 30_000})
-      await expect(resultRegion.getByText(publishedTitle)).toHaveCount(0)
 
       const queryUrl = page.getByTestId('vision-query-url')
       await expect(queryUrl).toHaveValue(/\/vX\//)
