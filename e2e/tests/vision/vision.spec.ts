@@ -13,6 +13,7 @@ import {
   createVariantDocument,
   deleteVariantDefinition,
   encodeQueryString,
+  fetchPublishedVariantOverlay,
   getVisionRegions,
   openVisionTool,
   runVisionQuery,
@@ -256,7 +257,7 @@ test.describe('Vision', () => {
     })
     await createVariantDefinition(sanityClient, {
       variantId,
-      conditions: {audience: 'vision-e2e'},
+      conditions: {audience: `vision-${variantId}`},
       metadata: {title: `Vision variant ${variantId}`},
     })
 
@@ -266,6 +267,15 @@ test.describe('Vision', () => {
         publishedId: bookId,
         document: {_type: 'book', title: variantTitle},
       })
+      await expect
+        .poll(async () => {
+          const result = await fetchPublishedVariantOverlay(sanityClient, {
+            publishedId: bookId,
+            variantId,
+          })
+          return result[0]?.title
+        })
+        .toBe(variantTitle)
 
       await openVisionTool(page, `?perspective=published&variant=${variantId}`)
       await expect(page.getByTestId('perspective-selector')).toHaveValue('pinnedRelease')

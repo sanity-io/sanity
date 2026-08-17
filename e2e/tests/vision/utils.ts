@@ -139,6 +139,18 @@ async function ignoreVariantCleanupError(action: () => Promise<unknown>): Promis
   }
 }
 
+export async function fetchPublishedVariantOverlay(
+  sanityClient: SanityClient,
+  options: {publishedId: string; variantId: string},
+): Promise<Array<{_id: string; title?: string}>> {
+  return getVariantsClient(sanityClient)
+    .withConfig({
+      perspective: ['published'],
+      variant: options.variantId,
+    })
+    .fetch('*[_id == $id]{_id, title}', {id: options.publishedId})
+}
+
 export async function deleteVariantDefinition(
   sanityClient: SanityClient,
   variantId: string,
