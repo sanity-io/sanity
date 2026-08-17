@@ -1,7 +1,24 @@
 import {expect} from '@playwright/test'
 
 import {test} from '../../studio-test'
-import {encodeQueryString, getVisionRegions, openVisionTool} from './utils'
+import {partialASAPReleaseMetadata} from '../releases/utils/__fixtures__/releases'
+import {
+  archiveAndDeleteRelease,
+  createDocument,
+  createRelease,
+  getRandomReleaseId,
+} from '../releases/utils/methods'
+import {
+  createVariantDefinition,
+  createVariantDocument,
+  deleteVariantDefinition,
+  encodeQueryString,
+  getVisionRegions,
+  openVisionTool,
+  runVisionQuery,
+} from './utils'
+
+const BOOK_QUERY = '*[_type == "book" && _id == $id]{_id, title}'
 
 test.describe('Vision', () => {
   test('should be possible to type an execute a query', async ({page, sanityClient}) => {
@@ -155,5 +172,110 @@ test.describe('Vision', () => {
     // Stop the listener
     await stopButton.click()
     await expect(listenButton).toBeVisible()
+  })
+
+  test('queries the pinned release version of a document', async ({
+    page,
+    sanityClient,
+    _testContext,
+  }) => {
+    const dataset = sanityClient.config().dataset
+    const releaseId = getRandomReleaseId()
+    const bookId = _testContext.getUniqueDocumentId()
+    const publishedTitle = 'Published title'
+    const releaseTitle = 'Release title'
+
+    await createRelease({
+      sanityClient,
+      dataset,
+      releaseId,
+      metadata: {
+        ...partialASAPReleaseMetadata,
+        title: `Vision ${releaseId}`,
+      },
+    })
+
+    try {
+      await sanityClient.create({
+        _id: bookId,
+        _type: 'book',
+        title: publishedTitle,
+      })
+      await createDocument(sanityClient, {
+        _id: `versions.${releaseId}.${bookId}`,
+        _type: 'book',
+        title: releaseTitle,
+      })
+
+      await openVisionTool(page, `?perspective=${releaseId}`)
+      await expect(page.getByTestId('perspective-selector')).toHaveValue('pinnedRelease')
+      await expect(page.getByTestId('api-version-selector')).toBeEnabled()
+
+      const resultRegion = await runVisionQuery(page, BOOK_QUERY, {id: bookId})
+      await expect(resultRegion.getByText(releaseTitle)).toBeVisible({timeout: 30_000})
+      await expect(resultRegion.getByText(publishedTitle)).toHaveCount(0)
+
+      const queryUrl = page.getByTestId('vision-query-url')
+      await expect(queryUrl).toHaveValue(new RegExp(`[?&]perspective=[^&]*${releaseId}`))
+    } finally {
+      await archiveAndDeleteRelease({sanityClient, dataset, releaseId})
+    }
+  })
+
+  test('queries with the navbar variant and locks the API version to vX', async ({
+    page,
+    sanityClient,
+    _testContext,
+  }) => {
+    const variantId = `vis${getRandomReleaseId()}`
+    const bookId = _testContext.getUniqueDocumentId()
+    const publishedTitle = 'Published title'
+    const variantTitle = 'Variant title'
+
+    await sanityClient.create({
+      _id: bookId,
+      _type: 'book',
+      title: publishedTitle,
+    })
+    await createVariantDefinition(sanityClient, {
+      variantId,
+      conditions: {audience: 'vision-e2e'},
+      metadata: {title: `Vision variant ${variantId}`},
+    })
+
+    try {
+      await createVariantDocument(sanityClient, {
+        variantId,
+        publishedId: bookId,
+        document: {_type: 'book', title: variantTitle},
+      })
+
+      await openVisionTool(page, `?perspective=published&variant=${variantId}`)
+      await expect(page.getByTestId('perspective-selector')).toHaveValue('pinnedRelease')
+
+      const apiVersionSelector = page.getByTestId('api-version-selector')
+      await expect(apiVersionSelector).toHaveValue('vX')
+      await expect(apiVersionSelector).toBeDisabled()
+
+      await page.getByTestId('api-version-selector-wrap').hover()
+      await expect(
+        page.getByText('When a variant is selected the API version needs to be vX'),
+      ).toBeVisible()
+
+      const resultRegion = await runVisionQuery(page, BOOK_QUERY, {id: bookId})
+      await expect(resultRegion.getByText(variantTitle)).toBeVisible({timeout: 30_000})
+      await expect(resultRegion.getByText(publishedTitle)).toHaveCount(0)
+
+      const queryUrl = page.getByTestId('vision-query-url')
+      await expect(queryUrl).toHaveValue(/\/vX\//)
+      await expect(queryUrl).toHaveValue(new RegExp(`[?&]variant=${variantId}`))
+
+      await page.getByTestId('perspective-selector').selectOption('raw')
+      await expect(apiVersionSelector).toBeEnabled()
+      await expect(resultRegion.getByText(publishedTitle)).toBeVisible({timeout: 30_000})
+      await expect(queryUrl).not.toHaveValue(/[?&]variant=/)
+    } finally {
+      await deleteVariantDefinition(sanityClient, variantId)
+    }
   })
 })
