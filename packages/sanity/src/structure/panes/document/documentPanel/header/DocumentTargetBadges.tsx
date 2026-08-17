@@ -9,7 +9,6 @@ import {
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseDocument,
-  isSystemBundle,
   usePerspective,
   useTranslation,
   type SystemVariant,
@@ -19,11 +18,17 @@ import {
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {isLiveEditEnabled} from '../../../../components/paneItem/helpers'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
+import {
+  getBadgeSystemDocument,
+  getTargetBadgePerspective,
+  isTargetBadgeMissing,
+} from './getTargetBadgePerspective'
 
 /**
- * TODO: Replace by the RhombusIcon from @sanity/icons once available.
+ * TODO: Replace by the RhombusIcon from Sanity icons once available.
  */
 function RhombusIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
   const {ref, ...rest} = props
@@ -61,24 +66,6 @@ const BadgeContainer = styled(Flex)`
 const BadgeMotionWrapper = styled(motion.div)`
   flex: none;
 `
-
-function isTargetDocumentDefinitivelyMissing(
-  state: TargetDocumentState,
-  bundle: ReturnType<typeof usePerspective>['bundle'],
-): boolean {
-  switch (state.status) {
-    case 'resolving':
-      return false
-    case 'variant-definition-document-not-found':
-      return true
-    case 'variant-missing':
-      return true
-    case 'ready':
-      return !state.targetDocument && !state.variant && !isSystemBundle(bundle)
-    default:
-      return false
-  }
-}
 
 function getSelectedVariantFromState(
   state: TargetDocumentState,
@@ -158,11 +145,17 @@ const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: S
 })
 
 export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
-  const {targetDocumentState} = useDocumentPane()
+  const {displayed, schemaType, targetDocumentState} = useDocumentPane()
   const {bundle, selectedPerspective, selectedVariant} = usePerspective()
   const {t} = useTranslation(structureLocaleNamespace)
+  const isLiveEdit = isLiveEditEnabled(schemaType)
 
-  const isTargetMissing = isTargetDocumentDefinitivelyMissing(targetDocumentState, bundle)
+  const badgePerspective = getTargetBadgePerspective({
+    isLiveEdit,
+    selectedPerspective,
+    document: getBadgeSystemDocument(targetDocumentState, displayed),
+  })
+  const isTargetMissing = isTargetBadgeMissing({isLiveEdit, state: targetDocumentState, bundle})
   const badgeOpacity = isTargetMissing ? 0.5 : 1
   const selectedVariantBadge = getSelectedVariantFromState(targetDocumentState, selectedVariant)
 
@@ -174,12 +167,12 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
       <Flex align="center" flex="none" gap={2} paddingRight={1}>
         <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
           <TargetBadge
-            tone={getPerspectiveBadgeTone(selectedPerspective)}
+            tone={getPerspectiveBadgeTone(badgePerspective)}
             border
             radius={4}
             data-ui="DocumentTargetPerspectiveBadge"
           >
-            <PerspectiveBadgeLabel selectedPerspective={selectedPerspective} />
+            <PerspectiveBadgeLabel selectedPerspective={badgePerspective} />
           </TargetBadge>
         </BadgeMotionWrapper>
         {selectedVariantBadge ? (
