@@ -1,15 +1,11 @@
 /* oxlint-disable i18next/no-literal-string */
-import {Box, Card, Container, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Container, Heading, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {ErrorActions} from '../../components/errorActions/ErrorActions'
 import {isDev, isProd} from '../../environment'
 import {isClientRequestError} from '../requestErrors/classify'
-
-const View = styled(Box)`
-  align-items: center;
-`
 
 const TIP_SNIPPET = `const {attempt, handle} = useStudioErrorHandler()
 
@@ -44,7 +40,7 @@ export function FallbackErrorScreen(props: {
       paddingX={4}
       sizing="border"
     >
-      <View display="flex" height="fill">
+      <Flex alignItems="center" height="100%">
         <Container width={3}>
           <Stack gap={6}>
             <Stack gap={4}>
@@ -93,7 +89,7 @@ export function FallbackErrorScreen(props: {
             <ErrorActions error={error} eventId={eventId} onRetry={onReset} size="large" />
           </Stack>
         </Container>
-      </View>
+      </Flex>
     </Card>
   )
 }

@@ -1,6 +1,7 @@
 /* oxlint-disable i18next/no-literal-string */
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Box} from 'ui5'
 
 export function NoToolsScreen() {
   return (
