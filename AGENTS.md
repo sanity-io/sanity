@@ -689,3 +689,51 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
 - **`sanity dev` "package versions have not yet been marked as supported" warnings** are emitted by `@sanity/cli-build` in the **CLI repo** (`sanity-io/cli`, `packages/@sanity/cli-build/src/actions/build/checkStudioDependencyVersions.ts`), not this monorepo (the CLI was extracted in #12200). To mark a new `@sanity/ui` or React major as supported for published studios, update `DEFAULT_PACKAGES` there. This repo may pin a `pnpm.patchedDependencies` entry for the currently vendored `@sanity/cli-build` so local `pnpm dev` stays quiet until that CLI change ships.
+
+### Running e2e (Playwright) tests in the VM
+
+The e2e suite runs against the staging project `ittbm412` (see `.env.example`) on `api.sanity.work`. `STUDIO_E2E_AUTH_TOKEN` is injected into the VM for exactly this: it is a `manage-datasets` robot token on that project, so specs run the way CI runs them, with no source edits. Do not reach for `STUDIO_AUTH_TOKEN` or `SANITY_TEST_STUDIO_AUTH_TOKEN` here — those are production tokens and get 401 "Session not found" against `api.sanity.work`.
+
+1. **Build the packages.** `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH" && pnpm build`, then `git checkout packages/sanity/package.json` — the build rewrites its `inlinedDependencies`.
+
+2. **Install the browsers** (not preinstalled): `pnpm --filter e2e exec playwright install chromium firefox`.
+
+3. **Create a dataset.** Give every run its own, like CI does, and name it `cursor_ci_<random>` so the periodic cleanup can find it afterwards:
+
+   ```bash
+   export SANITY_E2E_PROJECT_ID=ittbm412
+   export SANITY_E2E_SESSION_TOKEN=$STUDIO_E2E_AUTH_TOKEN
+   export SANITY_E2E_DATASET=cursor_ci_$(openssl rand -hex 3)
+   pnpm e2e:setup # creates $SANITY_E2E_DATASET (public ACL) unless it already exists
+   ```
+
+4. **Start the studio** with those variables still exported. It serves on port 3339, which `playwright.config.ts` reuses instead of starting its own server:
+
+   ```bash
+   pnpm --filter studio-e2e-testing dev
+   ```
+
+   `sanity dev` needs no token of its own: Playwright authenticates the browser by seeding `SANITY_E2E_SESSION_TOKEN` into local storage through `storageState`.
+
+5. **Run specs**, again with those variables exported:
+
+   ```bash
+   cd e2e && pnpm exec playwright test --project=chromium tests/navbar/search.spec.ts --retries=0
+   ```
+
+   Keep `--retries=0` so a flake stays visible, and add `--repeat-each=N` when chasing one. `--project=firefox` runs the other browser CI uses. CI gives each browser its own dataset through `SANITY_E2E_DATASET_CHROMIUM` / `SANITY_E2E_DATASET_FIREFOX`; both fall back to `SANITY_E2E_DATASET`, so run one project at a time unless you create a dataset per browser — specs that touch per-user state (key-value keys such as recent searches or sort orders) otherwise interfere across browsers.
+
+6. **Delete the dataset when you are done:**
+
+   ```bash
+   curl -X DELETE "https://$SANITY_E2E_PROJECT_ID.api.sanity.work/v2023-02-03/datasets/$SANITY_E2E_DATASET" \
+     -H "Authorization: Bearer $STUDIO_E2E_AUTH_TOKEN"
+   ```
+
+   `pnpm e2e:cleanup`, scheduled every 6 hours, sweeps `cursor_ci_*` datasets older than 24 hours as a backstop — treat that as a safety net, not as the cleanup step.
+
+Debugging notes:
+
+- A fresh dataset is empty. Specs that need content seed it themselves; if one assumes documents exist, that is a bug in the spec, not a reason to point at the shared `staging` dataset.
+- The failure video is written to `e2e/results/<test>/video.webm`; extract frames with the bundled ffmpeg: `~/.cache/ms-playwright/ffmpeg-*/ffmpeg-linux -i video.webm -r 1 /tmp/frame_%03d.png` (this build has no `-vf fps=` filter).
+- To reproduce load-related flakiness, throttle the browser from within the spec: `const cdp = await page.context().newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 8})` (chromium only). Stub a slow or eventually-consistent backend with `page.route('**/data/query/**', …)`; the global search query is identifiable by its `findability-source: global` GROQ comment.

@@ -703,6 +703,14 @@ jobs:
           certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
           certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
 
+      # Unlike the measuring jobs, this one shells out to the `sanity` CLI
+      # below, whose entrypoint (sanity/lib/cli.js) is build output — the
+      # bench-dist-experiment artifact carries the built studio, not the built
+      # packages. `build:reference-config` calls the package script directly
+      # rather than going through turbo, so nothing else builds `sanity` here.
+      - name: Build packages
+        run: pnpm build --output-logs=full --log-order=grouped
+
       - uses: actions/download-artifact@v8
         with:
           name: bench-dist-experiment
