@@ -706,8 +706,6 @@ The e2e suite runs against the staging project `ittbm412` (see `.env.example`) o
    pnpm e2e:setup # creates $SANITY_E2E_DATASET (public ACL) unless it already exists
    ```
 
-   Dataset names must be lowercase (`a-z`, `0-9`, `_`, `-`): `CURSOR_CI_…` is rejected by the client before a request is made, because `sanityIdify` replaces illegal characters but does not lowercase.
-
 4. **Start the studio** with those variables still exported. It serves on port 3339, which `playwright.config.ts` reuses instead of starting its own server:
 
    ```bash
