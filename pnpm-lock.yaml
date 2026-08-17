@@ -105,7 +105,7 @@ overrides:
   vitest: ^4.1.10
 
 patchedDependencies:
-  '@sanity/cli-build@5.1.0': a6eb790018ceffd4ece149ab3c97153f47417453f7cded717c668e103f049900
+  '@sanity/cli-build@5.1.0': 72711f41bb57a552db2221ca54f61a89e7960e8c9eecf99bf12808fcb59c88ab
 
 importers:
 
@@ -18451,7 +18451,7 @@ snapshots:
       '@sanity/color': 3.0.8
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/mutator': link:packages/@sanity/mutator
-      '@sanity/ui': 4.0.1(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
+      '@sanity/ui': 4.0.3(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
       date-fns: 4.4.0
       lodash-es: 4.18.1
       react: 19.2.8
@@ -18475,7 +18475,7 @@ snapshots:
 
   '@sanity/browserslist-config@1.0.5': {}
 
-  '@sanity/cli-build@5.1.0(patch_hash=a6eb790018ceffd4ece149ab3c97153f47417453f7cded717c668e103f049900)(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(yaml@2.9.0)':
+  '@sanity/cli-build@5.1.0(patch_hash=72711f41bb57a552db2221ca54f61a89e7960e8c9eecf99bf12808fcb59c88ab)(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(yaml@2.9.0)':
     dependencies:
       '@oclif/core': 4.13.3
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.3)(vite@8.2.1)
@@ -18573,7 +18573,7 @@ snapshots:
       '@oclif/core': 4.13.3
       '@oclif/plugin-help': 6.2.56
       '@oclif/plugin-not-found': 3.2.91(@types/node@24.13.3)
-      '@sanity/cli-build': 5.1.0(patch_hash=a6eb790018ceffd4ece149ab3c97153f47417453f7cded717c668e103f049900)(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(yaml@2.9.0)
+      '@sanity/cli-build': 5.1.0(patch_hash=72711f41bb57a552db2221ca54f61a89e7960e8c9eecf99bf12808fcb59c88ab)(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(yaml@2.9.0)
       '@sanity/cli-core': 2.8.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/client': 7.26.2
       '@sanity/codegen': 7.0.3(@oclif/core@4.13.3)(@sanity/cli-core@2.8.1)(oxfmt@0.63.0)(react@19.2.8)(supports-color@8.1.1)
@@ -18871,7 +18871,7 @@ snapshots:
   '@sanity/language-filter@5.0.15(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)':
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/ui': 4.0.1(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
+      '@sanity/ui': 4.0.3(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       react-rx: 4.2.5(react@19.2.8)(rxjs@7.8.2)
@@ -18967,7 +18967,7 @@ snapshots:
       '@sanity-labs/design-tokens': 0.0.2-alpha.4
       '@sanity/blueprints': 0.23.2(vite@8.2.1)
       '@sanity/blueprints-parser': 0.4.0
-      '@sanity/cli-build': 5.1.0(patch_hash=a6eb790018ceffd4ece149ab3c97153f47417453f7cded717c668e103f049900)(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(yaml@2.9.0)
+      '@sanity/cli-build': 5.1.0(patch_hash=72711f41bb57a552db2221ca54f61a89e7960e8c9eecf99bf12808fcb59c88ab)(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(jiti@2.7.0)(rolldown@1.2.3)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(yaml@2.9.0)
       '@sanity/cli-core': 2.8.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.1)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/client': 7.26.2
       adm-zip: 0.6.0
