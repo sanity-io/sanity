@@ -632,13 +632,15 @@ export function VisionGui(props: VisionGuiProps) {
   }, [cancelQuerySubscription, cancelListenerSubscription])
 
   const pinApiVersionForVariant = useEffectEvent(() => {
-    if (apiVersion === VARIANTS_API_VERSION && customApiVersion === false) {
-      return
-    }
     changeApiVersion(VARIANTS_API_VERSION)
   })
+  const hadActiveVariantRef = useRef(false)
   useEffect(() => {
-    if (!activeVariant) {
+    const hadActiveVariant = hadActiveVariantRef.current
+    hadActiveVariantRef.current = Boolean(activeVariant)
+    // Only pin when a variant becomes active. Do not run (or restore) when it
+    // is later cleared — the API version should stay on vX.
+    if (!activeVariant || hadActiveVariant) {
       return
     }
     pinApiVersionForVariant()
