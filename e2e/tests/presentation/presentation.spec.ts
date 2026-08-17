@@ -19,9 +19,18 @@ test.describe('Presentation', () => {
 
     const previewIframeContents = previewIframe.first().contentFrame()
 
-    // Wait for the visual editing component to be ready inside the iframe
-    // This ensures the React app has hydrated and the useEffect has run
-    await expect(previewIframeContents.locator('sanity-visual-editing')).toBeAttached()
+    // Wait for the visual editing component to be ready inside the iframe.
+    // This ensures the React app has hydrated and the useEffect has run.
+    //
+    // The preview iframe boots a *separate* application (the visual-editing
+    // overlay) that must download, hydrate and register its custom element. On a
+    // cold Firefox worker under CI load this legitimately takes longer than the
+    // default 30s, producing a first-attempt timeout that passes on retry once
+    // the worker is warm. Give the slow-but-correct boot more headroom rather
+    // than relying on Playwright's retry to mask it. The assertion is unchanged.
+    await expect(previewIframeContents.locator('sanity-visual-editing')).toBeAttached({
+      timeout: 60_000,
+    })
   })
 
   test('should be able to toggle preview viewport', async ({page, browserName}) => {
