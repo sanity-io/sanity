@@ -1,4 +1,6 @@
-import {ComposeIcon, DropIcon, ImageIcon} from '@sanity/icons'
+import {ComposeIcon} from '@sanity/icons/Compose'
+import {DropIcon} from '@sanity/icons/Drop'
+import {ImageIcon} from '@sanity/icons/Image'
 import {Box, Text} from '@sanity/ui'
 import {
   BlockEditor,
@@ -9,10 +11,12 @@ import {
 } from 'sanity'
 
 function CustomEditor(props: PortableTextInputProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {markers, value} = props
   const newMarkers = markers?.concat([
     {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []},
   ])
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return <BlockEditor {...props} markers={newMarkers} />
 }
 
@@ -428,6 +432,7 @@ export default defineType({
             {
               type: 'image',
               title: 'Image',
+              // @ts-expect-error -- pre-existing, fix later
               fields: [
                 {title: 'Caption', name: 'caption', type: 'string', options: {isHighlighted: true}},
                 {

@@ -1,13 +1,16 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Box, Stack, Text, useToast} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
+import {Box} from 'ui5'
 
-import {Dialog} from '../../../ui-components'
-import {LoadingBlock} from '../../components'
-import {useSchema} from '../../hooks'
-import {Translate, useTranslation} from '../../i18n'
-import {Preview} from '../../preview'
-import {getErrorMessage} from '../../util'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {useSchema} from '../../hooks/useSchema'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {Translate} from '../../i18n/Translate'
+import {Preview} from '../../preview/components/Preview'
+import {getErrorMessage} from '../../util/getErrorMessage'
 import {useScheduledDraftDocument} from '../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../hooks/useScheduleDraftOperations'
 
@@ -97,7 +100,7 @@ export function PublishScheduledDraftDialog(
         },
       }}
     >
-      <Stack space={3} paddingX={3} marginBottom={2}>
+      <Stack gap={3} paddingX={3} marginBottom={2}>
         {schemaType && firstDocument ? (
           <Preview value={firstDocument} schemaType={schemaType} />
         ) : (

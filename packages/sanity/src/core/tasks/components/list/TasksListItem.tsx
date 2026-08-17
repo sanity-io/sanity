@@ -1,6 +1,5 @@
 import {
-  Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button as UIButton,
   Card,
   Flex,
@@ -11,9 +10,10 @@ import {isThisISOWeek} from 'date-fns/isThisISOWeek'
 import {isToday} from 'date-fns/isToday'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {Tooltip} from '../../../../ui-components'
-import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../hooks'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../hooks/useDateTimeFormat'
 import {type TaskDocument} from '../../types'
 import {TasksUserAvatar} from '../TasksUserAvatar'
 import {DocumentPreview} from './DocumentPreview'
@@ -95,7 +95,7 @@ export function TasksListItem(props: TasksListItemProps) {
   const targetDocument = useMemo(() => getTargetDocumentMeta(target), [target])
 
   return (
-    <Stack space={3}>
+    <Stack gap={3} data-testid="tasks-list-item">
       <Flex align="center" gap={1}>
         <Box>
           <TasksStatus documentId={documentId} status={status} />

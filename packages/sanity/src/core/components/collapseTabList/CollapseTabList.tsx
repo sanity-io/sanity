@@ -2,19 +2,18 @@ import {Flex} from '@sanity/ui'
 import {
   Children,
   cloneElement,
-  type ForwardedRef,
-  forwardRef,
   type ReactNode,
   useCallback,
   useMemo,
   useState,
+  type RefAttributes,
 } from 'react'
 import {styled} from 'styled-components'
 
-import {type MenuButtonProps} from '../../../ui-components'
+import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
 import {ObserveElement} from '../collapseMenu/ObserveElement'
-import {ContextMenuButton} from '../contextMenuButton'
+import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'
 
 function _isReactElement(node: unknown): node is React.JSX.Element {
   return Boolean(node)
@@ -50,11 +49,9 @@ interface CollapseTabListProps {
  * Similar to `<CollapseMenu />` but instead of collapsing the inner items by removing the text
  * it shows the items that fit, and the rest are rendered in a menu.
  * @internal */
-export const CollapseTabList = forwardRef(function CollapseTabList(
-  props: CollapseTabListProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
+export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref,
     children: childrenProp,
     gap,
     menuButtonProps,
@@ -78,7 +75,6 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
   const displayChildren = useMemo(() => {
     if (collapsed) return null // If collapsed, we don't want to show any children
     if (!showChildren) return null // If we haven't run the intersection observer yet, we don't want to show any children
-    // eslint-disable-next-line max-nested-callbacks
     return children.filter((c) => !hiddenElements.some((h) => h.key === c.key))
   }, [children, collapsed, hiddenElements, showChildren])
 
@@ -100,10 +96,7 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
     () =>
       collapsed
         ? children
-        : children.filter(({key}) =>
-            // eslint-disable-next-line max-nested-callbacks
-            hiddenElements.find((o: React.JSX.Element) => o.key === key),
-          ),
+        : children.filter(({key}) => hiddenElements.find((o: React.JSX.Element) => o.key === key)),
     [children, hiddenElements, collapsed],
   )
 
@@ -115,7 +108,6 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
       const isIntersecting = e.isIntersecting
       if (!isHidden && !isIntersecting) setHiddenElements((prev) => [...prev, child])
       if (isHidden && isIntersecting)
-        // eslint-disable-next-line max-nested-callbacks
         setHiddenElements((prev) => prev.filter((el) => el.key !== child.key))
     },
     [hiddenElements, showChildren, setShowChildren, setHiddenElements],
@@ -158,4 +150,4 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
       </HiddenRow>
     </Flex>
   )
-})
+}

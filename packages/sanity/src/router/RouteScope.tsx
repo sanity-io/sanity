@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {type ReactNode, useCallback, useEffect, useMemo, useRef} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 

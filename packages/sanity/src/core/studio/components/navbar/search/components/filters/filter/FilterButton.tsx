@@ -1,6 +1,6 @@
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
 import {
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
   Card,
   rem,
@@ -9,8 +9,8 @@ import {
 import {type KeyboardEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Popover} from '../../../../../../../../ui-components'
-import {useTranslation} from '../../../../../../../i18n'
+import {Popover} from '../../../../../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
@@ -26,6 +26,7 @@ interface FilterButtonProps {
 
 const CloseButton = styled(Button)`
   border-radius: ${({theme}) =>
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     `0 ${rem(theme.sanity.radius[2])} ${rem(theme.sanity.radius[2])} 0`};
 `
 

@@ -80,6 +80,7 @@ import {locationResolverTest} from './debug/locationResolverTest'
 import {longValidationTestType} from './debug/longValidation'
 import manyFieldsTest from './debug/manyFieldsTest'
 import {manyViewsType} from './debug/manyViews'
+import {nestedArrayInsertMenuRepro} from './debug/nestedArrayInsertMenuRepro'
 import notitle from './debug/notitle'
 import {objectsDebug} from './debug/objectsDebug'
 import {patchOnMountDebug} from './debug/patchOnMount'
@@ -95,6 +96,7 @@ import recursive from './debug/recursive'
 import recursiveArray from './debug/recursiveArray'
 import recursiveObjectTest, {recursiveObject} from './debug/recursiveObject'
 import recursivePopover from './debug/recursivePopover'
+import {pageDocRepro, sectionDocRepro} from './debug/referenceCreateButtonRepro'
 import removeRestoreAction from './debug/removeRestoreAction'
 import reservedFieldNames from './debug/reservedFieldNames'
 import review from './debug/review'
@@ -103,6 +105,7 @@ import select from './debug/select'
 import {navbarSettingsDialogRepro} from './debug/settingsV2DialogRepro'
 import {simpleArrayOfObjects} from './debug/simpleArrayOfObjects'
 import {simpleReferences} from './debug/simpleReferences'
+import {twoArgValidationRepro} from './debug/twoArgValidationRepro'
 import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
@@ -111,15 +114,11 @@ import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
 import {documentInternationalizationTest} from './externalPlugins/documentInternationalization'
 import internationalizedArray from './externalPlugins/internationalizedArray'
-import markdown from './externalPlugins/markdown'
-import mux from './externalPlugins/mux'
 import house from './house'
 import playlist from './playlist'
 import playlistTrack from './playlistTrack'
 import code from './plugins/code'
-import color from './plugins/color'
 import geopoint from './plugins/geopoint'
-import {hotspot, hotspotArrayTest} from './plugins/hotspotArray'
 import species from './species'
 import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './standard/arrays'
 import booleans from './standard/booleans'
@@ -138,7 +137,7 @@ import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
 import blocks from './standard/portableText/blocks'
 import {ptCustomBlockEditors} from './standard/portableText/customBlockEditors'
-import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
+import {ptCustomMarkersTestType} from './standard/portableText/customMarkers/schemaTypes'
 import {customPlugins} from './standard/portableText/customPlugins'
 import {ptCustomWithDefaultsType} from './standard/portableText/customWithDefaults'
 import manyEditors from './standard/portableText/manyEditors'
@@ -235,6 +234,7 @@ export function createSchemaTypes(projectId: string) {
     ctaType,
     tooltipAnnotationType,
     arrayModalWidthRepro,
+    nestedArrayInsertMenuRepro,
     arrayOfStringsGridCustomInput,
     button,
     collapsibleColumnsBug,
@@ -289,6 +289,8 @@ export function createSchemaTypes(projectId: string) {
     namedDeprecatedArray,
     notitle,
     objectsDebug,
+    pageDocRepro,
+    sectionDocRepro,
     longValidationTestType,
     poppers,
     presence,
@@ -317,6 +319,7 @@ export function createSchemaTypes(projectId: string) {
     reservedFieldNames,
     review,
     navbarSettingsDialogRepro,
+    twoArgValidationRepro,
     select,
     typeWithNoToplevelStrings,
     uploads,
@@ -336,14 +339,9 @@ export function createSchemaTypes(projectId: string) {
     code,
     // @todo temporary, until code input is v3 compatible
     codeInputType,
-    color,
     geopoint,
-    hotspot,
-    hotspotArrayTest,
 
     // Test documents with 3rd party plugin inputs
-    markdown,
-    mux,
     internationalizedArray,
     documentInternationalizationTest,
     // Other documents

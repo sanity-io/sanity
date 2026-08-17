@@ -136,10 +136,12 @@ test.describe('Enhanced Object Dialog - popover dialog', () => {
     // wait for form to be attached
     await createDraftDocument('/content/input-debug;objectsDebug')
 
-    await page
+    const addItemButton = page
       .getByTestId('field-animalsWithPopover')
       .getByRole('button', {name: 'Add item'})
-      .click()
+    // Clicking before the field is enabled is a no-op and the popover never opens.
+    await expect(addItemButton).toBeEnabled()
+    await addItemButton.click()
   })
 
   test(`the popover dialog should open on arrays that open with a popover and open the enhanced object dialog when opening nested objects`, async ({

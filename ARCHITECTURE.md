@@ -32,7 +32,7 @@ sanity/
 │       ├── eslint-config/     # Shared ESLint configuration
 │       ├── test-config/       # Shared test configuration
 │       ├── tsconfig/          # Shared TypeScript configuration
-│       ├── package.config/    # Build configuration utilities
+│       ├── tsdown.config/     # Build configuration utilities
 │       └── ...
 ├── dev/                        # Development studios for testing
 │   ├── test-studio/           # Primary development studio
@@ -115,9 +115,7 @@ export default defineConfig({
   dataset: 'production',
 
   schema: {
-    types: [
-      /* document and object types */
-    ],
+    types: [/* document and object types */],
   },
 
   plugins: [
@@ -191,15 +189,11 @@ export const myPlugin = definePlugin({
 
   // Add schema types
   schema: {
-    types: [
-      /* custom types */
-    ],
+    types: [/* custom types */],
   },
 
   // Add tools to navigation
-  tools: [
-    /* custom tools */
-  ],
+  tools: [/* custom tools */],
 
   // Customize document actions
   document: {
@@ -208,9 +202,7 @@ export const myPlugin = definePlugin({
 
   // Add studio components
   studio: {
-    components: {
-      /* component overrides */
-    },
+    components: {/* component overrides */},
   },
 })
 ```

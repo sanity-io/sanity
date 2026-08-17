@@ -1,9 +1,7 @@
-import {
-  ErrorOutlineIcon,
-  type IconComponent,
-  InfoOutlineIcon,
-  WarningOutlineIcon,
-} from '@sanity/icons'
+import {type IconComponent} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {
   type ObjectSchemaType,
   type Path,
@@ -21,8 +19,8 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {ErrorBoundary} from '../../../../../ui-components'
-import {DocumentInspectorHeader} from '../../documentInspector'
+import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
+import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
 import {getPathTitles} from './getPathTitles'
 
@@ -86,7 +84,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
               </Box>
             )}
             {mergedValidation.length > 0 && (
-              <Stack space={2}>
+              <Stack gap={2}>
                 {mergedValidation.map((marker, i) => (
                   <ValidationCard
                     // oxlint-disable-next-line no-array-index-key
@@ -157,7 +155,7 @@ function ValidationCard(props: {
               </Text>
             </Box>
 
-            <Stack flex={1} space={2}>
+            <Stack flex={1} gap={2}>
               <DocumentNodePathBreadcrumbs
                 path={marker.path}
                 schemaType={schemaType}

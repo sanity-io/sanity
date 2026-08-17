@@ -4,7 +4,7 @@ import {
 } from '@sanity/media-library-types'
 import {type CustomValidatorResult, isReference, type Validators} from '@sanity/types'
 
-import {getPublishedId} from '../../util'
+import {getPublishedId} from '../../util/draftUtils'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'
 import {genericValidators, SLOW_VALIDATOR_TIMEOUT} from './genericValidator'
@@ -67,7 +67,6 @@ export const objectValidators: Validators = {
   assetRequired: (flag, value, message, {i18n}) => {
     if (!value || !value.asset || !value.asset._ref) {
       return {
-        // eslint-disable-next-line camelcase
         __internal_metadata: {
           name: 'assetRequired',
         },
@@ -146,7 +145,6 @@ export const objectValidators: Validators = {
     }
 
     const validationErrorMetadata = {
-      // eslint-disable-next-line camelcase
       __internal_metadata: {
         name: 'media',
       },

@@ -1,4 +1,4 @@
-import {ToggleArrowRightIcon} from '@sanity/icons'
+import {ToggleArrowRightIcon} from '@sanity/icons/ToggleArrowRight'
 import {Box, Flex, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
@@ -57,6 +57,7 @@ export function Details(props: DetailsProps) {
 
   const handleToggle = useCallback(() => setOpen((v) => !v), [])
 
+  // oxlint-disable-next-line react/react-compiler
   useEffect(() => setOpen(openProp || false), [openProp])
 
   return (

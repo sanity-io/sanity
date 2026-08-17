@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {type ComponentType} from 'react'
 import {createGlobalStyle, css} from 'styled-components'

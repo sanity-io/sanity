@@ -2,7 +2,7 @@ import {isValidElement, useState} from 'react'
 import {isValidElementType} from 'react-is'
 import {useI18nText} from 'sanity'
 
-import {Pane} from '../../components'
+import {Pane} from '../../components/pane/Pane'
 import {type StructureToolPaneActionHandler} from '../../types'
 import {type BaseStructureToolPaneProps} from '../types'
 import {UserComponentPaneContent} from './UserComponentPaneContent'
@@ -28,6 +28,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
   } | null>(null)
   const {title = ''} = useI18nText(pane)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {key, ...componentProps} = {...restProps, ...restPane}
 
   return (

@@ -52,22 +52,21 @@ const PATHS = [
 ]
 
 export const mock$ = defer(() => timer(0, 10000)).pipe(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   mergeMapTo(USERIDS),
-  map(
-    (id, n): StateEvent => ({
-      type: 'state',
-      userId: id,
-      sessionId: id + n,
-      timestamp: new Date().toISOString(),
-      locations: [
-        {
-          type: 'document',
-          documentId: 'presence-debug',
-          lastActiveAt: new Date().toISOString(),
-          path: sample(PATHS),
-        },
-      ] as any,
-    }),
-  ),
+  map((id, n): StateEvent => ({
+    type: 'state',
+    userId: id,
+    sessionId: id + n,
+    timestamp: new Date().toISOString(),
+    locations: [
+      {
+        type: 'document',
+        documentId: 'presence-debug',
+        lastActiveAt: new Date().toISOString(),
+        path: sample(PATHS),
+      },
+    ] as any,
+  })),
   shareReplay(),
 )

@@ -1,13 +1,16 @@
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../../../ui-components'
-import {useCurrentUser, useUser} from '../../../../store'
-import {CommentsAvatar} from '../../avatars'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {useCurrentUser, useUser} from '../../../../store/user/hooks'
+import {CommentsAvatar} from '../../avatars/CommentsAvatar'
 
 const Span = styled.span(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {regular} = theme.sanity.fonts?.text.weights || {}
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {hovered} = theme.sanity.color?.card || {}
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {bg} = theme.sanity.color.selectable?.caution.pressed || {}
 
   return css`

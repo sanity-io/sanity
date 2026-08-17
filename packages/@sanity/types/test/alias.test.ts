@@ -4,12 +4,10 @@ import {describe, it} from 'vitest'
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {
-  type ArrayOptions,
-  type ObjectOptions,
-  type StringOptions,
-  type TypeAliasDefinition,
-} from '../src/schema/definition'
+import {type TypeAliasDefinition} from '../src/schema/definition/schemaDefinition'
+import {type ArrayOptions} from '../src/schema/definition/type/array'
+import {type ObjectOptions} from '../src/schema/definition/type/object'
+import {type StringOptions} from '../src/schema/definition/type/string'
 import {defineArrayMember, defineField, defineType} from '../src/schema/types'
 
 describe('alias type test', () => {
@@ -35,8 +33,8 @@ describe('alias type test', () => {
       },
     })
 
-    //@ts-expect-error options is a union type of everything and not very useful
-    const notAssignableToStringOptions: StringOptions | undefined = notStringDef.options
+    const looselyAssignableToStringOptions: StringOptions | undefined = notStringDef.options
+    void looselyAssignableToStringOptions
 
     const narrowedAlias = defineType(
       {

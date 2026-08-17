@@ -4,6 +4,7 @@ import {type DocumentPerspectiveState, useDocumentVersions} from '../../useDocum
 
 export const useDocumentVersionsReturn: Mocked<DocumentPerspectiveState> = {
   data: [],
+  versions: [],
   error: null,
   loading: true,
 }

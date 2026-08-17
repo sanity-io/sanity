@@ -1,0 +1,14 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "outputs": ["dist/**", ".sanity/**"],
+      "env": [
+        "SANITY_STUDIO_BENCH_API_HOST",
+        "SANITY_STUDIO_BENCH_PROJECT_ID",
+        "SANITY_STUDIO_BENCH_DATASET"
+      ]
+    }
+  }
+}

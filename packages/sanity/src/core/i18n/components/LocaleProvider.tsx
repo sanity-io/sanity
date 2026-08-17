@@ -1,11 +1,11 @@
-/* eslint-disable @sanity/i18n/no-i18next-import */
+/* oxlint-disable @sanity/i18n/no-i18next-import */
 import {type i18n} from 'i18next'
 import {type PropsWithChildren, Suspense, useCallback, useMemo, useSyncExternalStore} from 'react'
 import {I18nextProvider} from 'react-i18next'
 import {LocaleContext, type LocaleContextValue} from 'sanity/_singletons'
 
-import {LoadingBlock} from '../../components/loadingBlock'
-import {useSource} from '../../studio'
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {useSource} from '../../studio/source'
 import {defaultLocale} from '../locales'
 import {storePreferredLocale} from '../localeStore'
 import {type Locale} from '../types'
@@ -21,6 +21,7 @@ export function LocaleProvider(props: PropsWithChildren) {
 
     i18n: {locales},
     __internal: {i18next},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
 
   return (

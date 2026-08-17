@@ -1,4 +1,5 @@
-import {CloseIcon, EyeOpenIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {Box, Button, Card, Checkbox, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {
@@ -38,7 +39,7 @@ export function FormInputExample(props: ObjectInputProps) {
 
   if (renderDefaultForm) {
     return (
-      <Stack space={2}>
+      <Stack gap={2}>
         <Card shadow={2} margin={3} padding={4} radius={2}>
           {props.renderDefault({...props, renderInput})}
         </Card>
@@ -46,21 +47,21 @@ export function FormInputExample(props: ObjectInputProps) {
     )
   }
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       <Card padding={3} radius={2}>
-        <Stack space={4}>
-          <Stack space={4}>
+        <Stack gap={4}>
+          <Stack gap={4}>
             <Flex gap={2}>
               <Text weight="semibold">
                 Input at <code>{pathToString(path)}</code>
               </Text>
             </Flex>
             <Flex gap={4}>
-              <Inline space={2}>
+              <Inline gap={2}>
                 <Checkbox checked={includeField} onChange={() => setIncludeField((v) => !v)} />{' '}
                 <Text>Include field</Text>
               </Inline>
-              <Inline space={2}>
+              <Inline gap={2}>
                 <Checkbox checked={includeItem} onChange={() => setIncludeItem((v) => !v)} />{' '}
                 <Text>Include item</Text>
               </Inline>

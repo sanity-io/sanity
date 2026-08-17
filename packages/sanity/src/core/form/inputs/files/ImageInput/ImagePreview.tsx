@@ -1,9 +1,9 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type Card, Text} from '@sanity/ui'
 import {type ComponentProps, useCallback, useEffect, useState} from 'react'
 
-import {LoadingBlock} from '../../../../components/loadingBlock'
-import {useTranslation} from '../../../../i18n'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type AssetAccessPolicy} from '../types'
 import {ErrorIconWrapper, FlexOverlay, Overlay, RatioBox} from './ImagePreview.styled'
 
@@ -21,6 +21,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & ImagePreviewPr
   useEffect(() => {
     /* set for when the src is being switched when the image input already had a image src
     - meaning it already had an asset */
+    // oxlint-disable-next-line react/react-compiler
     setLoaded(false)
     setHasError(false)
   }, [src])

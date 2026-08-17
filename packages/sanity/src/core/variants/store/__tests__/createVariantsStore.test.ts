@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {filter, firstValueFrom, of, Subject, take, throwError, toArray} from 'rxjs'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockVariant} from '../../__fixtures__/createMockVariant'
 import {VARIANT_DOCUMENTS_PATH} from '../constants'
@@ -27,12 +27,27 @@ describe('createVariantsStore', () => {
     vi.clearAllMocks()
   })
 
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('does not fetch or listen when disabled', async () => {
+    const {client, fetch, listen} = createMockClient()
+
+    const store = createVariantsStore({client, enabled: false})
+    const value = await firstValueFrom(store.state$)
+
+    expect(value).toMatchObject({state: 'loaded'})
+    expect(fetch).not.toHaveBeenCalled()
+    expect(listen).not.toHaveBeenCalled()
+  })
+
   it('loads variants from the variants system document path', async () => {
     const variant = createMockVariant('a')
     const {client, fetch, listen, listener$} = createMockClient()
     fetch.mockReturnValue(of([variant]))
 
-    const store = createVariantsStore({client})
+    const store = createVariantsStore({client, enabled: true})
     const valuesPromise = firstValueFrom(store.state$.pipe(take(3), toArray()))
 
     listener$.next({type: 'welcome'})
@@ -70,18 +85,23 @@ describe('createVariantsStore', () => {
   })
 
   it('keeps variants updated when the listener refetches', async () => {
+    vi.useFakeTimers()
+
     const firstVariant = createMockVariant('a')
     const updatedVariant = createMockVariant('b', 1)
     const {client, fetch, listener$} = createMockClient()
     fetch.mockReturnValueOnce(of([firstVariant])).mockReturnValueOnce(of([updatedVariant]))
 
-    const store = createVariantsStore({client})
+    const store = createVariantsStore({client, enabled: true})
     const valuesPromise = firstValueFrom(store.state$.pipe(take(4), toArray()))
 
     listener$.next({type: 'welcome'})
+    await vi.advanceTimersByTimeAsync(0)
     listener$.next({type: 'mutation', transition: 'update', visibility: 'query'})
+    await vi.advanceTimersByTimeAsync(1000)
 
     const values = await valuesPromise
+    vi.useRealTimers()
     const lastValue = values.at(-1)!
 
     expect(fetch).toHaveBeenCalledTimes(2)
@@ -95,7 +115,7 @@ describe('createVariantsStore', () => {
     const {client, fetch, listener$} = createMockClient()
     fetch.mockReturnValue(of([variantA, variantB]))
 
-    const store = createVariantsStore({client})
+    const store = createVariantsStore({client, enabled: true})
     const loadedPromise = firstValueFrom(
       store.state$.pipe(
         filter(({state, variants}) => state === 'loaded' && variants.size === 2),
@@ -125,7 +145,7 @@ describe('createVariantsStore', () => {
     const {client, fetch, listener$} = createMockClient()
     fetch.mockReturnValue(throwError(() => error))
 
-    const store = createVariantsStore({client})
+    const store = createVariantsStore({client, enabled: true})
     const valuesPromise = firstValueFrom(store.state$.pipe(take(3), toArray()))
 
     listener$.next({type: 'welcome'})

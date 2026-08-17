@@ -1,4 +1,5 @@
-import {DocumentIcon, ImageIcon} from '@sanity/icons'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {ImageIcon} from '@sanity/icons/Image'
 import {
   type Asset,
   type AssetSource,

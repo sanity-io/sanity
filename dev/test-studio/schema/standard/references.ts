@@ -1,4 +1,4 @@
-import {SyncIcon} from '@sanity/icons'
+import {SyncIcon} from '@sanity/icons/Sync'
 import {
   defineField,
   defineType,

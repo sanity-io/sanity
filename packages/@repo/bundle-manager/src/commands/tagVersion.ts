@@ -1,17 +1,14 @@
-import {Storage} from '@google-cloud/storage'
 import {readEnv} from '@repo/utils'
 
 import {isValidTag} from '../assert'
 import {corePkgs, VALID_TAGS} from '../constants'
+import {createStorageClient} from '../helpers/createStorageClient'
 import {updateManifestWith} from '../helpers/updateManifestWith'
 import {tagVersion as tagManifestVersion} from '../operations/tagVersion'
 import {type KnownEnvVar} from '../types'
 import {cleanDirName, currentUnixTime} from '../utils'
 
-const storage = new Storage({
-  projectId: readEnv<KnownEnvVar>('GOOGLE_PROJECT_ID'),
-  credentials: JSON.parse(readEnv<KnownEnvVar>('GCLOUD_SERVICE_KEY')),
-})
+const storage = createStorageClient()
 
 const bucket = storage.bucket(readEnv<KnownEnvVar>('GCLOUD_BUCKET'))
 

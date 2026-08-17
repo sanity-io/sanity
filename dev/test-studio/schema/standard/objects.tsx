@@ -1,4 +1,3 @@
-/* eslint-disable func-name-matching */
 // import {FaPuzzlePiece as icon} from 'react-icons/fa'
 
 import {useCallback} from 'react'

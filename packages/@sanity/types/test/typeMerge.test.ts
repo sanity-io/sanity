@@ -1,9 +1,9 @@
 import {describe, it} from 'vitest'
 
-import {type ExtensionTypeExampleDef, type ObjectDefinition} from '../src/schema/definition'
+import {type ExtensionTypeExampleDef, type ObjectDefinition} from '../src'
 import {defineType} from '../src/schema/types'
 
-declare module '../src/schema/definition' {
+declare module '../src' {
   // here we type up our custom schema definition
 
   export type ExtensionTypeExampleDef = Omit<ObjectDefinition, 'type' | 'fields'> & {

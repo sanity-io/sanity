@@ -187,6 +187,98 @@ const cases = {
     type: 'attribute',
     name: 'trueOrFalseField',
   },
+  // Dotted-attribute LHS in a filter constraint (#5313): the Content Lake
+  // accepts these, so an incoming patch using one must parse here, not throw.
+  'arr[asset._ref == "abc"]': {
+    type: 'path',
+    nodes: [
+      {type: 'attribute', name: 'arr'},
+      {
+        type: 'union',
+        nodes: [
+          {
+            type: 'constraint',
+            operator: '==',
+            lhs: {
+              type: 'path',
+              nodes: [
+                {type: 'attribute', name: 'asset'},
+                {type: 'attribute', name: '_ref'},
+              ],
+            },
+            rhs: {type: 'string', value: 'abc'},
+          },
+        ],
+      },
+    ],
+  },
+  'items[meta.author.name == "jane"]': {
+    type: 'path',
+    nodes: [
+      {type: 'attribute', name: 'items'},
+      {
+        type: 'union',
+        nodes: [
+          {
+            type: 'constraint',
+            operator: '==',
+            lhs: {
+              type: 'path',
+              nodes: [
+                {type: 'attribute', name: 'meta'},
+                {type: 'attribute', name: 'author'},
+                {type: 'attribute', name: 'name'},
+              ],
+            },
+            rhs: {type: 'string', value: 'jane'},
+          },
+        ],
+      },
+    ],
+  },
+  'variants[stock.warehouse >= 20]': {
+    type: 'path',
+    nodes: [
+      {type: 'attribute', name: 'variants'},
+      {
+        type: 'union',
+        nodes: [
+          {
+            type: 'constraint',
+            operator: '>=',
+            lhs: {
+              type: 'path',
+              nodes: [
+                {type: 'attribute', name: 'stock'},
+                {type: 'attribute', name: 'warehouse'},
+              ],
+            },
+            rhs: {type: 'number', value: 20},
+          },
+        ],
+      },
+    ],
+  },
+  // No comparator: must rewind to a path subscript (a union of a `path` node),
+  // not a half-consumed constraint.
+  'arr[asset._ref]': {
+    type: 'path',
+    nodes: [
+      {type: 'attribute', name: 'arr'},
+      {
+        type: 'union',
+        nodes: [
+          {
+            type: 'path',
+            nodes: [
+              {type: 'attribute', name: 'asset'},
+              {type: 'attribute', name: '_ref'},
+            ],
+          },
+        ],
+      },
+    ],
+  },
 }
 
 Object.keys(cases).forEach((path) => {

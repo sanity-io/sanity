@@ -231,15 +231,13 @@ const mockDocumentValue = {
 }
 
 // Mock recursive function
-const mockRecursive = vi.fn(
-  (): TreeEditingState => ({
-    breadcrumbs: [],
-    menuItems: [],
-    relativePath: [],
-    rootTitle: '',
-    siblings: new Map(),
-  }),
-)
+const mockRecursive = vi.fn((): TreeEditingState => ({
+  breadcrumbs: [],
+  menuItems: [],
+  relativePath: [],
+  rootTitle: '',
+  siblings: new Map(),
+}))
 
 // Helper function to create test props
 function createTestProps(overrides: Partial<Parameters<typeof buildArrayState>[0]> = {}) {
@@ -606,13 +604,11 @@ describe.skip('buildArrayState', () => {
                   _key: 'prop1',
                   _type: 'property',
                   name: 'Property 1',
-                  // eslint-disable-next-line camelcase
                   properties_b: [
                     {
                       _key: 'prop_b1',
                       _type: 'propertyB',
                       name: 'Property B1',
-                      // eslint-disable-next-line camelcase
                       properties_c: arrayValue,
                     },
                   ],

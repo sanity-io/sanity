@@ -1,4 +1,6 @@
-import {ChevronRightIcon, DocumentIcon, FolderIcon} from '@sanity/icons'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {FolderIcon} from '@sanity/icons/Folder'
 import {
   isSanityDocument,
   type PreviewValue,
@@ -30,7 +32,7 @@ import {
 } from 'sanity'
 
 import {MissingSchemaType} from '../MissingSchemaType'
-import {usePaneRouter} from '../paneRouter'
+import {usePaneRouter} from '../paneRouter/usePaneRouter'
 import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {
@@ -142,6 +144,7 @@ export function PaneItem(props: PaneItemProps) {
   }, [])
 
   // Reset `clicked` state when `selected` prop changes
+  // oxlint-disable-next-line react/react-compiler
   useEffect(() => setClicked(false), [selected])
 
   // Preloads the edit state on hover, using concurrent rendering with `startTransition` so preloads can be interrupted and not block rendering
@@ -160,7 +163,6 @@ export function PaneItem(props: PaneItemProps) {
       data-testid={`pane-item-${title}`}
       __unstable_focusRing
       as={ChildLink as FIXME}
-      // @ts-expect-error - `childId` is a valid prop on `ChildLink`
       childId={id}
       data-as="a"
       margin={margin}
@@ -186,7 +188,9 @@ export function PaneItem(props: PaneItemProps) {
 
 function PreloadDocumentPane(props: {documentId: string; documentType: string}) {
   const {documentId, documentType} = props
-  // Preload the edit state for the document, and keep it alive until mouse leave
+  // Preload the edit state for the document, and keep it alive until mouse leave.
+  // No `getTargetScopeId(useTargetDocumentState())` here: this is a best-effort preload of the draft/published
+  // pair, so no version scope applies.
   useEditState(getPublishedId(documentId), documentType)
 
   return null

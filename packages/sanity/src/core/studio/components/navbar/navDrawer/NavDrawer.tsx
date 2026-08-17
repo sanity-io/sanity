@@ -1,21 +1,23 @@
-import {CloseIcon, LeaveIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
+import {LeaveIcon} from '@sanity/icons/Leave'
 import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components'
-import {UserAvatar} from '../../../../components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {CapabilityGate} from '../../../../components/CapabilityGate'
-import {type NavbarAction, type Tool} from '../../../../config'
-import {useTranslation} from '../../../../i18n'
+import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
+import {type NavbarAction} from '../../../../config/studio/types'
+import {type Tool} from '../../../../config/types'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useColorSchemeSetValue} from '../../../colorScheme'
-import {useToolMenuComponent} from '../../../studio-components-hooks'
+import {useToolMenuComponent} from '../../../studio-components-hooks/useToolMenuComponent'
 import {useWorkspace} from '../../../workspace'
-import {useWorkspaces} from '../../../workspaces'
+import {useWorkspaces} from '../../../workspaces/useWorkspaces'
 import {HomeButton} from '../home/HomeButton'
-import {WorkspaceMenuButton} from '../workspace'
+import {WorkspaceMenuButton} from '../workspace/WorkspaceMenuButton'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {ManageMenu} from './ManageMenu'
@@ -158,7 +160,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               variants={INNER_CARD_VARIANTS}
             >
               <Card borderBottom>
-                <Stack space={3} padding={3}>
+                <Stack gap={3} padding={3}>
                   <Flex align="center">
                     {/* Current user */}
                     <Flex flex={1} align="center" paddingRight={2}>
@@ -198,7 +200,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               <Flex direction="column" flex={1} justify="space-between" overflow="auto">
                 {/* Tools */}
                 <Card flex="none" padding={2}>
-                  {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
+                  {/* oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work */}
                   <ToolMenu
                     activeToolName={activeToolName}
                     closeSidebar={onClose}
@@ -211,7 +213,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                 <Flex direction="column">
                   {actionNodes && (
                     <Card flex="none" padding={2}>
-                      <Stack space={1}>{actionNodes}</Stack>
+                      <Stack gap={1}>{actionNodes}</Stack>
                     </Card>
                   )}
 

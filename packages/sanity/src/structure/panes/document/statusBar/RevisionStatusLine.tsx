@@ -1,4 +1,4 @@
-import {RestoreIcon} from '@sanity/icons'
+import {RestoreIcon} from '@sanity/icons/Restore'
 import {Box, Flex, Text} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {useContext} from 'react'

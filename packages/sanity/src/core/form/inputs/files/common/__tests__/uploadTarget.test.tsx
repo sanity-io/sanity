@@ -13,10 +13,12 @@ import {
   observeImageAssetStub,
   observeVideoAssetStub,
 } from '../../../../../../../test/fixtures/assetSourceMocks'
-import {renderFileInput, renderImageInput, renderVideoInput} from '../../../../../../../test/form'
+import {renderFileInput} from '../../../../../../../test/form/renderFileInput'
+import {renderImageInput} from '../../../../../../../test/form/renderImageInput'
+import {renderVideoInput} from '../../../../../../../test/form/renderVideoInput'
 import {BaseVideoInput} from '../../../../../../media-library/plugin/VideoInput/VideoInput'
-import {BaseFileInput} from '../../FileInput'
-import {BaseImageInput} from '../../ImageInput'
+import {BaseFileInput} from '../../FileInput/FileInput'
+import {BaseImageInput} from '../../ImageInput/ImageInput'
 
 // Mock useVideoPlaybackInfo and VideoPlayer for video tests (VideoInput uses these)
 vi.mock('../../../../../../media-library/plugin/VideoInput/useVideoPlaybackInfo', () => ({
@@ -274,6 +276,7 @@ describe('uploadTarget - drag and drop', () => {
     // Browse-only source (no Uploader, no uploadMode: 'component') should not appear in picker
     const browseOnlySource: AssetSource = {
       name: 'browse-only',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       title: 'Browse Only',
       component: () => null,
     }
@@ -307,6 +310,7 @@ describe('uploadTarget - drag and drop', () => {
   it('does not show browse-only asset sources in upload destination picker (image)', async () => {
     const browseOnlySource: AssetSource = {
       name: 'browse-only',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       title: 'Browse Only',
       component: () => null,
     }

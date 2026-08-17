@@ -116,6 +116,36 @@ describe('createSearchQuery', () => {
   })
 
   describe('searchOptions', () => {
+    // The document list pane ranks search results by relevance by passing a
+    // `_score`-primary sort (with the configured order as a tiebreaker). This
+    // asserts that such a sort produces a genuinely relevance-ranked query:
+    // the `score(boost(...))` pipeline runs, zero-score docs are filtered out,
+    // and results are ordered by `_score` first, then the configured field.
+    it('ranks by relevance when a _score-primary sort is provided (document list pane)', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
+      const {query} = createSearchQuery(
+        {
+          query: 'test',
+          types: [testType],
+        },
+        '',
+        {
+          sort: [
+            {field: '_score', direction: 'desc'},
+            {field: '_updatedAt', direction: 'desc'},
+          ],
+        },
+      )
+
+      expect(query).toMatchInlineSnapshot(`
+        "// findability-mvi:5
+        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), ([@, _id] match text::query($__query) || references($__rawQuery))) [_score > 0] {_type, _id, _originalId, "orderings": [_score, _updatedAt]} | order(orderings[0] desc,orderings[1] desc) [0...$__limit]"
+      `)
+    })
+
     it('should use provided limit (plus one to determine existence of next page)', () => {
       const testType = Schema.compile({
         types: schemaTypes,
@@ -618,6 +648,59 @@ describe('createSearchQuery', () => {
       `)
 
       expect(query).toContain('cover[].cards[].title match text::query($__query), 5)')
+    })
+  })
+
+  // https://github.com/sanity-io/sanity/issues/4775
+  describe('reference search (phase two)', () => {
+    const getType = () => Schema.compile({types: schemaTypes}).get('basic-schema-test')
+
+    it('leaves the query untouched when no reference ids are supplied', () => {
+      const withoutIds = createSearchQuery({query: 'test', types: [getType()]}, '')
+      const withEmptyIds = createSearchQuery(
+        {query: 'test', types: [getType()]},
+        '',
+        {},
+        {
+          referenceIds: [],
+        },
+      )
+
+      expect(withEmptyIds.query).toBe(withoutIds.query)
+      expect(withEmptyIds.params).not.toHaveProperty('__refIds')
+    })
+
+    it('boosts referring documents via references() without any dereference', () => {
+      const {query, params} = createSearchQuery(
+        {query: 'test', types: [getType()]},
+        '',
+        {},
+        {
+          referenceIds: ['author-1', 'author-2'],
+          referenceWeight: 5,
+        },
+      )
+
+      // The reference match is index-accelerated and accepted by score().
+      expect(query).toContain('boost(references($__refIds), 5)')
+      // The regression that broke production: a dereference must never reach score().
+      expect(query).not.toContain('->')
+      expect(params.__refIds).toEqual(['author-1', 'author-2'])
+    })
+
+    it('ORs references() into the filter when the search is unscored', () => {
+      const {query} = createSearchQuery(
+        {query: 'test', types: [getType()]},
+        '',
+        {sort: [{field: 'title', direction: 'asc'}]},
+        {referenceIds: ['author-1']},
+      )
+
+      expect(query).toContain(
+        '([@, _id] match text::query($__query) || references($__rawQuery)) || references($__refIds)',
+      )
+      expect(query).not.toContain('score(')
+      expect(query).not.toContain('->')
     })
   })
 })

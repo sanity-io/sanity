@@ -1,7 +1,7 @@
 import {Flex, Text} from '@sanity/ui'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/SingleDocReleaseEnabledProvider'
 import {singleDocReleaseNamespace} from '../../../singleDocRelease/i18n'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'

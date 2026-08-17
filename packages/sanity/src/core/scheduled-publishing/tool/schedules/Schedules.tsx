@@ -1,6 +1,7 @@
-import {WarningOutlineIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Text} from '@sanity/ui'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
+import {Card, Container, Flex, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'

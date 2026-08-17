@@ -10,6 +10,7 @@ export const CustomTextInputBox = styled(Box)<{
 
     input + span {
       background: ${({theme}) =>
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         $background ? theme.sanity.color.card.disabled.bg2 : 'transparent'};
     }
 

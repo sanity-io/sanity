@@ -1,12 +1,10 @@
-import {
-  ActivityIcon,
-  ClipboardIcon,
-  ComponentIcon,
-  ErrorOutlineIcon,
-  PackageIcon,
-  RocketIcon,
-  TrendUpwardIcon,
-} from '@sanity/icons'
+import {ActivityIcon} from '@sanity/icons/Activity'
+import {ClipboardIcon} from '@sanity/icons/Clipboard'
+import {ComponentIcon} from '@sanity/icons/Component'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {PackageIcon} from '@sanity/icons/Package'
+import {RocketIcon} from '@sanity/icons/Rocket'
+import {TrendUpwardIcon} from '@sanity/icons/TrendUpward'
 import {Stack, Text} from '@sanity/ui'
 import {defineArrayMember, defineField, defineType, type PreviewProps} from 'sanity'
 
@@ -144,7 +142,7 @@ export const todo = defineType({
   components: {
     preview: (props: any) => {
       return (
-        <Stack space={2} padding={2}>
+        <Stack gap={2} padding={2}>
           <Text weight="semibold">Article TODOs</Text>
           <ul>
             {props?.items?.map((t: string) => (
@@ -215,7 +213,7 @@ export const timeline = defineType({
   components: {
     preview: (props: PreviewProps & {events?: any[]}) => {
       return (
-        <Stack space={2} padding={2}>
+        <Stack gap={2} padding={2}>
           <Text weight="semibold">Timeline</Text>
           <ul>
             {props?.events?.map((event: {title: string; periodDescription: string}) => (

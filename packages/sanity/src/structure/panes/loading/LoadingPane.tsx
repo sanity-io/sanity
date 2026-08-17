@@ -1,11 +1,13 @@
 import {_raf2, type CardTone, Flex} from '@sanity/ui'
 import {memo, useEffect, useMemo, useState} from 'react'
-import {type Observable} from 'rxjs'
-import {LoadingBlock, useTranslation} from 'sanity'
+import {useObservable} from 'react-rx'
+import {isObservable, type Observable, of} from 'rxjs'
+import {map} from 'rxjs/operators'
+import {Delay, LoadingBlock, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Delay} from '../../components/Delay'
-import {Pane, PaneContent} from '../../components/pane'
+import {Pane} from '../../components/pane/Pane'
+import {PaneContent} from '../../components/pane/PaneContent'
 import {structureLocaleNamespace} from '../../i18n'
 import {getWaitMessages, type WaitMessage} from './getWaitMessages'
 
@@ -59,21 +61,25 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
     return messageProp
   }, [messageProp, path])
 
-  const [currentMessage, setCurrentMessage] = useState<string | null>(() => {
-    if (typeof resolvedMessage === 'string') return resolvedMessage
-    return t(DEFAULT_MESSAGE_KEY)
-  })
+  const defaultMessage =
+    typeof resolvedMessage === 'string' ? resolvedMessage : t(DEFAULT_MESSAGE_KEY)
 
-  useEffect(() => {
-    if (typeof resolvedMessage !== 'object') return undefined
-    if (typeof resolvedMessage.subscribe !== 'function') return undefined
+  const message$ = useMemo(() => {
+    if (typeof resolvedMessage === 'string') {
+      return of(resolvedMessage)
+    }
 
-    const sub = resolvedMessage.subscribe((message) => {
-      setCurrentMessage('messageKey' in message ? t(message.messageKey) : message.message)
-    })
+    // Require a real RxJS Observable (`pipe`), not a bare Subscribable.
+    if (!isObservable(resolvedMessage)) {
+      return of(defaultMessage)
+    }
 
-    return () => sub.unsubscribe()
-  }, [resolvedMessage, t])
+    return resolvedMessage.pipe(
+      map((message) => ('messageKey' in message ? t(message.messageKey) : message.message)),
+    )
+  }, [resolvedMessage, t, defaultMessage])
+
+  const currentMessage = useObservable(message$, defaultMessage)
 
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
   const [mounted, setMounted] = useState(false)

@@ -14,7 +14,7 @@ import {
   tap,
 } from 'rxjs'
 
-import {type ObjectDiff} from '../../field'
+import {type ObjectDiff} from '../../field/types'
 import {calculateDiff} from './calculateDiff'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
@@ -67,6 +67,7 @@ export function getDocumentChanges({
   let lastResolvedTo: string | null = null
   let lastTransactions: TransactionLogEventWithEffects[] = []
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return combineLatest(to$, since$, eventsObservable$).pipe(
     switchMap(([toObs, since, {events}]) => {
       const to = toObs?.document

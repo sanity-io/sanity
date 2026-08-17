@@ -1,6 +1,8 @@
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Box} from 'ui5'
 
-import {Translate, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {MissingSinceDocumentError} from '../../../store/events/getDocumentChanges'
 
 /**
@@ -11,7 +13,7 @@ export function ChangesError({error}: {error?: Error | null}) {
   const revisionNotFoundError = error instanceof MissingSinceDocumentError
   return (
     <Card tone="caution" padding={3}>
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text size={1} weight="medium" as="h3">
           {t('changes.error-title')}
         </Text>

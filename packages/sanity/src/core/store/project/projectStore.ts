@@ -1,11 +1,13 @@
 import {type SanityClient} from '@sanity/client'
 import {
   catchError,
+  distinctUntilChanged,
   map,
   type Observable,
   of,
   repeat,
   ReplaySubject,
+  scan,
   share,
   shareReplay,
   timer,
@@ -37,6 +39,12 @@ const getProjectOrg = memoize(
           return of(null)
         }),
         repeat({delay: REFETCH_INTERVAL}),
+        // A transient refetch failure emits `null`. Retain the last known
+        // project data so a failed refetch does not clobber a previously-good
+        // organization id (which would strip org_id from telemetry events
+        // flushed during the refetch window). See SAPP-3824.
+        scan<ProjectData | null, ProjectData | null>((lastKnown, next) => next ?? lastKnown, null),
+        distinctUntilChanged(),
         share({
           connector: () => new ReplaySubject(1),
           resetOnComplete: true,
@@ -56,6 +64,29 @@ const getOrganizationId = memoize(
 
 const getOrganizationData = memoize(
   (client: SanityClient) => getProjectOrg(client).pipe(map((res) => res?.organization ?? null)),
+  (client) => `${client.config().projectId}-${client.config().dataset}`,
+)
+
+/**
+ * Fetches the project grants for the current user, shared and replayed so all
+ * permission checks reuse a single request. Memoized so callers outside the
+ * project store (e.g. the schema/manifest upload gate) hit the same cached
+ * observable instead of issuing a duplicate `/grants` request.
+ *
+ * Keyed by `projectId-dataset`, matching the other memoized requests in this
+ * module, so a client for a different project/dataset never reuses another's
+ * grants.
+ *
+ * @internal
+ */
+export const getProjectGrants = memoize(
+  (client: SanityClient): Observable<ProjectGrants> =>
+    client.observable
+      .request<ProjectGrants>({
+        url: `/projects/${client.config().projectId}/grants`,
+        tag: 'get-grants',
+      })
+      .pipe(shareReplay(1)),
   (client) => `${client.config().projectId}-${client.config().dataset}`,
 )
 
@@ -79,20 +110,12 @@ export function createProjectStore(context: {client: SanityClient}): ProjectStor
     })
   }
 
-  // Share and replay the grants result so permission checks reuse the same response.
-  const grants$ = versionedClient.observable
-    .request<ProjectGrants>({
-      url: `/projects/${projectId}/grants`,
-      tag: 'get-grants',
-    })
-    .pipe(shareReplay(1))
-
   const projectOrgData$ = getProjectOrg(versionedClient)
 
   return {
     get,
     getDatasets,
-    getGrants: () => grants$,
+    getGrants: () => getProjectGrants(versionedClient),
     getOrganizationData: () => projectOrgData$.pipe(map((res) => res?.organization ?? null)),
     getOrganizationId: () => projectOrgData$.pipe(map((res) => res?.organizationId ?? null)),
   }

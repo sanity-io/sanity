@@ -2,12 +2,13 @@ import {Schema} from '@sanity/schema'
 import {type CurrentUser, defineField} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
-import {buildCommentBreadcrumbs} from '../utils'
+import {buildCommentBreadcrumbs} from '../utils/buildCommentBreadcrumbs'
 
 const CURRENT_USER: CurrentUser = {
   email: '',
   id: '',
   name: '',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   role: '',
   roles: [],
   profileImage: '',

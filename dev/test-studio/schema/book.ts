@@ -1,4 +1,4 @@
-import {BookIcon} from '@sanity/icons'
+import {BookIcon} from '@sanity/icons/Book'
 import {defineType, type Rule} from '@sanity/types'
 import {isIncomingReferenceCreation} from 'sanity/structure'
 

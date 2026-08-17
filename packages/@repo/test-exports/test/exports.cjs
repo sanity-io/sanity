@@ -24,7 +24,6 @@ module.exports = (condition) => {
   }
   const workspaces = {}
   for (const workspace of Object.keys(dependencies)) {
-    // eslint-disable-next-line import/no-dynamic-require
     const pkg = require(`${workspace}/package.json`)
     workspaces[workspace] = []
     if (!pkg.exports) continue

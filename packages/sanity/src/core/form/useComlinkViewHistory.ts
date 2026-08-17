@@ -1,8 +1,9 @@
 import {useEffect, useRef} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
 import {useRecordDocumentHistoryEvent} from '../hooks/useRecordDocumentHistoryEvent'
-import {type EditStateFor, useRenderingContextStore} from '../store'
+import {useRenderingContextStore} from '../store/datastores'
+import {type EditStateFor} from '../store/document/document-pair/editState'
 import {useActiveWorkspace} from '../studio/activeWorkspaceMatcher/useActiveWorkspace'
 
 /**
@@ -14,7 +15,9 @@ import {useActiveWorkspace} from '../studio/activeWorkspaceMatcher/useActiveWork
  */
 export function useComlinkViewHistory({editState}: {editState: EditStateFor}): void {
   const renderingContextStore = useRenderingContextStore()
-  const capabilities = useObservable(renderingContextStore.capabilities)
+  // Kept synchronous: capabilities emit once at boot and gate the history
+  // recording effect below; deferring only delays it.
+  const capabilities = useSyncObservable(renderingContextStore.capabilities)
   const {activeWorkspace} = useActiveWorkspace()
   const displayed = editState.version ?? editState.draft ?? editState.published
 

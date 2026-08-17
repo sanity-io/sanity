@@ -11,17 +11,20 @@ import {
 } from 'react'
 import {styled} from 'styled-components'
 
-import {ChangeIndicator} from '../../../../changeIndicators'
-import {LoadingBlock} from '../../../../components/loadingBlock'
-import {Translate, useTranslation} from '../../../../i18n'
-import {EMPTY_ARRAY} from '../../../../util'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
+import {EMPTY_ARRAY} from '../../../../util/empty'
 import {Details} from '../../../components/Details'
-import {FormField} from '../../../components/formField'
+import {FormField} from '../../../components/formField/FormField'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {set} from '../../../patch'
-import {type ObjectInputProps} from '../../../types'
+import {set} from '../../../patch/patch'
+import {type ObjectInputProps} from '../../../types/inputProps'
 import {RatioBox} from '../common/RatioBox'
-import {DEFAULT_CROP, DEFAULT_HOTSPOT, HotspotImage, ImageTool} from './imagetool'
+import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetool/constants'
+import {HotspotImage} from './imagetool/HotspotImage'
+import {ImageTool} from './imagetool/ImageTool'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps extends Omit<
@@ -84,6 +87,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
   }, [onPathFocus])
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setLocalValue(value || DEFAULT_VALUE)
   }, [value])
 
@@ -143,7 +147,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
       {isSvg ? (
         <>
           <Card padding={3} marginY={3} tone="caution" radius={2}>
-            <Stack space={4}>
+            <Stack gap={4}>
               <Text size={1}>{t('inputs.imagetool.vector-warning.title')}</Text>
               <Details title={t('inputs.imagetool.vector-warning.expand-developer-info')}>
                 <Text size={1}>
@@ -217,7 +221,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
         {hotspotPreviews.length > 0 ? (
           <Box marginTop={2}>
-            <Grid columns={4} gap={1}>
+            <Grid gridTemplateColumns={4} gap={1}>
               {hotspotPreviews.map(({title, aspectRatio}) => (
                 <Box key={title} marginTop={2}>
                   <Heading as="h4" size={0}>

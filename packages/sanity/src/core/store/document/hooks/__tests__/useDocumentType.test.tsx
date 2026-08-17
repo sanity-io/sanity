@@ -6,7 +6,7 @@ import {expect, test, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {defineConfig} from '../../../../config'
+import {defineConfig} from '../../../../config/defineConfig'
 import {useDocumentType} from '../useDocumentType'
 
 function createWrapperComponent(client: SanityClient) {
@@ -106,7 +106,6 @@ test('should return correct document type when transitioning from undefined type
 
   client.observable.fetch = vi.fn<typeof client.observable.fetch>().mockReturnValue(responseGrrm)
 
-  // eslint-disable-next-line no-undef-init
   let documentType: string | undefined = undefined
 
   const {result, rerender} = renderHook(() => useDocumentType('grrm', documentType), {

@@ -2,11 +2,13 @@ import {Card, Flex, Stack, Text} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
 import uniq from 'lodash-es/uniq.js'
 
-import {Tooltip} from '../../../../../../../../../ui-components'
-import {TextWithTone} from '../../../../../../../../components'
-import {useSchema} from '../../../../../../../../hooks'
-import {useTranslation} from '../../../../../../../../i18n'
-import {EMPTY_ARRAY, isNonNullable, truncateString} from '../../../../../../../../util'
+import {Tooltip} from '../../../../../../../../../ui-components/tooltip/Tooltip'
+import {TextWithTone} from '../../../../../../../../components/textWithTone/TextWithTone'
+import {useSchema} from '../../../../../../../../hooks/useSchema'
+import {useTranslation} from '../../../../../../../../i18n/hooks/useTranslation'
+import {EMPTY_ARRAY} from '../../../../../../../../util/empty'
+import {isNonNullable} from '../../../../../../../../util/isNonNullable'
+import {truncateString} from '../../../../../../../../util/unicodeString'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {type SearchFieldDefinition} from '../../../../definitions/fields'
 import {type SearchFilterDefinition} from '../../../../definitions/filters'
@@ -75,10 +77,10 @@ export function FilterTooltip({
     <Tooltip
       content={
         <Card tone="default" radius={2} style={{maxWidth: '250px'}}>
-          <Stack space={4}>
+          <Stack gap={4}>
             {/* Field name */}
             {fieldDefinition && (
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text muted size={1} weight="medium">
                   {t('search.filter-field-tooltip-name')}
                 </Text>
@@ -95,7 +97,7 @@ export function FilterTooltip({
 
             {/* Field description */}
             {fieldDefinitionDescription && (
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text muted size={1} weight="medium">
                   {t('search.filter-field-tooltip-description')}
                 </Text>
@@ -114,7 +116,7 @@ export function FilterTooltip({
 
             {/* Field document titles */}
             {!documentTypesNarrowed.length && fieldDefinitionDocumentTypeTitles.length > 0 && (
-              <Stack space={2}>
+              <Stack gap={2}>
                 <Flex align="center" gap={1}>
                   <Text muted size={1} weight="medium">
                     {t('search.filter-field-tooltip-used-in-document-types')}

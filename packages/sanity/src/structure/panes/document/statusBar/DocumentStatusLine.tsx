@@ -1,6 +1,6 @@
 import {
   Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button,
   Flex,
   Skeleton,
@@ -10,6 +10,7 @@ import {AnimatePresence, motion} from 'motion/react'
 import {useEffect, useLayoutEffect, useState} from 'react'
 import {
   AvatarSkeleton,
+  getTargetScopeId,
   isPublishedPerspective,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
   useEvents,
@@ -23,10 +24,10 @@ import {
 } from 'sanity'
 
 import {HISTORY_INSPECTOR_NAME} from '../constants'
-import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline'
+import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline/timelineI18n'
 import {useDocumentPane} from '../useDocumentPane'
 import {useDocumentPaneInfo} from '../useDocumentPaneInfo'
-import {DocumentStatusPulse} from './DocumentStatusPulse'
+import {DocumentStatusPulse} from './DocumentStatusPulse/DocumentStatusPulse'
 
 const RELATIVE_TIME_OPTIONS = {
   minimal: true,
@@ -159,6 +160,7 @@ const EventsStatus = () => {
   )
 }
 
+/* oxlint-disable no-deprecated -- renders the deprecated legacy document timeline */
 const TimelineStatus = () => {
   const {timelineStore} = useDocumentPane()
   const chunks = useTimelineSelector(timelineStore, (state) => state.chunks)
@@ -181,22 +183,28 @@ const TimelineStatus = () => {
     />
   )
 }
+/* oxlint-enable no-deprecated */
 
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
 
 export function DocumentStatusLine() {
-  const {editState, value} = useDocumentPane()
+  const {value, targetDocumentState} = useDocumentPane()
   const {documentId, documentType} = useDocumentPaneInfo()
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
+  // oxlint-disable-next-line no-deprecated -- the legacy timeline opt-out keeps working until the next major
   const eventsEnabled = source.beta?.eventsAPI?.documents
 
-  const syncState = useSyncState(documentId, documentType, editState?.release)
+  // The scope of the document targeted by the selected perspective (undefined while the target is
+  // resolving or when the draft/published pair applies).
+  const scopeId = getTargetScopeId(targetDocumentState)
+  const syncState = useSyncState(documentId, documentType, scopeId)
 
   const lastUpdated = value?._updatedAt
 
-  // eslint-disable-next-line consistent-return
+  // oxlint-disable-next-line consistent-return
   useEffect(() => {
     // Schedule an update to set the status to 'saved' when status changed to 'syncing.
     // We use `syncState.isSyncing` here to avoid the status being set to 'saved' when the document is syncing.
@@ -213,12 +221,14 @@ export function DocumentStatusLine() {
 
   // Clear the status when documentId changes to make sure we don't show the wrong status when opening a new document
   useLayoutEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setStatus(null)
   }, [documentId])
 
   // Set status to 'syncing' when lastUpdated changes and we go from not syncing to syncing
   useLayoutEffect(() => {
     if (syncState.isSyncing) {
+      // oxlint-disable-next-line react/react-compiler
       setStatus('syncing')
     }
   }, [syncState.isSyncing, lastUpdated])

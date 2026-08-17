@@ -1,10 +1,10 @@
 import {type Asset as AssetType} from '@sanity/types'
 import {useMemo} from 'react'
 
-import {Dialog} from '../../../../../ui-components'
-import {LoadingBlock} from '../../../../components/loadingBlock'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useLegacyReferringDocuments} from '../../../../hooks/useReferringDocuments'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {AssetUsageList} from './AssetUsageList'
 
 export interface UsageDialogProps {
@@ -14,6 +14,7 @@ export interface UsageDialogProps {
 }
 
 export function AssetUsageDialog({asset, assetType, onClose}: UsageDialogProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {isLoading, referringDocuments} = useLegacyReferringDocuments(asset._id)
 
   const publishedDocuments = useMemo(() => {

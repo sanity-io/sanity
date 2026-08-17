@@ -8,7 +8,7 @@ import {
   selectDivergenceCount,
   selectFirstDescendantDivergence,
 } from '../../divergence/divergenceNavigator'
-import {useVersionRelease} from '../../divergence/hooks/useVersionRelease'
+import {useVersionRelease} from '../../hooks/useVersionRelease'
 import {useDocumentDivergences} from '../contexts/DivergencesProvider'
 
 interface Props {

@@ -1,5 +1,5 @@
-// eslint-disable-next-line no-restricted-imports -- auth tests use raw Playwright (no studio-test fixtures)
-import {expect, test} from '@playwright/test'
+// oxlint-disable-next-line no-restricted-imports -- auth tests use raw Playwright (no studio-test fixtures)
+import {expect, type Page, test} from '@playwright/test'
 
 import {watchForStudioErrors} from '../../helpers/studioErrors'
 import {BASE_URL, MOCK_TOKEN, PROJECT_ID, setupMockAuth} from './helpers'
@@ -14,7 +14,7 @@ const TOKEN_STORAGE_KEY = `__studio_auth_token_${PROJECT_ID}`
  * Seed localStorage with a mock token before navigation.
  * Used for the token-fallback tests where cookie auth fails.
  */
-async function seedToken(page: import('@playwright/test').Page) {
+async function seedToken(page: Page) {
   await page.addInitScript(
     ({key, token}) => {
       localStorage.setItem(key, JSON.stringify({token}))

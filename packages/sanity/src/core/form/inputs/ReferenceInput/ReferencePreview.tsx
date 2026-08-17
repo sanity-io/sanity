@@ -2,13 +2,14 @@ import {type ObjectSchemaType} from '@sanity/types'
 import {Badge, Box, Inline} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {type PreviewLayoutKey} from '../../../components'
-import {DocumentStatus} from '../../../components/documentStatus'
-import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator'
-import {DocumentPreviewPresence} from '../../../presence'
-import {useDocumentVersionInfo} from '../../../releases'
-import {useDocumentPresence} from '../../../store'
-import {type RenderPreviewCallback} from '../../types'
+import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
+import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator/DocumentStatusIndicator'
+import {type PreviewLayoutKey} from '../../../components/previews/types'
+import {DocumentPreviewPresence} from '../../../presence/DocumentPreviewPresence'
+import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
+import {getDocumentVersionInfoFromVersions} from '../../../releases/util/getDocumentVersionInfoFromVersions'
+import {useDocumentPresence} from '../../../store/presence/useDocumentPresence'
+import {type RenderPreviewCallback} from '../../types/renderCallback'
 
 /**
  * Used to preview a referenced type
@@ -25,7 +26,8 @@ export function ReferencePreview(props: {
 
   const documentPresence = useDocumentPresence(id)
 
-  const versionsInfo = useDocumentVersionInfo(id)
+  const {versions} = useDocumentVersions({documentId: id})
+  const versionsInfo = useMemo(() => getDocumentVersionInfoFromVersions(versions), [versions])
 
   // Note: we can't pass the preview values as-is to the Preview-component here since it's a "prepared" value and the
   // Preview component expects the "raw"/unprepared value. By passing only _id and _type we make sure the Preview-component
@@ -36,8 +38,8 @@ export function ReferencePreview(props: {
     () => ({
       children: (
         <Box paddingLeft={3}>
-          <Inline space={3}>
-            {showTypeLabel && <Badge mode="outline">{refType.title}</Badge>}
+          <Inline gap={3}>
+            {showTypeLabel && <Badge>{refType.title}</Badge>}
 
             {documentPresence && documentPresence.length > 0 && (
               <DocumentPreviewPresence presence={documentPresence} />

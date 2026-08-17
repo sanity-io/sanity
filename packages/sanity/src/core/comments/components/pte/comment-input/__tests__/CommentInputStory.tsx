@@ -1,6 +1,6 @@
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import noop from 'lodash-es/noop.js'
-import {useState} from 'react'
+import {useCallback, useState} from 'react'
 import {CommentInput} from 'sanity'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
@@ -10,6 +10,7 @@ const currentUser: CurrentUser = {
   email: '',
   id: '',
   name: '',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   role: '',
   roles: [],
   profileImage: '',
@@ -39,10 +40,21 @@ export function CommentsInputStory({
 }: {
   onDiscardCancel?: () => void
   onDiscardConfirm?: () => void
-  onSubmit?: () => void
+  onSubmit?: (value: PortableTextBlock[]) => void
   value?: PortableTextBlock[] | null
 }) {
   const [valueState, setValueState] = useState<PortableTextBlock[] | null>(value)
+
+  const handleSubmit = useCallback(
+    (nextValue: PortableTextBlock[]) => {
+      // The Studio resets the `value` it passes to `CommentInput` after each
+      // submit; the story does the same.
+      setValueState(null)
+      onSubmit(nextValue)
+    },
+    [onSubmit],
+  )
+
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <CommentInput
@@ -55,7 +67,7 @@ export function CommentsInputStory({
         mentionOptions={MENTION_DATA}
         onDiscardConfirm={onDiscardConfirm}
         onDiscardCancel={onDiscardCancel}
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
       />
     </TestWrapper>
   )

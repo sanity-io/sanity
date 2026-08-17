@@ -1,8 +1,8 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useEffect} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {
   useEnsureMediaLibrary,
   type useEnsureMediaLibraryProps,
@@ -46,7 +46,7 @@ export function EnsureMediaLibrary(props: {
           <Text size={1}>
             <ErrorOutlineIcon />
           </Text>
-          <Stack space={4} data-testid={errorCodeTestId}>
+          <Stack gap={4} data-testid={errorCodeTestId}>
             <Text size={1} weight="semibold">
               {error.message ||
                 t('asset-sources.media-library.error.library-could-not-be-resolved')}

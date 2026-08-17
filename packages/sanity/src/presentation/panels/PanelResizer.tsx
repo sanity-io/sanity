@@ -138,7 +138,7 @@ export const PanelResizer: FunctionComponent<{
     window.addEventListener('mouseup', onDragStop)
     window.addEventListener('contextmenu', onDragStop)
 
-    // eslint-disable-next-line consistent-return
+    // oxlint-disable-next-line consistent-return
     return () => {
       resetDocumentStyles()
       window.removeEventListener('mousemove', onDrag)

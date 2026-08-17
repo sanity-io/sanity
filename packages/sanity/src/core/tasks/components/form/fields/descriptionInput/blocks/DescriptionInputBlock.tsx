@@ -1,6 +1,7 @@
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 const NormalText = styled(Text)`
   word-break: break-word;

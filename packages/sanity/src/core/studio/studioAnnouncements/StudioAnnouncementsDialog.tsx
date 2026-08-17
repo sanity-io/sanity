@@ -1,15 +1,15 @@
-/* eslint-disable camelcase */
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Grid, Text} from '@sanity/ui'
 import {Fragment, useCallback, useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, Dialog} from '../../../ui-components'
-import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../hooks'
-import {useTranslation} from '../../i18n'
+import {Button} from '../../../ui-components/button/Button'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../hooks/useDateTimeFormat'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {SANITY_VERSION} from '../../version'
-import {UpsellDescriptionSerializer} from '../upsell'
+import {UpsellDescriptionSerializer} from '../upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
 import {
   ProductAnnouncementLinkClicked,
   ProductAnnouncementViewed,
@@ -119,7 +119,7 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
 
     observer.observe(item)
 
-    // eslint-disable-next-line consistent-return
+    // oxlint-disable-next-line consistent-return
     return () => {
       observer.disconnect()
     }

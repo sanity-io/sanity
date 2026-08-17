@@ -1,11 +1,11 @@
-import {type SanityDocument} from '@sanity/client'
-import {render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor, type RenderResult} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
+import {type DocumentInVariantGroup} from '../types'
 import {VariantDocumentsTable} from '../VariantDocumentsTable'
 
 vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
@@ -17,44 +17,142 @@ vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
   )),
 }))
 
+vi.mock('../variantDocumentTable/VariantDocumentPreview', () => ({
+  VariantDocumentPreview: vi.fn(({row}) => (
+    <div data-testid="preview">{row.document.title || row.document._id}</div>
+  )),
+}))
+
+vi.mock('../variantDocumentTable/VariantDocumentBundleChips', () => ({
+  VariantDocumentBundleChips: vi.fn(({versions}: {versions: Array<{bundleId?: string}>}) => (
+    <div data-testid="bundle-chips">
+      {versions.map((version) => version.bundleId ?? 'published').join(',')}
+    </div>
+  )),
+}))
+
+// Mock the "Edited by" cell so the table test doesn't reach the transaction-log / user-profile
+// fetches it makes per row (those are covered by the cell's own unit tests).
+vi.mock('../../../../components/documentTable/EditedByCell', () => ({
+  EditedByCell: vi.fn(({documentId}) => <div data-testid="edited-by">{documentId}</div>),
+}))
+
+vi.mock('../../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => ({
+    data: [],
+    loading: false,
+    error: null,
+  })),
+}))
+
+// Pin a wide viewport so responsive rendering is deterministic across tests.
+vi.mock('@sanity/ui', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useMediaIndex: vi.fn(() => 4),
+}))
+
 setupVirtualListEnv()
 
-const mockDocuments: SanityDocument[] = [
+const defaultValidation = {
+  hasError: false,
+  isValidating: false,
+  validation: [],
+} as const
+
+const mockRows: DocumentInVariantGroup[] = [
   {
-    _id: 'drafts.article-first',
-    _type: 'article',
-    _rev: 'rev-1',
-    _createdAt: '2025-01-01T00:00:00Z',
-    _updatedAt: '2025-06-01T00:00:00Z',
-    title: 'First article',
+    memoKey: 'group-1',
+    groupId: 'article-1',
+    // @ts-expect-error -- pre-existing, fix later
+    validation: defaultValidation,
+    document: {
+      _id: 'published.scope.article-1',
+      _type: 'article',
+      _rev: 'rev-1',
+      _createdAt: '2025-01-01T00:00:00Z',
+      _updatedAt: '2025-06-01T00:00:00Z',
+      publishedDocumentExists: true,
+      title: 'First article',
+    },
+    version: {
+      documentId: 'published.scope.article-1',
+      releaseRef: null,
+      updatedAt: '2025-06-01T00:00:00Z',
+    },
+    versions: [
+      {
+        documentId: 'published.scope.article-1',
+        releaseRef: null,
+        updatedAt: '2025-06-01T00:00:00Z',
+      },
+      {
+        documentId: 'drafts.scope.article-1',
+        bundleId: 'drafts',
+        releaseRef: null,
+        updatedAt: '2025-05-01T00:00:00Z',
+      },
+    ],
   },
   {
-    _id: 'drafts.article-second',
-    _type: 'article',
-    _rev: 'rev-2',
-    _createdAt: '2025-01-02T00:00:00Z',
-    _updatedAt: '2025-06-02T00:00:00Z',
-    title: 'Second article',
+    memoKey: 'group-2',
+    groupId: 'article-2',
+    // @ts-expect-error -- pre-existing, fix later
+    validation: defaultValidation,
+    document: {
+      _id: 'drafts.scope.article-2',
+      _type: 'article',
+      _rev: 'rev-2',
+      _createdAt: '2025-01-02T00:00:00Z',
+      _updatedAt: '2025-06-02T00:00:00Z',
+      publishedDocumentExists: false,
+      title: 'Second article',
+    },
+    version: {
+      documentId: 'drafts.scope.article-2',
+      bundleId: 'drafts',
+      releaseRef: null,
+      updatedAt: '2025-06-02T00:00:00Z',
+    },
+    versions: [
+      {
+        documentId: 'drafts.scope.article-2',
+        bundleId: 'drafts',
+        releaseRef: null,
+        updatedAt: '2025-06-02T00:00:00Z',
+      },
+    ],
   },
 ]
 
 describe('VariantDocumentsTable', () => {
-  const renderTable = async (documents: SanityDocument[] = mockDocuments) => {
+  const renderTable = async (
+    rows: DocumentInVariantGroup[] = mockRows,
+    loading = false,
+  ): Promise<RenderResult & {wrapper: Awaited<ReturnType<typeof createTestProvider>>}> => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<VariantDocumentsTable documents={documents} />, {wrapper})
-    await screen.findByPlaceholderText('Search documents')
-    return result
+    const result = render(<VariantDocumentsTable rows={rows} loading={loading} />, {wrapper})
+    // Search now lives in the command lane (only shown with documents), so settle on the table
+    // container, which is always present regardless of rows/loading.
+    await screen.findByTestId('variant-documents-table')
+    return {...result, wrapper}
   }
 
   it('shows an empty state when there are no documents', async () => {
     await renderTable([])
 
-    expect(screen.getByText('No documents in this variant')).toBeInTheDocument()
+    expect(screen.getByText('No documents in this variant definition')).toBeInTheDocument()
   })
 
-  it('renders document rows with title, type, and edited columns', async () => {
+  it('shows loading skeleton rows while documents are loading', async () => {
+    await renderTable([], true)
+
+    expect(screen.getAllByTestId('table-row-skeleton')).toHaveLength(3)
+    expect(screen.queryByText('No documents in this variant definition')).not.toBeInTheDocument()
+  })
+
+  it('renders document rows with bundle, title, type, and edited columns', async () => {
     await renderTable()
 
     await waitFor(() => {
@@ -63,11 +161,13 @@ describe('VariantDocumentsTable', () => {
 
     expect(screen.getByText('First article')).toBeInTheDocument()
     expect(screen.getByText('Second article')).toBeInTheDocument()
-    expect(screen.getByText('drafts.article-first')).toBeInTheDocument()
     expect(screen.getAllByText('article')).toHaveLength(2)
+    expect(screen.getByText('published,drafts')).toBeInTheDocument()
+    expect(screen.getByText('drafts')).toBeInTheDocument()
+    expect(screen.getByText('Appears in')).toBeInTheDocument()
   })
 
-  it('filters documents when searching by title, id, or type', async () => {
+  it('filters documents when searching by title or name', async () => {
     const user = userEvent.setup()
 
     await renderTable()
@@ -84,5 +184,157 @@ describe('VariantDocumentsTable', () => {
 
     expect(screen.getByText('Second article')).toBeInTheDocument()
     expect(screen.queryByText('First article')).not.toBeInTheDocument()
+  })
+
+  it('clears a stale release lane when its segment disappears and does not reapply when it returns', async () => {
+    const user = userEvent.setup()
+    const draftsOnlyRows: DocumentInVariantGroup[] = [
+      {
+        ...mockRows[0]!,
+        document: {
+          ...mockRows[0]!.document,
+          _id: 'drafts.scope.article-1',
+          publishedDocumentExists: false,
+        },
+        version: mockRows[0]!.versions[1]!,
+        versions: [mockRows[0]!.versions[1]!],
+      },
+      mockRows[1]!,
+    ]
+
+    const {rerender} = await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    await user.click(screen.getByTestId('variant-release-lane-segment-published'))
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    rerender(<VariantDocumentsTable rows={draftsOnlyRows} />)
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    rerender(<VariantDocumentsTable rows={mockRows} />)
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+    expect(screen.getByText('First article')).toBeInTheDocument()
+    expect(screen.getByText('Second article')).toBeInTheDocument()
+  })
+
+  it('filters documents by release lane and clears on re-click', async () => {
+    const user = userEvent.setup()
+
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    // The lane appears because the documents span more than one bundle (published + drafts).
+    expect(screen.getByTestId('variant-release-lane')).toBeInTheDocument()
+
+    // Only the first article has a published version.
+    await user.click(screen.getByTestId('variant-release-lane-segment-published'))
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+    expect(screen.getByText('First article')).toBeInTheDocument()
+    expect(screen.queryByText('Second article')).not.toBeInTheDocument()
+
+    // Clicking the active segment again clears the filter back to all documents.
+    await user.click(screen.getByTestId('variant-release-lane-segment-published'))
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+  })
+
+  it('hides the release lane when all documents share a single bundle', async () => {
+    // Only the second fixture row (drafts-only) — nothing to filter by with just one bundle.
+    await renderTable([mockRows[1]!])
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+    expect(screen.queryByTestId('variant-release-lane')).not.toBeInTheDocument()
+  })
+
+  it('sorts rows by document group id on first load', async () => {
+    const rows: DocumentInVariantGroup[] = [
+      {
+        ...mockRows[1]!,
+        groupId: 'z-group',
+        memoKey: 'group-z',
+        document: {
+          ...mockRows[1]!.document,
+          title: 'Zulu article',
+        },
+      },
+      {
+        ...mockRows[0]!,
+        groupId: 'a-group',
+        memoKey: 'group-a',
+        document: {
+          ...mockRows[0]!.document,
+          title: 'Alpha article',
+        },
+      },
+    ]
+
+    await renderTable(rows)
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    const renderedTitles = screen.getAllByTestId('preview').map((node) => node.textContent)
+
+    expect(renderedTitles).toEqual(['Alpha article', 'Zulu article'])
+  })
+
+  it('puts search in the command lane, not the column header', async () => {
+    await renderTable()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+
+    // Search moved out of the column-header row into the command lane; the preview column is now
+    // a plain sortable "Document" label.
+    expect(screen.getByTestId('variant-documents-search')).toBeInTheDocument()
+    expect(screen.getByText('Document')).toBeInTheDocument()
+  })
+
+  it('finds documents by name when title is missing', async () => {
+    const user = userEvent.setup()
+    const rows: DocumentInVariantGroup[] = [
+      {
+        ...mockRows[0]!,
+        groupId: 'article-named',
+        memoKey: 'group-named',
+        document: {
+          ...mockRows[0]!.document,
+          title: undefined,
+          name: 'Named article',
+        },
+      },
+    ]
+
+    await renderTable(rows)
+
+    await user.type(screen.getByPlaceholderText('Search documents'), 'Named')
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
   })
 })

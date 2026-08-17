@@ -40,9 +40,19 @@ interface UseDocumentListOpts {
   client: SanityClient
   filter: string
   perspective?: ClientPerspective
+  /**
+   * The selected editing variant as a bare variant id. When set, the list resolves documents as
+   * seen through that variant, on top of `perspective`.
+   */
+  variant?: string
   params: Record<string, unknown>
   searchQuery: string | null
   sortOrder?: SortOrder
+  /**
+   * Whether to rank results by relevance when a search term is present.
+   * Defaults to `true`.
+   */
+  searchSortByRelevance?: boolean
 }
 
 interface DocumentListState {
@@ -107,6 +117,8 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     sortOrder,
     searchQuery,
     perspective,
+    variant,
+    searchSortByRelevance = true,
   } = opts
   const {strategy: searchStrategy} = useWorkspace().search
   const schema = useSchema()
@@ -130,11 +142,13 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
       params: paramsProp,
       schema,
       perspective,
+      variant,
       searchQuery: searchQuery || '',
       sort: sortOrder || DEFAULT_ORDERING,
       staticTypeNames: typeNameFromFilter,
       maxFieldDepth,
       searchStrategy,
+      sortByRelevance: searchSortByRelevance,
     }
 
     const partialList$ = listenSearchQuery(listenSearchQueryArgs).pipe(
@@ -257,8 +271,10 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     paramsProp,
     schema,
     perspective,
+    variant,
     searchQuery,
     sortOrder,
+    searchSortByRelevance,
     typeNameFromFilter,
     maxFieldDepth,
     searchStrategy,

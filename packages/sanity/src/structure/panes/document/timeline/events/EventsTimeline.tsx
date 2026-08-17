@@ -216,6 +216,7 @@ export const EventsTimeline = ({
     ],
   )
 
+  // oxlint-disable-next-line react/react-compiler
   useEffect(() => setMounted(true), [])
   const selectedIndex = events.findIndex((event) => event.id === selectedEventId)
 
@@ -250,7 +251,7 @@ export const EventsTimeline = ({
           />
         </ListWrapper>
       ) : (
-        <Stack padding={3} space={3}>
+        <Stack padding={3} gap={3}>
           <Text size={1} weight="medium">
             {t('timeline.error.no-document-history-title')}
           </Text>

@@ -39,6 +39,21 @@ describe('useVersionOperations', () => {
     expect(mockedUseSetPerspective).toHaveBeenCalledWith('releaseId')
   })
 
+  it('should skip perspective navigation when navigate is false', async () => {
+    const wrapper = await createTestProvider()
+    const {result} = renderHook(() => useVersionOperations(), {wrapper})
+
+    await act(async () => {
+      await result.current.createVersion('releaseId', 'documentId', {navigate: false})
+    })
+
+    expect(useReleaseOperationsMockReturn.createVersion).toHaveBeenCalledWith(
+      'releaseId',
+      'documentId',
+    )
+    expect(mockedUseSetPerspective).not.toHaveBeenCalled()
+  })
+
   it('should discard a version successfully', async () => {
     const wrapper = await createTestProvider()
     const {result} = renderHook(() => useVersionOperations(), {wrapper})
@@ -58,6 +73,7 @@ describe('useVersionOperations', () => {
     const {result} = renderHook(() => useVersionOperations(), {wrapper})
 
     await act(async () => {
+      // oxlint-disable-next-line no-deprecated
       await result.current.unpublishVersion('versions.release.documentId')
     })
 

@@ -1,7 +1,7 @@
 import {Stack} from '@sanity/ui'
 import {useCallback} from 'react'
 
-import {useTranslation} from '../../../../../../../../../i18n'
+import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorDateEqualValue} from '../../../../../definitions/operators/dateOperators'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
@@ -62,7 +62,7 @@ export function CommonDateEqualInput({
   )
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <ParsedDateTextInput
         aria-label={t('search.filter-date-aria-label')}
         fontSize={fullscreen ? 2 : 1}

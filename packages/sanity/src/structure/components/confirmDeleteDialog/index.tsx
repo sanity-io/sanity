@@ -2,11 +2,10 @@ import {Box, Text} from '@sanity/ui'
 import {type ComponentProps, useCallback, useId, useState} from 'react'
 import {useTranslation} from 'sanity'
 
-import {Dialog, ErrorBoundary} from '../../../ui-components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {structureLocaleNamespace} from '../../i18n'
 import {ConfirmDeleteDialog, type ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
-
-export type {ConfirmDeleteDialogProps}
 
 type ArgType<T> = T extends (arg: infer U) => unknown ? U : never
 type ErrorInfo = ArgType<ComponentProps<typeof ErrorBoundary>['onCatch']>

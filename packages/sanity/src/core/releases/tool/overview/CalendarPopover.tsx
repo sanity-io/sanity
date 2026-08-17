@@ -1,5 +1,5 @@
-import {FilterIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports
+import {FilterIcon} from '@sanity/icons/Filter'
+// oxlint-disable-next-line no-restricted-imports
 import {Button, useClickOutsideEvent} from '@sanity/ui'
 import {type ReactNode, useRef, useState} from 'react'
 
@@ -34,7 +34,7 @@ export function CalendarPopover({content, asDialog}: {content: ReactNode; asDial
         selected={isCalendarOpen}
         onClick={() => setIsCalendarOpen((prev) => !prev)}
         ref={buttonRef}
-        space={2}
+        gap={2}
       />
     </Tooltip>
   )

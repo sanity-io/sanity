@@ -297,6 +297,118 @@ describe('transferValue', () => {
       expect(transferValueResult?.targetValue[0]._key).not.toEqual('123')
     })
 
+    test('can copy reference where referenced document only exists as a version within a release', async () => {
+      const sourceValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        // Strong reference created while a release was the selected perspective:
+        // `_strengthenOnPublish` is set, but `_weak` is not
+        reference: {
+          _type: 'reference',
+          _ref: 'yyy',
+          _strengthenOnPublish: {type: 'editor'},
+        },
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: ['reference'],
+        sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: ['reference'],
+        targetRootValue: {},
+        targetRootPath: ['reference'],
+        currentUser,
+        options: {
+          validateReferences: true,
+          // The referenced document only exists within a release
+          client: createMockClient([
+            {_type: 'editor', _id: 'versions.rSomeRelease.yyy', name: 'John Doe'},
+          ]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toEqual({
+        _type: 'reference',
+        _ref: 'yyy',
+        _weak: true,
+        _strengthenOnPublish: {type: 'editor'},
+      })
+    })
+
+    test('can copy reference where referenced document only exists as a draft', async () => {
+      const sourceValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        reference: {
+          _type: 'reference',
+          _ref: 'yyy',
+          _weak: true,
+          _strengthenOnPublish: {type: 'editor'},
+        },
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: ['reference'],
+        sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: ['reference'],
+        targetRootValue: {},
+        targetRootPath: ['reference'],
+        currentUser,
+        options: {
+          validateReferences: true,
+          // The referenced document only exists as a draft
+          client: createMockClient([{_type: 'editor', _id: 'drafts.yyy', name: 'John Doe'}]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toEqual({
+        _type: 'reference',
+        _ref: 'yyy',
+        _weak: true,
+        _strengthenOnPublish: {type: 'editor'},
+      })
+    })
+
+    test('can copy reference with filter where referenced document only exists as a version within a release', async () => {
+      const sourceValue = {
+        _type: 'referencesDocument',
+        _id: 'xxx',
+        reference: {
+          _type: 'reference',
+          _ref: 'yyy',
+          _strengthenOnPublish: {type: 'editor'},
+        },
+      }
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('referencesDocument')!,
+        sourcePath: ['reference'],
+        sourceValue,
+        targetDocumentSchemaType: schema.get('referencesDocument')!,
+        targetRootSchemaType: schema.get('referencesDocument')!,
+        targetPath: ['referenceWithFilter'],
+        targetRootValue: {},
+        targetRootPath: ['referenceWithFilter'],
+        currentUser,
+        options: {
+          validateReferences: true,
+          // The referenced document only exists within a release
+          client: createMockClient([
+            {_type: 'editor', _id: 'versions.rSomeRelease.yyy', name: 'yyy'},
+          ]),
+        },
+      })
+      expect(transferValueResult?.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toEqual({
+        _type: 'reference',
+        _ref: 'yyy',
+        _weak: true,
+        _strengthenOnPublish: {type: 'editor'},
+      })
+    })
+
     test('will not copy reference into array of references where referenced document does not exist', async () => {
       const sourceValue = {
         _type: 'referencesDocument',

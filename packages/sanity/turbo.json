@@ -3,6 +3,9 @@
   "extends": ["//"],
   "tasks": {
     "build": {
+      // Read by tsdown.config.ts to override the `__PKG_VERSION__` define for preview releases
+      // (see pkg-pr-new.yml), so it must invalidate this package's cached build
+      "env": ["PKG_VERSION"],
       "outputs": [
         "lib/**"
       ]

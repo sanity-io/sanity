@@ -1,4 +1,5 @@
-import {StackCompactIcon, StackIcon} from '@sanity/icons'
+import {StackIcon} from '@sanity/icons/Stack'
+import {StackCompactIcon} from '@sanity/icons/StackCompact'
 import {type SchemaType} from '@sanity/types'
 import startCase from 'lodash-es/startCase.js'
 

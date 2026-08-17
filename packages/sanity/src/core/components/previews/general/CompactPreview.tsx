@@ -2,7 +2,7 @@ import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
@@ -56,7 +56,7 @@ export function CompactPreview(props: CompactPreviewProps) {
         <Flex align="center" flex={1} gap={2}>
           {media && <Skeleton animated radius={2} style={PREVIEW_SIZES.compact.media} />}
 
-          <Stack data-testid="compact-preview__heading" flex={1} space={2}>
+          <Stack data-testid="compact-preview__heading" flex={1} gap={2}>
             <TitleSkeleton />
           </Stack>
 
@@ -83,7 +83,7 @@ export function CompactPreview(props: CompactPreviewProps) {
             media={media as any}
           />
         )}
-        <Stack data-testid="compact-preview__header" flex={1} space={2}>
+        <Stack data-testid="compact-preview__header" flex={1} gap={2}>
           <Text size={1} style={{color: 'inherit'}} textOverflow="ellipsis" weight="medium">
             {title && renderPreviewNode(title, 'compact')}
             {!title && (

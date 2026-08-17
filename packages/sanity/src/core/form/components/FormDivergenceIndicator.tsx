@@ -4,7 +4,7 @@ import {type ComponentType} from 'react'
 
 import {DivergenceIndicator} from '../../divergence/components/DivergenceIndicator'
 import {type DivergenceNavigator, selectDivergence} from '../../divergence/divergenceNavigator'
-import {useVersionRelease} from '../../divergence/hooks/useVersionRelease'
+import {useVersionRelease} from '../../hooks/useVersionRelease'
 import {useDocumentDivergences} from '../contexts/DivergencesProvider'
 
 interface Props {

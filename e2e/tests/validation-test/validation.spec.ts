@@ -8,7 +8,6 @@ test.describe('Validation test', () => {
     test('and the one array item has been deleted', async ({page, createDraftDocument}) => {
       const errors: string[] = []
 
-      // eslint-disable-next-line max-nested-callbacks
       page.on('console', (msg) => {
         if (
           msg.type() === 'error' &&
@@ -86,7 +85,6 @@ test.describe('Validation test', () => {
     }) => {
       const errors: string[] = []
 
-      // eslint-disable-next-line max-nested-callbacks
       page.on('console', (msg) => {
         if (msg.type() === 'error' && msg.text().includes('Error: Array item not found: [')) {
           errors.push(msg.text())
@@ -178,7 +176,6 @@ test.describe('Validation test', () => {
     }) => {
       const errors: string[] = []
 
-      // eslint-disable-next-line max-nested-callbacks
       page.on('console', (msg) => {
         if (
           msg.type() === 'error' &&

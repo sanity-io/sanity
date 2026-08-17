@@ -1,4 +1,6 @@
-import {BookIcon, MoonIcon, UserIcon} from '@sanity/icons'
+import {BookIcon} from '@sanity/icons/Book'
+import {MoonIcon} from '@sanity/icons/Moon'
+import {UserIcon} from '@sanity/icons/User'
 import {defineType} from 'sanity'
 
 export const createGlobalDocumentReferenceSubtype = (projectId: string) =>

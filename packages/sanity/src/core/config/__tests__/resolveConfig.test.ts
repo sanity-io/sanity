@@ -3,7 +3,7 @@ import {firstValueFrom, lastValueFrom, of} from 'rxjs'
 import {bufferTime} from 'rxjs/operators'
 import {describe, expect, it} from 'vitest'
 
-import {createMockAuthStore} from '../../store'
+import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
 import {VARIANTS_NAME} from '../../variants/plugin'
 import {definePlugin} from '../definePlugin'
 import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'
@@ -503,6 +503,129 @@ describe('beta variants config', () => {
         },
       }),
     ).rejects.toThrow('Expected `beta.variants.enabled` to be a boolean, but received string')
+  })
+})
+
+describe('beta document group inventory config', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('defaults document group inventory to false', async () => {
+    const source = await createSourceFromConfig({projectId, dataset})
+
+    expect(source.beta?.documentGroupInventory?.enabled).toBe(false)
+  })
+
+  it('resolves document group inventory from root config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {documentGroupInventory: {enabled: true}},
+    })
+
+    expect(source.beta?.documentGroupInventory?.enabled).toBe(true)
+  })
+
+  it('resolves document group inventory from plugin config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-document-group-inventory',
+          beta: {documentGroupInventory: {enabled: true}},
+        })(),
+      ],
+    })
+
+    expect(source.beta?.documentGroupInventory?.enabled).toBe(true)
+  })
+
+  it('lets root config override plugin document group inventory config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-document-group-inventory',
+          beta: {documentGroupInventory: {enabled: true}},
+        })(),
+      ],
+      beta: {documentGroupInventory: {enabled: false}},
+    })
+
+    expect(source.beta?.documentGroupInventory?.enabled).toBe(false)
+  })
+
+  it('infers document group inventory when variants is enabled', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {variants: {enabled: true}},
+    })
+
+    expect(source.beta?.documentGroupInventory?.enabled).toBe(true)
+  })
+
+  it('cannot be switched off when variants is enabled', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {
+        variants: {enabled: true},
+        documentGroupInventory: {enabled: false},
+      },
+    })
+
+    expect(source.beta?.documentGroupInventory?.enabled).toBe(true)
+  })
+
+  it('throws when document group inventory is not an object', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          // @ts-expect-error should be an object
+          documentGroupInventory: 'enabled',
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.documentGroupInventory` to be an object, but received string')
+  })
+
+  it('throws when document group inventory enabled is not a boolean', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          documentGroupInventory: {
+            // @ts-expect-error should be a boolean
+            enabled: 'enabled',
+          },
+        },
+      }),
+    ).rejects.toThrow(
+      'Expected `beta.documentGroupInventory.enabled` to be a boolean, but received string',
+    )
+  })
+
+  it('throws when document group inventory enabled is invalid even if variants is enabled', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          variants: {enabled: true},
+          documentGroupInventory: {
+            // @ts-expect-error should be a boolean
+            enabled: 'enabled',
+          },
+        },
+      }),
+    ).rejects.toThrow(
+      'Expected `beta.documentGroupInventory.enabled` to be a boolean, but received string',
+    )
   })
 })
 

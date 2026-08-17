@@ -1,5 +1,7 @@
-import {useEffect, useMemo, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
 import {isObservable, map, of} from 'rxjs'
+import {startWith} from 'rxjs/operators'
 import {
   type ObjectSchemaType,
   type PreviewableType,
@@ -14,8 +16,14 @@ import {
   type DocumentLocationsStatus,
 } from './types'
 import {usePresentationPerspectiveStack} from './usePresentationPerspectiveStack'
+import {usePresentationVariant} from './usePresentationVariant'
 
 const INITIAL_STATE: DocumentLocationsState = {locations: []}
+
+type DocumentLocationsResult = {
+  state: DocumentLocationsState
+  status: DocumentLocationsStatus
+}
 
 export function useDocumentLocations(props: {
   id: string
@@ -31,12 +39,16 @@ export function useDocumentLocations(props: {
   const documentPreviewStore = useDocumentPreviewStore()
 
   const perspectiveStack = usePresentationPerspectiveStack()
-  const [locationsState, setLocationsState] = useState<DocumentLocationsState>(INITIAL_STATE)
+  const variant = usePresentationVariant()
 
   const resolver = resolvers && (typeof resolvers === 'function' ? resolvers : resolvers[type.name])
 
-  const [locationsStatus, setLocationsStatus] = useState<DocumentLocationsStatus>(
-    resolver ? 'resolving' : 'empty',
+  const initialResult = useMemo(
+    (): DocumentLocationsResult => ({
+      state: INITIAL_STATE,
+      status: resolver ? 'resolving' : 'empty',
+    }),
+    [resolver],
   )
 
   const result = useMemo(() => {
@@ -44,7 +56,7 @@ export function useDocumentLocations(props: {
 
     // Original/advanced resolver which requires explicit use of Observables
     if (typeof resolver === 'function') {
-      const params = {id, type: type.name, version, perspectiveStack}
+      const params = {id, type: type.name, version, perspectiveStack, variant}
       const context = {documentStore}
       const _result = resolver(params, context)
       return isObservable(_result) ? _result : of(_result)
@@ -56,7 +68,7 @@ export function useDocumentLocations(props: {
       // Override the preview selection in the schema type to use the user
       // defined selection defined by the resolver
       const _type = {...type, preview: {select: resolver.select}} satisfies PreviewableType
-      const options = {perspective: perspectiveStack}
+      const options = {perspective: perspectiveStack, variant}
       return documentPreviewStore
         .observeForPreview(doc, _type, options)
         .pipe(map((preview) => resolver.resolve(preview.snapshot || null)))
@@ -64,19 +76,24 @@ export function useDocumentLocations(props: {
 
     // Resolver is explicitly provided state
     return of(resolver)
-  }, [documentStore, documentPreviewStore, id, resolver, type, version, perspectiveStack])
+  }, [documentStore, documentPreviewStore, id, resolver, type, version, perspectiveStack, variant])
 
-  useEffect(() => {
-    const sub = result?.subscribe((state) => {
-      setLocationsState(state || INITIAL_STATE)
-      setLocationsStatus(state ? 'resolved' : 'empty')
-    })
+  const locationsResult$ = useMemo(() => {
+    if (!result) return of(initialResult)
 
-    return () => sub?.unsubscribe()
-  }, [result])
+    return result.pipe(
+      map((state): DocumentLocationsResult => ({
+        state: state || INITIAL_STATE,
+        status: state ? 'resolved' : 'empty',
+      })),
+      startWith(initialResult),
+    )
+  }, [result, initialResult])
+
+  const {state, status} = useObservable(locationsResult$, initialResult)
 
   return {
-    state: locationsState,
-    status: locationsStatus,
+    state,
+    status,
   }
 }

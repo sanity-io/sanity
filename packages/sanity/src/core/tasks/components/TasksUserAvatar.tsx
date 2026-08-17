@@ -1,13 +1,12 @@
-import {UserIcon} from '@sanity/icons'
+import {UserIcon} from '@sanity/icons/User'
 import {type User} from '@sanity/types'
 import {type AvatarSize, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../ui-components'
-import {AvatarSkeleton, UserAvatar} from '../../components'
-import {useUser} from '../../store'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
+import {AvatarSkeleton, UserAvatar} from '../../components/userAvatar/UserAvatar'
+import {useUser} from '../../store/user/hooks'
 
 const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?: boolean}>(
   (props) => {

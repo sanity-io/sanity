@@ -1,4 +1,3 @@
-/* oxlint-disable no-console */
 import {at, patch, SanityEncoder, set, setIfMissing} from '@sanity/mutate'
 
 import {getClient} from '../client'

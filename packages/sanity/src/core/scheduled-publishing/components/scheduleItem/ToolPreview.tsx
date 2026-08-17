@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {type ComponentType, forwardRef, useMemo} from 'react'
+import {type ComponentType, type ReactNode, type Ref, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {Preview} from '../../../preview/components/Preview'
@@ -35,18 +35,23 @@ const ToolPreview = (props: Props) => {
   const publishedId = usePublishedId(visibleDocument?._id)
 
   const LinkComponent = useMemo(() => {
-    const Component = forwardRef((linkProps: any, ref: any) => (
-      <IntentLink
-        {...linkProps}
-        intent="edit"
-        params={{
-          type: schemaType.name,
-          id: visibleDocument && getPublishedId(visibleDocument?._id),
-        }}
-        ref={ref}
-      />
-    ))
-    Component.displayName = 'ForwardRef(LinkComponent)'
+    function Component(linkProps: {children?: ReactNode; ref?: Ref<HTMLAnchorElement>}) {
+      const {ref, ...rest} = linkProps
+      const publishedDocId = visibleDocument ? getPublishedId(visibleDocument._id) : undefined
+      return (
+        <IntentLink
+          {...rest}
+          intent="edit"
+          params={{
+            type: schemaType.name,
+            ...(publishedDocId ? {id: publishedDocId} : {}),
+          }}
+          ref={ref}
+        />
+      )
+    }
+    // oxlint-disable-next-line react/react-compiler -- displayName assignment on render-local component
+    Component.displayName = 'LinkComponent'
     return Component
   }, [schemaType, visibleDocument])
 

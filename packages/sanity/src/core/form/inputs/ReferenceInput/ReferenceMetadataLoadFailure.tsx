@@ -1,7 +1,7 @@
 import {Stack, Text} from '@sanity/ui'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {AlertStrip} from '../../components/AlertStrip'
 
 /**
@@ -25,7 +25,7 @@ export function ReferenceMetadataLoadErrorAlertStrip({
       status="warning"
       data-testid="alert-reference-info-failed"
     >
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text as="p" muted size={1}>
           {errorMessage}
         </Text>

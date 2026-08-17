@@ -1,25 +1,28 @@
 import {type Path} from '@sanity/types'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
+import {CommentDeleteDialog} from '../../../comments/components/CommentDeleteDialog'
+import {type CommentInputProps} from '../../../comments/components/pte/comment-input/CommentInput'
+import {useComments} from '../../../comments/hooks/useComments'
 import {
   type CommentBaseCreatePayload,
   type CommentCreatePayload,
-  type CommentInputProps,
   type CommentReactionOption,
   type CommentThreadItem,
   type CommentUpdatePayload,
-  useComments,
-} from '../../../comments'
-import {CommentDeleteDialog} from '../../../comments/components'
-import {LoadingBlock} from '../../../components'
-import {type FormPatch, type PatchEvent, set} from '../../../form'
-import {useTranslation} from '../../../i18n'
-import {useCurrentUser} from '../../../store'
-import {useWorkspace} from '../../../studio'
+} from '../../../comments/types'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {set} from '../../../form/patch/patch'
+import {type PatchEvent} from '../../../form/patch/PatchEvent'
+import {type FormPatch} from '../../../form/patch/types'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {useWorkspace} from '../../../studio/workspace'
 import {
   TASKS_SELECTED_TASK_SEARCH_PARAM,
   TASKS_SIDEBAR_SEARCH_PARAM,
@@ -223,9 +226,9 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         />
       )}
 
-      <Stack space={5}>
+      <Stack gap={5}>
         <Flex align="center">
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <Text size={2} weight="semibold">
               {t('panel.activity.title')}
             </Text>
@@ -245,7 +248,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
         <AnimatePresence>
           {!loading && (
-            <MotionStack animate="visible" initial="hidden" space={4} variants={VARIANTS}>
+            <MotionStack animate="visible" initial="hidden" gap={4} variants={VARIANTS}>
               {value.createdByUser && (
                 <Stack paddingBottom={1}>
                   <TasksActivityCreatedAt
@@ -256,7 +259,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
               )}
 
               {currentUser && (
-                <Stack space={4} marginTop={1}>
+                <Stack gap={4} marginTop={1}>
                   {activity.map((item) => {
                     if (item._type === 'activity') {
                       return <EditedAt key={item.timestamp} activity={item.payload} />

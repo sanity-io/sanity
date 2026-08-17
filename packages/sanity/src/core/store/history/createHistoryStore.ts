@@ -11,9 +11,11 @@ import {from, type Observable} from 'rxjs'
 import {map, mergeMap} from 'rxjs/operators'
 
 import {isDev} from '../../environment'
-import {getDraftId, getIdPair, getPublishedId, getVersionFromId, isRecord} from '../../util'
+import {getDraftId, getPublishedId, getVersionFromId, getIdPair} from '../../util/draftUtils'
+import {isRecord} from '../../util/isRecord'
 import {actionsApiClient} from '../document/document-pair/utils/actionsApiClient'
-import {Timeline, TimelineController} from './history'
+import {Timeline} from './history/Timeline'
+import {TimelineController} from './history/TimelineController'
 
 /**
  * Represents a document revision identifier.
@@ -47,11 +49,15 @@ export interface HistoryStore {
     options?: RestoreOptions,
   ) => Observable<void>
 
-  /** @internal */
+  /**
+   * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
+   * @internal
+   */
   getTimelineController: (options: {
     client: SanityClient
     documentId: string
     documentType: string
+    // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   }) => TimelineController
 }
 
@@ -147,11 +153,14 @@ const getTimelineController = ({
   client: SanityClient
   documentId: string
   documentType: string
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
 }): TimelineController => {
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   const timeline = new Timeline({
     enableTrace: isDev,
     publishedId: documentId,
   })
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   return new TimelineController({
     client,
     documentId,
@@ -268,7 +277,10 @@ function restore(
         }
         return actionsApiClient(
           client,
-          getIdPair(documentId, {version: getVersionFromId(documentId)}),
+          // The pair derives from the *target* id: `documentId` is always the published group id
+          // (its bundle segment is always undefined), while the target may be a version document
+          // (release or variant scoped) whose actions require the versioned API client.
+          getIdPair(documentId, {version: getVersionFromId(targetDocumentId)}),
         ).observable.action(
           options.fromDeleted
             ? [
@@ -308,6 +320,7 @@ export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore 
 
     restore: (id, targetId, rev, options) => restore(client, id, targetId, rev, options),
 
+    // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
     getTimelineController,
   }
 }

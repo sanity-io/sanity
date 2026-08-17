@@ -55,7 +55,7 @@ export const formInputDebug = {
 
 function CustomObjectInput(props: ObjectInputProps) {
   return (
-    <Grid gap={4} columns={2}>
+    <Grid gap={4} gridTemplateColumns={2}>
       <FormInput {...props} absolutePath={['arrayWithObjects']} />
       <FormInput {...props} absolutePath={['address', 'country']} />
     </Grid>

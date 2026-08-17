@@ -1,1 +1,19 @@
-export * from '../paths'
+export {
+  _resolveKeyedPath,
+  FOCUS_TERMINATOR,
+  fromString,
+  get,
+  hasFocus,
+  hasItemFocus,
+  isEqual,
+  isExpanded,
+  isSegmentEqual,
+  numEqualSegments,
+  pathFor,
+  resolveKeyedPath,
+  startsWith,
+  toString,
+  trimChildPath,
+  trimLeft,
+  trimRight,
+} from '../paths'

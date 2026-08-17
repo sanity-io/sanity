@@ -1,8 +1,10 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {keyframes, styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {Button, Popover, type PopoverProps} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {Popover, type PopoverProps} from '../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 
 const Root = styled(Box)`
@@ -37,7 +39,7 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
     <StyledPopover
       content={
         <Root padding={4}>
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text weight="medium" size={1}>
               {t('onboarding.header')}
             </Text>

@@ -1,9 +1,9 @@
 import {fromUrl} from '@sanity/bifur-client'
-import {createClient, type SanityClient} from '@sanity/client'
+import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
+// oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import startCase from 'lodash-es/startCase.js'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
@@ -18,18 +18,23 @@ import {
   createSanityMediaLibraryFileSource,
   createSanityMediaLibraryImageSource,
 } from '../form/studio/assetSourceMediaLibrary'
-import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
-import {createSchema} from '../schema'
-import {type AuthStore, createAuthStore, isAuthStore} from '../store'
-import {validateWorkspaces} from '../studio'
+import {type LocaleSource} from '../i18n/types'
+import {createSchema} from '../schema/createSchema'
+import {createAuthStore, type RequestFailureDiagnostics} from '../store/authStore/createAuthStore'
+import {type AuthStore} from '../store/authStore/types'
+import {isAuthStore} from '../store/authStore/utils/asserters'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
+import {fetchCanDeployStudio} from '../studio/manifest/canDeployStudio'
 import {uploadSchema} from '../studio/manifest/uploadSchema'
+import {type RequestErrorChannel} from '../studio/requestErrors/types'
+import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
-import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
-import {EMPTY_ARRAY, isNonNullable} from '../util'
+import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
 import {canonicalHash} from '../util/canonicalHash'
+import {EMPTY_ARRAY} from '../util/empty'
+import {isNonNullable} from '../util/isNonNullable'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
@@ -38,6 +43,7 @@ import {
   documentAskToEditEnabledReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
+  documentGroupInventoryEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
   draftsEnabledReducer,
@@ -65,7 +71,8 @@ import {
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {recordConfigWarning} from './configWarnings'
 import {createDefaultIcon} from './createDefaultIcon'
-import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
+import {initialDocumentFieldActions} from './document/fieldActions'
+import {documentFieldActionsReducer} from './document/fieldActions/reducer'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
@@ -262,7 +269,13 @@ const createDatasetAssetSources = (config: SourceOptions, client: SanityClient) 
  */
 export function prepareConfig(
   config: Config | MissingConfigFile,
-  options?: {basePath?: string},
+  options?: {
+    basePath?: string
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    requestHandler?: RequestHandler
+    requestErrorChannel?: RequestErrorChannel
+    requestFailureDiagnostics?: RequestFailureDiagnostics
+  },
 ): PreparedConfig {
   if (!Array.isArray(config) && 'missingConfigFile' in config) {
     throw new ConfigResolutionError({
@@ -354,7 +367,11 @@ export function prepareConfig(
         throw new SchemaError(schema)
       }
 
-      const auth = getAuthStore(source)
+      const auth = getAuthStore(source, {
+        requestHandler: options?.requestHandler,
+        requestErrorChannel: options?.requestErrorChannel,
+        requestFailureDiagnostics: options?.requestFailureDiagnostics,
+      })
       const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {
@@ -397,10 +414,12 @@ export function prepareConfig(
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
       projectId: rootSource.projectId,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       theme: rootSource.theme || studioTheme,
       title,
       subtitle: rootSource.subtitle,
       hidden: rootSource.hidden,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       __internal: {
         sources: resolvedSources,
       },
@@ -413,14 +432,40 @@ export function prepareConfig(
   return {type: 'prepared-config', workspaces}
 }
 
-function getAuthStore(source: SourceOptions): AuthStore {
+function getAuthStore(
+  source: SourceOptions,
+  {
+    requestHandler,
+    requestErrorChannel,
+    requestFailureDiagnostics,
+  }: {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    requestHandler?: RequestHandler
+    requestErrorChannel?: RequestErrorChannel
+    requestFailureDiagnostics?: RequestFailureDiagnostics
+  },
+): AuthStore {
   if (isAuthStore(source.auth)) {
     return source.auth
   }
 
-  const clientFactory = source.unstable_clientFactory || createClient
+  const _clientFactory = source.unstable_clientFactory || createClient
+
   const {projectId, dataset, apiHost} = source
-  return createAuthStore({apiHost, ...source.auth, clientFactory, dataset, projectId})
+  return createAuthStore({
+    apiHost,
+    ...source.auth,
+    clientFactory: (config) => {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      return _clientFactory({...config, _requestHandler: requestHandler})
+    },
+    // Passed as getters so this unhashable runtime wiring stays out of the
+    // auth-store memo key.
+    getRequestErrorHandler: () => requestErrorChannel,
+    getRequestFailureDiagnostics: () => requestFailureDiagnostics,
+    dataset,
+    projectId,
+  })
 }
 
 interface ResolveSourceOptions {
@@ -435,6 +480,7 @@ interface ResolveSourceOptions {
 
 function getBifurClient(client: SanityClient, auth: AuthStore) {
   const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dataset, url: baseUrl, requestTagPrefix = 'sanity.studio'} = bifurVersionedClient.config()
   const url = `${baseUrl.replace(/\/+$/, '')}/socket/${dataset}`.replace(/^http/, 'ws')
   const urlWithTag = `${url}?tag=${requestTagPrefix}`
@@ -479,7 +525,6 @@ function resolveSource({
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
-  /* eslint-disable no-proto */
   const wrappedClient = client as any
   context.client = [...Object.keys(client), ...Object.keys(wrappedClient.__proto__)].reduce(
     (acc, key) => {
@@ -496,7 +541,6 @@ function resolveSource({
     },
     {},
   ) as any as SanityClient
-  /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
 
   const defaultAssetSources = createDatasetAssetSources(config, client)
@@ -563,14 +607,13 @@ function resolveSource({
   const initialTemplatesResponses = templates
     // filter out the ones with parameters to fill
     .filter((template) => !template.parameters?.length)
-    .map(
-      (template): TemplateItem => ({
-        templateId: template.id,
-        description: template.description,
-        icon: template.icon,
-        title: template.title,
-      }),
-    )
+    .map((template): TemplateItem => ({
+      templateId: template.id,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      description: template.description,
+      icon: template.icon,
+      title: template.title,
+    }))
 
   const templateMap = templates.reduce((acc, template) => {
     acc.set(template.id, template)
@@ -631,7 +674,9 @@ function resolveSource({
             type: 'initialValueTemplateItem',
             title,
             i18n: response.i18n || template.i18n,
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             subtitle: response.subtitle || defaultSubtitle,
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             description: response.description || template.description,
             icon: response.icon || template.icon || schemaType?.icon,
             initialDocumentId: response.initialDocumentId,
@@ -668,6 +713,27 @@ function resolveSource({
     })
   }
 
+  const variantsEnabled = variantsEnabledReducer({config, initialValue: false})
+
+  // Upload the schema descriptor to Content Lake, but only when the user is
+  // authenticated and actually holds the `deployStudio` grant. Checking the
+  // grant first avoids firing a POST that would 403 for users without it.
+  const schemaDescriptorId: Promise<string | undefined> = authenticated
+    ? (async () => {
+        const studioClient = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+        if (!(await fetchCanDeployStudio(studioClient))) {
+          debug('Skipping schema upload: user lacks the deployStudio grant')
+          return undefined
+        }
+        return uploadSchema(schema, studioClient)
+      })().catch((err) => {
+        // Resolve to `undefined` (rather than rejecting) so consumers awaiting
+        // `schemaDescriptorId` don't have to handle a rejection.
+        debug('Uploading schema failed', {err})
+        return undefined
+      })
+    : Promise.resolve(undefined)
+
   const source: Source = {
     type: 'source',
     name: config.name,
@@ -682,7 +748,6 @@ function resolveSource({
     templates,
     auth,
     i18n: i18n.source,
-    // eslint-disable-next-line camelcase
     __internal_tasks: internalTasksReducer({
       config,
     }),
@@ -746,6 +811,7 @@ function resolveSource({
           reducer: documentLanguageFilterReducer,
         }),
       /** @todo this is deprecated so it will eventually be removed */
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       unstable_comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
@@ -837,12 +903,7 @@ function resolveSource({
       i18next: i18n.i18next,
       staticInitialValueTemplateItems,
       options: config,
-      schemaDescriptorId: authenticated
-        ? catchTap(uploadSchema(schema, getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)), (err) => {
-            debug('Uploading schema failed', {err})
-            return undefined
-          })
-        : Promise.resolve(undefined),
+      schemaDescriptorId,
     },
     onUncaughtError: (error: Error, errorInfo: ErrorInfo) => {
       return onUncaughtErrorResolver({
@@ -856,11 +917,18 @@ function resolveSource({
 
     beta: {
       eventsAPI: {
+        // oxlint-disable-next-line no-deprecated -- still resolved so the legacy timeline opt-out keeps working until the next major
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
       variants: {
-        enabled: variantsEnabledReducer({config, initialValue: false}),
+        enabled: variantsEnabled,
+      },
+      documentGroupInventory: {
+        // The document group inventory is an inherent part of the variants experience.
+        // It cannot be switched off while variants are switched on.
+        enabled:
+          documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
       },
     },
 
@@ -950,13 +1018,4 @@ function joinBasePath(rootPath: string, basePath?: string) {
     .join('/')
 
   return `/${joined}`
-}
-
-/**
- * Registers a catch to a promise (to prevent it from being caught by the
- * "unhandled promise" handler) while returning the original promise.
- */
-function catchTap<T>(promise: Promise<T>, cb: (reason: unknown) => void): Promise<T> {
-  promise.catch(cb)
-  return promise
 }

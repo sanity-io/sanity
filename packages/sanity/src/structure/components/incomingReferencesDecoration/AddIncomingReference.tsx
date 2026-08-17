@@ -1,6 +1,7 @@
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
-import {Box, Grid, Stack, Text, useToast} from '@sanity/ui'
+import {Box, Grid, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {catchError, concat, filter, map, type Observable, of, scan, switchMap, tap} from 'rxjs'
@@ -118,6 +119,7 @@ export function AddIncomingReference({
   const schema = useSchema()
   const schemaType = schema.get(type)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const {strategy: searchStrategy} = source.search
   const documentPreviewStore = useDocumentPreviewStore()
@@ -184,7 +186,7 @@ export function AddIncomingReference({
   )
 
   return (
-    <Stack space={2} padding={2}>
+    <Stack gap={2} padding={2}>
       <Box paddingY={2}>
         <Text size={1} weight="medium">
           {t('incoming-references-input.reference-from', {type})}

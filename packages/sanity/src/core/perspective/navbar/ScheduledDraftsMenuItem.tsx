@@ -1,11 +1,11 @@
-import {CalendarIcon} from '@sanity/icons'
+import {CalendarIcon} from '@sanity/icons/Calendar'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ComponentType, useCallback} from 'react'
 import {useIntentLink} from 'sanity/router'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {FEATURES, useFeatureEnabled} from '../../hooks/useFeatureEnabled'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {NavigatedToScheduledDrafts} from '../../releases/__telemetry__/navigation.telemetry'
 import {useScheduledDraftsEnabled} from '../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'

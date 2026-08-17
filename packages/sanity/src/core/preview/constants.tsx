@@ -1,4 +1,4 @@
-import {WarningOutlineIcon} from '@sanity/icons'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type PreviewValue} from '@sanity/types'
 
 export const INCLUDE_FIELDS_QUERY = ['_id', '_rev', '_type']
@@ -44,3 +44,6 @@ export const INVALID_PREVIEW_FALLBACK: PreviewValue = {
   subtitle: 'Check the error log in the console',
   media: <WarningOutlineIcon />,
 }
+
+// oxlint-disable-next-line typescript/prefer-as-const
+export const DOCUMENT_SYSTEM_FIELD: '_system' = '_system'

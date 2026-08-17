@@ -1,4 +1,4 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Flex, Stack} from '@sanity/ui'
 import {TextWithTone, useTranslation} from 'sanity'
 
@@ -10,7 +10,7 @@ export function TimelineError({versionError}: {versionError?: boolean}) {
       <TextWithTone tone="critical">
         <ErrorOutlineIcon />
       </TextWithTone>
-      <Stack space={4}>
+      <Stack gap={4}>
         <TextWithTone size={1} tone="critical" weight="medium">
           {versionError
             ? t('timeline.error.load-document-changes-version-title')

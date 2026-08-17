@@ -40,8 +40,12 @@ function normalizeItems(items: DataTransferItem[]) {
         } catch {
           return toArray(item.getAsFile())
         }
+        // `webkitGetAsEntry()` returns null for items that aren't backed by a
+        // real filesystem entry — notably files in a programmatically built
+        // DataTransfer on Firefox. The entry is only needed to detect
+        // directories, so fall back to reading the file directly.
         if (!entry) {
-          return []
+          return toArray(item.getAsFile())
         }
         return entry.isDirectory ? walk(entry as FIXME) : toArray(item.getAsFile())
       }

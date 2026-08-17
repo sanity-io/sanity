@@ -1,3 +1,4 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type ObjectDiff} from '@sanity/diff'
 import {BoundaryElementProvider, Box, Card, Flex, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
@@ -17,8 +18,8 @@ import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../../../i18n'
-import {TimelineMenu} from '../../timeline'
 import {TimelineError} from '../../timeline/TimelineError'
+import {TimelineMenu} from '../../timeline/timelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
 
 const Scroller = styled(ScrollContainer)`

@@ -1,13 +1,19 @@
 import {type ReleaseDocument, type SingleActionResult} from '@sanity/client'
-import {EllipsisHorizontalIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, MenuDivider, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Spinner, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {RouterContext, useRouter} from 'sanity/router'
 
-import {Button, Dialog, MenuItem, Popover} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {Popover} from '../../../../../ui-components/popover/Popover'
 import {type ReleaseActionDescription} from '../../../../config/releases/actions'
-import {Translate, type TranslateComponentMap, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate, type TranslateComponentMap} from '../../../../i18n/Translate'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {useWorkspace} from '../../../../studio/workspace'
@@ -19,7 +25,7 @@ import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {createReleaseId} from '../../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {type DocumentInRelease} from '../../detail/types'
 import {DuplicateReleaseToastLink} from './DuplicateReleaseToastLink'
 import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
 import {ReleaseMenu} from './ReleaseMenu'
@@ -250,7 +256,7 @@ export const ReleaseMenuButton = ({
           },
         }}
       >
-        <Stack space={4} paddingX={4} paddingBottom={4}>
+        <Stack gap={4} paddingX={4} paddingBottom={4}>
           <ReleasePreviewCard release={release} />
           {!!documentsCount && (
             <Text muted size={1}>
@@ -316,6 +322,7 @@ export const ReleaseMenuButton = ({
         key={`custom-action-${index}`}
         icon={action.icon}
         text={action.label}
+        tone={action.tone}
         disabled={action.disabled || isPerformingOperation}
         onClick={handleOnActionClick(action)}
         tooltipProps={action.title ? {content: action.title} : undefined}

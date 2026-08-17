@@ -1,4 +1,4 @@
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {memo, type ReactNode, useCallback, useId, useMemo, useState} from 'react'
 import {
   ContextMenuButton,
@@ -7,7 +7,9 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {MenuButton, MenuItem, type PopoverProps} from '../../../../ui-components'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {type PopoverProps} from '../../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../../i18n'
 import {ActionStateDialog} from './ActionStateDialog'
 

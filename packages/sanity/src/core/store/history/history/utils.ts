@@ -1,4 +1,5 @@
-import {type Annotation} from '../../../field'
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
+import {type Annotation} from '../../../field/types'
 import {type CombinedDocument} from './types'
 
 export function isSameAnnotation(a: Annotation, b: Annotation): boolean {

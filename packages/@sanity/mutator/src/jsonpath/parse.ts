@@ -176,11 +176,40 @@ class Parser {
     return this.parseNumber()
   }
 
+  // The LHS of a filter constraint: a single attribute or a dotted chain
+  // (`asset._ref`). Only `.attribute` continuations are accepted; a `[union]` or
+  // `..recursive` segment would make the rewind in `parseFilterExpression()`
+  // ambiguous.
+  parseAttributePath(): AttributeExpr | PathExpr | null {
+    const first = this.parseAttribute()
+    if (!first) {
+      return null
+    }
+
+    const nodes: AttributeExpr[] = [first]
+    while (this.match({type: 'operator', symbol: '.'})) {
+      const next = this.parseAttribute()
+      if (!next) {
+        throw new Error("Expected attribute name following '.'")
+      }
+      nodes.push(next)
+    }
+
+    if (nodes.length === 1) {
+      return nodes[0]
+    }
+
+    return {
+      type: 'path',
+      nodes: nodes,
+    }
+  }
+
   // TODO: Reorder constraints so that literal value is always on rhs, and variable is always
   // on lhs.
   parseFilterExpression(): ConstraintExpr | null {
     const start = this.i
-    const expr = this.parseAttribute() || this.parseAlias()
+    const expr = this.parseAttributePath() || this.parseAlias()
     if (!expr) {
       return null
     }

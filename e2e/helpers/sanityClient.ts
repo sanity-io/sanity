@@ -35,7 +35,6 @@ const testSanityClient = createClient({
   apiHost: 'https://api.sanity.work',
 })
 
-/* eslint-disable callback-return*/
 export function withDefaultClient(callback: (context: TestContext) => void): void {
   const context = new TestContext(testSanityClient)
   callback(context)

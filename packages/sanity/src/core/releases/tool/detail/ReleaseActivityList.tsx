@@ -1,8 +1,8 @@
-import {Box} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import {AnimatePresence} from 'motion/react'
 import {useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {

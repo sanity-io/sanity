@@ -1,15 +1,18 @@
 import {
   PortableTextEditor,
+  useEditor,
+  useEditorSelector,
   usePortableTextEditor,
-  usePortableTextEditorSelection,
 } from '@portabletext/editor'
-import {isKeySegment} from '@sanity/types'
+import {getSelectionEndBlock, getSelectionStartBlock} from '@portabletext/editor/selectors'
+import {isEqual} from '@sanity/util/paths'
 import {memo, useCallback, useMemo} from 'react'
 
-import {type PopoverProps} from '../../../../../ui-components'
-import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {useTranslation} from '../../../../i18n'
+import {type PopoverProps} from '../../../../../ui-components/popover/Popover'
+import {CollapseMenu} from '../../../../components/collapseMenu/CollapseMenu'
+import {CollapseMenuButton} from '../../../../components/collapseMenu/CollapseMenuButton'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {getActionIcon} from './helpers'
 import {useActiveActionKeys, useFocusBlock} from './hooks'
@@ -30,17 +33,18 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const {disabled: disabledProp, groups, isFullscreen, collapsed} = props
   const focusBlock = useFocusBlock()
 
-  const editor = usePortableTextEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  const legacyEditor = usePortableTextEditor()
+  const editor = useEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
-  const selection = usePortableTextEditorSelection()
   const {t} = useTranslation()
-  const isSelectingMultipleBlocks =
-    // Path at 0 is the block level, by comparing those we can detect if the user is selecting multiple blocks
-    selection && isKeySegment(selection.anchor.path[0]) && isKeySegment(selection.focus.path[0])
-      ? // In case of keyed segments
-        selection.anchor.path[0]._key !== selection?.focus.path[0]._key
-      : // In case of non-keyed segments
-        selection?.anchor.path[0] !== selection?.focus.path[0]
+  // Compare the enclosing block at each end by path (keys aren't unique across
+  // containers).
+  const isSelectingMultipleBlocks = useEditorSelector(editor, (snapshot) => {
+    const startBlock = getSelectionStartBlock(snapshot)
+    const endBlock = getSelectionEndBlock(snapshot)
+    return !!startBlock && !!endBlock && !isEqual(startBlock.path, endBlock.path)
+  })
 
   const isVoidBlock = focusBlock?._type !== schemaTypes.block.name
   const isEmptyTextBlock =
@@ -55,13 +59,10 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
     () =>
       groups.reduce<Array<PTEToolbarAction & {firstInGroup?: true}>>((acc, group) => {
         return acc.concat(
-          group.actions.map(
-            // eslint-disable-next-line max-nested-callbacks
-            (action: PTEToolbarAction, actionIndex) => {
-              if (actionIndex === 0) return {...action, firstInGroup: true}
-              return action
-            },
-          ),
+          group.actions.map((action: PTEToolbarAction, actionIndex) => {
+            if (actionIndex === 0) return {...action, firstInGroup: true}
+            return action
+          }),
         )
       }, []),
     [groups],
@@ -70,8 +71,9 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const activeKeys = useActiveActionKeys({actions})
 
   const handleMenuClose = useCallback(() => {
-    PortableTextEditor.focus(editor)
-  }, [editor])
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    PortableTextEditor.focus(legacyEditor)
+  }, [legacyEditor])
 
   const tooltipPlacement = isFullscreen ? 'bottom' : 'top'
 
@@ -96,7 +98,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
               action: action.title || action.key,
             })}
             data-testid={`action-button-${action.key}`}
-            disabled={disabled || annotationDisabled}
+            disabled={disabled || action.disabled || annotationDisabled}
             mode="bleed"
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}

@@ -11,6 +11,7 @@ export interface UserColorManagerOptions {
   userStore?: {me: Observable<{id: string} | null>}
   colors?: Record<UserColorHue, UserColor>
   currentUserColor?: UserColorHue
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   scheme: ThemeColorSchemeKey
 }
 
@@ -24,6 +25,7 @@ const defaultHues: ColorHueKey[] = COLOR_HUES.filter(
   (hue) => !USER_COLOR_EXCLUDE_HUES.includes(hue),
 )
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const getTints = (scheme: ThemeColorSchemeKey): Record<string, ColorTintKey> => {
   const isDarkScheme = scheme === 'dark'
 
@@ -34,6 +36,7 @@ const getTints = (scheme: ThemeColorSchemeKey): Record<string, ColorTintKey> => 
   }
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const getDefaultColors = (scheme: ThemeColorSchemeKey): Record<string, UserColor> => {
   const {background, border, text} = getTints(scheme)
 
@@ -52,6 +55,7 @@ const getDefaultColors = (scheme: ThemeColorSchemeKey): Record<string, UserColor
   )
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const getAnonymousColor = (scheme: ThemeColorSchemeKey): UserColor => {
   const {background, border, text} = getTints(scheme)
 
@@ -210,7 +214,6 @@ export function createUserColorManager(options: UserColorManagerOptions): UserCo
   function getPreferredHue(userId: string): UserColorHue {
     let hash = 0
     for (let i = 0; i < userId.length; i++) {
-      // eslint-disable-next-line no-bitwise
       hash = ((hash << 5) - hash + userId.charCodeAt(i)) | 0
     }
     return userColorKeys[Math.abs(hash) % userColorKeys.length]

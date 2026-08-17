@@ -1,14 +1,30 @@
-import {LinkIcon, ShareIcon, TargetIcon} from '@sanity/icons'
+import {LinkIcon} from '@sanity/icons/Link'
+import {ShareIcon} from '@sanity/icons/Share'
+import {TargetIcon} from '@sanity/icons/Target'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, useToast} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
-import {getDraftId, getVersionId, usePerspective, useStudioUrl, useTranslation} from 'sanity'
+import {
+  getDraftId,
+  getVersionId,
+  isNewDocument,
+  isVersionId,
+  useDocumentVersions,
+  usePerspective,
+  useStudioUrl,
+  useTargetDocumentState,
+  useTranslation,
+} from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
-import {usePaneRouter} from '../../../../components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {DocumentIDCopied, DocumentURLCopied} from '../../__telemetry__'
+import {DocumentIDCopied, DocumentURLCopied} from '../../__telemetry__/documentPanes.telemetry'
+import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 
 /**
@@ -20,6 +36,11 @@ import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
  */
 export function CopyDocumentActions() {
   const {documentId, documentType, schemaType} = useDocumentPaneInfo()
+  const {editState} = useDocumentPane()
+  const targetDocumentState = useTargetDocumentState(documentId)
+  const {data: existingDocumentIds, loading: documentVersionsLoading} = useDocumentVersions({
+    documentId,
+  })
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {params} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
@@ -42,6 +63,20 @@ export function CopyDocumentActions() {
 
     return getDraftId(documentId)
   }, [documentId, scheduledDraft, schemaType?.liveEdit, selectedPerspectiveName, selectedReleaseId])
+
+  const selectedVariantMissing =
+    targetDocumentState.status === 'variant-missing' ||
+    targetDocumentState.status === 'variant-definition-document-not-found'
+
+  const existenceCheckReady = Boolean(editState?.ready) && !documentVersionsLoading
+
+  const copiedVersionMissing =
+    existenceCheckReady &&
+    isVersionId(contextAwareDocumentId) &&
+    !isNewDocument(editState) &&
+    !existingDocumentIds.includes(contextAwareDocumentId)
+
+  const documentExists = !selectedVariantMissing && !copiedVersionMissing
 
   const handleCopyLink = useCallback(async () => {
     telemetry.log(DocumentURLCopied)
@@ -85,6 +120,10 @@ export function CopyDocumentActions() {
       title: t('panes.document-operation-results.operation-success_copy-id'),
     })
   }, [contextAwareDocumentId, pushToast, t, telemetry])
+
+  if (!documentExists) {
+    return null
+  }
 
   return (
     <MenuButton

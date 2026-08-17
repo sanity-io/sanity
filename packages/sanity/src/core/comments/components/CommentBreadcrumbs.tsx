@@ -1,8 +1,9 @@
-import {ChevronRightIcon} from '@sanity/icons'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {Fragment, useMemo} from 'react'
+import {Box} from 'ui5'
 
-import {Tooltip} from '../../../ui-components'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 
 export interface CommentBreadcrumbsProps {
   titlePath: string[]
@@ -56,7 +57,7 @@ export function CommentBreadcrumbs(props: CommentBreadcrumbsProps) {
           <Fragment key={key}>
             <Tooltip
               content={
-                <Stack space={2} padding={2}>
+                <Stack gap={2} padding={2}>
                   {item.map(renderItem)}
                 </Stack>
               }

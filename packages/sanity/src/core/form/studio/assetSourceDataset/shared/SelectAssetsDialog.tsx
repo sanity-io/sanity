@@ -1,25 +1,28 @@
-import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
+import {DownloadIcon} from '@sanity/icons/Download'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import uniqueId from 'lodash-es/uniqueId.js'
 import {
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   memo,
   type MouseEvent,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {type Subscription} from 'rxjs'
 import {styled} from 'styled-components'
 
-import {Button, Dialog} from '../../../../../ui-components'
-import {useClient, useListFormat} from '../../../../hooks'
-import {Translate, useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {useClient} from '../../../../hooks/useClient'
+import {useListFormat} from '../../../../hooks/useListFormat'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {FileListView} from '../file/FileListView'
 import {ImageListView} from '../image/ImageListView'
@@ -99,21 +102,26 @@ const CardLoadMore = styled(Card)`
   z-index: 200;
 `
 
-const SelectAssetsComponent = function SelectAssetsComponent(
-  props: AssetSourceComponentProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
+function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<HTMLDivElement>) {
+  const {
+    ref,
+    selectedAssets,
+    assetType = 'image',
+    dialogHeaderTitle,
+    onClose,
+    onSelect,
+    accept,
+  } = props
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const versionedClient = useMemo(() => client.withConfig({apiVersion: '2023-02-14'}), [client])
   const [_elementId] = useState(() => `default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
   const {t} = useTranslation()
+  const toast = useToast()
   const fetch$ = useRef<Subscription>(undefined)
   const [assets, setAssets] = useState<Asset[]>([])
   const [isLastPage, setIsLastPage] = useState(false)
   const [hasResetAutoFocus, setHasResetFocus] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const {selectedAssets, assetType = 'image', dialogHeaderTitle, onClose, onSelect, accept} = props
 
   const isImageOnlyWildCard = accept && accept === 'image/*' && assetType === 'image'
   const fetchPage = useCallback(
@@ -127,16 +135,31 @@ const SelectAssetsComponent = function SelectAssetsComponent(
       setIsLoading(true)
 
       if (typeof accept !== 'undefined') {
-        fetch$.current = versionedClient.observable
+        fetch$.current = client.observable
           .fetch(buildQuery(start, end, assetTypeParam, accept), {}, {tag})
-          .subscribe((result) => {
-            setIsLastPage(result.length < PER_PAGE)
-            setAssets((prevState) => prevState.concat(result))
-            setIsLoading(false)
+          .subscribe({
+            next: (result) => {
+              setIsLastPage(result.length < PER_PAGE)
+              setAssets((prevState) => prevState.concat(result))
+              setIsLoading(false)
+            },
+            error: (err) => {
+              // Without this the dialog would spin forever (and the error
+              // would surface as an unhandled rxjs error).
+              console.error(err)
+              setIsLoading(false)
+              // Roll back the page that failed to load so the next "Load more"
+              // retries it instead of skipping ahead and leaving a gap.
+              currentPageNumber.current = pageNumber > 0 ? pageNumber - 1 : 0
+              toast.push({
+                status: 'error',
+                title: t('asset-source.dialog.load-error'),
+              })
+            },
           })
       }
     },
-    [assetType, accept, versionedClient],
+    [assetType, accept, client, toast, t],
   )
 
   const handleDeleteFinished = useCallback(
@@ -234,7 +257,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
       ref={ref}
       width={2}
     >
-      <Stack space={5}>
+      <Stack gap={5}>
         {!isImageOnlyWildCard && !isLoading && accept?.length > 0 && (
           <Card tone="primary" padding={3} border radius={2}>
             <Flex gap={3} align="center">
@@ -293,4 +316,4 @@ const SelectAssetsComponent = function SelectAssetsComponent(
   )
 }
 
-export const SelectAssetsDialog = memo(forwardRef(SelectAssetsComponent))
+export const SelectAssetsDialog = memo(SelectAssetsComponent)

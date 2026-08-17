@@ -71,6 +71,7 @@ export function getDefaultPluginsOptions(
   return {
     tasks: {
       enabled: true,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       ...workspace.unstable_tasks,
       ...workspace.tasks,
     },
@@ -80,7 +81,6 @@ export function getDefaultPluginsOptions(
       inputDateTimeFormat: 'dd/MM/yyyy HH:mm',
       ...workspace.scheduledPublishing,
       // If the user has explicitly enabled scheduled publishing, we should respect that
-      // eslint-disable-next-line camelcase
       __internal__workspaceEnabled: workspace.scheduledPublishing?.enabled ?? false,
     },
     releases: {
