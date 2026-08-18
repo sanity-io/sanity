@@ -11,11 +11,28 @@ export interface GateThresholds {
   targetHalfWidthMs: number
 }
 
-/** Interaction latency: differences under ~one duration-granularity step or 5% are noise. */
+/**
+ * Interaction latency: differences of one Event Timing duration-granularity
+ * step (8ms) or under 5% are noise.
+ *
+ * The absolute floor must sit strictly ABOVE one 8ms granularity step, because
+ * 8ms is the smallest non-zero difference the browser can report at all. With
+ * the old `absMs: 3`, a single quantisation step cleared the floor on every
+ * metric whose median was under 160ms, so two identical builds gated as a
+ * regression whenever their samples happened to land one step apart — observed
+ * on the self-test (`article/body`, median 56ms: Δ+8.0ms [+4.0, +8.0] 🔴).
+ * `gate` compares with `>=`, so the floor is 16ms (= two steps, and the same
+ * value as OBSERVABILITY_FLOOR_MS) rather than 8: one step is never a verdict,
+ * two always are.
+ *
+ * targetHalfWidthMs matches, for the same reason — a convergence target finer
+ * than the instrument's resolution can never be reached, so sampling ran to
+ * budget exhaustion and reported `inconclusive` instead of stopping early.
+ */
 export const INTERACTION_THRESHOLDS: GateThresholds = {
-  absMs: 3,
+  absMs: 16,
   rel: 0.05,
-  targetHalfWidthMs: 4,
+  targetHalfWidthMs: 8,
 }
 
 /** Load metrics (time-to-editable/LCP): sub-100ms or sub-8% differences don't matter. */
@@ -53,6 +70,20 @@ export function gate(
     return 'inconclusive'
   }
   return 'neutral'
+}
+
+/**
+ * Did the gate actually decide an effect? True only for `regression` and
+ * `improvement`.
+ *
+ * This is the predicate behind `--fail-on-verdict` (the self-test), and it
+ * deliberately excludes `inconclusive`: gate() treats inconclusive as neutral
+ * and the PR report counts it under "no regressions", so failing on it would
+ * make ordinary CI noise — the very thing inconclusive exists to absorb — read
+ * as harness drift.
+ */
+export function isDecidedVerdict(verdict: Verdict | undefined): boolean {
+  return verdict === 'regression' || verdict === 'improvement'
 }
 
 /**
