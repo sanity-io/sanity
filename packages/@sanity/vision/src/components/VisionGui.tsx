@@ -640,11 +640,8 @@ export function VisionGui(props: VisionGuiProps) {
     if (perspective !== 'pinnedRelease') {
       return
     }
+    // changeApiVersion already re-runs the query with vX.
     changeApiVersion(VARIANTS_API_VERSION)
-    if (!query.trim()) {
-      return
-    }
-    handleQueryExecution()
   })
 
   useEffect(() => {
