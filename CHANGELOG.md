@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [5.31.2](https://github.com/sanity-io/sanity/compare/v5.31.1...v5.31.2) (2026-08-18)
+
+### Bug Fixes
+
+* **deps:** pin @tanstack/react-virtual to 3.14.2 ([#14135](https://github.com/sanity-io/sanity/issues/14135)) ([5fd3a7c](https://github.com/sanity-io/sanity/commit/5fd3a7c928f34edbd83a4a0361f7a15a21d74ef5))
 ## [5.31.1](https://github.com/sanity-io/sanity/compare/v5.31.0...v5.31.1) (2026-06-10)
 
 ### Bug Fixes
