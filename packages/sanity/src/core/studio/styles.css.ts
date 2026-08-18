@@ -56,7 +56,7 @@ globalStyle(`${globalStylesRoot} *::selection`, {
   backgroundColor: selectionBackgroundColor,
 })
 
-globalStyle(globalStylesRoot, {
+globalStyle(`html:where([${GLOBAL_STYLES_ATTRIBUTE}])`, {
   backgroundColor: uiColorBg,
 })
 
