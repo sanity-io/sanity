@@ -1,7 +1,7 @@
 import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {rgba} from '@sanity/ui/theme'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useId, useInsertionEffect} from 'react'
+import {useInsertionEffect, useState} from 'react'
 
 import {GLOBAL_STYLES_ATTRIBUTE} from './globalStyleConstants'
 import {
@@ -22,11 +22,22 @@ interface InitialVariable {
 interface GlobalStyleRegistry {
   initialAttributePresent: boolean
   initialVariables: Map<string, InitialVariable>
-  instances: Map<string, Record<string, string>>
+  instances: Map<symbol, Record<string, string> | undefined>
   root: HTMLElement
 }
 
 const registries = new WeakMap<Document, GlobalStyleRegistry>()
+const globalStyleVariableNames = Object.keys(
+  assignInlineVars({
+    [selectionBackgroundColor]: '',
+    [uiColorBg]: '',
+    [uiColorBorder]: '',
+    [uiColorMutedFg]: '',
+    [uiFontTextFamily]: '',
+    [uiFontTextWeightMedium]: '',
+    [webkitResizerBackgroundImage]: '',
+  }),
+)
 
 // Construct a resize handle icon as a data URI, to be displayed in browsers that support the `::-webkit-resizer` selector.
 function buildResizeHandleDataUri(hexColor: string) {
@@ -41,21 +52,17 @@ function applyVariables(root: HTMLElement, variables: Record<string, string>) {
   }
 }
 
-function getLatestVariables(instances: Map<string, Record<string, string>>) {
+function getLatestVariables(instances: Map<symbol, Record<string, string> | undefined>) {
   let latest: Record<string, string> | undefined
 
   for (const variables of instances.values()) {
-    latest = variables
+    if (variables) latest = variables
   }
 
   return latest
 }
 
-function registerGlobalStyles(
-  ownerDocument: Document,
-  instanceId: string,
-  variables: Record<string, string>,
-) {
+function registerGlobalStyles(ownerDocument: Document, instanceId: symbol) {
   const root = ownerDocument.documentElement
   let registry = registries.get(ownerDocument)
 
@@ -63,7 +70,7 @@ function registerGlobalStyles(
     registry = {
       initialAttributePresent: root.hasAttribute(GLOBAL_STYLES_ATTRIBUTE),
       initialVariables: new Map(
-        Object.keys(variables).map((name) => [
+        globalStyleVariableNames.map((name) => [
           name,
           {
             priority: root.style.getPropertyPriority(name),
@@ -77,9 +84,8 @@ function registerGlobalStyles(
     registries.set(ownerDocument, registry)
   }
 
-  registry.instances.set(instanceId, variables)
+  registry.instances.set(instanceId, undefined)
   registry.root.setAttribute(GLOBAL_STYLES_ATTRIBUTE, '')
-  applyVariables(registry.root, variables)
 
   return () => {
     const currentRegistry = registries.get(ownerDocument)
@@ -108,38 +114,58 @@ function registerGlobalStyles(
   }
 }
 
+function updateGlobalStyles(
+  ownerDocument: Document,
+  instanceId: symbol,
+  variables: Record<string, string>,
+) {
+  const registry = registries.get(ownerDocument)
+  if (!registry?.instances.has(instanceId)) return
+
+  registry.instances.set(instanceId, variables)
+
+  let latestInstanceId: symbol | undefined
+  for (const id of registry.instances.keys()) {
+    latestInstanceId = id
+  }
+
+  if (latestInstanceId === instanceId) {
+    applyVariables(registry.root, variables)
+  }
+}
+
 export function GlobalStyle(): null {
-  const instanceId = useId()
+  const [instanceId] = useState(Symbol)
   const {color, font} = useThemeV2()
   const webkitResizerBackgroundImageValue = buildResizeHandleDataUri(color.icon)
   const selectionBackgroundColorValue = rgba(color.focusRing, 0.3)
 
-  useInsertionEffect(
-    () =>
-      registerGlobalStyles(
-        document,
-        instanceId,
-        assignInlineVars({
-          [selectionBackgroundColor]: selectionBackgroundColorValue,
-          [uiColorBg]: color.bg,
-          [uiColorBorder]: color.border,
-          [uiColorMutedFg]: color.muted.fg,
-          [uiFontTextFamily]: font.text.family,
-          [uiFontTextWeightMedium]: font.text.weights.medium.toString(),
-          [webkitResizerBackgroundImage]: webkitResizerBackgroundImageValue,
-        }),
-      ),
-    [
-      color.bg,
-      color.border,
-      color.muted.fg,
-      font.text.family,
-      font.text.weights.medium,
+  useInsertionEffect(() => registerGlobalStyles(document, instanceId), [instanceId])
+
+  useInsertionEffect(() => {
+    updateGlobalStyles(
+      document,
       instanceId,
-      selectionBackgroundColorValue,
-      webkitResizerBackgroundImageValue,
-    ],
-  )
+      assignInlineVars({
+        [selectionBackgroundColor]: selectionBackgroundColorValue,
+        [uiColorBg]: color.bg,
+        [uiColorBorder]: color.border,
+        [uiColorMutedFg]: color.muted.fg,
+        [uiFontTextFamily]: font.text.family,
+        [uiFontTextWeightMedium]: font.text.weights.medium.toString(),
+        [webkitResizerBackgroundImage]: webkitResizerBackgroundImageValue,
+      }),
+    )
+  }, [
+    color.bg,
+    color.border,
+    color.muted.fg,
+    font.text.family,
+    font.text.weights.medium,
+    instanceId,
+    selectionBackgroundColorValue,
+    webkitResizerBackgroundImageValue,
+  ])
 
   return null
 }

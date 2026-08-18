@@ -4,7 +4,7 @@ import {GLOBAL_STYLES_ATTRIBUTE} from './globalStyleConstants'
 
 const SCROLLBAR_SIZE = 12 // px
 const SCROLLBAR_BORDER_SIZE = 4 // px
-const globalStylesRoot = `html[${GLOBAL_STYLES_ATTRIBUTE}]`
+const globalStylesRoot = `:where(html[${GLOBAL_STYLES_ATTRIBUTE}])`
 
 export const selectionBackgroundColor = createVar()
 export const uiColorBg = createVar()

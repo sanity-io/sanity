@@ -71,4 +71,18 @@ describe('GlobalStyle', () => {
     expect(document.documentElement).not.toHaveAttribute(GLOBAL_STYLES_ATTRIBUTE)
     expect(document.documentElement.style.getPropertyValue(uiColorBgName)).toBe('')
   })
+
+  it('keeps mount precedence when an earlier instance changes theme', () => {
+    const earlier = render(<ThemedGlobalStyle scheme="light" />)
+    const latest = render(<ThemedGlobalStyle scheme="dark" />)
+    const latestBackground = document.documentElement.style.getPropertyValue(uiColorBgName)
+
+    earlier.rerender(<ThemedGlobalStyle scheme="dark" />)
+    earlier.rerender(<ThemedGlobalStyle scheme="light" />)
+
+    expect(document.documentElement.style.getPropertyValue(uiColorBgName)).toBe(latestBackground)
+
+    latest.unmount()
+    earlier.unmount()
+  })
 })
