@@ -316,9 +316,10 @@ test.describe('Vision', () => {
       await expect(queryUrl).toHaveValue(new RegExp(`[?&]variant=${variantId}`))
 
       await page.getByTestId('perspective-selector').selectOption('raw')
+      // The vX lock is only while pinned release has a variant. Switching to a
+      // Vision-local perspective lifts it; do not require the selector to stay
+      // on vX (this studio's default is a custom dated version).
       await expect(apiVersionSelector).toBeEnabled()
-      await expect(apiVersionSelector).toHaveValue('vX')
-      await expect(queryUrl).toHaveValue(/\/vX\//)
       await expect(queryUrl).not.toHaveValue(/[?&]variant=/)
 
       // Raw does not attach the navbar variant, so the overlay title query no
