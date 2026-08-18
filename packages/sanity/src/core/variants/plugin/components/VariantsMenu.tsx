@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 // oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
-import {Button, Text, TextInput} from '@sanity/ui'
+import {Button, Text, TextInput, Flex} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
@@ -9,6 +9,8 @@ import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
+import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {oversizedButtonStyle} from '../../../perspective/styles'
 import {useSetVariant} from '../../../perspective/useSetVariant'
@@ -21,7 +23,6 @@ import {
   getVariantTitle,
 } from '../../tool/util'
 import {type SystemVariant} from '../../types'
-import {RhombusIcon} from './PersonalizationIcons'
 
 const StyledMenu = styled(Menu)`
   min-width: 240px;
@@ -115,40 +116,56 @@ export function VariantsMenu(): React.JSX.Element {
             />
           </Box>
 
+          <Box paddingX={2} paddingY={1}>
+            <MenuItem
+              data-testid="variant-default"
+              icon={
+                <Text size={2}>
+                  <RhombusOutlinedIcon style={{color: 'var(--card-badge-suggest-icon-color)'}} />
+                </Text>
+              }
+              onClick={handleSelectDefault}
+              pressed={isDefaultSelected}
+              selected={isDefaultSelected}
+              text={t('navbar.variant.default')}
+            />
+          </Box>
           <MenuDivider />
-
-          <MenuItem
-            data-testid="variant-default"
-            icon={RhombusIcon}
-            onClick={handleSelectDefault}
-            pressed={isDefaultSelected}
-            selected={isDefaultSelected}
-            text={t('navbar.variant.default')}
-          />
 
           {filteredVariants.length > 0 && (
             <>
-              <Box padding={3} paddingBottom={2}>
-                <SectionHeader muted size={0} weight="medium">
-                  {t('navbar.variant.other')}
-                </SectionHeader>
+              <Box paddingX={2}>
+                <Flex paddingTop={3} paddingBottom={2} gap={2} paddingLeft={3}>
+                  {/* Spacer for icon alignment */}
+                  <Box style={{width: '15px'}} />
+                  <Box>
+                    <SectionHeader muted size={0} weight="medium">
+                      {t('navbar.variant.other')}
+                    </SectionHeader>
+                  </Box>
+                </Flex>
               </Box>
+              <Box paddingX={2}>
+                {filteredVariants.map((variant) => {
+                  const isSelected = selectedVariant?._id === variant._id
 
-              {filteredVariants.map((variant) => {
-                const isSelected = selectedVariant?._id === variant._id
-
-                return (
-                  <MenuItem
-                    key={variant._id}
-                    data-testid={`variant-${getVariantId(variant._id)}`}
-                    icon={RhombusIcon}
-                    onClick={() => handleSelectVariant(variant)}
-                    pressed={isSelected}
-                    selected={isSelected}
-                    text={getVariantTitle(variant)}
-                  />
-                )
-              })}
+                  return (
+                    <MenuItem
+                      key={variant._id}
+                      data-testid={`variant-${getVariantId(variant._id)}`}
+                      icon={
+                        <Text size={2}>
+                          <RhombusIcon style={{color: 'var(--card-badge-suggest-icon-color)'}} />
+                        </Text>
+                      }
+                      onClick={() => handleSelectVariant(variant)}
+                      pressed={isSelected}
+                      selected={isSelected}
+                      text={getVariantTitle(variant)}
+                    />
+                  )
+                })}
+              </Box>
             </>
           )}
         </StyledMenu>
