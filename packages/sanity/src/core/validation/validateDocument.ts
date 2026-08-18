@@ -39,11 +39,14 @@ const DEFAULT_MAX_FETCH_CONCURRENCY = 25
 // NOTE: ensure to update the TSDoc and CLI help test if this is changed
 const DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY = 5
 
-let _limitConcurrency: ReturnType<typeof createClientConcurrencyLimiter> | undefined
+const concurrencyLimiters = new Map<number, ReturnType<typeof createClientConcurrencyLimiter>>()
 const getConcurrencyLimiter = (maxConcurrency: number) => {
-  if (_limitConcurrency) return _limitConcurrency
-  _limitConcurrency = createClientConcurrencyLimiter(maxConcurrency)
-  return _limitConcurrency
+  let limiter = concurrencyLimiters.get(maxConcurrency)
+  if (!limiter) {
+    limiter = createClientConcurrencyLimiter(maxConcurrency)
+    concurrencyLimiters.set(maxConcurrency, limiter)
+  }
+  return limiter
 }
 
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
@@ -163,7 +166,7 @@ export interface ValidateDocumentOptions {
    * this value if you have complex custom validations that require many
    * `client.fetch` requests at once. It's possible for custom validator to
    * stall if there are not enough concurrent fetch requests available to
-   * fullfil the custom validation. This is 25 by default.
+   * fulfill the custom validation. This is 25 by default.
    */
   maxFetchConcurrency?: number
 
@@ -244,7 +247,7 @@ export function validateDocumentObservable({
   currentUser,
 }: ValidateDocumentObservableOptions): Observable<ValidationMarker[]> {
   if (typeof document?._type !== 'string') {
-    throw new Error(`Tried to validated a value without a '_type'`)
+    throw new Error(`Tried to validate a value without a '_type'`)
   }
 
   const documentType = schema.get(document._type)
