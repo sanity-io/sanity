@@ -1,6 +1,6 @@
 // oxlint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Button} from '@sanity/ui'
-import {type CSSProperties, useCallback} from 'react'
+import {useCallback} from 'react'
 import {useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -13,6 +13,7 @@ import {ToolLink} from '../../../studio/components/navbar/tools/ToolLink'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
 import {VARIANTS_TOOL_NAME} from '../index'
+import {suggestIconColor} from './VariantsNav.css'
 
 const OversizedButton = styled(ToolLink)`
   ${oversizedButtonStyle}
@@ -43,17 +44,7 @@ export function VariantsToolLink({
         data-as="a"
         fontSize={2}
         icon={
-          selectedVariant ? (
-            <RhombusIcon />
-          ) : (
-            <RhombusOutlinedIcon
-              style={
-                {
-                  '--card-icon-color': 'var(--card-badge-suggest-icon-color)',
-                } as CSSProperties
-              }
-            />
-          )
+          selectedVariant ? <RhombusIcon /> : <RhombusOutlinedIcon className={suggestIconColor} />
         }
         mode="bleed"
         padding={2}

@@ -23,6 +23,7 @@ import {
   getVariantTitle,
 } from '../../tool/util'
 import {type SystemVariant} from '../../types'
+import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
 
 const StyledMenu = styled(Menu)`
   min-width: 240px;
@@ -120,8 +121,8 @@ export function VariantsMenu(): React.JSX.Element {
             <MenuItem
               data-testid="variant-default"
               icon={
-                <Text size={2}>
-                  <RhombusOutlinedIcon style={{color: 'var(--card-badge-suggest-icon-color)'}} />
+                <Text size={2} className={suggestIconColor}>
+                  <RhombusOutlinedIcon />
                 </Text>
               }
               onClick={handleSelectDefault}
@@ -137,7 +138,7 @@ export function VariantsMenu(): React.JSX.Element {
               <Box paddingX={2}>
                 <Flex paddingTop={3} paddingBottom={2} gap={2} paddingLeft={3}>
                   {/* Spacer for icon alignment */}
-                  <Box style={{width: '15px'}} />
+                  <Box className={menuIconSpacer} />
                   <Box>
                     <SectionHeader muted size={0} weight="medium">
                       {t('navbar.variant.other')}
@@ -154,8 +155,8 @@ export function VariantsMenu(): React.JSX.Element {
                       key={variant._id}
                       data-testid={`variant-${getVariantId(variant._id)}`}
                       icon={
-                        <Text size={2}>
-                          <RhombusIcon style={{color: 'var(--card-badge-suggest-icon-color)'}} />
+                        <Text size={2} className={suggestIconColor}>
+                          <RhombusIcon />
                         </Text>
                       }
                       onClick={() => handleSelectVariant(variant)}
