@@ -1,7 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {
   BoundaryElementProvider,
-  Box,
   Flex,
   Text,
   useClickOutsideEvent,
@@ -10,6 +9,7 @@ import {
 import {type ComponentProps, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {type PopoverProps} from '../../../../../../ui-components/popover/Popover'
@@ -142,9 +142,9 @@ function Content(props: PopoverEditDialogProps) {
         <BoundaryElementProvider element={boundaryElement}>
           <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
             <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
-              <ContentHeaderBox flex="none" padding={1}>
+              <ContentHeaderBox flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
                 <Flex align="center">
-                  <Box flex={1} padding={2}>
+                  <Box flexBasis="0%" flexGrow={1} padding={2}>
                     <Text weight="medium">{title}</Text>
                   </Box>
 
@@ -158,7 +158,7 @@ function Content(props: PopoverEditDialogProps) {
                   />
                 </Flex>
               </ContentHeaderBox>
-              <ContentScrollerBox flex={1}>
+              <ContentScrollerBox flexBasis="0%" flexGrow={1}>
                 <PresenceOverlay margins={[0, 0, 1, 0]}>
                   <Box padding={3} ref={setContentElement}>
                     {props.children}
