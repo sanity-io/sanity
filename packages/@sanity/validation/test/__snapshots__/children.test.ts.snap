@@ -1,0 +1,119 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`child rules > all() rules - multiple failures > all() rules - match 1`] = `[]`;
+
+exports[`child rules > all() rules - multiple failures > all() rules - multiple failures, custom messages 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must start with an uppercase character and 5 chars or more",
+    },
+    "level": "error",
+    "message": "Must start with an uppercase character and 5 chars or more",
+    "path": [],
+  },
+]
+`;
+
+exports[`child rules > all() rules - single failure > all() rules - match 1`] = `[]`;
+
+exports[`child rules > all() rules - single failure > all() rules - single failure, custom message 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must start with an uppercase character",
+    },
+    "level": "error",
+    "message": "Must start with an uppercase character",
+    "path": [],
+  },
+]
+`;
+
+exports[`child rules > all() rules - single failure, custom, common error > all() rules - multiple failures, common error 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Needs to be a capital letter followed by at least 4 lowercase characters",
+    },
+    "level": "error",
+    "message": "Needs to be a capital letter followed by at least 4 lowercase characters",
+    "path": [],
+  },
+]
+`;
+
+exports[`child rules > all() rules - single failure, custom, common error > all() rules - single failure, common error 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Needs to start with a capital letter and then follow with lowercase characters",
+    },
+    "level": "error",
+    "message": "Needs to start with a capital letter and then follow with lowercase characters",
+    "path": [],
+  },
+]
+`;
+
+exports[`child rules > either() rules - all fail, custom, common error > either() rules - all fail, common error 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Needs to start with a capital letter, unless it's an iProduct",
+    },
+    "level": "error",
+    "message": "Needs to start with a capital letter, unless it's an iProduct",
+    "path": [],
+  },
+]
+`;
+
+exports[`child rules > either() rules - all matches > either() rules - all match 1`] = `[]`;
+
+exports[`child rules > either() rules - all matches > either() rules - no matches 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must start with a capital R or Must end with "ed"",
+    },
+    "level": "error",
+    "message": "Must start with a capital R or Must end with "ed"",
+    "path": [],
+  },
+]
+`;
+
+exports[`child rules > either() rules - single failure > either() rules - match 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be rgb(num, num, num) format or Must be hex color with #-prefix",
+    },
+    "level": "error",
+    "message": "Must be rgb(num, num, num) format or Must be hex color with #-prefix",
+    "path": [],
+  },
+]
+`;
+
+exports[`child rules > either() rules - single failure > either() rules - single failure, custom message 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be rgb(num, num, num) format or Must be hex color with #-prefix",
+    },
+    "level": "error",
+    "message": "Must be rgb(num, num, num) format or Must be hex color with #-prefix",
+    "path": [],
+  },
+]
+`;

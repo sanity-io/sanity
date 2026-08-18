@@ -1,0 +1,113 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`date > with custom format > max length constraint > Must be at or before 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be at or before 01-01-2024",
+    },
+    "level": "error",
+    "message": "Must be at or before 01-01-2024",
+    "path": [],
+  },
+]
+`;
+
+exports[`date > with custom format > min length constraint > Must be at or after 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be at or after 01-01-2024",
+    },
+    "level": "error",
+    "message": "Must be at or after 01-01-2024",
+    "path": [],
+  },
+]
+`;
+
+exports[`date > with default format > max length constraint > Must be at or before 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be at or before 2024-01-01",
+    },
+    "level": "error",
+    "message": "Must be at or before 2024-01-01",
+    "path": [],
+  },
+]
+`;
+
+exports[`date > with default format > min length constraint > Must be at or after 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be at or after 2024-01-01",
+    },
+    "level": "error",
+    "message": "Must be at or after 2024-01-01",
+    "path": [],
+  },
+]
+`;
+
+exports[`datetime > with custom format > max length constraint > Must be at or before 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be at or before 1st. January 2024 09:31",
+    },
+    "level": "error",
+    "message": "Must be at or before 1st. January 2024 09:31",
+    "path": [],
+  },
+]
+`;
+
+exports[`datetime > with custom format > min length constraint > Must be at or after 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be at or after 1st. January 2024 09:31",
+    },
+    "level": "error",
+    "message": "Must be at or after 1st. January 2024 09:31",
+    "path": [],
+  },
+]
+`;
+
+exports[`datetime > with default format > max length constraint > Must be at or before 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be at or before 2024-01-01 09:31",
+    },
+    "level": "error",
+    "message": "Must be at or before 2024-01-01 09:31",
+    "path": [],
+  },
+]
+`;
+
+exports[`datetime > with default format > min length constraint > Must be at or after 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be at or after 2024-01-01 09:31",
+    },
+    "level": "error",
+    "message": "Must be at or after 2024-01-01 09:31",
+    "path": [],
+  },
+]
+`;

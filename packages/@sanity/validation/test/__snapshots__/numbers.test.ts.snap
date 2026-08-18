@@ -1,0 +1,195 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`number > greater than constraint > gt: too low 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be greater than 10",
+    },
+    "level": "error",
+    "message": "Must be greater than 10",
+    "path": [],
+  },
+]
+`;
+
+exports[`number > greater than constraint > gt: too low, at limit 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be greater than 10",
+    },
+    "level": "error",
+    "message": "Must be greater than 10",
+    "path": [],
+  },
+]
+`;
+
+exports[`number > greater than constraint > gt: valid 1`] = `[]`;
+
+exports[`number > integer constraint > integer: invalid (float) 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be an integer",
+    },
+    "level": "error",
+    "message": "Must be an integer",
+    "path": [],
+  },
+]
+`;
+
+exports[`number > integer constraint > integer: valid 1`] = `[]`;
+
+exports[`number > less than constraint > lt: too high 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be less than 10",
+    },
+    "level": "error",
+    "message": "Must be less than 10",
+    "path": [],
+  },
+]
+`;
+
+exports[`number > less than constraint > lt: too high, at limit 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be less than 10",
+    },
+    "level": "error",
+    "message": "Must be less than 10",
+    "path": [],
+  },
+]
+`;
+
+exports[`number > less than constraint > lt: valid 1`] = `[]`;
+
+exports[`number > max constraint > max: too large 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be lower than or equal to 10",
+    },
+    "level": "error",
+    "message": "Must be lower than or equal to 10",
+    "path": [],
+  },
+]
+`;
+
+exports[`number > max constraint > max: valid 1`] = `[]`;
+
+exports[`number > max constraint > max: valid, at limit 1`] = `[]`;
+
+exports[`number > min constraint > min: too low 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be greater than or equal to 10",
+    },
+    "level": "error",
+    "message": "Must be greater than or equal to 10",
+    "path": [],
+  },
+]
+`;
+
+exports[`number > min constraint > min: valid 1`] = `[]`;
+
+exports[`number > min constraint > min: valid, at limit 1`] = `[]`;
+
+exports[`number > negative constraint > negative: invalid (zero) 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be less than 0",
+    },
+    "level": "error",
+    "message": "Must be less than 0",
+    "path": [],
+  },
+]
+`;
+
+exports[`number > negative constraint > negative: invalid 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be less than 0",
+    },
+    "level": "error",
+    "message": "Must be less than 0",
+    "path": [],
+  },
+]
+`;
+
+exports[`number > negative constraint > negative: valid 1`] = `[]`;
+
+exports[`number > positive constraint > positive: invalid 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be greater than or equal to 0",
+    },
+    "level": "error",
+    "message": "Must be greater than or equal to 0",
+    "path": [],
+  },
+]
+`;
+
+exports[`number > positive constraint > positive: valid (zero) 1`] = `[]`;
+
+exports[`number > positive constraint > positive: valid 1`] = `[]`;
+
+exports[`number > precision constraint > precision: invalid (pi) 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Max precision is 3",
+    },
+    "level": "error",
+    "message": "Max precision is 3",
+    "path": [],
+  },
+]
+`;
+
+exports[`number > precision constraint > precision: valid (at limit) 1`] = `[]`;
+
+exports[`number > precision constraint > precision: valid (below limit) 1`] = `[]`;
+
+exports[`number > required constraint > required: undefined 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Required",
+    },
+    "level": "error",
+    "message": "Required",
+    "path": [],
+  },
+]
+`;
+
+exports[`number > required constraint > required: valid 1`] = `[]`;

@@ -1,0 +1,85 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generics > can customize error messages 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Dude it needs to be a string",
+    },
+    "level": "error",
+    "message": "Dude it needs to be a string",
+    "path": [],
+  },
+]
+`;
+
+exports[`generics > can customize info messages 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Dude it should probably be a string",
+    },
+    "level": "info",
+    "message": "Dude it should probably be a string",
+    "path": [],
+  },
+]
+`;
+
+exports[`generics > can customize warning messages 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Dude it should probably be a string",
+    },
+    "level": "warning",
+    "message": "Dude it should probably be a string",
+    "path": [],
+  },
+]
+`;
+
+exports[`generics > can demote errors to warnings 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Expected type "String", got "Number"",
+    },
+    "level": "warning",
+    "message": "Expected type "String", got "Number"",
+    "path": [],
+  },
+]
+`;
+
+exports[`generics > can merge rules 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be at least 5 characters long",
+    },
+    "level": "error",
+    "message": "Must be at least 5 characters long",
+    "path": [],
+  },
+]
+`;
+
+exports[`generics > returns arrays of errors/warnings by default 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Expected type "String", got "Number"",
+    },
+    "level": "error",
+    "message": "Expected type "String", got "Number"",
+    "path": [],
+  },
+]
+`;
