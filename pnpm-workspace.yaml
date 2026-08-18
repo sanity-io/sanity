@@ -81,9 +81,6 @@ minimumReleaseAgeExclude:
   - 'csstype'
   - 'data-uri-to-buffer@7.0.0'
   - 'eslint-plugin-boundaries'
-  # Fresh majors pulled in by @sanity/client v8; exclude so install can resolve before the age gate
-  - 'eventsource@5.0.0'
-  - 'eventsource-parser@4.0.0'
   - 'get-it'
   - 'groq-js'
   # lightningcss and its per-platform native bindings (lightningcss-linux-x64-gnu etc.) release
@@ -117,8 +114,6 @@ minimumReleaseAgeExclude:
   - 'web-vitals'
   # covers yuku-ast/yuku-codegen/yuku-parser, which ship together with rolldown-plugin-dts
   - 'yuku-*'
-  - framer-motion@13.1.0
-  - motion@13.1.0
 
 overrides:
   vitest: 'catalog:'
