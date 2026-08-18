@@ -1,6 +1,8 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {type ReactNode} from 'react'
 import {defineConfig, type PerspectiveContextValue, usePerspective} from 'sanity'
+import {PaneContext} from 'sanity/_singletons'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -49,6 +51,7 @@ const BASE_PERSPECTIVE: PerspectiveContextValue = {
 }
 
 const ORDERING_TESTID = 'document-list-search-ordering'
+const SEARCH_TESTID = 'document-list-search'
 
 function getPaneProps() {
   return {
@@ -63,6 +66,38 @@ function getPaneProps() {
       options: {filter: '_type == "author"'},
     } as DocumentListPaneNode,
   }
+}
+
+/** The pane reads its collapsed state from context, so tests must supply one. */
+function PaneProvider(props: {children: ReactNode; collapsed?: boolean}) {
+  return (
+    <PaneContext.Provider
+      value={{
+        collapse: vi.fn(),
+        collapsed: props.collapsed ?? false,
+        expand: vi.fn(),
+        index: 0,
+        isLast: true,
+        rootElement: null,
+      }}
+    >
+      {props.children}
+    </PaneContext.Provider>
+  )
+}
+
+async function renderDocumentListPane(options: {collapsed?: boolean} = {}) {
+  const wrapper = await createTestProvider({
+    config: defineConfig({projectId: 'test', dataset: 'test'}),
+    resources: [structureUsEnglishLocaleBundle],
+  })
+
+  return render(
+    <PaneProvider collapsed={options.collapsed}>
+      <DocumentListPane {...getPaneProps()} />
+    </PaneProvider>,
+    {wrapper},
+  )
 }
 
 describe('DocumentListPane search ordering indicator', () => {
@@ -84,23 +119,13 @@ describe('DocumentListPane search ordering indicator', () => {
   })
 
   it('does not show the relevance indicator when there is no search term', async () => {
-    const wrapper = await createTestProvider({
-      config: defineConfig({projectId: 'test', dataset: 'test'}),
-      resources: [structureUsEnglishLocaleBundle],
-    })
-
-    render(<DocumentListPane {...getPaneProps()} />, {wrapper})
+    await renderDocumentListPane()
 
     expect(screen.queryByTestId(ORDERING_TESTID)).toBeNull()
   })
 
   it('shows the relevance indicator once a search term is entered', async () => {
-    const wrapper = await createTestProvider({
-      config: defineConfig({projectId: 'test', dataset: 'test'}),
-      resources: [structureUsEnglishLocaleBundle],
-    })
-
-    render(<DocumentListPane {...getPaneProps()} />, {wrapper})
+    await renderDocumentListPane()
 
     await userEvent.type(await screen.findByLabelText('Search list'), 'exodus')
 
@@ -109,12 +134,7 @@ describe('DocumentListPane search ordering indicator', () => {
   })
 
   it('treats a whitespace-only query as empty and hides the indicator', async () => {
-    const wrapper = await createTestProvider({
-      config: defineConfig({projectId: 'test', dataset: 'test'}),
-      resources: [structureUsEnglishLocaleBundle],
-    })
-
-    render(<DocumentListPane {...getPaneProps()} />, {wrapper})
+    await renderDocumentListPane()
 
     await userEvent.type(await screen.findByLabelText('Search list'), '   ')
 
@@ -122,6 +142,51 @@ describe('DocumentListPane search ordering indicator', () => {
     // appear. Allow time for the debounced query to settle before asserting.
     await new Promise((resolve) => setTimeout(resolve, 400))
     expect(screen.queryByTestId(ORDERING_TESTID)).toBeNull()
+  })
+})
+
+describe('DocumentListPane search area when the pane is collapsed', () => {
+  beforeEach(() => {
+    mockUseDocumentList.mockReturnValue({
+      error: null,
+      onRetry: vi.fn(),
+      isLoading: false,
+      items: [],
+      isRetrying: false,
+      canRetry: false,
+      retryCount: 0,
+      autoRetry: false,
+      connected: true,
+      fromCache: false,
+      onLoadFullList: vi.fn(),
+      isLoadingFullList: false,
+    })
+  })
+
+  it('shows the search area while the pane is expanded', async () => {
+    await renderDocumentListPane()
+
+    expect(await screen.findByTestId(SEARCH_TESTID)).toBeVisible()
+  })
+
+  it('hides the search area, including the relevance indicator, while collapsed', async () => {
+    const {rerender} = await renderDocumentListPane()
+
+    // Enter a search term while expanded, so the relevance indicator renders,
+    // then collapse the pane.
+    await userEvent.type(await screen.findByLabelText('Search list'), 'exodus')
+    expect(await screen.findByTestId(ORDERING_TESTID)).toBeVisible()
+
+    rerender(
+      <PaneProvider collapsed>
+        <DocumentListPane {...getPaneProps()} />
+      </PaneProvider>,
+    )
+
+    // The search area stays mounted so the query survives the collapse, but a
+    // collapsed pane is too narrow to render it without overflowing.
+    expect(screen.getByTestId(SEARCH_TESTID)).not.toBeVisible()
+    expect(screen.getByTestId(ORDERING_TESTID)).not.toBeVisible()
   })
 })
 

@@ -19,6 +19,7 @@ import {
 } from 'sanity'
 import {keyframes, styled} from 'styled-components'
 
+import {usePane} from '../../components/pane/usePane'
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
@@ -102,6 +103,11 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const {t} = useTranslation(structureLocaleNamespace)
   const {title} = useI18nText(pane)
+  // A collapsed pane is only wide enough for the rotated header. The search
+  // area is kept mounted (so the query and the input element the results list
+  // uses for keyboard navigation survive a collapse) but hidden, otherwise its
+  // contents overflow the pane and bleed into the neighbouring one.
+  const {collapsed} = usePane()
 
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchInputValue, setSearchInputValue] = useState<string>('')
@@ -276,7 +282,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   return (
     <>
-      <Box paddingX={3} paddingBottom={3}>
+      <Box data-testid="document-list-search" hidden={collapsed} paddingX={3} paddingBottom={3}>
         <Stack gap={3}>
           <TextInput
             aria-label={t('panes.document-list-pane.search-input.aria-label')}
