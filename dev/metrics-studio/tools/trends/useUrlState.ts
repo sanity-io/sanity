@@ -15,10 +15,10 @@ export function useUrlState(
   key: string,
   fallback: string,
 ): [string, (next: string, mode?: 'replace' | 'push') => void] {
-  const read = () => {
+  const read = useCallback(() => {
     if (typeof window === 'undefined') return fallback
     return new URLSearchParams(window.location.search).get(key) ?? fallback
-  }
+  }, [fallback, key])
   const [value, setValue] = useState(read)
 
   // Reflect Back/Forward navigation (pushState entries) back into state.
@@ -26,8 +26,7 @@ export function useUrlState(
     const onPopState = () => setValue(read())
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, fallback])
+  }, [read])
 
   const set = useCallback(
     (next: string, mode: 'replace' | 'push' = 'replace') => {
