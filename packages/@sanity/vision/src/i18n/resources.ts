@@ -118,7 +118,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'settings.api-version-label': 'API version',
   /** Tooltip shown when the API version selector is locked to vX because a variant is selected */
   'settings.api-version-locked-for-variant':
-    'When a variant is selected the API version needs to be vX',
+    'When a variant is selected, the API version needs to be vX.',
   /** Label for the "Custom API version" input in settings, shown when "other" is chosen as API version */
   'settings.custom-api-version-label': 'Custom API version',
   /** Label for the "Dataset" dropdown in vision settings */

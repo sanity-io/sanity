@@ -164,7 +164,7 @@ export function VisionGui(props: VisionGuiProps) {
         : DEFAULT_API_VERSION,
   )
   const [customApiVersion, setCustomApiVersion] = useState<string | false>(() =>
-    API_VERSIONS.includes(storedApiVersion) ? false : storedApiVersion,
+    activeVariant || API_VERSIONS.includes(storedApiVersion) ? false : storedApiVersion,
   )
   const isValidApiVersion = customApiVersion ? validateApiVersion(customApiVersion) : true
 
@@ -201,7 +201,11 @@ export function VisionGui(props: VisionGuiProps) {
     return [...releaseIds, ...defaultPerspective] as PerspectiveStack
   }, [releases, isDraftModelEnabled, isScheduledDraftsEnabled])
 
-  const userApiVersion = isValidApiVersion && customApiVersion ? customApiVersion : apiVersion
+  const userApiVersion = activeVariant
+    ? VARIANTS_API_VERSION
+    : isValidApiVersion && customApiVersion
+      ? customApiVersion
+      : apiVersion
 
   // Client  with memoized initial value
   const _client = useClient({
@@ -273,7 +277,11 @@ export function VisionGui(props: VisionGuiProps) {
         }),
         apiVersion:
           options?.apiVersion ||
-          (customApiVersion && isValidApiVersion ? customApiVersion : apiVersion),
+          (queryVariant
+            ? VARIANTS_API_VERSION
+            : customApiVersion && isValidApiVersion
+              ? customApiVersion
+              : apiVersion),
         variant: queryVariant,
       }
 
@@ -689,8 +697,8 @@ export function VisionGui(props: VisionGuiProps) {
       data-testid="vision-root"
     >
       <VisionGuiHeader
-        apiVersion={apiVersion}
-        customApiVersion={customApiVersion}
+        apiVersion={activeVariant ? VARIANTS_API_VERSION : apiVersion}
+        customApiVersion={activeVariant ? false : customApiVersion}
         dataset={dataset}
         datasets={datasets}
         onChangeDataset={handleChangeDataset}
