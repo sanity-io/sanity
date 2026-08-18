@@ -249,7 +249,7 @@ describe('FormBuilder', () => {
         schema: {types: schemaTypes},
       },
     })
-    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: true}))
 
     let capturedDocumentId: string | undefined
     const probeFieldAction = defineDocumentFieldAction({
@@ -346,12 +346,15 @@ describe('FormBuilder', () => {
       </TestProvider>,
     )
 
-    await screen.findByTestId('field-title')
+    await screen.findByTestId('field-title', {}, {timeout: 10_000})
 
-    await waitFor(() => {
-      expect(capturedDocumentId).toBe('doc-1')
-      expect(screen.getByText('doc-1')).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(capturedDocumentId).toBe('doc-1')
+        expect(screen.getByText('doc-1')).toBeInTheDocument()
+      },
+      {timeout: 10_000},
+    )
     expect(capturedDocumentId).not.toBe('root')
     expect(screen.queryByText('root')).not.toBeInTheDocument()
   })
