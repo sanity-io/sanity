@@ -10,13 +10,13 @@ import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {createEventsStore} from './createEventsStore'
 import {getDocumentAtRevision as getDocumentAtRevisionFunction} from './getDocumentAtRevision'
+import {resolveEventsRevisionId} from './resolveEventsRevisionId'
 import {
   type DocumentGroupEvent,
   type EventsStore,
   isCreateDocumentVersionEvent,
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
-  isEditDocumentVersionEvent,
   isPublishDocumentVersionEvent,
 } from './types'
 
@@ -85,42 +85,16 @@ export function useEventsStore({
     }
   }, [eventsStore])
 
-  const revisionId = useMemo(() => {
-    if (rev === '@lastPublished') {
-      const publishEvent = events.find(isPublishDocumentVersionEvent)
-      return publishEvent?.id || null
-    }
-    if (rev === '@lastEdited') {
-      const editEvent = events.find(isEditDocumentVersionEvent)
-      if (editEvent) return editEvent.revisionId
-    }
-    if (rev?.startsWith('@release:')) {
-      const releaseId = rev.split(':')[1]
-      const releaseEvent = events.find(
-        (event) => isPublishDocumentVersionEvent(event) && event.releaseId === releaseId,
-      )
-      if (releaseEvent) return releaseEvent.id
-      if (events.length > 0 && !loading) eventsStore.loadMoreEvents()
-    }
-
-    if (!rev) {
-      const [lastEvent] = events
-
-      // if the most recent event was a publish, or delete version, use that event as the revision
-      if (lastEvent) {
-        if (isPublishDocumentVersionEvent(lastEvent)) {
-          return lastEvent.id
-        }
-        if (isDeleteDocumentVersionEvent(lastEvent)) {
-          // the versionRevisionId returned by this event is incorrect, see #content-releases-actions-history channel.
-          // We need to use the last edit event we can find to grab the revision id.
-          return events.find(isEditDocumentVersionEvent)?.revisionId
-        }
-      }
-    }
-
-    return rev
-  }, [events, rev, eventsStore, loading])
+  const revisionId = useMemo(
+    () =>
+      resolveEventsRevisionId({
+        rev,
+        events,
+        loading,
+        loadMore: eventsStore.loadMoreEvents,
+      }),
+    [events, rev, eventsStore, loading],
+  )
 
   const getDocumentAtRevision = useCallback(
     (revision: string) => {

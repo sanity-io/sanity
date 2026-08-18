@@ -18,7 +18,11 @@ import {type ObjectDiff} from '../../field/types'
 import {calculateDiff} from './calculateDiff'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
-import {type EventsStoreRevision, isCreateDocumentVersionEvent} from './types'
+import {
+  type EventsStoreRevision,
+  isCreateDocumentVersionEvent,
+  isDeleteDocumentVersionEvent,
+} from './types'
 import {type EventsObservableValue} from './useEventsStore'
 
 const buildDocumentForDiffInput = (document?: Partial<SanityDocument> | null) => {
@@ -65,6 +69,7 @@ export function getDocumentChanges({
 }): Observable<{loading: boolean; diff: ObjectDiff | null; error: Error | null}> {
   let lastResolvedSince: string | null = null
   let lastResolvedTo: string | null = null
+  let lastLatestEventId: string | undefined
   let lastTransactions: TransactionLogEventWithEffects[] = []
 
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -109,8 +114,16 @@ export function getDocumentChanges({
             if (sinceDoc._rev === HISTORY_CLEARED_EVENT_ID) {
               return of([])
             }
-            if (viewingLatest && lastResolvedSince === sinceDoc._rev) {
-              // The document has been previously resolved and it's on latest, we can use the remote transactions, we don't need to fetch them again
+            if (viewingLatest && events[0] && isDeleteDocumentVersionEvent(events[0])) {
+              return of([])
+            }
+            if (
+              viewingLatest &&
+              lastResolvedSince === sinceDoc._rev &&
+              lastLatestEventId === events[0]?.id
+            ) {
+              // The document has been previously resolved and it's on latest, we can use the remote transactions, we don't need to fetch them again.
+              // The latest event id is part of the cache key so a discard/publish is not mixed with the previous draft edits.
               return of(removeDuplicatedTransactions(lastTransactions.concat(remoteTx)))
             }
             if (
@@ -134,6 +147,7 @@ export function getDocumentChanges({
           return getTransactions().pipe(
             tap((transactions) => {
               lastResolvedSince = sinceDoc._rev
+              lastLatestEventId = events[0]?.id
               lastTransactions = transactions
               if (to?._rev) {
                 lastResolvedTo = to._rev
