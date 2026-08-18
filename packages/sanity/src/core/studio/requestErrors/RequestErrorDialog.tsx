@@ -178,7 +178,7 @@ export function RequestErrorDialog(props: {
 }
 
 function RateLimitedDialog(props: {
-  claim: Extract<RequestErrorClaim, {type: 'rateLimited'}>
+  claim: {type: 'rateLimited'; error: Error; retryAfterSeconds?: number; retryable: boolean}
   onRetry: () => void
 }) {
   const {claim, onRetry} = props

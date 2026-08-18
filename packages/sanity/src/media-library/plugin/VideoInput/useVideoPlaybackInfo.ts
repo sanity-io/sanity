@@ -163,7 +163,7 @@ export function useVideoPlaybackInfo(
           const assetInstanceId = parseAssetInstanceId(assetRef._ref)
           return from(
             client.request<VideoPlaybackInfo>({
-              url: `/media-libraries/${mediaLibraryId}/video/${assetInstanceId}/playback-info`,
+              uri: `/media-libraries/${mediaLibraryId}/video/${assetInstanceId}/playback-info`,
               tag: 'media-library.video-playback-info',
             }),
           )

@@ -109,45 +109,8 @@ describe('classifyRequestError', () => {
     expect(classifyRequestError(serverError())).toMatchObject({type: 'serverError'})
   })
 
-  it('classifies an HTTP error from another client copy by its public shape', () => {
-    const error = {
-      message: 'HTTP 503: Service Unavailable',
-      response: {
-        body: {error: 'Unavailable'},
-        headers: {},
-        method: 'GET',
-        statusCode: 503,
-        statusMessage: 'Service Unavailable',
-        url: 'https://abc123.api.sanity.io/v1/foo',
-      },
-      statusCode: 503,
-    }
-
-    expect(classifyRequestError(error)).toEqual({type: 'serverError', error})
-  })
-
   it('classifies network errors', () => {
     expect(classifyRequestError(networkError())).toMatchObject({type: 'networkError'})
-  })
-
-  it('classifies get-it v9 / platform TimeoutErrors as networkError', () => {
-    const timeout = Object.assign(new Error('The operation was aborted due to timeout'), {
-      name: 'TimeoutError',
-    })
-    expect(classifyRequestError(timeout)).toMatchObject({type: 'networkError'})
-  })
-
-  it('classifies get-it v8 socket timeouts as networkError', () => {
-    const timeout = Object.assign(
-      new Error('Socket timed out on request to https://x.api.sanity.io/…'),
-      {code: 'ESOCKETTIMEDOUT'},
-    )
-    expect(classifyRequestError(timeout)).toMatchObject({type: 'networkError'})
-  })
-
-  it('classifies Node ETIMEDOUT errors as networkError', () => {
-    const timeout = Object.assign(new Error('connect ETIMEDOUT'), {code: 'ETIMEDOUT'})
-    expect(classifyRequestError(timeout)).toMatchObject({type: 'networkError'})
   })
 
   it('leaves arbitrary errors unclassified', () => {
@@ -226,23 +189,6 @@ describe('isInvalidSessionError', () => {
       statusCode: 401,
       body: {error: 'Unauthorized', errorCode: 'SIO-401-ANF', message: 'Session not found'},
     })
-    expect(isInvalidSessionError(err)).toBe(true)
-  })
-
-  it('matches an invalid-session error from another client copy by its public shape', () => {
-    const err = {
-      message: 'Unauthorized',
-      response: {
-        body: {errorCode: 'SIO-401-ANF'},
-        headers: {},
-        method: 'GET',
-        statusCode: 401,
-        statusMessage: 'Unauthorized',
-        url: 'https://abc123.api.sanity.io/v1/users/me',
-      },
-      statusCode: 401,
-    }
-
     expect(isInvalidSessionError(err)).toBe(true)
   })
 

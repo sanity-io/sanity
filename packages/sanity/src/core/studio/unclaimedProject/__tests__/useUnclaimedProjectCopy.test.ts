@@ -101,7 +101,7 @@ describe('useUnclaimedProjectCopy', () => {
 
     await waitFor(() => expect(result.current).toEqual(COPY))
     expect(mockRequest).toHaveBeenCalledExactlyOnceWith({
-      url: '/journey/unclaimed-project',
+      uri: '/journey/unclaimed-project',
       tag: 'unclaimed-project-copy',
     })
   })
@@ -113,7 +113,7 @@ describe('useUnclaimedProjectCopy', () => {
 
     await waitFor(() =>
       expect(mockRequest).toHaveBeenCalledExactlyOnceWith({
-        url: '/journey/unclaimed-project',
+        uri: '/journey/unclaimed-project',
         tag: 'unclaimed-project-copy',
       }),
     )
