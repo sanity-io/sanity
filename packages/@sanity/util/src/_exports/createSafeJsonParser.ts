@@ -1,1 +1,1 @@
-export * from '../createSafeJsonParser'
+export {createSafeJsonParser} from '../createSafeJsonParser'

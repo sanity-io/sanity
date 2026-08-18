@@ -1,16 +1,12 @@
-import {Autocomplete, Box, Flex, type Placement, Text} from '@sanity/ui'
-import {
-  type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
-  type Ref,
-  type RefObject,
-  useCallback,
-} from 'react'
+import {Box, Flex, type Placement, Text} from '@sanity/ui'
+import {Autocomplete} from '@sanity/ui/autocomplete'
+import {type ComponentProps, type Ref, type RefObject, useCallback, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
 
-import {Popover} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Popover} from '../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
+import {useReferenceAutocompletePopoverBoundary} from '../../hooks/useReferenceAutocompletePopoverBoundary'
 
 const StyledPopover = styled(Popover)`
   & > div {
@@ -25,17 +21,17 @@ const StyledText = styled(Text)`
 
 const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 
-export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
+export function ReferenceAutocomplete(
   props: ComponentProps<typeof Autocomplete> & {
     referenceElement: HTMLDivElement | null
     searchString?: string
     portalRef?: RefObject<HTMLDivElement | null>
-  },
-  ref: ForwardedRef<HTMLInputElement>,
+  } & RefAttributes<HTMLInputElement>,
 ) {
-  const {searchString, loading, portalRef, referenceElement, ...restProps} = props
+  const {ref, searchString, loading, portalRef, referenceElement, ...restProps} = props
   const {t} = useTranslation()
   const hasResults = props.options && props.options.length > 0
+  const popoverBoundary = useReferenceAutocompletePopoverBoundary(referenceElement)
   const renderPopover = useCallback(
     (
       {
@@ -59,6 +55,8 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         fallbackPlacements={FALLBACK_PLACEMENTS}
         arrow={false}
         constrainSize
+        floatingBoundary={popoverBoundary}
+        referenceBoundary={popoverBoundary}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         content={
@@ -87,7 +85,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         matchReferenceWidth
       />
     ),
-    [hasResults, t, searchString, loading, portalRef, referenceElement],
+    [hasResults, t, searchString, loading, portalRef, referenceElement, popoverBoundary],
   )
   return <Autocomplete {...restProps} ref={ref} renderPopover={renderPopover} />
-})
+}

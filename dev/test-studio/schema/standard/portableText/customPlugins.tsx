@@ -1,13 +1,312 @@
-import {defineBehavior, effect, forward} from '@portabletext/editor/behaviors'
-import {BehaviorPlugin} from '@portabletext/editor/plugins'
+import {defineContainer} from '@portabletext/editor'
+import {defineBehavior, effect, forward, raise} from '@portabletext/editor/behaviors'
+import {BehaviorPlugin, NodePlugin} from '@portabletext/editor/plugins'
 import {CharacterPairDecoratorPlugin} from '@portabletext/plugin-character-pair-decorator'
-import {defineArrayMember, defineType} from 'sanity'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  type PortableTextPluginsProps,
+  useFormValue,
+} from 'sanity'
+
+const CONTAINER_NODES = [
+  defineContainer({
+    type: 'codeBlock',
+    arrayField: 'code',
+    render: ({children, attributes}) => (
+      <pre
+        {...attributes}
+        style={{
+          background: '#f6f6f6',
+          border: '1px solid #ddd',
+          borderRadius: 4,
+          padding: '8px 12px',
+          fontFamily: 'monospace',
+          whiteSpace: 'pre-wrap',
+        }}
+      >
+        {children}
+      </pre>
+    ),
+  }),
+]
+
+// Keys come from the editor's own `keyGenerator` (off the behavior snapshot)
+// so they honour any configured generator.
+function emptyTextBlock(keyGenerator: () => string) {
+  return {
+    _key: keyGenerator(),
+    _type: 'block',
+    style: 'normal',
+    markDefs: [],
+    children: [{_key: keyGenerator(), _type: 'span', text: '', marks: []}],
+  }
+}
+
+// The guard skips containers that already have content, which also stops the
+// raise below from re-triggering.
+const containerScaffoldBehaviors = [
+  defineBehavior({
+    on: 'insert.block',
+    guard: ({event}) => {
+      if (event.block._type !== 'codeBlock') {
+        return false
+      }
+      const code = 'code' in event.block ? event.block.code : undefined
+      return !(Array.isArray(code) && code.length > 0)
+    },
+    actions: [
+      ({event, snapshot}) => [
+        raise({
+          ...event,
+          block: {
+            ...event.block,
+            code: [emptyTextBlock(snapshot.context.keyGenerator)],
+          },
+        }),
+      ],
+    ],
+  }),
+]
+
+function ContainerPlugins(props: PortableTextPluginsProps) {
+  // Flips the same document between inline container rendering and
+  // dialog-edited block objects; see the `containersEnabled` field description.
+  const containersEnabled = useFormValue(['containersEnabled']) !== false
+
+  return (
+    <>
+      {props.renderDefault({
+        ...props,
+        plugins: {
+          ...props.plugins,
+          table: {enabled: containersEnabled},
+        },
+      })}
+      {containersEnabled ? (
+        <>
+          <NodePlugin nodes={CONTAINER_NODES} />
+          <BehaviorPlugin behaviors={containerScaffoldBehaviors} />
+        </>
+      ) : null}
+    </>
+  )
+}
+
+// Binds the built-in table plugin to `sanity-plugin-rich-table`'s schema
+// shape (`richTable` > `rows` > `row` > `cells` > `richTableCell` >
+// `content`) via native `defineContainer` definitions: type and field
+// names come from the containers, renders fall back to the studio's
+// table UI. Module scope so the plugin doesn't re-register per render.
+const richTableContainers = {
+  table: defineContainer({type: 'richTable', arrayField: 'rows'}),
+  row: defineContainer({type: 'row', arrayField: 'cells'}),
+  cell: defineContainer({type: 'richTableCell', arrayField: 'content'}),
+}
+
+function RichTableAdoptionPlugins(props: PortableTextPluginsProps) {
+  return props.renderDefault({
+    ...props,
+    plugins: {
+      ...props.plugins,
+      table: {enabled: true, containers: richTableContainers},
+    },
+  })
+}
 
 export const customPlugins = defineType({
   name: 'customPlugins',
   title: 'Custom Plugins',
   type: 'document',
   fields: [
+    {
+      type: 'boolean',
+      name: 'containersEnabled',
+      title: 'Render containers inline',
+      description:
+        'When off, the Container Table field renders `table` and `codeBlock` as block objects edited through the dialog. Author a comment on nested text in one mode and toggle to verify it resolves in the other.',
+      initialValue: true,
+    },
+    {
+      type: 'array',
+      name: 'containerTable',
+      title: 'Container Table',
+      description:
+        'A defineContainer table (table > row > cell). Images and text blocks live at the root and inside cells. Cell blocks are deliberately narrower than root blocks (styles: normal/quote; decorators: strong/underline; lists: bullet; no annotations), so the toolbar disables the difference while the caret is inside a cell.',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          of: [
+            defineArrayMember({
+              type: 'object',
+              name: 'inlineNote',
+              title: 'Inline note',
+              fields: [defineField({type: 'string', name: 'text', title: 'Text'})],
+              preview: {select: {title: 'text'}},
+            }),
+          ],
+        }),
+        defineArrayMember({
+          type: 'image',
+          options: {hotspot: true},
+          fields: [defineField({name: 'alt', type: 'string', title: 'Alternative text'})],
+        }),
+        defineArrayMember({
+          type: 'object',
+          name: 'table',
+          fields: [
+            defineField({type: 'number', name: 'headerRows'}),
+            defineField({
+              type: 'array',
+              name: 'rows',
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  name: 'row',
+                  fields: [
+                    defineField({
+                      type: 'array',
+                      name: 'cells',
+                      of: [
+                        defineArrayMember({
+                          type: 'object',
+                          name: 'cell',
+                          fields: [
+                            defineField({
+                              type: 'array',
+                              name: 'value',
+                              of: [
+                                defineArrayMember({
+                                  type: 'block',
+                                  // Deliberately narrower than the root
+                                  // block in every toolbar-gated category
+                                  // (styles, decorators, annotations,
+                                  // lists), so the toolbar's positional
+                                  // disabled state is easy to verify:
+                                  // caret in a cell disables everything
+                                  // the cell doesn't declare, caret at
+                                  // the root enables it all again.
+                                  styles: [
+                                    {title: 'Normal', value: 'normal'},
+                                    {title: 'Quote', value: 'blockquote'},
+                                  ],
+                                  marks: {
+                                    decorators: [
+                                      {title: 'Strong', value: 'strong'},
+                                      {title: 'Underline', value: 'underline'},
+                                    ],
+                                    annotations: [],
+                                  },
+                                  lists: [{title: 'Bullet', value: 'bullet'}],
+                                  of: [
+                                    defineArrayMember({
+                                      type: 'object',
+                                      name: 'inlineNote',
+                                      title: 'Inline note',
+                                      fields: [
+                                        defineField({type: 'string', name: 'text', title: 'Text'}),
+                                      ],
+                                      preview: {select: {title: 'text'}},
+                                    }),
+                                  ],
+                                }),
+                                defineArrayMember({
+                                  type: 'image',
+                                  options: {hotspot: true},
+                                  fields: [
+                                    defineField({
+                                      name: 'alt',
+                                      type: 'string',
+                                      title: 'Alternative text',
+                                    }),
+                                  ],
+                                }),
+                              ],
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+        defineArrayMember({
+          type: 'object',
+          name: 'codeBlock',
+          title: 'Code block',
+          fields: [
+            defineField({
+              type: 'array',
+              name: 'code',
+              of: [defineArrayMember({type: 'block', marks: {decorators: []}})],
+            }),
+          ],
+        }),
+      ],
+      components: {
+        portableText: {
+          plugins: ContainerPlugins,
+        },
+      },
+    },
+    {
+      type: 'array',
+      name: 'richTableAdoption',
+      title: 'Rich Table Adoption',
+      description:
+        "Built-in table editing bound to sanity-plugin-rich-table's schema shape (richTable > rows > row > cells > richTableCell > content) through the table plugin's containers config. The row's extra title field persists untouched; headerRows is the one field the built-in adds.",
+      of: [
+        defineArrayMember({type: 'block'}),
+        defineArrayMember({
+          type: 'object',
+          name: 'richTable',
+          fields: [
+            // Not part of the rich-table shape: the built-in's header-row
+            // toggle needs it declared or the value is stripped.
+            defineField({type: 'number', name: 'headerRows'}),
+            defineField({
+              type: 'array',
+              name: 'rows',
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  name: 'row',
+                  fields: [
+                    defineField({type: 'string', name: 'title'}),
+                    defineField({
+                      type: 'array',
+                      name: 'cells',
+                      of: [
+                        defineArrayMember({
+                          type: 'object',
+                          name: 'richTableCell',
+                          fields: [
+                            defineField({
+                              type: 'array',
+                              name: 'content',
+                              of: [defineArrayMember({type: 'block'})],
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+      components: {
+        portableText: {
+          plugins: RichTableAdoptionPlugins,
+        },
+      },
+    },
     {
       type: 'string',
       name: 'title',
@@ -72,8 +371,10 @@ export const customPlugins = defineType({
               plugins: {
                 ...props.plugins,
                 markdown: {
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   boldDecorator: ({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'bold')?.name,
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   unorderedList: ({schema}) =>
                     schema.lists.find((list) => list.name === 'dot')?.name,
                 },
@@ -124,8 +425,10 @@ export const customPlugins = defineType({
                 ...props.plugins,
                 markdown: {
                   config: {
+                    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                     boldDecorator: ({schema}) =>
                       schema.decorators.find((decorator) => decorator.name === 'bold')?.name,
+                    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                     unorderedListStyle: ({schema}) =>
                       schema.lists.find((list) => list.name === 'dot')?.name,
                   },
@@ -202,6 +505,7 @@ export const customPlugins = defineType({
                   },
                 })}
                 <CharacterPairDecoratorPlugin
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'strong')?.name
                   }
@@ -211,6 +515,7 @@ export const customPlugins = defineType({
                   }}
                 />
                 <CharacterPairDecoratorPlugin
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'strong')?.name
                   }
@@ -220,6 +525,7 @@ export const customPlugins = defineType({
                   }}
                 />
                 <CharacterPairDecoratorPlugin
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'em')?.name
                   }
@@ -229,6 +535,7 @@ export const customPlugins = defineType({
                   }}
                 />
                 <CharacterPairDecoratorPlugin
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'em')?.name
                   }

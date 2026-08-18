@@ -1,6 +1,7 @@
-/* eslint-disable i18next/no-literal-string */
-import {WarningOutlineIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+/* oxlint-disable i18next/no-literal-string */
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
+import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Box} from 'ui5'
 
 export function ToolNotFoundScreen(props: {toolName: string}) {
   const {toolName} = props
@@ -16,7 +17,7 @@ export function ToolNotFoundScreen(props: {toolName: string}) {
                   <WarningOutlineIcon />
                 </Text>
               </Box>
-              <Stack flex={1} marginLeft={3} space={3}>
+              <Stack flex={1} marginLeft={3} gap={3}>
                 <Text as="h1" size={1} weight="medium">
                   Tool not found: <code>{toolName}</code>
                 </Text>

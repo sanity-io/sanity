@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type ReactNode} from 'react'
+import {type ReactNode, type RefAttributes} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 
 import {Root, RootCard} from './PaneFooter.styles'
@@ -15,11 +15,8 @@ interface PaneFooterProps {
  * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
-export const PaneFooter = forwardRef(function PaneFooter(
-  props: PaneFooterProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
-  const {children, padding} = props
+export function PaneFooter(props: PaneFooterProps & RefAttributes<HTMLDivElement>) {
+  const {ref, children, padding} = props
   const {collapsed} = usePane()
 
   return (
@@ -31,4 +28,4 @@ export const PaneFooter = forwardRef(function PaneFooter(
       </Root>
     </LegacyLayerProvider>
   )
-})
+}

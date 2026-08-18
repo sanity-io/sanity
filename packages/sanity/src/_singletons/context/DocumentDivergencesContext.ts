@@ -6,13 +6,16 @@ import type {DivergenceNavigator} from '../../core/divergence/divergenceNavigato
  * @internal
  */
 export type DocumentDivergencesContextValue =
-  | (DivergenceNavigator & {enabled: true})
-  | {enabled: false}
+  | (DivergenceNavigator & {enabled: true; sessionId: string})
+  | {enabled: false; sessionId: null}
 
 /**
  * @internal
  */
-export const DocumentDivergencesContext = createContext<DocumentDivergencesContextValue | null>(
+export const DocumentDivergencesContext = createContext<DocumentDivergencesContextValue>(
   'sanity/_singletons/context/document-divergences',
-  null,
+  {
+    enabled: false,
+    sessionId: null,
+  },
 )

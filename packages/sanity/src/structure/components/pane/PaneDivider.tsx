@@ -91,6 +91,7 @@ export function PaneDivider({
         setDragging(false)
 
         window.removeEventListener('mousemove', handleMouseMove)
+        // oxlint-disable-next-line react/react-compiler
         window.removeEventListener('mouseup', handleMouseUp)
 
         resize('end', element, 0)

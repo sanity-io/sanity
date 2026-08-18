@@ -9,15 +9,16 @@ import {
 } from 'react'
 import {FieldActionsContext, type FieldActionsContextValue} from 'sanity/_singletons'
 
-import {type DocumentFieldActionNode} from '../../../config'
-import {pathToString} from '../../../field'
-import {supportsTouch} from '../../../util'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
+import {pathToString} from '../../../field/paths/helpers'
+import {supportsTouch} from '../../../util/supportsTouch'
 import {type FieldCommentsProps} from '../../types/fieldProps'
 import {useHoveredField} from '../useHoveredField'
 
 type FieldActionsProviderProps = PropsWithChildren<{
   actions: DocumentFieldActionNode[]
   /** @internal @deprecated DO NOT USE */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   __internal_comments?: FieldCommentsProps
   __internal_slot?: ReactNode
   focused?: boolean
@@ -29,7 +30,7 @@ export const FieldActionsProvider = memo(function FieldActionsProvider(
   props: FieldActionsProviderProps,
 ) {
   // by passing the comments and slot here, we can wrap this functionality around any custom field without needing to confirm the title and description
-  // eslint-disable-next-line camelcase
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {actions, children, path, focused, __internal_comments, __internal_slot} = props
   const {
     onMouseEnter: onFieldMouseEnter,
@@ -58,9 +59,7 @@ export const FieldActionsProvider = memo(function FieldActionsProvider(
       actions,
       focused,
       hovered,
-      // eslint-disable-next-line camelcase
       __internal_comments,
-      // eslint-disable-next-line camelcase
       __internal_slot,
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
@@ -71,9 +70,7 @@ export const FieldActionsProvider = memo(function FieldActionsProvider(
       handleMouseEnter,
       handleMouseLeave,
       hovered,
-      // eslint-disable-next-line camelcase
       __internal_slot,
-      // eslint-disable-next-line camelcase
       __internal_comments,
     ],
   )

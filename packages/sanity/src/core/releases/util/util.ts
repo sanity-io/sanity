@@ -1,11 +1,14 @@
 import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} from '@sanity/client'
+import {type DocumentSystem} from '@sanity/types'
 
 import {type TargetPerspective} from '../../perspective/types'
-import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
+import {getVersionFromId, isVersionId} from '../../util/draftUtils'
+import {formatRelativeLocale} from '../../util/formatRelativeLocale'
 import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 import {type CardinalityView, type Mode} from '../tool/overview/queryParamUtils'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
 import {createReleaseId} from './createReleaseId'
+import {getReleaseIdFromReleaseDocumentId} from './getReleaseIdFromReleaseDocumentId'
 
 /** @internal */
 export type NotArchivedRelease = ReleaseDocument & {state: Exclude<ReleaseState, 'archived'>}
@@ -47,12 +50,21 @@ export function getPublishDateFromRelease(release: ReleaseDocument): Date | null
   return new Date(dateString)
 }
 
-/** @internal */
-export function formatRelativeLocalePublishDate(release: ReleaseDocument): string {
+/**
+ * Formats a release's publish date as a locale-aware relative string. `timeZone`
+ * defaults to the host runtime's TZ; inside React components, prefer
+ * `useFormatRelativeLocalePublishDate` to bind the studio's selected timezone.
+ *
+ * @internal
+ */
+export function formatRelativeLocalePublishDate(
+  release: ReleaseDocument,
+  timeZone?: string,
+): string {
   const publishDate = getPublishDateFromRelease(release)
 
   if (!publishDate) return ''
-  return formatRelativeLocale(publishDate, new Date())
+  return formatRelativeLocale(publishDate, new Date(), timeZone)
 }
 
 /** @internal */

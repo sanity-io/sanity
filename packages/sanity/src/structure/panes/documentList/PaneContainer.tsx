@@ -1,26 +1,36 @@
-import {Card, Code} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import isEqual from 'lodash-es/isEqual.js'
-import {memo, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
 import {
   EMPTY_ARRAY,
   type GeneralDocumentListLayoutKey,
+  type ObjectSchemaType,
   SourceProvider,
   useI18nText,
+  useSchema,
   useSource,
+  useTranslation,
 } from 'sanity'
-import shallowEquals from 'shallow-equals'
 
-import {Pane} from '../../components/pane'
+import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
+import {structureLocaleNamespace} from '../../i18n'
 import {assignId} from '../../structureResolvers/assignId'
 import {type PaneMenuItem} from '../../types'
 import {useStructureToolSetting} from '../../useStructureToolSetting'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPane} from './DocumentListPane'
-import {findStaticTypesInFilter} from './helpers'
+import {
+  findStaticTypesInFilter,
+  fromStaticSortOrder,
+  toStaticSortOrder,
+  validateSortOrder,
+} from './helpers'
 import {PaneHeader} from './PaneHeader'
-import {type SortOrder} from './types'
+import {type SortOrder, type StaticSortOrder} from './types'
+import {useShallowUnique} from './useShallowUnique'
 
 /**
  * Type for custom menu item state storage.
@@ -38,13 +48,25 @@ const addIdsToMenuItems = (menuItems?: PaneMenuItem[]): PaneMenuItem[] | undefin
   })
 }
 
-const addSelectedStateToMenuItems = (options: {
+/**
+ * @internal exported for testing
+ */
+export const addSelectedStateToMenuItems = (options: {
   menuItems?: PaneMenuItem[]
   sortOrderRaw?: SortOrder
   layout?: GeneralDocumentListLayoutKey
   customMenuItemState?: CustomMenuItemState
+  schemaType?: ObjectSchemaType
+  disabledSortReason?: string
 }) => {
-  const {menuItems, sortOrderRaw, layout, customMenuItemState = {}} = options
+  const {
+    menuItems,
+    sortOrderRaw,
+    layout,
+    customMenuItemState = {},
+    schemaType,
+    disabledSortReason,
+  } = options
 
   return menuItems?.map((item) => {
     if (item.params?.layout) {
@@ -55,9 +77,20 @@ const addSelectedStateToMenuItems = (options: {
     }
 
     if (item?.params?.by) {
+      const itemSortOrder: SortOrder = {by: item.params.by}
+
+      const isInvalidSortOrder =
+        validateSortOrder(itemSortOrder, schemaType, DEFAULT_ORDERING) !== itemSortOrder
+
+      const staticSortBy = toStaticSortOrder({by: sortOrderRaw?.by ?? EMPTY_ARRAY}).by
+      const itemSortBy = toStaticSortOrder({by: item?.params?.by ?? EMPTY_ARRAY}).by
+
       return {
         ...item,
-        selected: isEqual(sortOrderRaw?.by, item?.params?.by || EMPTY_ARRAY),
+        selected: isEqual(staticSortBy, itemSortBy),
+        ...(isInvalidSortOrder && {
+          disabled: {reason: disabledSortReason},
+        }),
       }
     }
 
@@ -76,13 +109,63 @@ const addSelectedStateToMenuItems = (options: {
   })
 }
 
-export function useShallowUnique<ValueType>(value: ValueType): ValueType {
-  const [previous, setPrevious] = useState<ValueType>(value)
-  if (!shallowEquals(previous, value)) {
-    setPrevious(value)
-    return value
+/**
+ * Appends restore-default items to the Sort and Layout groups. Injected at
+ * render time so panes with custom `menuItems` still receive them.
+ *
+ * @internal exported for testing
+ */
+export const appendRestoreDefaultItems = (options: {
+  menuItems?: PaneMenuItem[]
+  isSortDefault: boolean
+  isLayoutDefault: boolean
+  restoreSortDisabledReason: string
+  restoreLayoutDisabledReason: string
+  suppressRestoreDefaults?: boolean
+}): PaneMenuItem[] => {
+  const {
+    menuItems = [],
+    isSortDefault,
+    isLayoutDefault,
+    restoreSortDisabledReason,
+    restoreLayoutDisabledReason,
+    suppressRestoreDefaults,
+  } = options
+
+  if (suppressRestoreDefaults) return menuItems
+
+  // Only attach a restore item to a group that already has items, so a pane
+  // that removed them (e.g. `menuItems([])`) does not get them back.
+  const hasSortItems = menuItems.some(
+    (item) => item.group === 'sorting' || item.action === 'setSortOrder',
+  )
+  const hasLayoutItems = menuItems.some(
+    (item) => item.group === 'layout' || item.action === 'setLayout',
+  )
+
+  const restoreDefaultSortOrderItem: PaneMenuItem = {
+    group: 'sorting',
+    action: 'restoreDefaultSortOrder',
+    i18n: {title: {key: 'menu-items.sort-by.restore-default', ns: structureLocaleNamespace}},
+    title: 'Default sort',
+    params: {hideSelectionIndicator: true},
+    ...(isSortDefault && {disabled: {reason: restoreSortDisabledReason}}),
   }
-  return previous
+
+  const restoreDefaultLayoutItem: PaneMenuItem = {
+    group: 'layout',
+    action: 'restoreDefaultLayout',
+    i18n: {title: {key: 'menu-items.layout.restore-default', ns: structureLocaleNamespace}},
+    title: 'Default view',
+    params: {hideSelectionIndicator: true},
+    ...(isLayoutDefault && {disabled: {reason: restoreLayoutDisabledReason}}),
+  }
+
+  return [
+    ...menuItems,
+    ...(hasSortItems ? [restoreDefaultSortOrderItem] : []),
+    ...(hasLayoutItems ? [restoreDefaultLayoutItem] : []),
+  ]
 }
 
 /**
@@ -92,6 +175,7 @@ export const PaneContainer = memo(function PaneContainer(
   props: BaseStructureToolPaneProps<'documentList'>,
 ) {
   const {index, isSelected, pane, paneKey} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {name: parentSourceName} = useSource()
 
   const {
@@ -100,6 +184,7 @@ export const PaneContainer = memo(function PaneContainer(
     menuItemGroups,
     menuItems,
     options,
+    suppressRestoreDefaultMenuItems,
   } = pane
   const {defaultOrdering = EMPTY_ARRAY, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -123,28 +208,100 @@ export const PaneContainer = memo(function PaneContainer(
     return defaultOrdering?.length > 0 ? {by: defaultOrdering} : DEFAULT_ORDERING
   }, [defaultOrdering])
 
-  const [sortOrderRaw, setSortOrder] = useStructureToolSetting<SortOrder>(
+  const [storedSortOrderRaw, setStoredSortOrder] = useStructureToolSetting<StaticSortOrder>(
     'sort-order',
     typeName ?? pane.id, //pane.id for anything that is not documentTypeList
     defaultSortOrder,
   )
 
-  // Custom menu item state for tracking selected state of custom menu items
-  // Uses local state (doesn't persist across refreshes) to avoid keyValueStore allowlist issues
+  const schema = useSchema()
+  const schemaType = useMemo(
+    () => (typeName ? (schema.get(typeName) as ObjectSchemaType | undefined) : undefined),
+    [typeName, schema],
+  )
+  const {t} = useTranslation(structureLocaleNamespace)
+
+  // Rehydrate the live `schemaType` onto each persisted entry. The
+  // pane already knows the type via `typeName`, so no discriminator
+  // is needed in storage.
+  const sortOrderRaw = useMemo<SortOrder | undefined>(
+    () => fromStaticSortOrder(storedSortOrderRaw, schemaType),
+    [storedSortOrderRaw, schemaType],
+  )
+
+  const validatedSortOrder = useMemo(() => {
+    if (!sortOrderRaw) return sortOrderRaw
+    return validateSortOrder(sortOrderRaw, schemaType, defaultSortOrder)
+  }, [sortOrderRaw, schemaType, defaultSortOrder])
+
+  const handleSetSortOrder = useCallback(
+    async (newSortOrder: SortOrder) => {
+      const validated = validateSortOrder(newSortOrder, schemaType, defaultSortOrder)
+      await setStoredSortOrder(toStaticSortOrder(validated))
+    },
+    [setStoredSortOrder, schemaType, defaultSortOrder],
+  )
+
+  // Clear the stored preference instead of writing the default: the key is
+  // shared per type, so writing would leak this list's default onto its siblings.
+  const handleRestoreDefaultSortOrder = useCallback(async () => {
+    await setStoredSortOrder(null)
+  }, [setStoredSortOrder])
+
+  const handleRestoreDefaultLayout = useCallback(async () => {
+    await setLayout(null)
+  }, [setLayout])
+
   const [customMenuItemState, setCustomMenuItemState] = useState<CustomMenuItemState>({})
 
-  // Add auto-generated IDs to menu items that don't have one
   const menuItemsWithIds = useMemo(() => addIdsToMenuItems(menuItems), [menuItems])
+
+  const disabledSortReason = t('panes.document-list-pane.sort-order.disabled-reason')
 
   const menuItemsWithSelectedState = useMemo(
     () =>
       addSelectedStateToMenuItems({
         menuItems: menuItemsWithIds,
-        sortOrderRaw,
+        sortOrderRaw: validatedSortOrder,
         layout,
         customMenuItemState,
+        schemaType,
+        disabledSortReason,
       }),
-    [customMenuItemState, layout, menuItemsWithIds, sortOrderRaw],
+    [
+      customMenuItemState,
+      disabledSortReason,
+      layout,
+      menuItemsWithIds,
+      schemaType,
+      validatedSortOrder,
+    ],
+  )
+
+  const isLayoutDefault = layout === defaultLayout
+  // Compare the stored static order, not the hydrated validatedSortOrder.
+  const isSortDefault = useMemo(
+    () => isEqual(storedSortOrderRaw?.by ?? [], toStaticSortOrder(defaultSortOrder).by),
+    [storedSortOrderRaw, defaultSortOrder],
+  )
+
+  const menuItemsWithRestoreDefaults = useMemo(
+    () =>
+      appendRestoreDefaultItems({
+        menuItems: menuItemsWithSelectedState,
+        isSortDefault,
+        isLayoutDefault,
+        restoreSortDisabledReason: t('menu-items.sort-by.restore-default.disabled-reason'),
+        restoreLayoutDisabledReason: t('menu-items.layout.restore-default.disabled-reason'),
+        suppressRestoreDefaults: suppressRestoreDefaultMenuItems,
+      }),
+    [
+      menuItemsWithSelectedState,
+      isSortDefault,
+      isLayoutDefault,
+      t,
+      suppressRestoreDefaultMenuItems,
+    ],
   )
 
   return (
@@ -168,13 +325,15 @@ export const PaneContainer = memo(function PaneContainer(
           index={index}
           initialValueTemplates={initialValueTemplates}
           menuItemGroups={menuItemGroups}
-          menuItems={menuItemsWithSelectedState}
+          menuItems={menuItemsWithRestoreDefaults}
           setLayout={setLayout}
-          setSortOrder={setSortOrder}
+          setSortOrder={handleSetSortOrder}
           setCustomMenuItemState={setCustomMenuItemState}
+          restoreDefaultLayout={handleRestoreDefaultLayout}
+          restoreDefaultSortOrder={handleRestoreDefaultSortOrder}
           title={title}
         />
-        <DocumentListPane {...props} sortOrder={sortOrderRaw} layout={layout} />
+        <DocumentListPane {...props} sortOrder={validatedSortOrder} layout={layout} />
       </Pane>
     </SourceProvider>
   )

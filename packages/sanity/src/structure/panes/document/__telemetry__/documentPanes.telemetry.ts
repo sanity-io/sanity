@@ -4,7 +4,7 @@ import {defineEvent} from '@sanity/telemetry'
  * @internal
  */
 export const DocumentURLCopied = defineEvent({
-  name: 'DocumentURLCopied',
+  name: 'Document URL Copied',
   version: 1,
   description: 'User copied document URL to clipboard',
 })
@@ -13,7 +13,7 @@ export const DocumentURLCopied = defineEvent({
  * @internal
  */
 export const DocumentIDCopied = defineEvent({
-  name: 'DocumentIDCopied',
+  name: 'Document ID Copied',
   version: 1,
   description: 'User copied document ID to clipboard',
 })
@@ -22,7 +22,7 @@ export const DocumentIDCopied = defineEvent({
  * @internal
  */
 export const InlineChangesSwitchedOn = defineEvent({
-  name: 'InlineChangesSwitchedOn',
+  name: 'Inline Changes Switched On',
   version: 1,
   description: 'User switched on display of inline changes',
 })
@@ -31,7 +31,7 @@ export const InlineChangesSwitchedOn = defineEvent({
  * @internal
  */
 export const InlineChangesSwitchedOff = defineEvent({
-  name: 'InlineChangesSwitchedOff',
+  name: 'Inline Changes Switched Off',
   version: 1,
   description: 'User switched off display of inline changes',
 })

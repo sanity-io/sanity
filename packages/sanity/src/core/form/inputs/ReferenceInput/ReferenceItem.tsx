@@ -1,29 +1,30 @@
-import {
-  AddDocumentIcon,
-  CloseIcon,
-  CopyIcon,
-  LaunchIcon as OpenInNewTabIcon,
-  SyncIcon as ReplaceIcon,
-  TrashIcon,
-} from '@sanity/icons'
+import {AddDocumentIcon} from '@sanity/icons/AddDocument'
+import {CloseIcon} from '@sanity/icons/Close'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {LaunchIcon as OpenInNewTabIcon} from '@sanity/icons/Launch'
+import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
-import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui'
+import {Box, type CardTone} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
-import {ChangeIndicator} from '../../../changeIndicators'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
-import {LoadingBlock} from '../../../components/loadingBlock'
-import {useTranslation} from '../../../i18n'
-import {FieldPresence} from '../../../presence'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
+import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {FieldPresence} from '../../../presence/FieldPresence'
 import {EMPTY_ARRAY} from '../../../util/empty'
-import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
+import {FormFieldSet} from '../../components/formField/FormFieldSet'
+import {FormFieldValidationStatus} from '../../components/formField/FormFieldValidationStatus'
 import {FormNodeDivergenceDetail} from '../../components/FormNodeDivergenceDetail'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
-import {set, unset} from '../../patch'
-import {type ObjectItem, type ObjectItemProps} from '../../types'
+import {set, unset} from '../../patch/patch'
+import {type ObjectItem, type ObjectItemProps} from '../../types/itemProps'
 import {randomKey} from '../../utils/randomKey'
 import {regenerateKeys} from '../../utils/regenerateKeys'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
@@ -303,6 +304,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
             {!isEditing && hasRef && (
               <MenuItem
                 as={IntentLink}
+                data-as="a"
                 icon={OpenInNewTabIcon}
                 // @ts-expect-error - these are valid types but there's an issue in `@sanity/ui@3` where type inference is not working on `as` props
                 intent="edit"

@@ -1,10 +1,10 @@
-import {Card, Stack} from '@sanity/ui'
+import {Card, type CardTone, Stack} from '@sanity/ui'
 import get from 'lodash-es/get.js'
 import {PureComponent} from 'react'
 
-import {ChangeIndicator} from '../../../../changeIndicators'
-import {ArrayOfPrimitivesItem} from '../../../members'
-import {type ArrayOfPrimitivesInputProps} from '../../../types'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
+import {ArrayOfPrimitivesItem} from '../../../members/array/items/ArrayOfPrimitivesItem'
+import {type ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
 import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
 import {ArrayValidationProvider} from '../common/ArrayValidationContext'
@@ -27,6 +27,7 @@ interface State {
  * @hidden
  * @beta
  */
+// oxlint-disable-next-line react/prefer-function-component -- needs getSnapshotBeforeUpdate (no hook equivalent)
 export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInputProps, State> {
   _element: HTMLElement | null = null
 
@@ -157,10 +158,15 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
       elementProps,
       arrayFunctions: ArrayFunctions = ArrayOfPrimitivesFunctions,
       changed,
+      validation,
     } = this.props
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
     const isGrid = schemaType.options?.layout === 'grid'
+
+    // Compute tone for array container based on validation errors
+    const hasErrors = validation?.some((v) => v.level === 'error')
+    const errorTone: CardTone | undefined = hasErrors ? 'critical' : undefined
 
     // Note: we need this in order to generate new id's when items are moved around in the list
     // without it, dndkit will restore focus on the original index of the dragged item
@@ -171,7 +177,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
 
     return (
       <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
-        <Stack space={2} data-testid="array-primitives-input">
+        <Stack gap={2} data-testid="array-primitives-input">
           <UploadTargetCard
             types={schemaType.of}
             resolveUploader={resolveUploader}
@@ -179,11 +185,11 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
             {...elementProps}
             tabIndex={0}
           >
-            <Stack space={1}>
+            <Stack gap={1}>
               {membersWithSortIds.length === 0 ? (
-                <NoItemsPlaceholder schemaType={schemaType} />
+                <NoItemsPlaceholder schemaType={schemaType} validation={validation} />
               ) : (
-                <Card padding={1} border>
+                <Card padding={1} border tone={errorTone}>
                   <List
                     onItemMove={this.handleSortEnd}
                     onItemMoveStart={this.handleItemMoveStart}
@@ -191,7 +197,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
                     items={membersWithSortIds.map((m) => m.id)}
                     sortable={isSortable}
                     gap={isGrid ? 3 : 1}
-                    columns={isGrid ? [2, 3, 4] : 1}
+                    gridTemplateColumns={isGrid ? [2, 3, 4] : 1}
                     padding={isGrid ? 1 : undefined}
                     margin={isGrid ? 1 : undefined}
                   >

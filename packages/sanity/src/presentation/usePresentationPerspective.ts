@@ -1,5 +1,6 @@
 import {usePerspective} from 'sanity'
 
+import {isAgentBundleName} from '../core/store/agent/createAgentBundlesStore'
 import {type PresentationPerspective} from './types'
 
 /**
@@ -12,11 +13,14 @@ export function usePresentationPerspective({
 }): PresentationPerspective {
   const {selectedPerspectiveName = 'drafts', selectedReleaseId, perspectiveStack} = usePerspective()
 
-  return selectedReleaseId || scheduledDraft
-    ? scheduledDraft
-      ? [scheduledDraft, ...perspectiveStack]
-      : perspectiveStack
-    : selectedPerspectiveName === 'published'
-      ? 'published'
-      : 'drafts'
+  if (selectedReleaseId || scheduledDraft || isAgentBundleName(selectedPerspectiveName)) {
+    if (scheduledDraft) {
+      return [scheduledDraft, ...perspectiveStack]
+    }
+    return perspectiveStack
+  }
+  if (selectedPerspectiveName === 'published') {
+    return 'published'
+  }
+  return 'drafts'
 }

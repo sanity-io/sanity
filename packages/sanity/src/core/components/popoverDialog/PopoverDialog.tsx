@@ -1,23 +1,38 @@
-import {CloseIcon} from '@sanity/icons'
-import {Box, Flex, Layer, type ResponsiveWidthProps, Stack, Text, type Theme} from '@sanity/ui'
+import {CloseIcon} from '@sanity/icons/Close'
+import {
+  Box,
+  Flex,
+  Layer,
+  type ResponsiveWidthProps,
+  Stack,
+  Text,
+  type Theme,
+  usePortal,
+} from '@sanity/ui'
 import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'react'
-import TrapFocus from 'react-focus-lock'
+import TrapFocus, {type ReactFocusLockProps} from 'react-focus-lock'
 import {css, styled} from 'styled-components'
 
-import {Button, Popover, type PopoverProps} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {Popover, type PopoverProps} from '../../../ui-components/popover/Popover'
 import {PopoverContainer} from './PopoverContainer'
 
 const StyledPopover = styled(Popover)(() => {
   return css`
-    /* Make the popover scrollable if it overflows the viewport */
+    /* Make the popover scrollable if it overflows the viewport.
+     * Reserve space for the scrollbar so content that grows past the viewport
+     * (e.g. when switching tabs) doesn't cause a horizontal layout shift. */
     [data-ui='Popover__wrapper'] {
       overflow: auto;
+      scrollbar-gutter: stable;
     }
   `
 })
 
 // This layer is sticky so that the header is always visible when scrolling
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const StickyLayer = styled(Layer)((props: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const radii = props.theme.sanity.radius[3]
 
   return css`
@@ -43,6 +58,7 @@ interface PopoverDialogProps {
 /** @internal */
 export function PopoverDialog(props: PopoverDialogProps) {
   const {children, header, onClose, referenceElement, containerRef, width} = props
+  const portal = usePortal()
 
   const handleClose = useCallback(() => {
     onClose()
@@ -51,10 +67,23 @@ export function PopoverDialog(props: PopoverDialogProps) {
     referenceElement?.focus()
   }, [onClose, referenceElement])
 
+  // If the popover is opened inside a portal, trap focus only in that portal.
+  // This allows focus interactions in panes outside of the portal scope, which
+  // is especially important if the popover contains links to content that opens
+  // in a separate pane (such as a reference).
+  //
+  // Note that providing an allow list to `TrapFocus` in this way does not enable
+  // keyboard navigation outside of the `TrapFocus` component. This can be
+  // enabled using groups or shards.
+  //
+  // https://github.com/theKashey/react-focus-lock/issues/97#issuecomment-594844115
+  const trapPaneFocus: ReactFocusLockProps['whiteList'] = (interactionElement) =>
+    !portal.element || portal.element.contains(interactionElement)
+
   // @todo: these use the same styles as dialogs, can this be shared?
   const content = (
     <PopoverContainer width={width} data-testid="popover-dialog">
-      <TrapFocus autoFocus>
+      <TrapFocus autoFocus whiteList={trapPaneFocus}>
         <Stack ref={containerRef}>
           <StickyLayer>
             <Box padding={2} paddingLeft={4}>

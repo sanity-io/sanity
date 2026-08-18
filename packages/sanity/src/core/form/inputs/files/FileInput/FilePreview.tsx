@@ -1,11 +1,12 @@
 import {isFileSource} from '@sanity/asset-utils'
-import {ImageIcon, SearchIcon} from '@sanity/icons'
+import {ImageIcon} from '@sanity/icons/Image'
+import {SearchIcon} from '@sanity/icons/Search'
 import {type AssetSource, type FileAsset} from '@sanity/types'
 import get from 'lodash-es/get.js'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
-import {MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {getDataTestIdPrefix} from '../common/AssetSourceBrowser'
@@ -136,10 +137,13 @@ export function FilePreview(props: FileAssetProps) {
     t,
   ])
 
+  const disableNew = schemaType.options?.disableNew === true
+
   const uploadMenuItem = useUploadMenuItem({
     accept,
     assetSourcesWithUpload,
     directUploads,
+    disableNew,
     readOnly,
     onSelectFiles: handleSelectFilesFromAssetSource,
     onOpenSourceForUpload: handleOpenSourceForUpload,

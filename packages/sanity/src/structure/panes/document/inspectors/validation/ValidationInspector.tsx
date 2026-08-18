@@ -1,9 +1,7 @@
-import {
-  ErrorOutlineIcon,
-  type IconComponent,
-  InfoOutlineIcon,
-  WarningOutlineIcon,
-} from '@sanity/icons'
+import {type IconComponent} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {
   type ObjectSchemaType,
   type Path,
@@ -12,11 +10,17 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
-import {type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
-import {type DocumentInspectorProps, isGoingToUnpublish, useTranslation} from 'sanity'
+import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
+import {
+  type DocumentInspectorProps,
+  isGoingToUnpublish,
+  mergeParseErrors,
+  useParseErrors,
+  useTranslation,
+} from 'sanity'
 
-import {ErrorBoundary} from '../../../../../ui-components'
-import {DocumentInspectorHeader} from '../../documentInspector'
+import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
+import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
 import {getPathTitles} from './getPathTitles'
 
@@ -35,6 +39,11 @@ const MARKER_TONE: Record<'error' | 'warning' | 'info', CardTone> = {
 export function ValidationInspector(props: DocumentInspectorProps) {
   const {onClose} = props
   const {onFocus, onPathOpen, schemaType, validation, value, editState} = useDocumentPane()
+  const parseErrors = useParseErrors()
+  const mergedValidation = useMemo(
+    () => mergeParseErrors(validation, parseErrors),
+    [validation, parseErrors],
+  )
   const {t} = useTranslation('validation')
 
   const handleOpen = useCallback(
@@ -67,16 +76,16 @@ export function ValidationInspector(props: DocumentInspectorProps) {
           </Box>
         ) : (
           <>
-            {validation.length === 0 && (
+            {mergedValidation.length === 0 && (
               <Box padding={2}>
                 <Text muted size={1}>
                   {t('panel.no-errors-message')}
                 </Text>
               </Box>
             )}
-            {validation.length > 0 && (
-              <Stack space={2}>
-                {validation.map((marker, i) => (
+            {mergedValidation.length > 0 && (
+              <Stack gap={2}>
+                {mergedValidation.map((marker, i) => (
                   <ValidationCard
                     // oxlint-disable-next-line no-array-index-key
                     key={i}
@@ -102,7 +111,22 @@ function ValidationCard(props: {
   value: Partial<SanityDocument> | null
 }) {
   const {marker, onOpen, schemaType, value} = props
-  const handleOpen = useCallback(() => onOpen(marker.path), [marker, onOpen])
+  const handleClick = useCallback(
+    (event: MouseEvent) => {
+      // Allow text selection: if the user selected text, don't navigate
+      const selection = window.getSelection()
+      if (
+        selection &&
+        selection.toString().length > 0 &&
+        // It's selecting inside the card, so don't navigate
+        event.currentTarget.contains(selection.anchorNode)
+      ) {
+        return
+      }
+      onOpen(marker.path)
+    },
+    [marker, onOpen],
+  )
   const [errorInfo, setErrorInfo] = useState<{error: Error; info: ErrorInfo} | null>(null)
   const Icon = MARKER_ICON[marker.level]
 
@@ -118,9 +142,10 @@ function ValidationCard(props: {
         <Card
           __unstable_focusRing
           as="button"
-          onClick={handleOpen}
+          onClick={handleClick}
           padding={3}
           radius={2}
+          style={{userSelect: 'text'}}
           tone={MARKER_TONE[marker.level]}
         >
           <Flex align="flex-start" gap={3}>
@@ -130,7 +155,7 @@ function ValidationCard(props: {
               </Text>
             </Box>
 
-            <Stack flex={1} space={2}>
+            <Stack flex={1} gap={2}>
               <DocumentNodePathBreadcrumbs
                 path={marker.path}
                 schemaType={schemaType}

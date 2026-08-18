@@ -44,6 +44,7 @@ export function useOptimisticDiff({
   )
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setCurrentSignal('definitive')
     // Ensure the optimistic value is synced with the definitive value.
     setOptimisticValue(definitiveValue)

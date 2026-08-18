@@ -50,7 +50,7 @@ import {
   useReleasesMetadataMockReturn,
 } from '../../../store/__tests__/__mocks/useReleasesMetadata.mock'
 import {type ReleasesMetadata} from '../../../store/useReleasesMetadata'
-import {useBundleDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
+import {useReleaseDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useReleaseDocuments.mock'
 import {
   mockUseReleaseCreator,
   useReleaseCreatorMockReturn,
@@ -95,8 +95,8 @@ vi.mock('../../../store/useReleasesMetadata', () => ({
   useReleasesMetadata: vi.fn(() => useReleasesMetadataMockReturn),
 }))
 
-vi.mock('../../detail/useBundleDocuments', () => ({
-  useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
+vi.mock('../../detail/useReleaseDocuments', () => ({
+  useReleaseDocuments: vi.fn(() => useReleaseDocumentsMockReturnWithResults),
 }))
 
 vi.mock('../../../store/useReleasePermissions', () => ({
@@ -104,12 +104,9 @@ vi.mock('../../../store/useReleasePermissions', () => ({
 }))
 
 const {mockNavigate, mockResolveIntentLink, mockRouterReturn} = vi.hoisted(() => {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const mockNavigate = vi.fn()
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const mockResolveIntentLink = vi.fn(() => '/test')
   // Stable reference so the `[router]` effect dependency doesn't fire on every render
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const mockRouterReturn = {
     state: {},
     navigate: mockNavigate,
@@ -382,6 +379,7 @@ describe('ReleasesOverview', () => {
         data: releases,
         error: undefined,
         loading: false,
+        map: new Map(releases.map((release) => [release._id, release])),
       })
       mockUseArchivedReleases.mockReturnValue({
         ...useArchivedReleasesMockReturn,
@@ -699,7 +697,9 @@ describe('ReleasesOverview', () => {
       })
 
       it('hides the timezone text and shows only the icon', () => {
-        expect(screen.queryByText('SCT (Sanity/Oslo)')).not.toBeInTheDocument()
+        // Narrow viewports move the label into a tooltip, and tooltip content stays mounted
+        // (hidden) while the tooltip is closed.
+        expect(screen.getByText('SCT (Sanity/Oslo)')).not.toBeVisible()
       })
     })
 
@@ -1422,9 +1422,12 @@ describe('ReleasesOverview', () => {
       const {unmount} = await mountAndFlush(<TestComponent />, {wrapper})
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith({
-          _searchParams: expect.arrayContaining([['view', 'drafts']]),
-        })
+        expect(mockNavigate).toHaveBeenCalledWith(
+          {
+            _searchParams: expect.arrayContaining([['view', 'drafts']]),
+          },
+          {replace: true},
+        )
       })
 
       unmount()
@@ -1446,6 +1449,30 @@ describe('ReleasesOverview', () => {
       for (const call of mockNavigate.mock.calls) {
         const searchParams: [string, string][] = call[0]?._searchParams || []
         expect(searchParams).not.toContainEqual(['view', 'drafts'])
+      }
+    })
+
+    it('uses replace when syncing filter/group state to URL to avoid duplicate history entries', async () => {
+      mockNavigate.mockClear()
+      vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+      vi.mocked(useRouter).mockReturnValue({
+        state: {},
+        navigate: mockNavigate,
+        resolveIntentLink: mockResolveIntentLink,
+      } as unknown as ReturnType<typeof useRouter>)
+
+      const wrapper = await createTestProvider({
+        resources: [releasesUsEnglishLocaleBundle],
+      })
+
+      await mountAndFlush(<TestComponent />, {wrapper})
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalled()
+      })
+
+      for (const call of mockNavigate.mock.calls) {
+        expect(call[1]).toEqual({replace: true})
       }
     })
   })

@@ -1,8 +1,15 @@
-export default {
+import {defineLocalesResources} from 'sanity'
+
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+export default defineLocalesResources('presentation', {
   /** The title shown above the document list */
   'document-list-pane.document-list.title': 'Documents on this page',
   /** The text shown if the document list is unable to render */
   'document-list-pane.error.text': 'Could not render the document list',
+  /** The label for the ordering that lists documents in the order they appear on the page */
+  'document-list-pane.ordering.by-appearance': 'By appearance',
+  /** The label for the ordering that lists documents by when they were last edited */
+  'document-list-pane.ordering.last-edited': 'Last edited',
   /** The status of the channel connection */
   'channel.status_connected': 'Connected',
   /** The status of the channel connection */
@@ -31,6 +38,12 @@ export default {
   'main-document.label': 'Main document',
   /** The warning message text shown when a defined resolver fails to return a main document */
   'main-document.missing.text': 'Missing a main document for <Code>{{path}}</Code>',
+  /** The label for the tab that shows the document editor at narrow viewports */
+  'narrow-tabs.content-tab.label': 'Structure',
+  /** The label for the tab that shows the navigator at narrow viewports */
+  'narrow-tabs.navigator-tab.label': 'Navigator',
+  /** The label for the tab that shows the preview at narrow viewports */
+  'narrow-tabs.preview-tab.label': 'Presentation',
   /** The label for a generic error message */
   'presentation-error.label': 'Error message',
   /** The text shown when the preview frame cannot connect to Presentation */
@@ -125,4 +138,4 @@ export default {
   'share-preview-menu.copy-url.text': 'Copy preview link',
   /** Fallback message shown when the current user is not permitted to share previews */
   'share-preview-menu.error_missing-grants': "You don't have permission to share previews. ",
-}
+})

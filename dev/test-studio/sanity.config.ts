@@ -1,22 +1,22 @@
 import {assist} from '@sanity/assist'
-import {colorInput} from '@sanity/color-input'
 import {debugSecrets} from '@sanity/debug-preview-url-secret-plugin'
 import {documentInternationalization} from '@sanity/document-internationalization'
 import {googleMapsInput} from '@sanity/google-maps-input'
-import {BookIcon, EnvelopeIcon, MobileDeviceIcon, PresentationIcon} from '@sanity/icons'
+import {BookIcon} from '@sanity/icons/Book'
+import {EnvelopeIcon} from '@sanity/icons/Envelope'
+import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
+import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
+import {themerTool} from '@sanity/themer/tool'
 import {visionTool} from '@sanity/vision'
-import {DECISION_PARAMETERS_SCHEMA, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
+import {defineConfig, definePlugin, type AuthProvider, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
-import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
-import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
-import {muxInput} from 'sanity-plugin-mux-input'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
-import {imageAssetSource} from './assetSources'
+import {imageAssetSource} from './assetSources/imageAssetSource'
 import {
   Annotation,
   Block,
@@ -41,25 +41,68 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
-import {errorReportingTestPlugin} from './plugins/error-reporting-test'
+import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
+import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
-import {languageFilter} from './plugins/language-filter'
-import {routerDebugTool} from './plugins/router-debug'
+import {languageFilter} from './plugins/language-filter/plugin'
+import {routerDebugTool} from './plugins/router-debug/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
-import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
+import {newDocumentOptions} from './structure/resolveNewDocumentOptions'
+import {structure} from './structure/resolveStructure'
+import {defaultDocumentNode} from './structure/resolveStructureDocumentNode'
 
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
 
+// Set by `pnpm dev:proxy` / `pnpm dev:proxy:http1`: routes production-workspace requests through @repo/debug-proxy
+// to exercise the studio under adverse network conditions (see packages/@repo/debug-proxy).
+function getDebugProxyApiHost(): string | undefined {
+  const mode = process.env.SANITY_STUDIO_USE_DEBUG_PROXY
+  if (!mode) {
+    return undefined
+  }
+  if (mode === 'true') {
+    // HTTP/2 over TLS — requires the proxy cert to be trusted (see the package README)
+    return 'https://localhost:3051'
+  }
+  if (mode === 'http1') {
+    return 'http://localhost:3050'
+  }
+  console.warn(`Ignoring unknown SANITY_STUDIO_USE_DEBUG_PROXY value: "${mode}"`)
+  return undefined
+}
+
+const debugProxyApiHost = getDebugProxyApiHost()
+
+// Sanity Sandbox org SAML SSO (`ppsg7ml5`). `/auth/providers` reports `sso.saml: true`
+// but does not include the login URL, so Studio will not offer SSO unless we add it.
+// Same configuration ID as `dev/auth-test-studio`.
+const sanitySandboxSsoProvider: AuthProvider = {
+  name: 'saml',
+  title: 'SSO',
+  url: 'https://api.sanity.io/v2021-10-01/auth/saml/login/91cadf2a',
+}
+
+const sanitySandboxAuth = {
+  providers: (prev: AuthProvider[]) =>
+    prev.some((provider) => provider.name === sanitySandboxSsoProvider.name)
+      ? prev
+      : [...prev, sanitySandboxSsoProvider],
+}
+
 const envConfig = {
   // use this for production workspaces
-  production: isStaging ? {apiHost: 'https://api.sanity.io'} : {},
+  production: isStaging
+    ? {apiHost: 'https://api.sanity.io'}
+    : debugProxyApiHost
+      ? {apiHost: debugProxyApiHost}
+      : {},
   // use this for staging workspaces
   staging: isStaging ? {} : {apiHost: 'https://api.sanity.work'},
 }
@@ -125,11 +168,18 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       debugSecrets(),
       presentationTool({
         allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
-        previewUrl: '/preview/index.html',
+        previewUrl: {
+          origin:
+            process.env.SANITY_STUDIO_PREVIEW_IFRAME_ORIGIN ??
+            (process.env.NODE_ENV === 'development'
+              ? 'http://localhost:3334'
+              : 'https://test-studio-preview-iframe.sanity.dev'),
+          preview: '/',
+        },
         resolve: {
           mainDocuments: defineDocuments([
             {
-              route: '/preview/index.html',
+              route: '/',
               filter: `_type == "simpleBlock" && isMain`,
             },
           ]),
@@ -142,7 +192,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
                   locations: [
                     {
                       title: doc.title,
-                      href: `/preview/index.html?${new URLSearchParams({title: doc.title})}`,
+                      href: `/?${new URLSearchParams({title: doc.title})}`,
                     },
                   ],
                 }
@@ -206,18 +256,15 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
           lng: -74.1180863,
         },
       }),
-      colorInput(),
       visionTool({
         // uncomment to test
         //defaultApiVersion: '2025-02-05',
       }),
-      // eslint-disable-next-line camelcase
-      muxInput({mp4_support: 'standard'}),
-      imageHotspotArrayPlugin(),
+      themerTool(),
       routerDebugTool(),
+      formBuilderReproTool(),
       errorReportingTestPlugin(),
       media(),
-      markdownSchema(),
       wave(),
       autoCloseBrackets(),
       internationalizedArray({
@@ -248,6 +295,7 @@ const defaultWorkspace = defineConfig({
   dataset: 'test',
   ...envConfig.production,
   plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
+  auth: sanitySandboxAuth,
 
   onUncaughtError: (error, errorInfo) => {
     console.log(error)
@@ -255,10 +303,6 @@ const defaultWorkspace = defineConfig({
   },
   basePath: '/test',
   icon: SanityMonogram,
-  // eslint-disable-next-line camelcase
-  __internal_serverDocumentActions: {
-    enabled: true,
-  },
   scheduledPublishing: {
     enabled: true,
     inputDateTimeFormat: 'MM/dd/yy h:mm a',
@@ -269,11 +313,6 @@ const defaultWorkspace = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
-  [DECISION_PARAMETERS_SCHEMA]: {
-    audiences: ['aud-a', 'aud-b', 'aud-c'],
-    locales: ['en-GB', 'en-US'],
-    ages: ['20-29', '30-39'],
-  },
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {
@@ -281,9 +320,6 @@ const defaultWorkspace = defineConfig({
       }
       if (ctx.schemaType === 'author' && ctx.releaseId) {
         return [...prev, useTestVersionAction]
-      }
-      if (ctx.schemaType === 'playlist') {
-        return prev.filter(({action}) => action === 'delete')
       }
 
       return prev
@@ -297,10 +333,69 @@ const defaultWorkspace = defineConfig({
       return prev
     },
   },
+  beta: {
+    variants: {
+      enabled: true,
+    },
+  },
 })
 
 export default defineConfig([
+  {
+    ...defaultWorkspace,
+    name: 'default-hidden',
+    title: 'Default Hidden',
+    subtitle: 'Statically hidden and configured as the first (default) workspace',
+    basePath: '/default-hidden',
+    hidden: true,
+  },
   defaultWorkspace,
+  {
+    ...defaultWorkspace,
+    title: 'Test Studio (variants disabled)',
+    name: 'test-studio-variants-disabled',
+    basePath: '/test-studio-variants-disabled',
+    beta: {
+      variants: {
+        enabled: false,
+      },
+    },
+  },
+  {
+    ...defaultWorkspace,
+    projectId: 'nonexistent',
+    name: 'nonexistent-project',
+    title: 'Nonexistent project',
+    subtitle: 'Workspace with a nonexistent project id',
+    basePath: '/nonexistent-project',
+  },
+  {
+    ...defaultWorkspace,
+    dataset: 'nonexistent',
+    name: 'nonexistent-dataset',
+    title: 'Nonexistent dataset',
+    subtitle: 'Workspace with a nonexistent dataset',
+    basePath: '/nonexistent-dataset',
+  },
+  {
+    ...defaultWorkspace,
+    name: 'admin-only',
+    title: 'Admin Only',
+    subtitle: 'Hidden unless you have an administrator role',
+    basePath: '/admin-only',
+    hidden: ({currentUser}) => {
+      if (currentUser === null) return false
+      return !currentUser.roles.some((role) => role.name === 'administrator')
+    },
+  },
+  {
+    ...defaultWorkspace,
+    name: 'always-hidden',
+    title: 'Always Hidden',
+    subtitle: 'You should never see this workspace because it is statically hidden',
+    basePath: '/always-hidden',
+    hidden: true,
+  },
   {
     ...defaultWorkspace,
     name: 'us',
@@ -318,6 +413,16 @@ export default defineConfig([
       drafts: {enabled: true},
     },
     releases: {enabled: false},
+  },
+  {
+    ...defaultWorkspace,
+    name: 'secondary',
+    title: 'Secondary test project',
+    projectId: 'q5caobza',
+    dataset: 'production',
+    basePath: '/secondary',
+    // Different project/org than Sanity Sandbox — keep the default providers.
+    auth: undefined,
   },
   {
     ...defaultWorkspace,
@@ -340,6 +445,7 @@ export default defineConfig([
     dataset: 'partial-indexing-2',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/partial-indexing',
+    auth: sanitySandboxAuth,
     ...envConfig.production,
     search: {
       unstable_partialIndexing: {
@@ -365,13 +471,14 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/playground',
+    auth: sanitySandboxAuth,
     beta: {
       eventsAPI: {
         releases: true,
       },
     },
     search: {
-      strategy: 'groq2024',
+      strategy: 'groqLegacy',
     },
     mediaLibrary: {
       enabled: true,
@@ -389,6 +496,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/listener-events',
+    auth: sanitySandboxAuth,
     mediaLibrary: {
       enabled: true,
     },
@@ -402,6 +510,7 @@ export default defineConfig([
     dataset: 'playground-partial-indexing',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/playground-partial-indexing',
+    auth: sanitySandboxAuth,
     mediaLibrary: {
       enabled: true,
     },
@@ -423,6 +532,11 @@ export default defineConfig([
     },
     mediaLibrary: {
       enabled: true,
+    },
+    beta: {
+      variants: {
+        enabled: true,
+      },
     },
   },
   {
@@ -505,6 +619,7 @@ export default defineConfig([
       formComponentsPlugin(),
     ],
     basePath: '/custom-components',
+    auth: sanitySandboxAuth,
     onUncaughtError: (error, errorInfo) => {
       console.log(error)
       console.log(errorInfo)
@@ -540,6 +655,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'}), assist()],
     basePath: '/ai-assist',
+    auth: sanitySandboxAuth,
     mediaLibrary: {
       enabled: true,
     },
@@ -552,6 +668,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/stega',
+    auth: sanitySandboxAuth,
     form: {
       components: {
         input: StegaDebugger,
@@ -624,6 +741,7 @@ export default defineConfig([
         allowOrigins: ['https://*.sanity.dev'],
         previewUrl: {
           // Intentionally using sanity.build instead of sanity.dev, to test that it's able to recover from the server side domain redirect to sanity.dev
+          // @TODO it is currently not able to recover, it fails eventually, investigate why
           initial: 'https://next.sanity.build',
           previewMode: {enable: '/api/draft-mode/enable'},
         },

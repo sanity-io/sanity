@@ -23,9 +23,9 @@ class ProvisionError extends Error {
   message: string
   error: string
   code: ErrorCode
-  // eslint-disable-next-line unicorn/custom-error-definition
+  // oxlint-disable-next-line unicorn/custom-error-definition
   constructor(message: string, error: string, code: ErrorCode) {
-    // eslint-disable-next-line unicorn/custom-error-definition
+    // oxlint-disable-next-line unicorn/custom-error-definition
     super(message)
     this.message = message
     this.error = error
@@ -46,7 +46,7 @@ function getMediaLibrariesForOrganization(
 ): Observable<MediaLibrary> {
   return client
     .request<{data?: MediaLibrary[]}>({
-      uri: `/media-libraries?organizationId=${organizationId}`,
+      url: `/media-libraries?organizationId=${organizationId}`,
       method: 'GET',
     })
     .pipe(
@@ -65,7 +65,7 @@ function getOrganizationIdFromLibraryId(
 ): Observable<string> {
   return client
     .request({
-      uri: `/media-libraries/${libraryId}`,
+      url: `/media-libraries/${libraryId}`,
       method: 'GET',
     })
     .pipe(
@@ -88,7 +88,7 @@ function getOrganizationIdFromProjectId(
 ): Observable<string> {
   return client
     .request({
-      uri: `/projects/${projectId}`,
+      url: `/projects/${projectId}`,
       method: 'GET',
     })
     .pipe(

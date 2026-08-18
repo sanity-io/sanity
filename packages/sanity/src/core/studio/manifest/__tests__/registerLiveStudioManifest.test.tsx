@@ -3,13 +3,20 @@ import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type Source, type WorkspaceSummary} from '../../../config/types'
-import {type AuthStore} from '../../../store'
+import {type AuthStore} from '../../../store/authStore/types'
 import {type UserApplication} from '../../../store/userApplications'
+import {fetchCanDeployStudio} from '../canDeployStudio'
 import {registerStudioManifest} from '../registerLiveStudioManifest'
 
 // Mock the icon module to avoid styled-components complexity in tests
 vi.mock('../icon', () => ({
   resolveIcon: vi.fn(() => '<svg>mock-icon</svg>'),
+}))
+
+// Gate the manifest POST on the deployStudio grant; default to granted so the
+// existing registration tests exercise the POST path.
+vi.mock('../canDeployStudio', () => ({
+  fetchCanDeployStudio: vi.fn(() => Promise.resolve(true)),
 }))
 
 const mockTheme: RootTheme = buildTheme()
@@ -29,6 +36,7 @@ describe('registerStudioManifest', () => {
     projectId: 'app-project',
     urlType: 'internal',
     appHost: 'test-studio',
+    // @ts-expect-error -- pre-existing, fix later
     apiHost: 'https://api.sanity.io',
   }
 
@@ -125,7 +133,7 @@ describe('registerStudioManifest', () => {
 
       expect(mockRequest).toHaveBeenCalledWith({
         method: 'POST',
-        uri: '/projects/app-project/user-applications/app-123/config/live-manifest',
+        url: '/projects/app-project/user-applications/app-123/config/live-manifest',
         body: {
           value: expect.objectContaining({
             workspaces: expect.any(Array),
@@ -233,6 +241,15 @@ describe('registerStudioManifest', () => {
       expect(mockRequest).not.toHaveBeenCalled()
     })
 
+    it('should skip the POST when the user lacks the deployStudio grant', async () => {
+      vi.mocked(fetchCanDeployStudio).mockResolvedValueOnce(false)
+      const workspace = createMockWorkspace()
+
+      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
+
+      expect(mockRequest).not.toHaveBeenCalled()
+    })
+
     it('should filter out workspaces without schemaDescriptorId', async () => {
       const validWorkspace = createMockWorkspace({
         name: 'valid',
@@ -259,6 +276,7 @@ describe('registerStudioManifest', () => {
     it('should handle workspace with no sources', async () => {
       const workspace = createMockWorkspace()
       // Override to have empty sources
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       workspace.__internal.sources = []
 
       await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
@@ -300,6 +318,35 @@ describe('registerStudioManifest', () => {
 
       const callArgs = mockRequest.mock.calls[0][0]
       expect(callArgs.body.value.workspaces[0].subtitle).toBeUndefined()
+    })
+  })
+
+  describe('abort signal', () => {
+    it('should forward the abort signal to the request', async () => {
+      const controller = new AbortController()
+
+      await registerStudioManifest(
+        mockUserApplication,
+        [createMockWorkspace()],
+        mockTheme,
+        controller.signal,
+      )
+
+      expect(mockRequest).toHaveBeenCalledWith(expect.objectContaining({signal: controller.signal}))
+    })
+
+    it('should skip the POST when the signal is already aborted', async () => {
+      const controller = new AbortController()
+      controller.abort()
+
+      await registerStudioManifest(
+        mockUserApplication,
+        [createMockWorkspace()],
+        mockTheme,
+        controller.signal,
+      )
+
+      expect(mockRequest).not.toHaveBeenCalled()
     })
   })
 })

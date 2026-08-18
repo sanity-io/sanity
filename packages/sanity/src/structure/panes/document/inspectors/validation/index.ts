@@ -1,4 +1,6 @@
-import {CheckmarkCircleIcon, ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {useMemo} from 'react'
 import {
   type DocumentInspector,
@@ -8,36 +10,33 @@ import {
   isGoingToUnpublish,
   isValidationError,
   isValidationWarning,
-  usePerspective,
+  mergeParseErrors,
+  useParseErrors,
   useTranslation,
-  useValidationStatus,
 } from 'sanity'
 
 import {VALIDATION_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
 import {ValidationInspector} from './ValidationInspector'
 
-function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
-  const {documentType} = props
+function useMenuItem(_props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {t} = useTranslation('validation')
-  const {selectedReleaseId} = usePerspective()
-  const {value} = useDocumentPane()
+  // Read the same validation the inspector panel uses (from the document pane),
+  // rather than fetching it directly from the live document. This keeps the
+  // status-bar badge and the panel in sync — e.g. both are empty while viewing
+  // a historical revision, where validation is suppressed. Reading it directly
+  // here would leave a stale red badge that opens an empty panel.
+  const {validation: validationMarkers, value} = useDocumentPane()
+  const parseErrors = useParseErrors()
 
-  const {validation: validationMarkers} = useValidationStatus(
-    value._id,
-    documentType,
-    !selectedReleaseId,
-  )
-
-  const validation: FormNodeValidation[] = useMemo(
-    () =>
-      validationMarkers.map((item) => ({
-        level: item.level,
-        message: item.message,
-        path: item.path,
-      })),
-    [validationMarkers],
-  )
+  const validation: FormNodeValidation[] = useMemo(() => {
+    const merged = mergeParseErrors(validationMarkers, parseErrors)
+    return merged.map((item) => ({
+      level: item.level,
+      message: item.message,
+      path: item.path,
+    }))
+  }, [validationMarkers, parseErrors])
 
   const hasErrors = validation.some(isValidationError)
   const hasWarnings = validation.some(isValidationWarning)

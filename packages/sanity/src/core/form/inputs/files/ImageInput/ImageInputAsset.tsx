@@ -3,8 +3,8 @@ import {type AssetSource, type UploadState} from '@sanity/types'
 import {Box} from '@sanity/ui'
 import {type CSSProperties, type FocusEvent, memo, useCallback, useMemo} from 'react'
 
-import {ChangeIndicator} from '../../../../changeIndicators'
-import {type InputOnSelectFileFunctionProps, type InputProps} from '../../../types'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
+import {type InputOnSelectFileFunctionProps, type InputProps} from '../../../types/inputProps'
 import {UploadTargetCard} from '../common/uploadTarget/UploadTargetCard'
 import {UploadWarning} from '../common/UploadWarning'
 import {type BaseImageInputProps, type BaseImageInputValue} from './types'
@@ -75,6 +75,7 @@ function ImageInputAssetComponent(props: {
         inputProps.elementProps.onFocus(event)
       }
     },
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
     [inputProps, elementProps.ref?.current],
   )
 

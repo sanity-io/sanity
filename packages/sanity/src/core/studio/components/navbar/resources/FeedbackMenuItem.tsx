@@ -1,8 +1,9 @@
-import {FeedbackIcon} from '@sanity/icons'
-import {MenuDivider} from '@sanity/ui'
+import {FeedbackIcon} from '@sanity/icons/Feedback'
+import {MenuDivider} from '@sanity/ui/menu'
 
-import {MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {feedbackLocaleNamespace} from '../../../../i18n/localeNamespaces'
 
 interface FeedbackMenuItemProps {
   onClick: () => void
@@ -15,7 +16,7 @@ interface FeedbackMenuItemProps {
  */
 export function FeedbackMenuItem(props: FeedbackMenuItemProps) {
   const {onClick} = props
-  const {t} = useTranslation()
+  const {t} = useTranslation(feedbackLocaleNamespace)
 
   return (
     <>

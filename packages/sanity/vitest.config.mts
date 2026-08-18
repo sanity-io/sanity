@@ -1,13 +1,25 @@
 import {defineConfig} from '@repo/test-config/vitest'
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
+import babel from '@rolldown/plugin-babel'
+import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
+import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
 
+// The vanilla-extract plugin is still required in jsdom: `.css.ts` modules need its transform
+// for file scoping (they throw "Styles were unable to be assigned to a file" without it). Style
+// *injection* is skipped via `disableRuntimeStyles` in `test/setup/environment.ts`, since no
+// jsdom test asserts on styles or vanilla-extract class names.
 export default defineConfig({
   test: {
     environment: 'jsdom',
+    // styled-components turns off its fast CSSOM injection path ("speedy"
+    // mode) whenever NODE_ENV !== 'production' and appends CSS text nodes to
+    // <style> tags instead. jsdom reparses the whole stylesheet on every such
+    // insertion, which slows first mounts of styled-heavy trees down enough to
+    // trip default testing-library timeouts. Force the production injection
+    // path, which is also what the @sanity/styled-components fork always used.
+    env: {SC_DISABLE_SPEEDY: 'false'},
     globalSetup: ['./test/setup/global.ts'],
     setupFiles: ['./test/setup/environment.ts'],
-    exclude: ['./playwright-ct', './src/_internal/cli'],
+    exclude: ['./src/_internal/cli', '**/*.browser.test.*'],
     server: {
       deps: {inline: ['vitest-package-exports']},
     },
@@ -19,8 +31,7 @@ export default defineConfig({
   },
   plugins: [
     vanillaExtractPlugin(),
-    react({
-      babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]},
-    }),
+    ...viteReact(),
+    babel({presets: [reactCompilerPreset({target: '19'})]}),
   ],
 })

@@ -15,7 +15,7 @@ test(`unpublished documents can be deleted`, async ({page, createDraftDocument})
 
   await page.getByTestId('action-menu-button').click()
   await page.getByTestId('action-Delete').click()
-  await page.getByRole('button', {name: 'Delete all versions'}).click()
+  await page.getByTestId('confirm-button').click()
 
   await expect(page.getByText('The document was successfully deleted')).toBeVisible()
 })
@@ -35,7 +35,7 @@ test(`published documents can be deleted`, async ({page, createDraftDocument}) =
 
   await page.getByTestId('action-menu-button').click()
   await page.getByTestId('action-Delete').click()
-  await page.getByRole('button', {name: 'Delete all versions'}).click()
+  await page.getByTestId('confirm-button').click()
 
   await expect(page.getByText('The document was successfully deleted')).toBeVisible()
 })
@@ -65,13 +65,17 @@ test(`deleted document shows the right name from last revision`, async ({
   // Delete the document
   await page.getByTestId('action-menu-button').click()
   await page.getByTestId('action-Delete').click()
-  await page.getByRole('button', {name: 'Delete all versions'}).click()
+  await page.getByTestId('confirm-button').click()
 
   // Wait for deletion to complete
   await expect(page.getByText('The document was successfully deleted')).toBeVisible()
 
   // Navigate back to the original document URL once it's deleted since it navigates back to the initial structure
   await page.goto(documentUrl)
+
+  // `page.goto` back to the deleted document remounts the form view; the
+  // assertion below would race that remount.
+  await page.locator('[data-testid="form-view"]').waitFor({state: 'visible', timeout: 30_000})
 
   // Verify that the form still shows the correct name from the last revision
   // The form should display the last revision document content

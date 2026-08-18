@@ -5,7 +5,7 @@ import {
   rem,
   type ResponsiveWidthStyleProps,
 } from '@sanity/ui'
-import {forwardRef, type ReactNode, type Ref} from 'react'
+import {type ReactNode, type Ref, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
 
 // This is a workaround to make sure that the Container gets the correct width when used inside a popover.
@@ -13,6 +13,7 @@ import {styled} from 'styled-components'
 // calculates its width based on the content width.
 const StyledContainer = styled(Container)<ResponsiveWidthStyleProps>((props) => {
   const {theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {container, media} = theme.sanity
 
   return _responsive(media, props.$width, (val) => ({
@@ -27,11 +28,8 @@ interface PopoverContainerProps extends ContainerProps {
   children: ReactNode
 }
 
-export const PopoverContainer = forwardRef(function PopoverContainer(
-  props: PopoverContainerProps,
-  ref: Ref<HTMLDivElement>,
-) {
-  const {width = [], ...restProps} = props
+export function PopoverContainer(props: PopoverContainerProps & RefAttributes<HTMLDivElement>) {
+  const {ref, width = [], ...restProps} = props
 
   return (
     <StyledContainer
@@ -41,4 +39,4 @@ export const PopoverContainer = forwardRef(function PopoverContainer(
       ref={ref}
     />
   )
-})
+}

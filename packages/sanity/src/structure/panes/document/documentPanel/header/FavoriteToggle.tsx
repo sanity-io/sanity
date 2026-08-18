@@ -1,4 +1,5 @@
-import {StarFilledIcon, StarIcon} from '@sanity/icons'
+import {StarIcon} from '@sanity/icons/Star'
+import {StarFilledIcon} from '@sanity/icons/StarFilled'
 import {Text} from '@sanity/ui'
 import {type ComponentType} from 'react'
 import {useManageFavorite, type UseManageFavoriteProps, useTranslation} from 'sanity'

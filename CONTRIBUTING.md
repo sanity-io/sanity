@@ -4,9 +4,11 @@ Want to file an issue? [Jump to _How to file an issue_ ⏬](#how-to-file-an-issu
 
 Contributions are always welcome, no matter how large or small.
 
+> **For AI Agents:** See [AGENTS.md](./AGENTS.md) for agent-specific instructions, quick-reference commands, PR labeling (`🤖 bot`), and Cursor Cloud gotchas.
+
 ## Getting started
 
-Before contributing, please read our [code of conduct](https://github.com/sanity-io/sanity/blob/current/CODE_OF_CONDUCT.md).
+Before contributing, please read our [code of conduct](CODE_OF_CONDUCT.md).
 
 Then make sure you have _Node.js version 18 or newer_. We currently use [pnpm](https://pnpm.io/installation) as our package manager, so make sure you have that installed as well.
 

@@ -1,15 +1,13 @@
 import {
-  type ForwardedRef,
-  forwardRef,
   type ReactNode,
   useCallback,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 
-import {resizeObserver} from '../../util/resizeObserver'
 import {
   DEBUG,
   INTERSECTION_ELEMENT_PADDING,
@@ -44,11 +42,11 @@ interface RegionsWithIntersectionsProps {
 const toPx = (num: number) => `${num}px`
 const negate = (num: number) => 0 - num
 
-export const RegionsWithIntersections = forwardRef(function RegionsWithIntersections(
-  props: RegionsWithIntersectionsProps,
-  ref: ForwardedRef<HTMLDivElement>,
+export function RegionsWithIntersections(
+  props: RegionsWithIntersectionsProps & RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref,
     regions,
     render,
     children,
@@ -94,9 +92,16 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
 
     setOverlayWidth(overlayRef.current.offsetWidth)
 
-    return resizeObserver.observe(overlayRef.current, (event) => {
-      setOverlayWidth(event.contentRect.width)
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0]
+      if (entry) {
+        setOverlayWidth(entry.contentRect.width)
+      }
     })
+
+    observer.observe(overlayRef.current)
+
+    return () => observer.disconnect()
   }, [])
 
   const top = intersections['::top']
@@ -187,4 +192,4 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
       <BottomRegionWrapper $debug={DEBUG} id="::bottom" io={io} onIntersection={onIntersection} />
     </RootWrapper>
   )
-})
+}

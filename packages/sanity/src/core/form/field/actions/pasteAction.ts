@@ -1,9 +1,9 @@
-import {ClipboardIcon} from '@sanity/icons'
+import {ClipboardIcon} from '@sanity/icons/Clipboard'
 import {useCallback} from 'react'
 
 import {defineDocumentFieldAction} from '../../../config/document/fieldActions/define'
-import {useTranslation} from '../../../i18n'
-import {useCopyPaste} from '../../../studio'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useCopyPaste} from '../../../studio/copyPaste/CopyPasteProvider'
 import {useGetFormValue} from '../../contexts/GetFormValue'
 import {type FormDocumentValue} from '../../types/formDocumentValue'
 import {defineActionItem} from './define'

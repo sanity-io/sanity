@@ -160,6 +160,7 @@ export type ObserveDocumentTypeFromIdFn = (
   id: string,
   apiConfig?: ApiConfig,
   perspective?: StackablePerspective[],
+  variant?: string,
 ) => Observable<string | undefined>
 
 /**
@@ -171,6 +172,7 @@ export interface ObservePathsFn {
     paths: (string | PreviewPath)[],
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
   ): Observable<PreviewValue | SanityDocumentLike | Reference | string | null>
 }
 

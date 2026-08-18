@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {rem, type Theme} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ComponentType} from 'react'
@@ -9,6 +7,7 @@ import {focusRingBorderStyle, focusRingStyle} from './helpers'
 
 export function withFocusRing<Props>(component: ComponentType<Props>) {
   return styled(component)<Props & {$border?: boolean; $radius?: number}>(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (props: {theme: Theme; $border?: boolean; $radius?: number}) => {
       const {$border, $radius} = props
       const {card, color, radius} = getTheme_v2(props.theme)

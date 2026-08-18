@@ -1,5 +1,5 @@
-import {Box} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 const INDICATOR_LEFT_OFFSET = 20
 const INDICATOR_WIDTH = 1
@@ -26,19 +26,21 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
       $inRange &&
       !$last &&
       css`
-      &:after {
-        content: '';
-        display: block;
-        position: absolute;
-        left: var(--indicator-left);
-        bottom: -var(--indicator-bottom);
-        width: var(--indicator-width);
-        height: ${
-          $isDefaultPerspective ? 'calc(var(--indicator-bottom) + 12px)' : 'var(--indicator-bottom)'
-        };
-        background-color: var(--card-border-color);
-      }
-    `
+        &:after {
+          content: '';
+          display: block;
+          position: absolute;
+          left: var(--indicator-left);
+          bottom: -var(--indicator-bottom);
+          width: var(--indicator-width);
+          height: ${
+            $isDefaultPerspective
+              ? 'calc(var(--indicator-bottom) + 12px)'
+              : 'var(--indicator-bottom)'
+          };
+          background-color: var(--card-border-color);
+        }
+      `
     }
 
     ${
@@ -73,30 +75,30 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
     ${
       $first &&
       css`
-      > [data-ui='MenuItem']:after {
-        margin-top: -3px;
-        border-top-left-radius: ${INDICATOR_WIDTH}px;
-        border-top-right-radius: ${INDICATOR_WIDTH}px;
-      }
-      > [data-ui='MenuItem']:before {
-        display: none;
-      }
-    `
+        > [data-ui='MenuItem']:after {
+          margin-top: -3px;
+          border-top-left-radius: ${INDICATOR_WIDTH}px;
+          border-top-right-radius: ${INDICATOR_WIDTH}px;
+        }
+        > [data-ui='MenuItem']:before {
+          display: none;
+        }
+      `
     }
 
     ${
       $last &&
       css`
-      > [data-ui='MenuItem']:before {
-        // dot diameter (5px) - 1.6px stroke divided by 2
-        padding-bottom: 1.7px;
-        border-bottom-left-radius: ${INDICATOR_WIDTH}px;
-        border-bottom-right-radius: ${INDICATOR_WIDTH}px;
-      }
-      > [data-ui='MenuItem']:after {
-        display: none;
-      }
-    `
+        > [data-ui='MenuItem']:before {
+          // dot diameter (5px) - 1.6px stroke divided by 2
+          padding-bottom: 1.7px;
+          border-bottom-left-radius: ${INDICATOR_WIDTH}px;
+          border-bottom-right-radius: ${INDICATOR_WIDTH}px;
+        }
+        > [data-ui='MenuItem']:after {
+          display: none;
+        }
+      `
     }
   `,
 )
@@ -110,17 +112,17 @@ export const GlobalPerspectiveMenuLabelIndicator = styled(Box)<{$withinRange: bo
     ${
       $withinRange &&
       css`
-      &:before {
-        content: '';
-        display: block;
-        position: absolute;
-        left: ${INDICATOR_LEFT_OFFSET}px;
-        top: -8px;
-        bottom: -${INDICATOR_BOTTOM_OFFSET}px;
-        width: ${INDICATOR_WIDTH}px;
-        background-color: var(${INDICATOR_COLOR_VAR_NAME});
-      }
-    `
+        &:before {
+          content: '';
+          display: block;
+          position: absolute;
+          left: ${INDICATOR_LEFT_OFFSET}px;
+          top: -8px;
+          bottom: -${INDICATOR_BOTTOM_OFFSET}px;
+          width: ${INDICATOR_WIDTH}px;
+          background-color: var(${INDICATOR_COLOR_VAR_NAME});
+        }
+      `
     }
   `,
 )

@@ -1,16 +1,19 @@
 import {diffInput, wrap} from '@sanity/diff'
-import {ArrowLeftIcon, ArrowRightIcon, CloseIcon} from '@sanity/icons'
-import {Box, Card, Flex, Skeleton, Spinner, Text, useLayer} from '@sanity/ui'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
+import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
+import {CloseIcon} from '@sanity/icons/Close'
+import {Card, Flex, Skeleton, Spinner, Text, useLayer} from '@sanity/ui'
 import {fromString} from '@sanity/util/paths'
 import {type RefObject, type ComponentType, Fragment} from 'react'
 import {DocumentChangeContext} from 'sanity/_singletons'
+import {Box, type Space} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
-import {emptyValuesByType, type DiffComponent, type DiffComponentOptions} from '../../field'
-import {useTranslation} from '../../i18n'
+import {type DiffComponent, type DiffComponentOptions} from '../../field/types'
+import {useVersionRelease} from '../../hooks/useVersionRelease'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type DivergenceNavigator, type ReachableDivergence} from '../divergenceNavigator'
 import {useDivergenceController} from '../hooks/useDivergenceController'
-import {useVersionRelease} from '../hooks/useVersionRelease'
 import {DivergenceOverlay} from './DivergenceOverlay'
 
 /**
@@ -56,9 +59,8 @@ export const DivergenceDetail: ComponentType<DivergenceDetailProps> = ({
   const diff = isLoading
     ? undefined
     : diffInput<any>(
-        wrap(upstreamBase?.value?.value ?? emptyValuesByType[divergence.schemaType.jsonType], {}),
-        wrap(upstreamHead?.value?.value ?? emptyValuesByType[divergence.schemaType.jsonType], {}),
-        {},
+        wrap(upstreamBase?.value?.value ?? null, {}),
+        wrap(upstreamHead?.value?.value ?? null, {}),
       )
 
   const DiffComponent = normalizeDiffComponent(divergence.diffComponent)
@@ -129,14 +131,15 @@ export const DivergenceDetail: ComponentType<DivergenceDetailProps> = ({
               />
             ) : (
               <>
-                {diff && DiffComponent && (
-                  // eslint-disable-next-line react-hooks/static-components
-                  <DiffComponent diff={diff} schemaType={divergence.schemaType} />
-                )}
+                {diff &&
+                  DiffComponent && (
+                    // oxlint-disable-next-line react/react-compiler
+                    <DiffComponent diff={diff} schemaType={divergence.schemaType} />
+                  )}
               </>
             )}
           </Card>
-          <Box paddingX={sectionPadding} paddingY={sectionPadding - 1}>
+          <Box paddingX={sectionPadding} paddingY={(sectionPadding - 1) as Space}>
             <Flex flex={1} gap={2} justify="space-between">
               <Flex flex={1} gap={3} align="center">
                 <Flex gap={2} align="center">

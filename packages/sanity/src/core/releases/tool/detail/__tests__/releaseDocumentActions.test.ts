@@ -5,7 +5,7 @@ import {
   type DocumentFilterType,
   documentMatchesFilter,
 } from '../releaseDocumentActions'
-import {type DocumentInRelease} from '../useBundleDocuments'
+import {type DocumentInRelease} from '../types'
 
 function createMockDocument(
   overrides: Partial<{

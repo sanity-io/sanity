@@ -1,18 +1,17 @@
-import {ClockIcon, CloseIcon} from '@sanity/icons'
+import {ClockIcon} from '@sanity/icons/Clock'
+import {CloseIcon} from '@sanity/icons/Close'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
-  Box,
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
   Flex,
   Inline,
   rem,
-  type ResponsiveMarginProps,
-  type ResponsivePaddingProps,
   Text,
 } from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {styled} from 'styled-components'
+import {Box, type MarginProps, type PaddingProps} from 'ui5'
 
 import {RecentSearchClicked} from '../../../__telemetry__/search.telemetry'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -20,7 +19,7 @@ import {type RecentSearch, useRecentSearchesStore} from '../../../datastores/rec
 import {DocumentTypesPill} from '../../common/DocumentTypesPill'
 import {FilterPill} from '../../common/FilterPill'
 
-export interface RecentSearchesProps extends ResponsiveMarginProps, ResponsivePaddingProps {
+export interface RecentSearchesProps extends MarginProps, PaddingProps {
   index: number
   maxVisibleTypePillChars?: number
   value: RecentSearch
@@ -29,7 +28,7 @@ export interface RecentSearchesProps extends ResponsiveMarginProps, ResponsivePa
 const DEFAULT_COMBINED_TYPE_COUNT = 40
 
 const RecentSearchItemButton = styled(Button)`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
+  border-radius: ${({theme}) => rem(theme.sanity.radius[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   cursor: default;
   width: 100%;
 `
@@ -107,7 +106,6 @@ export function RecentSearchItem({
             <Text muted size={1}>
               <ClockIcon />
             </Text>
-            {/* eslint-disable-next-line i18next/no-literal-string */}
             <Text>&#8203;</Text>
           </Inline>
           <Flex align="stretch" flex={1} gap={2} justify="flex-start" marginLeft={3} wrap="wrap">

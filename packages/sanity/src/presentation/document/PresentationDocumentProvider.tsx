@@ -1,13 +1,6 @@
-import {
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffectEvent,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from 'react'
+import {type ReactNode, useCallback, useContext, useLayoutEffect, useMemo, useState} from 'react'
 import {PresentationDocumentContext} from 'sanity/_singletons'
+import {useEffectEvent} from 'use-effect-event'
 
 import {type PresentationPluginOptions} from '../types'
 import {type PresentationDocumentContextValue} from './types'
@@ -24,7 +17,6 @@ export function PresentationDocumentProvider(props: {
   const [optionsArray, setOptionsArray] = useState<PresentationPluginOptions[]>(() => [])
 
   const register = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-shadow
     (options: PresentationPluginOptions) => {
       if (parentRegister) {
         return parentRegister(options)
@@ -47,7 +39,6 @@ export function PresentationDocumentProvider(props: {
     [optionsArray, parent, register],
   )
 
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const registerEffectEvent = useEffectEvent((options: PresentationPluginOptions) =>
     register(options),
   )

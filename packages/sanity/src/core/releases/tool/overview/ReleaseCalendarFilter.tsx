@@ -1,9 +1,9 @@
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons/Close'
 import {format} from 'date-fns/format'
 import {AnimatePresence, motion} from 'motion/react'
 import {useMemo, useState} from 'react'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {
   CalendarDay,
   type CalendarDayProps,

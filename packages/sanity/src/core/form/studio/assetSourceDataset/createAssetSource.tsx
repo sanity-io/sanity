@@ -1,5 +1,6 @@
 import {type SanityClient} from '@sanity/client'
-import {DocumentsIcon, ImageIcon} from '@sanity/icons'
+import {DocumentsIcon} from '@sanity/icons/Documents'
+import {ImageIcon} from '@sanity/icons/Image'
 import {type AssetSource} from '@sanity/types'
 
 import {DatasetAssetSource} from './shared/DatasetAssetSource'
@@ -22,6 +23,7 @@ export interface CreateDatasetAssetSourceProps {
 export function createDatasetImageAssetSource(props: CreateDatasetAssetSourceProps): AssetSource {
   return {
     name: sourceName,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     title: props.title,
     // i18nKey: 'asset-sources.dataset.image.title',
     component: DatasetAssetSource,
@@ -39,6 +41,7 @@ export function createDatasetImageAssetSource(props: CreateDatasetAssetSourcePro
 export function createDatasetFileAssetSource(props: CreateDatasetAssetSourceProps): AssetSource {
   return {
     name: sourceName,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     title: props.title,
     // i18nKey: 'asset-sources.dataset.file.title',
     component: DatasetAssetSource,

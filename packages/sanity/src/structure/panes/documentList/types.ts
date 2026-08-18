@@ -8,7 +8,18 @@ export interface DocumentListPaneItem extends SanityDocumentLike {
 
 export type SortOrder = {
   by: SearchSort[]
-  extendedProjection?: string
+}
+
+/**
+ * Serializable subset of `SearchSort`.
+ */
+export type StaticSearchSort = Pick<SearchSort, 'field' | 'direction' | 'mapWith' | 'nulls'>
+
+/**
+ * Serializable subset of `SortOrder`.
+ */
+export type StaticSortOrder = {
+  by: StaticSearchSort[]
 }
 
 export type LoadingVariant = 'spinner' | 'initial' | 'subtle'

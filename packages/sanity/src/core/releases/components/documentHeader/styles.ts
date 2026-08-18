@@ -1,5 +1,5 @@
 import {
-  Button, // eslint-disable-line no-restricted-imports
+  Button, // oxlint-disable-line no-restricted-imports
 } from '@sanity/ui'
 import {styled} from 'styled-components'
 

@@ -2,9 +2,9 @@ import {type StackablePerspective} from '@sanity/client'
 import {isCrossDatasetReference, isReference} from '@sanity/types'
 import uniq from 'lodash-es/uniq.js'
 import {type Observable, of as observableOf} from 'rxjs'
-import {switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, switchMap} from 'rxjs/operators'
 
-import {isRecord} from '../util'
+import {isRecord} from '../util/isRecord'
 import {type ApiConfig, type FieldName, type Previewable, type PreviewPath} from './types'
 import {props} from './utils/props'
 
@@ -31,6 +31,7 @@ type ObserveFieldsFn = (
   fields: FieldName[],
   apiConfig?: ApiConfig,
   perspective?: StackablePerspective[],
+  variant?: string,
 ) => Observable<Record<string, unknown> | null>
 
 function observePaths(
@@ -39,6 +40,7 @@ function observePaths(
   observeFields: ObserveFieldsFn,
   apiConfig?: ApiConfig,
   perspective?: StackablePerspective[],
+  variant?: string,
 ): Observable<Record<string, unknown> | null> {
   if (!value || typeof value !== 'object') {
     // Reached a leaf. Return as is
@@ -70,7 +72,8 @@ function observePaths(
       ? {projectId: value._projectId, dataset: value._dataset}
       : apiConfig
 
-    return observeFields(id, nextHeads, refApiConfig, perspective).pipe(
+    return observeFields(id, nextHeads, refApiConfig, perspective, variant).pipe(
+      distinctUntilChanged((prev, curr) => prev?._rev === curr?._rev),
       switchMap((snapshot) => {
         if (snapshot === null) {
           return observableOf(null)
@@ -86,6 +89,7 @@ function observePaths(
           observeFields,
           refApiConfig,
           perspective,
+          variant,
         )
       }),
     )
@@ -104,9 +108,19 @@ function observePaths(
   const next = Object.keys(leads).reduce((res: Record<string, unknown>, head) => {
     const tails = leads[head].filter((tail) => tail.length > 0)
     if (tails.length === 0) {
-      res[head] = isRecord(value) ? (value as Record<string, unknown>)[head] : undefined
+      res[head] =
+        isRecord(value) || Array.isArray(value)
+          ? (value as Record<string, unknown>)[head]
+          : undefined
     } else {
-      res[head] = observePaths((value as any)[head], tails, observeFields, apiConfig, perspective)
+      res[head] = observePaths(
+        (value as any)[head],
+        tails,
+        observeFields,
+        apiConfig,
+        perspective,
+        variant,
+      )
     }
     return res
   }, currentValue)
@@ -137,7 +151,15 @@ export function createPathObserver(options: {observeFields: ObserveFieldsFn}) {
     paths: (FieldName | PreviewPath)[],
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
   ): Observable<Record<string, unknown> | null> => {
-    return observePaths(value, normalizePaths(paths), observeFields, apiConfig, perspective)
+    return observePaths(
+      value,
+      normalizePaths(paths),
+      observeFields,
+      apiConfig,
+      perspective,
+      variant,
+    )
   }
 }

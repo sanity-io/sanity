@@ -1,7 +1,8 @@
 import {type SearchParam} from 'sanity/router'
 
-import {getTypeNamesFromFilter, type PartialDocumentList} from './DocumentList'
+import {type PartialDocumentList} from './DocumentList'
 import {type StructureNode} from './StructureNodes'
+import {getTypeNamesFromFilter} from './util/getTypeNamesFromFilter'
 
 /**
  * Intent parameters (json)

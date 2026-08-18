@@ -1,10 +1,12 @@
-import {SearchIcon, SpinnerIcon} from '@sanity/icons'
-import {Box, TextInput} from '@sanity/ui'
+import {SearchIcon} from '@sanity/icons/Search'
+import {SpinnerIcon} from '@sanity/icons/Spinner'
+import {Box, Stack, TextInput} from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
+  EMPTY_ARRAY,
   type GeneralPreviewLayoutKey,
   useActiveReleases,
   useClient,
@@ -19,12 +21,19 @@ import {keyframes, styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
-import {EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
+import {DEFAULT_ORDERING, EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
+import {
+  DocumentListPaneSearchOrdering,
+  getSearchOrderingId,
+  isSortOrderingMenuItem,
+  RELEVANCE_ORDERING_ID,
+} from './DocumentListPaneSearchOrdering'
 import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
-import {useShallowUnique} from './PaneContainer'
+import {isOrderByIdsParam, reorderItemsByIdsParam} from './orderByIdsParam'
 import {type LoadingVariant, type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
+import {useShallowUnique} from './useShallowUnique'
 
 /**
  * @internal
@@ -79,7 +88,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
   const releases = useActiveReleases()
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -97,13 +106,60 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchInputValue, setSearchInputValue] = useState<string>('')
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
+  // The ordering applied while a search term is present. Defaults to relevance
+  // ranking, and resets back to relevance whenever the search is cleared.
+  const [searchOrderingId, setSearchOrderingId] = useState<string>(RELEVANCE_ORDERING_ID)
+
+  // The query the list actually searches on. Whitespace-only input is treated as
+  // empty, so the search-scoped UI must key off the trimmed value too.
+  const trimmedSearchQuery = searchQuery.trim()
+
+  const orderByIdsParam = isOrderByIdsParam(sortOrderRaw)
 
   const sortWithOrderingFn =
     typeName && sortOrderRaw
       ? applyOrderingFunctions(sortOrderRaw, schema.get(typeName) as any)
       : sortOrderRaw
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const sortOrder = useUnique(sortWithOrderingFn)
+
+  // The sentinel ordering has no server-side meaning, so the fetch falls back to
+  // the default ordering and the items are reordered client-side afterwards.
+  const fetchSortOrder = orderByIdsParam ? DEFAULT_ORDERING : sortOrder
+
+  // The list's configured orderings, surfaced as choices in the search sort
+  // control (relevance plus these). The sentinel ordering is excluded; it isn't
+  // a real sort choice the editor can apply while searching.
+  const searchOrderings = useMemo(
+    () =>
+      (pane.menuItems || []).filter(
+        (item) => isSortOrderingMenuItem(item) && !isOrderByIdsParam({by: item.params!.by}),
+      ),
+    [pane.menuItems],
+  )
+
+  // While searching, relevance ranking is the default. If the editor picks one
+  // of the configured orderings instead, apply that order and disable scoring.
+  const useRelevance = searchOrderingId === RELEVANCE_ORDERING_ID
+  const selectedSearchOrdering = useRelevance
+    ? undefined
+    : searchOrderings.find((ordering) => getSearchOrderingId(ordering) === searchOrderingId)
+  const searchSchemaType = typeName ? schema.get(typeName) : undefined
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  const effectiveSortOrder = useUnique(
+    selectedSearchOrdering?.params?.by
+      ? // Run the chosen ordering through `applyOrderingFunctions` so it picks up
+        // the same field mappers (e.g. `lower`, `dateTime`) the header sort menu
+        // uses — otherwise the same ordering would sort differently here.
+        // `applyOrderingFunctions` requires a concrete schema type, so only apply
+        // it when the type is statically resolvable; otherwise fall back to the
+        // raw ordering rather than passing `undefined`.
+        searchSchemaType
+        ? applyOrderingFunctions({by: selectedSearchOrdering.params.by}, searchSchemaType as any)
+        : {by: selectedSearchOrdering.params.by}
+      : fetchSortOrder,
+  )
 
   const client = useClient({
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -127,10 +183,18 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     client,
     filter,
     perspective: perspectiveStack,
+    variant: selectedVariantName,
     params,
-    searchQuery: searchQuery?.trim(),
-    sortOrder,
+    searchQuery: trimmedSearchQuery,
+    sortOrder: effectiveSortOrder,
+    searchSortByRelevance: useRelevance,
   })
+
+  const orderedItems = useMemo(() => {
+    if (!orderByIdsParam || trimmedSearchQuery) return items
+    const idsParam = Array.isArray(params.ids) ? (params.ids as string[]) : EMPTY_ARRAY
+    return reorderItemsByIdsParam(items, idsParam)
+  }, [orderByIdsParam, trimmedSearchQuery, items, params.ids])
 
   const isLoading = documentListIsLoading || releases.loading
 
@@ -163,6 +227,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   useEffect(() => {
     if (!enableSearchSpinner && !isLoading) {
+      // oxlint-disable-next-line react/react-compiler
       setEnableSearchSpinner(paneKey)
     }
   }, [enableSearchSpinner, isLoading, paneKey])
@@ -170,9 +235,21 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   useEffect(() => {
     // Clear search field and disable search spinner
     // when switching between panes (i.e. when paneKey changes).
+    // oxlint-disable-next-line react/react-compiler
     handleClearSearch()
     setEnableSearchSpinner()
   }, [paneKey, handleClearSearch])
+
+  useEffect(() => {
+    // Relevance ranking is search-scoped: whenever the term is cleared (via the
+    // clear button, Escape, emptying the field, or switching panes), reset the
+    // applied ordering back to relevance.
+    if (!trimmedSearchQuery) {
+      // TODO: Refactor search ordering reset to avoid effect state updates.
+      // oxlint-disable-next-line react/react-compiler
+      setSearchOrderingId(RELEVANCE_ORDERING_ID)
+    }
+  }, [trimmedSearchQuery])
 
   const loadingVariant: LoadingVariant = useMemo(() => {
     if (connected && isLoading && enableSearchSpinner === paneKey) {
@@ -200,28 +277,37 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   return (
     <>
       <Box paddingX={3} paddingBottom={3}>
-        <TextInput
-          aria-label={t('panes.document-list-pane.search-input.aria-label')}
-          autoComplete="off"
-          border={false}
-          clearButton={Boolean(searchQuery)}
-          fontSize={[2, 2, 1]}
-          icon={textInputIcon}
-          iconRight={
-            !connected || (loadingVariant === 'subtle' && !searchInputValue)
-              ? DelayedSubtleSpinnerIcon
-              : null
-          }
-          onChange={handleQueryChange}
-          onClear={handleClearSearch}
-          onKeyDown={handleSearchKeyDown}
-          padding={2}
-          placeholder={t('panes.document-list-pane.search-input.placeholder')}
-          radius={2}
-          ref={setSearchInputElement}
-          spellCheck={false}
-          value={searchInputValue}
-        />
+        <Stack gap={3}>
+          <TextInput
+            aria-label={t('panes.document-list-pane.search-input.aria-label')}
+            autoComplete="off"
+            border={false}
+            clearButton={Boolean(searchQuery)}
+            fontSize={[2, 2, 1]}
+            icon={textInputIcon}
+            iconRight={
+              !connected || (loadingVariant === 'subtle' && !searchInputValue)
+                ? DelayedSubtleSpinnerIcon
+                : null
+            }
+            onChange={handleQueryChange}
+            onClear={handleClearSearch}
+            onKeyDown={handleSearchKeyDown}
+            padding={2}
+            placeholder={t('panes.document-list-pane.search-input.placeholder')}
+            radius={2}
+            ref={setSearchInputElement}
+            spellCheck={false}
+            value={searchInputValue}
+          />
+          {trimmedSearchQuery && (
+            <DocumentListPaneSearchOrdering
+              orderings={searchOrderings}
+              value={searchOrderingId}
+              onChange={setSearchOrderingId}
+            />
+          )}
+        </Stack>
       </Box>
       <DocumentListPaneContent
         key={paneKey}
@@ -238,7 +324,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         retryCount={retryCount}
         isRetrying={isRetrying}
         isConnected={connected}
-        items={items}
+        items={orderedItems}
         layout={layout}
         muted={loadingVariant === 'subtle'}
         loadingVariant={loadingVariant}
@@ -247,7 +333,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         paneTitle={title}
         searchInputElement={searchInputElement}
         showIcons={showIcons}
-        sortOrder={sortOrder}
+        sortOrder={orderByIdsParam ? DEFAULT_ORDERING : sortOrder}
       />
     </>
   )

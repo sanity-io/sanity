@@ -139,7 +139,7 @@ function blockToSymbolizedText(
           returned = textDiff.segments
             .filter((seg) => seg.action !== 'removed')
             .map((seg) => seg.text.replace(symbolRegex, ''))
-            .join(TextSymbols.SEGMENT_START_SYMBOL)
+            .join('')
         }
         if (child.marks) {
           child.marks.forEach((mark) => {
@@ -283,7 +283,8 @@ export function createPortableTextDiff(
   throw new Error('Can not display this diff')
 }
 
-function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] {
+/** @internal Exported for testing */
+export function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] {
   const segments: StringDiffSegment[] = []
   const dmpDiffs = cleanupEfficiency(makeDiff(fromInput, toInput))
 
@@ -348,7 +349,7 @@ function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] 
       }
       return newSegments
     }),
-  )
+  ).filter((seg) => seg.text !== '')
 }
 
 export function getInlineObjects(diff: ObjectDiff): PortableTextObject[] {

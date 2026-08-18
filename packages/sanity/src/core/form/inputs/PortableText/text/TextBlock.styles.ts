@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {hues} from '@sanity/color'
 import {Box, Flex, type Theme} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
@@ -13,6 +11,7 @@ interface TextBlockStyleProps {
   $level: number
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
   const {$level} = props
   const {color, font, radius, space} = getTheme_v2(props.theme)
@@ -123,7 +122,9 @@ export const BlockActionsOuter = styled(Box)`
   position: relative;
 `
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const BlockActionsInner = styled(Flex)(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {fonts, space} = theme.sanity
   const textSize1 = fonts.text.sizes[1]
   const textSize2 = fonts.text.sizes[2]
@@ -155,7 +156,9 @@ export const TextFlex = styled(Flex)<{$level?: number}>`
 `
 
 export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ({theme, $hasChanges}: {theme: Theme; $hasChanges: boolean}) => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {space} = theme.sanity
 
     return css`

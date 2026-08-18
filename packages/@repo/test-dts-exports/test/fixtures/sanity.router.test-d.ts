@@ -72,7 +72,7 @@ describe('sanity/router', () => {
     expectTypeOf<IntentJsonParams>().not.toBeNever()
   })
   test('IntentLink', () => {
-    expectTypeOf<typeof IntentLink>().not.toBeNever()
+    expectTypeOf<typeof IntentLink>().toBeFunction()
   })
   test('IntentLinkProps', () => {
     expectTypeOf<IntentLinkProps>().toBeObject()
@@ -84,7 +84,7 @@ describe('sanity/router', () => {
     expectTypeOf<InternalSearchParam>().not.toBeNever()
   })
   test('Link', () => {
-    expectTypeOf<typeof Link>().not.toBeNever()
+    expectTypeOf<typeof Link>().toBeFunction()
   })
   test('LinkProps', () => {
     expectTypeOf<LinkProps>().toBeObject()
@@ -147,6 +147,8 @@ describe('sanity/router', () => {
     expectTypeOf<RouterState>().not.toBeNever()
   })
   test('RouteScope', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    expectTypeOf<typeof RouteScope>().toBeFunction()
     expectTypeOf<typeof RouteScope>().not.toBeNever()
   })
   test('RouteScopeProps', () => {
@@ -162,7 +164,7 @@ describe('sanity/router', () => {
     expectTypeOf<SearchParam>().not.toBeNever()
   })
   test('StateLink', () => {
-    expectTypeOf<typeof StateLink>().not.toBeNever()
+    expectTypeOf<typeof StateLink>().toBeFunction()
   })
   test('StateLinkProps', () => {
     expectTypeOf<StateLinkProps>().toBeObject()

@@ -1,4 +1,5 @@
-import {Box, Container} from '@sanity/ui'
+import {Container} from '@sanity/ui'
+import {Box} from 'ui5'
 
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'

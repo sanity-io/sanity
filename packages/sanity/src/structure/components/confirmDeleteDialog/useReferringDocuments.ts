@@ -1,6 +1,7 @@
 import {type ClientError, type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
-import {EMPTY, fromEvent, type Observable, of, timer} from 'rxjs'
+import {useObservable} from 'react-rx'
+import {combineLatest, concat, EMPTY, fromEvent, type Observable, of, timer} from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
@@ -11,7 +12,6 @@ import {
 } from 'rxjs/operators'
 import {
   type AvailabilityResponse,
-  createHookFromObservableFactory,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   type DocumentStore,
   getDraftId,
@@ -95,7 +95,7 @@ function getDocumentExistence(
   const draftId = getDraftId(documentId)
   const publishedId = getPublishedId(documentId)
   const requestOptions = {
-    uri: versionedClient.getDataUrl('doc', `${draftId},${publishedId}`),
+    url: versionedClient.getDataUrl('doc', `${draftId},${publishedId}`),
     json: true,
     query: {excludeContent: 'true'},
     tag: 'use-referring-documents.document-existence',
@@ -159,84 +159,155 @@ export function fetchCrossDatasetReferences(
   )
 }
 
-const useInternalReferences = createHookFromObservableFactory(
-  ([documentId, documentStore]: [string, DocumentStore]) => {
-    const referencesClause = '*[references($documentId)][0...100]{_id,_type}'
-    const totalClause = 'count(*[references($documentId)])'
-    const fetchQuery = `{"references":${referencesClause},"totalCount":${totalClause}}`
-    const listenQuery = '*[references($documentId)]'
+/**
+ * @internal
+ */
+export interface ReferringDocumentsOptions {
+  documentId: string
+  versionedClient: SanityClient
+  documentStore: DocumentStore
+}
 
-    return documentStore.listenQuery(
-      {fetch: fetchQuery, listen: listenQuery},
-      {documentId},
-      {tag: 'use-referring-documents', transitions: ['appear', 'disappear'], throttleTime: 5000},
-    ) as Observable<ReferringDocuments['internalReferences']>
-  },
-)
-
-const useCrossDatasetReferences = createHookFromObservableFactory(
-  ([documentId, versionedClient]: [string, SanityClient]) => {
-    // (documentId: string, versionedClient: SanityClient) => {
-    return getVisiblePoll$().pipe(
-      switchMap(() =>
-        fetchCrossDatasetReferences(documentId, {
-          versionedClient,
-        }),
-      ),
-    )
-  },
-)
-
-export function useReferringDocuments(documentId: string): ReferringDocuments {
-  const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-
-  const documentStore = useDocumentStore()
+/**
+ * Returns an observable describing the documents that refer to the given
+ * document, both within the same dataset (internal references) and across
+ * datasets (cross-dataset references). The observable keeps emitting as the
+ * underlying queries poll/listen for changes.
+ *
+ * @internal
+ */
+export function referringDocuments({
+  documentId,
+  versionedClient,
+  documentStore,
+}: ReferringDocumentsOptions): Observable<ReferringDocuments> {
   const publishedId = getPublishedId(documentId)
 
-  const [internalReferences, isInternalReferencesLoading] = useInternalReferences(
-    useMemo(() => [publishedId, documentStore], [documentStore, publishedId]),
+  const internalReferences$ = withLoadingState(fetchInternalReferences(publishedId, documentStore))
+
+  const crossDatasetReferences$ = withLoadingState(
+    getVisiblePoll$().pipe(
+      switchMap(() => fetchCrossDatasetReferences(publishedId, {versionedClient})),
+    ),
   )
 
-  const [crossDatasetReferences, isCrossDatasetReferencesLoading] = useCrossDatasetReferences(
-    useMemo(() => [publishedId, versionedClient], [publishedId, versionedClient]),
+  return combineLatest([internalReferences$, crossDatasetReferences$]).pipe(
+    map(
+      ([
+        [internalReferences, isInternalReferencesLoading],
+        [crossDatasetReferences, isCrossDatasetReferencesLoading],
+      ]): ReferringDocuments => {
+        const projectIds = Array.from(
+          new Set(
+            crossDatasetReferences?.references
+              .map((crossDatasetReference) => crossDatasetReference.projectId)
+              .filter(Boolean),
+          ),
+        ).sort()
+
+        const datasetNames = Array.from(
+          new Set<string>(
+            crossDatasetReferences?.references
+              .map((crossDatasetReference) => crossDatasetReference?.datasetName || '')
+              .filter((datasetName) => Boolean(datasetName) && datasetName !== ''),
+          ),
+        ).sort()
+
+        const hasUnknownDatasetNames = Boolean(
+          crossDatasetReferences?.references.some(
+            (crossDatasetReference) => typeof crossDatasetReference.datasetName !== 'string',
+          ),
+        )
+
+        return {
+          totalCount:
+            (internalReferences?.totalCount || 0) + (crossDatasetReferences?.totalCount || 0),
+          projectIds,
+          datasetNames,
+          hasUnknownDatasetNames,
+          internalReferences,
+          crossDatasetReferences,
+          isLoading: isInternalReferencesLoading || isCrossDatasetReferencesLoading,
+        }
+      },
+    ),
   )
+}
 
-  const projectIds = useMemo(() => {
-    return Array.from(
-      new Set(
-        crossDatasetReferences?.references
-          .map((crossDatasetReference) => crossDatasetReference.projectId)
-          .filter(Boolean),
-      ),
-    ).sort()
-  }, [crossDatasetReferences?.references])
+const INITIAL_STATE: ReferringDocuments = {
+  isLoading: true,
+  totalCount: 0,
+  projectIds: [],
+  datasetNames: [],
+  hasUnknownDatasetNames: false,
+  internalReferences: undefined,
+  crossDatasetReferences: undefined,
+}
 
-  const datasetNames = useMemo(() => {
-    return Array.from(
-      new Set<string>(
-        crossDatasetReferences?.references
-          // .filter((name) => typeof name === 'string')
-          .map((crossDatasetReference) => crossDatasetReference?.datasetName || '')
-          .filter((datasetName) => Boolean(datasetName) && datasetName !== ''),
-      ),
-    ).sort()
-  }, [crossDatasetReferences?.references])
+const EMPTY_READY_STATE: ReferringDocuments = {
+  isLoading: false,
+  totalCount: 0,
+  projectIds: [],
+  datasetNames: [],
+  hasUnknownDatasetNames: false,
+  internalReferences: {totalCount: 0, references: []},
+  crossDatasetReferences: {totalCount: 0, references: []},
+}
 
-  const hasUnknownDatasetNames = useMemo(() => {
-    return Boolean(
-      crossDatasetReferences?.references.some(
-        (crossDatasetReference) => typeof crossDatasetReference.datasetName !== 'string',
-      ),
-    )
-  }, [crossDatasetReferences?.references])
+/**
+ * @internal
+ */
+export interface UseReferringDocumentsOptions {
+  /**
+   * When `false`, skips fetching incoming references and returns an empty ready
+   * state
+   */
+  enabled?: boolean
+}
 
-  return {
-    totalCount: (internalReferences?.totalCount || 0) + (crossDatasetReferences?.totalCount || 0),
-    projectIds,
-    datasetNames,
-    hasUnknownDatasetNames,
-    internalReferences,
-    crossDatasetReferences,
-    isLoading: isInternalReferencesLoading || isCrossDatasetReferencesLoading,
-  }
+export function useReferringDocuments(
+  documentId: string,
+  options?: UseReferringDocumentsOptions,
+): ReferringDocuments {
+  const enabled = options?.enabled ?? true
+  const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const documentStore = useDocumentStore()
+
+  const referringDocuments$ = useMemo(() => {
+    if (!enabled) {
+      return of(EMPTY_READY_STATE)
+    }
+    return referringDocuments({documentId, versionedClient, documentStore})
+  }, [documentId, documentStore, enabled, versionedClient])
+
+  return useObservable(referringDocuments$, enabled ? INITIAL_STATE : EMPTY_READY_STATE)
+}
+
+/**
+ * Fetches the documents within the same dataset that reference the subject
+ * document using the document store's `listenQuery`
+ */
+function fetchInternalReferences(
+  documentId: string,
+  documentStore: DocumentStore,
+): Observable<ReferringDocuments['internalReferences']> {
+  // Documents now self reference themselves, within the _system.group field. We need to exclude them from the references query.
+  const referencesQuery = `*[references($documentId) && _system.group._ref != $documentId]`
+  const referencesClause = `${referencesQuery}[0...100]{_id,_type}`
+  const totalClause = `count(${referencesQuery})`
+  const fetchQuery = `{"references":${referencesClause},"totalCount":${totalClause}}`
+  const listenQuery = referencesQuery
+
+  return documentStore.listenQuery(
+    {fetch: fetchQuery, listen: listenQuery},
+    {documentId},
+    {tag: 'use-referring-documents', transitions: ['appear', 'disappear'], throttleTime: 5000},
+  ) as Observable<ReferringDocuments['internalReferences']>
+}
+
+function withLoadingState<Type>(source: Observable<Type>): Observable<[Type | undefined, boolean]> {
+  return concat(
+    of<[Type | undefined, boolean]>([undefined, true]),
+    source.pipe(map((value): [Type | undefined, boolean] => [value, false])),
+  )
 }

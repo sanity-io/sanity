@@ -1,4 +1,24 @@
-import {type SearchSort} from './types'
+import {ORDERINGS_PROJECTION_KEY, type SearchSort} from './types'
+
+/**
+ * Returns the GROQ expression that addresses the value being sorted
+ * on, after the projection has run.
+ *
+ * Every sort entry is projected into the top-level `orderings`
+ * array by `compileSortExpression`, so the address is always
+ * `orderings[<projectionIndex>]`.
+ *
+ * If a caller passes a `SearchSort` without a `projectionIndex`
+ * (i.e. one that hasn't been threaded through
+ * `compileSortExpression`), this falls back to the literal `field`
+ * so that the produced clause is at least syntactically valid.
+ */
+function getSortTarget(ordering: SearchSort): string {
+  if (ordering.projectionIndex === undefined) {
+    return ordering.field
+  }
+  return `${ORDERINGS_PROJECTION_KEY}[${ordering.projectionIndex}]`
+}
 
 /**
  * Returns a `select(defined(...))` expression to override the default null sorting
@@ -11,7 +31,7 @@ import {type SearchSort} from './types'
  * Only generates a prefix when the user explicitly requests the opposite.
  */
 function getNullSortingPrefix(ordering: SearchSort): string | undefined {
-  const {direction, nulls, field} = ordering
+  const {direction, nulls} = ordering
 
   if (!nulls) return undefined
 
@@ -22,16 +42,19 @@ function getNullSortingPrefix(ordering: SearchSort): string | undefined {
 
   if (!needsOverride) return undefined
 
+  const target = getSortTarget(ordering)
+
   // nulls last: defined values sort first (0), nulls sort last (1)
   // nulls first: defined values sort last (1), nulls sort first (0)
   if (nulls === 'last') {
-    return `select(defined(${field}) => 0, 1)`
+    return `select(defined(${target}) => 0, 1)`
   }
-  return `select(defined(${field}) => 1, 0)`
+  return `select(defined(${target}) => 1, 0)`
 }
 
 function wrapFieldWithFn(ordering: SearchSort): string {
-  return ordering.mapWith ? `${ordering.mapWith}(${ordering.field})` : ordering.field
+  const target = getSortTarget(ordering)
+  return ordering.mapWith ? `${ordering.mapWith}(${target})` : target
 }
 
 export function toOrderClause(orderBy: SearchSort[]): string {

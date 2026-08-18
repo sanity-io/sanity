@@ -1,4 +1,6 @@
-import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Box, Card, type CardProps, Flex} from '@sanity/ui'
 import {type HTMLProps, type ReactNode} from 'react'
 

@@ -1,4 +1,4 @@
-import {defineField} from '@sanity/types'
+import {defineField, type FormNodeValidation} from '@sanity/types'
 import {screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
@@ -76,7 +76,7 @@ describe('Mouse accessibility', () => {
     })
     const input = result.container.querySelector('input[id="booleanTest"]')
     await userEvent.click(input!)
-    expect(onFocus).toBeCalled()
+    expect(onFocus).toHaveBeenCalled()
   })
 
   it('emits onChange when clicked', async () => {
@@ -87,7 +87,7 @@ describe('Mouse accessibility', () => {
 
     const input = result.container.querySelector('input[id="booleanTest"]')
     await userEvent.click(input!)
-    expect(onChange).toBeCalled()
+    expect(onChange).toHaveBeenCalled()
   })
 })
 
@@ -101,7 +101,7 @@ describe('Keyboard accessibility', () => {
     const input = result.container.querySelector('input[id="booleanTest"]')
     await userEvent.tab()
     expect(input).toHaveFocus()
-    expect(onFocus).toBeCalled()
+    expect(onFocus).toHaveBeenCalled()
   })
 
   it('emits onChange when pressing enter', async () => {
@@ -113,7 +113,7 @@ describe('Keyboard accessibility', () => {
     const input = result.container.querySelector('input[id="booleanTest"]')
     await userEvent.click(input!)
     await waitFor(() => {
-      expect(onChange).toBeCalled()
+      expect(onChange).toHaveBeenCalled()
     })
   })
 
@@ -128,7 +128,7 @@ describe('Keyboard accessibility', () => {
     await userEvent.tab()
     expect(input).not.toHaveFocus()
 
-    expect(onBlur).toBeCalled()
+    expect(onBlur).toHaveBeenCalled()
   })
 })
 
@@ -167,7 +167,7 @@ describe('readOnly property', () => {
     // Mouse event
     await userEvent.click(input!)
     // expect(input).toHaveFocus()
-    expect(onChange).not.toBeCalled()
+    expect(onChange).not.toHaveBeenCalled()
 
     // Keyboard event
     await userEvent.tab()
@@ -197,13 +197,13 @@ describe('readOnly property', () => {
 
     // Mouse event
     await userEvent.click(input!)
-    expect(onChange).toBeCalled()
+    expect(onChange).toHaveBeenCalled()
 
     // Keyboard event
     await userEvent.tab({shift: true})
     await userEvent.tab()
     await userEvent.keyboard('{space}')
-    expect(onChange).toBeCalled()
+    expect(onChange).toHaveBeenCalled()
   })
 
   it.skip('makes field read-only based on value in document', async () => {
@@ -218,10 +218,36 @@ describe('readOnly property', () => {
 
     // Mouse event
     await userEvent.click(input!)
-    expect(onChange).not.toBeCalled()
+    expect(onChange).not.toHaveBeenCalled()
 
     // Keyboard event
     await userEvent.tab()
     expect(input).not.toHaveFocus()
+  })
+})
+
+describe('Validation', () => {
+  it('applies critical tone when there are validation errors', async () => {
+    const errorValidation: FormNodeValidation[] = [
+      {level: 'error', message: 'This field is required', path: []},
+    ]
+
+    const {result} = await renderBooleanInput({
+      fieldDefinition: defs.booleanTest,
+      render: (inputProps) => <BooleanInput {...inputProps} validation={errorValidation} />,
+    })
+
+    const card = result.container.querySelector('[data-testid="boolean-input"]')
+    expect(card).toHaveAttribute('data-tone', 'critical')
+  })
+
+  it('does not apply critical tone when there are no validation errors', async () => {
+    const {result} = await renderBooleanInput({
+      fieldDefinition: defs.booleanTest,
+      render: (inputProps) => <BooleanInput {...inputProps} />,
+    })
+
+    const card = result.container.querySelector('[data-testid="boolean-input"]')
+    expect(card).not.toHaveAttribute('data-tone', 'critical')
   })
 })

@@ -1,4 +1,4 @@
-import {AccessDeniedIcon} from '@sanity/icons'
+import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {type CurrentUser} from '@sanity/types'
 import {Box, Inline, Text} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
@@ -59,7 +59,7 @@ export function InsufficientPermissionsMessage({
 
   return (
     <Box>
-      <Inline space={2}>
+      <Inline gap={2}>
         <Text size={0}>
           <AccessDeniedIcon />
         </Text>

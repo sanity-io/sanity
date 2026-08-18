@@ -1,6 +1,6 @@
-import {AddIcon} from '@sanity/icons'
-import {Menu} from '@sanity/ui'
-import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
+import {AddIcon} from '@sanity/icons/Add'
+import {Menu} from '@sanity/ui/menu'
+import {type ComponentProps, type ReactNode, type Ref, useMemo} from 'react'
 import {
   type InitialValueTemplateItem,
   type ReleaseId,
@@ -14,7 +14,10 @@ import {
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
 
-import {Button, MenuButton, MenuItem, type PopoverProps} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
+import {type PopoverProps} from '../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../i18n'
 import {IntentButton} from '../IntentButton'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
@@ -120,7 +123,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       >
         <IntentButton
           aria-label={getI18nText(firstItem).title}
-          icon={firstItem.icon || AddIcon}
+          icon={AddIcon}
           intent={intent}
           mode="bleed"
           disabled={disabled}
@@ -151,20 +154,23 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
             const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
 
-            const Link = forwardRef((linkProps, linkRef: ForwardedRef<never>) =>
-              disabled ? (
-                <button type="button" disabled {...linkProps} ref={linkRef} />
+            const resolvedIntent = intent
+            const Link = (linkProps: {children?: ReactNode; ref?: Ref<HTMLElement>}) => {
+              const {ref: linkRef, ...rest} = linkProps
+              return disabled ? (
+                <button type="button" disabled {...rest} ref={linkRef as Ref<HTMLButtonElement>} />
               ) : (
                 <IntentLink
-                  {...linkProps}
-                  intent={intent.type}
-                  params={intent.params}
-                  searchParams={intent.searchParams}
-                  ref={linkRef}
+                  {...rest}
+                  intent={resolvedIntent.type}
+                  params={resolvedIntent.params}
+                  searchParams={resolvedIntent.searchParams}
+                  ref={linkRef as Ref<HTMLAnchorElement>}
                 />
-              ),
-            )
+              )
+            }
 
+            // oxlint-disable-next-line react/react-compiler -- displayName assignment on render-local component
             Link.displayName = 'Link'
 
             const {title} = getI18nText({

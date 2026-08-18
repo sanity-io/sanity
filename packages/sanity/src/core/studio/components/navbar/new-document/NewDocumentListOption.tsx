@@ -1,12 +1,13 @@
 import {type CurrentUser} from '@sanity/types'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {isValidElement, type MouseEvent, useCallback, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {useIntentLink} from 'sanity/router'
+import {Box} from 'ui5'
 
-import {Tooltip} from '../../../../../ui-components'
-import {InsufficientPermissionsMessage} from '../../../../components'
-import {useI18nText} from '../../../../i18n'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
+import {useI18nText} from '../../../../i18n/hooks/useI18nText'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {type NewDocumentOption, type PreviewLayout} from './types'
 
@@ -46,6 +47,20 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   const {title} = useI18nText(option)
   const {icon: Icon} = option
 
+  const cardContent = (
+    <Flex align="center" gap={3}>
+      {Icon && (
+        <Box>
+          <Text size={preview === 'inline' ? 1 : undefined}>
+            {isValidElement(Icon) && Icon}
+            {isValidElementType(Icon) && <Icon />}
+          </Text>
+        </Box>
+      )}
+      <Text size={preview === 'inline' ? 1 : undefined}>{title}</Text>
+    </Flex>
+  )
+
   return (
     <Tooltip
       key={option.id}
@@ -56,28 +71,31 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
       }
     >
       <div>
-        <Card
-          as={option.hasPermission ? 'a' : 'button'}
-          data-testid={`create-new-${option.templateId}`}
-          disabled={!option.hasPermission}
-          href={href}
-          marginBottom={1}
-          onClick={handleDocumentClick}
-          padding={preview === 'inline' ? 3 : 4}
-          radius={2}
-        >
-          <Flex align="center" gap={3}>
-            {Icon && (
-              <Box>
-                <Text size={preview === 'inline' ? 1 : undefined}>
-                  {isValidElement(Icon) && Icon}
-                  {isValidElementType(Icon) && <Icon />}
-                </Text>
-              </Box>
-            )}
-            <Text size={preview === 'inline' ? 1 : undefined}>{title}</Text>
-          </Flex>
-        </Card>
+        {option.hasPermission ? (
+          <Card
+            as="a"
+            data-testid={`create-new-${option.templateId}`}
+            href={href}
+            marginBottom={1}
+            onClick={handleDocumentClick}
+            padding={preview === 'inline' ? 3 : 4}
+            radius={2}
+          >
+            {cardContent}
+          </Card>
+        ) : (
+          <Card
+            as="button"
+            data-testid={`create-new-${option.templateId}`}
+            disabled
+            marginBottom={1}
+            onClick={handleDocumentClick}
+            padding={preview === 'inline' ? 3 : 4}
+            radius={2}
+          >
+            {cardContent}
+          </Card>
+        )}
       </div>
     </Tooltip>
   )

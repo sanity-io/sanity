@@ -15,6 +15,11 @@ const enUSStrings = {
   // Used by `fieldGroupsWithI18n` debug schema type
   'field-groups.group-1': '🇺🇸 Group 1',
   'field-groups.group-2': '🇺🇸 Group 2',
+
+  // Used by `TranslateExample` to test graceful fallback for broken translations (#12617)
+  'translate.missing-self-closing': 'Before <Missing/> after',
+  'translate.missing-wrapping': 'Click <Label>here</Label> to continue',
+  'translate.mismatched-component': 'Not in the <Label>{{title}}</Label> release.',
 }
 
 const enUS = defineLocaleResourceBundle({

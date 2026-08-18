@@ -2,9 +2,10 @@ import {type UploadState} from '@sanity/types'
 import {Card, Flex, Inline, Text} from '@sanity/ui'
 import {useEffect} from 'react'
 
-import {Button} from '../../../../../ui-components'
-import {LinearProgress} from '../../../../components'
-import {Translate, useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {LinearProgress} from '../../../../components/progress/LinearProgress'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {STALE_UPLOAD_MS} from '../constants'
 import {CardWrapper, CodeWrapper, FlexWrapper, LeftSection} from './UploadProgress.styled'
 
@@ -38,7 +39,7 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
         <LeftSection>
           <Flex justify="center" gap={[3, 3, 2, 2]} direction={['column', 'column', 'row']}>
             <Text size={1}>
-              <Inline space={2}>
+              <Inline gap={2}>
                 <Translate
                   t={t}
                   i18nKey="input.files.common.upload-progress"

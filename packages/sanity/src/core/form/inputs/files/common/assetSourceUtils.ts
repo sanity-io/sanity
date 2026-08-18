@@ -39,6 +39,7 @@ export function getAssetSourceDisplayName(
   t: (key: string) => string,
   options?: {useStartCaseForName?: boolean},
 ): string {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const base = source.i18nKey ? t(source.i18nKey) : source.title
   if (base) return base
   return options?.useStartCaseForName ? startCase(source.name) : source.name

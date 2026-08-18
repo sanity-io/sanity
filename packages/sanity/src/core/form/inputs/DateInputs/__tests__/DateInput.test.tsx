@@ -2,7 +2,7 @@ import {defineField} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
 import {expect, test} from 'vitest'
 
-import {renderStringInput} from '../../../../../../test/form'
+import {renderStringInput} from '../../../../../../test/form/renderStringInput'
 import {DateInput} from '../DateInput'
 
 // NOTE: for the tests to be deterministic we need this to ensure tests are run in a predefined time zone
@@ -22,7 +22,7 @@ test('does not emit onChange after invalid value has been typed', async () => {
 
   const input = result.container.querySelector('input')!
 
-  // eslint-disable-next-line testing-library/prefer-user-event
+  // oxlint-disable-next-line testing-library/prefer-user-event
   fireEvent.change(input, {target: {value: 'this is invalid'}})
   expect(input.value).toBe('this is invalid')
   expect(onChange.mock.calls.length).toBe(0)
@@ -44,7 +44,7 @@ test('emits onChange on correct format if a valid value has been typed', async (
   const input = result.container.querySelector('input')!
 
   // NOTE: the date is entered and displayed in local time zone
-  // eslint-disable-next-line testing-library/prefer-user-event
+  // oxlint-disable-next-line testing-library/prefer-user-event
   fireEvent.change(input, {target: {value: '2021-03-28'}})
   expect(input.value).toBe('2021-03-28')
 
@@ -81,7 +81,7 @@ test('change the date should show the correct date in the input (save on enter)'
   })
 
   const input = result.container.querySelector('input')!
-  // eslint-disable-next-line testing-library/prefer-user-event
+  // oxlint-disable-next-line testing-library/prefer-user-event
   fireEvent.change(input, {target: {value: '2021-03-30'}})
   fireEvent.blur(input)
   expect(onChange.mock.calls).toMatchSnapshot()

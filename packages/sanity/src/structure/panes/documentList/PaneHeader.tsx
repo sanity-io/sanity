@@ -1,14 +1,13 @@
-import {ArrowLeftIcon} from '@sanity/icons'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {memo, type ReactNode, useMemo} from 'react'
 import {type GeneralPreviewLayoutKey, type InitialValueTemplateItem} from 'sanity'
 
-import {Button, TooltipDelayGroupProvider} from '../../../ui-components'
-import {
-  BackLink,
-  PaneHeader as StructurePaneHeader,
-  PaneHeaderActions,
-  usePane,
-} from '../../components'
+import {Button} from '../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {PaneHeader as StructurePaneHeader} from '../../components/pane/PaneHeader'
+import {usePane} from '../../components/pane/usePane'
+import {PaneHeaderActions} from '../../components/paneHeaderActions/PaneHeaderActions'
+import {BackLink} from '../../components/paneRouter/BackLink'
 import {
   type PaneMenuItem,
   type PaneMenuItemGroup,
@@ -27,6 +26,8 @@ interface PaneHeaderProps {
   setLayout: (layout: GeneralPreviewLayoutKey) => void
   setSortOrder: (sortOrder: SortOrder) => void
   setCustomMenuItemState: (state: Record<string, unknown>) => void
+  restoreDefaultLayout: () => void
+  restoreDefaultSortOrder: () => void
   title: string
 }
 
@@ -41,6 +42,8 @@ export const PaneHeader = memo(
     setLayout,
     setSortOrder,
     setCustomMenuItemState,
+    restoreDefaultLayout,
+    restoreDefaultSortOrder,
     title,
   }: PaneHeaderProps) => {
     const {features} = useStructureTool()
@@ -56,6 +59,8 @@ export const PaneHeader = memo(
         setSortOrder: (sort: SortOrder) => {
           setSortOrder(sort)
         },
+        restoreDefaultLayout,
+        restoreDefaultSortOrder,
         setMenuItemState: (params: {_menuItemId: string; value?: unknown}) => {
           const id = params._menuItemId
           const value = params.value ?? true
@@ -72,7 +77,14 @@ export const PaneHeader = memo(
           }
         },
       }
-    }, [customMenuItemState, setLayout, setSortOrder, setCustomMenuItemState])
+    }, [
+      customMenuItemState,
+      setLayout,
+      setSortOrder,
+      setCustomMenuItemState,
+      restoreDefaultLayout,
+      restoreDefaultSortOrder,
+    ])
 
     return (
       <TooltipDelayGroupProvider>

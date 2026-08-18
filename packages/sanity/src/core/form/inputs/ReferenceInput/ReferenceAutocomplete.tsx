@@ -1,20 +1,22 @@
 import {type Path} from '@sanity/types'
-import {Autocomplete, Box, Flex, type Placement, Text} from '@sanity/ui'
+import {Box, Flex, type Placement, Text} from '@sanity/ui'
+import {Autocomplete} from '@sanity/ui/autocomplete'
 import * as PathUtils from '@sanity/util/paths'
 import {
   type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
   type Ref,
   type RefObject,
   useCallback,
   useState,
+  type RefAttributes,
 } from 'react'
 import {styled} from 'styled-components'
 
-import {useFormBuilder} from '../..'
-import {Popover} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Popover} from '../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
+import {useReferenceAutocompletePopoverBoundary} from '../../hooks/useReferenceAutocompletePopoverBoundary'
+import {useFormBuilder} from '../../useFormBuilder'
 
 const StyledPopover = styled(Popover)`
   & > div {
@@ -32,17 +34,16 @@ const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 /**
  * @internal
  */
-export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
+export function ReferenceAutocomplete(
   props: ComponentProps<typeof Autocomplete> & {
     path: Path
     referenceElement: HTMLDivElement | null
     searchString?: string
     portalRef?: RefObject<HTMLDivElement | null>
-  },
-  ref: ForwardedRef<HTMLInputElement>,
+  } & RefAttributes<HTMLInputElement>,
 ) {
   const {focusPath} = useFormBuilder()
-  const {searchString, loading, portalRef, referenceElement, path, ...restProps} = props
+  const {ref, searchString, loading, portalRef, referenceElement, path, ...restProps} = props
 
   /**
    * Path here is the path of the reference input, not including the _ref segment, that is why we use the
@@ -54,6 +55,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
 
   const {t} = useTranslation()
   const hasResults = props.options && props.options.length > 0
+  const popoverBoundary = useReferenceAutocompletePopoverBoundary(referenceElement)
   const renderPopover = useCallback(
     (
       {
@@ -77,6 +79,8 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         fallbackPlacements={FALLBACK_PLACEMENTS}
         arrow={false}
         constrainSize
+        floatingBoundary={popoverBoundary}
+        referenceBoundary={popoverBoundary}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         content={
@@ -105,7 +109,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         matchReferenceWidth
       />
     ),
-    [hasResults, t, searchString, loading, portalRef, referenceElement],
+    [hasResults, t, searchString, loading, portalRef, referenceElement, popoverBoundary],
   )
   return (
     <Autocomplete
@@ -116,4 +120,4 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
       autoFocus={autoFocus}
     />
   )
-})
+}

@@ -1,4 +1,6 @@
-import {BoundaryElementProvider, Card, Flex, useToast} from '@sanity/ui'
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
+import {BoundaryElementProvider, Card, Flex} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
 import {
   type Chunk,
@@ -9,7 +11,7 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {Timeline} from '../../timeline'
+import {Timeline} from '../../timeline/timeline'
 import {TimelineError} from '../../timeline/TimelineError'
 import {useDocumentPane} from '../../useDocumentPane'
 

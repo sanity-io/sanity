@@ -1,22 +1,17 @@
-/* eslint-disable camelcase */
-
-import {useTheme_v2} from '@sanity/ui'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {rgba} from '@sanity/ui/theme'
 import {setElementVars} from '@vanilla-extract/dynamic'
 import {useInsertionEffect} from 'react'
 
 import {
-  uiFontTextFamily,
-  uiColoBg,
-  formGutterSize,
-  formGutterGap,
-  webkitResizerSvg,
-  uiFontTextWeightsMedium,
-  uiColorBorder,
   uiColorMutedFg,
   selectionBackgroundColor,
+  uiColorBg,
+  uiColorBorder,
+  uiFontTextFamily,
+  uiFontTextWeightMedium,
+  webkitResizerBackgroundImage,
 } from './styles.css'
-import {useWorkspace} from './workspace'
 
 // Construct a resize handle icon as a data URI, to be displayed in browsers that support the `::-webkit-resizer` selector.
 function buildResizeHandleDataUri(hexColor: string) {
@@ -25,50 +20,41 @@ function buildResizeHandleDataUri(hexColor: string) {
   return `url("data:image/svg+xml,${encodedSvg}")`
 }
 
-export const GlobalStyle = (): null => {
-  const {
-    advancedVersionControl: {enabled: advancedVersionControlEnabled},
-  } = useWorkspace()
-
-  const {color, font, space} = useTheme_v2()
-  const webkitResizerSvgDataUri = buildResizeHandleDataUri(color.icon)
-  const selectionBackgroundColorVar = rgba(color.focusRing, 0.3)
+export function GlobalStyle(): null {
+  const {color, font} = useThemeV2()
+  const webkitResizerBackgroundImageValue = buildResizeHandleDataUri(color.icon)
+  const selectionBackgroundColorValue = rgba(color.focusRing, 0.3)
 
   useInsertionEffect(() => {
     setElementVars(document.documentElement, {
-      [formGutterSize]: advancedVersionControlEnabled ? `${space[4]}px` : '0px',
-      [formGutterGap]: advancedVersionControlEnabled ? `${space[3]}px` : '0px',
-      [selectionBackgroundColor]: selectionBackgroundColorVar,
-      [uiFontTextFamily]: font.text.family,
-      [uiFontTextWeightsMedium]: font.text.weights.medium.toString(),
-      [uiColoBg]: color.bg,
+      [selectionBackgroundColor]: selectionBackgroundColorValue,
+      [uiColorBg]: color.bg,
       [uiColorBorder]: color.border,
       [uiColorMutedFg]: color.muted.fg,
-      [webkitResizerSvg]: webkitResizerSvgDataUri,
+      [uiFontTextFamily]: font.text.family,
+      [uiFontTextWeightMedium]: font.text.weights.medium.toString(),
+      [webkitResizerBackgroundImage]: webkitResizerBackgroundImageValue,
     })
+
     return () => {
       setElementVars(document.documentElement, {
-        [formGutterSize]: null,
-        [formGutterGap]: null,
         [selectionBackgroundColor]: null,
-        [uiFontTextFamily]: null,
-        [uiFontTextWeightsMedium]: null,
-        [uiColoBg]: null,
+        [uiColorBg]: null,
         [uiColorBorder]: null,
         [uiColorMutedFg]: null,
-        [webkitResizerSvg]: null,
+        [uiFontTextFamily]: null,
+        [uiFontTextWeightMedium]: null,
+        [webkitResizerBackgroundImage]: null,
       })
     }
   }, [
-    advancedVersionControlEnabled,
-    space,
-    selectionBackgroundColorVar,
-    font.text.family,
-    font.text.weights.medium,
     color.bg,
     color.border,
     color.muted.fg,
-    webkitResizerSvgDataUri,
+    font.text.family,
+    font.text.weights.medium,
+    selectionBackgroundColorValue,
+    webkitResizerBackgroundImageValue,
   ])
 
   return null

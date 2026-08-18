@@ -37,10 +37,7 @@ export function createObserveDocument({
       function batchFetchDocuments(ids: [string][]) {
         return _client.observable
           .fetch(`*[_id in $ids]`, {ids: uniq(ids.flat())}, {tag: 'preview.observe-document'})
-          .pipe(
-            // eslint-disable-next-line max-nested-callbacks
-            map((result) => ids.map(([id]) => result.find((r: {_id: string}) => r._id === id))),
-          )
+          .pipe(map((result) => ids.map(([id]) => result.find((r: {_id: string}) => r._id === id))))
       }
       return debounceCollect(batchFetchDocuments, 100)
     },

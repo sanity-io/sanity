@@ -2,7 +2,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {useClient} from '../../../../hooks/useClient'
-import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
+import {useDocumentPreviewStore} from '../../../../store/datastores'
 import {useSource} from '../../../../studio/source'
 import {useReleasesStore} from '../../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../../util/getReleaseDocumentIdFromReleaseId'
@@ -22,6 +22,7 @@ export function useReleaseEvents(releaseId: string): ReleaseEvents {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const documentPreviewStore = useDocumentPreviewStore()
   const {state$: releasesState$} = useReleasesStore()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const eventsAPIEnabled = Boolean(source.beta?.eventsAPI?.releases)
 

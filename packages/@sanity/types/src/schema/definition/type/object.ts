@@ -1,6 +1,6 @@
 import {type PreviewConfig} from '../../preview'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
-import {type InitialValueProperty} from '../../types'
+import {type InitialValueProperty, type ModalOptions} from '../../types'
 import {type FieldDefinition} from '../schemaDefinition'
 import {
   type BaseSchemaDefinition,
@@ -14,10 +14,7 @@ export interface ObjectOptions extends BaseSchemaTypeOptions {
   collapsible?: boolean
   collapsed?: boolean
   columns?: number
-  modal?: {
-    type?: 'dialog' | 'popover'
-    width?: number | number[] | 'auto'
-  }
+  modal?: ModalOptions
 }
 
 /** @public */

@@ -4,10 +4,15 @@ import {styled} from 'styled-components'
 
 interface PanelProps extends PropsWithChildren {
   defaultSize?: number | null
+  /** Panel group key; not a DOM id. */
   id: string
+  /** DOM id for the root element (e.g. aria-controls target). */
+  htmlId?: string
   minWidth?: number
   maxWidth?: number
   order?: number
+  /** Hide via display:none without unmounting (keeps iframe state). */
+  hidden?: boolean
 }
 
 const Root = styled.div`
@@ -20,9 +25,11 @@ export const Panel: FunctionComponent<PanelProps> = function ({
   children,
   defaultSize = null,
   id,
+  htmlId,
   minWidth,
   maxWidth,
   order = 0,
+  hidden = false,
 }) {
   const context = useContext(PresentationPanelsContext)
 
@@ -32,7 +39,8 @@ export const Panel: FunctionComponent<PanelProps> = function ({
 
   const {getPanelStyle, registerElement, unregisterElement} = context
 
-  const style = getPanelStyle(id)
+  // Hidden panels stay mounted (preserving iframe state) but leave the flex layout so siblings fill the space.
+  const style = hidden ? {display: 'none'} : getPanelStyle(id)
 
   useLayoutEffect(() => {
     registerElement(id, {
@@ -49,5 +57,9 @@ export const Panel: FunctionComponent<PanelProps> = function ({
     }
   }, [id, defaultSize, order, maxWidth, minWidth, registerElement, unregisterElement])
 
-  return <Root style={style}>{children}</Root>
+  return (
+    <Root id={htmlId} style={style}>
+      {children}
+    </Root>
+  )
 }

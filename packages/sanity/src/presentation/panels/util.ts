@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-shadow,no-eq-null */
 import {
   type ElementMap,
   type InitialDragState,
@@ -14,7 +13,6 @@ function getNextWidth(panel: PanelElement, nextWidth: number, containerWidth: nu
   return Math.min(maxWidth, Math.max(minWidth, nextWidth))
 }
 
-// eslint-disable-next-line max-params
 export function getNextWidths(
   delta: number,
   containerWidth: number,
@@ -94,6 +92,10 @@ export function getPanelWidth(panels: PanelElement[], id: string, widths: number
   if (width == null) return '0'
 
   return width.toPrecision(10)
+}
+
+export function getContainerRect(containerElement: HTMLDivElement | null): DOMRect | null {
+  return containerElement?.getBoundingClientRect() ?? null
 }
 
 export function getOffset(

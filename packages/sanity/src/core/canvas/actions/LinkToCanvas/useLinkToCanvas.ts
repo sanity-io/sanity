@@ -6,7 +6,7 @@ import {catchError, combineLatest, map, type Observable, of, tap} from 'rxjs'
 
 import {useClient} from '../../../hooks/useClient'
 import {useWorkspaceSchemaId} from '../../../hooks/useWorkspaceSchemaId'
-import {useComlinkStore, useProjectStore} from '../../../store/_legacy/datastores'
+import {useComlinkStore, useProjectStore} from '../../../store/datastores'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {useStudioAppIdStore} from '../../../store/studio-app/useStudioAppIdStore'
 import {useWorkspace} from '../../../studio/workspace'
@@ -213,5 +213,9 @@ export function useLinkToCanvas({document}: {document: SanityDocument | undefine
     workspace.name,
   ])
 
+  // Deferred (per review): keyed on the stable document `_id`/`_type` and
+  // consumed inside a dialog the user opens for a fixed document, so there's
+  // no cross-document tear. react-rx v5's identity-coherent deferral falls
+  // back to the live value if the observable identity changes.
   return useObservable(linkToCanvas$, initialState)
 }

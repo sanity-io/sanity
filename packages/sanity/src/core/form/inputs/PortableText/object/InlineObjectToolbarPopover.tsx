@@ -1,10 +1,12 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {EditIcon, TrashIcon} from '@sanity/icons'
+import {EditIcon} from '@sanity/icons/Edit'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
-import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
@@ -36,12 +38,15 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const deleteButtonRef = useRef<HTMLButtonElement | null>(null)
   const focusTrappedRef = useRef<HTMLButtonElement | null>(null)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const contentRef = useRef<HTMLDivElement | null>(null)
 
   const handleClosePopover = useCallback(() => {
     setPopoverOpen(false)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
     focusTrappedRef.current = null
   }, [editor])
@@ -70,6 +75,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             event.preventDefault()
             event.stopPropagation()
             focusTrappedRef.current = null
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             PortableTextEditor.focus(editor)
             return
           }
@@ -85,6 +91,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   useEffect(() => {
     focusTrappedRef.current = null
     if (inlineObjectOpen) {
+      // oxlint-disable-next-line react/react-compiler
       setPopoverOpen(false)
       return
     }

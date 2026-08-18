@@ -1,9 +1,12 @@
+import {defineLocalesResources} from '../../i18n/helpers'
+
 /**
  * Defined locale strings for the single doc release tool, in US English.
  *
  * @internal
  */
-const singleDocReleaseLocaleStrings = {
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+const singleDocReleaseLocaleStrings = defineLocalesResources('singleDocRelease', {
   /** Action text for scheduling publish of a draft document */
   'action.schedule-publish': 'Schedule publish',
   /** Tooltip text for when a document is scheduled for publishing */
@@ -21,6 +24,8 @@ const singleDocReleaseLocaleStrings = {
   /** Tooltip text for when schedule publish is disabled due to cardinality one releases */
   'action.schedule-publish.disabled.cardinality-one':
     'A Scheduled Draft for this document already exists.',
+  /** Tooltip text for when schedule publish is disabled because a variant is selected */
+  'action.schedule-publish.disabled.variant': 'Scheduling is not yet available for variants.',
   /** Empty state title for scheduled drafts */
   'empty-state.title': 'Scheduled Drafts',
   /** Empty state description for scheduled drafts */
@@ -28,7 +33,7 @@ const singleDocReleaseLocaleStrings = {
     'Schedule and lock draft documents for publishing at a future date and time.',
   /** Empty state action documentation for scheduled drafts */
   'empty-state.action.documentation': 'Learn about scheduling',
-}
+})
 
 /**
  * @alpha

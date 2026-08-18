@@ -1,7 +1,6 @@
 name: End-to-End Embedded Tests
 permissions:
   contents: read # for checkout
-  pull-requests: write # for comment
 
 on:
   pull_request:
@@ -18,9 +17,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -32,21 +29,21 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true'
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
         if: steps.changes.outputs.has_changes == 'true'
         id: cache-playwright-browsers
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
 
       - name: Install Playwright Browsers
         if: steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium firefox
+        run: pnpm exec playwright install --with-deps chromium firefox
 
   test:
     if: needs.install.outputs.has_code_changes == 'true'
@@ -64,26 +61,26 @@ jobs:
       matrix:
         project: [chromium, firefox]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.project }}
+        run: pnpm exec playwright install --with-deps ${{ matrix.project }}
 
       - name: Build
         run: pnpm build
@@ -92,7 +89,7 @@ jobs:
         run: pnpm embedded-studio-vite:test --project ${{ matrix.project }}
 
       - name: Upload Playwright Report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report-${{ matrix.project }}

@@ -1,10 +1,10 @@
-/* eslint-disable @sanity/i18n/no-i18next-import */
+/* oxlint-disable @sanity/i18n/no-i18next-import */
 import {createInstance as createI18nInstance, type i18n, type InitOptions} from 'i18next'
 import {initReactI18next} from 'react-i18next'
 
-import {type SourceOptions} from '../config'
 import {localeBundlesReducer, localeDefReducer} from '../config/configPropertyReducers'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
+import {type SourceOptions} from '../config/types'
 import {createSanityI18nBackend} from './backend'
 import {DEBUG_I18N, maybeWrapT} from './debug'
 import {studioLocaleNamespace} from './localeNamespaces'
@@ -155,11 +155,6 @@ const defaultOptions: InitOptions = {
   // in a single place with a single approach. This means we shouldn't need to wait for the init,
   // as any missing translations will be loaded async (through react suspense).
   initAsync: true,
-
-  // Suppress ads in console
-  // for context see https://github.com/i18next/i18next/issues/2390
-  // Open source funding is tricky, but this is NOT the way
-  showSupportNotice: false,
 
   // Because we use i18next-react, we do not need to escale values
   interpolation: {

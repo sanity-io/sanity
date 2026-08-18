@@ -1,4 +1,4 @@
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
 import {Flex, Text, useClickOutsideEvent} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
@@ -15,10 +15,12 @@ import {
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
-import {Popover} from '../../../../../../ui-components'
-import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators'
-import {useTranslation} from '../../../../../i18n'
-import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
+import {Popover} from '../../../../../../ui-components/popover/Popover'
+import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators/tracker'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useDiffAnnotationColor} from '../../../../diff/annotations/hooks'
+import {ChangeList} from '../../../../diff/components/ChangeList'
+import {DiffTooltip} from '../../../../diff/components/DiffTooltip'
 import {type ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
@@ -139,6 +141,7 @@ function AnnnotationWithDiff({
 
   useEffect(() => {
     if (!open && isEditing) {
+      // oxlint-disable-next-line react/react-compiler
       setOpen(true)
       onSetFocus(myPath)
     }

@@ -1,4 +1,5 @@
 import {copyPasteLocaleResources} from './bundles/copy-paste'
+import {feedbackLocaleResources} from './bundles/feedback'
 import {studioDefaultLocaleResources} from './bundles/studio'
 import {validationLocaleResources} from './bundles/validation'
 import {defineLocale} from './helpers'
@@ -12,7 +13,12 @@ import {defineLocale} from './helpers'
 export const usEnglishLocale = defineLocale({
   id: 'en-US',
   title: 'English (US)',
-  bundles: [studioDefaultLocaleResources, validationLocaleResources, copyPasteLocaleResources],
+  bundles: [
+    studioDefaultLocaleResources,
+    validationLocaleResources,
+    copyPasteLocaleResources,
+    feedbackLocaleResources,
+  ],
 
   weekInfo: {
     firstDay: 7, // Sunday

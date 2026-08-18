@@ -1,3 +1,4 @@
+import {type SanityImageSource} from '@sanity/asset-utils'
 import {type ImageUrlFitMode, type SchemaType} from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
 
@@ -55,7 +56,10 @@ export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
   imageUrl?: string
   isPlaceholder?: boolean
   layout?: TLayoutKey
-  media?: ReactNode | ComponentType<{dimensions: PreviewMediaDimensions; layout: TLayoutKey}>
+  media?:
+    | ReactNode
+    | SanityImageSource
+    | ComponentType<{dimensions: PreviewMediaDimensions; layout: TLayoutKey}>
   mediaDimensions?: PreviewMediaDimensions
   progress?: number
   status?: ReactNode | ComponentType<{layout: TLayoutKey}>

@@ -1,26 +1,29 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ErrorOutlineIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
-import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
-import {forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
+import {EyeClosedIcon} from '@sanity/icons/EyeClosed'
+import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
+import {LockIcon} from '@sanity/icons/Lock'
+// oxlint-disable-next-line no-restricted-imports -- custom use for Button not supported by ui-components
+import {Button, Flex, Stack, Text} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
+import {MenuItem} from '@sanity/ui/menu'
+import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
-import {Tooltip} from '../../../ui-components/tooltip'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
 import {usePerspective} from '../../perspective/usePerspective'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
+import {useFormatRelativeLocalePublishDate} from '../../releases/hooks/useFormatRelativeLocalePublishDate'
 import {isReleaseDocument} from '../../releases/store/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {
-  formatRelativeLocalePublishDate,
-  isDraftPerspective,
-  isReleaseScheduledOrScheduling,
-} from '../../releases/util/util'
+import {isDraftPerspective, isReleaseScheduledOrScheduling} from '../../releases/util/util'
 import {useWorkspace} from '../../studio/workspace'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
@@ -81,15 +84,14 @@ export function getRangePosition(range: LayerRange, index: number): rangePositio
   return undefined
 }
 
-export const GlobalPerspectiveMenuItem = forwardRef<
-  HTMLDivElement,
-  {
+export function GlobalPerspectiveMenuItem(
+  props: {
     release: ReleaseDocument | 'published' | typeof LATEST
     rangePosition: rangePosition
     menuItemProps?: ReleasesNavMenuItemPropsGetter
-  }
->((props, ref) => {
-  const {release, rangePosition} = props
+  } & RefAttributes<HTMLDivElement>,
+) {
+  const {ref, release, rangePosition} = props
 
   const {
     document: {
@@ -101,6 +103,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   const setPerspective = useSetPerspective()
   const {toggleExcludedPerspective, isPerspectiveExcluded} = useExcludedPerspective()
+  const formatPublishDate = useFormatRelativeLocalePublishDate()
   const releaseId = isReleaseDocument(release)
     ? getReleaseIdFromReleaseDocumentId(release._id)
     : release
@@ -154,7 +157,9 @@ export const GlobalPerspectiveMenuItem = forwardRef<
         <Flex align="flex-start" gap={1}>
           <IconWrapperBox
             $isExcluded={isReleasePerspectiveExcluded}
-            flex="none"
+            flexBasis="auto"
+            flexGrow={0}
+            flexShrink={0}
             data-testid="release-indicator-icon"
             paddingX={3}
             paddingY={2}
@@ -167,7 +172,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             flex={1}
             paddingY={2}
             paddingRight={2}
-            space={2}
+            gap={2}
             style={{
               opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
               maxWidth: '200px',
@@ -200,11 +205,11 @@ export const GlobalPerspectiveMenuItem = forwardRef<
               release.metadata.releaseType === 'scheduled' &&
               (release.publishAt || release.metadata.intendedPublishAt) && (
                 <Text muted size={1}>
-                  {formatRelativeLocalePublishDate(release)}
+                  {formatPublishDate(release)}
                 </Text>
               )}
           </Stack>
-          <Box flex="none">
+          <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
             {canReleaseBeExcluded && (
               <Tooltip portal content={t('release.layer.hide')} placement="bottom">
                 <ToggleLayerButton
@@ -230,6 +235,4 @@ export const GlobalPerspectiveMenuItem = forwardRef<
       </MenuItem>
     </GlobalPerspectiveMenuItemIndicator>
   )
-})
-
-GlobalPerspectiveMenuItem.displayName = 'GlobalPerspectiveMenuItem'
+}

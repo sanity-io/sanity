@@ -1,10 +1,10 @@
 import {renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
-import {useProjectOrganizationId} from '../../store/_legacy/project/useProjectOrganizationId'
+import {useProjectOrganizationId} from '../../store/project/useProjectOrganizationId'
 import {useRenderingContext} from '../../store/renderingContext/useRenderingContext'
 import {useStudioAppIdStore} from '../../store/studio-app/useStudioAppIdStore'
-import {useActiveWorkspace} from '../../studio'
+import {useActiveWorkspace} from '../../studio/activeWorkspaceMatcher/useActiveWorkspace'
 import {useEnvAwareSanityWebsiteUrl} from '../../studio/hooks/useEnvAwareSanityWebsiteUrl'
 import {getDashboardPath} from '../../util/dashboardPath'
 import {useStudioUrl} from '../useStudioUrl'
@@ -17,11 +17,11 @@ vi.mock('../../store/studio-app/useStudioAppIdStore', () => ({
   useStudioAppIdStore: vi.fn(),
 }))
 
-vi.mock('../../store/_legacy/project/useProjectOrganizationId', () => ({
+vi.mock('../../store/project/useProjectOrganizationId', () => ({
   useProjectOrganizationId: vi.fn(),
 }))
 
-vi.mock('../../studio', () => ({
+vi.mock('../../studio/activeWorkspaceMatcher/useActiveWorkspace', () => ({
   useActiveWorkspace: vi.fn(),
 }))
 

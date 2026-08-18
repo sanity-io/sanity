@@ -16,7 +16,9 @@ import type {
   AssetMetadataType,
   AssetSchemaTypeOptions,
   AssetSource,
+  AssetSourceComponentAction,
   AssetSourceComponentProps,
+  AssetSourceOpenInSourceResult,
   AssetSourceSpec,
   AssetSourceUploader,
   AssetSourceUploaderClass,
@@ -66,6 +68,7 @@ import type {
   CrossDatasetReferenceValue,
   CrossDatasetType,
   CurrentUser,
+  CurrentUserAttribute,
   CustomValidator,
   CustomValidatorResult,
   DashboardNotificationPayload,
@@ -90,6 +93,8 @@ import type {
   DocumentDefinition,
   DocumentOptions,
   DocumentRule,
+  DocumentSystem,
+  DocumentSystemRef,
   EmailDefinition,
   EmailOptions,
   EmailRule,
@@ -160,6 +165,7 @@ import type {
   isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
   isArrayOfPrimitivesSchemaType,
+  isArrayOfStringsSchemaType,
   isArraySchemaType,
   isAssetAspect,
   isBlockChildrenObjectField,
@@ -226,6 +232,7 @@ import type {
   MediaValidator,
   MendozaEffectPair,
   MendozaPatch,
+  ModalOptions,
   MultiFieldSet,
   MultipleMutationResult,
   Mutation,
@@ -270,6 +277,9 @@ import type {
   ReferenceRule,
   ReferenceSchemaType,
   ReferenceTo,
+  ReferenceTypeFilter,
+  ReferenceTypeFilterContext,
+  ReferenceTypeOption,
   ReferenceValue,
   Role,
   Rule,
@@ -340,6 +350,8 @@ import type {
   UrlOptions,
   UrlRule,
   User,
+  UserAttributeType,
+  UserAttributeValue,
   ValidationBuilder,
   ValidationContext,
   ValidationError,
@@ -396,8 +408,14 @@ describe('@sanity/types', () => {
   test('AssetSource', () => {
     expectTypeOf<AssetSource>().toBeObject()
   })
+  test('AssetSourceComponentAction', () => {
+    expectTypeOf<AssetSourceComponentAction>().not.toBeNever()
+  })
   test('AssetSourceComponentProps', () => {
     expectTypeOf<AssetSourceComponentProps>().toBeObject()
+  })
+  test('AssetSourceOpenInSourceResult', () => {
+    expectTypeOf<AssetSourceOpenInSourceResult>().not.toBeNever()
   })
   test('AssetSourceSpec', () => {
     expectTypeOf<AssetSourceSpec>().toBeObject()
@@ -546,6 +564,9 @@ describe('@sanity/types', () => {
   test('CurrentUser', () => {
     expectTypeOf<CurrentUser>().toBeObject()
   })
+  test('CurrentUserAttribute', () => {
+    expectTypeOf<CurrentUserAttribute>().not.toBeNever()
+  })
   test('CustomValidator', () => {
     expectTypeOf<CustomValidator<any>>().toBeObject()
   })
@@ -618,6 +639,12 @@ describe('@sanity/types', () => {
   test('DocumentRule', () => {
     expectTypeOf<DocumentRule>().toBeObject()
   })
+  test('DocumentSystem', () => {
+    expectTypeOf<DocumentSystem>().toBeObject()
+  })
+  test('DocumentSystemRef', () => {
+    expectTypeOf<DocumentSystemRef>().toBeObject()
+  })
   test('EmailDefinition', () => {
     expectTypeOf<EmailDefinition>().toBeObject()
   })
@@ -655,7 +682,7 @@ describe('@sanity/types', () => {
     expectTypeOf<Fieldset>().not.toBeNever()
   })
   test('FieldsetDefinition', () => {
-    expectTypeOf<FieldsetDefinition>().not.toBeNever()
+    expectTypeOf<FieldsetDefinition>().toBeObject()
   })
   test('File', () => {
     expectTypeOf<File>().toBeObject()
@@ -827,6 +854,9 @@ describe('@sanity/types', () => {
   })
   test('isArrayOfPrimitivesSchemaType', () => {
     expectTypeOf<typeof isArrayOfPrimitivesSchemaType>().toBeFunction()
+  })
+  test('isArrayOfStringsSchemaType', () => {
+    expectTypeOf<typeof isArrayOfStringsSchemaType>().toBeFunction()
   })
   test('isArraySchemaType', () => {
     expectTypeOf<typeof isArraySchemaType>().toBeFunction()
@@ -1026,6 +1056,9 @@ describe('@sanity/types', () => {
   test('MendozaPatch', () => {
     expectTypeOf<MendozaPatch>().not.toBeNever()
   })
+  test('ModalOptions', () => {
+    expectTypeOf<ModalOptions>().toBeObject()
+  })
   test('MultiFieldSet', () => {
     expectTypeOf<MultiFieldSet>().toBeObject()
   })
@@ -1157,6 +1190,15 @@ describe('@sanity/types', () => {
   })
   test('ReferenceTo', () => {
     expectTypeOf<ReferenceTo>().not.toBeNever()
+  })
+  test('ReferenceTypeFilter', () => {
+    expectTypeOf<ReferenceTypeFilter>().not.toBeNever()
+  })
+  test('ReferenceTypeFilterContext', () => {
+    expectTypeOf<ReferenceTypeFilterContext>().toBeObject()
+  })
+  test('ReferenceTypeOption', () => {
+    expectTypeOf<ReferenceTypeOption>().toBeObject()
   })
   test('ReferenceValue', () => {
     expectTypeOf<ReferenceValue>().not.toBeNever()
@@ -1367,6 +1409,12 @@ describe('@sanity/types', () => {
   })
   test('User', () => {
     expectTypeOf<User>().toBeObject()
+  })
+  test('UserAttributeType', () => {
+    expectTypeOf<UserAttributeType>().not.toBeNever()
+  })
+  test('UserAttributeValue', () => {
+    expectTypeOf<UserAttributeValue>().not.toBeNever()
   })
   test('ValidationBuilder', () => {
     expectTypeOf<ValidationBuilder<any, any>>().not.toBeNever()

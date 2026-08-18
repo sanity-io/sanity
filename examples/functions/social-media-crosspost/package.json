@@ -3,10 +3,10 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@humanwhocodes/crosspost": "^0.1.1",
-    "@sanity/client": "^7.17.0",
-    "@sanity/functions": "^1.1.0",
-    "@sanity/image-url": "^2.0.3"
+    "@humanwhocodes/crosspost": "^1.0.4",
+    "@sanity/client": "^7.26.2",
+    "@sanity/functions": "^1.6.8",
+    "@sanity/image-url": "^2.1.1"
   },
   "blueprintResourceItem": {
     "type": "sanity.function.document",

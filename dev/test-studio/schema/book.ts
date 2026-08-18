@@ -1,4 +1,4 @@
-import {BookIcon} from '@sanity/icons'
+import {BookIcon} from '@sanity/icons/Book'
 import {defineType, type Rule} from '@sanity/types'
 import {isIncomingReferenceCreation} from 'sanity/structure'
 
@@ -153,6 +153,11 @@ export default defineType({
       title: 'Publication year asc (nulls last, default)',
       name: 'publicationYearAscNullsLast',
       by: [{field: 'publicationYear', direction: 'asc', nulls: 'last'}],
+    },
+    {
+      title: 'By non-existent field',
+      name: 'nonExistentField',
+      by: [{field: 'nonExistentField', direction: 'desc'}],
     },
   ],
   preview: {

@@ -46,8 +46,8 @@ export const CanvasUnlinkApproved = defineEvent({
 })
 
 export type OpenCanvasOrigin = 'action' | 'banner'
-export const CanvasOpened = defineEvent<{origin: OpenCanvasOrigin}>({
-  name: 'Canvas Opened from studio',
+export const CanvasOpened = defineEvent<{origin: OpenCanvasOrigin; source: 'studio'}>({
+  name: 'Canvas Opened',
   version: 1,
   description: 'User clicked "Edit in Canvas"',
 })

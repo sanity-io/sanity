@@ -1,5 +1,5 @@
 import {type DragStartEvent} from '@dnd-kit/core'
-import {Card, useTheme} from '@sanity/ui'
+import {Card, type CardTone, useTheme} from '@sanity/ui'
 import {
   defaultRangeExtractor,
   elementScroll,
@@ -9,8 +9,9 @@ import {
 } from '@tanstack/react-virtual'
 import {useCallback, useLayoutEffect, useRef, useState} from 'react'
 
-import {ArrayOfObjectsItem} from '../../../../members'
-import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
+import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
+import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import {type ObjectItem} from '../../../../types/itemProps'
 import {Item, List} from '../../common/list'
 import {ErrorItem} from './ErrorItem'
 import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'
@@ -36,6 +37,7 @@ interface VirtualizedArrayListProps<Item extends ObjectItem> {
   listGridGap: number
   paddingY: number
   radius: number
+  tone?: CardTone
 }
 
 /**
@@ -66,8 +68,10 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
     listGridGap,
     paddingY,
     radius,
+    tone,
   } = props
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = useTheme().sanity
   const {scrollElement, containerElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)
@@ -212,6 +216,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
     <Card
       ref={parentRef}
       border
+      tone={tone}
       radius={radius}
       style={{
         // This is not memoized since it changes on scroll so it will change anyways making memo useless

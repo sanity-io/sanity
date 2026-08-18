@@ -2,8 +2,8 @@ import escapeRegExp from 'lodash-es/escapeRegExp.js'
 import isEqual from 'lodash-es/isEqual.js'
 import {
   type ComponentType,
-  type MutableRefObject,
   type ReactNode,
+  type RefObject,
   useCallback,
   useEffect,
   useMemo,
@@ -12,11 +12,12 @@ import {
 import {type Router, RouterProvider, type RouterState} from 'sanity/router'
 import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
 
-import {ErrorBoundary} from '../../../ui-components'
-import {type Tool, type Workspace} from '../../config'
-import {createRouter, type RouterHistory, type RouterStateEvent} from '../router'
+import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
+import {type Tool, type Workspace} from '../../config/types'
 import {decodeUrlState, resolveDefaultState, resolveIntentState} from '../router/helpers'
+import {createRouter} from '../router/router'
 import {useRouterHistory} from '../router/RouterHistoryContext'
+import {type RouterHistory, type RouterStateEvent} from '../router/types'
 
 interface WorkspaceRouterProviderProps {
   children: ReactNode
@@ -156,7 +157,7 @@ function maybeResolveIntent(
   event: RouterStateEvent | null,
   router: Router,
   tools: Tool[],
-  prevEvent: MutableRefObject<RouterStateEvent | null>,
+  prevEvent: RefObject<RouterStateEvent | null>,
 ): string | null {
   if (event?.type === 'state' && event.state?.intent) {
     const redirectState = resolveIntentState(

@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import {SplitPane} from '@rexxars/react-split-pane'
 import {
   type ClientPerspective,
@@ -7,18 +6,12 @@ import {
   type ReleaseDocument,
   type StackablePerspective,
 } from '@sanity/client'
-import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Button, Flex, useToast} from '@sanity/ui'
+import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {Box, Button, Flex} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {isHotkey} from 'is-hotkey-esm'
-import {
-  type ChangeEvent,
-  useCallback,
-  useEffect,
-  useEffectEvent,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
@@ -30,19 +23,24 @@ import {
   useScheduledDraftsEnabled,
   useTranslation,
   useWorkspace,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
+import {groqExtensions} from '../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
 import {
   getActivePerspective,
+  getActiveVariant,
   isSupportedPerspective,
   isVirtualPerspective,
   type SupportedPerspective,
 } from '../perspectives'
 import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
+import {isVisionPasteTarget} from '../util/isVisionPasteTarget'
 import {getLocalStorage} from '../util/localStorage'
 import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
 import {prefixApiVersion} from '../util/prefixApiVersion'
@@ -53,6 +51,8 @@ import {usePaneSize} from './usePaneSize'
 import {
   InputBackgroundContainerLeft,
   InputContainer,
+  QueryRecallPaneContainer,
+  QueryRecallPaneWrapper,
   Root,
   SplitpaneContainer,
   StyledLabel,
@@ -66,12 +66,12 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
     return false
   }
 
-  // eslint-disable-next-line no-bitwise
   return node === other || !!(node.compareDocumentPosition(other as Node) & 16)
 }
 
 // Match Sanity API URLs with any domain (supports custom CDN domains like foolcdn.com)
 const sanityUrl = /\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
+const VARIANTS_API_VERSION = prefixApiVersion(VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion)
 
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
@@ -115,7 +115,7 @@ export function VisionGui(props: VisionGuiProps) {
   const {datasets, config, projectId, defaultDataset} = props
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {data: releases = []} = useActiveReleases()
   const workspace = useWorkspace()
@@ -151,14 +151,20 @@ export function VisionGui(props: VisionGuiProps) {
     }
     return datasets[0]
   })
-  const [apiVersion, setApiVersion] = useState<string>(() =>
-    API_VERSIONS.includes(storedApiVersion) ? storedApiVersion : DEFAULT_API_VERSION,
-  )
-  const [customApiVersion, setCustomApiVersion] = useState<string | false>(() =>
-    API_VERSIONS.includes(storedApiVersion) ? false : storedApiVersion,
-  )
   const [perspective, setPerspectiveState] = useState<SupportedPerspective | undefined>(
     storedPerspective || 'raw',
+  )
+  const activeVariant = getActiveVariant(perspective, selectedVariantName)
+
+  const [apiVersion, setApiVersion] = useState<string>(() =>
+    activeVariant
+      ? VARIANTS_API_VERSION
+      : API_VERSIONS.includes(storedApiVersion)
+        ? storedApiVersion
+        : DEFAULT_API_VERSION,
+  )
+  const [customApiVersion, setCustomApiVersion] = useState<string | false>(() =>
+    activeVariant || API_VERSIONS.includes(storedApiVersion) ? false : storedApiVersion,
   )
   const isValidApiVersion = customApiVersion ? validateApiVersion(customApiVersion) : true
 
@@ -195,30 +201,36 @@ export function VisionGui(props: VisionGuiProps) {
     return [...releaseIds, ...defaultPerspective] as PerspectiveStack
   }, [releases, isDraftModelEnabled, isScheduledDraftsEnabled])
 
+  const userApiVersion = activeVariant
+    ? VARIANTS_API_VERSION
+    : isValidApiVersion && customApiVersion
+      ? customApiVersion
+      : apiVersion
+
   // Client  with memoized initial value
   const _client = useClient({
-    apiVersion: isValidApiVersion && customApiVersion ? customApiVersion : apiVersion,
+    apiVersion: userApiVersion,
   })
   const client = useMemo(() => {
     return _client.withConfig({
-      apiVersion: isValidApiVersion && customApiVersion ? customApiVersion : apiVersion,
+      apiVersion: userApiVersion,
       perspective: getActivePerspective({
         visionPerspective: perspective,
         perspectiveStack,
         scheduledDraftsStack,
       }),
       dataset,
+      variant: activeVariant,
       allowReconfigure: true,
     })
   }, [
     perspectiveStack,
     scheduledDraftsStack,
     perspective,
-    customApiVersion,
-    apiVersion,
+    userApiVersion,
     dataset,
     _client,
-    isValidApiVersion,
+    activeVariant,
   ])
 
   const cancelQuerySubscription = useCallback(() => {
@@ -246,22 +258,31 @@ export function VisionGui(props: VisionGuiProps) {
         return
       }
 
+      const visionPerspective =
+        options && 'perspective' in options ? options.perspective : perspective
+      const queryVariant = getActiveVariant(visionPerspective, selectedVariantName)
+
       const context: Required<Omit<QueryExecutionOptions, 'params' | 'perspective'>> & {
         params: Params
         perspective: ClientPerspective | undefined
+        variant: string | undefined
       } = {
         query: options?.query || query,
         dataset: options?.dataset || dataset,
         params: parseParams(JSON.stringify(options?.params || params.parsed, null, 2), t),
         perspective: getActivePerspective({
-          visionPerspective:
-            options && 'perspective' in options ? options.perspective : perspective,
+          visionPerspective,
           perspectiveStack,
           scheduledDraftsStack,
         }),
         apiVersion:
           options?.apiVersion ||
-          (customApiVersion && isValidApiVersion ? customApiVersion : apiVersion),
+          (queryVariant
+            ? VARIANTS_API_VERSION
+            : customApiVersion && isValidApiVersion
+              ? customApiVersion
+              : apiVersion),
+        variant: queryVariant,
       }
 
       localStorage.set('query', context.query)
@@ -269,7 +290,9 @@ export function VisionGui(props: VisionGuiProps) {
 
       cancelListenerSubscription()
 
-      setQueryInProgress(!context.params.error && Boolean(context.query))
+      const hasQuery = context.query.trim().length > 0
+
+      setQueryInProgress(!context.params.error && hasQuery)
       setListenInProgress(false)
       setListenMutations([])
       setError(context.params.error ? new Error(context.params.error) : undefined)
@@ -277,18 +300,20 @@ export function VisionGui(props: VisionGuiProps) {
       setQueryTime(undefined)
       setE2eTime(undefined)
 
-      if (context.params.error) {
+      if (context.params.error || !hasQuery) {
         return
       }
 
       const urlQueryOpts: Record<string, string | string[]> = {
         perspective: context.perspective ?? [],
+        ...(context.variant ? {variant: context.variant} : {}),
       }
 
       const ctxClient = client.withConfig({
         apiVersion: context.apiVersion,
         dataset: context.dataset,
         perspective: context.perspective,
+        variant: context.variant,
       })
 
       const newUrl = ctxClient.getUrl(
@@ -326,6 +351,7 @@ export function VisionGui(props: VisionGuiProps) {
       perspective,
       perspectiveStack,
       scheduledDraftsStack,
+      selectedVariantName,
       customApiVersion,
       isValidApiVersion,
       apiVersion,
@@ -360,10 +386,9 @@ export function VisionGui(props: VisionGuiProps) {
     [localStorage, handleQueryExecution],
   )
 
-  const handleChangeApiVersion = useCallback(
-    (evt: ChangeEvent<HTMLSelectElement>) => {
-      const newApiVersion = evt.target.value
-      if (newApiVersion?.toLowerCase() === 'other') {
+  const changeApiVersion = useCallback(
+    (newApiVersion: string) => {
+      if (newApiVersion.toLowerCase() === 'other') {
         setCustomApiVersion('v')
         customApiVersionElementRef.current?.focus()
         return
@@ -375,6 +400,13 @@ export function VisionGui(props: VisionGuiProps) {
       handleQueryExecution({apiVersion: newApiVersion})
     },
     [localStorage, handleQueryExecution],
+  )
+
+  const handleChangeApiVersion = useCallback(
+    (evt: ChangeEvent<HTMLSelectElement>) => {
+      changeApiVersion(evt.target.value)
+    },
+    [changeApiVersion],
   )
 
   // Handle custom API version change
@@ -559,22 +591,25 @@ export function VisionGui(props: VisionGuiProps) {
 
   const handlePaste = useCallback(
     (evt: ClipboardEvent) => {
-      if (!evt.clipboardData) {
+      if (!evt.clipboardData || !isVisionPasteTarget(visionRootRef.current, evt)) {
         return
       }
 
-      const data = evt.clipboardData.getData('text/plain')
-      evt.preventDefault()
-      const urlState = getStateFromUrl(data)
-      if (urlState) {
-        setStateFromParsedUrl(urlState)
-        toast.push({
-          closable: true,
-          id: 'vision-paste',
-          status: 'info',
-          title: 'Parsed URL to query',
-        })
+      const urlState = getStateFromUrl(evt.clipboardData.getData('text/plain'))
+      if (!urlState) {
+        return
       }
+
+      // Only cancel the native paste once the clipboard is known to hold a query URL Vision can
+      // load, so unrelated content still pastes as usual.
+      evt.preventDefault()
+      setStateFromParsedUrl(urlState)
+      toast.push({
+        closable: true,
+        id: 'vision-paste',
+        status: 'info',
+        title: 'Parsed URL to query',
+      })
     },
     [getStateFromUrl, setStateFromParsedUrl, toast],
   )
@@ -609,6 +644,21 @@ export function VisionGui(props: VisionGuiProps) {
     }
   }, [cancelQuerySubscription, cancelListenerSubscription])
 
+  const handleStudioVariantChange = useEffectEvent(() => {
+    if (perspective !== 'pinnedRelease') {
+      return
+    }
+    // changeApiVersion already re-runs the query with vX.
+    changeApiVersion(VARIANTS_API_VERSION)
+  })
+
+  useEffect(() => {
+    if (!activeVariant) {
+      return
+    }
+    handleStudioVariantChange()
+  }, [activeVariant])
+
   const handleStudioPerspectiveChange = useEffectEvent((stack: StackablePerspective[]) => {
     if (stack.length > 0) {
       setPerspective('pinnedRelease')
@@ -628,12 +678,13 @@ export function VisionGui(props: VisionGuiProps) {
             perspectiveStack,
             scheduledDraftsStack,
           }) ?? [],
+        ...(activeVariant ? {variant: activeVariant} : {}),
       }
       return client.getUrl(
         client.getDataUrl('query', encodeQueryString(queryString, queryParams, urlQueryOpts)),
       )
     },
-    [client, perspective, perspectiveStack, scheduledDraftsStack],
+    [activeVariant, client, perspective, perspectiveStack, scheduledDraftsStack],
   )
 
   return (
@@ -646,8 +697,8 @@ export function VisionGui(props: VisionGuiProps) {
       data-testid="vision-root"
     >
       <VisionGuiHeader
-        apiVersion={apiVersion}
-        customApiVersion={customApiVersion}
+        apiVersion={activeVariant ? VARIANTS_API_VERSION : apiVersion}
+        customApiVersion={activeVariant ? false : customApiVersion}
         dataset={dataset}
         datasets={datasets}
         onChangeDataset={handleChangeDataset}
@@ -672,7 +723,7 @@ export function VisionGui(props: VisionGuiProps) {
           <Box height="stretch" flex={1}>
             <SplitPane
               className="sidebarPanes"
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+              // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
               split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
               minSize={300}
             >
@@ -700,6 +751,7 @@ export function VisionGui(props: VisionGuiProps) {
                         initialValue={query}
                         onChange={setQuery}
                         ref={editorQueryRef}
+                        extensions={groqExtensions}
                       />
                     </Box>
                   </InputContainer>
@@ -734,7 +786,7 @@ export function VisionGui(props: VisionGuiProps) {
               />
             </SplitPane>
           </Box>
-          <Box style={{position: 'relative', height: '100%'}}>
+          <QueryRecallPaneContainer>
             <Button
               mode="ghost"
               padding={2}
@@ -752,15 +804,17 @@ export function VisionGui(props: VisionGuiProps) {
                 {isQueryRecallCollapsed ? <ChevronLeftIcon /> : <ChevronRightIcon />}
               </div>
             </Button>
-            <QueryRecall
-              url={url}
-              getStateFromUrl={getStateFromUrl}
-              setStateFromParsedUrl={setStateFromParsedUrl}
-              currentQuery={query}
-              currentParams={params.parsed || {}}
-              generateUrl={generateUrl}
-            />
-          </Box>
+            <QueryRecallPaneWrapper>
+              <QueryRecall
+                url={url}
+                getStateFromUrl={getStateFromUrl}
+                setStateFromParsedUrl={setStateFromParsedUrl}
+                currentQuery={query}
+                currentParams={params.parsed || {}}
+                generateUrl={generateUrl}
+              />
+            </QueryRecallPaneWrapper>
+          </QueryRecallPaneContainer>
         </SplitPane>
       </SplitpaneContainer>
     </Root>

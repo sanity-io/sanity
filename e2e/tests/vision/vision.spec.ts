@@ -120,17 +120,27 @@ test.describe('Vision', () => {
     const inputText = `*[_type == "book" && _id == "${bookDocumentId}"]`
     await expect(queryEditor).toBeEnabled()
     await queryEditor.fill(inputText)
-    // Assert that the text was correctly inserted
+    // Assert that the text was correctly inserted. The `toHaveText` poll is the
+    // real readiness signal that CodeMirror has committed the value to its
+    // internal state; no arbitrary sleep is needed here.
     await expect(queryEditor).toHaveText(inputText)
 
-    // sleep for a bit so the text is part of the query, there is nothing in the ui to show that the text has been inserted
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // The Listen button is disabled until Vision has parsed the current query,
+    // so waiting for `enabled` is the reliable readiness signal (replaces an
+    // earlier arbitrary 1s sleep used to "let the text become part of the query").
+    const listenButton = page.locator('button').filter({hasText: 'Listen'})
+    await expect(listenButton).toBeVisible()
+    await expect(listenButton).toBeEnabled()
+    await listenButton.click()
 
-    // Find the button with the text "Fetch" and click it.
-    await page.locator('button').filter({hasText: 'Listen'}).click()
-
-    // Wait until the listener is active
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // Clicking Listen swaps the UI to a Stop button once the listener
+    // subscription is established on the backend. Creating the document before
+    // the Stop button appears races the listener setup and can cause the
+    // document event to be missed entirely. Waiting for `Stop` is the
+    // definitive "listener is active" readiness signal (replaces an earlier
+    // arbitrary 1s sleep).
+    const stopButton = page.locator('button').filter({hasText: 'Stop'})
+    await expect(stopButton).toBeVisible()
 
     await sanityClient.create({
       _type: 'book',
@@ -143,7 +153,7 @@ test.describe('Vision', () => {
     await expect(resultRegion.getByText(`documentId:${bookDocumentId}`)).toBeVisible()
 
     // Stop the listener
-    await page.locator('button').filter({hasText: 'Stop'}).click()
-    await expect(page.locator('button').filter({hasText: 'Listen'})).toBeVisible()
+    await stopButton.click()
+    await expect(listenButton).toBeVisible()
   })
 })

@@ -1,4 +1,4 @@
-import {UnknownIcon} from '@sanity/icons'
+import {UnknownIcon} from '@sanity/icons/Unknown'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'

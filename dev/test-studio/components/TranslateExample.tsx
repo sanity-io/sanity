@@ -1,13 +1,12 @@
-import {InfoFilledIcon} from '@sanity/icons'
+import {InfoFilledIcon} from '@sanity/icons/InfoFilled'
 import {Card, Stack, Text} from '@sanity/ui'
-import {forwardRef} from 'react'
 import {Translate, useTranslation} from 'sanity'
 
-export const TranslateExample = forwardRef(function TranslateExample() {
+export function TranslateExample() {
   const {t} = useTranslation('testStudio')
   return (
     <Card padding={4}>
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text>{t('use-translation.with-html')}</Text>
         <Text>
           {t('use-translation.interpolation-example', {
@@ -58,7 +57,28 @@ export const TranslateExample = forwardRef(function TranslateExample() {
             }}
           />
         </Text>
+
+        <Text weight="bold">Broken translations (should fall back gracefully, not crash):</Text>
+
+        <Text>
+          Missing self-closing:{' '}
+          <Translate t={t} i18nKey="translate.missing-self-closing" components={{}} />
+        </Text>
+        <Text>
+          Missing wrapping: <Translate t={t} i18nKey="translate.missing-wrapping" components={{}} />
+        </Text>
+        <Text>
+          Mismatched component (issue #12617):{' '}
+          <Translate
+            t={t}
+            i18nKey="translate.mismatched-component"
+            components={{
+              VersionBadge: ({children}) => <span style={{fontWeight: 'bold'}}>{children}</span>,
+            }}
+            values={{title: 'My Release'}}
+          />
+        </Text>
       </Stack>
     </Card>
   )
-})
+}

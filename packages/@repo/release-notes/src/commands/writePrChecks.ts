@@ -8,14 +8,11 @@ import {writeCheck} from '../utils/writeCheck'
 export async function writePrChecks() {
   const releasePr = await getReleasePr()
 
-  // get the 100 most recently updated PRs
-  const {data: prs} = await getOctokit().pulls.list({
+  const octokit = getOctokit()
+  const prs = await octokit.paginate(octokit.pulls.list, {
     ...REPO,
-    // eslint-disable-next-line camelcase
     per_page: 100,
     state: 'open',
-    sort: 'updated',
-    directory: 'desc',
     base: 'main',
   })
 

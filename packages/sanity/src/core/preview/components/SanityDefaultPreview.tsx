@@ -1,6 +1,7 @@
 import {isImageSource, isSanityImageUrl, parseImageAssetUrl} from '@sanity/asset-utils'
 import {type SanityClient} from '@sanity/client'
-import {DocumentIcon, WarningOutlineIcon} from '@sanity/icons'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {
   createImageUrlBuilder,
   type ImageUrlBuilder,
@@ -19,13 +20,14 @@ import {
 } from 'react'
 import {isValidElementType} from 'react-is'
 
-import {Tooltip} from '../../../ui-components'
-import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
+import {resolveBlockImageDimensions} from '../../components/previews/helpers'
+import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews/types'
 import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
 import {useImageUrl} from '../../form/inputs/files/ImageInput/useImageUrl'
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {isString} from '../../util'
+import {isString} from '../../util/isString'
 import {_previewComponents} from './_previewComponents'
 
 function FallbackIcon() {
@@ -186,14 +188,30 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
     return renderIcon
   }, [Icon, imageUrl, mediaProp, renderIcon, renderMedia, title])
 
+  const resolvedMediaDimensions = useMemo<PreviewMediaDimensions | undefined>(() => {
+    if (props.mediaDimensions) {
+      return props.mediaDimensions
+    }
+
+    if (layout !== 'blockImage') {
+      return undefined
+    }
+
+    if (!isImageSource(mediaProp)) {
+      return undefined
+    }
+
+    return resolveBlockImageDimensions(mediaProp)
+  }, [layout, mediaProp, props.mediaDimensions])
+
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
     () => ({
       ...restProps,
-      // @todo: fix `TS2769: No overload matches this call.`
-      media: media as any,
+      media,
+      mediaDimensions: resolvedMediaDimensions,
       title,
     }),
-    [media, restProps, title],
+    [media, resolvedMediaDimensions, restProps, title],
   )
 
   const LayoutComponent = _previewComponents[layout || 'default'] as ComponentType<

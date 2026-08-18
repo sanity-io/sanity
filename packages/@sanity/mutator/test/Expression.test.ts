@@ -73,3 +73,29 @@ test('Expression toIndicies', () => {
   const index = new Expression(parseAsPath('[2]').nodes[0])
   expect([2]).toEqual(index.toIndicies(new PlainProbe(['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'])))
 })
+
+// Dotted-attribute LHS in a filter constraint (#5313): equality, deep chains,
+// the existence operator, and short-circuit on a missing or non-object hop.
+test('Expression constraints with dotted-attribute LHS — issue #5313', () => {
+  const refCompare = new Expression(parseAsPath('[asset._ref == "image-abc"]').nodes[0])
+  expect(true).toEqual(refCompare.testConstraint(new PlainProbe({asset: {_ref: 'image-abc'}})))
+  expect(false).toEqual(refCompare.testConstraint(new PlainProbe({asset: {_ref: 'image-xyz'}})))
+
+  // Missing intermediate key -> false, not a throw.
+  expect(false).toEqual(refCompare.testConstraint(new PlainProbe({asset: null})))
+  expect(false).toEqual(refCompare.testConstraint(new PlainProbe({})))
+
+  // Non-object container mid-walk -> false.
+  expect(false).toEqual(refCompare.testConstraint(new PlainProbe({asset: 'not-an-object'})))
+
+  const deep = new Expression(parseAsPath('[meta.author.name == "jane"]').nodes[0])
+  expect(true).toEqual(deep.testConstraint(new PlainProbe({meta: {author: {name: 'jane'}}})))
+  expect(false).toEqual(deep.testConstraint(new PlainProbe({meta: {author: {name: 'bob'}}})))
+  expect(false).toEqual(deep.testConstraint(new PlainProbe({meta: {author: {}}})))
+
+  // Existence `?`: the leaf must exist and be primitive.
+  const exists = new Expression(parseAsPath('[asset._ref?]').nodes[0])
+  expect(true).toEqual(exists.testConstraint(new PlainProbe({asset: {_ref: 'image-abc'}})))
+  expect(false).toEqual(exists.testConstraint(new PlainProbe({asset: {}})))
+  expect(false).toEqual(exists.testConstraint(new PlainProbe({})))
+})

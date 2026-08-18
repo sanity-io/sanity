@@ -139,6 +139,7 @@ export function useOptimisticPortableTextDiff({
 
   // Reset the optimistic state after receiving definitive state.
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setOptimisticValue(undefined)
   }, [definitiveValue])
 

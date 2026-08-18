@@ -3,7 +3,7 @@ import {type Diff} from '@sanity/diff'
 import {type Path} from '@sanity/types'
 
 import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
-import {ROOT_PATH} from '../../../StringInput/StringInputPortableText/StringInputPortableText'
+import {ROOT_PATH} from '../../../StringInput/StringInputPortableText/packageValue'
 import {DeletedSegment, InsertedSegment} from './segments'
 
 interface ComputeStringDiffRangeDecorationsOptions {

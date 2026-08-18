@@ -1,12 +1,19 @@
 import {firstValueFrom, of, Subject} from 'rxjs'
 import {take, tap} from 'rxjs/operators'
-import {describe, expect, it} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type SanityClient} from '../../form/studio/assetSourceDataset/uploader'
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../../util/const'
 import {chunkCombinedSelections, type ClientLike, createObserveFields} from '../observeFields'
 import {type InvalidationChannelEvent} from '../types'
 import {type CombinedSelection} from '../utils/optimizeQuery'
+
+function sendMutations(channel: Subject<InvalidationChannelEvent>, documentIds: string | string[]) {
+  const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
+  for (const documentId of ids) {
+    channel.next({type: 'mutation', documentId, visibility: 'query'})
+  }
+}
 
 describe('chunkCombinedSelections', () => {
   it('should return a single chunk when IDs fit within the size limit', () => {
@@ -255,5 +262,264 @@ describe('observeFields', () => {
       .subscribe()
       .unsubscribe()
     expect(syncValue).toBe(null)
+  })
+
+  describe('invalidation filter with perspective', () => {
+    const SETTLE_TIME = 200
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    function setupPerspectiveTest() {
+      let fetchCount = 0
+      const client: ClientLike = {
+        observable: {
+          fetch: () => {
+            fetchCount++
+            return of([[{_id: 'foo', _rev: `rev${fetchCount}`, _type: 'testDoc', title: 'Test'}]])
+          },
+        },
+        withConfig: () => client,
+      }
+      const channel = new Subject<InvalidationChannelEvent>()
+      const observe = createObserveFields({
+        invalidationChannel: channel,
+        client: client as unknown as SanityClient,
+      })
+
+      return {
+        get fetchCount() {
+          return fetchCount
+        },
+        channel,
+        observe,
+      }
+    }
+
+    async function connectAndSettle(channel: Subject<InvalidationChannelEvent>) {
+      channel.next({type: 'connected'})
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+    }
+
+    it('should re-fetch when the observed document itself is mutated (with perspective)', async () => {
+      const harness = setupPerspectiveTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
+
+      sendMutations(harness.channel, 'foo')
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetchCount).toBeGreaterThan(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should re-fetch when the draft version of observed document is mutated', async () => {
+      const harness = setupPerspectiveTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
+
+      sendMutations(harness.channel, 'drafts.foo')
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetchCount).toBeGreaterThan(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should re-fetch when a versioned document matching the observed doc is mutated', async () => {
+      const harness = setupPerspectiveTest()
+      const sub = harness
+        .observe('foo', ['title'], undefined, ['drafts', 'summer'])
+        .subscribe(() => {})
+
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
+
+      sendMutations(harness.channel, 'versions.summer.foo')
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetchCount).toBeGreaterThan(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should NOT re-fetch when an unrelated document is mutated (with perspective)', async () => {
+      const harness = setupPerspectiveTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
+
+      sendMutations(harness.channel, ['trigger-doc', 'drafts.other-doc', 'versions.summer.bar'])
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetchCount).toBe(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should NOT re-fetch for a version outside the active perspective stack', async () => {
+      const harness = setupPerspectiveTest()
+      const sub = harness
+        .observe('foo', ['title'], undefined, ['drafts', 'summer'])
+        .subscribe(() => {})
+
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
+
+      sendMutations(harness.channel, 'versions.winter.foo')
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetchCount).toBe(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should NOT re-fetch when the same base document is mutated in an out-of-stack version while observing drafts', async () => {
+      const harness = setupPerspectiveTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
+
+      sendMutations(harness.channel, 'versions.summer.foo')
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetchCount).toBe(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should NOT re-fetch when the same base document is mutated in drafts while observing a version perspective', async () => {
+      const harness = setupPerspectiveTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['summer']).subscribe(() => {})
+
+      await connectAndSettle(harness.channel)
+      const afterConnect = harness.fetchCount
+
+      sendMutations(harness.channel, 'drafts.foo')
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetchCount).toBe(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('should always re-fetch on connected event regardless of perspective', async () => {
+      const harness = setupPerspectiveTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts']).subscribe(() => {})
+
+      await connectAndSettle(harness.channel)
+
+      expect(harness.fetchCount).toBeGreaterThan(0)
+      sub.unsubscribe()
+    })
+  })
+
+  describe('variant', () => {
+    const SETTLE_TIME = 200
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    function setupVariantTest() {
+      const fetches: {query: string; options: Record<string, unknown>}[] = []
+      const apiVersions: (string | undefined)[] = []
+
+      const client = {
+        observable: {
+          fetch: (query: string, _params: unknown, options: Record<string, unknown>) => {
+            fetches.push({query, options})
+            return of([
+              [{_id: 'foo', _rev: `rev${fetches.length}`, _type: 'testDoc', title: 'Test'}],
+            ])
+          },
+        },
+        withConfig: (config: {apiVersion?: string}) => {
+          apiVersions.push(config.apiVersion)
+          return client
+        },
+      }
+
+      const channel = new Subject<InvalidationChannelEvent>()
+      const observe = createObserveFields({
+        invalidationChannel: channel,
+        client: client as unknown as SanityClient,
+      })
+
+      return {fetches, apiVersions, channel, observe}
+    }
+
+    it('passes the variant to the query and uses the variants api version', async () => {
+      const harness = setupVariantTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts'], 'alpha').subscribe()
+
+      harness.channel.next({type: 'connected'})
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetches[0].options).toMatchObject({
+        perspective: ['drafts'],
+        variant: 'alpha',
+      })
+      expect(harness.apiVersions).toContain('X')
+      sub.unsubscribe()
+    })
+
+    it('does not share cached field observers between variants', async () => {
+      const harness = setupVariantTest()
+      const subs = [
+        harness.observe('foo', ['title'], undefined, ['drafts']).subscribe(),
+        harness.observe('foo', ['title'], undefined, ['drafts'], 'alpha').subscribe(),
+        harness.observe('foo', ['title'], undefined, ['drafts'], 'beta').subscribe(),
+      ]
+
+      harness.channel.next({type: 'connected'})
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetches.map((fetch) => fetch.options.variant)).toEqual([
+        undefined,
+        'alpha',
+        'beta',
+      ])
+      subs.forEach((sub) => sub.unsubscribe())
+    })
+
+    it('re-fetches for versions outside the perspective stack, since variant scope ids are opaque', async () => {
+      const harness = setupVariantTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts'], 'alpha').subscribe()
+
+      harness.channel.next({type: 'connected'})
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+      const afterConnect = harness.fetches.length
+
+      sendMutations(harness.channel, 'versions.p8Ab12cd34.foo')
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetches.length).toBeGreaterThan(afterConnect)
+      sub.unsubscribe()
+    })
+
+    it('does not re-fetch for unrelated documents when a variant is selected', async () => {
+      const harness = setupVariantTest()
+      const sub = harness.observe('foo', ['title'], undefined, ['drafts'], 'alpha').subscribe()
+
+      harness.channel.next({type: 'connected'})
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+      const afterConnect = harness.fetches.length
+
+      sendMutations(harness.channel, ['bar', 'drafts.bar', 'versions.p8Ab12cd34.bar'])
+      await vi.advanceTimersByTimeAsync(SETTLE_TIME)
+
+      expect(harness.fetches.length).toBe(afterConnect)
+      sub.unsubscribe()
+    })
   })
 })

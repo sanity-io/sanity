@@ -1,7 +1,7 @@
 import {type ComponentType, type PropsWithChildren} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
-import {useRenderingContextStore} from '../store/_legacy/datastores'
+import {useRenderingContextStore} from '../store/datastores'
 import {type Capability} from '../store/renderingContext/types'
 
 type Props = PropsWithChildren<{
@@ -25,7 +25,9 @@ export const CapabilityGate: ComponentType<Props> = ({
   condition = 'unavailable',
 }) => {
   const renderingContextStore = useRenderingContextStore()
-  const renderingContextCapabilities = useObservable(renderingContextStore.capabilities, {})
+  // Kept synchronous: capabilities emit once at boot, so deferring only
+  // delays the gate flipping without any render-load benefit.
+  const renderingContextCapabilities = useSyncObservable(renderingContextStore.capabilities, {})
   const renderingContextHasCapability = renderingContextCapabilities[capability] === true
 
   if (condition === 'available' && !renderingContextHasCapability) {

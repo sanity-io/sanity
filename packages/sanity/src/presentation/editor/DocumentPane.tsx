@@ -1,5 +1,6 @@
 import {studioPath} from '@sanity/client/csm'
-import {Card, Code, Label, Stack} from '@sanity/ui'
+import {Card, Label, Stack} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path, useTranslation} from 'sanity'
 import {decodeJsonParams} from 'sanity/router'
@@ -10,7 +11,7 @@ import {
 } from 'sanity/structure'
 import {styled} from 'styled-components'
 
-import {ErrorBoundary} from '../../ui-components'
+import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
 import {PresentationPaneRouterProvider} from '../paneRouter/PresentationPaneRouterProvider'
@@ -85,6 +86,7 @@ export function DocumentPane(props: {
 
   // Reset error state when parameters change
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler
     setErrorParams(null)
   }, [documentId, documentType, structureParams])
 
@@ -94,7 +96,7 @@ export function DocumentPane(props: {
         {devMode && (
           // show runtime error message in dev mode
           <Card overflow="auto" padding={3} radius={2} tone="critical">
-            <Stack space={3}>
+            <Stack gap={3}>
               <Label muted size={0}>
                 {t('presentation-error.label')}
               </Label>
@@ -117,7 +119,7 @@ export function DocumentPane(props: {
         >
           <Suspense fallback={<PresentationSpinner />}>
             <StructureDocumentPane
-              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+              // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
               paneKey="document"
               index={1}
               itemId="document"

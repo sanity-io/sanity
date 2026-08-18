@@ -1,8 +1,16 @@
 import {type SanityClient} from '@sanity/client'
 import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
+import {uuid} from '@sanity/uuid'
 import get from 'lodash-es/get.js'
-import {type ComponentType, type PropsWithChildren, useContext, useEffect, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {
+  type ComponentType,
+  type PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import {useSyncObservable} from 'react-rx'
 import {BehaviorSubject, combineLatest, EMPTY, filter, map, of, Subject, tap} from 'rxjs'
 import {type DocumentDivergencesContextValue, DocumentDivergencesContext} from 'sanity/_singletons'
 
@@ -19,12 +27,13 @@ import {
 import {readMostRecentSharedTransaction} from '../../divergence/readMostRecentSharedTransaction'
 import {type ResolutionMarker} from '../../divergence/types/ResolutionMarker'
 import {useClient} from '../../hooks/useClient'
-import {type EditStateFor} from '../../store'
-import {selectUpstreamVersion} from '../../store/_legacy/document/selectUpstreamVersion'
+import {type EditStateFor} from '../../store/document/document-pair/editState'
+import {selectUpstreamVersion} from '../../store/document/selectUpstreamVersion'
 import {getDocumentAtRevision} from '../../store/events/getDocumentAtRevision'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isPublishedId} from '../../util/draftUtils'
-import {type FormState} from '../store'
+import {FormGutterCustomProperties} from '../components/FormGutterCustomProperties'
+import {type FormState} from '../store/useFormState'
 
 interface PropsEnabled extends PropsWithChildren {
   enabled: true
@@ -32,7 +41,6 @@ interface PropsEnabled extends PropsWithChildren {
   upstreamEditState: EditStateFor
   editState: EditStateFor
   subjectId: string
-  displayedId: string
   schemaType: ObjectSchemaType
 }
 
@@ -50,7 +58,7 @@ export const DivergencesProvider: ComponentType<Props> = (props) => {
     return <DivergencesProviderEnabled {...props} />
   }
 
-  return <DocumentDivergencesContext.Provider value={{enabled: false}} {...props} />
+  return <DivergencesProviderDisabled {...props} />
 }
 
 const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
@@ -59,7 +67,6 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
   editState,
   subjectId,
   schemaType,
-  displayedId,
   children,
 }) => {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -68,7 +75,7 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
   const upstreamId = upstreamHead?._id
   const hasUpstreamVersion = typeof upstreamId !== 'undefined'
 
-  const subject = isPublishedId(displayedId)
+  const subject = isPublishedId(subjectId)
     ? editState.published
     : (editState.version ?? editState.draft)
 
@@ -106,9 +113,29 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
     formState,
   })
 
+  const [sessionId] = useState(() => uuid())
+
+  const value = useMemo<DocumentDivergencesContextValue>(
+    () => ({enabled: true, sessionId, ...divergenceNavigator}),
+    [sessionId, divergenceNavigator],
+  )
+
   return (
-    <DocumentDivergencesContext.Provider value={{enabled: true, ...divergenceNavigator}}>
-      {children}
+    <DocumentDivergencesContext.Provider value={value}>
+      <FormGutterCustomProperties $enabled>{children}</FormGutterCustomProperties>
+    </DocumentDivergencesContext.Provider>
+  )
+}
+
+const disabledContextValue: DocumentDivergencesContextValue = {
+  enabled: false,
+  sessionId: null,
+}
+
+const DivergencesProviderDisabled: ComponentType<PropsWithChildren> = ({children}) => {
+  return (
+    <DocumentDivergencesContext.Provider value={disabledContextValue}>
+      <FormGutterCustomProperties $enabled={false}>{children}</FormGutterCustomProperties>
     </DocumentDivergencesContext.Provider>
   )
 }
@@ -117,13 +144,7 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
  * @internal
  */
 export function useDocumentDivergences(): DocumentDivergencesContextValue {
-  const context = useContext(DocumentDivergencesContext)
-
-  if (!context) {
-    throw new Error('useDocumentDivergences must be used within a DocumentDivergencesContext')
-  }
-
-  return context
+  return useContext(DocumentDivergencesContext)
 }
 
 /**
@@ -161,7 +182,10 @@ function useCollateDivergencesContext({
     get(subjectHead, ['_system', 'base', 'id']) === upstreamHead?._id &&
     get(subjectHead, ['_system', 'base', 'rev']) === upstreamHead?._rev
 
-  const mostRecentSharedTransaction = useObservable(
+  // Kept synchronous: this is an input to the `readUpstreamAtFork` stream that
+  // is combined with the live document heads below — a deferred snapshot could
+  // pair an outdated fork-point revision with newer heads.
+  const mostRecentSharedTransaction = useSyncObservable(
     shouldFindForkPoint && baseIsForkPoint
       ? EMPTY
       : readMostRecentSharedTransaction({
@@ -241,5 +265,8 @@ function useCollateDivergencesContext({
     }).pipe(tap((nextContext) => context.next(nextContext)))
   }, [readUpstreamAtFork, context, listenUpstreamHead, listenSubjectHead, listenResolutions])
 
-  return useObservable(listenContext)
+  // The subscription exists to drive the `context.next` pipeline above; the
+  // returned snapshot is not consumed for rendering, so deferring it would
+  // only desynchronize the pipeline.
+  return useSyncObservable(listenContext)
 }

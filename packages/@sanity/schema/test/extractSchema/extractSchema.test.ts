@@ -553,6 +553,50 @@ describe('Extract schema test', () => {
     })
   })
 
+  test('object type without fields returns empty object type', () => {
+    const types = [
+      defineType({
+        title: 'Empty Object',
+        name: 'emptyObject',
+        type: 'object',
+        fields: [],
+      }),
+      defineType({
+        title: 'Test Document',
+        name: 'testDocument',
+        type: 'document',
+        fields: [
+          {
+            title: 'Empty',
+            name: 'empty',
+            type: 'emptyObject',
+          },
+        ],
+      }),
+    ]
+
+    // Compile directly to bypass validation that rejects objects with no fields
+    const schema = Schema.compile({
+      name: 'test',
+      types: [...types, ...builtinTypes],
+    })
+
+    const extracted = extractSchema(schema)
+    const emptyObjectType = extracted.find((type) => type.name === 'emptyObject')
+    expect(emptyObjectType).toBeDefined()
+    assert(emptyObjectType !== undefined)
+    assert(emptyObjectType.type === 'type')
+    expect(emptyObjectType.name).toBe('emptyObject')
+    expect(emptyObjectType.value.type).toBe('object')
+    assert(emptyObjectType.value.type === 'object')
+    expect(emptyObjectType.value.attributes).toStrictEqual({
+      _type: {
+        type: 'objectAttribute',
+        value: {type: 'string', value: 'emptyObject'},
+      },
+    })
+  })
+
   test('order of types does not matter', () => {
     const schema1 = createSchema({
       name: 'test',

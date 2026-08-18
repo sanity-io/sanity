@@ -4,10 +4,10 @@ import {
   type FileSchemaType,
   type ImageSchemaType,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useAuthType} from '../hooks/useAuthType'
 import {useLinkAssets} from '../hooks/useLinkAssets'
 import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
@@ -133,6 +133,7 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
             type: 'uploadRequest',
             files: uploader.getFiles(),
           })
+          // oxlint-disable-next-line react/react-compiler
           setPageReadyForUploads(false)
         }
       }

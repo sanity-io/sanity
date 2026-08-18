@@ -1,5 +1,5 @@
-import {TrashIcon} from '@sanity/icons'
-import {Menu} from '@sanity/ui'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {Menu} from '@sanity/ui/menu'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -38,8 +38,7 @@ export const FallbackContextMenu = (props: Props) => {
           />
         </Menu>
       }
-      placement="left"
-      popover={{portal: true, tone: 'default'}}
+      popover={{placement: 'left', portal: true, tone: 'default'}}
     />
   )
 }

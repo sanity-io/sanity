@@ -1,18 +1,22 @@
-import {Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
 import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 
-import {Button} from '../../../../ui-components'
-import {ReferenceInputPreviewCard} from '../../../components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {getPublishedId, isNonNullable} from '../../../util'
+import {getPublishedId} from '../../../util/draftUtils'
+import {isNonNullable} from '../../../util/isNonNullable'
 import {Alert} from '../../components/Alert'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {set, setIfMissing, unset} from '../../patch'
+import {set, setIfMissing, unset} from '../../patch/patch'
+import {useArrayItemRootElementRef} from '../arrays/common/useArrayItemRootElementRef'
 import {AutocompleteContainer} from './AutocompleteContainer'
 import {CreateButton} from './CreateButton'
 import {OptionPreview} from './OptionPreview'
@@ -58,7 +62,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
     path,
     elementProps,
     focusPath,
+    validation,
   } = props
+
+  const validationError = validation?.find((v) => v.level === 'error')?.message
   const {selectedReleaseId} = usePerspective()
 
   const {getReferenceInfo} = useReferenceInput({
@@ -282,6 +289,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   // --- click outside handling
   const {menuRef, menuButtonRef, containerRef} = useReferenceItemRef()
+  const arrayItemRootElementRef = useArrayItemRootElementRef()
   const clickOutsideBoundaryRef = useRef<HTMLDivElement>(null)
   const autoCompletePortalRef = useRef<HTMLDivElement>(null)
   const createButtonMenuPortalRef = useRef<HTMLDivElement>(null)
@@ -311,14 +319,20 @@ export function ReferenceInput(props: ReferenceInputProps) {
       clickOutsideBoundaryRef.current,
       autoCompletePortalRef.current,
       createButtonMenuPortalRef.current,
+      // The enclosing array item (when inside one). Custom item/input
+      // components may render their own UI (e.g. a "Create new" button) around
+      // the default input, and clicking it must not clear the empty item —
+      // clearing on mousedown unmounts such elements before their click
+      // handlers get a chance to run.
+      arrayItemRootElementRef?.current ?? null,
     ],
   )
 
   return (
     <div style={props.elementProps.style}>
       <ReferenceInputPreview {...props}>
-        <Stack space={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
-          <Stack space={2}>
+        <Stack gap={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
+          <Stack gap={2}>
             {isWeakRefToNonexistent ? (
               <Alert
                 data-testid="alert-nonexistent-document"
@@ -363,6 +377,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
                 renderValue={renderValue}
                 openButton={{onClick: handleAutocompleteOpenButtonClick}}
                 portalRef={autoCompletePortalRef}
+                customValidity={validationError}
                 value={value?._ref}
               />
 

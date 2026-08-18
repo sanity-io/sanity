@@ -43,57 +43,42 @@ const errors = allDiagnostics.filter((diag) => diag.category === ts.DiagnosticCa
  * If it originates from a sanity library the intention may be to fix it, but it shouldn't block the PR from landing.
  */
 const filteredErrors = errors.filter((d) => {
-  const {file, code, messageText} = d
+  const {file, code} = d
 
   // We can't deal with errors without a file property so we don't skip over them
   if (!file) return true
 
-  // We can't fix type issues in third party libraries
-  if (file.fileName.includes('node_modules/@types/inquirer')) {
-    return false
-  }
-  if (file.fileName.endsWith('node_modules/react-i18next/index.d.ts')) {
-    return false
-  }
-  if (file.fileName.endsWith('node_modules/rollup/dist/rollup.d.ts')) {
-    return false
-  }
-  if (file.fileName.endsWith('node_modules/slate-react/dist/components/text.d.ts')) {
-    return false
-  }
-  if (file.fileName.endsWith('node_modules/vite/dist/node/index.d.ts')) {
+  // Temporary workaround for broken d.ts output in @sanity/sdk's dist/ (still reproduced with the
+  // latest stable 2.14.1). The generated declarations import from '../_exports', which TypeScript
+  // can't resolve because dist/_exports/ ships no index.d.ts. This only affects type checking in
+  // node_modules and does not impact runtime behavior. The d.ts emit is fixed in @sanity/sdk v3, so
+  // this filter can be removed once the monorepo upgrades to it (or @sanity/sdk backports the fix).
+  if (code === 2307 && file.fileName.includes('/node_modules/@sanity/sdk/dist/')) {
     return false
   }
 
-  // This error originates from a generated xstate machine declaration, so it's not code we can fix, it's a false negative
+  // Temporary workaround for quick-lru's TS2416 declarations with TypeScript's new iterator helper
+  // types in lib.esnext.iterator.d.ts. quick-lru's methods currently return IterableIterator while
+  // Map now expects MapIterator. This originates from node_modules and does not affect runtime
+  // behavior in this repository. Remove once quick-lru ships declarations compatible with
+  // TypeScript versions that include Iterator helper methods on MapIterator.
+  if (code === 2416 && file.fileName.includes('/node_modules/quick-lru/')) {
+    return false
+  }
+
+  // Temporary workaround for @sanity/vision declaration output that emits a side-effect import to
+  // "get-it", which TypeScript reports as TS2882 under skipLibCheck: false in this suite.
+  if (code === 2882 && file.fileName.includes('/packages/@sanity/vision/lib/index.d.ts')) {
+    return false
+  }
+
+  // Temporary workaround for @module-federation/sdk declarations importing the optional "webpack"
+  // peer dependency types. This originates in node_modules and does not affect runtime behavior.
   if (
-    file.fileName.includes('node_modules/@portabletext/editor/') &&
-    code === 2488 &&
-    messageText ===
-      `Type 'never' must have a '[Symbol.iterator]()' method that returns an iterator.`
-  ) {
-    return false
-  }
-
-  // Handled in https://github.com/sanity-io/sanity/pull/9986
-  if (
-    (file.fileName.includes('packages/sanity/lib/_singletons.') ||
-      file.fileName.includes('packages/sanity/lib/desk.')) &&
-    (code === 2552 || code === 2304)
-  ) {
-    return false
-  }
-
-  // Handled in https://github.com/sanity-io/sanity/pull/9988
-  if (file.fileName.includes('packages/sanity/lib/index.') && code === 2717) {
-    return false
-  }
-
-  // @sanity/codegen@5.10.1 has a type incompatibility due to conflicting @oclif/core versions (4.8.0 vs 4.8.2)
-  // This is a transitive dependency conflict we can't fix directly
-  if (
-    file.fileName.includes('node_modules/@sanity/codegen/dist/index.d.ts') &&
-    (code === 2417 || code === 2344)
+    code === 2307 &&
+    file.fileName.includes(
+      '/node_modules/@module-federation/sdk/dist/types/plugins/ModuleFederationPlugin.d.ts',
+    )
   ) {
     return false
   }

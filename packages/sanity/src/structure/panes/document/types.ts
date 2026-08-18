@@ -13,6 +13,10 @@ export type DocumentPaneProviderProps = {
 
 /** @internal */
 export interface HistoryStoreProps {
+  /**
+   * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
+   */
+  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
   store?: TimelineStore
   error: Error | null
   onOlderRevision: boolean

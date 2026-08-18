@@ -11,31 +11,34 @@ import {
   type SearchStrategy,
 } from '@sanity/types'
 import {type ButtonTone} from '@sanity/ui'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
+// oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import {type ComponentType, type ErrorInfo, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 import {type Router, type RouterState} from 'sanity/router'
 
-import {type FormBuilderCustomMarkersComponent, type FormBuilderMarkersComponent} from '../form'
+import {
+  type FormBuilderCustomMarkersComponent,
+  type FormBuilderMarkersComponent,
+} from '../form/types/_transitional'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
-import {type AuthStore} from '../store'
+import {type AuthStore} from '../store/authStore/types'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
-import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
+import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
 import {type StudioTheme} from '../theme'
 import {type AuthConfig} from './auth/types'
+import {type DocumentActionComponent} from './document/actions'
+import {type DocumentBadgeComponent} from './document/badges'
 import {
-  type DocumentActionComponent,
-  type DocumentBadgeComponent,
   type DocumentFieldAction,
   type DocumentFieldActionsResolver,
   type DocumentFieldActionsResolverContext,
-  type DocumentInspector,
-} from './document'
-import {type FormComponents} from './form'
+} from './document/fieldActions/types'
+import {type DocumentInspector} from './document/inspector'
+import {type FormComponents} from './form/types'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
-import {type StudioComponents, type StudioComponentsPluginOptions} from './studio'
+import {type StudioComponents, type StudioComponentsPluginOptions} from './studio/types'
 
 /**
  * @hidden
@@ -69,20 +72,6 @@ export interface GroupableActionDescription<GroupType = unknown> extends BaseAct
 }
 
 /**
- * Symbol for configuring decision parameters schema
- * @beta
- */
-export const DECISION_PARAMETERS_SCHEMA = Symbol('__decisionParametersSchema')
-
-/**
- * Configuration for decision parameters
- * @beta
- */
-export interface DecisionParametersConfig {
-  [key: string]: string[]
-}
-
-/**
  * @hidden
  * @beta
  */
@@ -100,6 +89,7 @@ export interface SanityFormConfig {
    * @beta
    */
   unstable?: {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     CustomMarkers?: FormBuilderCustomMarkersComponent
     Markers?: FormBuilderMarkersComponent
   }
@@ -267,8 +257,6 @@ export interface ConfigContext {
    * Localization resources
    */
   i18n: LocaleSource
-  /** @beta */
-  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 }
 
 /** @public */
@@ -354,6 +342,24 @@ export interface DocumentPluginOptions {
   /** @internal */
   comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
+  }
+
+  /**
+   * Configuration for the "Ask to edit" button that appears when a user
+   * lacks edit permissions on a document.
+   *
+   * @hidden
+   * @beta
+   */
+  askToEdit?: {
+    /**
+     * Whether the "Ask to edit" button is enabled. Defaults to `true`.
+     *
+     * Can be a boolean or a function that receives a context object and returns a boolean.
+     * When set to `false`, the "Ask to edit" button will be hidden but the
+     * document will still be read-only for users without edit permissions.
+     */
+    enabled: boolean | ((context: DocumentAskToEditEnabledContext) => boolean)
   }
 
   drafts?: {
@@ -493,33 +499,18 @@ export interface PluginOptions {
      * Control the strategy used for searching documents. This should generally only be used if you
      * wish to try experimental search strategies.
      *
-     * This option takes precedence over the deprecated `search.enableLegacySearch` option.
-     *
      * Can be one of:
      *
-     * - `"groqLegacy"` (default): Use client-side tokenization and schema introspection to search
-     *   using the GROQ Query API.
-     * - `"groq2024"`: (experimental) Perform full text searching using the GROQ Query API and its
+     * * - `"groq2024"`: (default) Perform full text searching using the GROQ Query API and its
      *   new `text::matchQuery` function.
+     * - `"groqLegacy"` (legacy): Use client-side tokenization and schema introspection to search
+     *   using the GROQ Query API.
      */
     strategy?: SearchStrategy
-
-    /**
-     * Enables the legacy Query API search strategy.
-     *
-     * @deprecated Use `search.strategy` instead.
-     */
-    enableLegacySearch?: boolean
   }
-
-  /** @internal */
-  __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
 
   /** Configuration for Scheduled drafts */
   scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
-
-  /** @beta */
-  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 
   /** Configuration for Content Releases */
   releases?: DefaultPluginsWorkspaceOptions['releases']
@@ -587,12 +578,54 @@ export type AsyncConfigPropertyReducer<TValue, TContext> = (
 export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 
 /**
+ * Context passed to workspace `hidden` callbacks.
+ *
+ * @public
+ */
+export interface WorkspaceHiddenContext {
+  /** The authenticated user, or `null` if unavailable. */
+  currentUser: CurrentUser | null
+}
+
+/**
+ * A boolean or callback that returns `true` to hide the workspace from the UI.
+ *
+ * @public
+ */
+export type WorkspaceHiddenProperty = boolean | ((context: WorkspaceHiddenContext) => boolean)
+
+/**
  * @hidden
  * @beta
  */
 export interface WorkspaceOptions extends SourceOptions {
   basePath: string
   subtitle?: string
+
+  /**
+   * Hides this workspace from the studio UI. Client-side only -
+   * enforce access control server-side via Sanity's RBAC system.
+   *
+   * Callbacks are evaluated after auth state resolves and re-evaluated when it changes.
+   * Before auth resolves, callback-hidden workspaces are treated as visible for
+   * navigation purposes - users will see a loading screen until auth resolves.
+   *
+   * When `currentUser` is `null` (user not yet authenticated in this workspace),
+   * returning `true` will prevent them from seeing and authenticating against the
+   * workspace. Start callbacks with `if (currentUser === null) return false` unless
+   * you intentionally want to hide the workspace from unauthenticated users.
+   *
+   * @example Hide a workspace from non-admin users
+   * ```ts
+   * hidden: ({currentUser}) => {
+   *   if (currentUser === null) return false
+   *   return !currentUser.roles.some((role) => role.name === 'administrator')
+   * }
+   * ```
+   *
+   * @public
+   */
+  hidden?: WorkspaceHiddenProperty
   /**
    * The workspace logo
    *
@@ -606,6 +639,7 @@ export interface WorkspaceOptions extends SourceOptions {
    * @hidden
    * @beta
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme?: StudioTheme
 
   /**
@@ -631,23 +665,7 @@ export interface WorkspaceOptions extends SourceOptions {
   mediaLibrary?: DefaultPluginsWorkspaceOptions['mediaLibrary']
   apps?: AppsOptions
 
-  /**
-   * @hidden
-   * @internal
-   */
-  __internal_serverDocumentActions?: {
-    /**
-     * @deprecated The Mutations API integration will be removed in a future release.
-     */
-    enabled?: boolean
-  }
-
   scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
-
-  /**
-   * @beta
-   */
-  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
@@ -742,6 +760,12 @@ export interface DocumentInspectorContext extends ConfigContext {
 
 /** @hidden @beta */
 export interface DocumentCommentsEnabledContext {
+  documentId?: string
+  documentType: string
+}
+
+/** @hidden @beta */
+export interface DocumentAskToEditEnabledContext {
   documentId?: string
   documentType: string
 }
@@ -895,6 +919,11 @@ export interface Source {
     comments: {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
     }
+
+    /** @hidden @beta */
+    askToEdit: {
+      enabled: (props: DocumentAskToEditEnabledContext) => boolean
+    }
   }
 
   /** @internal */
@@ -946,6 +975,7 @@ export interface Source {
      * @beta
      */
     unstable?: {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       CustomMarkers?: FormBuilderCustomMarkersComponent
       Markers?: FormBuilderMarkersComponent
     }
@@ -971,8 +1001,6 @@ export interface Source {
     unstable_partialIndexing?: {
       enabled: boolean
     }
-
-    enableLegacySearch?: boolean
     strategy?: SearchStrategy
   }
 
@@ -1021,8 +1049,6 @@ export interface Source {
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
   }
 
-  /** @internal */
-  __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
   /** Configuration for studio features.
    * @internal
    */
@@ -1077,6 +1103,8 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   customIcon: boolean
   subtitle?: string
   basePath: string
+  /** @see WorkspaceHiddenProperty */
+  hidden?: WorkspaceHiddenProperty
   auth: AuthStore
   projectId: string
   dataset: string
@@ -1086,6 +1114,7 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
    * @internal
    */
   apiHost?: string
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: StudioTheme
   schema: Schema
   i18n: LocaleSource
@@ -1143,6 +1172,17 @@ export interface ScheduledPublishingPluginOptions {
 export interface Workspace extends Omit<Source, 'type'> {
   type: 'workspace'
   /**
+   * The API hostname *explicitly configured* on the workspace (custom CNAMEs,
+   * non-default environments). Undefined when the config sets none — note the
+   * effective host may still differ from the production default in that case
+   * (e.g. staging inferred via `isStaging`); environment defaults are applied
+   * where clients are created, not here. Carried over from the workspace
+   * summary at runtime; typed here so consumers don't have to re-derive it
+   * from a client.
+   * @internal
+   */
+  apiHost?: string
+  /**
    * URL base path to use, for instance `/myWorkspace`
    * Note that this will be prepended with any _studio_ base path, eg `/studio/myWorkspace`,
    * and is a client-side routing feature. If you're looking to serve your studio from a subpath,
@@ -1195,17 +1235,13 @@ export interface PreparedConfig {
   workspaces: WorkspaceSummary[]
 }
 
-export type {
-  AuthConfig,
-  AuthProvider,
-  CookielessCompatibleLoginMethod,
-  LoginMethod,
-} from './auth/types'
+export type {AuthConfig} from './auth/types'
 
 /** @beta */
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
   scheduledDrafts: {enabled: boolean}
+  variants: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
   releases: {
     enabled?: boolean
@@ -1306,7 +1342,30 @@ export interface BetaFeatures {
    * If it is not enabled, it will continue using the legacy Timeline.
    */
   eventsAPI?: {
+    /**
+     * @deprecated This option will be removed in the next major version, after which document
+     * history will always use the events API and the legacy Timeline will no longer be available.
+     */
     documents?: boolean
     releases?: boolean
+  }
+  /**
+   * Config for variants beta features in Studio.
+   */
+  variants?: {
+    enabled?: boolean
+  }
+  /**
+   * Control whether the preview of the new document group inventory is
+   * switched on.
+   *
+   * This is the new UI for managing and navigating versions and variants of
+   * documents. It replaces the version chips that currently appear at the top
+   * of the document editor.
+   *
+   * It is switched on automatically when `beta.variants.enabled` is true.
+   */
+  documentGroupInventory?: {
+    enabled?: boolean
   }
 }

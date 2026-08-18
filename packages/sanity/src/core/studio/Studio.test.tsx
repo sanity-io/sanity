@@ -21,7 +21,7 @@ import {renderToStaticMarkup, renderToString} from 'react-dom/server'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
-import {createMockAuthStore} from '../store/_legacy/authStore/createMockAuthStore'
+import {createMockAuthStore} from '../store/authStore/createMockAuthStore'
 import {Studio} from './Studio'
 
 const client = createMockSanityClient() as any as SanityClient
@@ -31,7 +31,8 @@ const config = {
   auth: createMockAuthStore({client, currentUser: null}),
 }
 
-vi.mock('./components/navbar/new-document')
+vi.mock('./components/navbar/new-document/NewDocumentButton')
+vi.mock('./components/navbar/new-document/useNewDocumentOptions')
 vi.mock('./components/navbar/presence/PresenceMenu')
 
 describe('Studio', () => {

@@ -1,5 +1,5 @@
 import {defineConfig} from '@repo/test-config/vitest'
-import react from '@vitejs/plugin-react'
+import viteReact from '@vitejs/plugin-react'
 
 export default defineConfig({
   test: {
@@ -8,5 +8,5 @@ export default defineConfig({
       ignoreSourceErrors: false,
     },
   },
-  plugins: [react({babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]}})],
+  plugins: [viteReact()],
 })

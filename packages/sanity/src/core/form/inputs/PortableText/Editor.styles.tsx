@@ -1,11 +1,10 @@
-/* eslint-disable camelcase */
-
 import {Card, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
-import {ScrollContainer} from '../../../components/scroll'
-import {createListName, TEXT_LEVELS} from './text'
+import {ScrollContainer} from '../../../components/scroll/scrollContainer'
+import {TEXT_LEVELS} from './text/constants'
+import {createListName} from './text/helpers'
 
 export const Root = styled(Card)<{$isOneLine: boolean}>`
   &[data-fullscreen='true'] {
@@ -101,33 +100,48 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
 
     & > .pt-list-item-bullet + .pt-list-item-number,
     & > .pt-list-item-number + .pt-list-item-bullet {
-      margin-top: ${({theme}) => theme.sanity.space[3]}px;
+      margin-top: ${({theme}) => theme.sanity.space[3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
     }
 
     & > :not(.pt-list-item) + .pt-list-item {
-      margin-top: ${({theme}) => theme.sanity.space[2]}px;
+      margin-top: ${({theme}) => theme.sanity.space[2] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
     }
 
     & > .pt-list-item + :not(.pt-list-item) {
-      margin-top: ${({theme}) => theme.sanity.space[3]}px;
+      margin-top: ${({theme}) => theme.sanity.space[3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
     }
 
     & > :first-child {
-      padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
+      padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
     }
 
     padding-bottom: ${({$isFullscreen, $isOneLine, theme}) =>
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       $isOneLine ? '0' : theme.sanity.space[$isFullscreen ? 9 : 5]}px;
 
-    & > .pt-block {
+    & > [data-pt-block] {
+      /* Positioning context for the absolutely-positioned drop indicator so it
+         sizes to the block (the centred text column) instead of the full-width
+         .pt-editable, which overshoots the block in fullscreen. */
+      position: relative;
       margin: 0 auto;
       max-width: ${(props) => getTheme_v2(props.theme).container[1]}px;
     }
 
-    /* & > .pt-block {
-      & .pt-inline-object {
-      }
-    } */
+    /* Container nodes are consumer-rendered and miss the inner-padding gutter
+     * the text-block/object components apply. Padding a container is unreliable
+     * (a table ignores it for cell layout), so narrow the box via max-width
+     * minus the gutter on both sides instead, centred by the margin auto above. */
+    & > [data-pt-block='container'] {
+      width: calc(
+        100% -
+          ${({$isFullscreen, theme}) => 2 * theme.sanity.space[$isFullscreen ? 5 : 3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px
+      );
+      max-width: calc(
+        ${(props) => getTheme_v2(props.theme).container[1]}px -
+          ${({$isFullscreen, theme}) => 2 * theme.sanity.space[$isFullscreen ? 5 : 3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px
+      );
+    }
 
     & .pt-drop-indicator {
       pointer-events: none;
@@ -137,20 +151,36 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
       margin-top: -3px;
       left: calc(
         ${({$isFullscreen, theme}) =>
-          $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
           1px
       );
       right: calc(
         ${({$isFullscreen, theme}) =>
-          $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
           1px
       );
       width: calc(
         100% -
           ${({$isFullscreen, theme}) =>
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} +
           2px
       ) !important;
+    }
+
+    /* A block nested in a container is its own positioning context, so its drop
+       indicator sizes to the block (the cell) instead of escaping to the
+       container, and spans the full width: the container owns the gutter. */
+    & [data-pt-block] [data-pt-block] {
+      position: relative;
+    }
+
+    & [data-pt-block] [data-pt-block] .pt-drop-indicator {
+      left: 0;
+      right: 0;
+      width: 100% !important;
     }
   }
 `

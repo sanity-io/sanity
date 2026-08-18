@@ -3,38 +3,19 @@ import {createGlobalVar, createVar, fallbackVar, globalStyle} from '@vanilla-ext
 const SCROLLBAR_SIZE = 12 // px
 const SCROLLBAR_BORDER_SIZE = 4 // px
 
-// Used in FormContainer and FormRow, should be rewritten to regular `createVar` later instead of `createVar` later instead of `createGlobalVar`
-export const formGutterSize = createGlobalVar('formGutterSize', {
-  syntax: '<length>',
-  inherits: true,
-  initialValue: '0px',
-})
-export const formGutterGap = createGlobalVar('formGutterGap', {
-  syntax: '<length>',
-  inherits: true,
-  initialValue: '0px',
-})
 export const selectionBackgroundColor = createVar()
-
-// equivalent to font.text.family in Sanity UI theme context
-export const uiFontTextFamily = createVar()
-// equivalent to font.text.weights.medium in Sanity UI theme constants
-export const uiFontTextWeightsMedium = createVar()
-// equivalent to color.bg in Sanity UI theme constants
-export const uiColoBg = createVar()
-// equivalent to color.border in Sanity UI theme constants
+export const uiColorBg = createVar()
 export const uiColorBorder = createVar()
-// equivalent to color.muted.fg in Sanity UI theme constants
 export const uiColorMutedFg = createVar()
+export const uiFontTextFamily = createVar()
+export const uiFontTextWeightMedium = createVar()
+export const webkitResizerBackgroundImage = createVar()
 
-// An svg data uri built client side, unfortunately
-export const webkitResizerSvg = createVar()
-
-const uiCardBorderColorVar = createGlobalVar('card-border-color')
-const uiCardMutedFgColorVar = createGlobalVar('card-muted-fg-color')
+const uiCardBorderColor = createGlobalVar('card-border-color')
+const uiCardMutedFgColor = createGlobalVar('card-muted-fg-color')
 
 globalStyle('::-webkit-resizer', {
-  backgroundImage: webkitResizerSvg,
+  backgroundImage: webkitResizerBackgroundImage,
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'bottom right',
 })
@@ -47,13 +28,13 @@ globalStyle('::-webkit-scrollbar-corner', {
 })
 globalStyle('::-webkit-scrollbar-thumb', {
   backgroundClip: 'content-box',
-  backgroundColor: fallbackVar(uiCardBorderColorVar, uiColorBorder),
+  backgroundColor: fallbackVar(uiCardBorderColor, uiColorBorder),
   borderWidth: SCROLLBAR_BORDER_SIZE,
   borderStyle: 'solid',
   borderColor: 'transparent',
 })
 globalStyle('::-webkit-scrollbar-thumb:hover', {
-  backgroundColor: fallbackVar(uiCardMutedFgColorVar, uiColorMutedFg),
+  backgroundColor: fallbackVar(uiCardMutedFgColor, uiColorMutedFg),
 })
 globalStyle('::-webkit-scrollbar-track', {
   background: 'transparent',
@@ -64,7 +45,7 @@ globalStyle('*::selection', {
 })
 
 globalStyle('html', {
-  backgroundColor: uiColoBg,
+  backgroundColor: uiColorBg,
 })
 
 globalStyle('body', {
@@ -73,11 +54,15 @@ globalStyle('body', {
 
 globalStyle('#sanity', {
   fontFamily: uiFontTextFamily,
+  vars: {
+    '--static-css-file-loaded-studio': 'true',
+  },
 })
 
 globalStyle('b', {
-  fontWeight: uiFontTextWeightsMedium,
+  fontWeight: uiFontTextWeightMedium,
 })
+
 globalStyle('strong', {
-  fontWeight: uiFontTextWeightsMedium,
+  fontWeight: uiFontTextWeightMedium,
 })

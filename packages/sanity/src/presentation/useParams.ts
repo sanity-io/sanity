@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-shadow */
-import {type MutableRefObject, useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react'
+import {type RefObject, useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {getPublishedId} from 'sanity'
 import {type RouterContextValue, type RouterState, type SearchParam} from 'sanity/router'
 
@@ -66,7 +65,7 @@ export function useParams({
   routerSearchParams: {
     [k: string]: string
   }
-  frameStateRef: MutableRefObject<FrameState>
+  frameStateRef: RefObject<FrameState>
 }): {
   isSameDocument: (state: PresentationStateParams) => boolean
   navigate: PresentationNavigate

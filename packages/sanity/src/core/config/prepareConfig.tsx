@@ -1,9 +1,9 @@
 import {fromUrl} from '@sanity/bifur-client'
-import {createClient, type SanityClient} from '@sanity/client'
+import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
+// oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import startCase from 'lodash-es/startCase.js'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
@@ -18,25 +18,32 @@ import {
   createSanityMediaLibraryFileSource,
   createSanityMediaLibraryImageSource,
 } from '../form/studio/assetSourceMediaLibrary'
-import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
-import {createSchema} from '../schema'
-import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
-import {validateWorkspaces} from '../studio'
+import {type LocaleSource} from '../i18n/types'
+import {createSchema} from '../schema/createSchema'
+import {createAuthStore, type RequestFailureDiagnostics} from '../store/authStore/createAuthStore'
+import {type AuthStore} from '../store/authStore/types'
+import {isAuthStore} from '../store/authStore/utils/asserters'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
+import {fetchCanDeployStudio} from '../studio/manifest/canDeployStudio'
 import {uploadSchema} from '../studio/manifest/uploadSchema'
+import {type RequestErrorChannel} from '../studio/requestErrors/types'
+import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
-import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
-import {EMPTY_ARRAY, isNonNullable} from '../util'
+import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
+import {canonicalHash} from '../util/canonicalHash'
+import {EMPTY_ARRAY} from '../util/empty'
+import {isNonNullable} from '../util/isNonNullable'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
-  decisionParametersSchemaReducer,
   directUploadsReducer,
   documentActionsReducer,
+  documentAskToEditEnabledReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
+  documentGroupInventoryEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
   draftsEnabledReducer,
@@ -47,7 +54,6 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   internalTasksReducer,
-  legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
   mediaLibraryFrontendHostReducer,
   mediaLibraryLibraryIdReducer,
@@ -59,12 +65,14 @@ import {
   scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
-  serverDocumentActionsReducer,
   toolsReducer,
+  variantsEnabledReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
+import {recordConfigWarning} from './configWarnings'
 import {createDefaultIcon} from './createDefaultIcon'
-import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
+import {initialDocumentFieldActions} from './document/fieldActions'
+import {documentFieldActionsReducer} from './document/fieldActions/reducer'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
@@ -72,7 +80,6 @@ import {SchemaError} from './SchemaError'
 import {
   type Config,
   type ConfigContext,
-  DECISION_PARAMETERS_SCHEMA,
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
@@ -109,6 +116,109 @@ function warnDeprecatedConfigContextClientOnce() {
   console.warn(
     '`configContext.client` is deprecated and will be removed in the next release! Use `context.getClient({apiVersion: "2021-06-07"})` instead',
   )
+}
+
+const warnedProjectAuthDivergence = new Set<string>()
+
+/**
+ * Detects when multiple workspaces declare different `auth` configurations
+ * for the same projectId. Auth is project-scoped at runtime (cookies are
+ * scoped to the API domain; tokens are stored by projectId in localStorage),
+ * so per-workspace auth configs for the same project don't actually isolate
+ * auth between workspaces — whichever workspace initializes first wins at
+ * the storage level, and other configs become silent no-ops.
+ *
+ * Logs to the console and records the finding on the module-level warnings
+ * list (see `configWarnings.ts`) so the studio UI can surface it in dev
+ * mode via `ConfigIssuesButton`.
+ *
+ * @internal
+ */
+function warnOnDivergentProjectAuth(
+  workspaces: ReadonlyArray<WorkspaceOptions | SingleWorkspace>,
+): void {
+  const byProject = new Map<string, Array<{name: string; auth: unknown}>>()
+  for (const workspace of workspaces) {
+    const {projectId, auth, name} = workspace as WorkspaceOptions & {auth?: unknown}
+    if (!projectId || auth === undefined) continue
+    const list = byProject.get(projectId) ?? []
+    list.push({name: name ?? 'default', auth})
+    byProject.set(projectId, list)
+  }
+
+  for (const [projectId, entries] of byProject) {
+    if (entries.length < 2) continue
+
+    // Fingerprint each auth config so we can tell whether they diverge.
+    // AuthStore instances (already-constructed) are compared by reference
+    // identity; plain AuthConfig objects are compared by JSON shape.
+    // `providers` can be a function — different function identities will
+    // show as divergent, which may produce false positives but is acceptable
+    // for a deprecation warning.
+    const fingerprints = new Map<string, string[]>()
+    for (const {name, auth} of entries) {
+      const fingerprint = fingerprintAuth(auth)
+      const names = fingerprints.get(fingerprint) ?? []
+      names.push(name)
+      fingerprints.set(fingerprint, names)
+    }
+
+    if (fingerprints.size < 2) continue
+
+    // De-dupe across multiple prepareConfig runs in the same session
+    // (HMR, tests, multiple studio instances).
+    const warnKey = `${projectId}:${[...fingerprints.keys()].sort().join('|')}`
+    if (warnedProjectAuthDivergence.has(warnKey)) continue
+    warnedProjectAuthDivergence.add(warnKey)
+
+    const groups = [...fingerprints.values()]
+    const formattedGroups = groups.map((names) => `  • ${names.map((n) => `"${n}"`).join(', ')}`)
+    const message =
+      `Workspaces for project "${projectId}" declare different \`auth\` ` +
+      `configurations. Auth is project-scoped: workspaces for the same project ` +
+      `share cookies and tokens. Only the first-initialized workspace's \`auth\` ` +
+      `config takes effect; others are silent no-ops. Consolidate these to a ` +
+      `single shared config:\n${formattedGroups.join('\n')}`
+
+    console.warn(`[sanity] ${message}`)
+    recordConfigWarning({
+      type: 'project-auth-divergence',
+      projectId,
+      groups,
+      message,
+    })
+  }
+}
+
+function fingerprintAuth(auth: unknown): string {
+  if (auth === null || typeof auth !== 'object') return String(auth)
+
+  // Pre-built `AuthStore` instances are compared by reference identity.
+  // `createAuthStore` is memoized by a canonical hash of its options, so two
+  // `createAuthStore(equivalentOptions)` calls return the same instance —
+  // meaning reference identity is sufficient to detect "same auth" even when
+  // the calls were made separately per workspace.
+  if (isAuthStore(auth)) return `AuthStore@${getObjectId(auth)}`
+
+  // Plain `AuthConfig` objects are compared by canonical shape (keys sorted
+  // recursively) so property declaration order doesn't produce false
+  // positives.
+  try {
+    return `AuthConfig:${canonicalHash(auth)}`
+  } catch {
+    return `unserializable@${getObjectId(auth)}`
+  }
+}
+
+const objectIds = new WeakMap<object, number>()
+let nextObjectId = 1
+function getObjectId(value: object): number {
+  let id = objectIds.get(value)
+  if (id === undefined) {
+    id = nextObjectId++
+    objectIds.set(value, id)
+  }
+  return id
 }
 
 // Create media library sources with configuration
@@ -159,7 +269,12 @@ const createDatasetAssetSources = (config: SourceOptions, client: SanityClient) 
  */
 export function prepareConfig(
   config: Config | MissingConfigFile,
-  options?: {basePath?: string},
+  options?: {
+    basePath?: string
+    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    requestErrorChannel?: RequestErrorChannel
+    requestFailureDiagnostics?: RequestFailureDiagnostics
+  },
 ): PreparedConfig {
   if (!Array.isArray(config) && 'missingConfigFile' in config) {
     throw new ConfigResolutionError({
@@ -183,6 +298,8 @@ export function prepareConfig(
       causes: [e.message],
     })
   }
+
+  warnOnDivergentProjectAuth(workspaceOptions)
 
   const workspaces = workspaceOptions.map((rawWorkspace): WorkspaceSummary => {
     if (preparedWorkspaces.has(rawWorkspace)) {
@@ -249,7 +366,11 @@ export function prepareConfig(
         throw new SchemaError(schema)
       }
 
-      const auth = getAuthStore(source)
+      const auth = getAuthStore(source, {
+        createStudioRequestHandler: options?.createStudioRequestHandler,
+        requestErrorChannel: options?.requestErrorChannel,
+        requestFailureDiagnostics: options?.requestFailureDiagnostics,
+      })
       const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {
@@ -292,9 +413,12 @@ export function prepareConfig(
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
       projectId: rootSource.projectId,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       theme: rootSource.theme || studioTheme,
       title,
       subtitle: rootSource.subtitle,
+      hidden: rootSource.hidden,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       __internal: {
         sources: resolvedSources,
       },
@@ -307,14 +431,45 @@ export function prepareConfig(
   return {type: 'prepared-config', workspaces}
 }
 
-function getAuthStore(source: SourceOptions): AuthStore {
+function getAuthStore(
+  source: SourceOptions,
+  {
+    createStudioRequestHandler,
+    requestErrorChannel,
+    requestFailureDiagnostics,
+  }: {
+    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    requestErrorChannel?: RequestErrorChannel
+    requestFailureDiagnostics?: RequestFailureDiagnostics
+  },
+): AuthStore {
   if (isAuthStore(source.auth)) {
     return source.auth
   }
 
-  const clientFactory = source.unstable_clientFactory || createClient
+  const clientFactory = source.unstable_clientFactory ?? createClient
+
   const {projectId, dataset, apiHost} = source
-  return createAuthStore({apiHost, ...source.auth, clientFactory, dataset, projectId})
+  return createAuthStore({
+    apiHost,
+    ...source.auth,
+    clientFactory: (config) => {
+      let client: SanityClient
+      client = clientFactory({
+        ...config,
+        ...(createStudioRequestHandler
+          ? {requestHandler: createStudioRequestHandler(() => client)}
+          : {}),
+      })
+      return client
+    },
+    // Passed as getters so this unhashable runtime wiring stays out of the
+    // auth-store memo key.
+    getRequestErrorHandler: () => requestErrorChannel,
+    getRequestFailureDiagnostics: () => requestFailureDiagnostics,
+    dataset,
+    projectId,
+  })
 }
 
 interface ResolveSourceOptions {
@@ -329,6 +484,7 @@ interface ResolveSourceOptions {
 
 function getBifurClient(client: SanityClient, auth: AuthStore) {
   const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dataset, url: baseUrl, requestTagPrefix = 'sanity.studio'} = bifurVersionedClient.config()
   const url = `${baseUrl.replace(/\/+$/, '')}/socket/${dataset}`.replace(/^http/, 'ws')
   const urlWithTag = `${url}?tag=${requestTagPrefix}`
@@ -370,14 +526,9 @@ function resolveSource({
     projectId,
     schema,
     i18n: i18n.source,
-    [DECISION_PARAMETERS_SCHEMA]: decisionParametersSchemaReducer({
-      config,
-      initialValue: undefined,
-    }),
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
-  /* eslint-disable no-proto */
   const wrappedClient = client as any
   context.client = [...Object.keys(client), ...Object.keys(wrappedClient.__proto__)].reduce(
     (acc, key) => {
@@ -394,7 +545,6 @@ function resolveSource({
     },
     {},
   ) as any as SanityClient
-  /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
 
   const defaultAssetSources = createDatasetAssetSources(config, client)
@@ -461,14 +611,13 @@ function resolveSource({
   const initialTemplatesResponses = templates
     // filter out the ones with parameters to fill
     .filter((template) => !template.parameters?.length)
-    .map(
-      (template): TemplateItem => ({
-        templateId: template.id,
-        description: template.description,
-        icon: template.icon,
-        title: template.title,
-      }),
-    )
+    .map((template): TemplateItem => ({
+      templateId: template.id,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      description: template.description,
+      icon: template.icon,
+      title: template.title,
+    }))
 
   const templateMap = templates.reduce((acc, template) => {
     acc.set(template.id, template)
@@ -529,7 +678,9 @@ function resolveSource({
             type: 'initialValueTemplateItem',
             title,
             i18n: response.i18n || template.i18n,
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             subtitle: response.subtitle || defaultSubtitle,
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             description: response.description || template.description,
             icon: response.icon || template.icon || schemaType?.icon,
             initialDocumentId: response.initialDocumentId,
@@ -566,6 +717,27 @@ function resolveSource({
     })
   }
 
+  const variantsEnabled = variantsEnabledReducer({config, initialValue: false})
+
+  // Upload the schema descriptor to Content Lake, but only when the user is
+  // authenticated and actually holds the `deployStudio` grant. Checking the
+  // grant first avoids firing a POST that would 403 for users without it.
+  const schemaDescriptorId: Promise<string | undefined> = authenticated
+    ? (async () => {
+        const studioClient = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+        if (!(await fetchCanDeployStudio(studioClient))) {
+          debug('Skipping schema upload: user lacks the deployStudio grant')
+          return undefined
+        }
+        return uploadSchema(schema, studioClient)
+      })().catch((err) => {
+        // Resolve to `undefined` (rather than rejecting) so consumers awaiting
+        // `schemaDescriptorId` don't have to handle a rejection.
+        debug('Uploading schema failed', {err})
+        return undefined
+      })
+    : Promise.resolve(undefined)
+
   const source: Source = {
     type: 'source',
     name: config.name,
@@ -580,7 +752,6 @@ function resolveSource({
     templates,
     auth,
     i18n: i18n.source,
-    // eslint-disable-next-line camelcase
     __internal_tasks: internalTasksReducer({
       config,
     }),
@@ -644,6 +815,7 @@ function resolveSource({
           reducer: documentLanguageFilterReducer,
         }),
       /** @todo this is deprecated so it will eventually be removed */
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       unstable_comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
@@ -656,6 +828,15 @@ function resolveSource({
       comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
+            context: partialContext,
+            config,
+            initialValue: true,
+          })
+        },
+      },
+      askToEdit: {
+        enabled: (partialContext) => {
+          return documentAskToEditEnabledReducer({
             context: partialContext,
             config,
             initialValue: true,
@@ -702,14 +883,7 @@ function resolveSource({
       },
       strategy: searchStrategyReducer({
         config,
-        initialValue: 'groqLegacy',
-      }),
-      enableLegacySearch: resolveConfigProperty({
-        config,
-        context,
-        reducer: legacySearchEnabledReducer,
-        propertyName: 'enableLegacySearch',
-        initialValue: true,
+        initialValue: 'groq2024',
       }),
       // we will use this when we add search config to PluginOptions
       /*filters: resolveConfigProperty({
@@ -733,12 +907,7 @@ function resolveSource({
       i18next: i18n.i18next,
       staticInitialValueTemplateItems,
       options: config,
-      schemaDescriptorId: authenticated
-        ? catchTap(uploadSchema(schema, getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)), (err) => {
-            debug('Uploading schema failed', {err})
-            return undefined
-          })
-        : Promise.resolve(undefined),
+      schemaDescriptorId,
     },
     onUncaughtError: (error: Error, errorInfo: ErrorInfo) => {
       return onUncaughtErrorResolver({
@@ -752,13 +921,19 @@ function resolveSource({
 
     beta: {
       eventsAPI: {
+        // oxlint-disable-next-line no-deprecated -- still resolved so the legacy timeline opt-out keeps working until the next major
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
-    },
-    // eslint-disable-next-line camelcase
-    __internal_serverDocumentActions: {
-      enabled: serverDocumentActionsReducer({config, initialValue: undefined}),
+      variants: {
+        enabled: variantsEnabled,
+      },
+      documentGroupInventory: {
+        // The document group inventory is an inherent part of the variants experience.
+        // It cannot be switched off while variants are switched on.
+        enabled:
+          documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
+      },
     },
 
     announcements: {
@@ -847,13 +1022,4 @@ function joinBasePath(rootPath: string, basePath?: string) {
     .join('/')
 
   return `/${joined}`
-}
-
-/**
- * Registers a catch to a promise (to prevent it from being caught by the
- * "unhandled promise" handler) while returning the original promise.
- */
-function catchTap<T>(promise: Promise<T>, cb: (reason: unknown) => void): Promise<T> {
-  promise.catch(cb)
-  return promise
 }

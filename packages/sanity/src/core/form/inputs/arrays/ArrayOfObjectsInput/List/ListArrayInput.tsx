@@ -1,11 +1,13 @@
 import {type DragStartEvent} from '@dnd-kit/core'
 import {isKeySegment} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
-import {useTranslation} from '../../../../../i18n'
-import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useItemComponent} from '../../../../form-components-hooks/useItemComponent'
+import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
@@ -34,12 +36,22 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderField,
     renderInlineBlock,
     renderInput,
-    renderItem,
     renderPreview,
     schemaType,
+    validation,
     value = EMPTY,
   } = props
   const {t} = useTranslation()
+
+  // Resolves locally to avoid the deep nesting preview bug (#4780) caused by
+  // props.renderItem accumulating callback wrapping through ancestor components.
+  const ItemComponent = useItemComponent()
+  const renderItem = useCallback(
+    (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => <ItemComponent {...itemProps} />,
+    [ItemComponent],
+  )
+  const hasErrors = validation?.some((v) => v.level === 'error')
+  const errorTone: CardTone | undefined = hasErrors ? 'critical' : undefined
 
   // Stores the index of the item being dragged
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)
@@ -81,7 +93,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   return (
     <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
-      <Stack space={2} ref={parentRef}>
+      <Stack gap={2} ref={parentRef}>
         <UploadTargetCard
           {...elementProps}
           $radius={radius}
@@ -91,10 +103,11 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           tabIndex={0}
           types={schemaType.of}
         >
-          <Stack data-ui="ArrayInput__content" space={2}>
+          <Stack data-ui="ArrayInput__content" gap={2}>
             {members.length === 0 ? (
-              <Card padding={3} border radius={2}>
+              <Card padding={3} border radius={2} tone={errorTone}>
                 <Text align="center" muted size={1}>
+                  {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
                   {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
                 </Text>
               </Card>
@@ -102,6 +115,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
               <VirtualizedArrayList
                 key={mountKey}
                 members={members}
+                tone={errorTone}
                 memberKeys={memberKeys}
                 activeDragItemIndex={activeDragItemIndex}
                 focusPathKey={focusPathKey}

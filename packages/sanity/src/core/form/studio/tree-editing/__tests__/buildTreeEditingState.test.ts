@@ -2,7 +2,7 @@ import {Schema} from '@sanity/schema'
 import {type SanityDocumentLike} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
-import {buildTreeEditingState} from '../utils'
+import {buildTreeEditingState} from '../utils/build-tree-editing-state/buildTreeEditingState'
 
 const schema = Schema.compile({
   name: 'default',
@@ -180,7 +180,9 @@ const schema = Schema.compile({
   ],
 })
 
-describe('tree-editing: buildTreeEditingState', () => {
+// TODO: Remove this file - tests are disabled as buildTreeEditingState is no longer used.
+// See: https://github.com/sanity-io/sanity/pull/12661
+describe.skip('tree-editing: buildTreeEditingState', () => {
   test('should build tree editing state for an array of objects', () => {
     // implement
 
@@ -406,7 +408,6 @@ describe('tree-editing: buildTreeEditingState', () => {
                 {
                   _key: '8c993b716215',
                   _type: 'property',
-                  // eslint-disable-next-line camelcase
                   description_two: [
                     {
                       _key: '981f3db981d8',
@@ -425,12 +426,10 @@ describe('tree-editing: buildTreeEditingState', () => {
                     {
                       _key: '3483ab85466e',
                       _type: 'object2',
-                      // eslint-disable-next-line camelcase
                       item_two: [
                         {
                           _key: '6dd0be61a480',
                           _type: 'object3',
-                          // eslint-disable-next-line camelcase
                           description_three: [
                             {
                               _key: '1513b024fca5',
@@ -449,11 +448,9 @@ describe('tree-editing: buildTreeEditingState', () => {
                             {
                               _key: '8a2392617e21',
                               _type: 'object3',
-                              // eslint-disable-next-line camelcase
                               title_three: 'adas',
                             },
                           ],
-                          // eslint-disable-next-line camelcase
                           title_two: 'Ahhh',
                         },
                       ],

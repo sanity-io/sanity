@@ -10,6 +10,28 @@ export default defineType({
   name: 'slugsTest',
   type: 'document',
   title: 'Slugs test',
+  orderings: [
+    {
+      title: 'Slug (asc)',
+      name: 'slugAsc',
+      by: [
+        {
+          field: 'slug.current',
+          direction: 'asc',
+        },
+      ],
+    },
+    {
+      title: 'Slug (desc)',
+      name: 'slugDesc',
+      by: [
+        {
+          field: 'slug.current',
+          direction: 'desc',
+        },
+      ],
+    },
+  ],
   preview: {
     select: {
       title: 'title',

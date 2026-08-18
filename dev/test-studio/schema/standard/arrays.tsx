@@ -1,4 +1,5 @@
-import {ImageIcon, OlistIcon} from '@sanity/icons'
+import {ImageIcon} from '@sanity/icons/Image'
+import {OlistIcon} from '@sanity/icons/Olist'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const topLevelArrayType = defineType({
@@ -73,6 +74,15 @@ export default defineType({
       title: 'Array of references to authors',
       type: 'array',
       of: [{type: 'reference', to: [{type: 'author'}]}],
+    },
+    {
+      name: 'arrayOfReferencesNoArrayFunctions',
+      title: 'Array of references to authors (no ArrayFunctions)',
+      type: 'array',
+      of: [{type: 'reference', to: [{type: 'author'}]}],
+      options: {
+        disableActions: ['add'],
+      },
     },
     predefinedStringArray,
     defineField({
@@ -743,5 +753,26 @@ export default defineType({
         }),
       ],
     }),
+    defineField({
+      name: 'deeplyNestedBody',
+      title: 'Deeply nested body',
+      type: 'deepNested.body',
+    }),
   ],
+  preview: {
+    select: {
+      title: 'title',
+      strings: 'arrayOfStrings',
+      firstItem: 'arrayOfStrings.0',
+      length: 'arrayOfStrings.length',
+    },
+    prepare({title, strings, firstItem, length}) {
+      console.log('arraysTest preview.prepare', {
+        strings,
+        firstItem,
+        length,
+      })
+      return {title}
+    },
+  },
 })

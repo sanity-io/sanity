@@ -12,6 +12,7 @@ on:
       - "packages/sanity/typedoc.config.json"
       - "packages/sanity/tsconfig.docs.json"
       - "packages/sanity/package.json"
+      - "packages/@repo/typedoc/**"
       - ".github/workflows/typedoc.yml"
   # Manual trigger
   workflow_dispatch:
@@ -49,18 +50,9 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
 
       - name: Build packages
         run: pnpm build --filter=sanity --output-logs=full --log-order=grouped
@@ -89,7 +81,7 @@ jobs:
 
       - name: Upload TypeDoc artifact
         if: steps.generate.outputs.success == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sanity-typedoc-${{ github.sha }}
           path: packages/sanity/docs/sanity-typedoc-output.json
@@ -114,12 +106,14 @@ jobs:
       - name: Extract version from tag
         if: (startsWith(github.ref, 'refs/tags/v') || inputs.upload) && steps.generate.outputs.success == 'true'
         id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          if [[ -n "${{ inputs.version }}" ]]; then
-            VERSION="${{ inputs.version }}"
+          if [[ -n "$INPUT_VERSION" ]]; then
+            VERSION="$INPUT_VERSION"
             echo "version=$VERSION" >> $GITHUB_OUTPUT
             echo "📋 Using provided version: $VERSION"
-          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             # Extract version from git tag (e.g., refs/tags/v1.2.3 -> 1.2.3)
             VERSION=${GITHUB_REF#refs/tags/v}
             echo "version=$VERSION" >> $GITHUB_OUTPUT

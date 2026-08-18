@@ -4,7 +4,8 @@ import {describe, it} from 'vitest'
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {type BlockDefinition, type BooleanDefinition} from '../src/schema/definition'
+import {type BlockDefinition} from '../src/schema/definition/type/block'
+import {type BooleanDefinition} from '../src/schema/definition/type/boolean'
 import {defineArrayMember, defineField, defineType} from '../src/schema/types'
 
 describe('block types', () => {
@@ -16,11 +17,12 @@ describe('block types', () => {
         title: 'Custom PTE',
         icon: () => null,
         description: 'Description',
-        initialValue: () => Promise.resolve([]),
+        // @ts-expect-error initialValue is not supported on block types
+        initialValue: {_type: 'block'},
         validation: (Rule) => [
           Rule.required()
             .required()
-            .custom((value) => (value?.filter((t) => !t).length === 1 ? 'Error' : true))
+            .custom((value) => (value?._type !== 'block' ? 'Error' : true))
             .warning(),
           // @ts-expect-error greaterThan does not exist on BlockRule
           Rule.greaterThan(5).error(),

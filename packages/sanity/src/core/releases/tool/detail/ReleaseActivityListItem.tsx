@@ -3,10 +3,11 @@ import {motion} from 'motion/react'
 import {memo, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {RelativeTime} from '../../../components/RelativeTime'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
-import {Translate, useTranslation} from '../../../i18n'
+import {useRelativeTime} from '../../../hooks/useRelativeTime'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ReleaseDocumentPreview} from '../components/ReleaseDocumentPreview'
 import {
@@ -49,7 +50,7 @@ const ReleaseEventDocumentPreview = ({
   event: AddDocumentToReleaseEvent | DiscardDocumentFromReleaseEvent
 }) => {
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       <ReleaseDocumentPreview
         releaseId={releaseId}
         documentId={event.documentId}
@@ -92,6 +93,23 @@ const ScheduleTarget = ({children, event}: {children: ReactNode; event: ReleaseE
 }
 
 const FadeInCard = motion.create(Card)
+
+function ActivityTimestamp({timestamp}: {timestamp: string}) {
+  const dateTimeFormat = useDateTimeFormat({
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+  const date = useMemo(() => new Date(timestamp), [timestamp])
+  const formattedDate = useMemo(() => dateTimeFormat.format(date), [dateTimeFormat, date])
+  const relativeTime = useRelativeTime(date, {useTemporalPhrase: true, minimal: true})
+
+  return (
+    <time dateTime={date.toISOString()} title={relativeTime}>
+      {formattedDate}
+    </time>
+  )
+}
+
 export const ReleaseActivityListItem = memo(
   ({
     event,
@@ -116,10 +134,10 @@ export const ReleaseActivityListItem = memo(
         animate={{opacity: 1}}
         transition={{type: 'spring', bounce: 0, duration: 0.4}}
       >
-        <Flex align="flex-start" gap={2}>
+        <Flex align="center" gap={2}>
           <UserAvatar user={event.author} />
           <Stack flex={1}>
-            <Flex gap={2} paddingY={2}>
+            <Flex gap={2} align="center">
               <StatusText muted size={1}>
                 <Translate
                   t={t}
@@ -131,7 +149,7 @@ export const ReleaseActivityListItem = memo(
                   values={{releaseTitle}}
                   i18nKey={ACTIVITY_TEXT_118N[event.type]}
                 />{' '}
-                &middot; <RelativeTime time={event.timestamp} useTemporalPhrase minimal />
+                &middot; <ActivityTimestamp timestamp={event.timestamp} />
               </StatusText>
             </Flex>
             {isAddDocumentToReleaseEvent(event) || isDiscardDocumentFromReleaseEvent(event) ? (

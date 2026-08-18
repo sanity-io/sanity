@@ -1,15 +1,16 @@
-import {HelpCircleIcon} from '@sanity/icons'
-import {Menu} from '@sanity/ui'
+import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useState} from 'react'
 import semver from 'semver'
 import {styled} from 'styled-components'
 
-import {MenuButton} from '../../../../../ui-components'
-import {StatusButton} from '../../../../components'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {StatusButton} from '../../../../components/StatusButton'
 import {STUDIO_DSN} from '../../../../error/sentry/sentryErrorReporter'
-import {FeedbackDialog} from '../../../../feedback'
+import {StudioFeedbackDialog} from '../../../../feedback/components/StudioFeedbackDialog'
 import {useFeedbackAvailable} from '../../../../feedback/hooks/useFeedbackAvailable'
-import {useTranslation} from '../../../../i18n'
+import {useFeedbackTelemetry} from '../../../../feedback/hooks/useFeedbackTelemetry'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useRenderingContext} from '../../../../store/renderingContext/useRenderingContext'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
@@ -61,14 +62,18 @@ export function ResourcesButton() {
   }, [])
 
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false)
-  const handleOpenFeedback = useCallback(() => setFeedbackDialogOpen(true), [])
+  const {feedbackDialogOpened} = useFeedbackTelemetry()
+  const handleOpenFeedback = useCallback(() => {
+    feedbackDialogOpened()
+    setFeedbackDialogOpen(true)
+  }, [feedbackDialogOpened])
   const handleCloseFeedback = useCallback(() => setFeedbackDialogOpen(false), [])
 
   return (
     <>
       {studioInfoDialogOpen && <StudioInfoDialog onClose={handleStudioInfoDialogClose} />}
       {feedbackDialogOpen && (
-        <FeedbackDialog
+        <StudioFeedbackDialog
           dsn={STUDIO_DSN}
           feedbackVersion="1"
           source="studio-help-menu"

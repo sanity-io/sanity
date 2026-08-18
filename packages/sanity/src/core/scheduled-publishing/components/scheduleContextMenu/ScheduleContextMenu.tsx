@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
@@ -37,8 +37,7 @@ export const ScheduleContextMenu = (props: Props) => {
           />
         </Menu>
       }
-      placement="left"
-      popover={{portal: true, tone: 'default'}}
+      popover={{placement: 'left', portal: true, tone: 'default'}}
     />
   )
 }

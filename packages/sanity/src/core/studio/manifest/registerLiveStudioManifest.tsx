@@ -5,6 +5,7 @@ import {type Source, type WorkspaceSummary} from '../../config/types'
 import {type UserApplication} from '../../store/userApplications'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {SANITY_VERSION} from '../../version'
+import {fetchCanDeployStudio} from './canDeployStudio'
 import {generateStudioManifest} from './generateStudioManifest'
 import {resolveIcon} from './icon'
 
@@ -17,6 +18,7 @@ const buildId: string | undefined =
  */
 async function resolveSource(workspace: WorkspaceSummary): Promise<Source | undefined> {
   // At risk of being fired, we need the schema descriptor id for the workspace.
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const sourceEntry = workspace.__internal.sources[0]
   if (!sourceEntry) {
     return undefined
@@ -40,6 +42,7 @@ async function resolveSchemaDescriptorId(workspace: WorkspaceSummary): Promise<s
  * @param userApplication - The user application
  * @param workspaces - Array of all workspaces in the Studio
  * @param theme - The Studio theme to use for rendering icons
+ * @param signal - Aborts the upload when the registering effect is torn down
  * @returns Promise that resolves when upload is complete
  * @internal
  */
@@ -47,6 +50,7 @@ export async function registerStudioManifest(
   userApplication: UserApplication,
   workspaces: WorkspaceSummary[],
   theme: RootTheme,
+  signal?: AbortSignal,
 ): Promise<void> {
   const {id, projectId} = userApplication
 
@@ -81,13 +85,28 @@ export async function registerStudioManifest(
     return // if the user isn't authenticated, nothing to do
   }
 
+  // Skip the POST when the user lacks the `deployStudio` grant, to avoid a 403.
+  // The schema upload is gated on the same grant, so in practice the manifest
+  // is already empty in that case; this is an explicit guard so registration
+  // doesn't depend on that implicit coupling.
+  const studioClient = client.withConfig(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  if (!(await fetchCanDeployStudio(studioClient))) {
+    return
+  }
+
+  // Bail before posting if the registering effect has already been torn down.
+  if (signal?.aborted) {
+    return
+  }
+
   // Post the live manifest via the global api
-  await client.withConfig(DEFAULT_STUDIO_CLIENT_OPTIONS).request({
+  await studioClient.request({
     method: 'POST',
-    uri: `/projects/${projectId}/user-applications/${id}/config/live-manifest`,
+    url: `/projects/${projectId}/user-applications/${id}/config/live-manifest`,
     body: {
       value: liveManifest,
     },
     tag: 'live-manifest-register',
+    signal,
   })
 }

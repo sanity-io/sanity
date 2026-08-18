@@ -1,4 +1,5 @@
-import {BookIcon, CircleIcon} from '@sanity/icons'
+import {BookIcon} from '@sanity/icons/Book'
+import {CircleIcon} from '@sanity/icons/Circle'
 
 export const circularCrossDatasetReferenceTest = {
   name: 'circularCrossDatasetReferenceTest',

@@ -5,8 +5,10 @@ import {combineLatest, defer, from, type Observable, of} from 'rxjs'
 import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
-import {createSWR, getDraftId, getPublishedId, getVersionId, isRecord} from '../util'
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../util/const'
+import {getDraftId, getPublishedId, getVersionId} from '../util/draftUtils'
+import {isRecord} from '../util/isRecord'
+import {createSWR} from '../util/rxSwr'
 import {
   AVAILABILITY_NOT_FOUND,
   AVAILABILITY_PERMISSION_DENIED,
@@ -89,7 +91,7 @@ function createDocumentAvailabilityObserver(
   function fetchDocumentReadabilityChunked(ids: string[]): Observable<DocumentAvailability[]> {
     return defer(() => {
       const requestOptions = {
-        uri: versionedClient.getDataUrl('doc', ids.join(',')),
+        url: versionedClient.getDataUrl('doc', ids.join(',')),
         json: true,
         query: {excludeContent: 'true'},
         tag: 'preview.documents-availability',

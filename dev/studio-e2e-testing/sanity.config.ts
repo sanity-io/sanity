@@ -1,19 +1,19 @@
-import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
-import {BookIcon, PlayIcon} from '@sanity/icons'
+import {BookIcon} from '@sanity/icons/Book'
+import {PlayIcon} from '@sanity/icons/Play'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, type ReleaseActionComponent} from 'sanity'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
-import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
-import {muxInput} from 'sanity-plugin-mux-input'
-import {imageAssetSource} from 'sanity-test-studio/assetSources'
+import {imageAssetSource} from 'sanity-test-studio/assetSources/imageAssetSource'
 import {resolveDocumentActions as documentActions} from 'sanity-test-studio/documentActions'
 import {assistFieldActionGroup} from 'sanity-test-studio/fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from 'sanity-test-studio/initialValueTemplates'
 import {customInspector} from 'sanity-test-studio/inspectors/custom'
-import {languageFilter} from 'sanity-test-studio/plugins/language-filter'
-import {defaultDocumentNode, newDocumentOptions, structure} from 'sanity-test-studio/structure'
+import {languageFilter} from 'sanity-test-studio/plugins/language-filter/plugin'
+import {newDocumentOptions} from 'sanity-test-studio/structure/resolveNewDocumentOptions'
+import {structure} from 'sanity-test-studio/structure/resolveStructure'
+import {defaultDocumentNode} from 'sanity-test-studio/structure/resolveStructureDocumentNode'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
@@ -40,6 +40,10 @@ const TestReleaseAction: ReleaseActionComponent = (props) => {
 const defaultConfig = defineConfig({
   name: 'default',
   title: 'studio-e2e-testing',
+  // Pin a workspace icon so Chromatic e2e snapshots stay stable. Without this,
+  // createDefaultIcon hashes projectId + dataset into a color, and e2e datasets
+  // change per PR / browser shard.
+  icon: PlayIcon,
 
   projectId: process.env.SANITY_E2E_PROJECT_ID!,
   dataset: process.env.SANITY_E2E_DATASET!,
@@ -89,8 +93,8 @@ const defaultConfig = defineConfig({
       name: 'presentation',
       title: 'Presentation',
       previewUrl: {
-        origin: 'https://test-studio.sanity.dev',
-        preview: '/preview/index.html',
+        origin: 'https://test-studio-preview-iframe.sanity.dev',
+        preview: '/',
       },
     }),
     languageFilter({
@@ -113,14 +117,10 @@ const defaultConfig = defineConfig({
         lng: -74.1180863,
       },
     }),
-    colorInput(),
     visionTool({
       defaultApiVersion: '2022-08-08',
     }),
-    // eslint-disable-next-line camelcase
-    muxInput({mp4_support: 'standard'}),
     media(),
-    markdownSchema(),
     internationalizedArray({
       languages: [
         {id: 'en', title: 'English'},
@@ -142,6 +142,11 @@ const defaultConfig = defineConfig({
   },
   mediaLibrary: {
     enabled: true,
+  },
+  beta: {
+    variants: {
+      enabled: true,
+    },
   },
 })
 

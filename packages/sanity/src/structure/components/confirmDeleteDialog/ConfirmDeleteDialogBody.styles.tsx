@@ -1,9 +1,9 @@
-import {InfoOutlineIcon} from '@sanity/icons'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Box, Flex, Inline, rem, Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Tooltip} from '../../../ui-components'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../i18n'
 
 export const ChevronWrapper = styled(Box)`
@@ -29,15 +29,17 @@ export const CrossDatasetReferencesSummary = styled.summary`
 export const Table = styled.table`
   width: 100%;
   text-align: left;
-  padding: 0 ${({theme}) => rem(theme.sanity.space[2])};
+  padding: 0
+    ${({theme}) => rem(theme.sanity.space[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   border-collapse: collapse;
 
   th {
-    padding: ${({theme}) => rem(theme.sanity.space[1])};
+    padding: ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   }
 
   td {
-    padding: 0 ${({theme}) => rem(theme.sanity.space[1])};
+    padding: 0
+      ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   }
 
   tr > *:last-child {
@@ -57,7 +59,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
 
   return (
     <Box padding={2}>
-      <Inline space={2}>
+      <Inline gap={2}>
         <Text size={1} muted>
           {t('confirm-delete-dialog.other-reference-count.title', {count: difference})}
         </Text>

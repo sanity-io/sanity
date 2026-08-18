@@ -2,6 +2,117 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.10.0](https://github.com/sanity-io/sanity/compare/v6.9.2...v6.10.0) (2026-08-18)
+
+### Features
+
+* **vision:** pass navbar variant with pinned release queries ([#14063](https://github.com/sanity-io/sanity/issues/14063)) ([ee6ebee](https://github.com/sanity-io/sanity/commit/ee6ebee9f5b48aa933905dec06ea658b8d6405ba))
+
+### Bug Fixes
+
+* **vision:** stop swallowing paste events outside vision ([#14016](https://github.com/sanity-io/sanity/issues/14016)) ([75de447](https://github.com/sanity-io/sanity/commit/75de4472819f2c9ccc64fc0916b8ea8345cfa0e0))
+## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
+
+### Bug Fixes
+
+* **core:** avoid native useEffectEvent in forwardRef and memo ([#13821](https://github.com/sanity-io/sanity/issues/13821)) ([8f84cf4](https://github.com/sanity-io/sanity/commit/8f84cf4b0628e3b9bc8c4752f67ec793153aaaf6))
+
+### Performance Improvements
+
+* **sanity:** defer non-controlled useObservable subscriptions ([#13799](https://github.com/sanity-io/sanity/issues/13799)) ([2958d75](https://github.com/sanity-io/sanity/commit/2958d75de93601e987f640b0ff02f3827db3d4ec))
+## [6.8.0](https://github.com/sanity-io/sanity/compare/v6.7.0...v6.8.0) (2026-07-30)
+
+### Bug Fixes
+
+* **deps:** bump react-rx to 4.2.5 ([#13797](https://github.com/sanity-io/sanity/issues/13797)) ([d820ba1](https://github.com/sanity-io/sanity/commit/d820ba12450f8872aec5aebc690cc1ac44010035))
+## [6.7.0](https://github.com/sanity-io/sanity/compare/v6.6.0...v6.7.0) (2026-07-28)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.2.1 ([#13684](https://github.com/sanity-io/sanity/issues/13684)) ([ad2634f](https://github.com/sanity-io/sanity/commit/ad2634fd01e69a5090896f68524984c06e48c74a))
+## [6.6.0](https://github.com/sanity-io/sanity/compare/v6.5.0...v6.6.0) (2026-07-22)
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#13363](https://github.com/sanity-io/sanity/issues/13363)) ([5db6df4](https://github.com/sanity-io/sanity/commit/5db6df43857db362a127ceb6133d24fbb8f05954))
+* **deps:** update dependency @sanity/icons to ^5.1.0 ([#13529](https://github.com/sanity-io/sanity/issues/13529)) ([3f9749b](https://github.com/sanity-io/sanity/commit/3f9749b346b36debeea84c07fda510e6c47d92f0))
+* **deps:** update dependency @sanity/icons to ^5.2.0 ([#13652](https://github.com/sanity-io/sanity/issues/13652)) ([0f0d33e](https://github.com/sanity-io/sanity/commit/0f0d33ea6ca7e1d157def3d7457f4b3fd08eb84c))
+## [6.5.0](https://github.com/sanity-io/sanity/compare/v6.4.0...v6.5.0) (2026-07-14)
+
+### Bug Fixes
+
+* **vision:** make saved queries side panel scrollable ([#13449](https://github.com/sanity-io/sanity/issues/13449)) ([4e796ad](https://github.com/sanity-io/sanity/commit/4e796ade9d57126b7f968bdbae429797fa649cd1))
+## [6.4.0](https://github.com/sanity-io/sanity/compare/v6.3.0...v6.4.0) (2026-07-07)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^3.7.6 ([#13384](https://github.com/sanity-io/sanity/issues/13384)) ([260a282](https://github.com/sanity-io/sanity/commit/260a282c2dc38d88e8d03e1f89b677aca765f173))
+* **deps:** update dependency @sanity/icons to v5 ([#13409](https://github.com/sanity-io/sanity/issues/13409)) ([f788296](https://github.com/sanity-io/sanity/commit/f78829648671e05a48c0329ff47abe7dbc457d64))
+* **deps:** update dependency react-rx to ^4.2.3 ([#13405](https://github.com/sanity-io/sanity/issues/13405)) ([10d1a5a](https://github.com/sanity-io/sanity/commit/10d1a5a49647421567b49c7a7bcf2c7813674bfc))
+
+### Performance Improvements
+
+* **sanity:** debarrel @sanity/icons imports ([#13393](https://github.com/sanity-io/sanity/issues/13393)) ([2e250dc](https://github.com/sanity-io/sanity/commit/2e250dc720aa3d49312c79a03bb5697ef4e08fe8))
+## [6.3.0](https://github.com/sanity-io/sanity/compare/v6.2.0...v6.3.0) (2026-06-30)
+
+### Features
+
+* **core:** re-add bundle.css export via conditional exports ([#13322](https://github.com/sanity-io/sanity/issues/13322)) ([d0ce99f](https://github.com/sanity-io/sanity/commit/d0ce99f46b715c0cd6173046a1e3a3f730657128))
+## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#13250](https://github.com/sanity-io/sanity/issues/13250)) ([e11d6ae](https://github.com/sanity-io/sanity/commit/e11d6ae64ceeba8bd176bbdb3169db7bc8634185))
+* **deps:** Update CodeMirror to ^6.43.1 ([#13184](https://github.com/sanity-io/sanity/issues/13184)) ([4f5443d](https://github.com/sanity-io/sanity/commit/4f5443d1ed5b3d84c7fdf8f28afad966e63e00cc))
+## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to vite 8 (#12960)
+* drop support for node 20 (#12859)
+
+### Features
+
+* upgrade to vite 8 ([#12960](https://github.com/sanity-io/sanity/issues/12960)) ([a9d703c](https://github.com/sanity-io/sanity/commit/a9d703cb14b5cab0a9f7b19675910ae453b84593))
+
+### Bug Fixes
+
+* drop support for node 20 ([#12859](https://github.com/sanity-io/sanity/issues/12859)) ([d02289a](https://github.com/sanity-io/sanity/commit/d02289a2ac5aca3de55853812ac6e0b659fa2ef4))
+* use v6 peer dep for `sanity` in `@sanity/vision` ([#12967](https://github.com/sanity-io/sanity/issues/12967)) ([9f33f49](https://github.com/sanity-io/sanity/commit/9f33f4989e6e46e0f2372a382bd88bfb8d923f42))
+## [5.31.0](https://github.com/sanity-io/sanity/compare/v5.30.0...v5.31.0) (2026-06-10)
+
+### Features
+
+* **vision:** Add shared queries support and UI improvements ([#12270](https://github.com/sanity-io/sanity/issues/12270)) ([88513f9](https://github.com/sanity-io/sanity/commit/88513f926f48a076f50a6816d8ba9b1d78d0a225))
+
+### Bug Fixes
+
+* **deps:** Update CodeMirror ([#13000](https://github.com/sanity-io/sanity/issues/13000)) ([c996dab](https://github.com/sanity-io/sanity/commit/c996dab66c03dc446309aa049bbc762d5ce3ad00))
+## [5.26.0](https://github.com/sanity-io/sanity/compare/v5.25.1...v5.26.0) (2026-05-19)
+
+### Reverts
+
+* "chore(release): publish v5.26.0" ([#12849](https://github.com/sanity-io/sanity/issues/12849)) ([70545b8](https://github.com/sanity-io/sanity/commit/70545b8d5421f875a171145fe5312742c0c4f959))
+## [5.25.1](https://github.com/sanity-io/sanity/compare/v5.25.0...v5.25.1) (2026-05-13)
+
+### Bug Fixes
+
+* **core:** remove static css import from `sanity` and `vision` ([#12825](https://github.com/sanity-io/sanity/issues/12825)) ([c147d00](https://github.com/sanity-io/sanity/commit/c147d00461c03b07a17bacfd2b029b297248176b))
+## [5.25.0](https://github.com/sanity-io/sanity/compare/v5.24.0...v5.25.0) (2026-05-12)
+
+### Bug Fixes
+
+* **vision:** do not fetch if query is empty ([#12814](https://github.com/sanity-io/sanity/issues/12814)) ([a10c347](https://github.com/sanity-io/sanity/commit/a10c347588c4ae128c5e2b2ad0c77b87d82b213f))
+## [5.23.0](https://github.com/sanity-io/sanity/compare/v5.22.0...v5.23.0) (2026-04-29)
+
+### Features
+
+* enable vanilla-extract CSS ([#12590](https://github.com/sanity-io/sanity/issues/12590)) ([c0fb87f](https://github.com/sanity-io/sanity/commit/c0fb87ff5ea41290df895fd45e3b0e90ce300bc1))
+## [5.21.0](https://github.com/sanity-io/sanity/compare/v5.20.0...v5.21.0) (2026-04-15)
+
+### Features
+
+* **vision:** groq syntax highlighting ([#12594](https://github.com/sanity-io/sanity/issues/12594)) ([95a1dce](https://github.com/sanity-io/sanity/commit/95a1dcee4f388be8c5d6212d118986e1e1742abc))
 
 ## [5.18.0](https://github.com/sanity-io/sanity/compare/v5.17.1...v5.18.0) (2026-03-24)
 

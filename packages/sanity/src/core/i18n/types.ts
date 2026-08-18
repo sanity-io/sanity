@@ -1,4 +1,4 @@
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
+// oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 
 /**
@@ -232,6 +232,3 @@ export interface LocaleSource {
 }
 
 export type {TFunction}
-
-export type {StudioLocaleResourceKeys} from './bundles/studio'
-export type {ValidationLocaleResourceKeys} from './bundles/validation'

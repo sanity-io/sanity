@@ -1,5 +1,5 @@
 import debounce from 'lodash-es/debounce.js'
-import {useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react'
 
 import {type IsEqualFunction} from './types'
 
@@ -65,6 +65,13 @@ export function useTrackerStore<Value>(): {
   const [reportedValues] = useState(() => new Map<string, Value>())
   const [snapshot, updateSnapshot] = useReducer(() => Array.from(reportedValues.entries()), [])
   const debouncedUpdateSnapshot = useMemo(() => debounce(updateSnapshot, 10, {trailing: true}), [])
+
+  // Cancel any pending trailing publish when the tracker unmounts. The reporters'
+  // unmount cleanups call `store.remove()`, which would otherwise leave a timer that
+  // dispatches to the unmounted reducer — in tests this can fire after the test
+  // environment is torn down and crash with an unhandled error.
+  useEffect(() => () => debouncedUpdateSnapshot.cancel(), [debouncedUpdateSnapshot])
+
   const store = useMemo(
     () => createStore(reportedValues, debouncedUpdateSnapshot),
     [debouncedUpdateSnapshot, reportedValues],

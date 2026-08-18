@@ -28,7 +28,7 @@ jobs:
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
 
       # Publish packages to npm under the `next-major` tag on new commits to the next-major branch.
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -47,18 +47,16 @@ jobs:
 
       - name: Check valid token
         run: |
-          WHOAMI_RESULT=$(npm whoami)
-          echo "npm whoami result: $WHOAMI_RESULT"
+          WHOAMI_RESULT=$(pnpm --silent whoami)
+          echo "pnpm whoami result: $WHOAMI_RESULT"
           if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
-            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            echo "Error: pnpm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
             exit 1
           fi
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
-        run: pnpm -r publish --tag next-major --no-git-checks
-        env:
-          NPM_CONFIG_PROVENANCE: true
+        run: pnpm -r publish --tag next-major --no-git-checks --provenance
 
       - name: Build bundles for staging
         env:
@@ -88,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
-        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
           webhook-type: incoming-webhook

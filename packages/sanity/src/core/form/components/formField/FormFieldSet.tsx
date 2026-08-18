@@ -8,24 +8,23 @@ import {
 import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   type HTMLProps,
   type ReactNode,
   useCallback,
   useImperativeHandle,
   useMemo,
   useRef,
+  type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
 
-import {TextWithTone} from '../../../components'
-import {type DocumentFieldActionNode} from '../../../config'
-import {useTranslation} from '../../../i18n'
-import {type FormNodePresence} from '../../../presence'
-import {useFieldActions} from '../../field'
+import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type FormNodePresence} from '../../../presence/types'
+import {useFieldActions} from '../../field/actions/useFieldActions'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
-import {type FieldCommentsProps} from '../../types'
+import {type FieldCommentsProps} from '../../types/fieldProps'
 import {FormDivergenceIndicator} from '../FormDivergenceIndicator'
 import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollectionIndicator'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
@@ -48,6 +47,7 @@ export interface FormFieldSetProps {
    */
   __unstable_presence?: FormNodePresence[]
   /** @internal @deprecated DO NOT USE */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
   __internal_slot?: ReactNode
@@ -98,10 +98,13 @@ const Content = styled(Box)<{
    */
   $borderLeft: boolean
   $focused?: boolean
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: Theme
 }>((props) => {
   const {$borderLeft, $focused, theme} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {focusRing} = theme.sanity
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {base} = theme.sanity.color
 
   return css`
@@ -139,12 +142,16 @@ const Content = styled(Box)<{
 const EMPTY_ARRAY: never[] = []
 
 /** @internal */
-export const FormFieldSet = forwardRef(function FormFieldSet(
-  props: FormFieldSetProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
+export function FormFieldSet(
+  props: FormFieldSetProps &
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'> &
+    RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref: forwardedRef,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_comments: comments,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_slot: slot = null,
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
@@ -197,7 +204,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
       return null
     }
     return (
-      <ColumnarGrid columns={columns} gapX={4} gapY={5}>
+      <ColumnarGrid gridTemplateColumns={columns} gapX={4} gapY={5}>
         {getChildren(children)}
       </ColumnarGrid>
     )
@@ -211,7 +218,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
           {...restProps}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          space={2}
+          gap={2}
         >
           <FormFieldBaseHeader
             __internal_comments={comments}
@@ -222,7 +229,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
             presence={presence}
             inputId={inputId}
             content={
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Flex align="center">
                   {title && (
                     <FormFieldSetLegend
@@ -284,4 +291,4 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
       </FormNodeDivergenceDetail>
     </FormRow>
   )
-})
+}

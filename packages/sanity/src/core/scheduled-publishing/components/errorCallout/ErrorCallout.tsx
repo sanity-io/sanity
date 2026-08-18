@@ -1,4 +1,4 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Card, Flex, Inline, Text} from '@sanity/ui'
 
 interface Props {
@@ -15,7 +15,7 @@ const ErrorCallout = (props: Props) => {
         <Text size={2}>
           <ErrorOutlineIcon />
         </Text>
-        <Inline space={2}>
+        <Inline gap={2}>
           <Text size={1} weight="semibold">
             {title}
           </Text>

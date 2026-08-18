@@ -1,9 +1,10 @@
 import {type Schema} from '@sanity/types'
-import {Card, Container, Flex, Heading, Stack, useToast} from '@sanity/ui'
+import {Card, Container, Flex, Heading, Stack} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useEffect} from 'react'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {formatSchemaErrorsToMarkdown} from './formatSchemaErrorsToMarkdown'
 import {reportWarnings} from './reportWarnings'
@@ -59,9 +60,17 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
   }
 
   return (
-    <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
+    <Card
+      data-testid="studio-error-screen"
+      data-error="Schema errors"
+      height="fill"
+      overflow="auto"
+      paddingY={[4, 5, 6, 7]}
+      paddingX={4}
+      sizing="border"
+    >
       <Container width={1}>
-        <Stack space={5}>
+        <Stack gap={5}>
           <Flex justify="space-between" align="center" gap={2}>
             <Heading as="h1">{t('schema-errors.title', 'Schema errors')}</Heading>
             <Button

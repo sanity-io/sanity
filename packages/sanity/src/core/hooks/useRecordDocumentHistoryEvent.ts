@@ -4,10 +4,10 @@ import {
   type MediaResource,
   type StudioResource,
 } from '@sanity/message-protocol'
-import {type DocumentHandle} from '@sanity/sdk'
+import {type DocumentHandle} from '@sanity/sdk-react'
 import {useCallback} from 'react'
 
-import {useComlinkStore} from '../store/_legacy/datastores'
+import {useComlinkStore} from '../store/datastores'
 
 interface DocumentInteractionHistory {
   recordEvent: (eventType: 'viewed' | 'edited' | 'created' | 'deleted') => void

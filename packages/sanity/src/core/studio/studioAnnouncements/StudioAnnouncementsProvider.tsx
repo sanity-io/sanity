@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
@@ -162,6 +161,7 @@ function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProvide
  * @hidden
  */
 export function StudioAnnouncementsProvider(props: StudioAnnouncementsProviderProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
 
   if (source.announcements?.enabled) {

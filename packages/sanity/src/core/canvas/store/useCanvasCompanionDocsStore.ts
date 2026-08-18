@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
 
 import {useClient} from '../../hooks/useClient'
-import {useDocumentPreviewStore} from '../../store/_legacy/datastores'
-import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
+import {useDocumentPreviewStore} from '../../store/datastores'
+import {useResourceCache} from '../../store/ResourceCacheProvider'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {

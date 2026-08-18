@@ -5,15 +5,16 @@ import {
   type StackablePerspective,
   type WelcomeEvent,
 } from '@sanity/client'
-import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
+import {type DocumentSystem, type PrepareViewOptions, type SanityDocument} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
-import {isRecord} from '../util'
+import {isRecord} from '../util/isRecord'
 import {
   createDocumentStackAvailabilityObserver,
   createPreviewAvailabilityObserver,
 } from './availability'
+import {DOCUMENT_SYSTEM_FIELD} from './constants'
 import {createGlobalListener} from './createGlobalListener'
 import {createObserveDocument, type ObserveDocumentAPIConfig} from './createObserveDocument'
 import {createPathObserver} from './createPathObserver'
@@ -21,6 +22,7 @@ import {createPreviewObserver} from './createPreviewObserver'
 import {createObservePathsDocumentPair} from './documentPair'
 import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from './liveDocumentIdSet'
 import {createObserveFields} from './observeFields'
+import {createObserveVersionDocumentIds} from './observeVersionDocumentIds'
 import {
   type ApiConfig,
   type DocumentStackAvailability,
@@ -42,6 +44,11 @@ export type ObserveForPreviewFn = (
   options?: {
     viewOptions?: PrepareViewOptions
     perspective?: StackablePerspective[]
+    /**
+     * The selected editing variant as a bare variant id. When set, preview values are resolved as
+     * seen through that variant, on top of the given perspective.
+     */
+    variant?: string
     apiConfig?: ApiConfig
   },
 ) => Observable<PreparedSnapshot>
@@ -61,7 +68,14 @@ export interface DocumentPreviewStore {
     id: string,
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
   ) => Observable<string | undefined>
+  observeDocumentSystemFromId: (
+    id: string,
+    apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
+    variant?: string,
+  ) => Observable<DocumentSystem | undefined>
 
   /**
    *
@@ -96,6 +110,7 @@ export interface DocumentPreviewStore {
    * transitions on the received listener events.
    * This provides a lightweight way of subscribing to a list of ids for simple cases where you just want to subscribe to a set of documents ids
    * that matches a particular filter.
+   *
    * @hidden
    * @beta
    * @param filter - A groq filter to use for the document set
@@ -116,7 +131,23 @@ export interface DocumentPreviewStore {
   ) => Observable<DocumentIdSetObserverState>
 
   /**
+   * Observes the set of version and variant document ids that exist for a given
+   * document group id.
+   *
+   * Unlike `unstable_observeDocumentIdSet`, this does not open a dedicated
+   * real-time listener for each published id. Instead, it is driven by the
+   * shared global listener and batches the discovery queries for all observed
+   * document group ids into a single combined query, returning the ids in
+   * ascending order.
+   *
+   * @hidden
+   * @beta
+   */
+  unstable_observeVersionDocumentIds: (publishedId: string) => Observable<string[]>
+
+  /**
    * Observe a complete document with the given ID
+   *
    * @hidden
    * @beta
    */
@@ -124,8 +155,10 @@ export interface DocumentPreviewStore {
     id: string,
     clientConfig?: ObserveDocumentAPIConfig,
   ) => Observable<SanityDocument | undefined>
+
   /**
    * Observe a list of complete documents with the given IDs
+   *
    * @hidden
    * @beta
    */
@@ -164,14 +197,48 @@ export function createDocumentPreviewStore({
     id: string,
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
   ): Observable<string | undefined> {
-    return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig, perspective).pipe(
+    return observePaths(
+      {_type: 'reference', _ref: id},
+      ['_type'],
+      apiConfig,
+      perspective,
+      variant,
+    ).pipe(
       map((res) => (isRecord(res) && typeof res._type === 'string' ? res._type : undefined)),
+      distinctUntilChanged(),
+    )
+  }
+  function observeDocumentSystemFromId(
+    id: string,
+    apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
+    variant?: string,
+    // TODO: This shouldn't be undefined once the documents are migrated.
+  ): Observable<DocumentSystem | undefined> {
+    return observePaths(
+      {_type: 'reference', _ref: id},
+      [DOCUMENT_SYSTEM_FIELD],
+      apiConfig,
+      perspective,
+      variant,
+    ).pipe(
+      map((res) =>
+        isRecord(res) && isRecord(res[DOCUMENT_SYSTEM_FIELD])
+          ? (res[DOCUMENT_SYSTEM_FIELD] as unknown as DocumentSystem)
+          : undefined,
+      ),
       distinctUntilChanged(),
     )
   }
 
   const observeDocumentIdSet = createDocumentIdSetObserver(versionedClient)
+
+  const observeVersionDocumentIds = createObserveVersionDocumentIds({
+    client: versionedClient,
+    invalidationChannel,
+  })
 
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
 
@@ -195,8 +262,9 @@ export function createDocumentPreviewStore({
     observePaths,
     observeForPreview,
     observeDocumentTypeFromId,
-
+    observeDocumentSystemFromId,
     unstable_observeDocumentIdSet: observeDocumentIdSet,
+    unstable_observeVersionDocumentIds: observeVersionDocumentIds,
     unstable_observeDocument: observeDocument,
     unstable_observeDocuments: (ids: string[]) =>
       combineLatest(ids.map((id) => observeDocument(id))),

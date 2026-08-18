@@ -7,6 +7,7 @@ import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduled-publi
 import {schedules, SCHEDULES_NAME} from '../schedules/plugin'
 import {SINGLE_DOC_RELEASE_NAME, singleDocRelease} from '../singleDocRelease/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
+import {variants, VARIANTS_NAME} from '../variants/plugin'
 import {
   type AppsOptions,
   type DefaultPluginsWorkspaceOptions,
@@ -16,6 +17,7 @@ import {
 } from './types'
 
 const defaultPlugins = (options: DefaultPluginsOptions) => [
+  variants(),
   comments(),
   tasks(),
   scheduledPublishing(),
@@ -32,6 +34,9 @@ type DefaultPluginsOptions = DefaultPluginsWorkspaceOptions & {
 
 export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: PluginOptions[]) {
   return defaultPlugins(options).filter((plugin) => {
+    if (plugin.name === VARIANTS_NAME) {
+      return options.variants.enabled
+    }
     if (plugin.name === SCHEDULED_PUBLISHING_NAME) {
       // The scheduled publishing plugin is only included if other plugin is included by the user.
       return options.scheduledPublishing.enabled && !!plugins?.length
@@ -66,6 +71,7 @@ export function getDefaultPluginsOptions(
   return {
     tasks: {
       enabled: true,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       ...workspace.unstable_tasks,
       ...workspace.tasks,
     },
@@ -75,7 +81,6 @@ export function getDefaultPluginsOptions(
       inputDateTimeFormat: 'dd/MM/yyyy HH:mm',
       ...workspace.scheduledPublishing,
       // If the user has explicitly enabled scheduled publishing, we should respect that
-      // eslint-disable-next-line camelcase
       __internal__workspaceEnabled: workspace.scheduledPublishing?.enabled ?? false,
     },
     releases: {
@@ -91,5 +96,9 @@ export function getDefaultPluginsOptions(
     },
     mediaLibrary: workspace?.mediaLibrary,
     scheduledDrafts: workspace.scheduledDrafts ?? {enabled: true},
+    variants: {
+      enabled: false,
+      ...workspace.beta?.variants,
+    },
   }
 }

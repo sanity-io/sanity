@@ -9,6 +9,7 @@ export default function CustomStringInput(props: StringInputProps) {
       <p>{schemaType.description}</p>
       <input
         type="text"
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         placeholder={schemaType.placeholder}
         onChange={(event) => {
           onChange(set(event.target.value))

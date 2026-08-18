@@ -1,7 +1,11 @@
-import {CheckmarkIcon, CloseIcon, SelectIcon} from '@sanity/icons'
-import {Box, Flex, Menu} from '@sanity/ui'
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {CloseIcon} from '@sanity/icons/Close'
+import {SelectIcon} from '@sanity/icons/Select'
+import {Flex} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {format} from 'date-fns/format'
 import {useRouter} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -65,7 +69,7 @@ export const ScheduleFilters = (props: ScheduleFiltersProps) => {
                 ))}
               </Menu>
             }
-            placement="bottom"
+            popover={{placement: 'bottom'}}
           />
         )}
       </Box>

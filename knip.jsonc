@@ -1,15 +1,12 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignoreWorkspaces": [
-    "e2e",
     "dev/*",
     "perf/*",
     "packages/@repo/test-exports",
     "packages/@repo/test-dts-exports",
-    "packages/@repo/eslint-config",
     "packages/@repo/test-config",
     "packages/@repo/tsconfig",
-    "packages/@repo/package.config",
     "packages/@repo/package.bundle",
     "packages/sanity/fixtures/examples/*",
   ],
@@ -25,10 +22,9 @@
         "dotenv",
         // keeping it a dev dependency speeds up 'npx only-allow pnpm' in package.json's preinstall script
         "only-allow",
-        // Knip does not bind extra args (`-f gha`) behind e.g. `pnpm turbo run lint` to the target binary
-        "eslint-formatter-gha",
-        // See .github/workflows/e2e-ui.yml
-        "@sanity/ui",
+        // Used by the boundaries jsPlugin via `settings["import/resolver"]` in .oxlintrc.json,
+        // which knip can't trace (unlike jsPlugins, which it detects)
+        "eslint-import-resolver-typescript",
       ],
       "ignoreBinaries": [
         // No root packages provide these binaries
@@ -37,72 +33,82 @@
         "sanity-tsdoc",
         // Knip doesn't understand `cd perf/studio && pnpm preview`
         "preview",
+        // `pnpm dist-tag` invocations in tag-latest.yml / tag-stable.yml
+        "dist-tag",
+        // Installed system-wide via brew/uv/pipx, not npm
+        "zizmor",
+      ],
+    },
+    // e2e is scanned so its heavy use of `@playwright/test` (catalog) is seen as
+    // used. The playwright plugin is disabled because the config reads required
+    // SANITY_E2E_* env vars at load time. Treat every file as an entry so the
+    // workspace's pre-existing unused files/exports (out of scope for this work)
+    // aren't reported, while dependency usage still is.
+    "e2e": {
+      "entry": ["**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+      "playwright": false,
+      "ignoreDependencies": [
+        // CLI invoked as `pnpm --filter e2e exec chromatic --playwright` in
+        // .github/workflows/e2e.yml, which knip can't trace
+        "chromatic",
       ],
     },
     "packages/sanity": {
-      "entry": [
-        "src/_exports/*.ts",
-        "bin/sanity",
-        "package.config.ts",
-        "playwright-ct/template/index.ts",
-        "mock-browser-env-stub-loader.mjs",
-      ],
+      "entry": ["src/_exports/*.ts", "bin/sanity", "mock-browser-env-stub-loader.mjs"],
       "project": [
         "src/**/*.{ts,tsx}",
-        "playwright-ct/**/*.{ts,tsx}",
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
       ],
-      "ignoreDependencies": ["@vitest/expect", "babel-plugin-styled-components"],
+      "ignoreBinaries": ["tzutil"],
+      "ignoreDependencies": [
+        "@vitest/expect",
+        // CLI invoked as `pnpm --filter sanity exec chromatic --vitest` in
+        // .github/workflows/chromatic.yml, which knip can't trace
+        "chromatic",
+      ],
+    },
+    "packages/@repo/debug-proxy": {
+      "project": ["src/**/*.ts"],
+      "ignoreBinaries": ["mkcert"],
     },
     "packages/@sanity/schema": {
       "entry": [
         "src/_exports/*.ts",
-        "package.config.ts",
         // Knip can't trace `import * as types from './types'` in Schema.ts
         "src/legacy/types/index.ts",
       ],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/mutator": {
-      "entry": ["package.config.ts"],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/types": {
-      "entry": ["package.config.ts"],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/diff": {
-      "entry": ["package.config.ts"],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/vision": {
-      "entry": ["package.config.ts"],
       "project": ["src/**/*.{ts,tsx}"],
-      "ignoreDependencies": ["babel-plugin-styled-components"],
     },
     "packages/@sanity/util": {
-      "entry": ["src/_exports/*.ts", "package.config.ts"],
+      "entry": ["src/_exports/*.ts"],
       "project": ["src/**/*.ts"],
     },
     "packages/groq": {
-      "entry": [
-        "src/groq.ts",
-        "src/define.ts",
-        "src/_exports.cts.ts",
-        "src/_exports.mts.ts",
-        "package.config.ts",
-      ],
-      "project": ["src/**/*.ts"],
+      "project": ["*.js", "*.cjs"],
     },
     "packages/@repo/bundle-manager": {
       "project": ["src/**/*.ts"],
     },
+    "packages/@repo/ailf": {
+      "entry": [".ailf/ailf.config.ts", ".ailf/tasks/*.reference.ts"],
+      "project": [".ailf/**/*.ts"],
+      "ignoreFiles": [".ailf/tasks/*.task.ts"],
+    },
     "packages/@repo/release-notes": {
       "project": ["src/**/*.ts"],
-      "ignoreDependencies": [
-        // Dynamically loaded by conventional-recommended-bump via loadPreset('conventionalcommits')
-        "conventional-changelog-conventionalcommits",
-      ],
     },
     "packages/@repo/utils": {
       "project": ["src/**/*.ts"],
@@ -113,7 +119,7 @@
         "updateLicenses.ts",
         // Hard to find
         "listPublishedPackages.ts",
-        "symlinkDependencies.cjs",
+        "symlinkDependencies.ts",
       ],
     },
   },

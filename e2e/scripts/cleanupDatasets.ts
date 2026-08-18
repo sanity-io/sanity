@@ -1,10 +1,10 @@
-/* eslint-disable no-console */
 /**
  * Periodic cleanup of e2e datasets.
  *
- * Handles two types of datasets:
+ * Handles three types of datasets:
  * - PR datasets (`pr-<number>-<browser>-<run-id>`): deleted when the PR is closed
  * - Main datasets (`main-<browser>-<run-id>`): deleted when older than 24 hours
+ * - Agent datasets (`cursor_ci_<random>`): deleted when older than 24 hours
  *
  * Runs on a schedule (every 6 hours) and can be triggered manually.
  */
@@ -20,7 +20,7 @@ const GITHUB_REPO = 'sanity-io/sanity'
 
 const API_BASE_URL = `https://${SANITY_E2E_PROJECT_ID}.api.sanity.work/v2026-03-03`
 
-const MAIN_DATASET_MAX_AGE_MS = 24 * 60 * 60 * 1000 // 24 hours
+const MAX_AGE_MS = 24 * 60 * 60 * 1000 // 24 hours
 
 interface Dataset {
   name: string
@@ -32,6 +32,10 @@ interface Dataset {
 const PR_DATASET_PATTERN = /^pr-(\d+)-/
 // Match dataset names like `main-chromium-22576482973`
 const MAIN_DATASET_PATTERN = /^main-(chromium|firefox)-/
+// Match dataset names like `cursor_ci_f167bd`, created by agents running the
+// suite from a Cursor Cloud VM (see AGENTS.md). They are meant to be deleted by
+// whoever created them; this is the backstop for the ones that are not.
+const AGENT_DATASET_PATTERN = /^cursor_ci_/
 
 async function listDatasets(): Promise<Dataset[]> {
   const res = await fetch(`${API_BASE_URL}/datasets?tag=studio-e2e-cleanup`, {
@@ -130,17 +134,20 @@ async function cleanupPrDatasets(datasets: Dataset[]): Promise<number> {
   return deletedCount
 }
 
-async function cleanupMainDatasets(datasets: Dataset[]): Promise<number> {
+async function cleanupExpiredDatasets(
+  datasets: Dataset[],
+  {label, pattern}: {label: string; pattern: RegExp},
+): Promise<number> {
   const now = Date.now()
-  const mainDatasets = datasets.filter((ds) => MAIN_DATASET_PATTERN.test(ds.name))
+  const matchingDatasets = datasets.filter((ds) => pattern.test(ds.name))
 
-  console.log(`Found ${mainDatasets.length} main datasets total`)
+  console.log(`Found ${matchingDatasets.length} ${label} datasets total`)
 
   let deletedCount = 0
 
-  for (const ds of mainDatasets) {
+  for (const ds of matchingDatasets) {
     const age = now - new Date(ds.createdAt).getTime()
-    if (age < MAIN_DATASET_MAX_AGE_MS) {
+    if (age < MAX_AGE_MS) {
       console.log(`  Skipping ${ds.name} (${Math.round(age / 3600000)}h old)`)
       continue
     }
@@ -161,10 +168,17 @@ async function run() {
   const datasets = await listDatasets()
 
   const prDeleted = await cleanupPrDatasets(datasets)
-  const mainDeleted = await cleanupMainDatasets(datasets)
+  const mainDeleted = await cleanupExpiredDatasets(datasets, {
+    label: 'main',
+    pattern: MAIN_DATASET_PATTERN,
+  })
+  const agentDeleted = await cleanupExpiredDatasets(datasets, {
+    label: 'agent',
+    pattern: AGENT_DATASET_PATTERN,
+  })
 
   console.log(
-    `\nCleanup complete. Deleted ${prDeleted} PR dataset(s) and ${mainDeleted} main dataset(s).`,
+    `\nCleanup complete. Deleted ${prDeleted} PR dataset(s), ${mainDeleted} main dataset(s) and ${agentDeleted} agent dataset(s).`,
   )
 }
 

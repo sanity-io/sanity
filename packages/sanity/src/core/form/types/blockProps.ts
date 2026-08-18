@@ -1,5 +1,6 @@
 import {type MarkdownShortcutsPluginProps} from '@portabletext/plugin-markdown-shortcuts'
 import {type PasteLinkPluginProps} from '@portabletext/plugin-paste-link'
+import {type TableContainers} from '@portabletext/plugin-table'
 import {type TypographyPluginProps} from '@portabletext/plugin-typography'
 import {
   type ArraySchemaType,
@@ -16,8 +17,8 @@ import {
 } from '@sanity/types'
 import {type ReactNode} from 'react'
 
-import {type PortableTextMarker} from '../..'
-import {type FormNodePresence} from '../../presence'
+import {type FormNodePresence} from '../../presence/types'
+import {type PortableTextMarker} from './_transitional'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
@@ -227,6 +228,7 @@ export interface BlockAnnotationProps {
    * Markers (meta data) connected to this annotation.
    * @deprecated - use `renderBlock` and `renderInlineBlock` interfaces instead
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   markers: PortableTextMarker[]
   /**
    * Closes the editing form connected to this annotation.
@@ -353,6 +355,7 @@ export interface BlockProps {
    * Markers (meta data) connected to this annotation.
    * @deprecated - use `renderBlock` and `renderInlineBlock` interfaces instead
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   markers: PortableTextMarker[]
   /**
    * Closes the editing form connected to this block.
@@ -457,6 +460,10 @@ export interface PortableTextPluginsProps {
            * @deprecated - add the configuration directly to `markdown` instead
            */
           config: MarkdownConfig
+          /**
+           * @defaultValue true
+           */
+          enabled?: boolean
         }
       | (MarkdownShortcutsPluginProps & {
           config?: undefined
@@ -477,6 +484,35 @@ export interface PortableTextPluginsProps {
        */
       enabled?: boolean
     } & TypographyPluginProps
+    /**
+     * Table editing for a table-shaped block object (`table` > `rows` >
+     * `row` > `cells` > `cell` > `value`). Unlike the other built-in
+     * plugins, tables are opt-in: the field's schema must include the table
+     * member type, and the plugin must be enabled explicitly.
+     *
+     * For the header-row toggle in the table menu to persist, the table
+     * type must also declare a `headerRows` number field; without it the
+     * toggled value is stripped from the document.
+     */
+    table?: {
+      /**
+       * @defaultValue false
+       */
+      enabled?: boolean
+      /**
+       * Native `@portabletext/plugin-table` container definitions, one per
+       * role, for binding the plugin to your own type and field names
+       * (adopting a table shape that already exists in your dataset).
+       * Omitted renders fall back to the studio's table UI, and omitted
+       * roles fall back to the canonical `table`/`row`/`cell` names. The
+       * nesting shape and the `headerRows` field name stay fixed, and the
+       * schema must declare the same names the containers use.
+       *
+       * Define the containers at module scope: a new object identity
+       * re-registers the plugin on every render.
+       */
+      containers?: TableContainers
+    }
   }
 }
 

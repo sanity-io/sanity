@@ -1,6 +1,7 @@
-import {ChevronRightIcon} from '@sanity/icons'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {Fragment} from 'react'
+import {Box} from 'ui5'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
@@ -19,7 +20,7 @@ export function FilterDetails({filter}: FilterDetailsProps) {
   const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
 
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       {/* Path */}
       {fieldDefinition?.titlePath && fieldDefinition.titlePath?.length > 1 && (
         <Box marginLeft={4}>

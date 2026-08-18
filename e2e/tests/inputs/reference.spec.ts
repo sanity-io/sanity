@@ -1,7 +1,7 @@
 import {type Locator, type Page, expect} from '@playwright/test'
 
-import {withDefaultClient} from '../../helpers'
 import {expectPublishedStatus, expectSavedStatus} from '../../helpers/documentStatusAssertions'
+import {withDefaultClient} from '../../helpers/sanityClient'
 import {test} from '../../studio-test'
 
 /**
@@ -25,11 +25,14 @@ async function searchAndSelectReference(
 
     // Wait briefly for results to appear
     try {
-      await expect(page.locator(optionSelector)).toBeVisible({
+      const option = page.locator(optionSelector)
+      await expect(option).toBeVisible({
         timeout: 10_000,
       })
-      // Option found, click it
-      await page.locator(optionSelector).click()
+      // Option found — scroll into view and click. Use force:true to bypass
+      // intermittent pointer-event interception by the navbar on chromium.
+      await option.scrollIntoViewIfNeeded()
+      await option.click({force: true})
       return
     } catch {
       // Option not found yet — retry the search.
@@ -42,8 +45,10 @@ async function searchAndSelectReference(
   // Final attempt — let it throw the regular assertion error if it still fails
   await autocomplete.click()
   await autocomplete.fill(searchText)
-  await expect(page.locator(optionSelector)).toBeVisible({timeout: 10_000})
-  await page.locator(optionSelector).click()
+  const option = page.locator(optionSelector)
+  await expect(option).toBeVisible({timeout: 10_000})
+  await option.scrollIntoViewIfNeeded()
+  await option.click({force: true})
 }
 
 withDefaultClient((context) => {
@@ -150,7 +155,9 @@ withDefaultClient((context) => {
     await page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton').click()
 
     // Wait for the new document referenced to be created & loaded
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
 
     // switch to original doc
     await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
@@ -191,7 +198,9 @@ withDefaultClient((context) => {
     await page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton').click()
 
     // Wait for the new document referenced to be created & loaded
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
 
     // switch to original doc
     await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
@@ -232,7 +241,9 @@ withDefaultClient((context) => {
     await page.getByTestId('create-new-document-select-referenceField-selectTypeMenuButton').click()
 
     // wait for the reference document to open
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
 
     // update and publish the reference
     await page.getByTestId('string-input').nth(1).fill('Reference test')
@@ -283,7 +294,9 @@ withDefaultClient((context) => {
       .click()
 
     // wait for the reference document to open
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
 
     // update and publish the reference
     await page.getByTestId('string-input').nth(1).fill('Reference test')

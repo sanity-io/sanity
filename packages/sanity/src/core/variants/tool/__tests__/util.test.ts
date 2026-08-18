@@ -1,0 +1,165 @@
+import {describe, expect, it} from 'vitest'
+
+import {createMockVariant} from '../../__fixtures__/createMockVariant'
+import {VARIANT_DOCUMENTS_PATH} from '../../store/constants'
+import {type SystemVariant} from '../../types'
+import {
+  buildConditionFacets,
+  decodeVariantIdFromRoute,
+  filterVariantsForSearch,
+  getVariantConditionsText,
+  getVariantDescription,
+  getVariantId,
+  getVariantIdFromDocument,
+  getVariantTitle,
+  isPublishedBundleId,
+  isReleaseBundle,
+  variantMatchesConditionFilters,
+} from '../util'
+
+describe('variants tool utilities', () => {
+  it('derives a display id from a variant document id', () => {
+    expect(getVariantId(`${VARIANT_DOCUMENTS_PATH}.audience-a`)).toBe('audience-a')
+    expect(getVariantId('audience-a')).toBe('audience-a')
+  })
+
+  it('derives the sticky variant id from a document _system variant ref', () => {
+    expect(
+      getVariantIdFromDocument({
+        _system: {
+          variant: {_ref: `${VARIANT_DOCUMENTS_PATH}.alpha-audience`, _weak: true},
+        },
+      }),
+    ).toBe('alpha-audience')
+    expect(getVariantIdFromDocument({})).toBeUndefined()
+  })
+
+  it('uses metadata title before falling back to the id suffix', () => {
+    const variant = createMockVariant('audience-a')
+
+    expect(getVariantTitle(variant)).toBe('audience-a')
+    expect(getVariantTitle({...variant, metadata: {title: 'Audience A', description: []}})).toBe(
+      'Audience A',
+    )
+  })
+
+  it('formats conditions as quoted key value pairs', () => {
+    expect(getVariantConditionsText({audience: 'developer', locale: 'en'})).toBe(
+      'audience: "developer", locale: "en"',
+    )
+    expect(getVariantConditionsText({locale: 'en,nb'})).toBe('locale: "en,nb"')
+  })
+
+  it('decodes route slugs back to variant document ids', () => {
+    expect(decodeVariantIdFromRoute('alpha-audience')).toBe(
+      `${VARIANT_DOCUMENTS_PATH}.alpha-audience`,
+    )
+    expect(decodeVariantIdFromRoute(encodeURIComponent('loyal-customers'))).toBe(
+      `${VARIANT_DOCUMENTS_PATH}.loyal-customers`,
+    )
+    expect(decodeVariantIdFromRoute(encodeURIComponent(`${VARIANT_DOCUMENTS_PATH}.a`))).toBe(
+      `${VARIANT_DOCUMENTS_PATH}.a`,
+    )
+    expect(decodeVariantIdFromRoute('%E0%A4%A')).toBe(`${VARIANT_DOCUMENTS_PATH}.%E0%A4%A`)
+    expect(decodeVariantIdFromRoute(undefined)).toBeUndefined()
+  })
+
+  it('extracts plain text descriptions from portable text', () => {
+    const variant = createMockVariant('audience-a')
+
+    expect(
+      getVariantDescription({
+        ...variant,
+        metadata: {
+          description: [
+            {
+              _key: 'block-1',
+              _type: 'block',
+              children: [{_key: 'span-1', _type: 'span', marks: [], text: 'Developer audience'}],
+              markDefs: [],
+              style: 'normal',
+            },
+          ],
+        },
+      }),
+    ).toBe('Developer audience')
+  })
+
+  it('filters variants by title and condition keys or values', () => {
+    const developerVariant = {
+      ...createMockVariant('developer'),
+      metadata: {title: 'Developer audience', description: []},
+    }
+    const localeVariant = {
+      ...createMockVariant('norwegian', 1),
+      conditions: {locale: 'nb-NO'},
+    }
+
+    expect(filterVariantsForSearch([developerVariant, localeVariant], 'developer')).toEqual([
+      developerVariant,
+    ])
+    expect(filterVariantsForSearch([developerVariant, localeVariant], 'locale')).toEqual([
+      localeVariant,
+    ])
+    expect(filterVariantsForSearch([developerVariant, localeVariant], 'nb-no')).toEqual([
+      localeVariant,
+    ])
+  })
+
+  it('treats undefined and published bundle ids as published', () => {
+    expect(isPublishedBundleId(undefined)).toBe(true)
+    expect(isPublishedBundleId('published')).toBe(true)
+    expect(isPublishedBundleId('drafts')).toBe(false)
+    expect(isPublishedBundleId('rASAP')).toBe(false)
+  })
+
+  it('identifies release bundle ids', () => {
+    expect(isReleaseBundle(undefined)).toBe(false)
+    expect(isReleaseBundle('published')).toBe(false)
+    expect(isReleaseBundle('drafts')).toBe(false)
+    expect(isReleaseBundle('rASAP')).toBe(true)
+  })
+})
+
+describe('buildConditionFacets', () => {
+  it('derives one sorted facet per condition key with its distinct values', () => {
+    const variants: SystemVariant[] = [
+      {...createMockVariant('a'), conditions: {market: 'london', brand: 'brand-z'}},
+      {...createMockVariant('b'), conditions: {market: 'plymouth', brand: 'brand-z'}},
+      {...createMockVariant('c'), conditions: {market: 'london'}},
+    ]
+
+    expect(buildConditionFacets(variants)).toEqual([
+      {key: 'brand', values: ['brand-z']},
+      {key: 'market', values: ['london', 'plymouth']},
+    ])
+  })
+
+  it('returns an empty list when no variant carries conditions', () => {
+    const variants: SystemVariant[] = [{...createMockVariant('a'), conditions: {}}]
+    expect(buildConditionFacets(variants)).toEqual([])
+  })
+})
+
+describe('variantMatchesConditionFilters', () => {
+  const variant: SystemVariant = {
+    ...createMockVariant('a'),
+    conditions: {market: 'london', segment: 'VIP'},
+  }
+
+  it('matches when there are no active filters', () => {
+    expect(variantMatchesConditionFilters(variant, {})).toBe(true)
+    expect(variantMatchesConditionFilters(variant, {market: []})).toBe(true)
+  })
+
+  it('ORs values within a dimension and ANDs across dimensions', () => {
+    expect(variantMatchesConditionFilters(variant, {market: ['london', 'plymouth']})).toBe(true)
+    expect(variantMatchesConditionFilters(variant, {market: ['london'], segment: ['VIP']})).toBe(
+      true,
+    )
+    expect(variantMatchesConditionFilters(variant, {market: ['london'], segment: ['New']})).toBe(
+      false,
+    )
+    expect(variantMatchesConditionFilters(variant, {brand: ['brand-z']})).toBe(false)
+  })
+})

@@ -21,3 +21,11 @@ export const validationLocaleNamespace = 'validation' as const
  * @hidden
  */
 export const copyPasteLocalNamespace = 'copy-paste' as const
+
+/**
+ * The namespace for feedback UI strings.
+ *
+ * @internal
+ * @hidden
+ */
+export const feedbackLocaleNamespace = 'feedback' as const

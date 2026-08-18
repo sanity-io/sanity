@@ -5,13 +5,29 @@
 import type {
   ALL_FIELDS_GROUP_NAME,
   builtinTypes,
+  CreateManifest,
   createSchemaFromManifestTypes,
+  createStoredWorkspaceSchemaPayload,
+  CreateWorkspaceManifest,
   DEFAULT_MAX_FIELD_DEPTH,
+  DefaultWorkspaceSchemaId,
   DescriptorConverter,
+  DescriptorRequester,
+  extractCreateWorkspaceManifest,
+  extractManifestSchemaTypes,
   extractSchema,
   FIXME,
+  getWorkspaceSchemaId,
   groupProblems,
+  IconResolver,
   isActionEnabled,
+  ManifestSchemaType,
+  ManifestWorkspaceFile,
+  ParsedWorkspaceSchemaId,
+  parseWorkspaceSchemaId,
+  PreparedSchemaUpload,
+  prepareSchemaUpload,
+  PrepareSchemaUploadOptions,
   Problem,
   ProblemPath,
   ProblemPathPropertySegment,
@@ -22,11 +38,18 @@ import type {
   resolveSearchConfigForBaseFieldPaths,
   SchemaSynchronizationRequest,
   SchemaSynchronizationResult,
+  StoredWorkspaceSchema,
   TypeWithProblems,
+  uploadSchema,
+  UploadSchemaOptions,
+  UploadSchemaPhase,
   validateMediaLibraryAssetAspect,
   validateSchema,
   ValidationError,
   ValidationResult,
+  validForNamesChars,
+  validForNamesPattern,
+  WorkspaceSchemaId,
 } from '@sanity/schema/_internal'
 import {describe, expectTypeOf, test} from 'vitest'
 
@@ -37,14 +60,35 @@ describe('@sanity/schema/_internal', () => {
   test('builtinTypes', () => {
     expectTypeOf<typeof builtinTypes>().not.toBeNever()
   })
+  test('CreateManifest', () => {
+    expectTypeOf<CreateManifest>().toBeObject()
+  })
   test('createSchemaFromManifestTypes', () => {
     expectTypeOf<typeof createSchemaFromManifestTypes>().toBeFunction()
+  })
+  test('createStoredWorkspaceSchemaPayload', () => {
+    expectTypeOf<typeof createStoredWorkspaceSchemaPayload>().toBeFunction()
+  })
+  test('CreateWorkspaceManifest', () => {
+    expectTypeOf<CreateWorkspaceManifest>().toBeObject()
   })
   test('DEFAULT_MAX_FIELD_DEPTH', () => {
     expectTypeOf<typeof DEFAULT_MAX_FIELD_DEPTH>().not.toBeNever()
   })
+  test('DefaultWorkspaceSchemaId', () => {
+    expectTypeOf<DefaultWorkspaceSchemaId>().not.toBeNever()
+  })
   test('DescriptorConverter', () => {
     expectTypeOf<DescriptorConverter>().not.toBeNever()
+  })
+  test('DescriptorRequester', () => {
+    expectTypeOf<DescriptorRequester>().not.toBeNever()
+  })
+  test('extractCreateWorkspaceManifest', () => {
+    expectTypeOf<typeof extractCreateWorkspaceManifest>().toBeFunction()
+  })
+  test('extractManifestSchemaTypes', () => {
+    expectTypeOf<typeof extractManifestSchemaTypes>().toBeFunction()
   })
   test('extractSchema', () => {
     expectTypeOf<typeof extractSchema>().toBeFunction()
@@ -52,11 +96,38 @@ describe('@sanity/schema/_internal', () => {
   test('FIXME', () => {
     expectTypeOf<FIXME>().not.toBeNever()
   })
+  test('getWorkspaceSchemaId', () => {
+    expectTypeOf<typeof getWorkspaceSchemaId>().toBeFunction()
+  })
   test('groupProblems', () => {
     expectTypeOf<typeof groupProblems>().toBeFunction()
   })
+  test('IconResolver', () => {
+    expectTypeOf<IconResolver>().not.toBeNever()
+  })
   test('isActionEnabled', () => {
     expectTypeOf<typeof isActionEnabled>().not.toBeNever()
+  })
+  test('ManifestSchemaType', () => {
+    expectTypeOf<ManifestSchemaType>().toBeObject()
+  })
+  test('ManifestWorkspaceFile', () => {
+    expectTypeOf<ManifestWorkspaceFile>().toBeObject()
+  })
+  test('ParsedWorkspaceSchemaId', () => {
+    expectTypeOf<ParsedWorkspaceSchemaId>().toBeObject()
+  })
+  test('parseWorkspaceSchemaId', () => {
+    expectTypeOf<typeof parseWorkspaceSchemaId>().toBeFunction()
+  })
+  test('PreparedSchemaUpload', () => {
+    expectTypeOf<PreparedSchemaUpload>().toBeObject()
+  })
+  test('prepareSchemaUpload', () => {
+    expectTypeOf<typeof prepareSchemaUpload>().toBeFunction()
+  })
+  test('PrepareSchemaUploadOptions', () => {
+    expectTypeOf<PrepareSchemaUploadOptions>().not.toBeNever()
   })
   test('Problem', () => {
     expectTypeOf<Problem>().toBeObject()
@@ -88,8 +159,20 @@ describe('@sanity/schema/_internal', () => {
   test('SchemaSynchronizationResult', () => {
     expectTypeOf<SchemaSynchronizationResult>().not.toBeNever()
   })
+  test('StoredWorkspaceSchema', () => {
+    expectTypeOf<StoredWorkspaceSchema>().toBeObject()
+  })
   test('TypeWithProblems', () => {
     expectTypeOf<TypeWithProblems>().toBeObject()
+  })
+  test('uploadSchema', () => {
+    expectTypeOf<typeof uploadSchema>().toBeFunction()
+  })
+  test('UploadSchemaOptions', () => {
+    expectTypeOf<UploadSchemaOptions>().not.toBeNever()
+  })
+  test('UploadSchemaPhase', () => {
+    expectTypeOf<UploadSchemaPhase>().toBeObject()
   })
   test('validateMediaLibraryAssetAspect', () => {
     expectTypeOf<typeof validateMediaLibraryAssetAspect>().toBeFunction()
@@ -102,5 +185,14 @@ describe('@sanity/schema/_internal', () => {
   })
   test('ValidationResult', () => {
     expectTypeOf<ValidationResult>().toBeObject()
+  })
+  test('validForNamesChars', () => {
+    expectTypeOf<typeof validForNamesChars>().not.toBeNever()
+  })
+  test('validForNamesPattern', () => {
+    expectTypeOf<typeof validForNamesPattern>().not.toBeNever()
+  })
+  test('WorkspaceSchemaId', () => {
+    expectTypeOf<WorkspaceSchemaId>().not.toBeNever()
   })
 })

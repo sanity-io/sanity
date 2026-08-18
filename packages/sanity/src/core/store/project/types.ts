@@ -1,0 +1,106 @@
+import {type Role} from '@sanity/types'
+import {type Observable} from 'rxjs'
+
+/**
+ * @hidden
+ * @beta */
+export interface ProjectData {
+  id: string
+  displayName: string
+  /**
+   * @deprecated Use the `/user-applications` endpoint instead, which lists all deployed studios/applications
+   * @see https://www.sanity.io/help/studio-host-user-applications
+   */
+  studioHost: string | null
+  isBlocked: boolean
+  isDisabled: boolean
+  isDisabledByUser: boolean
+  metadata: {
+    color: string
+    /**
+     * @deprecated Use the `/user-applications` endpoint instead, which lists all deployed studios/applications
+     * @see https://www.sanity.io/help/studio-host-user-applications
+     */
+    externalStudioHost: string
+  }
+  maxRetentionDays: number
+  activityFeedEnabled: boolean
+  createdAt: string
+  updatedAt: string
+  organizationId: string
+  organization?: ProjectOrganizationData | null
+  members: {
+    id: string
+    createdAt: string
+    updatedAt: string
+    isCurrentUser: boolean
+    isRobot: boolean
+    role: string
+    roles: Role[]
+  }[]
+  features: string[]
+  pendingInvites: number
+}
+
+/**
+ * @hidden
+ * @beta */
+export interface ProjectDatasetData {
+  name: string
+  aclMode: 'public' | 'private'
+  createdAt: string
+  createdByUserId: string
+  tags: {
+    name: string
+    title: string
+  }[]
+}
+
+/**
+ * @hidden
+ * @beta */
+export type ProjectGrants = Record<
+  string,
+  | {
+      id: string
+      name: string
+      title: string
+      description: string | null
+      isCustom: boolean
+      config: Record<string, unknown>
+      grants: {
+        name: string
+        params: Record<string, unknown>
+      }[]
+    }[]
+  | undefined
+>
+
+/**
+ * @hidden
+ * @beta */
+export interface ProjectStore {
+  get: () => Observable<ProjectData>
+  getDatasets: () => Observable<ProjectDatasetData[]>
+  getOrganizationData: () => Observable<ProjectOrganizationData | null>
+  getOrganizationId: () => Observable<string | null>
+  getGrants: () => Observable<ProjectGrants>
+}
+
+export interface ProjectOrganizationData {
+  requestAccessStatus: string
+  id: string
+  name: string
+  slug: string | null
+  telemetryConsentStatus: string
+  defaultRoleName: string
+  domains: string[]
+  dashboardStatus: string
+  mediaLibraryStatus: string
+  aiFeaturesStatus: string
+  oauthAppsStatus: string
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+  createdByUserId: string
+}

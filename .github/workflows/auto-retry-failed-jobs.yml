@@ -4,7 +4,7 @@ permissions:
 
 on:
   # Trigger when test workflows complete with failure on first attempt
-  workflow_run:
+  workflow_run: # zizmor: ignore[dangerous-triggers] only reruns by run ID; no PR code execution
     workflows:
       - "Unit tests"
       - "End-to-End Tests"

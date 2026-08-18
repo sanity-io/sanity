@@ -1,8 +1,9 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {type ReactNode, useCallback, useMemo} from 'react'
 
-import {EnhancedObjectDialog, useEnhancedObjectDialog} from '../../../..'
-import {useTranslation} from '../../../../../i18n'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {EnhancedObjectDialog} from '../../../../components/EnhancedObjectDialog'
+import {useEnhancedObjectDialog} from '../../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {_getModalOption} from '../helpers'
 import {DefaultEditDialog} from './DialogModal'
 import {PopoverEditDialog} from './PopoverModal'
@@ -31,6 +32,7 @@ export function ObjectEditModal(props: {
   const schemaModalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
   const modalType = schemaModalOption?.type || defaultType
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: nestedObjectNavigationEnabled} = useEnhancedObjectDialog()
 
   const schemaTypeTitle = schemaType.i18nTitleKey
@@ -45,7 +47,10 @@ export function ObjectEditModal(props: {
     onClose()
   }, [onClose])
 
-  const modalWidth = schemaModalOption?.width
+  // Treat an empty width array as "unset" so the edit dialog components apply
+  // their own width defaults instead of collapsing to content/auto width.
+  const rawModalWidth = schemaModalOption?.width
+  const modalWidth = rawModalWidth && rawModalWidth.length > 0 ? rawModalWidth : undefined
 
   if (modalType === 'popover') {
     return (
@@ -69,7 +74,7 @@ export function ObjectEditModal(props: {
       type="dialog"
       onClose={onClose}
       header={modalTitle}
-      width={1}
+      width={modalWidth ?? 1}
       autofocus={autoFocus}
     >
       {props.children}

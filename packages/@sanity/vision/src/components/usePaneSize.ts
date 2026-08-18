@@ -7,6 +7,11 @@ interface PaneSizeOptions {
   minSize: number
   maxSize: number
 }
+
+interface RootSize {
+  width: number
+  height: number
+}
 function narrowBreakpoint(): boolean {
   return typeof window !== 'undefined' && window.innerWidth > 600
 }
@@ -35,6 +40,10 @@ export function usePaneSize({
 }: {
   visionRootRef: React.RefObject<HTMLDivElement | null>
 }) {
+  const [rootSize, setRootSize] = useState<RootSize>(() => ({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1000,
+    height: typeof window !== 'undefined' ? window.innerHeight : 800,
+  }))
   const [isNarrowBreakpoint, setIsNarrowBreakpoint] = useState(() => narrowBreakpoint())
   const [paneSizeOptions, setPaneSizeOptions] = useState<PaneSizeOptions>(() =>
     calculatePaneSizeOptions(undefined),
@@ -45,9 +54,10 @@ export function usePaneSize({
       return undefined
     }
     const handleResize = (entries: ResizeObserverEntry[]) => {
-      setIsNarrowBreakpoint(narrowBreakpoint())
       const entry = entries?.[0]
       if (entry) {
+        setRootSize({width: entry.contentRect.width, height: entry.contentRect.height})
+        setIsNarrowBreakpoint(entry.contentRect.width > 600)
         setPaneSizeOptions(calculatePaneSizeOptions(entry.contentRect.height))
       }
     }
@@ -59,5 +69,5 @@ export function usePaneSize({
     }
   }, [visionRootRef])
 
-  return {paneSizeOptions, isNarrowBreakpoint}
+  return {paneSizeOptions, isNarrowBreakpoint, rootSize}
 }

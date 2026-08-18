@@ -47,7 +47,7 @@ export function useCanvasTelemetry(): CanvasTelemetryHookValue {
         telemetry.log(CanvasLinkDialogRejected, {diffs: getDiffTypesCount(diffs)}),
       unlinkCtaClicked: () => telemetry.log(CanvasUnlinkCtaClicked),
       unlinkApproved: () => telemetry.log(CanvasUnlinkApproved),
-      canvasOpened: (origin) => telemetry.log(CanvasOpened, {origin}),
+      canvasOpened: (origin) => telemetry.log(CanvasOpened, {origin, source: 'studio'}),
     }),
     [telemetry],
   )

@@ -2,6 +2,84 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.9.1](https://github.com/sanity-io/sanity/compare/v6.9.0...v6.9.1) (2026-08-06)
+
+### Bug Fixes
+
+* **form:** resolve context-aware validation rules in inputs ([#13878](https://github.com/sanity-io/sanity/issues/13878)) ([9ad5a19](https://github.com/sanity-io/sanity/commit/9ad5a19b5fe519a7907140e2bcef4a9b52771a18))
+## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
+
+### Bug Fixes
+
+* **core:** allow creating draft variants from published variant sibling ([#13741](https://github.com/sanity-io/sanity/issues/13741)) ([cf5a7da](https://github.com/sanity-io/sanity/commit/cf5a7da78f0f4d42a7c21106749b439a007efdf3))
+* **types:** preserve supplied schema helper properties ([#13237](https://github.com/sanity-io/sanity/issues/13237)) ([38002e4](https://github.com/sanity-io/sanity/commit/38002e4432aff0f917eee7461897c23bba35886e))
+## [6.6.0](https://github.com/sanity-io/sanity/compare/v6.5.0...v6.6.0) (2026-07-22)
+
+### Features
+
+* **variants:** enable editing variant documents through the document form ([#13505](https://github.com/sanity-io/sanity/issues/13505)) ([46d84dc](https://github.com/sanity-io/sanity/commit/46d84dc1977e7e0740782044a053342241723735))
+## [6.4.0](https://github.com/sanity-io/sanity/compare/v6.3.0...v6.4.0) (2026-07-07)
+
+### Features
+
+* **types:** add user attribute types to CurrentUser ([#13395](https://github.com/sanity-io/sanity/issues/13395)) ([b7b7fc1](https://github.com/sanity-io/sanity/commit/b7b7fc1fcbeee63fc211abff0cbaa67e0ce5d68c))
+## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
+
+### Features
+
+* **core:** add document `_system` to useDocumentVersions ([#13094](https://github.com/sanity-io/sanity/issues/13094)) ([d4acef0](https://github.com/sanity-io/sanity/commit/d4acef01712a803588033ae68d94b92fcfda514b))
+
+### Bug Fixes
+
+* **releases:** return undefined for empty values in temporarilyBuildDocumentSystem ([#13121](https://github.com/sanity-io/sanity/issues/13121)) ([46aaaf0](https://github.com/sanity-io/sanity/commit/46aaaf02d86f6f69b69ed5681fb4c9d3c83cd4f2))
+## [6.1.0](https://github.com/sanity-io/sanity/compare/v6.0.0...v6.1.0) (2026-06-16)
+
+### Bug Fixes
+
+* **types:** allow collapsible and collapsed options on geopoint fields ([#13109](https://github.com/sanity-io/sanity/issues/13109)) ([897b06a](https://github.com/sanity-io/sanity/commit/897b06ad6e275ee81a57066855aeaec06cfb7cc0))
+## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
+
+### ⚠ BREAKING CHANGES
+
+* drop support for node 20 (#12859)
+
+### Features
+
+* **studio:** use `groq2024` search strategy by default ([3d9442f](https://github.com/sanity-io/sanity/commit/3d9442f5b37471d0ee958e70b8962fde30cbb7a0))
+
+### Bug Fixes
+
+* drop support for node 20 ([#12859](https://github.com/sanity-io/sanity/issues/12859)) ([d02289a](https://github.com/sanity-io/sanity/commit/d02289a2ac5aca3de55853812ac6e0b659fa2ef4))
+## [5.31.0](https://github.com/sanity-io/sanity/compare/v5.30.0...v5.31.0) (2026-06-10)
+
+### Bug Fixes
+
+* **core:** support modal width in Enhanced dialog ([#12955](https://github.com/sanity-io/sanity/issues/12955)) ([37d9ece](https://github.com/sanity-io/sanity/commit/37d9ece0b9ca504b1fa51f5d49df0c7d36ba865c))
+* **deps:** update dependency @sanity/insert-menu to v3.0.8 ([#12941](https://github.com/sanity-io/sanity/issues/12941)) ([dd02d30](https://github.com/sanity-io/sanity/commit/dd02d30b27c5154c3665e35e2019633a6e2c4104))
+## [5.28.0](https://github.com/sanity-io/sanity/compare/v5.27.0...v5.28.0) (2026-05-28)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/insert-menu to v3.0.7 ([#12897](https://github.com/sanity-io/sanity/issues/12897)) ([9dea35a](https://github.com/sanity-io/sanity/commit/9dea35af2b16a7f5142b537ade7b4535d6f65212))
+## [5.26.0](https://github.com/sanity-io/sanity/compare/v5.25.1...v5.26.0) (2026-05-19)
+
+### Reverts
+
+* "chore(release): publish v5.26.0" ([#12849](https://github.com/sanity-io/sanity/issues/12849)) ([70545b8](https://github.com/sanity-io/sanity/commit/70545b8d5421f875a171145fe5312742c0c4f959))
+## [5.22.0](https://github.com/sanity-io/sanity/compare/v5.21.0...v5.22.0) (2026-04-22)
+
+### Features
+
+* **asset-sources:** add persistence key for Media Library plugin ([#12670](https://github.com/sanity-io/sanity/issues/12670)) ([311ac2d](https://github.com/sanity-io/sanity/commit/311ac2d6152be390a424c88860c9f9cb6647b9e3))
+
+### Bug Fixes
+
+* **types:** correct BlockRule value type from any[] to PortableTextBlock ([#12509](https://github.com/sanity-io/sanity/issues/12509)) ([3ca5e31](https://github.com/sanity-io/sanity/commit/3ca5e310a3bb2b8d1a8c5f8e4680e2c7f9dd6e22))
+## [5.20.0](https://github.com/sanity-io/sanity/compare/v5.19.0...v5.20.0) (2026-04-07)
+
+### Bug Fixes
+
+* **types:** preserve type autocomplete for defineField inside defineType ([#12576](https://github.com/sanity-io/sanity/issues/12576)) ([d566c31](https://github.com/sanity-io/sanity/commit/d566c31254a4d1d13d905eff0912be445ed69ac6))
 
 ## [5.18.0](https://github.com/sanity-io/sanity/compare/v5.17.1...v5.18.0) (2026-03-24)
 

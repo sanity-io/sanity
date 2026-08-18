@@ -1,13 +1,21 @@
-import {CalendarIcon} from '@sanity/icons'
+import {CalendarIcon} from '@sanity/icons/Calendar'
+import {lazy} from 'react'
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
 import {SCHEDULED_PUBLISHING_TOOL_NAME, TOOL_TITLE} from '../constants'
-import Tool from '../tool/Tool'
 import resolveDocumentActions from './documentActions/schedule'
 import resolveDocumentBadges from './documentBadges/scheduled'
-import {DocumentBannerInput} from './inputResolver'
-import {SchedulePublishingStudioLayout} from './SchedulePublishingStudioLayout'
+
+const Tool = lazy(() => import('../tool/Tool'))
+const DocumentBannerInput = lazy(() =>
+  import('./inputResolver').then((module) => ({default: module.DocumentBannerInput})),
+)
+const SchedulePublishingStudioLayout = lazy(() =>
+  import('./SchedulePublishingStudioLayout').then((module) => ({
+    default: module.SchedulePublishingStudioLayout,
+  })),
+)
 
 /**
  * @internal

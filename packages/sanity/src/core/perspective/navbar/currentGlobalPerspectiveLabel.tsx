@@ -1,19 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
-// eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
-import {Box, Button, Text} from '@sanity/ui'
-import {motion} from 'motion/react'
-import {
-  type ForwardedRef,
-  forwardRef,
-  type ReactNode,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+// oxlint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
+import {Button, Text} from '@sanity/ui'
+import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
@@ -25,76 +16,33 @@ import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {useAgentBundles} from '../../store/agent/useAgentBundles'
 import {oversizedButtonStyle} from '../styles'
 import {type TargetPerspective} from '../types'
+import {AnimatedTextWidth} from './AnimatedTextWidth'
 
 const OversizedButton = styled(IntentLink)`
   ${oversizedButtonStyle}
 `
-
-function AnimatedTextWidth({children, text}: {children: ReactNode; text: string}) {
-  const textRef = useRef<HTMLDivElement>(null)
-  const [containerWidth, setContainerWidth] = useState<null | number>(null) // in pixels
-  const [isAnimating, setIsAnimating] = useState(false)
-
-  useLayoutEffect(() => {
-    if (!textRef.current) return
-    const newWidth = textRef.current.offsetWidth
-    setContainerWidth(newWidth)
-  }, [text])
-
-  const onAnimationStart = useCallback(() => {
-    setIsAnimating(true)
-  }, [])
-  const onAnimationComplete = useCallback(() => {
-    setIsAnimating(false)
-  }, [])
-
-  return (
-    <motion.div
-      style={{
-        display: 'inline-block',
-        width: containerWidth === null ? 'auto' : containerWidth, // use auto on first render
-        overflow: isAnimating ? 'hidden' : 'visible',
-      }}
-      animate={{width: containerWidth || 'auto'}}
-      transition={{type: 'spring', bounce: 0, duration: 0.3}}
-      onAnimationStart={onAnimationStart}
-      onAnimationComplete={onAnimationComplete}
-    >
-      <div
-        ref={textRef}
-        style={{
-          display: 'inline-block',
-          whiteSpace: 'nowrap',
-          verticalAlign: 'middle',
-        }}
-      >
-        {children}
-      </div>
-    </motion.div>
-  )
-}
 
 const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocument}) => {
   const {t} = useTranslation()
 
   const ReleasesIntentLink = useMemo(
     () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      forwardRef(function ReleasesIntentLink(
-        {children, ...intentProps}: {children: ReactNode},
-        linkRef: ForwardedRef<HTMLAnchorElement>,
-      ) {
+      function ReleasesIntentLink({
+        ref,
+        children,
+        ...intentProps
+      }: React.ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>) {
         return (
           <OversizedButton
             {...intentProps}
-            ref={linkRef}
+            ref={ref}
             intent={RELEASES_INTENT}
             params={{id: getReleaseIdFromReleaseDocumentId(selectedPerspective._id)}}
           >
             {children}
           </OversizedButton>
         )
-      }),
+      },
     [selectedPerspective],
   )
 

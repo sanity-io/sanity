@@ -10,6 +10,8 @@
     "github>sanity-io/renovate-config:workarounds-esm",
     "github>sanity-io/renovate-config:dedupe"
   ],
+  "branchConcurrentLimit": 3,
+  "prConcurrentLimit": 5,
   "minimumReleaseAge": "3 days",
   "packageRules": [
     {
@@ -61,7 +63,6 @@
         "@sanity/comlink",
         "@sanity/export",
         "@sanity/icons",
-        "@sanity/insert-menu",
         "@sanity/mutate",
         "@sanity/presentation-comlink",
         "@sanity/preview-url-secret",
@@ -88,16 +89,15 @@
         "@sanity/cli",
         "@sanity/client",
         "@sanity/comlink",
-        "@sanity/eslint-config-i18n",
+        "@sanity/eslint-plugin-i18n",
         "@sanity/import",
         "@sanity/export",
         "@sanity/icons",
-        "@sanity/insert-menu",
         "@sanity/mutate",
-        "@sanity/pkg-utils",
         "@sanity/presentation-comlink",
         "@sanity/preview-url-secret",
         "@sanity/template-validator",
+        "@sanity/tsdown-config",
         "@sanity/ui",
         "@sanity/visual-editing-csm",
         "esbuild",
@@ -124,12 +124,26 @@
     {
       "description": "Group TypeScript related deps in a single PR, as they often have to update together",
       "groupName": "typescript-tooling",
-      "matchPackageNames": ["@sanity/pkg-utils", "typescript"]
+      "matchPackageNames": [
+        "@sanity/tsdown-config",
+        "tsdown",
+        "typescript",
+        "@typescript/typescript6"
+      ]
+    },
+    {
+      "description": "Keep typedoc/ts-morph workspaces on the TypeScript 6 API alias (dep name typescript -> @typescript/typescript6); block bumps to typescript@7",
+      "matchDepNames": ["typescript"],
+      "matchFileNames": [
+        "packages/@repo/test-dts-exports/package.json",
+        "packages/@repo/typedoc/package.json"
+      ],
+      "allowedVersions": "/^6\\./"
     },
     {
       "description": "Always upgrade oxlint together",
       "groupName": "oxlint",
-      "matchPackageNames": ["oxlint", "eslint-plugin-oxlint", "oxlint-tsgolint"]
+      "matchPackageNames": ["oxlint", "oxlint-tsgolint"]
     },
     {
       "description": "Include release notes in PR description for @sanity/cli updates",
@@ -137,5 +151,8 @@
       "prBodyTemplate": "{{{header}}}{{{table}}}{{{warnings}}}{{{notes}}}{{{configDescription}}}{{{controls}}}{{{footer}}}\n### Notes for release\n{{{changelogs}}}"
     }
   ],
+  "toolSettings": {
+    "nodeMaxMemory": 2560
+  },
   "ignorePaths": ["packages/sanity/fixtures/examples/prj-with-react-19/package.json"]
 }

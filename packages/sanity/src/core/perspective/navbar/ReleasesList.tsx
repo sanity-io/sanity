@@ -126,7 +126,7 @@ export function ReleasesList({
   return (
     <Card radius={3}>
       <StickyTopCard borderBottom padding={1}>
-        <Stack space={1}>
+        <Stack gap={1}>
           <GlobalPerspectiveMenuItem
             rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
             release={'published'}
@@ -143,7 +143,7 @@ export function ReleasesList({
       </StickyTopCard>
       {agentBundles[0] && (
         <Card borderBottom padding={1}>
-          <Stack space={1}>
+          <Stack gap={1}>
             <AgentBundleMenuItem bundle={agentBundles[0]} />
           </Stack>
         </Card>
@@ -162,15 +162,17 @@ export function ReleasesList({
           ))}
         </Stack>
       )}
-      {areReleasesEnabled && (
-        <StickyBottomCard borderTop paddingY={1} paddingX={2}>
-          <Stack space={1}>
-            <ScheduledDraftsMenuItem />
-            <ViewContentReleasesMenuItem />
-            <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
-          </Stack>
-        </StickyBottomCard>
-      )}
+      <StickyBottomCard borderTop paddingY={1} paddingX={2}>
+        <Stack gap={1}>
+          <ScheduledDraftsMenuItem />
+          {areReleasesEnabled && (
+            <>
+              <ViewContentReleasesMenuItem />
+              <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
+            </>
+          )}
+        </Stack>
+      </StickyBottomCard>
     </Card>
   )
 }

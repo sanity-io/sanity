@@ -1,4 +1,4 @@
-import {VideoIcon} from '@sanity/icons'
+import {VideoIcon} from '@sanity/icons/Video'
 import {defineField, defineType} from 'sanity'
 import {defineVideoField} from 'sanity/media-library'
 
@@ -66,6 +66,13 @@ export default defineType({
           name: 'video',
         }),
       ],
+    }),
+    defineVideoField({
+      name: 'video',
+      title: 'Video with disabled upload',
+      options: {
+        disableNew: true,
+      },
     }),
   ],
 })

@@ -1,29 +1,26 @@
 import {type SanityClient} from '@sanity/client'
 import {type ComponentType} from 'react'
 
-import {type SanityDocument} from '../documents'
-import {type Path} from '../paths'
-import {type CurrentUser} from '../user'
-import {type Rule, type ValidationContext} from '../validation'
+import {type SanityDocument} from '../documents/types'
+import {type Path} from '../paths/types'
+import {type CurrentUser} from '../user/types'
+import {type Rule, type ValidationContext} from '../validation/types'
 import {type SchemaTypeDefinition} from './definition/schemaDefinition'
-import {
-  type BlockDecoratorDefinition,
-  type BlockOptions,
-  type BooleanOptions,
-  type DateOptions,
-  type DatetimeOptions,
-  type FileOptions,
-  type ImageOptions,
-  type NumberOptions,
-  type ReferenceOptions,
-  type SlugOptions,
-  type StringOptions,
-  type TextOptions,
-} from './definition/type'
 import {type ArrayOptions} from './definition/type/array'
+import {type BlockDecoratorDefinition, type BlockOptions} from './definition/type/block'
+import {type BooleanOptions} from './definition/type/boolean'
+import {type DateOptions} from './definition/type/date'
+import {type DatetimeOptions} from './definition/type/datetime'
+import {type FileOptions} from './definition/type/file'
+import {type ImageOptions} from './definition/type/image'
+import {type NumberOptions} from './definition/type/number'
+import {type ReferenceOptions} from './definition/type/reference'
+import {type SlugOptions} from './definition/type/slug'
+import {type StringOptions} from './definition/type/string'
+import {type TextOptions} from './definition/type/text'
 import {type PreviewConfig} from './preview'
 
-export {defineArrayMember, defineField, defineType, typed} from './define'
+export {defineArrayMember, defineField, defineType} from './define'
 
 /**
  * Enhances VSCode autocomplete by using a distinct type for strings.
@@ -200,22 +197,18 @@ export type InitialValueProperty<Params, Value> =
  * If the schema has not been run through `inferFromSchema` from
  * `sanity/validation` then value could be a function.
  *
- * `inferFromSchema` mutates the schema converts this value to an array of
- * `Rule` instances.
+ * `inferFromSchema` mutates the schema and converts this value to an array of
+ * `Rule` instances, _except_ for context-aware validation (a function declaring a
+ * `context` parameter), which stays a function so it can be re-evaluated against
+ * the value being validated.
  *
  * @privateRemarks
  *
- * Usage of the schema inside the studio will almost always be from the compiled
- * `createSchema` function. In this case, you can cast the value or throw to
- * narrow the type. E.g.:
- *
- * ```ts
- * if (typeof type.validation === 'function') {
- *   throw new Error(
- *     `Schema type "${type.name}"'s \`validation\` was not run though \`inferFromSchema\``
- *   )
- * }
- * ```
+ * This means a compiled schema can still hold a function here, so do not treat
+ * that as a sign the schema was never compiled. To read rules outside of document
+ * validation, normalize on demand with `normalizeValidationRules(type)` and be
+ * ready for it to throw, since context-aware validation may dereference a context
+ * that only exists while validating. `getValidationRule` does this.
  *
  * @public
  */
@@ -522,4 +515,11 @@ export interface FileSchemaType extends Omit<ObjectSchemaType, 'options'> {
 /** @public */
 export interface ImageSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: ImageOptions
+}
+
+/** @public */
+/** @public */
+export interface ModalOptions {
+  type?: 'dialog' | 'popover'
+  width?: 1 | 2 | 3 | 4 | 5 | 'auto' | (1 | 2 | 3 | 4 | 5 | 'auto')[]
 }

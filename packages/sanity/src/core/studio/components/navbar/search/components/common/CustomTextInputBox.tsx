@@ -1,5 +1,5 @@
-import {Box} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 export const CustomTextInputBox = styled(Box)<{
   $background?: boolean
@@ -10,6 +10,7 @@ export const CustomTextInputBox = styled(Box)<{
 
     input + span {
       background: ${({theme}) =>
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         $background ? theme.sanity.color.card.disabled.bg2 : 'transparent'};
     }
 

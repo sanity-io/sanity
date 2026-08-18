@@ -2,6 +2,80 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.9.1](https://github.com/sanity-io/sanity/compare/v6.9.0...v6.9.1) (2026-08-06)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^8.8.3 ([#13866](https://github.com/sanity-io/sanity/issues/13866)) ([6712f2d](https://github.com/sanity-io/sanity/commit/6712f2d6b195888c4623412e3fc59d25a6963d55))
+## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^8.8.1 ([#13841](https://github.com/sanity-io/sanity/issues/13841)) ([a4d8244](https://github.com/sanity-io/sanity/commit/a4d82442b3f74beb5004d557bf8b9f17ca14ccf9))
+* **deps:** update dependency get-it to ^8.8.2 ([#13865](https://github.com/sanity-io/sanity/issues/13865)) ([7ea95c3](https://github.com/sanity-io/sanity/commit/7ea95c3ff2b75203e9d83ec2a80fa2af39a19cdd))
+## [6.7.0](https://github.com/sanity-io/sanity/compare/v6.6.0...v6.7.0) (2026-07-28)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.2.1 ([#13684](https://github.com/sanity-io/sanity/issues/13684)) ([ad2634f](https://github.com/sanity-io/sanity/commit/ad2634fd01e69a5090896f68524984c06e48c74a))
+* **deps:** update dependency groq-js to v2 ([#13677](https://github.com/sanity-io/sanity/issues/13677)) ([7ac6d86](https://github.com/sanity-io/sanity/commit/7ac6d86c9b844603a919c88e66e9f904ef95a991))
+## [6.6.0](https://github.com/sanity-io/sanity/compare/v6.5.0...v6.6.0) (2026-07-22)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.1.0 ([#13529](https://github.com/sanity-io/sanity/issues/13529)) ([3f9749b](https://github.com/sanity-io/sanity/commit/3f9749b346b36debeea84c07fda510e6c47d92f0))
+* **deps:** update dependency @sanity/icons to ^5.2.0 ([#13652](https://github.com/sanity-io/sanity/issues/13652)) ([0f0d33e](https://github.com/sanity-io/sanity/commit/0f0d33ea6ca7e1d157def3d7457f4b3fd08eb84c))
+## [6.5.0](https://github.com/sanity-io/sanity/compare/v6.4.0...v6.5.0) (2026-07-14)
+
+### Features
+
+* **schema:** add descriptor upload client ([#13284](https://github.com/sanity-io/sanity/issues/13284)) ([4b4bf8a](https://github.com/sanity-io/sanity/commit/4b4bf8ae448d17c054ba5fc4a4136920d9b20a3b))
+## [6.4.0](https://github.com/sanity-io/sanity/compare/v6.3.0...v6.4.0) (2026-07-07)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^3.7.6 ([#13384](https://github.com/sanity-io/sanity/issues/13384)) ([260a282](https://github.com/sanity-io/sanity/commit/260a282c2dc38d88e8d03e1f89b677aca765f173))
+* **deps:** update dependency @sanity/icons to v5 ([#13409](https://github.com/sanity-io/sanity/issues/13409)) ([f788296](https://github.com/sanity-io/sanity/commit/f78829648671e05a48c0329ff47abe7dbc457d64))
+
+### Performance Improvements
+
+* **sanity:** debarrel @sanity/icons imports ([#13393](https://github.com/sanity-io/sanity/issues/13393)) ([2e250dc](https://github.com/sanity-io/sanity/commit/2e250dc720aa3d49312c79a03bb5697ef4e08fe8))
+## [6.3.0](https://github.com/sanity-io/sanity/compare/v6.2.0...v6.3.0) (2026-06-30)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.30.3 ([#13354](https://github.com/sanity-io/sanity/issues/13354)) ([49db0b0](https://github.com/sanity-io/sanity/commit/49db0b0d4c3e499040d8eb0154ec7cb6ab350ae5))
+## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
+
+### Bug Fixes
+
+* **CLDX-5683:** preserve an explicit empty block decorator set ([#13291](https://github.com/sanity-io/sanity/issues/13291)) ([234029c](https://github.com/sanity-io/sanity/commit/234029c74f57dd1250b9dff173fdbdf43d4207fa))
+* **CLDX-5683:** preserve portable text block decorators in schema descriptor ([#13288](https://github.com/sanity-io/sanity/issues/13288)) ([fa8b84c](https://github.com/sanity-io/sanity/commit/fa8b84cb0734ca75b74719a3b26858aef2cf99d0))
+## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
+
+### ⚠ BREAKING CHANGES
+
+* drop support for node 20 (#12859)
+
+### Bug Fixes
+
+* drop support for node 20 ([#12859](https://github.com/sanity-io/sanity/issues/12859)) ([d02289a](https://github.com/sanity-io/sanity/commit/d02289a2ac5aca3de55853812ac6e0b659fa2ef4))
+## [5.31.0](https://github.com/sanity-io/sanity/compare/v5.30.0...v5.31.0) (2026-06-10)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.30.2 ([#12899](https://github.com/sanity-io/sanity/issues/12899)) ([5551206](https://github.com/sanity-io/sanity/commit/555120669482013a2452594c8cc6ef8e3958386a))
+## [5.26.0](https://github.com/sanity-io/sanity/compare/v5.25.1...v5.26.0) (2026-05-19)
+
+### Reverts
+
+* "chore(release): publish v5.26.0" ([#12849](https://github.com/sanity-io/sanity/issues/12849)) ([70545b8](https://github.com/sanity-io/sanity/commit/70545b8d5421f875a171145fe5312742c0c4f959))
+## [5.21.0](https://github.com/sanity-io/sanity/compare/v5.20.0...v5.21.0) (2026-04-15)
+
+### Bug Fixes
+
+* **schema:** convert missing descriptor properties and expand test coverage ([#12607](https://github.com/sanity-io/sanity/issues/12607)) ([b89b88f](https://github.com/sanity-io/sanity/commit/b89b88f0a8e46914f967da43ae5d6ff7d8d91792))
+* **schema:** support extracting object type without fields ([#12605](https://github.com/sanity-io/sanity/issues/12605)) ([ea79806](https://github.com/sanity-io/sanity/commit/ea7980663fcdb60b8457118bcb35486b60a7307e))
 
 ## [5.18.0](https://github.com/sanity-io/sanity/compare/v5.17.1...v5.18.0) (2026-03-24)
 

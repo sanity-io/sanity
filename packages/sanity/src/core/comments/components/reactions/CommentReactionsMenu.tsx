@@ -1,8 +1,8 @@
-// eslint-disable-next-line no-restricted-imports
+// oxlint-disable-next-line no-restricted-imports
 import {Button as UIButton, Grid} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption} from '../../types'
@@ -63,7 +63,7 @@ export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
 
   return (
     <Grid
-      columns={GRID_COLUMNS}
+      gridTemplateColumns={GRID_COLUMNS}
       gap={1}
       onKeyDown={handleRootKeyDown}
       ref={setRootElement}

@@ -1,4 +1,5 @@
-import {Box, Menu} from '@sanity/ui'
+import {Box} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
 import {
   ContextMenuButton,
@@ -77,6 +78,7 @@ export const IncomingReferenceDocumentActions = (props: {
   setIsExecutingAction: Dispatch<SetStateAction<boolean>>
 }) => {
   const {document, actions, setIsExecutingAction, isExecutingAction} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient} = useSource()
 
   const renderActions = useCallback<

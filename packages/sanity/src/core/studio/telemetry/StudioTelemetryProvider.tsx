@@ -15,10 +15,16 @@ import {
 import {useRouterState} from 'sanity/router'
 
 import {isProd} from '../../environment'
-import {useClient} from '../../hooks'
-import {useProjectOrganizationId} from '../../store/_legacy/project/useProjectOrganizationId'
+import {useClient} from '../../hooks/useClient'
+import {useProjectOrganizationId} from '../../store/project/useProjectOrganizationId'
 import {SANITY_VERSION} from '../../version'
+import {
+  collectWorkspaceFeatures,
+  WorkspaceFeaturesObserved,
+} from '../__telemetry__/featureAvailability.telemetry'
+import {StudioLoaded} from '../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../workspace'
+import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
 import {debugLoggingStore} from './utils/debugLoggingStore'
@@ -28,12 +34,54 @@ const sessionId = createSessionId()
 /** Telemetry only runs on client */
 const isClient = typeof window !== 'undefined'
 
+interface PluginWithNestedPlugins {
+  plugins?: PluginWithNestedPlugins[]
+}
+
+interface BrowserConnection {
+  effectiveType?: string
+  downlink?: number
+  rtt?: number
+  saveData?: boolean
+}
+
+type NavigatorWithConnection = Navigator & {
+  connection?: BrowserConnection
+  mozConnection?: BrowserConnection
+  webkitConnection?: BrowserConnection
+}
+
+function countPlugins(plugins: PluginWithNestedPlugins[] | undefined): number {
+  if (!plugins) return 0
+  return plugins.reduce((count, plugin) => count + 1 + countPlugins(plugin.plugins), 0)
+}
+
+function getConnection(): TelemetryContext['connection'] {
+  if (!isClient) return null
+
+  const nav = navigator as NavigatorWithConnection
+  const connection = nav.connection || nav.mozConnection || nav.webkitConnection
+
+  if (!connection) return null
+
+  return {
+    effectiveType: connection.effectiveType ?? null,
+    downlink: typeof connection.downlink === 'number' ? connection.downlink : null,
+    rtt: typeof connection.rtt === 'number' ? connection.rtt : null,
+    saveData: typeof connection.saveData === 'boolean' ? connection.saveData : null,
+  }
+}
+
 export function StudioTelemetryProvider(props: {children: ReactNode}) {
   const client = useClient({apiVersion: 'v2023-12-18'})
   const projectId = client.config().projectId
 
   // Get workspace context
   const workspace = useWorkspace()
+  const workspaces = useWorkspaces()
+  const workspaceCount = workspaces.length
+  const workspacePlugins = workspace.__internal.options.plugins
+  const workspaceSchema = workspace.schema
 
   // Get organization ID (async, may be null initially)
   const {value: orgId} = useProjectOrganizationId()
@@ -54,6 +102,9 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   // Telemetry only runs on client - no SSR fallbacks needed
   useEffect(() => {
     if (!isClient) return
+    const pluginCount = countPlugins(workspacePlugins)
+    const schemaTypeCount = workspaceSchema.getTypeNames().length
+
     contextRef.current = {
       // Static values
       userAgent: navigator.userAgent,
@@ -67,15 +118,28 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
       studioVersion: SANITY_VERSION,
       reactVersion,
       environment: isProd ? 'production' : 'development',
+      connection: getConnection(),
 
       // Dynamic values
       orgId: orgId || null,
       activeTool,
+      workspaceCount,
       activeWorkspace: workspace.name,
       activeProjectId: workspace.projectId,
       activeDataset: workspace.dataset,
+      pluginCount,
+      schemaTypeCount,
     }
-  }, [orgId, activeTool, workspace.name, workspace.projectId, workspace.dataset])
+  }, [
+    orgId,
+    activeTool,
+    workspaceCount,
+    workspace.name,
+    workspace.projectId,
+    workspace.dataset,
+    workspacePlugins,
+    workspaceSchema,
+  ])
 
   const storeOptions = useMemo((): CreateBatchedStoreOptions => {
     const debugTelemetry = import.meta && import.meta.env?.SANITY_STUDIO_DEBUG_TELEMETRY === 'true'
@@ -86,7 +150,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
     return {
       flushInterval: 30000,
       resolveConsent: () =>
-        client.request({uri: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
+        client.request({url: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
 
       // Each event is enriched with the current context
       sendEvents: (batch) => {
@@ -97,9 +161,8 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
           context,
         }))
         return client.request({
-          uri: '/intake/batch',
+          url: '/intake/batch',
           method: 'POST',
-          json: true,
           body: {projectId, batch: enrichedBatch},
         })
       },
@@ -120,20 +183,41 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
 
   // The storeOptions callbacks access contextRef.current, but only when called
   // asynchronously (on flush), not during render. Suppress the lint warning.
-  // eslint-disable-next-line react-hooks/refs
+  // oxlint-disable-next-line react/react-compiler
   const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
 
-  // Also update user properties on the store (for backwards compatibility)
+  // Per-instance guard so StrictMode's double-invoked mount effect logs StudioLoaded once.
+  const studioLoadedFiredRef = useRef(false)
   useEffect(() => {
-    if (!isClient || !contextRef.current) return
-    store.logger.updateUserProperties({
-      userAgent: contextRef.current.userAgent,
-      screen: contextRef.current.screen,
-      reactVersion,
+    if (!isClient || !contextRef.current || studioLoadedFiredRef.current) return
+    studioLoadedFiredRef.current = true
+    const ctx = contextRef.current
+    store.logger.log(StudioLoaded, {
       studioVersion: SANITY_VERSION,
-      environment: contextRef.current.environment,
+      reactVersion,
+      environment: ctx.environment,
+      userAgent: ctx.userAgent,
+      screenDensity: ctx.screen.density,
+      screenHeight: ctx.screen.height,
+      screenWidth: ctx.screen.width,
+      screenInnerHeight: ctx.screen.innerHeight,
+      screenInnerWidth: ctx.screen.innerWidth,
     })
   }, [store.logger])
+
+  const workspaceFeatures = useMemo(() => collectWorkspaceFeatures(workspace), [workspace])
+  // Why: this component creates the TelemetryProvider, so `useTelemetry()` is
+  // unavailable here. Log through `store.logger` directly. The ref dedupes
+  // StrictMode's double-invoked mount effect per workspace while still
+  // re-emitting when the active workspace changes.
+  const observedFeaturesKeyRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!isClient) return
+    const workspaceKey = `${workspace.projectId}:${workspace.name}`
+    if (observedFeaturesKeyRef.current === workspaceKey) return
+    observedFeaturesKeyRef.current = workspaceKey
+    store.logger.log(WorkspaceFeaturesObserved, workspaceFeatures)
+  }, [store.logger, workspace.name, workspace.projectId, workspaceFeatures])
 
   return (
     <TelemetryProvider store={store}>

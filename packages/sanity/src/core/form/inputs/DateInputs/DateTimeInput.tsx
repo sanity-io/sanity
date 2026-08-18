@@ -12,22 +12,25 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import {getMinutes} from 'date-fns/getMinutes'
 import {parseISO} from 'date-fns/parseISO'
 import {setMinutes} from 'date-fns/setMinutes'
-import {useCallback, useMemo} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {ChangeIndicator} from '../../../changeIndicators'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 import {TimeZoneButton} from '../../../components/timeZone/timeZoneButton/TimeZoneButton'
 import TimeZoneButtonElementQuery from '../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
 import {FormFieldHeaderText} from '../../../form/components/formField/FormFieldHeaderText'
 import {type TimeZoneScopeType, useTimeZone} from '../../../hooks/useTimeZone'
-import {Translate, useTranslation} from '../../../i18n'
-import {EMPTY_ARRAY, getPublishedId} from '../../../util'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
+import {getPublishedId} from '../../../util/draftUtils'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {FormFieldBaseHeader} from '../../components/formField/FormFieldBaseHeader'
 import {FormFieldStatus} from '../../components/formField/FormFieldStatus'
 import {useFormValue} from '../../contexts/FormValue'
-import {useFieldActions} from '../../field'
-import {set, unset} from '../../patch'
+import {useFieldActions} from '../../field/actions/useFieldActions'
+import {set, unset} from '../../patch/patch'
+import {useReportParseError} from '../../studio/contexts/ParseErrors'
 import {type StringInputProps} from '../../types/inputProps'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {getCalendarLabels, isValidDate} from './utils'
@@ -147,10 +150,14 @@ export function DateTimeInput(props: DateTimeInputProps) {
     elementProps,
     id,
     validation,
+    validationError,
     changed,
     path,
     presence = EMPTY_ARRAY,
   } = props
+
+  const [parseError, setParseError] = useState<string | null>(null)
+  useReportParseError(path, parseError)
 
   const {
     focused,
@@ -229,7 +236,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
             presence={presence}
             inputId={id}
             content={
-              <Stack space={2}>
+              <Stack gap={2}>
                 <FormFieldHeaderText
                   deprecated={schemaType.deprecated}
                   description={schemaType.description}
@@ -275,13 +282,16 @@ export function DateTimeInput(props: DateTimeInputProps) {
                 deserialize={deserialize}
                 formatInputValue={formatInputValue}
                 onChange={handleChange}
+                onParseError={setParseError}
                 parseInputValue={parseInputValue}
+                // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                 placeholder={schemaType.placeholder}
                 serialize={serialize}
                 timeStep={timeStep}
                 selectTime
                 value={value}
                 timeZoneScope={timeZoneScope}
+                validationError={validationError}
               />
             </div>
           </div>

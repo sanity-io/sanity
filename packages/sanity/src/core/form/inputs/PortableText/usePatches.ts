@@ -4,8 +4,8 @@ import get from 'lodash-es/get.js'
 import {useCallback} from 'react'
 import shallowEquals from 'shallow-equals'
 
-import {isRecord} from '../../../util'
-import {type FormPatch} from '../../patch'
+import {isRecord} from '../../../util/isRecord'
+import {type FormPatch} from '../../patch/types'
 import {useFormBuilder} from '../../useFormBuilder'
 
 /**
@@ -29,6 +29,7 @@ export function usePatches(props: {path: Path}): {
   subscribe: (subscriber: PatchesSubscriber) => () => void
 } {
   const {path} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {patchChannel} = useFormBuilder().__internal
 
   const subscribe = useCallback(

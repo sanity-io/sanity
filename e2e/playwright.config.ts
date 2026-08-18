@@ -1,5 +1,6 @@
 import os from 'node:os'
 
+import {type ChromaticConfig} from '@chromatic-com/playwright'
 import {
   defineConfig,
   devices,
@@ -77,9 +78,12 @@ const FIREFOX_PROJECT: PlaywrightTestProject = {
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-const playwrightConfig: PlaywrightTestConfig = {
+const playwrightConfig: PlaywrightTestConfig<ChromaticConfig> = {
   globalSetup: './globalSetup',
   testDir: TESTS_PATH,
+  // Auth tests use a separate config (playwright.auth.config.ts) with their own
+  // dev server on port 3340. Exclude them from the default config.
+  testIgnore: ['**/tests/auth/**'],
 
   /* Maximum time one test can run for. */
   timeout: 60_000,
@@ -99,6 +103,12 @@ const playwrightConfig: PlaywrightTestConfig = {
   retries: 2,
   reporter: excludeGithub([['list'], ['blob']]),
   use: {
+    // The suite runs against per-PR staging datasets (live timestamps,
+    // presence, parallel mutations), so automatic end-of-test Chromatic
+    // snapshots would be diff noise. Visual snapshots are opt-in at
+    // deterministic moments via `takeChromaticSnapshot` in specs that use the
+    // Chromatic-composed fixtures from ./studio-visual-test.
+    disableAutoSnapshot: true,
     actionTimeout: 10000,
     trace: 'on-first-retry',
     viewport: {width: 1728, height: 1000},

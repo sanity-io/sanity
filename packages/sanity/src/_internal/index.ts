@@ -15,7 +15,7 @@ export const cliProjectCommands: {
   // actually `CliCommandDefinition | CliCommandGroupDefinition` but avoiding the import
   commands: Array<unknown>
 } = {
-  requiredCliVersionRange: '^3.0.0 || ^4.0.0 || ^5.0.0',
+  requiredCliVersionRange: '^7.0.0',
   commands: new Proxy([], {
     get() {
       throw new Error(

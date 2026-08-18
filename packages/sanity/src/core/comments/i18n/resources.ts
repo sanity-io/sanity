@@ -1,11 +1,12 @@
 /* eslint sort-keys: "error" */
-import {defineLocalesResources} from '../../i18n'
+import {defineLocalesResources} from '../../i18n/helpers'
 
 /**
  * Defined locale strings for the comments feature, in US English.
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const commentsLocaleStrings = defineLocalesResources('comments', {
   /** The close comments button text */
   'close-pane-button-text': 'Close comments',

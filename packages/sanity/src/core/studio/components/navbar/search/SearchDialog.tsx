@@ -1,9 +1,11 @@
-import {Box, Card, Portal} from '@sanity/ui'
+import {type StackablePerspective} from '@sanity/client'
+import {Card, Portal} from '@sanity/ui'
 import {useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {supportsTouch} from '../../../../util'
+import {supportsTouch} from '../../../../util/supportsTouch'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {SearchWrapper} from './components/common/SearchWrapper'
 import {Filters} from './components/filters/Filters'
@@ -17,6 +19,11 @@ interface SearchDialogProps {
   onClose: () => void
   onOpen: () => void
   open: boolean
+  previewPerspective?: StackablePerspective[]
+  /**
+   * The variant the result previews are resolved in, as a bare variant id.
+   */
+  previewVariant?: string
 }
 
 const InnerCard = styled(Card)`
@@ -42,7 +49,13 @@ const SearchDialogBox = styled(Box)`
 /**
  * @internal
  */
-export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
+export function SearchDialog({
+  onClose,
+  onOpen,
+  open,
+  previewPerspective,
+  previewVariant,
+}: SearchDialogProps) {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const scheme = useColorSchemeValue()
 
@@ -66,7 +79,11 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
                   </Card>
                 )}
                 {hasValidTerms ? (
-                  <SearchResults inputElement={inputElement} />
+                  <SearchResults
+                    inputElement={inputElement}
+                    previewPerspective={previewPerspective}
+                    previewVariant={previewVariant}
+                  />
                 ) : (
                   <RecentSearches inputElement={inputElement} />
                 )}

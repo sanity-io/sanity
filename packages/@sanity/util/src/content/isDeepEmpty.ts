@@ -49,17 +49,18 @@ export function isDeepEmpty(value: unknown): boolean {
  * todo: remove in v4
  */
 export const isEmptyArray = isDeepEmptyArray
-/* eslint-disable tsdoc/syntax */
+/* oxlint-disable tsdoc/syntax */
 /**
  * @deprecated Use `isDeepEmpty` instead
  * todo: remove in v4
  * @alias
  */
-/* eslint-enable tsdoc/syntax */
 export const isEmpty = isDeepEmpty
+/* oxlint-enable tsdoc/syntax */
 
 /**
  * @deprecated Use `isDeepEmpty` instead
  * todo: remove in v4
+ *
  */
 export const isEmptyObject = isDeepEmptyObject

@@ -1,7 +1,8 @@
 import {SanityLogo} from '@sanity/logos'
-import {Box, Card, Flex, Heading, Stack, Text, usePrefersDark} from '@sanity/ui'
+import {Card, Flex, Heading, Stack, Text, usePrefersDark} from '@sanity/ui'
 import {Fragment, type ReactNode} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 const LINKS = [
   {
@@ -43,7 +44,7 @@ export function Layout(props: LayoutProps) {
   const prefersDark = usePrefersDark()
 
   return (
-    <Stack space={6}>
+    <Stack gap={6}>
       <Card border radius={3} overflow="auto">
         <Stack>
           {typeof header === 'object' && <Box>{header}</Box>}

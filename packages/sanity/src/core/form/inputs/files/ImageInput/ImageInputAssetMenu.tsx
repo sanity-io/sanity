@@ -1,13 +1,14 @@
 import {isImageSource} from '@sanity/asset-utils'
-import {ImageIcon, SearchIcon} from '@sanity/icons'
+import {ImageIcon} from '@sanity/icons/Image'
+import {SearchIcon} from '@sanity/icons/Search'
 import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
 import get from 'lodash-es/get.js'
 import {memo, type ReactNode, type RefObject, useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
-import {MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {getDataTestIdPrefix} from '../common/AssetSourceBrowser'
 import {getAssetSourceDisplayName, getAssetSourcesWithUpload} from '../common/assetSourceUtils'
@@ -177,6 +178,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     observeAsset,
     readOnly,
     reference,
+    schemaType,
     setHotspotButtonElement,
     menuButtonRef,
     setMenuOpen,
@@ -188,7 +190,10 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
 
   const documentId = reference?._ref
   const observable = useMemo(() => observeAsset(documentId), [documentId, observeAsset])
-  const asset = useObservable(observable)
+  // Kept synchronous: a deferred snapshot could pair the previous asset with a
+  // newly selected reference, pointing menu actions (e.g. open in source) at
+  // the wrong asset.
+  const asset = useSyncObservable(observable)
   const assetSourcesWithUpload = getAssetSourcesWithUpload(assetSources)
 
   // Find the first asset source that can handle opening this asset in source
@@ -241,10 +246,13 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     }
   }, [asset, onOpenInSource, openInSourceResult, setMenuOpen])
 
+  const disableNew = schemaType.options?.disableNew === true
+
   const uploadMenuItem = useUploadMenuItem({
     accept,
     assetSourcesWithUpload,
     directUploads,
+    disableNew,
     readOnly,
     onSelectFiles: handleSelectFilesFromAssetSource,
     onOpenSourceForUpload: handleOpenSourceForUpload,

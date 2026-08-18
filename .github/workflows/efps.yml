@@ -1,6 +1,5 @@
 name: eFPS Test
-permissions:
-  pull-requests: write # for comment
+permissions: {}
 
 on:
   # Build on pushes branches that have a PR (including drafts)
@@ -33,9 +32,7 @@ jobs:
       preview_url: ${{ steps.deploy-preview.outputs.DEPLOY_URL }}
       has_code_changes: ${{ steps.changes.outputs.has_changes }}
     steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -85,19 +82,23 @@ jobs:
         if: ${{github.ref_name != 'main' && steps.changes.outputs.has_changes == 'true'}}
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+          GITHUB_EVENT_REPOSITORY_NAME: ${{ github.event.repository.name }}
+          COMMIT_AUTHOR_NAME: ${{ github.event.sender.name || 'GitHub Actions' }}
+          COMMIT_REF: ${{ github.head_ref || github.ref_name }}
+          COMMIT_AUTHOR_LOGIN: ${{ github.event.sender.login || github.actor }}
         run: |
           echo "DEPLOY_URL=$(
             pnpm vercel deploy --prebuilt --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
               -m githubDeployment="1" \
-              -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+              -m githubCommitAuthorName="$COMMIT_AUTHOR_NAME" \
               -m githubCommitMessage="$COMMIT_MESSAGE" \
               -m githubCommitOrg="${{ github.repository_owner }}" \
-              -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
-              -m githubCommitRepo="${{ github.event.repository.name }}" \
+              -m githubCommitRef="$COMMIT_REF" \
+              -m githubCommitRepo="${GITHUB_EVENT_REPOSITORY_NAME}" \
               -m githubCommitSha="${{ github.sha }}" \
               -m githubOrg="${{ github.repository_owner }}" \
-              -m githubRepo="${{ github.event.repository.name }}" \
-              -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1
+              -m githubRepo="${GITHUB_EVENT_REPOSITORY_NAME}" \
+              -m githubCommitAuthorLogin="$COMMIT_AUTHOR_LOGIN" | tail -n 1
             )" >> $GITHUB_OUTPUT
 
       - name: Deploy new reference Studio from main
@@ -105,18 +106,22 @@ jobs:
         if: ${{github.ref_name == 'main' && steps.changes.outputs.has_changes == 'true'}}
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+          GITHUB_EVENT_REPOSITORY_NAME: ${{ github.event.repository.name }}
+          COMMIT_AUTHOR_NAME: ${{ github.event.sender.name || 'GitHub Actions' }}
+          COMMIT_REF: ${{ github.head_ref || github.ref_name }}
+          COMMIT_AUTHOR_LOGIN: ${{ github.event.sender.login || github.actor }}
         run: |
           pnpm vercel deploy --prod --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
             -m githubDeployment="1" \
-            -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+            -m githubCommitAuthorName="$COMMIT_AUTHOR_NAME" \
             -m githubCommitMessage="$COMMIT_MESSAGE" \
             -m githubCommitOrg="${{ github.repository_owner }}" \
-            -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
-            -m githubCommitRepo="${{ github.event.repository.name }}" \
+            -m githubCommitRef="$COMMIT_REF" \
+            -m githubCommitRepo="${GITHUB_EVENT_REPOSITORY_NAME}" \
             -m githubCommitSha="${{ github.sha }}" \
             -m githubOrg="${{ github.repository_owner }}" \
-            -m githubRepo="${{ github.event.repository.name }}" \
-            -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}"
+            -m githubRepo="${GITHUB_EVENT_REPOSITORY_NAME}" \
+            -m githubCommitAuthorLogin="$COMMIT_AUTHOR_LOGIN"
 
   efps-test:
     # We do not currently run in main, but we could do that if we want to compare main
@@ -125,6 +130,9 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-8core
     needs: [deploy]
+    permissions:
+      contents: read
+      pull-requests: write # for PR comment
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -136,7 +144,7 @@ jobs:
         shardIndex: [1, 2, 3]
         shardTotal: [3]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Add PR comment placeholder
@@ -152,16 +160,16 @@ jobs:
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(pnpm playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-all
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
@@ -199,9 +207,9 @@ jobs:
           ENABLE_PROFILER: ${{ github.event.inputs.enable_profiler || false }}
           RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
           STUDIO_URL: ${{ needs.deploy.outputs.preview_url }}
-        run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm efps:test --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: efps-report-${{ matrix.shardIndex }}-attempt-${{ github.run_attempt }}
@@ -212,12 +220,15 @@ jobs:
     if: ${{ github.ref_name != 'main' && needs.deploy.outputs.has_code_changes == 'true' && needs.efps-test.result == 'success' }}
     needs: [deploy, efps-test]
     runs-on: ubuntu-8core
+    permissions:
+      contents: read
+      pull-requests: write # for PR comment
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: efps-report-*
           merge-multiple: true

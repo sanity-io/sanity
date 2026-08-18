@@ -1,12 +1,12 @@
-/* eslint-disable i18next/no-literal-string */
-import {Box, Card, Code, Flex, Text} from '@sanity/ui'
+/* oxlint-disable i18next/no-literal-string */
+import {Card, Flex, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import startCase from 'lodash-es/startCase.js'
 import {useEffect} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 const ListItem = styled(Flex)``
-
-const ErrorMessageRoot = styled(Box).attrs({padding: 4})``
 
 /**
  * @internal
@@ -29,7 +29,7 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
   const last = path[path.length - 1]
 
   return (
-    <ErrorMessageRoot forwardedAs={Flex} direction="column" gap={4}>
+    <Flex direction="column" gap={4} padding={4}>
       <Flex direction="column" gap={2}>
         <Text weight="medium" size={3}>
           {startCase(last.type)} Error
@@ -65,6 +65,6 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
           </Box>
         </details>
       )}
-    </ErrorMessageRoot>
+    </Flex>
   )
 }

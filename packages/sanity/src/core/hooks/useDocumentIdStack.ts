@@ -2,7 +2,7 @@ import {type SanityDocument, type StrictVersionLayeringOptions} from '@sanity/ty
 import {useMemo} from 'react'
 
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
-import {type EditStateFor} from '../store/_legacy/document/document-pair/editState'
+import {type EditStateFor} from '../store/document/document-pair/editState'
 import {useWorkspace} from '../studio/workspace'
 import {getVersionId, isDraftId} from '../util/draftUtils'
 import {useFilteredReleases} from './useFilteredReleases'

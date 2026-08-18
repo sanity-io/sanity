@@ -1,15 +1,19 @@
 import {isImageSource} from '@sanity/asset-utils'
-import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
+import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
+import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
+import {LaunchIcon} from '@sanity/icons/Launch'
 import {createImageUrlBuilder} from '@sanity/image-url'
 import {type GlobalDocumentReferenceType, type PreviewValue} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
 import {isValidElement as reactIsValidElement, useMemo} from 'react'
 
-import {Tooltip} from '../../../../ui-components'
-import {DefaultPreview, type PreviewMediaDimensions, TextWithTone} from '../../../components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {DefaultPreview} from '../../../components/previews/general/DefaultPreview'
+import {type PreviewMediaDimensions} from '../../../components/previews/types'
+import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type FIXME} from '../../../FIXME'
-import {useTranslation} from '../../../i18n'
-import {type DocumentAvailability} from '../../../preview'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type DocumentAvailability} from '../../../preview/types'
 import {StyledPreviewFlex} from './GlobalDocumentReferencePreview.styled'
 import {resolveProjectDataset} from './utils/resolveProjectDataset'
 
@@ -101,10 +105,8 @@ export function GlobalDocumentReferencePreview(props: {
       )}
 
       <Box paddingLeft={3}>
-        <Inline space={4}>
-          {refType && showTypeLabel && (
-            <Badge mode="outline">{refType.title || refType.type}</Badge>
-          )}
+        <Inline gap={4}>
+          {refType && showTypeLabel && <Badge>{refType.title || refType.type}</Badge>}
 
           {(insufficientPermissions || notFound) && (
             <Box>

@@ -1,20 +1,25 @@
-import {DocumentIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {Card, Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {useUnitFormatter} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
-import {ChangeList, DiffCard, DiffTooltip, FromTo, MetaInfo} from '../../../diff'
-import {useRefValue} from '../../../diff/hooks'
+import {useUnitFormatter} from '../../../../hooks/useUnitFormatter'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {ChangeList} from '../../../diff/components/ChangeList'
+import {DiffCard} from '../../../diff/components/DiffCard'
+import {DiffTooltip} from '../../../diff/components/DiffTooltip'
+import {FromTo} from '../../../diff/components/FromTo'
+import {MetaInfo} from '../../../diff/components/MetaInfo'
+import {useRefValue} from '../../../diff/hooks/useRefValue'
 import {type DiffComponent, type ObjectDiff} from '../../../types'
 import {getHumanFriendlyBytes, getSizeDiff} from './helpers'
 import {type File, type FileAsset} from './types'
 
 const SizeDiff = styled.div`
   ${({theme}) => `
-    --size-diff-positive: ${theme.sanity.color.solid.positive.enabled.bg};
-    --size-diff-negative: ${theme.sanity.color.solid.critical.enabled.bg};
+    --size-diff-positive: ${theme.sanity.color.solid.positive.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
+    --size-diff-negative: ${theme.sanity.color.solid.critical.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   `}
   &:not([hidden]) {
     display: inline-block;

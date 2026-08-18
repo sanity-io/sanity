@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
+// oxlint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Button} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useObservable} from 'react-rx'
@@ -6,8 +6,8 @@ import {useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
-import {useTranslation} from '../i18n'
-import {ReleaseAvatarIcon} from '../releases'
+import {useTranslation} from '../i18n/hooks/useTranslation'
+import {ReleaseAvatarIcon} from '../releases/components/ReleaseAvatar'
 import {useReleasesStore} from '../releases/store/useReleasesStore'
 import {SCHEDULES_TOOL_NAME} from '../schedules/plugin'
 import {ToolLink} from '../studio/components/navbar/tools/ToolLink'

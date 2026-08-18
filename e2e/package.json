@@ -13,19 +13,20 @@
     "preview": "pnpm e2e:build && pnpm --filter studio-e2e-testing preview",
     "setup": "tsx -r dotenv-flow/config scripts/setup",
     "start": "pnpm --filter studio-e2e-testing preview",
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:auth": "playwright test --config=playwright.auth.config.ts"
   },
   "devDependencies": {
+    "@chromatic-com/playwright": "^0.14.11",
     "@playwright/test": "catalog:",
-    "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
-    "@sanity/uuid": "^3.0.2",
-    "eslint": "catalog:",
-    "tsx": "^4.21.0"
+    "@sanity/uuid": "^3.0.3",
+    "chromatic": "^18.2.0",
+    "tsx": "^4.23.12"
   },
   "engines": {
-    "node": ">=20.19 <22 || >=22.12"
+    "node": ">=22.12"
   }
 }

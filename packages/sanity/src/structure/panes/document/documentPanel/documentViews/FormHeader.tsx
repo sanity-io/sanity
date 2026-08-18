@@ -1,10 +1,10 @@
-import {InfoOutlineIcon} from '@sanity/icons'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Heading, Inline, Stack, Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../../../ui-components'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../../../i18n'
 
 interface DocumentHeaderProps {
@@ -33,23 +33,23 @@ const TitleContainer = styled(Stack)`
       container-type: inline-size;
 
       [data-heading] {
-        font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize}px;
-        line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight}px;
+        font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
+        line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
         overflow-wrap: break-word;
         text-wrap: pretty;
       }
 
       @container (max-width: 560px) {
         [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[3].lineHeight}px;
+          font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
+          line-height: ${theme.sanity.fonts.heading.sizes[3].lineHeight /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
         }
       }
 
       @container (max-width: 420px) {
         [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[2].fontSize}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[2].lineHeight}px;
+          font-size: ${theme.sanity.fonts.heading.sizes[2].fontSize /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
+          line-height: ${theme.sanity.fonts.heading.sizes[2].lineHeight /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
         }
       }
     `
@@ -70,9 +70,9 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
     return null
   }
   return (
-    <TitleContainer marginBottom={6} space={4}>
+    <TitleContainer marginBottom={6} gap={4}>
       {!isSingleton && (
-        <Inline space={1}>
+        <Inline gap={1}>
           <Text muted size={1}>
             {schemaType.title ?? schemaType.name}
           </Text>

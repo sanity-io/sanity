@@ -39,17 +39,28 @@ const ReleasesNavContainer = styled(Card)`
 interface Props {
   withReleasesToolButton?: boolean
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  border?: boolean
 }
 
 /**
  * @internal
  */
-export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton, menuItemProps}) => {
+export const ReleasesNav: ComponentType<Props> = ({
+  withReleasesToolButton,
+  menuItemProps,
+  border = true,
+}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   return (
-    <ReleasesNavContainer flex="none" tone="inherit" radius="full" data-ui="ReleasesNav" border>
+    <ReleasesNavContainer
+      flex="none"
+      tone="inherit"
+      radius="full"
+      data-ui="ReleasesNav"
+      border={border}
+    >
       {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
       <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
       <GlobalPerspectiveMenu

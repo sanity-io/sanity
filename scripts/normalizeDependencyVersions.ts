@@ -85,6 +85,10 @@ Object.keys(versionRanges).forEach((depName) => {
     .sort(semver.rcompare)
 
   const greatestVersion = plain[0]
+  if (greatestVersion === undefined) {
+    // no concrete versions to compare (e.g. only catalog:/workspace: ranges)
+    return
+  }
   const greatestMajor = `${semver.major(greatestVersion)}.0.0`
   const greatestRange = `^${greatestVersion}`
 
@@ -108,7 +112,6 @@ Object.keys(versionRanges).forEach((depName) => {
     console.log(
       `    ${sign} ${packages
         .map((pkgName) => {
-          // eslint-disable-next-line max-nested-callbacks
           const pkg = pkgs.find((p) => p.name === pkgName)!
 
           return `${pkgName} ${chalk.gray(path.relative(rootPath, pkg.file))}`
@@ -142,8 +145,7 @@ fixablePackages.forEach((pkg) => {
 
   let manifest: {dependencies: Record<string, string>; devDependencies: Record<string, string>}
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    manifest = require(manifestPath)
+    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
   } catch {
     return
   }

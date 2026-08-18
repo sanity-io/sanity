@@ -8,9 +8,6 @@
     "GITHUB_ACTIONS",
     "NODE_ENV",
     "PKG_BUILD_VERSION",
-    "PKG_FORMAT",
-    "PKG_RUNTIME",
-    "PKG_VERSION",
     "SANITY_ACTIVE_ENV",
     "SANITY_APP_BASEPATH",
     "SANITY_CLI_EXTRACT_MANIFEST_ENABLED",
@@ -31,6 +28,7 @@
     "SANITY_STUDIO_EFPS_REFERENCE_PROJECT_ID",
     "SANITY_STUDIO_MODE",
     "SANITY_STUDIO_PROJECT_ID",
+    "SANITY_STUDIO_USE_DEBUG_PROXY",
     "VERCEL_GIT_COMMIT_REF",
     "VERCEL_GIT_PULL_REQUEST_ID"
   ],
@@ -55,11 +53,9 @@
     "GITHUB_TOKEN",
     "NO_UPDATE_NOTIFIER",
     "npm_config_user_agent",
-    "PKG_FILE_PATH",
     "RUNNER_OS",
     "SANITY_AUTH_TOKEN",
     "SANITY_BASE_PATH",
-    "SANITY_CI_CLI_AUTH_TOKEN_STAGING",
     "SANITY_CLI_API_RATE_LIMIT_BYPASS",
     "SANITY_CLI_TEST_CONFIG_NAME",
     "SANITY_CLI_TEST_ID_TIMESTAMP",
@@ -82,8 +78,7 @@
     "XDG_CURRENT_DESKTOP"
   ],
   "globalDependencies": [
-    "pnpm-workspace.yaml",
-    ".oxlintrc.json"
+    "pnpm-workspace.yaml"
   ],
   "tasks": {
     "build": {
@@ -104,26 +99,6 @@
         "build"
       ],
       "outputLogs": "new-only"
-    },
-    "check:types": {
-      "outputs": [],
-      "dependsOn": [
-        "^build"
-      ]
-    },
-    "transit": {
-      "dependsOn": ["^transit"]
-    },
-    "lint": {
-      "dependsOn": ["transit"]
-    },
-    "//#check:format": {},
-    "//#check:oxlint": {
-      "cache": false
-    },
-    "//#chore:format:fix": {},
-    "//#chore:oxlint:fix": {
-      "cache": false
     }
   }
 }

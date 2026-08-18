@@ -1,4 +1,4 @@
-import {BookIcon} from '@sanity/icons'
+import {BookIcon} from '@sanity/icons/Book'
 
 function formatSubtitle(thesis) {
   if (thesis.authorName && thesis.publicationYear) {

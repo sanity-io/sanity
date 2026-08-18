@@ -1,5 +1,5 @@
 import {
-  // eslint-disable-next-line no-restricted-imports
+  // oxlint-disable-next-line no-restricted-imports
   ErrorBoundary as UIErrorBoundary,
   type ErrorBoundaryProps as UIErrorBoundaryProps,
 } from '@sanity/ui'

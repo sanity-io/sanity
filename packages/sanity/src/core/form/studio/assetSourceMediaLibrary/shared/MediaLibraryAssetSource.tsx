@@ -1,20 +1,22 @@
 import {type AssetSourceComponentProps} from '@sanity/types'
 import {PortalProvider} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
+import {encodeJsonParams} from 'sanity/router'
 
-import {useClient} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {useClient} from '../../../../hooks/useClient'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useWorkspace} from '../../../../studio/workspace'
 import {DEFAULT_API_VERSION} from '../constants'
 import {MediaLibraryProvider} from './MediaLibraryProvider'
 import {OpenInSourceDialog} from './OpenInSourceDialog'
 import {SelectAssetsDialog} from './SelectAssetsDialog'
 import {UploadAssetsDialog} from './UploadAssetDialog'
 
-const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceComponent(
-  props: AssetSourceComponentProps & {libraryId: string | null},
-  ref: ForwardedRef<HTMLDivElement>,
+function MediaLibraryAssetSourceComponent(
+  props: AssetSourceComponentProps & {libraryId: string | null} & RefAttributes<HTMLDivElement>,
 ) {
   const {
+    ref,
     accept, // TODO: make the plugin respect this filter?
     action = 'select',
     assetSource,
@@ -33,6 +35,16 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
   const {t} = useTranslation()
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
   const projectId = client.config().projectId
+  const workspace = useWorkspace()
+  const pickerPersistenceKey = useMemo(
+    () =>
+      encodeJsonParams({
+        projectId: workspace.projectId,
+        dataset: workspace.dataset,
+        workspaceName: workspace.name,
+      }) || undefined,
+    [workspace.projectId, workspace.dataset, workspace.name],
+  )
   const portalElement = useRootPortalElement()
   const handleSelectNewAsset = useCallback(() => {
     if (onChangeAction) {
@@ -57,6 +69,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
       />
       <PortalProvider element={portalElement}>
         <SelectAssetsDialog
+          pickerPersistenceKey={pickerPersistenceKey}
           dialogHeaderTitle={
             dialogHeaderTitle ||
             t('asset-sources.media-library.select-dialog.title', {
@@ -65,7 +78,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
             })
           }
           open={action === 'select'}
-          ref={ref}
+          ref={ref ?? null}
           onClose={onClose}
           onSelect={onSelect}
           selection={[]}
@@ -74,6 +87,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
         />
         {action === 'openInSource' && assetToOpen && (
           <OpenInSourceDialog
+            pickerPersistenceKey={pickerPersistenceKey}
             asset={assetToOpen}
             dialogHeaderTitle={t('asset-sources.media-library.open-in-source-dialog.title')}
             selectNewAssetButtonLabel={
@@ -94,7 +108,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
   )
 }
 
-export const MediaLibraryAssetSource = memo(forwardRef(MediaLibraryAssetSourceComponent))
+export const MediaLibraryAssetSource = memo(MediaLibraryAssetSourceComponent)
 
 const useRootPortalElement = () => {
   const [container] = useState(() => document.createElement('div'))

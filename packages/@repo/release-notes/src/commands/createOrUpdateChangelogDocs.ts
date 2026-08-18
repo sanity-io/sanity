@@ -1,4 +1,3 @@
-// oxlint-disable no-console
 import {ConventionalGitClient} from '@conventional-changelog/git-client'
 import {MONOREPO_ROOT} from '@repo/utils'
 import {type SanityClient, ClientError} from '@sanity/client'
@@ -20,15 +19,17 @@ import pMap from 'p-map'
 import {getClient} from '../client'
 import {STUDIO_PLATFORM_DOCUMENT_ID} from '../constants'
 import {type PullRequestInfo, type StudioChangelogEntry} from '../types'
+import {flattenCallouts} from '../utils/flattenCallouts'
 import {getCommits, getSemverTags} from '../utils/getCommits'
-import {getMergedPRForCommit} from '../utils/github'
+import {getCommitAuthor, getMergedPRForCommit} from '../utils/github'
 import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
+import {isBreakingChange} from '../utils/isBreakingChange'
 import {parseRenovateReleaseNotes} from '../utils/parseRenovateReleaseNotes'
+import {type NormalizedMarkdownBlock} from '../utils/portabletext-markdown/markdownToPortableText'
 import {
-  markdownToPortableText,
-  type NormalizedMarkdownBlock,
-} from '../utils/portabletext-markdown/markdownToPortableText'
-import {extractReleaseNotes, shouldExcludeReleaseNotes} from '../utils/pullRequestReleaseNotes'
+  extractReleaseNotesFromPrBody,
+  shouldExcludeReleaseNotes,
+} from '../utils/pullRequestReleaseNotes'
 import {stripPr} from '../utils/stripPrNumber'
 import {uploadImages} from '../utils/uploadImages'
 
@@ -144,12 +145,15 @@ async function mergeChangelogBody(
 }
 
 function createEntry(client: SanityClient, info: PullRequestInfo, {dryRun}: {dryRun?: boolean}) {
-  return info.pr && info.pr.body ? getReleaseNotesMutations(client, info, {dryRun}) : []
+  // Always emit an entry, even when GitHub didn't return a PR association or
+  // the PR has no body. This keeps the changelog document consistent with the
+  // release-PR description table (both should reflect every commit that shipped).
+  return getReleaseNotesMutations(client, info, {dryRun})
 }
 
 async function getReleaseNotesMutations(
   client: SanityClient,
-  {pr, conventionalCommit}: PullRequestInfo,
+  {pr, commitAuthor, conventionalCommit}: PullRequestInfo,
   options: {dryRun?: boolean},
 ) {
   const cleanSubject = pr
@@ -160,36 +164,49 @@ async function getReleaseNotesMutations(
   const userType = pr?.user?.type?.toLowerCase()
   const isBot = userType === 'bot'
 
-  const releaseNoteBlocks = pr?.body
-    ? isBot
-      ? parseRenovateReleaseNotes(pr.body)
-      : extractReleaseNotes(markdownToPortableText(pr.body))
-    : []
+  const releaseNoteBlocks = flattenCallouts(
+    pr?.body
+      ? isBot
+        ? parseRenovateReleaseNotes(pr.body)
+        : await extractReleaseNotesFromPrBody(pr.body)
+      : [],
+  )
 
+  const breaking = isBreakingChange(conventionalCommit)
+
+  // Breaking changes are never auto-excluded based on commit type/scope
+  // (e.g. a `chore!:` commit still needs release notes), but an explicit
+  // "no release notes" opt-out in the PR description is still respected.
   const excludeReleaseNotes =
     shouldExcludeReleaseNotes(releaseNoteBlocks) ||
     (isBot && releaseNoteBlocks.length === 0) ||
-    conventionalCommit.type === 'chore' ||
-    conventionalCommit.type === 'test' ||
-    conventionalCommit.scope === 'dev' ||
-    conventionalCommit.scope === 'build' ||
-    conventionalCommit.scope === 'test'
+    (!breaking &&
+      (conventionalCommit.type === 'chore' ||
+        conventionalCommit.type === 'test' ||
+        conventionalCommit.scope === 'dev' ||
+        conventionalCommit.scope === 'build' ||
+        conventionalCommit.scope === 'test'))
+
+  // Prefer the commit's git author over the PR user — when a commit lands on
+  // main through someone else's PR (e.g. a rebase-merged integration branch),
+  // the PR user is not the person who wrote the change.
+  const author = commitAuthor ?? pr?.user ?? undefined
 
   const entry: StudioChangelogEntry = {
     _type: 'changelogEntry',
     _key: conventionalCommit.hash!.slice(0, 8),
     pr: pr?.number,
-    author:
-      pr && pr.user
-        ? {
-            username: pr.user?.login,
-            url: pr.user?.html_url,
-            imageUrl: pr.user.avatar_url,
-            type: userType,
-          }
-        : undefined,
+    author: author
+      ? {
+          username: author.login,
+          url: author.html_url,
+          imageUrl: author.avatar_url,
+          type: author.type?.toLowerCase(),
+        }
+      : undefined,
     authorAssociation: pr?.author_association.toLowerCase(),
     exclude: excludeReleaseNotes,
+    breaking,
     subject: cleanSubject,
     header: conventionalCommit.header || '',
     coAuthors: conventionalCommit.body ? descriptionToCoAuthors(conventionalCommit.body) : [],
@@ -243,12 +260,15 @@ async function ensureContentRelease(
   return {created}
 }
 
-async function fetchCommitPrs(commits: Commit[]) {
+async function fetchCommitPrs(commits: Commit[]): Promise<PullRequestInfo[]> {
   return pMap(
     commits,
     async (commit) => {
-      const pr = await getMergedPRForCommit('sanity-io', 'sanity', commit.hash!)
-      return {conventionalCommit: commit, pr}
+      const [pr, commitAuthor] = await Promise.all([
+        getMergedPRForCommit('sanity-io', 'sanity', commit.hash!, commit.header ?? undefined),
+        getCommitAuthor('sanity-io', 'sanity', commit.hash!),
+      ])
+      return {conventionalCommit: commit, pr, commitAuthor}
     },
     {concurrency: 4},
   )

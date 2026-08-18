@@ -12,15 +12,15 @@ import {
 } from 'sanity'
 
 import {type _PaneMenuItem} from './components/pane/types'
+import {type Intent} from './structureBuilder/Intent'
+import {type MenuItem as StructureToolMenuItem} from './structureBuilder/MenuItem'
 import {
   type DefaultDocumentNodeResolver,
-  type Intent,
-  type MenuItem as StructureToolMenuItem,
   type StructureBuilder,
   type StructureContext,
   type UserComponent,
   type View,
-} from './structureBuilder'
+} from './structureBuilder/types'
 
 /** @internal */
 export interface StructureToolFeatures {
@@ -68,6 +68,15 @@ export interface StructureResolverContext extends ConfigContext {
    * See {@link PerspectiveStack}
    */
   perspectiveStack: PerspectiveStack
+  /**
+   * The selected editing variant as a bare variant id, or `undefined` when no variant is selected.
+   * It can be used as the variant param in the client, alongside `perspectiveStack`, to get the
+   * view of the documents as seen through that variant.
+   *
+   * Always provided by the Studio. Declared optional so that structure resolvers written before
+   * variants existed keep type checking when they construct this context themselves.
+   */
+  selectedVariantName?: string | undefined
 }
 
 /**
@@ -323,6 +332,8 @@ export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList
     params?: Record<string, unknown>
     apiVersion?: string
   }
+  /** Suppresses auto-injected restore-default sort/layout menu items for panes with a fixed ordering choice. */
+  suppressRestoreDefaultMenuItems?: boolean
   schemaTypeName: string
   source?: string
 }

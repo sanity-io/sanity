@@ -7,9 +7,9 @@ import {
   type StudioResource,
   type WindowMessages,
 } from '@sanity/message-protocol'
-import {type DocumentHandle} from '@sanity/sdk'
+import {type DocumentHandle} from '@sanity/sdk-react'
 import {useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {
   catchError,
   connect,
@@ -36,7 +36,7 @@ import {
   timeout,
 } from 'rxjs'
 
-import {useComlinkStore} from '../store/_legacy/datastores'
+import {useComlinkStore} from '../store/datastores'
 
 interface FavoriteStatusResponse {
   isFavorited: boolean
@@ -121,7 +121,10 @@ export function useManageFavorite({
   )
 
   const stateController = useMemo(() => optimisticState({node, context}), [context, node])
-  const state = useObservable(stateController.state)
+  // Kept synchronous: favorite()/unfavorite() push an optimistic SET into
+  // this stream so the toggle reflects the click immediately; deferring the
+  // state would make the control lag its own interaction.
+  const state = useSyncObservable(stateController.state)
 
   return {
     favorite: useCallback(() => stateController.setState(true), [stateController]),

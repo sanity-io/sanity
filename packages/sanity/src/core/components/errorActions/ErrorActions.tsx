@@ -1,8 +1,10 @@
-import {CopyIcon, SyncIcon} from '@sanity/icons'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {SyncIcon} from '@sanity/icons/Sync'
 import {Inline} from '@sanity/ui'
 import {type ComponentProps, type ComponentType} from 'react'
 
-import {Button, Tooltip} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {strings} from './strings'
 import {useCopyErrorDetails} from './useCopyErrorDetails'
 
@@ -29,7 +31,7 @@ export const ErrorActions: ComponentType<ErrorActionsProps> = ({
   const copyErrorDetails = useCopyErrorDetails(error, eventId)
 
   return (
-    <Inline space={3}>
+    <Inline gap={3}>
       {onRetry && (
         <Button
           disabled={isRetrying}

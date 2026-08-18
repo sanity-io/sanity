@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
-import {ComposeSparklesIcon} from '@sanity/icons'
+import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {
@@ -11,7 +11,7 @@ import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {isReleaseDocument} from '../../../releases/store/types'
-import {useProjectOrganizationId} from '../../../store/_legacy/project/useProjectOrganizationId'
+import {useProjectOrganizationId} from '../../../store/project/useProjectOrganizationId'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
@@ -76,6 +76,7 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
 
   useEffect(() => {
     if (isLinked) {
+      // oxlint-disable-next-line react/react-compiler
       handleCloseDialog()
     }
   }, [isLinked, handleCloseDialog])

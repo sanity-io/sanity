@@ -36,7 +36,7 @@ import {
 // We use a type import to ensure this change does not affect the runtime.
 // The 'sanity' package re-exports the '@sanity/types' module, which is why this
 // approach works.
-/* eslint-disable import/consistent-type-specifier-style,no-restricted-imports */
+/* oxlint-disable import/consistent-type-specifier-style,no-restricted-imports */
 import type {
   ArrayOfObjectsComponents,
   ArrayOfPrimitivesComponents,
@@ -57,11 +57,12 @@ import type {
   TextComponents,
   UrlComponents,
 } from 'sanity'
-/* eslint-enable import/consistent-type-specifier-style,no-restricted-imports */
+/* oxlint-enable import/consistent-type-specifier-style,no-restricted-imports */
 import {describe, it} from 'vitest'
 
-import {type PreviewProps} from '../../components'
-import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
+import {type PreviewProps} from '../../components/previews/types'
+import {type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps} from '../studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
+import {type StudioReferenceInputProps as ReferenceInputProps} from '../studio/inputs/reference/StudioReferenceInput'
 import {
   type ArrayFieldProps,
   type ArrayOfPrimitivesFieldProps,
@@ -369,6 +370,8 @@ describe('definitionExtensions', () => {
         },
       })
       const components: DocumentComponents | undefined = type.components
+      const componentsIsRequired: {components: unknown} = type
+      void componentsIsRequired
     })
 
     it('should extend components for file', () => {

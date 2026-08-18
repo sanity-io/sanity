@@ -19,7 +19,7 @@ it('exports snapshot', async () => {
       if (typeof entry === 'string') {
         throw new Error('Expected entry to be an object')
       }
-      return entry.source
+      return entry.monorepo
     },
     importMode: 'src',
     cwd: fileURLToPath(import.meta.url),

@@ -1,10 +1,8 @@
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
 import {parseArgs} from 'node:util'
 
 import {createClient} from '@sanity/client'
 import {config} from 'dotenv'
-import globby from 'globby'
+import {glob} from 'tinyglobby'
 
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
 import {findEnv, readEnv} from './config/envVars'
@@ -14,8 +12,6 @@ import {type Deployment} from './runner/types'
 import {getCurrentBranchSync, getGitInfoSync} from './runner/utils/gitUtils'
 import {sanityIdify} from './runner/utils/sanityIdIfy'
 import {KNOWN_TEST_IDS} from './runner/utils/testIds'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 config({path: `${__dirname}/.env`})
 
@@ -32,7 +28,7 @@ async function main(args: {
   label?: string
 }) {
   const currentBranch = getCurrentBranchSync()
-  const testFiles = await globby(`${__dirname}/tests/**/${args.pattern || '*'}.test.ts`)
+  const testFiles = await glob(`${__dirname}/tests/**/${args.pattern || '*'}.test.ts`)
   const branch = args.branch || findEnv('PERF_TEST_BRANCH') || currentBranch
   const headless = args.headless ?? findEnv('PERF_TEST_HEADLESS') !== 'false'
 

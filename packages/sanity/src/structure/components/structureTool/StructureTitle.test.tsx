@@ -1,13 +1,13 @@
 import {render, waitFor} from '@testing-library/react'
-// eslint-disable-next-line no-restricted-imports
+// oxlint-disable-next-line no-restricted-imports
 import * as SANITY from 'sanity'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
-import {type StructureContext} from '../../structureBuilder'
-import {type Panes} from '../../structureResolvers'
+import {type StructureContext} from '../../structureBuilder/types'
+import {type Panes} from '../../structureResolvers/useResolvedPanes'
 import * as USE_STRUCTURE_TOOL from '../../useStructureTool'
 import {DocumentTitle, StructureTitle} from './StructureTitle'
 
@@ -188,6 +188,7 @@ describe('StructureTitle', () => {
 
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
+      // @ts-expect-error -- pre-existing, fix later
       vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
       vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
@@ -221,6 +222,7 @@ describe('StructureTitle', () => {
       })
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
+      // @ts-expect-error -- pre-existing, fix later
       vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
       vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
 

@@ -1,6 +1,6 @@
 import {type Mock, type Mocked} from 'vitest'
 
-import {useDocumentPairPermissions} from '../../src/core/store/_legacy/grants/documentPairPermissions'
+import {useDocumentPairPermissions} from '../../src/core/store/grants/documentPairPermissions'
 
 export const useDocumentPairPermissionsMockReturn: Mocked<
   ReturnType<typeof useDocumentPairPermissions>

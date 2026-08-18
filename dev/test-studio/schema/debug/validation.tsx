@@ -38,6 +38,7 @@ export default defineType({
         return true
       }
 
+      // @ts-expect-error -- pre-existing, fix later
       const needsUrl = (doc.title[0] || '').toUpperCase() === doc.title[0]
       return needsUrl && !doc.myUrlField
         ? 'When the first character of the title is uppercase, you will need to fill out the "Plain url"-field'
@@ -297,10 +298,12 @@ export default defineType({
       description: 'Reference to a book with custom rule that ensures referenced book has a cover',
       type: 'reference',
       to: [{type: 'book'}],
-      validation: (Rule) =>
+      validation: (Rule) => [
+        Rule.required().error('Book is required'),
         Rule.custom(
           (value) =>
             new Promise((resolve) => {
+              // @ts-expect-error -- pre-existing, fix later
               if (!value || !value._ref) {
                 return resolve(true)
               }
@@ -312,6 +315,7 @@ export default defineType({
               // })
             }),
         ),
+      ],
     },
     {
       name: 'titleCase',
@@ -374,6 +378,7 @@ export default defineType({
         layout: 'radio',
         list: ['one', 'two', 'three'],
       },
+      validation: (Rule) => Rule.required().error('Radio is required'),
     },
     {
       name: 'readonlyField',
@@ -454,8 +459,11 @@ export default defineType({
             return true
           }
 
+          // @ts-expect-error -- pre-existing, fix later
           const location = points([[geoPoint.lng, geoPoint.lat]])
+          // @ts-expect-error -- pre-existing, fix later
           const norwayFeature = featureCollection(norway)
+          // @ts-expect-error -- pre-existing, fix later
           const ptsWithin = pointsWithinPolygon(location, norwayFeature)
           return ptsWithin.features.length > 0 ? true : 'Location must be in Norway'
         }),

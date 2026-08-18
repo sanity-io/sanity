@@ -1,4 +1,4 @@
-import {Tool} from 'sanity'
+import {type Tool} from 'sanity'
 import {route} from 'sanity/router'
 
 import {Main} from './Main'

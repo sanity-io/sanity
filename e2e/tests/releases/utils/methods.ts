@@ -1,3 +1,4 @@
+// oxlint-disable-next-line no-restricted-imports -- release test utils use raw Playwright (no studio-test fixtures)
 import test from '@playwright/test'
 import {type SanityClient, type SanityDocument} from '@sanity/client'
 
@@ -24,7 +25,7 @@ export const createRelease = async ({
   metadata: Record<string, any>
 }) => {
   await sanityClient.withConfig(CLIENT_OPTIONS).request({
-    uri: `/data/actions/${dataset}`,
+    url: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
       actions: [
@@ -49,7 +50,7 @@ export const archiveRelease = async ({
 }) => {
   try {
     await sanityClient.withConfig(CLIENT_OPTIONS).request({
-      uri: `/data/actions/${dataset}`,
+      url: `/data/actions/${dataset}`,
       method: 'POST',
       body: {
         actions: [
@@ -77,7 +78,7 @@ export const unarchiveRelease = async ({
 }) => {
   try {
     await sanityClient.withConfig(CLIENT_OPTIONS).request({
-      uri: `/data/actions/${dataset}`,
+      url: `/data/actions/${dataset}`,
       method: 'POST',
       body: {
         actions: [
@@ -105,7 +106,7 @@ export const deleteRelease = async ({
 }) => {
   // delete release
   await sanityClient.withConfig(CLIENT_OPTIONS).request({
-    uri: `/data/actions/${dataset}`,
+    url: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
       actions: [
@@ -143,7 +144,7 @@ export const discardVersion = async ({
 }) => {
   // discard release
   await sanityClient.withConfig(CLIENT_OPTIONS).request({
-    uri: `/data/actions/${dataset}`,
+    url: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
       actions: [
@@ -221,7 +222,6 @@ async function waitForReleaseToBeArchived({
   const startTime = Date.now()
 
   return new Promise<void>((resolve, reject) => {
-    // eslint-disable-next-line consistent-return
     const checkStatus = async () => {
       const query = `*[_type == "system.release" && _id == "_.releases.${releaseId}"][0] {state}`
       const release = await sanityClient.fetch(query)

@@ -1,4 +1,4 @@
-/* eslint-disable consistent-return */
+/* oxlint-disable consistent-return */
 import isEqual from 'lodash-es/isEqual.js'
 import {defineMigration, set} from 'sanity/migrate'
 

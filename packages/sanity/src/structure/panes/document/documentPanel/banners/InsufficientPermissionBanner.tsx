@@ -1,15 +1,14 @@
-import {ReadOnlyIcon} from '@sanity/icons'
+import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
-import {Translate, useCurrentUser, useListFormat, useTranslation} from 'sanity'
+import {Translate, useCurrentUser, useListFormat, useTranslation, useWorkspace} from 'sanity'
 
-import {
-  RequestPermissionDialog,
-  useRoleRequestsStatus,
-} from '../../../../components/requestPermissionDialog'
 import {AskToEditDialogOpened} from '../../../../components/requestPermissionDialog/__telemetry__/RequestPermissionDialog.telemetry'
+import {RequestPermissionDialog} from '../../../../components/requestPermissionDialog/RequestPermissionDialog'
+import {useRoleRequestsStatus} from '../../../../components/requestPermissionDialog/useRoleRequestsStatus'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
 interface InsufficientPermissionBannerProps {
@@ -20,6 +19,13 @@ export function InsufficientPermissionBanner({
   requiredPermission,
 }: InsufficientPermissionBannerProps) {
   const currentUser = useCurrentUser()
+  const workspace = useWorkspace()
+  const {documentId, schemaType} = useDocumentPane()
+
+  const askToEditEnabled = workspace.document.askToEdit.enabled({
+    documentId,
+    documentType: schemaType.name,
+  })
 
   const {
     data: roleRequestStatus,
@@ -46,6 +52,13 @@ export function InsufficientPermissionBanner({
       part.type === 'element' ? <code key={part.value}>{part.value}</code> : part.value,
     )
 
+  const showAskToEditAction =
+    askToEditEnabled &&
+    isOnlyViewer &&
+    roleRequestStatus &&
+    !requestStatusError &&
+    !requestStatusLoading
+
   return (
     <>
       <Banner
@@ -61,7 +74,7 @@ export function InsufficientPermissionBanner({
           </Text>
         }
         action={
-          isOnlyViewer && roleRequestStatus && !requestStatusError && !requestStatusLoading
+          showAskToEditAction
             ? {
                 onClick: requestPending
                   ? undefined

@@ -1,4 +1,4 @@
-import {ComposeIcon} from '@sanity/icons'
+import {ComposeIcon} from '@sanity/icons/Compose'
 import {apiVersion} from '@sanity/preview-url-secret/constants'
 
 export const DEFAULT_TOOL_ICON = ComposeIcon
@@ -7,8 +7,13 @@ export const DEFAULT_TOOL_TITLE = 'Presentation'
 
 export const EDIT_INTENT_MODE = 'presentation'
 
-// How long we wait until an iframe is loaded until we consider it to be slow and possibly failed
+// How long we wait for the Visual Editing overlays comlink connection, after the iframe has
+// loaded, before we consider it to be slow and possibly failed
 export const MAX_TIME_TO_OVERLAYS_CONNECTION = 3_000 // ms
+
+// How long we wait for the iframe `load` event before surfacing the connection error UI.
+// Generous because dev servers can spend a long time compiling the preview on first load.
+export const MAX_TIME_TO_IFRAME_LOAD = 15_000 // ms
 
 // The API version to use when using `@sanity/client`
 export const API_VERSION = apiVersion
@@ -21,3 +26,6 @@ export const LOADER_QUERY_GC_INTERVAL = 30_000 // ms
 
 // The interval at which we check if existing popups have been closed
 export const POPUP_CHECK_INTERVAL = 1000 // ms
+
+// Below this @sanity/ui breakpoint (~900px) the two 325px panels stop fitting side-by-side and collapse into tabs.
+export const NARROW_MEDIA_INDEX = 2

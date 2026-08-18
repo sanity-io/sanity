@@ -1,7 +1,7 @@
 import {type ComponentType, type ReactNode} from 'react'
 
-import {type HookCollectionActionHook} from '../../components/hookCollection'
-import {type EditStateFor} from '../../store'
+import {type HookCollectionActionHook} from '../../components/hookCollection/types'
+import {type EditStateFor} from '../../store/document/document-pair/editState'
 
 /**
  * @hidden
@@ -16,7 +16,6 @@ export interface DocumentBadgeDescription {
 /**
  * @hidden
  * @beta */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface DocumentBadgeProps extends EditStateFor {}
 
 /**

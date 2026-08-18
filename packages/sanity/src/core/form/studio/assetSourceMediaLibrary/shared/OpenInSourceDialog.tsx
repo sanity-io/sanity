@@ -3,8 +3,8 @@ import {type Asset} from '@sanity/types'
 import {Box, Card, Flex, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo} from 'react'
 
-import {Button} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useAuthType} from '../hooks/useAuthType'
 import {usePluginFrameUrl} from '../hooks/usePluginFrameUrl'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
@@ -14,6 +14,8 @@ import {AppDialog} from './Dialog'
 import {Iframe} from './Iframe'
 
 export interface OpenInSourceDialogProps {
+  /** Opaque key for Media Library iframe picker state partitioning; usually precomputed in the asset source. */
+  pickerPersistenceKey?: string
   asset: Asset
   dialogHeaderTitle: ReactNode
   selectNewAssetButtonLabel: string
@@ -25,9 +27,17 @@ export interface OpenInSourceDialogProps {
  * Dialog that opens an asset in the Media Library for viewing/editing
  */
 export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
-  const {asset, dialogHeaderTitle, onClose, onSelectNewAsset, selectNewAssetButtonLabel} = props
+  const {
+    asset,
+    dialogHeaderTitle,
+    onClose,
+    onSelectNewAsset,
+    selectNewAssetButtonLabel,
+    pickerPersistenceKey,
+  } = props
   const theme = useTheme()
   const {t} = useTranslation()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dark} = theme.sanity.color
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
   const appHost = mediaLibraryConfig.__internal.hosts.app
@@ -43,8 +53,9 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
       disableNavigation: true,
       selectAssetTypes: [],
       selectionType: 'single',
+      pickerPersistenceKey,
     }),
-    [dark, authType],
+    [dark, authType, pickerPersistenceKey],
   )
 
   const iframeUrl = usePluginFrameUrl(`/assets/${sourceAssetId}`, params)
@@ -80,7 +91,6 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
       width={3}
       footer={
         <Card
-          width="full"
           height="fill"
           padding={3}
           shadow={1}
@@ -89,7 +99,7 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
             minHeight: '2dvh',
           }}
         >
-          <Flex width="full" gap={3} align="center" justify="space-between">
+          <Flex gap={3} align="center" justify="space-between">
             <Button
               onClick={onSelectNewAsset}
               text={selectNewAssetButtonLabel}

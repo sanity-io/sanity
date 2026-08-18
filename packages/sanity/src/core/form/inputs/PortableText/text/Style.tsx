@@ -1,17 +1,24 @@
-import {type BlockStyleRenderProps} from '@portabletext/editor'
+import {type PortableTextTextBlock} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
 
-import {type BlockStyleProps} from '../../../types'
+import {type BlockStyleProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'
 
-export const Style = (props: BlockStyleRenderProps) => {
-  const {block, focused, children, selected, schemaType} = props
+type StyleProps = {
+  block: PortableTextTextBlock
+  children: React.JSX.Element
+  focused: boolean
+  selected: boolean
+}
+
+export const Style = (props: StyleProps) => {
+  const {block, focused, children, selected} = props
   const schemaTypes = usePortableTextMemberSchemaTypes()
-  const sanitySchemaType = schemaTypes.styles.find((type) => type.value === schemaType.value)
+  const sanitySchemaType = schemaTypes.styles.find((type) => type.value === block.style)
   if (!sanitySchemaType) {
     // This should never happen
-    throw new Error(`Could not find Sanity schema type for style: ${schemaType.value}`)
+    throw new Error(`Could not find Sanity schema type for style: ${block.style}`)
   }
   const DefaultComponentWithFallback = useMemo(
     () =>
@@ -48,7 +55,7 @@ export const Style = (props: BlockStyleRenderProps) => {
     return CustomComponent ? (
       <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
-      // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
+      // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
   }, [DefaultComponent, block, children, focused, sanitySchemaType, selected])

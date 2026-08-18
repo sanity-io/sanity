@@ -1,4 +1,4 @@
-import {BinaryDocumentIcon} from '@sanity/icons'
+import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ReactNode, type RefObject} from 'react'
 
@@ -51,7 +51,7 @@ export function FileActionsMenu(props: Props) {
               <BinaryDocumentIcon />
             </Text>
           </Card>
-          <Stack flex={1} space={2} marginLeft={3}>
+          <Stack flex={1} gap={2} marginLeft={3}>
             <Text
               size={1}
               textOverflow="ellipsis"
@@ -72,7 +72,7 @@ export function FileActionsMenu(props: Props) {
         <Flex justify="center" gap={2}>
           {accessPolicy === 'private' && <AccessPolicyBadge />}
           <OptionsMenuPopover
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- it's a translation key, not an attribute string literal
+            // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- it's a translation key, not an attribute string literal
             ariaLabelKey="inputs.file.actions-menu.file-options.aria-label"
             id="file-actions-menu"
             isMenuOpen={isMenuOpen}

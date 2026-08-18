@@ -3,7 +3,8 @@ import {type InitialValueResolverContext} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
-import {type resolveInitialValue as resolveInitialValueType, type Template} from '../'
+import {type resolveInitialValue as resolveInitialValueType} from '../resolve'
+import {type Template} from '../types'
 import {schema} from './schema'
 
 let resolveInitialValue: typeof resolveInitialValueType
@@ -12,7 +13,7 @@ beforeEach(async () => {
   vi.resetModules()
   vi.clearAllMocks()
 
-  resolveInitialValue = (await import('../')).resolveInitialValue
+  resolveInitialValue = (await import('../resolve')).resolveInitialValue
 })
 
 const example: Template = {
@@ -491,6 +492,96 @@ describe('resolveInitialValue', () => {
       await resolveInitialValue(testSchema, example, params3, mockConfigContext, {useCache: true})
 
       expect(initialValue).toHaveBeenCalledTimes(2) // null and undefined are treated differently
+    })
+  })
+
+  describe('array member initial value precedence', () => {
+    const getTestSchema = () =>
+      SchemaBuilder.compile({
+        name: 'default',
+        types: [
+          {
+            name: 'precedenceTest',
+            type: 'document',
+            fields: [
+              {
+                name: 'portableText',
+                type: 'array',
+                initialValue: [{_type: 'textItem', value: 'Parent'}],
+                of: [
+                  {type: 'block'},
+                  {
+                    name: 'textItem',
+                    type: 'object',
+                    fields: [{name: 'value', type: 'string', initialValue: 'Child'}],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+    const precedenceTemplate: Template = {
+      id: 'precedenceTest',
+      title: 'Precedence test',
+      schemaType: 'precedenceTest',
+      value: {},
+    }
+
+    test('parent array field initialValue takes precedence over array member field initialValue', async () => {
+      const result = await resolveInitialValue(
+        getTestSchema(),
+        precedenceTemplate,
+        {},
+        mockConfigContext,
+      )
+
+      expect(result.portableText).toHaveLength(1)
+      expect(result.portableText[0]).toMatchObject({
+        _type: 'textItem',
+        value: 'Parent',
+      })
+      expect(result.portableText[0]).toHaveProperty('_key')
+    })
+
+    test('array member field initialValue is used when the parent does not specify it', async () => {
+      const schemaWithoutParentValue = SchemaBuilder.compile({
+        name: 'default',
+        types: [
+          {
+            name: 'precedenceTest',
+            type: 'document',
+            fields: [
+              {
+                name: 'portableText',
+                type: 'array',
+                initialValue: [{_type: 'textItem'}],
+                of: [
+                  {type: 'block'},
+                  {
+                    name: 'textItem',
+                    type: 'object',
+                    fields: [{name: 'value', type: 'string', initialValue: 'Child'}],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+      const result = await resolveInitialValue(
+        schemaWithoutParentValue,
+        precedenceTemplate,
+        {},
+        mockConfigContext,
+      )
+
+      expect(result.portableText[0]).toMatchObject({
+        _type: 'textItem',
+        value: 'Child',
+      })
     })
   })
 })

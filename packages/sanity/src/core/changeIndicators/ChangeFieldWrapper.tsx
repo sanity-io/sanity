@@ -12,8 +12,8 @@ import {
 import deepCompare from 'react-fast-compare'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
-import {useZIndex} from '../components'
-import {pathToString} from '../field'
+import {useZIndex} from '../components/zOffsets/useZIndex'
+import {pathToString} from '../field/paths/helpers'
 import {DEBUG} from './constants'
 import {useChangeIndicatorsReporter} from './tracker'
 

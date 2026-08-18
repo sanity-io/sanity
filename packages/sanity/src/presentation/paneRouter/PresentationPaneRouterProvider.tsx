@@ -1,5 +1,5 @@
 import {toString as pathToString} from '@sanity/util/paths'
-import {forwardRef, type PropsWithChildren, useCallback, useMemo} from 'react'
+import {type PropsWithChildren, useCallback, useMemo, type RefAttributes} from 'react'
 import {getPublishedId, useUnique} from 'sanity'
 import {StateLink, useRouter} from 'sanity/router'
 import {
@@ -18,6 +18,7 @@ import {
 } from '../types'
 import {ChildLink} from './ChildLink'
 import {ReferenceChildLink} from './ReferenceChildLink'
+import {StructureIntentChildLink} from './StructureIntentChildLink'
 
 function encodeQueryString(params: Record<string, unknown> = {}): string {
   const parts = Object.entries(params)
@@ -49,11 +50,12 @@ function resolveQueryStringFromParams(nextParams: Record<string, string | undefi
   return encodeQueryString(safeNextParams)
 }
 
-const BackLink = forwardRef(function BackLink(
-  props: BackLinkProps & {searchParams: PresentationSearchParams},
-  ref: React.ForwardedRef<HTMLAnchorElement>,
+function BackLink(
+  props: BackLinkProps & {
+    searchParams: PresentationSearchParams
+  } & RefAttributes<HTMLAnchorElement>,
 ) {
-  const {searchParams, ...restProps} = props
+  const {ref, searchParams, ...restProps} = props
   return (
     <StateLink
       {...restProps}
@@ -65,7 +67,7 @@ const BackLink = forwardRef(function BackLink(
       title={undefined}
     />
   )
-})
+}
 
 export type PresentationPaneRouterProviderProps = PropsWithChildren<{
   onEditReference: PresentationNavigate
@@ -82,6 +84,7 @@ export function PresentationPaneRouterProvider(
 
   const {state: routerState, resolvePathFromState} = useRouter()
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
 
   const createPathWithParams: PaneRouterContextValue['createPathWithParams'] = useCallback(
@@ -107,37 +110,44 @@ export function PresentationPaneRouterProvider(
       hasGroupSiblings: false,
       groupLength: 1,
       routerPanesState: [],
-      ChildLink: forwardRef<HTMLAnchorElement, ChildLinkProps>(
-        function ContextChildLink(childLinkProps, ref) {
-          const {childId, ...rest} = childLinkProps
-          const doc = refs?.find((r) => r._id === childId || getPublishedId(r._id) === childId)
+      ChildLink: function ContextChildLink(
+        childLinkProps: ChildLinkProps & RefAttributes<HTMLAnchorElement>,
+      ) {
+        const {ref, childId, childParameters, ...rest} = childLinkProps
+        const doc = refs?.find((r) => r._id === childId || getPublishedId(r._id) === childId)
 
-          if (!doc) {
-            console.warn(`ChildLink: No document found for childId "${childId}"`)
-            return null
-          }
-
+        if (!doc) {
           return (
-            <ChildLink
+            <StructureIntentChildLink
               {...rest}
               ref={ref}
               childId={childId}
-              childType={doc._type}
-              searchParams={searchParams}
+              childParameters={childParameters}
             />
           )
-        },
-      ),
-      BackLink: forwardRef<HTMLAnchorElement, BackLinkProps>(
-        function ContextBackLink(backLinkProps, ref) {
-          return <BackLink {...backLinkProps} ref={ref} searchParams={searchParams} />
-        },
-      ),
-      ReferenceChildLink: forwardRef<HTMLAnchorElement, ReferenceChildLinkProps>(
-        function ContextReferenceChildLink(childLinkProps, ref) {
-          return <ReferenceChildLink {...childLinkProps} ref={ref} searchParams={searchParams} />
-        },
-      ),
+        }
+        return (
+          <ChildLink
+            {...rest}
+            ref={ref}
+            childId={childId}
+            childType={doc._type}
+            searchParams={searchParams}
+          />
+        )
+      },
+      BackLink: function ContextBackLink(
+        backLinkProps: BackLinkProps & RefAttributes<HTMLAnchorElement>,
+      ) {
+        const {ref, ...rest} = backLinkProps
+        return <BackLink {...rest} ref={ref} searchParams={searchParams} />
+      },
+      ReferenceChildLink: function ContextReferenceChildLink(
+        childLinkProps: ReferenceChildLinkProps & RefAttributes<HTMLAnchorElement>,
+      ) {
+        const {ref, ...rest} = childLinkProps
+        return <ReferenceChildLink {...rest} ref={ref} searchParams={searchParams} />
+      },
       ParameterizedLink: () => {
         throw new Error('ParameterizedLink not implemented')
       },

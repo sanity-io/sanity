@@ -21,13 +21,15 @@ runs:
     - name: Add label
       if: steps.check.outputs.path_only == 'true'
       shell: bash
-      run: gh pr edit ${{ github.event.pull_request.number }} --add-label "${{ inputs.label }}"
+      run: gh pr edit ${{ github.event.pull_request.number }} --add-label "$LABEL"
       env:
         GITHUB_TOKEN: ${{ github.token }}
+        LABEL: ${{ inputs.label }}
 
     - name: Remove label
       if: steps.check.outputs.path_only == 'false'
       shell: bash
-      run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "${{ inputs.label }}" || true
+      run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "$LABEL" || true
       env:
         GITHUB_TOKEN: ${{ github.token }}
+        LABEL: ${{ inputs.label }}

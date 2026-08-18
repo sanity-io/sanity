@@ -1,4 +1,3 @@
-// oxlint-disable no-console
 import {execSync} from 'node:child_process'
 import {existsSync, readFileSync, writeFileSync} from 'node:fs'
 import {join, relative} from 'node:path'

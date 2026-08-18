@@ -23,7 +23,9 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
   test(`opening - when clicking the internationalized array string field, the modal should not open`, async ({
     page,
   }) => {
-    const input = page.getByTestId('field-greeting[_key=="en"].value').getByTestId('string-input')
+    // The value input renders outside the field wrapper and item keys are
+    // random, so match it by its unique "Value" label at page scope.
+    const input = page.getByRole('textbox', {name: 'Value'})
     await expect(input).toBeEnabled()
     await input.click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
@@ -35,17 +37,19 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
   test(`opening - when clicking the internationalized array string field, and click the next one, the modal should not open`, async ({
     page,
   }) => {
-    const input = page.getByTestId('field-greeting[_key=="en"].value').getByTestId('string-input')
+    const greetingField = page.getByTestId('field-greeting')
+    const input = page.getByRole('textbox', {name: 'Value'})
     await expect(input).toBeVisible()
     await expect(input).toBeEnabled()
     await input.click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
     await input.fill('Test')
 
-    await page.getByRole('button', {name: 'FR'}).click()
+    await greetingField.getByRole('button', {name: 'FR'}).click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
-    const inputFr = page.getByTestId('field-greeting[_key=="fr"].value').getByTestId('string-input')
+    // Adding FR yields a second "Value" input; `.last()` selects it.
+    const inputFr = page.getByRole('textbox', {name: 'Value'}).last()
     await expect(inputFr).toBeVisible()
     await expect(inputFr).toBeEnabled()
     await inputFr.click()

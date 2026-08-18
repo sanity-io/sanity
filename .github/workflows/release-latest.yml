@@ -12,9 +12,7 @@ on:
         default: false
         type: boolean
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   build-and-validate:
@@ -30,7 +28,7 @@ jobs:
     outputs:
       version: ${{ steps.release-as.outputs.version }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -62,7 +60,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Get version
         id: release-as
         run: |
@@ -83,6 +81,9 @@ jobs:
 
   typedoc:
     needs: [build-and-validate, git-operations]
+    permissions:
+      contents: read
+      pull-requests: write
     uses: ./.github/workflows/typedoc.yml
     with:
       upload: true
@@ -101,7 +102,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       EXPECTED_NPM_USER: sanity-svc.npm
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - name: Build
@@ -114,18 +115,59 @@ jobs:
 
       - name: Check valid token
         run: |
-          WHOAMI_RESULT=$(npm whoami)
-          echo "npm whoami result: $WHOAMI_RESULT"
+          WHOAMI_RESULT=$(pnpm --silent whoami)
+          echo "pnpm whoami result: $WHOAMI_RESULT"
           if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
-            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            echo "Error: pnpm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
             exit 1
           fi
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
-        run: pnpm -r publish
-        env:
-          NPM_CONFIG_PROVENANCE: true
+        run: pnpm -r publish --provenance
+
+      - name: Wait for packages to be installable
+        # npm holds newly published versions for malware scanning (usually 5-15
+        # minutes, sometimes longer) before they become resolvable, so a package
+        # can be live while its exact-pinned workspace dependency still fails to
+        # install. Poll the registry until every published package resolves so
+        # the jobs that announce the release only run once it is installable.
+        # https://github.blog/changelog/2026-07-28-npm-publish-time-malware-scanning-and-dual-use-metadata/
+        run: |
+          # Get all published (non-private) packages in the workspace
+          pending=()
+          for pkg_dir in $(pnpm --silent tsx scripts/listPublishedPackages.ts); do
+            pending+=("$(jq -r '"\(.name)@\(.version)"' "$pkg_dir/package.json")")
+          done
+
+          echo "Waiting for ${#pending[@]} package(s) to resolve on the registry: ${pending[*]}"
+
+          deadline=$((SECONDS + 20 * 60))
+          while true; do
+            still_pending=()
+            for spec in "${pending[@]}"; do
+              if resolved=$(npm view "$spec" version --prefer-online 2>/dev/null) && [ -n "$resolved" ]; then
+                echo "✅ $spec is installable"
+              else
+                still_pending+=("$spec")
+              fi
+            done
+            pending=("${still_pending[@]}")
+
+            if [ "${#pending[@]}" -eq 0 ]; then
+              echo "✅ All published packages are installable"
+              break
+            fi
+
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "Error: timed out waiting for these packages to become installable:"
+              printf ' - %s\n' "${pending[@]}"
+              exit 1
+            fi
+
+            echo "⏳ Still waiting on ${#pending[@]} package(s): ${pending[*]} (retrying in 15s)"
+            sleep 15
+          done
 
   publish-releases:
     # Publish sanity.io Changelog & github release
@@ -134,7 +176,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
       - uses: actions/create-github-app-token@v3
@@ -146,7 +188,7 @@ jobs:
       - name: Generate GitHub release
         id: generate-github-release
         run: |
-          pnpm --silent release-notes publish-releases --targetVersion="${{needs.build-and-validate.outputs.version}}"
+          pnpm --silent release-notes publish-releases --target-version="${{needs.build-and-validate.outputs.version}}"
 
         env:
           RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
@@ -164,7 +206,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup
@@ -205,7 +247,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
-        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
           webhook-type: incoming-webhook

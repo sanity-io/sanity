@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import {useState} from 'react'
 import {describe, expect, it} from 'vitest'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {type RovingFocusProps} from '../types'
 import {useRovingFocus} from '../useRovingFocus'
 
@@ -24,6 +24,7 @@ function RenderTestComponent(props: TestProps) {
   })
 
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider theme={studioTheme}>
       <Card ref={setRootElement} id="rootElement">
         <Button text="Test" disabled={withDisabledButtons} />
@@ -49,32 +50,32 @@ describe('base/useRovingFocus:', () => {
     expect(buttons[0]).toBe(document.activeElement)
 
     // Focus button #1 on arrow right
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowRight'})
     expect(buttons[1]).toBe(document.activeElement)
 
     // Focus button #2 on arrow right
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowRight'})
     expect(buttons[2]).toBe(document.activeElement)
 
     // Focus button #3 on arrow right
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowRight'})
     expect(buttons[3]).toBe(document.activeElement)
 
     // Focus button #0 on arrow right
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowRight'})
     expect(buttons[0]).toBe(document.activeElement)
 
     // Focus button #3 on arrow left
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowLeft'})
     expect(buttons[3]).toBe(document.activeElement)
 
     // Focus button #2 on arrow left
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowLeft'})
     expect(buttons[2]).toBe(document.activeElement)
   })
@@ -92,32 +93,32 @@ describe('base/useRovingFocus:', () => {
     expect(buttons[0]).toBe(document.activeElement)
 
     // Focus button #1 on arrow down
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowDown'})
     expect(buttons[1]).toBe(document.activeElement)
 
     // Focus button #2 on arrow down
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowDown'})
     expect(buttons[2]).toBe(document.activeElement)
 
     // Focus button #3 on arrow down
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowDown'})
     expect(buttons[3]).toBe(document.activeElement)
 
     // Focus button #0 on arrow down
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowDown'})
     expect(buttons[0]).toBe(document.activeElement)
 
     // Focus button #3 on arrow right
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowUp'})
     expect(buttons[3]).toBe(document.activeElement)
 
     // Focus button #2 on arrow right
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowUp'})
     expect(buttons[2]).toBe(document.activeElement)
   })
@@ -135,12 +136,12 @@ describe('base/useRovingFocus:', () => {
     expect(buttons[1]).toBe(document.activeElement)
 
     // Focus button #3 on arrow right (skips #2 because it is disabled)
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowRight'})
     expect(buttons[3]).toBe(document.activeElement)
 
     // Focus button #1 on arrow right (skips #0 because it is disabled)
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowRight'})
     expect(buttons[1]).toBe(document.activeElement)
   })
@@ -158,22 +159,22 @@ describe('base/useRovingFocus:', () => {
     expect(buttons[0]).toBe(document.activeElement)
 
     // Focus button #1 on arrow right
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowRight'})
     expect(buttons[1]).toBe(document.activeElement)
 
     // Focus button #2 on arrow right
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowRight'})
     expect(buttons[2]).toBe(document.activeElement)
 
     // Focus button #3 on arrow right
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowRight'})
     expect(buttons[3]).toBe(document.activeElement)
 
     // Focus button #3 on arrow right (because loop is disabled, the focus stays on #3)
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowRight'})
     expect(buttons[3]).toBe(document.activeElement)
   })
@@ -191,7 +192,7 @@ describe('base/useRovingFocus:', () => {
     expect(buttons[3]).toBe(document.activeElement)
 
     // Focus button #0 on arrow right
-    // eslint-disable-next-line testing-library/prefer-user-event
+    // oxlint-disable-next-line testing-library/prefer-user-event
     fireEvent.keyDown(rootElement!, {key: 'ArrowRight'})
     expect(buttons[0]).toBe(document.activeElement)
   })

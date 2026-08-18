@@ -55,13 +55,14 @@ export async function sendFeedbackToSentry(payload: FeedbackPayload): Promise<st
 
   const hasTelemetryConsent = telemetryConsent === 'granted'
   const hasContactConsent = String(tags.contactConsent) === 'true'
-  // Keep in mind that users should be made aware that their name and email are shared with the Sanity team
-  // In the UI, even if they have given us consent
-  const shareName = hasTelemetryConsent || hasContactConsent
-  const shareEmail = hasTelemetryConsent || hasContactConsent
+  // Share name/email when the user has given consent (telemetry or contact),
+  // or when the caller explicitly provided them (explicit values signal intent to share).
+  const shareName = hasTelemetryConsent || hasContactConsent || !!name
+  const shareEmail = hasTelemetryConsent || hasContactConsent || !!email
 
   const {userId: _userId, ...safeTags} = tags
   const eventTags = hasTelemetryConsent ? tags : safeTags
+  const hasAttachments = !!attachments?.length
 
   const feedbackEvent = {
     contexts: {
@@ -81,12 +82,13 @@ export async function sendFeedbackToSentry(payload: FeedbackPayload): Promise<st
       ...(shareName ? {contactName: name ?? ''} : {}),
       ...(shareEmail ? {contactEmail: email ?? ''} : {}),
       telemetryConsent,
+      hasAttachments,
       type: 'feedback',
       source,
     },
   }
 
-  const hint = attachments?.length ? {attachments} : {}
+  const hint = hasAttachments ? {attachments} : {}
 
   const eventId = scope.captureEvent(feedbackEvent, hint)
 

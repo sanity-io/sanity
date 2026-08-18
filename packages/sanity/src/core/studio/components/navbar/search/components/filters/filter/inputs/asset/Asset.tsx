@@ -1,16 +1,23 @@
-import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ImageIcon} from '@sanity/icons/Image'
+import {SearchIcon} from '@sanity/icons/Search'
+import {UndoIcon} from '@sanity/icons/Undo'
 import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sanity/types'
-import {Box, Flex, Menu, Portal, Stack} from '@sanity/ui'
+import {Flex, Portal, Stack} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import get from 'lodash-es/get.js'
 import {useCallback, useEffect, useId, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
-import {type Source} from '../../../../../../../../../config'
+import {Button} from '../../../../../../../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../../../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../../../../../../ui-components/menuItem/MenuItem'
+import {type Source} from '../../../../../../../../../config/types'
 import {getAssetSourceDisplayName} from '../../../../../../../../../form/inputs/files/common/assetSourceUtils'
 import {sourceName as defaultSourceName} from '../../../../../../../../../form/studio/assetSourceDataset'
-import {useClient} from '../../../../../../../../../hooks'
-import {useTranslation} from '../../../../../../../../../i18n'
+import {useClient} from '../../../../../../../../../hooks/useClient'
+import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioClient'
 import {useSource} from '../../../../../../../../source'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
@@ -43,6 +50,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
       state: {fullscreen},
     } = useSearchState()
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {file, image} = useSource().form
     const {t} = useTranslation()
 
@@ -113,7 +121,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
 
     return (
       <ContainerBox>
-        <Stack space={3}>
+        <Stack gap={3}>
           {/* Asset source component */}
           {selectedAssetSource && AssetSourceComponent && (
             <Portal>

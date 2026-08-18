@@ -1,9 +1,10 @@
-import {AddUserIcon, CogIcon} from '@sanity/icons'
+import {AddUserIcon} from '@sanity/icons/AddUser'
+import {CogIcon} from '@sanity/icons/Cog'
 import {Flex, Stack, Text} from '@sanity/ui'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import {useTranslation} from '../../../../i18n'
-import {useProject} from '../../../../store/_legacy/project/useProject'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useProject} from '../../../../store/project/useProject'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
@@ -24,7 +25,7 @@ export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) 
     <Stack paddingX={4} paddingTop={4} paddingBottom={multipleWorkspaces ? 3 : 4}>
       <Flex align="center">
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
-        <Stack marginLeft={2} space={2}>
+        <Stack marginLeft={2} gap={2}>
           <Text size={0}>{project?.displayName}</Text>
           <Text size={2} weight="medium">
             {activeWorkspace.title}

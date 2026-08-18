@@ -17,9 +17,12 @@ runs:
     - name: Check if only specified path files changed
       id: check
       shell: bash
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        BASE_REF: ${{ github.base_ref }}
       run: |
         # Normalize path to ensure trailing slash
-        PATH_TO_CHECK="${{ inputs.path }}"
+        PATH_TO_CHECK="$INPUT_PATH"
         if [[ ! "$PATH_TO_CHECK" =~ /$ ]]; then
           PATH_TO_CHECK="${PATH_TO_CHECK}/"
         fi
@@ -29,7 +32,7 @@ runs:
         # Handle different event types
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           # For PRs, check files changed in the PR
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          CHANGED_FILES=$(git diff --name-only "origin/$BASE_REF...HEAD")
         elif [ "${{ github.event_name }}" = "push" ]; then
           # For pushes, check files in the last commit
           CHANGED_FILES=$(git diff --name-only HEAD~1)

@@ -1,4 +1,3 @@
-/* oxlint-disable no-console */
 import {type Octokit, type RestEndpointMethodTypes} from '@octokit/rest'
 
 import {REPO} from '../constants'
@@ -18,7 +17,14 @@ export async function commentPrAfterMerge(options: {
   const octokit = getOctokit()
   const pr = await getMergedPRForCommit('sanity-io', 'sanity', options.commit)
   if (!pr) {
-    throw new Error('No PR found for this commit')
+    // GitHub's commit→PR association index is best-effort and occasionally
+    // misses associations. Skip posting the reminder rather than failing the
+    // workflow.
+    console.warn(
+      `⚠️  WARNING: GitHub returned no PR association for commit ${options.commit}. ` +
+        `Skipping release-notes reminder comment.`,
+    )
+    return
   }
 
   console.log(`Found PR #${pr.number}`)
@@ -26,7 +32,6 @@ export async function commentPrAfterMerge(options: {
   // Get PR details including reviewers
   const {data: pullRequest} = await octokit.rest.pulls.get({
     ...REPO,
-    // eslint-disable-next-line camelcase
     pull_number: pr.number,
   })
   if (!pullRequest) {
@@ -76,9 +81,7 @@ async function createOrUpdateComment(
 
   const {data: existingComments} = await octokit.rest.issues.listComments({
     ...REPO,
-    // eslint-disable-next-line camelcase
     issue_number: options.pr,
-    // eslint-disable-next-line camelcase
     per_page: 100,
     order: 'created',
     direction: 'desc',
@@ -97,7 +100,6 @@ async function createOrUpdateComment(
     }
     return octokit.rest.issues.updateComment({
       ...REPO,
-      // eslint-disable-next-line camelcase
       comment_id: existingComment.id,
       body: idempotencyMarker + options.body,
     })
@@ -105,7 +107,6 @@ async function createOrUpdateComment(
 
   return octokit.rest.issues.createComment({
     ...REPO,
-    // eslint-disable-next-line camelcase
     issue_number: options.pr,
     body: idempotencyMarker + options.body,
   })
@@ -128,7 +129,6 @@ async function getCollaborators(octokit: Octokit, pullRequest: PullRequest) {
   // Get reviews to find reviewers
   const {data: reviews} = await octokit.rest.pulls.listReviews({
     ...REPO,
-    // eslint-disable-next-line camelcase
     pull_number: pullRequest.number,
   })
   const approvers = reviews

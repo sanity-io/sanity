@@ -1,22 +1,22 @@
-import {ResetIcon} from '@sanity/icons'
+import {ResetIcon} from '@sanity/icons/Reset'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
-import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardTone, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import capitalize from 'lodash-es/capitalize.js'
 import {
   type ChangeEvent,
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   useCallback,
   useId,
   useMemo,
+  type RefAttributes,
 } from 'react'
 
-import {Button} from '../../../ui-components'
-import {ChangeIndicator} from '../../changeIndicators'
-import {useTranslation} from '../../i18n'
-import {PatchEvent, set, unset} from '../patch'
-import {type StringInputProps} from '../types'
+import {Button} from '../../../ui-components/button/Button'
+import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {set, unset} from '../patch/patch'
+import {PatchEvent} from '../patch/PatchEvent'
+import {type StringInputProps} from '../types/inputProps'
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number,
@@ -35,6 +35,7 @@ export function SelectInput(props: StringInputProps) {
   const {
     value,
     readOnly,
+    validation,
     validationError,
     schemaType,
     onChange,
@@ -43,6 +44,9 @@ export function SelectInput(props: StringInputProps) {
     focused,
     elementProps,
   } = props
+
+  const hasErrors = validation?.some((v) => v.level === 'error')
+  const tone: CardTone | undefined = hasErrors ? 'critical' : undefined
   const items = useMemo(
     () => (schemaType.options?.list || []).map(toSelectItem),
     [schemaType.options],
@@ -98,24 +102,27 @@ export function SelectInput(props: StringInputProps) {
       inputId={inputId}
       items={items}
       direction={schemaType.options?.direction || 'vertical'}
-      customValidity={validationError}
       onChange={handleChange}
       readOnly={readOnly}
+      tone={tone}
+      customValidity={validationError}
     />
   ) : (
-    <Select
-      {...elementProps}
-      customValidity={validationError}
-      value={optionValueFromItem(currentItem)}
-      readOnly={readOnly}
-      onChange={handleSelectChange}
-    >
-      {[EMPTY_ITEM, ...items].map((item, i) => (
-        <option key={`${i - 1}`} value={i - 1}>
-          {item.title}
-        </option>
-      ))}
-    </Select>
+    <Card tone={tone} radius={2}>
+      <Select
+        {...elementProps}
+        customValidity={validationError}
+        value={optionValueFromItem(currentItem)}
+        readOnly={readOnly}
+        onChange={handleSelectChange}
+      >
+        {[EMPTY_ITEM, ...items].map((item, i) => (
+          <option key={`${i - 1}`} value={i - 1}>
+            {item.title}
+          </option>
+        ))}
+      </Select>
+    </Card>
   )
   return (
     <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
@@ -124,7 +131,7 @@ export function SelectInput(props: StringInputProps) {
   )
 }
 
-const RadioSelect = forwardRef(function RadioSelect(
+function RadioSelect(
   props: {
     items: TitledListValue<string | number>[]
     value?: TitledListValue<string | number>
@@ -134,11 +141,11 @@ const RadioSelect = forwardRef(function RadioSelect(
     onFocus: (event: FocusEvent<HTMLElement>) => void
     customValidity?: string
     inputId?: string
-  },
-
-  ref: ForwardedRef<HTMLInputElement>,
+    tone?: CardTone
+  } & RefAttributes<HTMLInputElement>,
 ) {
-  const {items, value, onChange, onFocus, readOnly, customValidity, direction, inputId} = props
+  const {ref, items, value, onChange, onFocus, readOnly, customValidity, direction, inputId, tone} =
+    props
   const {t} = useTranslation()
 
   const handleClear = useCallback(() => {
@@ -150,9 +157,9 @@ const RadioSelect = forwardRef(function RadioSelect(
   const showClearButton = !readOnly && value
 
   return (
-    <Card border paddingY={2} paddingX={3} radius={2}>
+    <Card border paddingY={2} paddingX={3} radius={2} tone={tone}>
       <Flex align={isHorizontal ? 'center' : 'flex-end'} gap={3} justify="space-between">
-        <Layout space={3} role="group" paddingY={1}>
+        <Layout gap={3} role="group" paddingY={1}>
           {items.map((item, index) => (
             <RadioSelectItem
               // oxlint-disable-next-line no-array-index-key
@@ -179,9 +186,9 @@ const RadioSelect = forwardRef(function RadioSelect(
       </Flex>
     </Card>
   )
-})
+}
 
-const RadioSelectItem = forwardRef(function RadioSelectItem(
+function RadioSelectItem(
   props: {
     customValidity?: string
     inputId?: string
@@ -190,11 +197,9 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
     onFocus: (event: FocusEvent<HTMLElement>) => void
     readOnly?: boolean
     value?: TitledListValue<string | number>
-  },
-
-  ref: ForwardedRef<HTMLInputElement>,
+  } & RefAttributes<HTMLInputElement>,
 ) {
-  const {customValidity, inputId, item, onChange, onFocus, readOnly, value} = props
+  const {ref, customValidity, inputId, item, onChange, onFocus, readOnly, value} = props
 
   const handleChange = useCallback(() => {
     onChange(item)
@@ -219,4 +224,4 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
       </Box>
     </Flex>
   )
-})
+}

@@ -198,7 +198,6 @@ function isRoot(pathname: string): boolean {
  * @param options - Route node options
  */
 export function _createNode(options: RouteNodeOptions): Router {
-  // eslint-disable-next-line camelcase
   const {path, scope, transform, children, __unsafe_disableScopedSearchParams} = options
 
   if (!path) {
@@ -210,7 +209,6 @@ export function _createNode(options: RouteNodeOptions): Router {
   return {
     _isRoute: true, // todo: make a Router class instead
     scope,
-    // eslint-disable-next-line camelcase
     __unsafe_disableScopedSearchParams,
     route: parsedRoute,
     children: children || [],

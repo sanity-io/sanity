@@ -1,4 +1,3 @@
-/* oxlint-disable no-console */
 import {DocumentId, getPublishedId, getVersionNameFromId, isVersionId} from '@sanity/id-utils'
 
 import {getClient} from '../client'
@@ -63,18 +62,14 @@ Author | Message | Commit
 ------------ | ------------- | -------------
 ${changelogDocument.changelog
   .map((entry) => {
-    return [
-      mention(entry.author),
-      `${stripPr(entry.header, entry.pr)} (#${entry.pr})`,
-      entry.hash,
-    ].join(' | ')
+    const message = entry.pr ? `${stripPr(entry.header, entry.pr)} (#${entry.pr})` : entry.header
+    return [mention(entry.author), message, entry.hash].join(' | ')
   })
   .join('\n')}
   `
   const createGithubReleasePayload = {
     owner: 'sanity-io',
     repo: 'sanity',
-    // eslint-disable-next-line camelcase
     tag_name: `v${options.targetVersion}`,
     name: `v${options.targetVersion}`,
     body: ghReleaseTemplate({
@@ -101,10 +96,9 @@ ${changelogDocument.changelog
 }
 
 function mention(author: StudioChangelogEntry['author']) {
-  if (author?.type !== 'bot') {
-    return `@${author?.username}`
-  }
-  return author.username
+  if (!author?.username) return '—'
+  if (author.type === 'bot') return author.username
+  return `@${author.username}`
 }
 
 function ghReleaseTemplate(vars: {
@@ -132,11 +126,4 @@ To initiate a new Sanity Studio project or learn more about upgrading, please re
 # 📓 Full changelog
 ${vars.changelog}
 `
-}
-
-function conventionalPrefix(entry: StudioChangelogEntry) {
-  if (!entry.type) {
-    return ''
-  }
-  return `${entry.type}${entry.scope ? `(${entry.scope})` : ''}: `
 }

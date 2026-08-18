@@ -1,17 +1,19 @@
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
-import {type FieldMember, type PrimitiveFormNode} from '../../../store'
+import {set, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type FormPatch} from '../../../patch/types'
+import {type FieldMember} from '../../../store/types/members'
+import {type PrimitiveFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {
-  type PrimitiveFieldProps,
-  type PrimitiveInputProps,
-  type RenderFieldCallback,
-  type RenderInputCallback,
-} from '../../../types'
+import {useParseErrorForPath} from '../../../studio/contexts/ParseErrors'
+import {type PrimitiveFieldProps} from '../../../types/fieldProps'
+import {type PrimitiveInputProps} from '../../../types/inputProps'
+import {type RenderFieldCallback, type RenderInputCallback} from '../../../types/renderCallback'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
+import {stripStegaFromPasteEvent} from '../../../utils/stegaPaste'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
@@ -35,6 +37,12 @@ export function PrimitiveField(props: {
   const [localValue, setLocalValue] = useState<string | undefined>()
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
+
+  // Parse error reported by the input for the current path (e.g. a date input
+  // holding malformed text it cannot commit). When present we replace the
+  // schema-driven error markers for this path so the tooltip shows the parse
+  // message instead of misleading "required" noise.
+  const parseError = useParseErrorForPath(member.field.path)
 
   useEffect(() => {
     if (member.field.focused) {
@@ -93,13 +101,17 @@ export function PrimitiveField(props: {
       'id': member.field.id,
       'ref': focusRef,
       'onChange': handleNativeChange,
+      'onPaste': stripStegaFromPasteEvent,
       'value': resolveNativeNumberInputValue(
         member.field.schemaType,
         member.field.value,
         localValue,
       ),
       'readOnly': Boolean(member.field.readOnly),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       'placeholder': member.field.schemaType.placeholder,
+      // Disable native browser autocomplete/autofill on content-editing fields
+      'autoComplete': 'off',
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
       'style': {
         anchorName: pathToAnchorIdent('input', member.field.path),
@@ -118,9 +130,15 @@ export function PrimitiveField(props: {
     ],
   )
 
+  const validation = useMemo(() => {
+    if (!parseError) return member.field.validation
+    const nonErrors = member.field.validation.filter((item) => item.level !== 'error')
+    return [{level: 'error' as const, message: parseError, path: member.field.path}, ...nonErrors]
+  }, [member.field.validation, member.field.path, parseError])
+
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
     const validationError =
-      member.field.validation
+      validation
         .filter((item) => item.level === 'error')
         .map((item) => item.message)
         .join('\n') || undefined
@@ -137,7 +155,7 @@ export function PrimitiveField(props: {
       focused: member.field.focused,
       level: member.field.level,
       onChange: handleChange,
-      validation: member.field.validation,
+      validation,
       presence: member.field.presence,
       validationError,
       elementProps,
@@ -156,7 +174,7 @@ export function PrimitiveField(props: {
     member.field.path,
     member.field.focused,
     member.field.level,
-    member.field.validation,
+    validation,
     member.field.presence,
     handleChange,
     elementProps,
@@ -176,7 +194,7 @@ export function PrimitiveField(props: {
       presence={member.field.presence}
       schemaType={member.field.schemaType as any}
       title={member.field.schemaType.title}
-      validation={member.field.validation}
+      validation={validation}
       value={member.field.value as any}
       render={renderField}
     >
