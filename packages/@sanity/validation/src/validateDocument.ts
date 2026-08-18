@@ -41,13 +41,6 @@ const DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY = 5
 
 const DEFAULT_VALIDATION_CLIENT_OPTIONS = {apiVersion: '2025-02-19'} as const
 
-let _limitConcurrency: ReturnType<typeof createClientConcurrencyLimiter> | undefined
-const getConcurrencyLimiter = (maxConcurrency: number) => {
-  if (_limitConcurrency) return _limitConcurrency
-  _limitConcurrency = createClientConcurrencyLimiter(maxConcurrency)
-  return _limitConcurrency
-}
-
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
   typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
 
@@ -144,11 +137,12 @@ export interface ValidateDocumentOptions {
   maxCustomValidationConcurrency?: number
 
   /**
-   * The amount of allowed inflight fetch requests at once. You may need to up
-   * this value if you have complex custom validations that require many
+   * The amount of allowed inflight fetch requests at once for this validation.
+   * You may need to up this value if you have complex custom validations that require many
    * `client.fetch` requests at once. It's possible for custom validator to
    * stall if there are not enough concurrent fetch requests available to
-   * fullfil the custom validation. This is 25 by default.
+   * fulfill the custom validation. Must be a positive integer. This is 25 by
+   * default.
    */
   maxFetchConcurrency?: number
 
@@ -207,7 +201,7 @@ export function validateDocumentInternal({
   maxFetchConcurrency,
   currentUser,
 }: ValidateDocumentInternalOptions): Promise<ValidationMarker[]> {
-  const limitConcurrency = getConcurrencyLimiter(
+  const limitConcurrency = createClientConcurrencyLimiter(
     maxFetchConcurrency ?? DEFAULT_MAX_FETCH_CONCURRENCY,
   )
   const getConcurrencyLimitedClient = (clientOptions: {apiVersion: string}) =>
@@ -261,7 +255,7 @@ export function validateDocumentObservable({
   currentUser,
 }: ValidateDocumentObservableOptions): Observable<ValidationMarker[]> {
   if (typeof document?._type !== 'string') {
-    throw new Error(`Tried to validated a value without a '_type'`)
+    throw new Error(`Tried to validate a value without a '_type'`)
   }
 
   const documentType = schema.get(document._type)

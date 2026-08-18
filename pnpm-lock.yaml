@@ -1610,7 +1610,7 @@ importers:
     dependencies:
       '@sanity/client':
         specifier: 'catalog:'
-        version: 7.26.2
+        version: 8.1.0(vitest@4.1.10)
       '@sanity/id-utils':
         specifier: ^1.0.0
         version: 1.0.0
@@ -1656,7 +1656,7 @@ importers:
         version: 7.0.2
       vite:
         specifier: 'catalog:'
-        version: 8.2.1(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+        version: 8.2.1(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.10
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.10)(jsdom@29.1.1)(vite@8.2.1)
@@ -1972,6 +1972,9 @@ importers:
       '@sanity/uuid':
         specifier: ^3.0.3
         version: 3.0.3
+      '@sanity/validation':
+        specifier: workspace:*
+        version: link:../@sanity/validation
       '@sanity/workbench':
         specifier: 0.1.0-alpha.42
         version: 0.1.0-alpha.42(@sanity/sdk@2.20.1)(react@19.2.8)(xstate@5.32.5)

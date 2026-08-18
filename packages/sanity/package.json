@@ -179,6 +179,7 @@
     "@sanity/preview-url-secret": "^4.1.5",
     "@sanity/prism-groq": "^1.1.2",
     "@sanity/schema": "workspace:*",
+    "@sanity/validation": "workspace:*",
     "@sanity/sdk-react": "^2.20.1",
     "@sanity/telemetry": "catalog:",
     "@sanity/types": "workspace:*",
