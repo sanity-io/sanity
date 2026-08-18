@@ -33,5 +33,3 @@ export function ClockSmallIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SV
     </svg>
   )
 }
-
-export {ClockSmallIcon as default}

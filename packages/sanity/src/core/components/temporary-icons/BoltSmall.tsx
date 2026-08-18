@@ -27,5 +27,3 @@ export function BoltSmallIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVG
     </svg>
   )
 }
-
-export {BoltSmallIcon as default}

@@ -22,5 +22,3 @@ export function CircleXsIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGS
     </svg>
   )
 }
-
-export {CircleXsIcon as default}

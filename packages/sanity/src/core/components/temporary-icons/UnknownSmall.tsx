@@ -39,5 +39,3 @@ export function UnknownSmallIcon(props: SVGProps<SVGSVGElement> & RefAttributes<
     </svg>
   )
 }
-
-export {UnknownSmallIcon as default}

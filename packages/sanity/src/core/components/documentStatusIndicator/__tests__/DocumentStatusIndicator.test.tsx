@@ -73,9 +73,9 @@ function mockPerspective(...overrides: Partial<PerspectiveContextValue>[]) {
   mockUsePerspective.mockReturnValue(Object.assign({...usePerspectiveMockReturn}, ...overrides))
 }
 
-// The rhombus has no test id of its own, so it is matched on its icon name instead.
+// Temporary icons expose stable `data-sanity-icon` names; release avatars use test ids.
 const INDICATOR_SELECTOR =
-  '[data-testid^="document-status-dot-"], [data-testid^="release-avatar-"], [data-sanity-icon="variant-status"]'
+  '[data-sanity-icon="rhombus"], [data-sanity-icon="ring"], [data-sanity-icon="circle-small"], [data-testid^="release-avatar-"]'
 
 function wrapper({children}: {children: ReactNode}) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -94,16 +94,15 @@ function renderIndicator(documentVersions: VersionInfoDocumentStub[]): string[] 
   )
 }
 
-const GREEN_DISC = 'document-status-dot-published'
-const YELLOW_RING = 'document-status-dot-draft'
-const RHOMBUS = 'variant-status'
+const GREEN_DISC = 'circle-small'
+const YELLOW_RING = 'ring'
+const RHOMBUS = 'rhombus'
 // `activeASAPRelease` is an asap release, and asap maps to the caution tone.
 const RELEASE_ICON = 'release-avatar-caution'
 // Agent bundles have no release document, so they fall back to the suggest-toned dot.
 const AGENT_ICON = 'release-avatar-suggest'
 
-// The cases below follow the decision chart in ../README.md: the perspective first, then whether a
-// variant is selected, then the outcomes.
+// Cases follow resolveDocumentStatusIcons.ts: perspective first, then variant selection.
 describe('DocumentStatusIndicator', () => {
   beforeEach(() => {
     mockPerspective()

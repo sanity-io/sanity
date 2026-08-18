@@ -22,5 +22,3 @@ export function RingIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGEl
     </svg>
   )
 }
-
-export {RingIcon as default}

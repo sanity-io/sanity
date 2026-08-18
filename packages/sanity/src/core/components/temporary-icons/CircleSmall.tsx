@@ -22,5 +22,3 @@ export function CircleSmallIcon(props: SVGProps<SVGSVGElement> & RefAttributes<S
     </svg>
   )
 }
-
-export {CircleSmallIcon as default}
