@@ -1,5 +1,6 @@
-import {BoundaryElementProvider, Box, type ResponsiveWidthProps} from '@sanity/ui'
+import {BoundaryElementProvider, type ResponsiveWidthProps} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useRef, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {PopoverDialog} from '../../components/popoverDialog/PopoverDialog'

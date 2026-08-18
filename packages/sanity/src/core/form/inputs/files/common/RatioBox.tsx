@@ -1,5 +1,5 @@
-import {Box} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 export const RatioBox = styled(Box)<{ratio?: number}>`
   position: relative;

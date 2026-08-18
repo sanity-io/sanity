@@ -1,6 +1,13 @@
 import {describe, expect, it} from 'vitest'
 
-import {cleanupCssOutputPlugin} from '../package.bundle'
+import {cleanupCssOutputPlugin, createDefaultConfig} from '../package.bundle'
+
+describe('createDefaultConfig()', () => {
+  it('injects the provided version as the __PKG_VERSION__ define', () => {
+    const config = createDefaultConfig({version: '9.9.9-test.1'})
+    expect(config.define?.['__PKG_VERSION__']).toBe('"9.9.9-test.1"')
+  })
+})
 
 function runPlugin(bundle: Record<string, any>) {
   const plugin = cleanupCssOutputPlugin()

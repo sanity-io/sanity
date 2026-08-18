@@ -4,9 +4,10 @@ import {InsertAboveIcon} from '@sanity/icons/InsertAbove'
 import {InsertBelowIcon} from '@sanity/icons/InsertBelow'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type SchemaType} from '@sanity/types'
-import {Box, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useCallback, useMemo, type RefAttributes} from 'react'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -206,7 +207,7 @@ export function ItemRow(props: DefaultItemProps & RefAttributes<HTMLDivElement>)
     >
       <Flex align={schemaType ? 'flex-end' : 'center'} ref={ref}>
         <Flex align="flex-end" flex={1}>
-          <Box flex={1} marginRight={2}>
+          <Box flexBasis="0%" flexGrow={1} marginRight={2}>
             {children}
           </Box>
         </Flex>
