@@ -1732,6 +1732,15 @@ export {
 export {Rule as ConcreteRuleClass} from '../core/validation/Rule'
 export {type ValidationContext} from '../core/validation/types'
 export {validateDocument, type ValidateDocumentOptions} from '../core/validation/validateDocument'
+export {
+  collateVariantChangedFields,
+  selectVariantBaseDocument,
+} from '../core/variants/collateVariantChangedFields'
+export {
+  useVariantDiff,
+  useVariantReviewChanges,
+  VariantDiffProvider,
+} from '../core/variants/components/VariantDiffProvider'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'

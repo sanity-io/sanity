@@ -4,6 +4,12 @@
  * @internal
  */
 const variantsLocaleStrings = {
+  /**
+   * Tooltip and accessible label for the mark in a field's gutter saying the field differs from the
+   * Default audience. Deliberately static rather than summarising the difference: it teaches what
+   * the mark means, and activating it opens the review-changes inspector for the detail.
+   */
+  'field-indicator.modified': 'Different from the default. Select to review changes.',
   /** Label for the variants navigation row. */
   'navbar.view-as': 'View as',
   /** Label for the version selector in the variants navigation row. */

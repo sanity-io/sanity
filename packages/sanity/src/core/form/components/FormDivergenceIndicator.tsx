@@ -11,6 +11,24 @@ interface Props {
   path: Path
 }
 
+/**
+ * Whether this path currently renders a divergence mark. Lets the gutter decide between competing
+ * marks without duplicating the condition below.
+ *
+ * @internal
+ */
+export function useHasVisibleDivergence(path: Path): boolean {
+  const divergenceNavigator = useDocumentDivergences()
+
+  if (!divergenceNavigator.enabled) {
+    return false
+  }
+
+  const divergence = selectDivergence(divergenceNavigator.state, path)
+
+  return Boolean(divergence && divergence.divergences[0][1].status === 'unresolved')
+}
+
 export const FormDivergenceIndicator: ComponentType<Props> = (props) => {
   const divergenceNavigator = useDocumentDivergences()
 

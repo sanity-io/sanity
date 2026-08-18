@@ -177,6 +177,10 @@ export {
   type UnclaimedProjectContextValue,
 } from '../_singletons/context/UnclaimedProjectContext'
 export {ValidationContext} from '../_singletons/context/ValidationContext'
+export {
+  VariantDiffContext,
+  type VariantDiffContextValue,
+} from '../_singletons/context/VariantDiffContext'
 export {VirtualizerScrollInstanceContext} from '../_singletons/context/VirtualizerScrollInstanceContext'
 export {VisibleWorkspacesContext} from '../_singletons/context/VisibleWorkspacesContext'
 export {WorkspaceContext} from '../_singletons/context/WorkspaceContext'
