@@ -299,7 +299,7 @@
     "node": ">=22.12"
   },
   "inlinedDependencies": {
-    "@sanity/visual-editing-csm": "3.0.14",
+    "@sanity/visual-editing-csm": "3.0.15",
     "rxjs-etc": "10.6.2",
     "valibot": "1.4.2"
   }
