@@ -103,6 +103,7 @@ catalogs:
 
 overrides:
   vitest: ^4.1.10
+  tsdown>rolldown: ~1.2.4
 
 importers:
 
@@ -26239,12 +26240,12 @@ snapshots:
 
   robust-predicates@3.0.3: {}
 
-  rolldown-plugin-dts@0.27.14(oxc-resolver@11.24.2)(rolldown@1.2.3)(typescript@7.0.2):
+  rolldown-plugin-dts@0.27.14(oxc-resolver@11.24.2)(rolldown@1.2.4)(typescript@7.0.2):
     dependencies:
       dts-resolver: 3.0.0(oxc-resolver@11.24.2)
       get-tsconfig: 5.0.0-beta.5
       obug: 2.1.4
-      rolldown: 1.2.3
+      rolldown: 1.2.4
       yuku-ast: 0.8.4
       yuku-codegen: 0.8.4
       yuku-parser: 0.8.4
@@ -27191,8 +27192,8 @@ snapshots:
       import-without-cache: 0.4.0
       obug: 2.1.4
       picomatch: 4.0.5
-      rolldown: 1.2.3
-      rolldown-plugin-dts: 0.27.14(oxc-resolver@11.24.2)(rolldown@1.2.3)(typescript@7.0.2)
+      rolldown: 1.2.4
+      rolldown-plugin-dts: 0.27.14(oxc-resolver@11.24.2)(rolldown@1.2.4)(typescript@7.0.2)
       tinyexec: 1.3.0
       tinyglobby: 0.2.17
       tree-kill: 1.2.2

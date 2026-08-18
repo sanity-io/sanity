@@ -200,7 +200,7 @@ The `sanity` package tsdown build can emit a Rolldown [bundle analyzer](https://
 pnpm analyze:sanity
 ```
 
-The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with `lib/`). The flag is opt-in because analysis adds work to the package build; it is declared in `packages/sanity/turbo.json` so turbo-cached builds are invalidated when it changes. Wiring is `@sanity/tsdown-config`'s `bundleAnalyzer` option (`true` selects markdown).
+The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with `lib/`). The flag is opt-in because analysis adds work to the package build; it is declared in `packages/sanity/turbo.json` so turbo-cached builds are invalidated when it changes. Wiring is `@sanity/tsdown-config`'s `bundleAnalyzer` option (`true` selects markdown). `pnpm-workspace.yaml` pins `tsdown>rolldown` to the same rolldown that `@sanity/tsdown-config` uses, so the analyzer BuiltinPlugin actually runs.
 
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
