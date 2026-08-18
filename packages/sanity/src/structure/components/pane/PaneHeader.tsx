@@ -81,7 +81,7 @@ export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement
               sizing="border"
               style={layoutStyle}
             >
-              <Flex align="flex-start" gap={3}>
+              <Flex align="center" gap={3}>
                 {backButton && (
                   <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                     {backButton}
