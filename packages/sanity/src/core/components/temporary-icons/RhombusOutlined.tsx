@@ -2,9 +2,6 @@
 
 import {type RefAttributes, type SVGProps} from 'react'
 
-/**
- * @public
- */
 export function RhombusOutlinedIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
   const {ref, ...rest} = props
   return (
