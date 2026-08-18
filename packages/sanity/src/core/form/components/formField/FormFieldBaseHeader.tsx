@@ -1,6 +1,7 @@
-import {Box, Card, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -248,7 +249,8 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
     >
       <ContentBox
         data-ui="fieldHeaderContentBox"
-        flex={1}
+        flexBasis="0%"
+        flexGrow={1}
         paddingY={2}
         $presenceMaxWidth={calcAvatarStackWidth(MAX_AVATARS)}
       >
@@ -256,7 +258,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
       </ContentBox>
 
       {presence && presence.length > 0 && (
-        <Box data-ui="PresenceBox" flex="none">
+        <Box data-ui="PresenceBox" flexBasis="auto" flexGrow={0} flexShrink={0}>
           <FieldPresence maxAvatars={MAX_AVATARS} presence={presence} />
         </Box>
       )}

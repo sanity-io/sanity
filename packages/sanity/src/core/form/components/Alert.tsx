@@ -1,8 +1,9 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {type ComponentProps, type ReactNode} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 interface AlertProps extends Omit<ComponentProps<typeof Card>, 'title'> {
   title: ReactNode
@@ -38,7 +39,7 @@ export function Alert(props: AlertProps) {
           </Text>
         </Box>
 
-        <Box flex={1} marginLeft={3}>
+        <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
           <Text size={1} weight="medium">
             {title}
           </Text>

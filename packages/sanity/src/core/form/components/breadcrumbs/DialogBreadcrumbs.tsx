@@ -1,10 +1,11 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, isObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 // oxlint-disable-next-line no-restricted-imports
-import {Badge, Box, Button, Flex, Inline, Text, useElementSize} from '@sanity/ui'
+import {Badge, Button, Flex, Inline, Text, useElementSize} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports
 import {Menu, MenuItem} from '@sanity/ui/menu'
 import {type PropsWithChildren, useCallback, useMemo, useState, type RefAttributes} from 'react'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
@@ -108,7 +109,7 @@ function BreadcrumbButton({
     >
       <Flex align="center" style={{minWidth: 0}}>
         {siblingInfo && (
-          <Box flex="none">
+          <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
             <Badge>#{siblingInfo.index}</Badge>
           </Box>
         )}
