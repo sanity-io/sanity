@@ -367,6 +367,17 @@ export function formatValue(value: number, unit: TrendUnit): string {
   if (unit === 'mb-per-min') return `${value >= 0 ? '+' : ''}${value.toFixed(2)} MB/min`
   if (unit === 'count-per-min') return `${value >= 0 ? '+' : ''}${value.toFixed(2)}/min`
   if (unit === 'ms-per-min') return `${value >= 0 ? '+' : ''}${value.toFixed(2)} ms/min`
+  // Seconds past 10s. Load metrics run to tens of thousands of ms, and a
+  // "60000ms" tick does not fit the 44px axis gutter — it silently renders as
+  // "0000ms", which reads as wrong data rather than as a clipped label. Below 10s
+  // stay in exact ms: keystroke latency lives at 30–200ms, where "0.09s" would
+  // throw away the precision the whole suite exists to measure.
+  if (Math.abs(value) >= 10_000) {
+    const seconds = value / 1000
+    // One decimal under 100s keeps 27.0s distinguishable from 27.9s; past that
+    // the extra digit is noise and costs width again
+    return `${Math.abs(seconds) < 100 ? seconds.toFixed(1) : seconds.toFixed(0)}s`
+  }
   return `${value.toFixed(0)}ms`
 }
 
@@ -404,6 +415,64 @@ function pointMeta(
     ciRunId: run.runner?.runId,
     ciRunAttempt: run.runner?.runAttempt,
   }
+}
+
+function medianOf(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid]
+}
+
+/**
+ * One point per commit: several runs of the same sha are merged into their
+ * median.
+ *
+ * CI re-runs the suite on a commit fairly often (4 shas in the stored history
+ * have 2–3 runs each), and a run document can also contribute more than one
+ * point to a series — the pageload scenario stores the INP metric twice. Left
+ * unmerged, both cases put several dots on one x-position, weight that commit
+ * several times in every median, and make a "7 runs" window cover fewer than 7
+ * commits' worth of history.
+ *
+ * Median rather than mean, matching the p50/median language used throughout the
+ * dashboard: a single throttled or failed re-run can't drag the point.
+ *
+ * The merged point keeps the *last* run's identity (runId, CI run, PR) so the
+ * click-through opens a real document, and takes the median of `value`/`p75`/
+ * `p90` independently. Note the honesty cost: re-runs of one commit often land
+ * on hosts of different speed (sha 7147d045's two runs differ by 21% of
+ * calibration), so a merged point averages across hosts. The calibration strip
+ * is where that stays visible — and it is deliberately NOT merged, since its
+ * whole job is showing per-run and cross-shard host spread.
+ */
+function mergeRunsPerCommit(points: TrendPoint[]): TrendPoint[] {
+  const byCommit = new Map<string, TrendPoint[]>()
+  for (const point of points) {
+    // An unknown sha can't be de-duplicated by commit — key those by run so
+    // they stay distinct rather than collapsing into one blob
+    const key = point.sha === 'unknown' ? `run:${point.runId}` : point.sha
+    const group = byCommit.get(key)
+    if (group) group.push(point)
+    else byCommit.set(key, [point])
+  }
+
+  const merged: TrendPoint[] = []
+  for (const group of byCommit.values()) {
+    const last = group[group.length - 1]
+    if (group.length === 1) {
+      merged.push(last)
+      continue
+    }
+    const p75s = group.map((point) => point.p75).filter((v): v is number => v !== undefined)
+    const p90s = group.map((point) => point.p90).filter((v): v is number => v !== undefined)
+    merged.push({
+      ...last,
+      value: medianOf(group.map((point) => point.value)),
+      p75: p75s.length > 0 ? medianOf(p75s) : undefined,
+      p90: p90s.length > 0 ? medianOf(p90s) : undefined,
+    })
+  }
+  return merged.sort((a, b) => a.date.getTime() - b.date.getTime())
 }
 
 export function buildSeries(runs: TrendRun[]): TrendSeries[] {
@@ -458,7 +527,12 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
       )
     }
   }
-  return [...series.values()]
+  // Merge after collection: one point per commit per line (calibrationSeries is
+  // deliberately left unmerged — see mergeRunsPerCommit)
+  return [...series.values()].map((entry) => ({
+    ...entry,
+    lines: entry.lines.map((line) => ({...line, points: mergeRunsPerCommit(line.points)})),
+  }))
 }
 
 /** The honesty overlay: host-speed score per run (higher = slower host). */
