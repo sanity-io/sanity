@@ -82,12 +82,19 @@ export const getVisionRegions = async (page: Page) => {
 
 export async function fetchPublishedVariantOverlay(
   sanityClient: SanityClient,
-  options: {publishedId: string; variantId: string},
+  options: {publishedId: string; variantId: string; title: string},
 ): Promise<Array<{_id: string; title?: string}>> {
-  return getVariantsClient(sanityClient)
+  // Variant overlay remaps `_id` to the published id in the result, but GROQ
+  // filters on `_id` do not reliably match those remapped documents. Filter by
+  // a unique content field instead, then assert the remapped `_id` in the result.
+  const result = await getVariantsClient(sanityClient)
     .withConfig({
-      perspective: ['published'],
+      perspective: 'published',
       variant: options.variantId,
     })
-    .fetch('*[_id == $id]{_id, title}', {id: options.publishedId})
+    .fetch<Array<{_id: string; title?: string}>>('*[title == $title]{_id, title}', {
+      title: options.title,
+    })
+
+  return result.filter((doc) => doc._id === options.publishedId)
 }

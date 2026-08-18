@@ -21,9 +21,11 @@ import {
   runVisionQuery,
 } from './utils'
 
-// Variant overlay remaps `_id` to the published id, but a `_type == "book"`
-// filter does not match those overlaid documents. Query by `_id` only.
+// Release overlay can be addressed by published `_id`. Variant overlay remaps
+// `_id` in the result, but GROQ `_id` / `_type` filters do not reliably match
+// those documents — query variant overlays by a unique content field instead.
 const OVERLAY_QUERY = '*[_id == $id]{_id, title}'
+const VARIANT_OVERLAY_QUERY = '*[title == $title]{_id, title}'
 // Stacked perspectives (release id + drafts) are rejected on the e2e studio's
 // Vision default (`v2022-08-08`). `v2025-02-19` is a built-in Vision option.
 const STACKED_PERSPECTIVE_API_VERSION = 'v2025-02-19'
@@ -249,8 +251,8 @@ test.describe('Vision', () => {
   }) => {
     const variantId = `vis${getRandomReleaseId()}`
     const bookId = _testContext.getUniqueDocumentId()
-    const publishedTitle = 'Published title'
-    const variantTitle = 'Variant title'
+    const publishedTitle = `Published ${bookId}`
+    const variantTitle = `Variant ${bookId}`
 
     await sanityClient.create({
       _id: bookId,
@@ -274,6 +276,7 @@ test.describe('Vision', () => {
           const result = await fetchPublishedVariantOverlay(sanityClient, {
             publishedId: bookId,
             variantId,
+            title: variantTitle,
           })
           return result[0]?.title
         })
@@ -286,7 +289,7 @@ test.describe('Vision', () => {
       await expect(apiVersionSelector).toHaveValue('vX')
       await expect(apiVersionSelector).toBeDisabled()
 
-      const resultRegion = await runVisionQuery(page, OVERLAY_QUERY, {id: bookId})
+      const resultRegion = await runVisionQuery(page, VARIANT_OVERLAY_QUERY, {title: variantTitle})
       const fetchButton = page.locator('button').filter({hasText: 'Fetch'})
       await expect
         .poll(
@@ -315,9 +318,15 @@ test.describe('Vision', () => {
       await page.getByTestId('perspective-selector').selectOption('raw')
       await expect(apiVersionSelector).toBeEnabled()
       await expect(apiVersionSelector).toHaveValue('vX')
-      await expect(resultRegion.getByText(publishedTitle)).toBeVisible({timeout: 30_000})
       await expect(queryUrl).toHaveValue(/\/vX\//)
       await expect(queryUrl).not.toHaveValue(/[?&]variant=/)
+
+      // Raw does not attach the navbar variant, so the overlay title query no
+      // longer matches. Query the published id to prove the base document is
+      // what Vision fetches without a variant.
+      const rawResultRegion = await runVisionQuery(page, OVERLAY_QUERY, {id: bookId})
+      await expect(rawResultRegion.getByText(publishedTitle)).toBeVisible({timeout: 30_000})
+      await expect(rawResultRegion.getByText(variantTitle)).toHaveCount(0)
     } finally {
       await deleteVariantDefinition(sanityClient, variantId, {publishedId: bookId})
     }
