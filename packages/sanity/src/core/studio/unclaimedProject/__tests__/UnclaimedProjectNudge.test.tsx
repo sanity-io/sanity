@@ -1,8 +1,8 @@
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
-import {act, render, screen} from '@testing-library/react'
+import {act, render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type ReactNode} from 'react'
+import {type ReactNode, useState} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {writeUnclaimedProjectSnoozedAt} from '../../../store/authStore/unclaimedProjectStorage'
@@ -11,6 +11,7 @@ import {
   UnclaimedProjectCountdown,
   UnclaimedProjectNudge,
 } from '../UnclaimedProjectNudge'
+import {UnclaimedProjectProvider} from '../UnclaimedProjectProvider'
 
 const {
   mockClearUnclaimedProjectRecord,
@@ -69,21 +70,17 @@ const COPY = {
     claimButtonText: 'Claim project',
     snoozeButtonText: 'Remind me later',
   },
-  claimed: {
-    text: 'This project is yours.',
-    identityText: 'Log in as {{identity}}.',
-    signInButtonText: 'Log in',
-  },
   noClaimUrl: {text: 'Open the original claim link.'},
 }
 
 const wrapper = ({children}: {children: ReactNode}) => (
-  <ThemeProvider theme={theme}>{children}</ThemeProvider>
+  <ThemeProvider theme={theme}>
+    <UnclaimedProjectProvider>{children}</UnclaimedProjectProvider>
+  </ThemeProvider>
 )
 
 function renderNudge(
   state:
-    | {status: 'claimed'; email?: string}
     | {status: 'expired'}
     | {
         status: 'unclaimed'
@@ -111,6 +108,13 @@ function latestToast(): Record<string, unknown> {
 describe('UnclaimedProjectNudge', () => {
   beforeEach(() => {
     localStorage.clear()
+    mockEnvironment.isDev = true
+    mockUseWorkspace.mockReturnValue({
+      auth: {logout: mockLogout},
+      currentUser: {provider: 'sanity-token'},
+      projectId: PROJECT_ID,
+    })
+    mockUseUnclaimedProject.mockReturnValue(undefined)
   })
 
   afterEach(() => {
@@ -283,24 +287,6 @@ describe('UnclaimedProjectNudge', () => {
     expect(latestToast()).toMatchObject({enabled: true})
   })
 
-  it('renders the claimant identity when the project has been claimed', () => {
-    renderNudge({status: 'claimed', email: 'claimant@example.com'})
-
-    const banner = screen.getByTestId('unclaimed-project-banner')
-    expect(banner).toHaveTextContent('This project is yours.')
-    expect(banner).toHaveAttribute('data-tone', 'positive')
-    expect(screen.getAllByText('claimant@example.com')).toHaveLength(2)
-    expect(latestToast()).toMatchObject({enabled: false})
-  })
-
-  it('renders a generic claimed identity when the claimant cannot be resolved', () => {
-    renderNudge({status: 'claimed'})
-
-    expect(screen.getByTestId('unclaimed-project-banner')).toHaveTextContent(
-      'Log in as the account tied to this project.',
-    )
-  })
-
   it('renders no stale banner for an expired project', () => {
     renderNudge({status: 'expired'})
 
@@ -323,13 +309,80 @@ describe('UnclaimedProjectNudge', () => {
     expect(latestToast()).toMatchObject({enabled: false})
   })
 
-  it('clears claim provenance before leaving the post-claim robot session', async () => {
-    renderNudge({status: 'claimed', email: 'claimant@example.com'})
-    const [signInButton] = screen.getAllByRole('button', {name: 'Log in'})
-    await userEvent.click(signInButton)
+  it('hides the complete nudge after the local project expiry', () => {
+    renderNudge({
+      status: 'unclaimed',
+      claimUrl: 'https://www.sanity.io/manage/claim/claim-token',
+      expiresAt: new Date(Date.now() - 1),
+      claimLinkSpent: false,
+    })
 
-    expect(mockClearUnclaimedProjectRecord).toHaveBeenCalledExactlyOnceWith(PROJECT_ID)
-    expect(mockLogout).toHaveBeenCalledOnce()
+    expect(screen.queryByTestId('unclaimed-project-banner')).not.toBeInTheDocument()
+    expect(latestToast()).toMatchObject({enabled: false})
+  })
+
+  it('hides the complete nudge when the project expiry is corrected to a past time', async () => {
+    const initialExpiry = new Date(Date.now() + 60_000)
+    const correctedExpiry = new Date(Date.now() - 1)
+    let applyCorrectedExpiry: (() => void) | undefined
+
+    mockUseWorkspace.mockReturnValue({
+      auth: {logout: mockLogout},
+      currentUser: {provider: 'sanity-token'},
+      projectId: PROJECT_ID,
+    })
+    mockUseUnclaimedProject.mockImplementation(() => {
+      const [expiresAt, setExpiresAt] = useState(initialExpiry)
+      applyCorrectedExpiry = () => setExpiresAt(correctedExpiry)
+      return {
+        status: 'unclaimed' as const,
+        claimUrl: 'https://www.sanity.io/manage/claim/claim-token',
+        expiresAt,
+        claimLinkSpent: false,
+      }
+    })
+    mockUseUnclaimedProjectCopy.mockReturnValue(COPY)
+
+    render(<UnclaimedProjectNudge />, {wrapper})
+
+    expect(screen.getByRole('link', {name: 'Claim project'})).toBeInTheDocument()
+    expect(latestToast()).toMatchObject({enabled: true})
+
+    await act(async () => {
+      applyCorrectedExpiry?.()
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('unclaimed-project-banner')).not.toBeInTheDocument()
+      expect(latestToast()).toMatchObject({enabled: false})
+    })
+  })
+
+  it('refreshes claimability on focus when the expiry timer was delayed', async () => {
+    vi.useFakeTimers()
+    const initialTime = new Date('2026-08-12T12:00:00.000Z')
+
+    try {
+      vi.setSystemTime(initialTime)
+      renderNudge({
+        status: 'unclaimed',
+        claimUrl: 'https://www.sanity.io/manage/claim/claim-token',
+        expiresAt: new Date(initialTime.getTime() + 60_000),
+        claimLinkSpent: false,
+      })
+
+      expect(screen.getByRole('link', {name: 'Claim project'})).toBeInTheDocument()
+
+      await act(async () => {
+        vi.setSystemTime(new Date(initialTime.getTime() + 61_000))
+        window.dispatchEvent(new Event('focus'))
+      })
+
+      expect(screen.queryByTestId('unclaimed-project-banner')).not.toBeInTheDocument()
+      expect(latestToast()).toMatchObject({enabled: false})
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
 

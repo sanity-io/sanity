@@ -4,7 +4,6 @@ import {catchError, defer, map, of} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {interpolateTemplate} from '../../util/interpolateTemplate'
 
 const UNCLAIMED_PROJECT_COPY_API_VERSION = '2026-07-28'
 const UNCLAIMED_PROJECT_COPY_URI = '/journey/unclaimed-project'
@@ -26,36 +25,8 @@ export interface UnclaimedProjectCopy {
     claimButtonText: string
     snoozeButtonText: string
   }
-  claimed: {
-    text: string
-    identityText: string
-    signInButtonText: string
-  }
   noClaimUrl: {
     text: string
-  }
-}
-
-/** Resolves the managed identity instruction without exposing email through Journey. */
-export function getClaimedIdentityText(text: string, email?: string): string {
-  return interpolateTemplate(text, {identity: email ?? 'the account tied to this project'})
-}
-
-/** Identifies the managed placeholder so a known claimant can be emphasized safely. */
-export function getClaimedIdentityTextParts(
-  text: string,
-  email?: string,
-): {before: string; identity: string; after: string} | undefined {
-  if (!email) return undefined
-
-  const marker = '{{identity}}'
-  const markerIndex = text.indexOf(marker)
-  if (markerIndex === -1) return undefined
-
-  return {
-    before: text.slice(0, markerIndex),
-    identity: email,
-    after: text.slice(markerIndex + marker.length),
   }
 }
 
@@ -86,7 +57,6 @@ export function parseUnclaimedProjectCopy(value: unknown): UnclaimedProjectCopy 
       'claimButtonText',
       'snoozeButtonText',
     ]) ||
-    !hasStringProperties(value.claimed, ['text', 'identityText', 'signInButtonText']) ||
     !hasStringProperties(value.noClaimUrl, ['text'])
   ) {
     return undefined
@@ -106,11 +76,6 @@ export function parseUnclaimedProjectCopy(value: unknown): UnclaimedProjectCopy 
       description: value.toast.description,
       claimButtonText: value.toast.claimButtonText,
       snoozeButtonText: value.toast.snoozeButtonText,
-    },
-    claimed: {
-      text: value.claimed.text,
-      identityText: value.claimed.identityText,
-      signInButtonText: value.claimed.signInButtonText,
     },
     noClaimUrl: {
       text: value.noClaimUrl.text,
@@ -159,7 +124,7 @@ export function useUnclaimedProjectCopy(enabled: boolean): UnclaimedProjectCopy 
           return response.json()
         })
       : client.observable.request<unknown>({
-          uri: UNCLAIMED_PROJECT_COPY_URI,
+          url: UNCLAIMED_PROJECT_COPY_URI,
           tag: 'unclaimed-project-copy',
         })
 

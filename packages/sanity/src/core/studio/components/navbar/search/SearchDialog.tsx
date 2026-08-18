@@ -1,8 +1,9 @@
 import {type StackablePerspective} from '@sanity/client'
-import {Box, Card, Portal} from '@sanity/ui'
+import {Card, Portal} from '@sanity/ui'
 import {useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {supportsTouch} from '../../../../util/supportsTouch'
 import {useColorSchemeValue} from '../../../colorScheme'

@@ -2,6 +2,13 @@ import {describe, expect, test} from 'vitest'
 
 import {getRouteContext} from '../useMainDocument'
 
+// Route matching is backed by URLPattern, which needs the polyfill in runtimes without a native
+// implementation (Node < 24, jsdom). `useMainDocument` lazy loads it before matching; these tests
+// call `getRouteContext` directly, so load it up front.
+if (typeof URLPattern === 'undefined') {
+  await import('urlpattern-polyfill')
+}
+
 describe('getRouteContext', () => {
   test('handles path parameters', () => {
     const path = '/type-slug/page-slug'
@@ -34,6 +41,11 @@ describe('getRouteContext', () => {
     })
   })
 
+  test('matches an absolute route only when the origins agree', () => {
+    const url = new URL('/path', 'https://other.example')
+    expect(getRouteContext('https://www.sanity.io/:slug', url)).toBeUndefined()
+  })
+
   test('handles arrays', () => {
     const origin = 'https://www.sanity.co.uk'
     const path = '/page'
@@ -61,9 +73,40 @@ describe('getRouteContext', () => {
     })
   })
 
+  test('handles the custom regexp wildcard pattern reported in SAPP-4118', () => {
+    // Compiled under path-to-regexp v6, threw under v8, works again under URLPattern
+    const route = '/:prefix(.*)/course/:slug'
+
+    expect(getRouteContext(route, new URL('/no/course/intro', location.origin))).toEqual({
+      origin: location.origin,
+      path: '/no/course/intro',
+      params: {prefix: 'no', slug: 'intro'},
+    })
+    expect(getRouteContext(route, new URL('/course/intro', location.origin))).toBeUndefined()
+  })
+
+  test('tries each route in order and returns the first that matches', () => {
+    // The workaround config studios migrated to for path-to-regexp v8 keeps working
+    const routes = ['/course/:slug', '/*prefix/course/:slug']
+
+    expect(getRouteContext(routes, new URL('/course/intro', location.origin))).toEqual({
+      origin: location.origin,
+      path: '/course/intro',
+      params: {slug: 'intro'},
+    })
+    expect(getRouteContext(routes, new URL('/no/course/intro', location.origin))).toEqual({
+      origin: location.origin,
+      path: '/no/course/intro',
+      params: {prefix: ['no'], slug: 'intro'},
+    })
+  })
+
   test('throws if an incorrect path is provided', () => {
-    const path = '/foo'
+    const path = '/a/b'
     const url = new URL(path, location.origin)
-    expect(() => getRouteContext('/*', url)).toThrow('"/*" is not a valid route pattern')
+    // URLPattern rejects duplicate group names
+    expect(() => getRouteContext('/:id/:id', url)).toThrow(
+      '"/:id/:id" is not a valid route pattern',
+    )
   })
 })

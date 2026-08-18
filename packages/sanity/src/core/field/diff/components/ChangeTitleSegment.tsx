@@ -1,5 +1,6 @@
-import {Box, rem, Text} from '@sanity/ui'
+import {rem, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type Annotation, type FieldChangeNode, type FromToIndex} from '../../types'

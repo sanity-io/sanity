@@ -49,8 +49,7 @@ export function createBatchedGetDocumentExists(
         switchMap(() =>
           client.observable
             .request<AvailabilityResponse>({
-              uri: client.getDataUrl('doc', ids.join(',')),
-              json: true,
+              url: client.getDataUrl('doc', ids.join(',')),
               query: {excludeContent: 'true'},
               tag: 'documents-availability',
             })

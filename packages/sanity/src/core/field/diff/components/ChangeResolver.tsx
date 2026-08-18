@@ -1,5 +1,5 @@
 import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
-import {Box, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {
   Fragment,
   type HTMLAttributes,
@@ -11,6 +11,7 @@ import {
   useState,
 } from 'react'
 import {DiffContext} from 'sanity/_singletons'
+import {Box} from 'ui5'
 
 import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {

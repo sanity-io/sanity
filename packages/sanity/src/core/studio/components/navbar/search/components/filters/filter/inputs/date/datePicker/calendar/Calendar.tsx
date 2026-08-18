@@ -1,4 +1,4 @@
-import {Box, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
 import {isAfter} from 'date-fns/isAfter'
@@ -14,6 +14,7 @@ import {
   useState,
 } from 'react'
 import {CalendarContext} from 'sanity/_singletons'
+import {Box} from 'ui5'
 
 import {useCurrentLocale} from '../../../../../../../../../../../i18n/hooks/useLocale'
 import {CalendarHeader} from './CalendarHeader'
@@ -208,7 +209,7 @@ export function Calendar(props: CalendarProps) {
       <Box data-ui="Calendar" ref={setCalendarElement}>
         {/* Select month and year */}
         <Flex>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <CalendarHeader moveFocusedDate={moveFocusedDate} onNowClick={handleNowClick} />
           </Box>
         </Flex>

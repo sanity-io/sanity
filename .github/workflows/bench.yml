@@ -655,14 +655,20 @@ jobs:
         run: pnpm bench store "$GITHUB_WORKSPACE/perf/bench/results/merged-absolute.json"
 
   self-test:
-    # Same source on both sides - every metric must gate neutral; anything
-    # else is harness drift and fails this job loudly
+    # Same source on both sides, so no metric may gate as a regression or an
+    # improvement - a decided verdict here is harness drift and fails this job
+    # loudly. Inconclusive is not drift: it means the CI stayed too wide to
+    # decide within the budget, which is the designed response to a noisy run.
     if: >-
       (github.event_name == 'schedule' && github.event.schedule == '0 6 * * 1') ||
       (github.event_name == 'workflow_dispatch' && inputs.self_test)
     needs: [build]
     runs-on: ubuntu-8core
-    timeout-minutes: 45
+    # The five scenarios below take ~42 minutes serially on a typical 8-core
+    # runner, and per-scenario cost tracks host speed (see the run's host
+    # calibration line) — leave headroom for a slow runner rather than losing a
+    # whole run's signal to a cancellation in the last scenario
+    timeout-minutes: 60
     permissions:
       contents: read
     env:
@@ -703,6 +709,14 @@ jobs:
           certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
           certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
 
+      # Unlike the measuring jobs, this one shells out to the `sanity` CLI
+      # below, whose entrypoint (sanity/lib/cli.js) is build output — the
+      # bench-dist-experiment artifact carries the built studio, not the built
+      # packages. `build:reference-config` calls the package script directly
+      # rather than going through turbo, so nothing else builds `sanity` here.
+      - name: Build packages
+        run: pnpm build --output-logs=full --log-order=grouped
+
       - uses: actions/download-artifact@v8
         with:
           name: bench-dist-experiment
@@ -711,9 +725,23 @@ jobs:
       - name: Build reference-config studio from the same source
         run: pnpm --filter bench build:reference-config
 
+      # Same five scenarios as the bench-interaction matrix, named explicitly:
+      # `bench run` otherwise defaults to every registered scenario, which adds
+      # syntheticLarge. That one needs ~55s per sample just to become editable,
+      # on both sides — and unlike bench-interaction, which shards one scenario
+      # per job, this job runs them serially, so it overran the timeout mid-
+      # syntheticLarge having already produced clean neutral results for the
+      # other five. Calibration cares that the instrument reads zero on
+      # identical builds, which five scenarios establish; the heaviest scenario
+      # is not worth doubling this job's wall-clock for.
       - name: Compare the build against itself
         run: |
           pnpm bench run --mode interaction \
+            --scenario singleString \
+            --scenario arrayI18n \
+            --scenario article \
+            --scenario recipe \
+            --scenario synthetic \
             --reference-dist "$GITHUB_WORKSPACE/perf/bench/.reference/dist" \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__self-test.json" \
             --fail-on-verdict
