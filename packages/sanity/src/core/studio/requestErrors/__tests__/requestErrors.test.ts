@@ -130,6 +130,26 @@ describe('classifyRequestError', () => {
     expect(classifyRequestError(networkError())).toMatchObject({type: 'networkError'})
   })
 
+  it('classifies get-it v9 / platform TimeoutErrors as networkError', () => {
+    const timeout = Object.assign(new Error('The operation was aborted due to timeout'), {
+      name: 'TimeoutError',
+    })
+    expect(classifyRequestError(timeout)).toMatchObject({type: 'networkError'})
+  })
+
+  it('classifies get-it v8 socket timeouts as networkError', () => {
+    const timeout = Object.assign(
+      new Error('Socket timed out on request to https://x.api.sanity.io/…'),
+      {code: 'ESOCKETTIMEDOUT'},
+    )
+    expect(classifyRequestError(timeout)).toMatchObject({type: 'networkError'})
+  })
+
+  it('classifies Node ETIMEDOUT errors as networkError', () => {
+    const timeout = Object.assign(new Error('connect ETIMEDOUT'), {code: 'ETIMEDOUT'})
+    expect(classifyRequestError(timeout)).toMatchObject({type: 'networkError'})
+  })
+
   it('leaves arbitrary errors unclassified', () => {
     expect(classifyRequestError(new Error('nope'))).toBeNull()
   })
