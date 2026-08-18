@@ -7,6 +7,14 @@
 export const studioLocaleNamespace = 'studio' as const
 
 /**
+ * The locale namespace for the structure tool and the pane primitives
+ * (document pane, pane chrome) that historically lived in `sanity/structure`.
+ *
+ * @public
+ */
+export const structureLocaleNamespace = 'structure' as const
+
+/**
  * The namespace for validation messages.
  *
  * @internal

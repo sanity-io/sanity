@@ -1,10 +1,11 @@
 import {memo, useContext} from 'react'
+import {DocumentActionsStateContext} from 'sanity/_singletons'
+
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
   type DocumentActionGroup,
-} from 'sanity'
-import {DocumentActionsStateContext} from 'sanity/_singletons'
+} from '../../config/document/actions'
 
 export interface ResolvedAction extends DocumentActionDescription {
   action?: DocumentActionComponent['action']

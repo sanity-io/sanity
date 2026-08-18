@@ -1,12 +1,11 @@
 import {render, screen} from '@testing-library/react'
 import {type ComponentType} from 'react'
 import {EMPTY} from 'rxjs'
-import {usePaneRouter} from 'sanity'
+import {type ResolvedAction, usePaneRouter} from 'sanity'
 import {DocumentActionsStateContext} from 'sanity/_singletons'
 import {beforeAll, beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {type ResolvedAction} from '../../../components/RenderActionCollectionState'
 import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {type DocumentPaneContextValue} from '../DocumentPaneContext'

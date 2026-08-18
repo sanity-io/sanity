@@ -10,10 +10,7 @@ import {DocumentInspectorPanel} from '../DocumentInspectorPanel'
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   usePane: vi.fn(() => ({collapsed: false})),
-}))
-
-vi.mock('../../../../useStructureTool', () => ({
-  useStructureTool: vi.fn(() => ({features: {resizablePanes: false}})),
+  usePaneFeatures: vi.fn(() => ({resizablePanes: false})),
 }))
 
 vi.mock('../../useDocumentPane', () => ({

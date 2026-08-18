@@ -11,8 +11,10 @@ import {
 
 import {ConfirmDeleteDialog as _ConfirmDeleteDialog} from '../structure/components/confirmDeleteDialog'
 import {type ConfirmDeleteDialogProps as _ConfirmDeleteDialogProps} from '../structure/components/confirmDeleteDialog/ConfirmDeleteDialog'
-import {structureLocaleNamespace as _structureLocaleNamespace} from '../structure/i18n'
-import {type StructureLocaleResourceKeys as _StructureLocaleResourceKeys} from '../structure/i18n/resources'
+import {
+  structureLocaleNamespace as _structureLocaleNamespace,
+  type StructureLocaleResourceKeys as _StructureLocaleResourceKeys,
+} from '../structure/i18n'
 import {DocumentInspectorHeader as _DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'
 import {DocumentPane as _DocumentPane} from '../structure/panes/document/DocumentPane'
 import {DocumentPaneProviderWrapper as _DocumentPaneProvider} from '../structure/panes/document/DocumentPaneProviderWrapper'

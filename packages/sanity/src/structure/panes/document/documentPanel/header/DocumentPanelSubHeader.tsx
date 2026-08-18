@@ -5,13 +5,13 @@ import {
   PaneHeader,
   useActiveWorkspace,
   usePane,
+  usePaneFeatures,
   usePaneRouter,
   useTranslation,
 } from 'sanity'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {useStructureTool} from '../../../../useStructureTool'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
@@ -23,7 +23,7 @@ import {FavoriteToggle} from './FavoriteToggle'
  */
 export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
   const {editState, connectionState, views, documentId, displayed} = useDocumentPane()
-  const {features} = useStructureTool()
+  const features = usePaneFeatures()
   const {index, BackLink} = usePaneRouter()
   const {activeWorkspace} = useActiveWorkspace()
 

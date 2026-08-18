@@ -948,8 +948,13 @@ export {
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useVersionRelease} from '../core/hooks/useVersionRelease'
 export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
+export {
+  structureDefaultLocaleResources,
+  type StructureLocaleResourceKeys,
+} from '../core/i18n/bundles/structure'
 export {type StudioLocaleResourceKeys} from '../core/i18n/bundles/studio'
 export {type ValidationLocaleResourceKeys} from '../core/i18n/bundles/validation'
+export {structureLocaleNamespace} from '../core/i18n/localeNamespaces'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
 export {
   defineLocale,
@@ -986,6 +991,9 @@ export {
 } from '../core/i18n/types'
 export {useDocumentLimitsUpsellContext} from '../core/limits/context/documents/DocumentLimitUpsellProvider'
 export {isDocumentLimitError} from '../core/limits/context/documents/isDocumentLimitError'
+export {DocumentTitle} from '../core/panes/components/DocumentTitle'
+export {ErrorPane} from '../core/panes/components/error/ErrorPane'
+export {LoadingPane} from '../core/panes/components/loading/LoadingPane'
 export {PANE_COLLAPSED_WIDTH, PANE_DEFAULT_MIN_WIDTH} from '../core/panes/components/pane/constants'
 export {Pane} from '../core/panes/components/pane/Pane'
 export {PaneContent} from '../core/panes/components/pane/PaneContent'
@@ -1017,16 +1025,56 @@ export {
 } from '../core/panes/components/paneRouter/types'
 export {PaneRouterContext, usePaneRouter} from '../core/panes/components/paneRouter/usePaneRouter'
 export {
+  RenderActionCollectionState,
+  type ResolvedAction,
+} from '../core/panes/components/RenderActionCollectionState'
+export {RenderBadgeCollectionState} from '../core/panes/components/RenderBadgeCollectionState'
+export {
+  AskToEditDialogOpened,
+  AskToEditRequestSent,
+} from '../core/panes/components/requestPermissionDialog/__telemetry__/RequestPermissionDialog.telemetry'
+export {
+  RequestPermissionDialog,
+  type RequestPermissionDialogProps,
+} from '../core/panes/components/requestPermissionDialog/RequestPermissionDialog'
+export {useRoleRequestsStatus} from '../core/panes/components/requestPermissionDialog/useRoleRequestsStatus'
+export {SpacerButton} from '../core/panes/components/spacerButton/SpacerButton'
+export {useConstructDocumentTitle} from '../core/panes/components/useConstructDocumentTitle'
+export {DOCUMENT_PANEL_PORTAL_ELEMENT, LOADING_PANE} from '../core/panes/constants'
+export {useDeletedDocumentLastRevision} from '../core/panes/hooks/useDeletedDocumentLastRevision'
+export {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../core/panes/menuNodes'
+export {PaneFeaturesProvider, usePaneFeatures} from '../core/panes/paneFeatures'
+export {
   type BaseIntentParams,
   type Intent,
   type IntentJsonParams,
   type IntentParams,
 } from '../core/panes/types/intent'
+export {type PaneFeatures} from '../core/panes/types/paneFeatures'
+export {
+  type KnownMenuItemParams,
+  type MenuItemActionType,
+  type MenuItemParamsType,
+  type PaneMenuItem,
+  type PaneMenuItemGroup,
+} from '../core/panes/types/paneMenuItems'
+export {type DocumentFieldMenuActionNode, type DocumentPaneNode} from '../core/panes/types/paneNode'
+export {type ResolvedPaneData, type ResolvedPanes} from '../core/panes/types/resolvedPanes'
 export {
   type RouterPaneGroup,
   type RouterPanes,
   type RouterPaneSibling,
 } from '../core/panes/types/routerPanes'
+export {
+  type BaseView,
+  type ComponentView,
+  type FormView,
+  type UserViewComponent,
+  type View,
+} from '../core/panes/types/views'
+export {useResolvedPanesList} from '../core/panes/useResolvedPanesList'
+export {useStructureToolSetting} from '../core/panes/useStructureToolSetting'
+export {isLiveEditEnabled} from '../core/panes/util/isLiveEditEnabled'
 export {toLowerCaseNoSpaces} from '../core/panes/util/toLowerCaseNoSpaces'
 export {getSelectedVariant} from '../core/perspective/getSelectedVariant'
 export {

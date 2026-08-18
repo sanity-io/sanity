@@ -2,23 +2,23 @@ import {Card, Flex, Text, type BadgeTone} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {memo, type RefAttributes, type SVGProps} from 'react'
 import {
-  ReleaseAvatarIcon,
-  ReleaseTitle,
   getReleaseTone,
   getVariantTitle,
   isDraftPerspective,
+  isLiveEditEnabled,
   isPublishedPerspective,
   isReleaseDocument,
-  usePerspective,
-  useTranslation,
+  ReleaseAvatarIcon,
+  ReleaseTitle,
   type SystemVariant,
   type TargetDocumentState,
   type TargetPerspective,
+  usePerspective,
+  useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
-import {isLiveEditEnabled} from '../../../../components/paneItem/helpers'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {

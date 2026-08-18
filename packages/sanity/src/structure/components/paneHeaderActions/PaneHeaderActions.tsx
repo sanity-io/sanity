@@ -5,12 +5,14 @@ import {
   EMPTY_ARRAY,
   EMPTY_OBJECT,
   type InitialValueTemplateItem,
+  isMenuNodeButton,
+  isNotMenuNodeButton,
   PaneContextMenuButton,
   PaneHeaderActionButton,
+  resolveMenuNodes,
   useTemplates,
 } from 'sanity'
 
-import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../menuNodes'
 import {
   type PaneMenuItem,
   type PaneMenuItemGroup,

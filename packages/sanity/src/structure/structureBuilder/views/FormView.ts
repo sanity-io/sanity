@@ -1,13 +1,9 @@
-import {type SerializeOptions} from '../StructureNodes'
-import {type BaseView, GenericViewBuilder} from './View'
+import {type BaseView, type FormView} from 'sanity'
 
-/**
- * Interface for form views.
- *
- * @public */
-export interface FormView extends BaseView {
-  type: 'form'
-}
+import {type SerializeOptions} from '../StructureNodes'
+import {GenericViewBuilder} from './View'
+
+export {type FormView}
 
 /**
  * Class for building a form view.

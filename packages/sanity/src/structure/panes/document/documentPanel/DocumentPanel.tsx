@@ -19,6 +19,7 @@ import {
   useArchivedReleases,
   useFilteredReleases,
   usePane,
+  usePaneFeatures,
   usePaneLayout,
   usePaneRouter,
   usePausedScheduledDraft,
@@ -30,7 +31,6 @@ import {css, styled} from 'styled-components'
 
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
-import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector/DocumentInspectorPanel'
 import {InspectDialog} from '../inspectDialog/InspectDialog'
 import {useDocumentPane} from '../useDocumentPane'
@@ -109,7 +109,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
   const parentPortal = usePortal()
-  const {features} = useStructureTool()
+  const features = usePaneFeatures()
   const [_portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLFormElement | null>(null)

@@ -4,8 +4,10 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import {memo, useMemo} from 'react'
 import {
   CopyPasteProvider,
+  ErrorPane,
   getCreatableVariantTarget,
   getPublishedId,
+  LoadingPane,
   ReferenceInputOptionsProvider,
   SourceProvider,
   Translate,
@@ -21,8 +23,6 @@ import {
 import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
 import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'
-import {ErrorPane} from '../error'
-import {LoadingPane} from '../loading'
 import {CommentsWrapper} from './comments/CommentsWrapper'
 import {useDocumentLayoutComponent} from './document-layout/useDocumentLayoutComponent'
 import {DocumentPaneProviderWrapper} from './DocumentPaneProviderWrapper'

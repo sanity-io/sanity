@@ -1,5 +1,5 @@
 /* eslint sort-keys: "error" */
-import {defineLocalesResources} from 'sanity'
+import {defineLocalesResources} from '../helpers'
 
 /**
  * Defined locale strings for the structure tool, in US English.

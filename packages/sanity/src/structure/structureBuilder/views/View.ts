@@ -1,4 +1,5 @@
 import kebabCase from 'lodash-es/kebabCase.js'
+import {type BaseView} from 'sanity'
 
 import {HELP_URL, SerializeError} from '../SerializeError'
 import {type Serializable, type SerializeOptions, type SerializePath} from '../StructureNodes'
@@ -7,18 +8,7 @@ import {validateId} from '../util/validateId'
 import {type ComponentViewBuilder} from './ComponentView'
 import {type FormViewBuilder} from './FormView'
 
-/**
- * Interface for base view
- *
- * @public */
-export interface BaseView {
-  /** View id */
-  id: string
-  /** View Title */
-  title: string
-  /** View Icon */
-  icon?: React.ComponentType | React.ReactNode
-}
+export {type BaseView}
 
 /**
  * Class for building generic views.

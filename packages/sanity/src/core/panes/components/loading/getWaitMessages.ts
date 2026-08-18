@@ -1,6 +1,7 @@
 import {merge, type Observable, of} from 'rxjs'
 import {delay, mapTo} from 'rxjs/operators'
-import {isDev} from 'sanity'
+
+import {isDev} from '../../../environment'
 
 /**
  * @internal

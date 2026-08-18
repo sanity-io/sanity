@@ -11,6 +11,7 @@ import {
   useI18nText,
   useSchema,
   useSource,
+  useStructureToolSetting,
   useTranslation,
 } from 'sanity'
 
@@ -18,7 +19,6 @@ import {_DEBUG} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
 import {assignId} from '../../structureResolvers/assignId'
 import {type PaneMenuItem} from '../../types'
-import {useStructureToolSetting} from '../../useStructureToolSetting'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPane} from './DocumentListPane'

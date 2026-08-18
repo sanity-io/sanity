@@ -1,22 +1,22 @@
-import {defineLocaleResourceBundle} from 'sanity'
+import {structureDefaultLocaleResources, structureLocaleNamespace} from 'sanity'
 
 /**
  * The locale namespace for the structure tool
  *
  * @public
  */
-export const structureLocaleNamespace = 'structure' as const
+export {structureLocaleNamespace}
 
 /**
  * The default locale bundle for the structure tool, which is US English.
  *
+ * The resources now live in core (registered with the default locale) so the
+ * pane primitives can render localized strings in any tool; this alias is kept
+ * for backwards compatibility.
+ *
  * @internal
  */
-export const structureUsEnglishLocaleBundle = defineLocaleResourceBundle({
-  locale: 'en-US',
-  namespace: structureLocaleNamespace,
-  resources: () => import('./resources'),
-})
+export const structureUsEnglishLocaleBundle = structureDefaultLocaleResources
 
 /**
  * The locale resource keys for the structure tool.
@@ -24,4 +24,4 @@ export const structureUsEnglishLocaleBundle = defineLocaleResourceBundle({
  * @alpha
  * @hidden
  */
-export type {StructureLocaleResourceKeys} from './resources'
+export {type StructureLocaleResourceKeys} from 'sanity'

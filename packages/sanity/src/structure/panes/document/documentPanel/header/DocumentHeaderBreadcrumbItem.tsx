@@ -1,20 +1,19 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
-import {useDocumentPreviewValues, usePerspective, useTranslation} from 'sanity'
+import {type ResolvedPanes, useDocumentPreviewValues, usePerspective, useTranslation} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {LOADING_PANE} from '../../../../constants'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {type Panes} from '../../../../structureResolvers/useResolvedPanes'
-import {type RouterPanes} from '../../../../types'
+import {type PaneNode, type RouterPanes} from '../../../../types'
 import {DocumentPaneNavigated} from './__telemetry__/focus.telemetry'
 
 export function DocumentHeaderBreadcrumbItem({
   paneData,
   index,
 }: {
-  paneData: Panes['paneDataItems'][number]
+  paneData: ResolvedPanes['paneDataItems'][number]
   index: number
 }) {
   const {pane} = paneData
@@ -25,12 +24,15 @@ export function DocumentHeaderBreadcrumbItem({
   const routerPanes = useMemo(() => (routerState?.panes || []) as RouterPanes, [routerState?.panes])
 
   const {perspectiveStack, selectedVariantName} = usePerspective()
+  // The resolved pane data is typed minimally in core; the structure tool
+  // resolves the full pane node union.
+  const paneNode = pane === LOADING_PANE ? null : (pane as PaneNode)
   // In case if it's a pane with a title, use the title
-  const staticTitle = pane !== LOADING_PANE && 'title' in pane ? pane.title : null
+  const staticTitle = paneNode ? paneNode.title : null
 
   // In case if it's a document pane, we need to fetch the document preview title
-  const documentId = pane !== LOADING_PANE && pane.type === 'document' ? pane.options.id : null
-  const documentType = pane !== LOADING_PANE && pane.type === 'document' ? pane.options.type : null
+  const documentId = paneNode?.type === 'document' ? paneNode.options.id : null
+  const documentType = paneNode?.type === 'document' ? paneNode.options.type : null
   const {value: previewValue, isLoading} = useDocumentPreviewValues({
     documentId: documentId ?? '',
     documentType: documentType ?? '',

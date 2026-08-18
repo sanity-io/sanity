@@ -1,4 +1,4 @@
-import {Button, type ButtonProps} from '../../../ui-components/button/Button'
+import {Button, type ButtonProps} from '../../../../ui-components/button/Button'
 
 interface SpacerButtonProps {
   size?: ButtonProps['size']
