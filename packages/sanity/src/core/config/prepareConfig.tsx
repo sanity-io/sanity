@@ -491,9 +491,9 @@ function getBifurClient(client: SanityClient, auth: AuthStore) {
   const urlWithTag = `${url}?tag=${requestTagPrefix}`
 
   const options = auth.token ? {token$: auth.token} : {}
-  // The connection is created here rather than through the client's own `fromUrl` so that
-  // momentary zero-subscriber gaps (React render/effect cycles) don't abort and reconnect the
-  // socket — see `createBifurConnection`.
+  // Temporary stand-in for `fromUrl` until the connection fix in `@sanity/bifur-client` is
+  // published: momentary zero-subscriber gaps (React render/effect cycles) must not abort and
+  // reconnect the socket — see `createBifurConnection`.
   return createBifurClient(createBifurConnection(urlWithTag), options)
 }
 

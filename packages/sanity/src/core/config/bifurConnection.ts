@@ -1,6 +1,11 @@
 import {fromEvent, NEVER, Observable, ReplaySubject, timer} from 'rxjs'
 import {share, takeUntil} from 'rxjs/operators'
 
+// TODO(bifur-client): this module is a temporary in-repo copy of the connection fix that is
+// landing in `@sanity/bifur-client` itself. Once the studio depends on a client version whose
+// `fromUrl` has these connection semantics, `getBifurClient` can go back to `fromUrl` and this
+// module (plus its test) can be deleted.
+
 /**
  * How long the WebSocket stays connected after the last subscriber has unsubscribed.
  *
