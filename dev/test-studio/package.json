@@ -15,9 +15,9 @@
     "start": "sanity preview"
   },
   "dependencies": {
-    "@portabletext/editor": "^7.10.18",
-    "@portabletext/html": "^1.1.2",
-    "@portabletext/plugin-character-pair-decorator": "^8.0.46",
+    "@portabletext/editor": "^7.11.0",
+    "@portabletext/html": "^1.2.0",
+    "@portabletext/plugin-character-pair-decorator": "^8.0.48",
     "@portabletext/react": "^8.0.0",
     "@portabletext/toolkit": "^6.0.0",
     "@sanity/assist": "^6.1.19",
