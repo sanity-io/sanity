@@ -1,5 +1,5 @@
 import {BoundaryElementProvider, PortalProvider, usePortal} from '@sanity/ui'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {Activity, useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
@@ -124,7 +124,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     [activeViewId, views],
   )
 
-  const showInspector = Boolean(!collapsed && inspector)
+  const showInspector = Boolean(inspector)
   // Keep the form mounted when the inspector takes over a collapsed layout.
   // Unmounting FormBuilder resets FullscreenPTEProvider, so a PTE that was in
   // full-pane mode comes back inline after the window is widened again.
@@ -468,14 +468,18 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
             {footer}
           </Flex>
         </div>
+        {/* Keep the open inspector mounted while the pane is collapsed (e.g. when opening a
+            reference in a new pane) so its state survives expanding the pane again. */}
         {showInspector && (
-          <BoundaryElementProvider element={rootElement}>
-            <DocumentInspectorPanel
-              documentId={documentId}
-              documentType={schemaType.name}
-              flex={1}
-            />
-          </BoundaryElementProvider>
+          <Activity mode={collapsed ? 'hidden' : 'visible'}>
+            <BoundaryElementProvider element={rootElement}>
+              <DocumentInspectorPanel
+                documentId={documentId}
+                documentType={schemaType.name}
+                flex={1}
+              />
+            </BoundaryElementProvider>
+          </Activity>
         )}
       </Flex>
     </PaneContent>
