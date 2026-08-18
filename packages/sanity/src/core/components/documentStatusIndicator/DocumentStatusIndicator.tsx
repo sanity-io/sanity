@@ -2,14 +2,14 @@ import {Card, Flex, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
 
+import {type TargetPerspective} from '../../perspective/types'
 import {usePerspective} from '../../perspective/usePerspective'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
-import {isSystemBundle} from '../../util/draftUtils'
-import {getTargetDocument, getVariantPublishedSibling} from '../../util/getTargetDocument'
 import {CircleSmallIcon} from '../temporary-icons/CircleSmall'
 import {RhombusIcon} from '../temporary-icons/Rhombus'
 import {RingIcon} from '../temporary-icons/Ring'
+import {type DocumentStatusIconKind, resolveDocumentStatusIcons} from './resolveDocumentStatusIcons'
 
 interface DocumentStatusProps {
   documentVersions: VersionInfoDocumentStub[]
@@ -90,118 +90,60 @@ function VariantIcon() {
   )
 }
 
+function renderDocumentStatusIcon(
+  icon: DocumentStatusIconKind,
+  selectedPerspective: TargetPerspective,
+) {
+  switch (icon) {
+    case 'variant':
+      return <VariantIcon key="variant" />
+    case 'release':
+      return (
+        <IconSlot key="release">
+          <ReleaseAvatarIcon release={selectedPerspective} size="small" />
+        </IconSlot>
+      )
+    case 'draft':
+      return (
+        <IconSlot key="draft" status="draft">
+          <RingIcon />
+        </IconSlot>
+      )
+    case 'published':
+      return (
+        <IconSlot key="published" status="published">
+          <CircleSmallIcon />
+        </IconSlot>
+      )
+  }
+}
+
 /**
  * Renders icons describing the document's status in the selected perspective and variant. The
  * perspective decides what the icons describe, and the selected variant then narrows it. Icons
  * appear in a fixed order: the rhombus (variant), the release icon, the yellow draft ring, then the
  * green published disc. At most three render at once.
  *
- * Perspective: system (published or drafts) — describes publish state.
- *   - Variant: none — describes the default documents:
- *     - Published: green disc.
- *     - Published & draft: yellow ring and green disc.
- *     - Draft only (not published yet): nothing.
- *   - Variant: selected — describes the variant's own documents, and takes over only when the
- *     document exists in the variant:
- *     - Not in the variant: falls back to the default documents above.
- *     - Published: rhombus and green disc.
- *     - Published & draft: rhombus, yellow ring and green disc.
- *     - Draft only (not published yet): rhombus and yellow ring.
- *
- * Perspective: a release or agent bundle — describes membership only, since versions in a release
- * have no publish state of their own.
- *   - Variant: none:
- *     - In the release: release icon (bolt, clock, or dot by release type; agent bundles get a
- *       suggest-toned dot).
- *     - Otherwise: nothing.
- *   - Variant: selected — a version scoped to the variant belongs to the release as much as a
- *     default one does, so the release icon still leads and the rhombus is only ever added on top of
- *     it, never shown alone:
- *     - In the release for the variant: rhombus and release icon, whether or not the release also
- *       holds a default version.
- *     - In the release for the default documents only: release icon.
- *     - Not in the release: nothing.
+ * See `resolveDocumentStatusIcons.ts` for the full decision logic.
  *
  * @internal
  */
 export function DocumentStatusIndicator({documentVersions}: DocumentStatusProps) {
   const {bundle, selectedPerspective, selectedVariant} = usePerspective()
 
-  const variantId = selectedVariant?._id
+  const icons = resolveDocumentStatusIcons({
+    bundle,
+    variantId: selectedVariant?._id,
+    documentVersions,
+  })
 
-  if (!isSystemBundle(bundle)) {
-    const inVariant = variantId
-      ? getTargetDocument({bundle, variant: variantId, documentVersions})
-      : undefined
-    const inDefault = getTargetDocument({bundle, variant: undefined, documentVersions})
-
-    // Membership of the release is what the perspective dictates, so it gates the whole indicator. A
-    // version scoped to the selected variant is a member of the release as much as a default one is,
-    // so either grants the release icon and the rhombus is added on top.
-    if (!inVariant && !inDefault) {
-      return null
-    }
-
-    return (
-      <Flex align="center">
-        {inVariant ? <VariantIcon /> : null}
-        <IconSlot>
-          <ReleaseAvatarIcon release={selectedPerspective} size="small" />
-        </IconSlot>
-      </Flex>
-    )
+  if (icons.length === 0) {
+    return null
   }
-
-  const variantTarget = variantId
-    ? {
-        draft: getTargetDocument({bundle: 'drafts', variant: variantId, documentVersions}),
-        published: getVariantPublishedSibling({variant: variantId, documentVersions}),
-      }
-    : undefined
-
-  // A selected variant only takes over the indicator when the document exists in it.
-  if (variantTarget && (variantTarget.draft || variantTarget.published)) {
-    return (
-      <Flex align="center">
-        <VariantIcon />
-        {variantTarget.draft && (
-          <IconSlot status="draft">
-            <RingIcon />
-          </IconSlot>
-        )}
-        {variantTarget.published && (
-          <IconSlot status="published">
-            <CircleSmallIcon />
-          </IconSlot>
-        )}
-      </Flex>
-    )
-  }
-
-  const published = Boolean(
-    getTargetDocument({bundle: 'published', variant: undefined, documentVersions}),
-  )
-
-  // For the default documents the draft ring reads as "unpublished changes", so it only means
-  // something next to the published disc: a document that has never been published gets no icons at
-  // all. A draft-only variant does keep its ring, because the rhombus already establishes that the
-  // variant exists.
-  const draft =
-    published &&
-    Boolean(getTargetDocument({bundle: 'drafts', variant: undefined, documentVersions}))
 
   return (
     <Flex align="center">
-      {draft && (
-        <IconSlot status="draft">
-          <RingIcon />
-        </IconSlot>
-      )}
-      {published && (
-        <IconSlot status="published">
-          <CircleSmallIcon />
-        </IconSlot>
-      )}
+      {icons.map((icon) => renderDocumentStatusIcon(icon, selectedPerspective))}
     </Flex>
   )
 }
