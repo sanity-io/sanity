@@ -31,7 +31,16 @@ export const ActionDialogWrapper = memo(function ActionDialogWrapper({
   referenceElement?: HTMLElement | null
 }) {
   const [actionIndex, setActionIndex] = useState(-1)
-  const currentAction = useMemo(() => actionStates[actionIndex], [actionIndex, actionStates])
+  const [hadDialog, setHadDialog] = useState(false)
+  const currentAction = actionStates[actionIndex]
+  const hasDialog = Boolean(currentAction?.dialog)
+
+  if (hasDialog && !hadDialog) {
+    setHadDialog(true)
+  } else if (!hasDialog && hadDialog && actionIndex !== -1) {
+    setHadDialog(false)
+    setActionIndex(-1)
+  }
 
   const handleAction = useCallback((idx: number) => {
     setActionIndex(idx)
