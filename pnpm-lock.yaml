@@ -2271,8 +2271,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
-        specifier: ^5.1.26
-        version: 5.1.26(@sanity/assist@6.1.19)(@sanity/language-filter@5.0.16)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
+        specifier: ^5.1.27
+        version: 5.2.0(@sanity/assist@6.1.19)(@sanity/language-filter@5.0.16)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
       styled-components:
         specifier: 'catalog:'
         version: 6.5.1(react-dom@19.2.8)(react@19.2.8)
@@ -6749,14 +6749,6 @@ packages:
         optional: true
       babel-plugin-react-compiler:
         optional: true
-
-  '@sanity/ui@4.0.1':
-    resolution: {integrity: sha512-OjsUCrI75fqhRHFljHUVQbddaDfVj3z1IJhbNImeZFguYyWEUTtf5N4j7S1mR9B9rbeZ0mx9QRyVg8YfriIaRA==}
-    engines: {node: '>=22.12'}
-    peerDependencies:
-      react: ^19.2
-      react-dom: ^19.2
-      styled-components: ^6.1
 
   '@sanity/ui@4.0.3':
     resolution: {integrity: sha512-IXZ01joAs1YDKhzcvW5+F+3hL5BsDLH3HB7WqpBqfTitQ0jmvyXr8quHQnsP8br3JyxEREmTEAIJhS8ABEXPXw==}
@@ -12873,19 +12865,6 @@ packages:
       react: ^19.2
       sanity: ^5 || ^6.0.0-0
       styled-components: ^6.1
-
-  sanity-plugin-internationalized-array@5.1.26:
-    resolution: {integrity: sha512-pnzdgepYYQ/GZXR5PsOZStj4SLF6LRYZK7kC3Y3NPZjV5jB7pMgVrC2WTtNvucW7nxhagW/TMrrjk0QfWqYcew==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-    peerDependencies:
-      '@sanity/assist': ^6.1.18
-      '@sanity/language-filter': ^5.0.15
-      react: ^19.2
-      react-dom: ^19.2
-      sanity: ^5 || ^6.0.0-0
-    peerDependenciesMeta:
-      '@sanity/assist':
-        optional: true
 
   sanity-plugin-internationalized-array@5.2.0:
     resolution: {integrity: sha512-bc1BpNQT/BoKWk/LP9Ii4918ceAMagBqcxDMg91fvRZN3KEucimy6m2aajOb0aNIdXsGxDeiffUDrLvRh6AzMg==}
@@ -19365,20 +19344,6 @@ snapshots:
       - rolldown
       - supports-color
       - vite
-
-  '@sanity/ui@4.0.1(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)':
-    dependencies:
-      '@floating-ui/react-dom': 2.1.9(react-dom@19.2.8)(react@19.2.8)
-      '@sanity/color': 3.0.8
-      '@sanity/icons': 5.2.1(react@19.2.8)
-      csstype: 3.2.3
-      motion: 13.1.0(react-dom@19.2.8)(react@19.2.8)
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
-      react-is: 19.2.8
-      react-refractor: 4.0.0(react@19.2.8)
-      styled-components: 6.5.1(react-dom@19.2.8)(react@19.2.8)
-      use-effect-event: 2.0.3(react@19.2.8)
 
   '@sanity/ui@4.0.3(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)':
     dependencies:
@@ -26084,21 +26049,6 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
       - react-dom
-
-  sanity-plugin-internationalized-array@5.1.26(@sanity/assist@6.1.19)(@sanity/language-filter@5.0.16)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1):
-    dependencies:
-      '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/language-filter': 5.0.16(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
-      '@sanity/ui': 4.0.1(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.1)
-      '@sanity/util': link:packages/@sanity/util
-      lodash-es: 4.18.1
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
-      sanity: link:packages/sanity
-    optionalDependencies:
-      '@sanity/assist': 6.1.19(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1)
-    transitivePeerDependencies:
-      - styled-components
 
   sanity-plugin-internationalized-array@5.2.0(@sanity/assist@6.1.19)(@sanity/language-filter@5.0.16)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.1):
     dependencies:
