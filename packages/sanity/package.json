@@ -228,7 +228,7 @@
     "semver": "^7.8.5",
     "shallow-equals": "^1.0.0",
     "speakingurl": "^14.0.1",
-    "swr": "^2.5.0",
+    "swr": "^2.5.1",
     "ui5": "npm:@sanity/ui@alpha",
     "urlpattern-polyfill": "10.1.0",
     "use-device-pixel-ratio": "^1.1.2",
