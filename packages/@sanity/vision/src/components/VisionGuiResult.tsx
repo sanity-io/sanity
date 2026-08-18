@@ -131,8 +131,10 @@ export function VisionGuiResult({
 }
 
 function SaveResultButtons({queryResult}: {queryResult: unknown}) {
-  const jsonUrl = queryResult ? getJsonBlobUrl(queryResult) : ''
-  const csvUrl = queryResult ? getCsvBlobUrl(queryResult) : ''
+  // This only renders when `hasResult` is true, and falsy values like `null`, `0`, `false` or ''
+  // are valid GROQ results — the resolvers themselves return `undefined` for non-encodable input.
+  const jsonUrl = getJsonBlobUrl(queryResult)
+  const csvUrl = getCsvBlobUrl(queryResult)
 
   return (
     <>
