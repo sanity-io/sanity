@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import ImageArrayDragStory from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/ImageArrayDragStory'
+import ImageArrayDragStory from './ImageArrayDragStory'
 
 /**
  * Reuses the `ImageArrayDrag.browser.test.tsx` harness: an image array next

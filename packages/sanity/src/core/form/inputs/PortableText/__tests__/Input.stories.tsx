@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {InputStory} from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/InputStory'
+import {InputStory} from './InputStory'
 
 /**
  * Reuses the `Input.browser.test.tsx` harness: a Portable Text input with

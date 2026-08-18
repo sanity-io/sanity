@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {MultipleAnnotationsStory} from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/MultipleAnnotationsStory'
+import {MultipleAnnotationsStory} from './MultipleAnnotationsStory'
 
 /**
  * Reuses the `Annotations.browser.test.tsx` (multiple annotations) harness: a

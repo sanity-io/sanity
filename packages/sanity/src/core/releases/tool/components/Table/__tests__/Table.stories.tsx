@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {TableStory} from '../../../../packages/sanity/src/core/releases/tool/components/Table/__tests__/TableStory'
+import {TableStory} from './TableStory'
 
 /**
  * Reuses the `Table.browser.test.tsx` harness: the releases tool table with a

@@ -20,15 +20,19 @@ baselines. Review diffs on the Chromatic build linked from the PR check.
 
 ## Quick start: add visual coverage for a component
 
-1. Prefer a story in `dev/storybook/stories/`. Two patterns:
+1. Add a co-located `*.stories.tsx` file to the owning package's `src` tree, usually in the same
+   `__tests__` directory as the component or harness. Storybook discovers
+   `packages/**/src/**/*.stories.tsx`. Two patterns:
    - **Plain component states** (ui-components wrappers, tone/card sentinels): render variants
-     directly — see [Button.stories.tsx](../../../dev/storybook/stories/ui-components/Button.stories.tsx).
+     directly — see
+     [Button.stories.tsx](../../../packages/sanity/src/ui-components/button/__tests__/Button.stories.tsx).
      Put many variants in one story (a grid) to keep snapshot count low.
    - **Studio-context states** (form inputs, anything needing workspace/i18n/layers): wrap in the
      browser-test harness `TestWrapper` (+ `TestForm` for form inputs) — see
-     [Dialog.stories.tsx](../../../dev/storybook/stories/ui-components/Dialog.stories.tsx) and the
-     Portable Text stories. If a vitest browser test already has a `*Story.tsx` harness, reuse it
-     (never fork it): the harness stays shared between the test and the story.
+     [Dialog.stories.tsx](../../../packages/sanity/src/ui-components/dialog/__tests__/Dialog.stories.tsx)
+     and the Portable Text stories. If a vitest browser test already has a `*Story.tsx` harness,
+     put the story beside it and reuse it (never fork it): the harness stays shared between the
+     test and the story.
 2. Verify locally: `pnpm dev:storybook` (port 6006), then `pnpm --filter sanity-storybook test`
    (every story runs as a vitest browser-mode test via `@storybook/addon-vitest`).
 3. Push — the `Chromatic / Storybook visual tests` check snapshots only affected stories
@@ -59,11 +63,11 @@ and vanilla-extract-migrated components (change indicators, `DocumentLayout`) as
    code changes. Every browser test's end state becomes a snapshot; the first build is the full
    baseline.
 
-Afterwards, consider slimming the harness-reuse stories in `dev/storybook/stories` that overlap
-with end-of-test snapshots (keep them if the browsable workbench view is worth the snapshot
-spend). See [REFERENCE.md](REFERENCE.md) for local capture runs, `takeSnapshot()`/`configure()`
-usage inside tests (only valid once the plugin is active — `takeSnapshot()` THROWS in normal
-runs, so never commit calls to it while the integration is dormant), and cost controls.
+Afterwards, consider slimming co-located harness-reuse stories that overlap with end-of-test
+snapshots (keep them if the browsable workbench view is worth the snapshot spend). See
+[REFERENCE.md](REFERENCE.md) for local capture runs, `takeSnapshot()`/`configure()` usage inside
+tests (only valid once the plugin is active — `takeSnapshot()` THROWS in normal runs, so never
+commit calls to it while the integration is dormant), and cost controls.
 
 ## Playwright e2e snapshots
 

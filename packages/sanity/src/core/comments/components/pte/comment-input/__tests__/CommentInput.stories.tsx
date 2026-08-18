@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {CommentsInputStory} from '../../../../packages/sanity/src/core/comments/components/pte/comment-input/__tests__/CommentInputStory'
+import {CommentsInputStory} from './CommentInputStory'
 
 /**
  * Reuses the `CommentInput.browser.test.tsx` harness: the comment input with
