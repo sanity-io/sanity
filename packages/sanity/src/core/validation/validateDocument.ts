@@ -5,7 +5,7 @@ import {
   type ValidateDocumentInternalOptions,
 } from '@sanity/validation/_internal'
 
-import {type SourceClientOptions, type Workspace} from '../config'
+import {type SourceClientOptions, type Workspace} from '../config/types'
 
 export {
   resolveTypeForArrayItem,
