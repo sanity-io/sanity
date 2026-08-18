@@ -1,8 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Flex, Grid, Text} from '@sanity/ui'
+import {Flex, Grid, Text} from '@sanity/ui'
 import {Fragment, useCallback, useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
@@ -128,7 +129,7 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
   return (
     <Box>
       <DialogHeader padding={3}>
-        <Box flex={'none'} padding={2} paddingRight={0}>
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={2} paddingRight={0}>
           <Box paddingLeft={2}>
             <Text size={1} muted>
               {formattedDate}
@@ -181,7 +182,7 @@ export function StudioAnnouncementsDialog({
       __unstable_hideCloseButton
       __unstable_autoFocus={false}
     >
-      <Root ref={dialogRef} height="fill">
+      <Root ref={dialogRef} height="100%">
         {announcements.map((announcement, index) => (
           <Fragment key={announcement._id}>
             <Announcement

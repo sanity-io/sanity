@@ -2394,6 +2394,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'tree-editing-dialog.sidebar.action.expand': 'Expand',
   /** Label to open the sidebar */
   'tree-editing-dialog.sidebar.action.open': 'Open sidebar',
+  /** Label for action to claim a project created through unauthenticated provisioning */
+  'user-menu.action.claim-project': 'Claim this project',
   /** Label for the button showed after trial ended */
   'user-menu.action.free-trial-finished': 'Upgrade from free',
   /** Label for button showing the free trial days left */
