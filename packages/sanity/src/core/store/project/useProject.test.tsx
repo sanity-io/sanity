@@ -66,7 +66,16 @@ describe('useProject', () => {
     const get = vi
       .fn<ProjectStore['get']>()
       .mockReturnValueOnce(
-        throwError(() => new ClientError({statusCode: 429, headers: {}, body: {}} as never)),
+        throwError(
+          () =>
+            new ClientError({
+              statusCode: 429,
+              headers: {},
+              body: {},
+              url: 'https://abc123.api.sanity.io/v1/projects/abc123',
+              method: 'GET',
+            } as never),
+        ),
       )
       .mockReturnValueOnce(of(projectData))
     const {result} = setup(get, channel)

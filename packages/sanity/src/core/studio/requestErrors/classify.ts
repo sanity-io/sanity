@@ -7,6 +7,14 @@ import isNativeNetworkError from 'is-network-error'
 export {getApiErrorCode, isInvalidSessionError, isUnauthorizedError} from '../../util/apiErrors'
 export {isTimeoutError}
 
+/**
+ * Node / get-it v8 timeout codes. get-it v9 reports timeouts as
+ * `TimeoutError` (caught by {@link isTimeoutError}); older transports used
+ * `ESOCKETTIMEDOUT` (idle socket) or `ETIMEDOUT` (connect/request deadline)
+ * on a plain Error, which `isTimeoutError` no longer matches.
+ */
+const LEGACY_TIMEOUT_CODES = new Set(['ESOCKETTIMEDOUT', 'ETIMEDOUT'])
+
 /** @internal */
 export function isNetworkError(error: unknown): error is Error {
   if (typeof error !== 'object' || error === null) return false
@@ -15,6 +23,9 @@ export function isNetworkError(error: unknown): error is Error {
   // Treat both get-it header timeouts and platform request-deadline
   // TimeoutErrors as network errors so they get the same treatment.
   if (isTimeoutError(error)) return true
+  if ('code' in error && typeof error.code === 'string' && LEGACY_TIMEOUT_CODES.has(error.code)) {
+    return true
+  }
   return isNativeNetworkError(error)
 }
 
