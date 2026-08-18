@@ -213,12 +213,7 @@ describe('DocumentListPane perspective and variant', () => {
   })
 
   it('queries with the perspective stack and no variant by default', async () => {
-    const wrapper = await createTestProvider({
-      config: defineConfig({projectId: 'test', dataset: 'test'}),
-      resources: [structureUsEnglishLocaleBundle],
-    })
-
-    render(<DocumentListPane {...getPaneProps()} />, {wrapper})
+    await renderDocumentListPane()
 
     expect(mockUseDocumentList).toHaveBeenCalledWith(
       expect.objectContaining({perspective: ['drafts'], variant: undefined}),
@@ -228,12 +223,7 @@ describe('DocumentListPane perspective and variant', () => {
   it('queries with the selected variant alongside the perspective stack', async () => {
     mockUsePerspective.mockReturnValue({...BASE_PERSPECTIVE, selectedVariantName: 'alpha-audience'})
 
-    const wrapper = await createTestProvider({
-      config: defineConfig({projectId: 'test', dataset: 'test'}),
-      resources: [structureUsEnglishLocaleBundle],
-    })
-
-    render(<DocumentListPane {...getPaneProps()} />, {wrapper})
+    await renderDocumentListPane()
 
     expect(mockUseDocumentList).toHaveBeenCalledWith(
       expect.objectContaining({perspective: ['drafts'], variant: 'alpha-audience'}),
