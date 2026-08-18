@@ -43,7 +43,7 @@ function NetworkTroubleshooting() {
         <Text size={1} weight="medium">
           Troubleshooting
         </Text>
-        <Stack as="ul" gap={2} style={{margin: 0, paddingLeft: '1.25em'}}>
+        <Stack as="ul" gap={3} style={{margin: 0, paddingLeft: '1.25em'}}>
           {NETWORK_TROUBLESHOOTING.map((tip) => (
             <Box as="li" key={tip.key}>
               <Text size={1} muted>
@@ -178,7 +178,7 @@ export function RequestErrorDialog(props: {
 }
 
 function RateLimitedDialog(props: {
-  claim: {type: 'rateLimited'; error: Error; retryAfterSeconds?: number; retryable: boolean}
+  claim: Extract<RequestErrorClaim, {type: 'rateLimited'}>
   onRetry: () => void
 }) {
   const {claim, onRetry} = props
