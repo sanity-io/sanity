@@ -59,6 +59,7 @@ export function VariantsToolLink({
         padding={2}
         radius="full"
         data-testid="variants-tool-link"
+        aria-label={t('navbar.tooltip')}
         selected={activeToolName === VARIANTS_TOOL_NAME}
       >
         {null}
