@@ -22,10 +22,10 @@ const isSerializable = (thing: unknown): thing is Serializable => {
  * it into an `Observable<PaneNode>`.
  */
 export type PaneResolver = (
-  unresolvedPane: UnresolvedPaneNode | undefined,
+  unresolvedPane: UnresolvedPaneNode | undefined | null,
   context: RouterPaneSiblingContext,
   flatIndex: number,
-) => Observable<PaneNode>
+) => Observable<PaneNode | null>
 
 export type PaneResolverMiddleware = (paneResolveFn: PaneResolver) => PaneResolver
 
@@ -71,12 +71,16 @@ export function createPaneResolver(middleware: PaneResolverMiddleware): PaneReso
   const resolvePane = rethrowWithPaneResolutionErrors(
     wrapWithPublishReplay(
       middleware((unresolvedPane, context, flatIndex) => {
-        if (!unresolvedPane) {
+        if (unresolvedPane === undefined) {
           throw new PaneResolutionError({
             message: 'Pane returned no child',
             context,
             helpId: 'structure-item-returned-no-child',
           })
+        }
+
+        if (unresolvedPane === null) {
+          return observableOf(null)
         }
 
         if (isPromise(unresolvedPane) || isObservable(unresolvedPane)) {

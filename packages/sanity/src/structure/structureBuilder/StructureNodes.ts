@@ -157,7 +157,7 @@ export type CollectionBuilder =
  *
  * @public
  */
-export type Child = Collection | CollectionBuilder | ChildResolver
+export type Child = Collection | CollectionBuilder | ChildResolver | null
 
 /** @internal */
 export type Builder =

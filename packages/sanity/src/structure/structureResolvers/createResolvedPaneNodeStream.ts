@@ -110,7 +110,7 @@ interface CacheState {
    * Holds the memoization results keyed by a combination of `assignId` and a
    * context hash.
    */
-  resolvedPaneCache: Map<string, Observable<PaneNode>>
+  resolvedPaneCache: Map<string, Observable<PaneNode | null>>
   /**
    * Acts as a dictionary that stores cache keys by their flat index. This is
    * used to clean up the cache between different branches in the pane
@@ -158,7 +158,7 @@ export type ResolvedPaneMeta = {
 interface ResolvePaneTreeOptions {
   resolvePane: PaneResolver
   flattenedRouterPanes: FlattenedRouterPane[]
-  unresolvedPane: UnresolvedPaneNode | undefined
+  unresolvedPane: UnresolvedPaneNode | undefined | null
   parent: PaneNode | null
   path: string[]
   structureContext: StructureContext
@@ -177,6 +177,11 @@ function resolvePaneTree({
   resolvePane,
   structureContext,
 }: ResolvePaneTreeOptions): Observable<ResolvedPaneMeta[]> {
+  // Explicit `null` child: silent leaf. Do not warn and do not resolve a next pane.
+  if (unresolvedPane === null) {
+    return observableOf([])
+  }
+
   const [current, ...rest] = flattenedRouterPanes
   const next = rest[0] as FlattenedRouterPane | undefined
 
@@ -195,6 +200,11 @@ function resolvePaneTree({
     return resolvePane(unresolvedPane, context, current.flatIndex).pipe(
       // this switch map receives a resolved pane
       switchMap((paneNode) => {
+        // A child resolver that returns `null` is an intentional leaf.
+        if (paneNode === null) {
+          return observableOf([])
+        }
+
         // we can create a `resolvedMeta` type using it
         const resolvedPaneMeta: ResolvedPaneMeta = {
           type: 'resolvedMeta',

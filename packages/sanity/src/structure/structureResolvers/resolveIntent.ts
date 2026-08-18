@@ -13,7 +13,7 @@ import {createPaneResolver, type PaneResolverMiddleware} from './createPaneResol
 import {memoBind} from './memoBind'
 
 interface TraverseOptions {
-  unresolvedPane: UnresolvedPaneNode | undefined
+  unresolvedPane: UnresolvedPaneNode | undefined | null
   intent: string
   params: {type: string; id: string; [key: string]: string | undefined}
   payload: unknown
@@ -47,7 +47,7 @@ export interface ResolveIntentOptions {
  * @see PaneNode
  */
 export async function resolveIntent(options: ResolveIntentOptions): Promise<RouterPanes> {
-  const resolvedPaneCache = new Map<string, Observable<PaneNode>>()
+  const resolvedPaneCache = new Map<string, Observable<PaneNode | null>>()
 
   // this is a simple version of the memoizer in `createResolvedPaneNodeStream`
   const memoize: PaneResolverMiddleware = (nextFn) => (unresolvedPane, context, flatIndex) => {
@@ -100,6 +100,7 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
       structureContext,
     }
     const resolvedPane = await firstValueFrom(resolvePane(unresolvedPane, context, flatIndex))
+    if (!resolvedPane) return []
 
     // if the resolved pane is a document pane and the pane's ID matches then
     // resolve the intent to the current path

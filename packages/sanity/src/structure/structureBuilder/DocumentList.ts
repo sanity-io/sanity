@@ -252,7 +252,10 @@ export class DocumentListBuilder extends GenericListBuilder<
       ...super.serialize(options),
       type: 'documentList',
       schemaTypeName: this.spec.schemaTypeName,
-      child: this.spec.child || createDocumentChildResolverForItem(this._context),
+      child:
+        this.spec.child === undefined
+          ? createDocumentChildResolverForItem(this._context)
+          : this.spec.child,
       options: {
         ...this.spec.options,
         // @todo: make specifying .apiVersion required when using custom (non-simple) filters in v4

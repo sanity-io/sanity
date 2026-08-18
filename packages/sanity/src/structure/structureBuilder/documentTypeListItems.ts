@@ -120,8 +120,9 @@ export function getDocumentTypeList(
       ],
     )
     .child(
-      spec.child ||
-        ((documentId: string) => resolveDocumentNode({schemaType: typeName, documentId})),
+      spec.child === undefined
+        ? (documentId: string) => resolveDocumentNode({schemaType: typeName, documentId})
+        : spec.child,
     )
     .canHandleIntent(spec.canHandleIntent || defaultIntentChecker)
     .menuItems(

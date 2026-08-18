@@ -360,7 +360,10 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
 
     return {
       ...this.spec,
-      child: this.spec.child || createDocumentChildResolver(this._context),
+      child:
+        this.spec.child === undefined
+          ? createDocumentChildResolver(this._context)
+          : this.spec.child,
       id: validateId(id, path, index),
       type: 'document',
       options: getDocumentOptions(options),
