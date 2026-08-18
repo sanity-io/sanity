@@ -2180,6 +2180,9 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.8(react@19.2.8)
+      rolldown:
+        specifier: ~1.2.3
+        version: 1.2.3
       rxjs-etc:
         specifier: ^10.6.2
         version: 10.6.2(rxjs@7.8.2)

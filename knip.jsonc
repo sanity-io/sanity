@@ -55,7 +55,14 @@
       ],
     },
     "packages/sanity": {
-      "entry": ["src/_exports/*.ts", "bin/sanity", "mock-browser-env-stub-loader.mjs"],
+      "entry": [
+        "src/_exports/*.ts",
+        "bin/sanity",
+        "mock-browser-env-stub-loader.mjs",
+        // Knip does not treat tsdown.config.ts as an entry, so rolldown (used only there)
+        // would otherwise look unused
+        "tsdown.config.ts",
+      ],
       "project": [
         "src/**/*.{ts,tsx}",
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
