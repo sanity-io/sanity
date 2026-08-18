@@ -1,0 +1,394 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`string > custom async rule with string > not a palindrome 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be a palindrome!",
+    },
+    "level": "error",
+    "message": "Must be a palindrome!",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > custom rule with string > not a palindrome 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be a palindrome!",
+    },
+    "level": "error",
+    "message": "Must be a palindrome!",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > exact length constraint > exact length: too long 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be exactly 5 characters long",
+    },
+    "level": "error",
+    "message": "Must be exactly 5 characters long",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > exact length constraint > exact length: too short 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be exactly 5 characters long",
+    },
+    "level": "error",
+    "message": "Must be exactly 5 characters long",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > exact length constraint > exact length: valid 1`] = `[]`;
+
+exports[`string > lowercase constraint > lowercase: all uppercase 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be all lowercase characters",
+    },
+    "level": "error",
+    "message": "Must be all lowercase characters",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > lowercase constraint > lowercase: locale characters 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be all lowercase characters",
+    },
+    "level": "error",
+    "message": "Must be all lowercase characters",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > lowercase constraint > lowercase: some uppercase 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be all lowercase characters",
+    },
+    "level": "error",
+    "message": "Must be all lowercase characters",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > lowercase constraint > lowercase: valid 1`] = `[]`;
+
+exports[`string > max length constraint > max length: too long 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be at most 5 characters long",
+    },
+    "level": "error",
+    "message": "Must be at most 5 characters long",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > max length constraint > max length: valid 1`] = `[]`;
+
+exports[`string > min length constraint > min length: too short 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be at least 2 characters long",
+    },
+    "level": "error",
+    "message": "Must be at least 2 characters long",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > min length constraint > min length: valid 1`] = `[]`;
+
+exports[`string > regex constraint (custom pattern name) > regex: match w/ custom pattern name 1`] = `[]`;
+
+exports[`string > regex constraint (custom pattern name) > regex: non-match w/ custom pattern name 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Does not match "PascalCase"-pattern",
+    },
+    "level": "error",
+    "message": "Does not match "PascalCase"-pattern",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > regex constraint (custom pattern name, as options) > regex: match w/ custom pattern name (opt) 1`] = `[]`;
+
+exports[`string > regex constraint (custom pattern name, as options) > regex: non-match w/ custom pattern name (opt) 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Does not match "PascalCase"-pattern",
+    },
+    "level": "error",
+    "message": "Does not match "PascalCase"-pattern",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > regex constraint (inverted) > regex: inverted match 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Should not match "/^[A-Z][a-z]+$/"-pattern",
+    },
+    "level": "error",
+    "message": "Should not match "/^[A-Z][a-z]+$/"-pattern",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > regex constraint (inverted) > regex: inverted non-match 1`] = `[]`;
+
+exports[`string > regex constraint > regex: match 1`] = `[]`;
+
+exports[`string > regex constraint > regex: non-match 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Does not match "/^[A-Z][a-z]+$/"-pattern",
+    },
+    "level": "error",
+    "message": "Does not match "/^[A-Z][a-z]+$/"-pattern",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > required constraint > required: empty string 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Required",
+    },
+    "level": "error",
+    "message": "Required",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > required constraint > required: null 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Expected type "String", got "null"",
+    },
+    "level": "error",
+    "message": "Expected type "String", got "null"",
+    "path": [],
+  },
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Required",
+    },
+    "level": "error",
+    "message": "Required",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > required constraint > required: undefined 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Required",
+    },
+    "level": "error",
+    "message": "Required",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > required constraint > required: valid 1`] = `[]`;
+
+exports[`string > uppercase constraint > uppercase: all lowercase 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be all uppercase characters",
+    },
+    "level": "error",
+    "message": "Must be all uppercase characters",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > uppercase constraint > uppercase: locale characters 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be all uppercase characters",
+    },
+    "level": "error",
+    "message": "Must be all uppercase characters",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > uppercase constraint > uppercase: some lowercase 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be all uppercase characters",
+    },
+    "level": "error",
+    "message": "Must be all uppercase characters",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > uppercase constraint > uppercase: some lowercase 2`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Must be all uppercase characters",
+    },
+    "level": "error",
+    "message": "Must be all uppercase characters",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > uppercase constraint > uppercase: valid 1`] = `[]`;
+
+exports[`string > uri constraint (allowRelative with restrictive scheme) > uri: absolute URL still rejects disallowed scheme 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Does not match allowed protocols/schemes",
+    },
+    "level": "error",
+    "message": "Does not match allowed protocols/schemes",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > uri constraint (credentials) > uri: credentials specified but not allowed 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Username/password not allowed",
+    },
+    "level": "error",
+    "message": "Username/password not allowed",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > uri constraint (credentials) > uri: username specified but not allowed 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Username/password not allowed",
+    },
+    "level": "error",
+    "message": "Username/password not allowed",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > uri constraint (invalid protocol) > uri: protocol non-match 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Does not match allowed protocols/schemes",
+    },
+    "level": "error",
+    "message": "Does not match allowed protocols/schemes",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > uri constraint (with unicode chars) > uri: non-match 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Not a valid URL",
+    },
+    "level": "error",
+    "message": "Not a valid URL",
+    "path": [],
+  },
+]
+`;
+
+exports[`string > uri constraint > uri: non-match 1`] = `
+[
+  {
+    "__internal_metadata": undefined,
+    "item": {
+      "message": "Not a valid URL",
+    },
+    "level": "error",
+    "message": "Not a valid URL",
+    "path": [],
+  },
+]
+`;
