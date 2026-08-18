@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {DecoratorsStory} from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/DecoratorsStory'
+import {DecoratorsStory} from './DecoratorsStory'
 
 /**
  * Reuses the `Decorators.browser.test.tsx` harness: a Portable Text input

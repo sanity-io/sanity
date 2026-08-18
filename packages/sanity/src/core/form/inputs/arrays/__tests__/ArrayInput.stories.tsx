@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import ArrayInputStory from '../../../../packages/sanity/src/core/form/inputs/arrays/__tests__/ArrayInputStory'
+import ArrayInputStory from './ArrayInputStory'
 
 /**
  * Reuses the `ArrayInput.browser.test.tsx` harness: an array-of-objects input
