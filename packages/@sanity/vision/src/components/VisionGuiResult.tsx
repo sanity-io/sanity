@@ -131,8 +131,8 @@ export function VisionGuiResult({
 }
 
 function SaveResultButtons({queryResult}: {queryResult: unknown}) {
-  const jsonUrl = queryResult ? getJsonBlobUrl(queryResult) : ''
-  const csvUrl = queryResult ? getCsvBlobUrl(queryResult) : ''
+  const jsonUrl = getJsonBlobUrl(queryResult)
+  const csvUrl = getCsvBlobUrl(queryResult)
 
   return (
     <>
