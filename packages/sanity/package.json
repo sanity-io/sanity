@@ -270,7 +270,7 @@
     "@vitest/expect": "^4.1.10",
     "babel-plugin-react-compiler": "catalog:",
     "blob-polyfill": "^9.0.20240710",
-    "chromatic": "^18.1.0",
+    "chromatic": "^18.2.0",
     "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
