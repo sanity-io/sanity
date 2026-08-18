@@ -23,8 +23,8 @@ import {RowLayout} from '../layouts/RowLayout'
 import {getEmptyValue} from './getEmptyValue'
 
 export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {
-  insertableTypes: SchemaType[]
-  sortable: boolean
+  insertableTypes?: SchemaType[]
+  sortable?: boolean
 }
 
 const MENU_BUTTON_POPOVER_PROPS = {portal: true, tone: 'default'} as const
@@ -33,9 +33,7 @@ const EMPTY_ARRAY: never[] = []
 export function ItemRow(props: DefaultItemProps & RefAttributes<HTMLDivElement>) {
   const {
     ref,
-    sortable,
     value,
-    insertableTypes,
     onInsert,
     onCopy,
     onRemove,
@@ -46,7 +44,12 @@ export function ItemRow(props: DefaultItemProps & RefAttributes<HTMLDivElement>)
     children,
     presence,
     schemaType,
+    insertableTypes: insertableTypesProp,
+    sortable: sortableProp,
   } = props
+
+  const insertableTypes = insertableTypesProp ?? parentSchemaType.of
+  const sortable = sortableProp ?? parentSchemaType.options?.sortable !== false
 
   const hasError = validation.filter((item) => item.level === 'error').length > 0
   const hasWarning = validation.filter((item) => item.level === 'warning').length > 0
