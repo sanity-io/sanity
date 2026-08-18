@@ -5,6 +5,47 @@ import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityCli
 import {type OperationArgs} from '../operations/types'
 import {discardChanges} from './discardChanges'
 
+const BASE_PAIR = {draftId: 'drafts.my-id', publishedId: 'my-id'}
+const RELEASE_PAIR = {...BASE_PAIR, versionId: 'versions.rSummer.my-id'}
+const VARIANT_PAIR = {...BASE_PAIR, versionId: 'versions.randomScope.my-id'}
+
+function draftDocument(): SanityDocument {
+  return {
+    _id: BASE_PAIR.draftId,
+    _type: 'example',
+    _rev: 'draftRev',
+    _createdAt: '2021-09-14T22:48:02.303Z',
+    _updatedAt: '2021-09-14T22:48:02.303Z',
+  }
+}
+
+function publishedDocument(): SanityDocument {
+  return {
+    _id: BASE_PAIR.publishedId,
+    _type: 'example',
+    _rev: 'publishedRev',
+    _createdAt: '2021-09-14T22:48:02.303Z',
+    _updatedAt: '2021-09-14T22:48:02.303Z',
+  }
+}
+
+/** A plain (non-variant) release version snapshot. */
+function releaseVersion(): SanityDocument {
+  return {
+    _id: RELEASE_PAIR.versionId,
+    _type: 'example',
+    _rev: 'releaseRev',
+    _createdAt: '2021-09-14T22:48:02.303Z',
+    _updatedAt: '2021-09-14T22:48:02.303Z',
+    _system: {
+      bundleId: 'rSummer',
+      release: {_ref: '_.releases.rSummer', _weak: true},
+      group: {_ref: 'my-id', _weak: true},
+      scopeId: 'rSummer',
+    },
+  }
+}
+
 /**
  * A variant-scoped version snapshot: `_system.variant` set, bundle per `bundleId`. Release
  * bundles carry the `_system.release` reference, matching real release-scoped variant documents.
@@ -12,7 +53,7 @@ import {discardChanges} from './discardChanges'
 function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocument {
   const isReleaseBundle = Boolean(bundleId) && bundleId !== 'drafts'
   return {
-    _id: 'versions.varscope.my-id',
+    _id: VARIANT_PAIR.versionId,
     _type: 'example',
     _rev: 'variantRev',
     _createdAt: '2021-09-14T22:48:02.303Z',
@@ -22,30 +63,22 @@ function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocum
       ...(isReleaseBundle ? {release: {_ref: `_.releases.${bundleId}`, _weak: true}} : {}),
       variant: {_ref: '_.variants.french', _weak: true},
       group: {_ref: 'my-id', _weak: true},
-      scopeId: 'varscope',
+      scopeId: 'randomScope',
     },
   }
 }
 
 describe('discardChanges', () => {
   describe('disabled', () => {
-    it('returns NO_CHANGES when there is neither a draft nor a version', () => {
+    it('is enabled for a draft', () => {
       expect(
         discardChanges.disabled({
-          snapshots: {draft: null, version: null},
+          snapshots: {draft: draftDocument(), published: publishedDocument()},
         } as unknown as OperationArgs),
-      ).toBe('NO_CHANGES')
+      ).toBe(false)
     })
 
-    it('returns NO_CHANGES for the variant-of-published document (removing it is unpublish)', () => {
-      expect(
-        discardChanges.disabled({
-          snapshots: {version: variantVersion(undefined)},
-        } as unknown as OperationArgs),
-      ).toBe('NO_CHANGES')
-    })
-
-    it('is enabled for a variant-over-drafts version', () => {
+    it('is enabled for a variant', () => {
       expect(
         discardChanges.disabled({
           snapshots: {version: variantVersion('drafts')},
@@ -53,134 +86,132 @@ describe('discardChanges', () => {
       ).toBe(false)
     })
 
-    it('is enabled for a release-scoped variant version', () => {
+    it('is enabled for a release version', () => {
+      expect(
+        discardChanges.disabled({
+          snapshots: {version: releaseVersion()},
+        } as unknown as OperationArgs),
+      ).toBe(false)
+    })
+
+    it('is enabled for a release-scoped variant', () => {
       expect(
         discardChanges.disabled({
           snapshots: {version: variantVersion('rSummer')},
         } as unknown as OperationArgs),
       ).toBe(false)
     })
+
+    it('returns NO_CHANGES for a published document', () => {
+      expect(
+        discardChanges.disabled({
+          snapshots: {draft: null, version: null, published: publishedDocument()},
+        } as unknown as OperationArgs),
+      ).toBe('NO_CHANGES')
+    })
+
+    it('returns NO_CHANGES for a published variant (removing it is unpublish)', () => {
+      expect(
+        discardChanges.disabled({
+          snapshots: {version: variantVersion(undefined)},
+        } as unknown as OperationArgs),
+      ).toBe('NO_CHANGES')
+    })
   })
 
   describe('execute', () => {
-    it('routes a variant-over-drafts version to the variant delete action', () => {
+    it('discards a draft via version.discard', () => {
       const client = createMockSanityClient()
 
       discardChanges.execute({
         client,
-        idPair: {
-          draftId: 'drafts.my-id',
-          publishedId: 'my-id',
-          versionId: 'versions.varscope.my-id',
+        idPair: BASE_PAIR,
+        snapshots: {draft: draftDocument()},
+      } as unknown as OperationArgs)
+
+      expect(client.$log.observable.action).toEqual([
+        {
+          actions: {
+            actionType: 'sanity.action.document.version.discard',
+            versionId: BASE_PAIR.draftId,
+          },
+          options: {tag: 'document.discard-changes'},
         },
+      ])
+    })
+
+    it('discards a variant via version.discard', () => {
+      const client = createMockSanityClient()
+
+      discardChanges.execute({
+        client,
+        idPair: VARIANT_PAIR,
         snapshots: {version: variantVersion('drafts')},
       } as unknown as OperationArgs)
 
       expect(client.$log.observable.action).toEqual([
         {
           actions: {
-            actionType: 'sanity.action.document.variant.delete',
-            publishedId: 'my-id',
-            variantId: 'french',
-            bundleId: 'drafts',
+            actionType: 'sanity.action.document.version.discard',
+            versionId: VARIANT_PAIR.versionId,
           },
           options: {tag: 'document.discard-changes'},
         },
       ])
     })
 
-    it('routes a release-scoped variant to the variant delete action with the release bundleId', () => {
+    it('discards a release version via version.discard', () => {
       const client = createMockSanityClient()
 
       discardChanges.execute({
         client,
-        idPair: {
-          draftId: 'drafts.my-id',
-          publishedId: 'my-id',
-          versionId: 'versions.varscope.my-id',
+        idPair: RELEASE_PAIR,
+        snapshots: {version: releaseVersion()},
+      } as unknown as OperationArgs)
+
+      expect(client.$log.observable.action).toEqual([
+        {
+          actions: {
+            actionType: 'sanity.action.document.version.discard',
+            versionId: RELEASE_PAIR.versionId,
+          },
+          options: {tag: 'document.discard-changes'},
         },
+      ])
+    })
+
+    it('discards a release-scoped variant via version.discard', () => {
+      const client = createMockSanityClient()
+
+      discardChanges.execute({
+        client,
+        idPair: VARIANT_PAIR,
         snapshots: {version: variantVersion('rSummer')},
       } as unknown as OperationArgs)
 
       expect(client.$log.observable.action).toEqual([
         {
           actions: {
-            actionType: 'sanity.action.document.variant.delete',
-            publishedId: 'my-id',
-            variantId: 'french',
-            bundleId: 'rSummer',
+            actionType: 'sanity.action.document.version.discard',
+            versionId: VARIANT_PAIR.versionId,
           },
           options: {tag: 'document.discard-changes'},
         },
       ])
     })
 
-    it('throws when executing against the variant-of-published document', () => {
+    it('throws when executing against a published variant', () => {
       const client = createMockSanityClient()
 
       expect(() => {
         discardChanges.execute({
           client,
-          idPair: {
-            draftId: 'drafts.my-id',
-            publishedId: 'my-id',
-            versionId: 'versions.varscope.my-id',
-          },
+          idPair: VARIANT_PAIR,
           snapshots: {version: variantVersion(undefined)},
         } as unknown as OperationArgs)
-      }).toThrow('Cannot discard changes of a published variant')
+      }).toThrow('Cannot discard changes of a published variant: unpublish it instead')
 
       expect(client.$log.observable.action).toEqual([])
-    })
-
-    it('keeps the generic discard action for non-variant documents', () => {
-      const client = createMockSanityClient()
-
-      discardChanges.execute({
-        client,
-        idPair: {draftId: 'drafts.my-id', publishedId: 'my-id'},
-        snapshots: {draft: {} as SanityDocument},
-      } as unknown as OperationArgs)
-
-      expect(client.$log.observable.action).toEqual([
-        {
-          actions: {
-            actionType: 'sanity.action.document.discard',
-            draftId: 'drafts.my-id',
-          },
-          options: {tag: 'document.discard-changes'},
-        },
-      ])
-    })
-
-    it('keeps the generic discard action targeting release versions via versionId', () => {
-      const client = createMockSanityClient()
-
-      discardChanges.execute({
-        client,
-        idPair: {
-          draftId: 'drafts.my-id',
-          publishedId: 'my-id',
-          versionId: 'versions.rSummer.my-id',
-        },
-        snapshots: {
-          version: {
-            _id: 'versions.rSummer.my-id',
-            _type: 'example',
-            _rev: 'r1',
-          } as SanityDocument,
-        },
-      } as unknown as OperationArgs)
-
-      expect(client.$log.observable.action).toEqual([
-        {
-          actions: {
-            actionType: 'sanity.action.document.discard',
-            draftId: 'versions.rSummer.my-id',
-          },
-          options: {tag: 'document.discard-changes'},
-        },
-      ])
     })
   })
 })
