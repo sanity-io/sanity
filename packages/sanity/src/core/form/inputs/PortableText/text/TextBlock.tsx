@@ -229,12 +229,14 @@ export function TextBlock(props: TextBlockProps) {
   }, [isFullscreen, renderBlockActions, nested])
 
   const outerPaddingProps: ResponsivePaddingProps = useMemo(() => {
-    if (listItem) {
+    // List markers are schema-resolved through `listItem`, but spacing follows
+    // the raw value so legacy list blocks keep the same document rhythm.
+    if (value.listItem) {
       return {paddingY: 2}
     }
 
     return TEXT_STYLE_PADDING[value.style || 'normal'] || {paddingY: 2}
-  }, [listItem, value])
+  }, [value.listItem, value.style])
 
   const isOpen = Boolean(memberItem?.member.open)
   const parentSchemaType = schemaTypes.portableText

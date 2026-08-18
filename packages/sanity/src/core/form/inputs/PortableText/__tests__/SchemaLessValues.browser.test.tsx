@@ -197,9 +197,20 @@ describe('Portable Text Input', () => {
           textBlocks.find((textBlock) => textBlock.textContent?.includes(text))
 
         const listBlock = blockWithText('schema-less list item')
+        const definedListBlock = blockWithText('schema-defined list item')
         expect(listBlock).toBeDefined()
+        expect(definedListBlock).toBeDefined()
         expect(listBlock?.hasAttribute('data-list-item')).toBe(false)
         expect(listBlock?.querySelector('[data-list-prefix]')).toBeNull()
+
+        const outerPadding = (textBlock: Element) => {
+          const root = textBlock.closest<HTMLElement>('[data-testid="text-block"]')
+          expect(root).not.toBeNull()
+          const style = getComputedStyle(root!)
+          return {paddingBottom: style.paddingBottom, paddingTop: style.paddingTop}
+        }
+
+        expect(outerPadding(listBlock!)).toEqual(outerPadding(definedListBlock!))
       })
     })
   })
