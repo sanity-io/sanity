@@ -27,7 +27,7 @@ index 793e01fd9d183c1761081dc29bb24e92295fb008..b9160620cb8c68f738ba205b2824762e
 +
  export {}
 diff --git a/dist/index.js b/dist/index.js
-index 41be66be926d88cdaad96223a955f0925e8cce35..895ad1f9df025499e15a3c34d8976f0b27337e18 100644
+index 41be66be926d88cdaad96223a955f0925e8cce35..c7e65c01351ee86ea80815e0016e80cb418a9c3e 100644
 --- a/dist/index.js
 +++ b/dist/index.js
 @@ -1,5 +1,12 @@
@@ -35,9 +35,9 @@ index 41be66be926d88cdaad96223a955f0925e8cce35..895ad1f9df025499e15a3c34d8976f0b
 +// https://github.com/sanity-io/bifur-client/pull/30 ahead of its release —
 +// remove the patch (and this file's changes) when bumping to the version that
 +// includes it. One deliberate divergence from that PR as currently written:
-+// the disconnect delay is a wall-clock grace period (timer(5e3)) instead of
-+// two chained setTimeout(0) hops, which measurably still churn connections
-+// during studio boot (see the share() comment below).
++// the disconnect delay is a wall-clock grace period (timer(5e3)) instead of a
++// task-scheduling-based tick — see the share() comment below for the measured
++// reasoning.
  import { switchMap, mergeMap, share, distinctUntilChanged, take, map, shareReplay, filter, finalize, takeUntil } from "rxjs/operators";
 -import { partition, fromEvent, EMPTY, of, combineLatest, merge, defer, Observable, race, timer, throwError, NEVER } from "rxjs";
 +import { partition, fromEvent, EMPTY, of, combineLatest, merge, defer, Observable, race, timer, throwError, NEVER, ReplaySubject } from "rxjs";
@@ -94,32 +94,30 @@ index 41be66be926d88cdaad96223a955f0925e8cce35..895ad1f9df025499e15a3c34d8976f0b
      };
    });
  }
-@@ -162,11 +180,31 @@ function fromUrl(url, options = {}) {
+@@ -162,11 +180,29 @@ function fromUrl(url, options = {}) {
            )
          )
        ) : id,
 -      shareReplay({ refCount: !0 }),
-+      // Ensure graceful disconnect in browsers. This sits before the `share`
-+      // so that unloading the page completes through it and closes the socket
-+      // immediately, rather than waiting on the disconnect timer.
++      // Close the socket right away when the page unloads — placed before the
++      // `share` so it doesn't wait on the disconnect grace period below.
        takeUntil(
 -        // ensure graceful disconnect in browsers
          isEventTargetLike(ourGlobal) ? fromEvent(ourGlobal, "beforeunload") : NEVER
 -      )
 +      ),
-+      // Share a single connection between all subscribers, disconnecting only
-+      // after a wall-clock grace period without any. This makes the connection
-+      // compatible with the teardown scheduling of consumers like react-rx's
-+      // `useObservable`: it warms up an uncached observable with a render-phase
-+      // subscribe/unsubscribe whose shared store resets one microtask later,
-+      // while the real subscription only arrives with React's passive effects.
-+      // Under a loaded main thread (studio boot) that effect flush lands
-+      // 100-200ms later — task-count based delays (one or two setTimeout hops,
-+      // as bifur-client#30 currently uses) measurably still tear the connection
-+      // down in between, reconnecting two to three times per page load. Only a
-+      // wall-clock grace absorbs the gap; cold mounts then reuse the in-flight
-+      // connection instead of aborting the handshake ("WebSocket is closed
-+      // before the connection is established") and reconnecting.
++      // One shared connection for all subscribers, disconnecting only after a
++      // wall-clock grace period with none. Consumers like react-rx's
++      // `useObservable` unsubscribe during render and resubscribe from a
++      // passive effect; under a loaded main thread (studio boot) that effect
++      // flush lands 100-250ms after the teardown — an unbounded number of
++      // tasks later. Every task-scheduling-based disconnect delay measured
++      // (a setTimeout(0), two chained setTimeout(0)s, and a same-queue
++      // MessageChannel/setImmediate tick) still tore the connection down in
++      // that window, reconnecting two to three times per page load. Only a
++      // wall-clock grace absorbs the gap, letting cold mounts reuse the
++      // in-flight connection instead of aborting the handshake ("WebSocket is
++      // closed before the connection is established") and reconnecting.
 +      share({
 +        connector: () => new ReplaySubject(1),
 +        resetOnError: !0,
@@ -129,7 +127,7 @@ index 41be66be926d88cdaad96223a955f0925e8cce35..895ad1f9df025499e15a3c34d8976f0b
      ),
      { token$ }
    );
-@@ -183,8 +221,8 @@ function fromSanityClient(client) {
+@@ -183,8 +219,8 @@ function fromSanityClient(client) {
  }
  export {
    ERROR_CODES,
