@@ -15,9 +15,10 @@ vi.mock('../useDocumentList', () => ({
   useDocumentList: vi.fn(),
 }))
 
-// Stub out the heavy results content so we can focus on the search header.
+// Stub out the heavy results content while retaining a visible node so the
+// pane body's Activity boundary can be asserted.
 vi.mock('../DocumentListPaneContent', () => ({
-  DocumentListPaneContent: () => null,
+  DocumentListPaneContent: () => <div data-testid="document-list-content" />,
 }))
 
 vi.mock('sanity', async (importOriginal) => ({
@@ -50,6 +51,7 @@ const BASE_PERSPECTIVE: PerspectiveContextValue = {
   bundle: 'drafts',
 }
 
+const CONTENT_TESTID = 'document-list-content'
 const ORDERING_TESTID = 'document-list-search-ordering'
 const SEARCH_TESTID = 'document-list-search'
 
@@ -167,9 +169,10 @@ describe('DocumentListPane search area when the pane is collapsed', () => {
     await renderDocumentListPane()
 
     expect(await screen.findByTestId(SEARCH_TESTID)).toBeVisible()
+    expect(screen.getByTestId(CONTENT_TESTID)).toBeVisible()
   })
 
-  it('hides the search area, including the relevance indicator, while collapsed', async () => {
+  it('hides the pane body while collapsed and restores its state when expanded', async () => {
     const {rerender} = await renderDocumentListPane()
 
     // Enter a search term while expanded, so the relevance indicator renders,
@@ -183,10 +186,21 @@ describe('DocumentListPane search area when the pane is collapsed', () => {
       </PaneProvider>,
     )
 
-    // The search area stays mounted so the query survives the collapse, but a
+    // The pane body stays mounted so its state survives the collapse, but a
     // collapsed pane is too narrow to render it without overflowing.
     expect(screen.getByTestId(SEARCH_TESTID)).not.toBeVisible()
     expect(screen.getByTestId(ORDERING_TESTID)).not.toBeVisible()
+    expect(screen.getByTestId(CONTENT_TESTID)).not.toBeVisible()
+
+    rerender(
+      <PaneProvider>
+        <DocumentListPane {...getPaneProps()} />
+      </PaneProvider>,
+    )
+
+    expect(screen.getByLabelText('Search list')).toHaveValue('exodus')
+    expect(screen.getByTestId(ORDERING_TESTID)).toBeVisible()
+    expect(screen.getByTestId(CONTENT_TESTID)).toBeVisible()
   })
 })
 

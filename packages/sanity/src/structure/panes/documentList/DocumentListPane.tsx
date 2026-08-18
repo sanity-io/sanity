@@ -1,7 +1,7 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
 import {Box, Stack, TextInput} from '@sanity/ui'
-import {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {Activity, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
@@ -103,10 +103,9 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const {t} = useTranslation(structureLocaleNamespace)
   const {title} = useI18nText(pane)
-  // A collapsed pane is only wide enough for the rotated header. The search
-  // area is kept mounted (so the query and the input element the results list
-  // uses for keyboard navigation survive a collapse) but hidden, otherwise its
-  // contents overflow the pane and bleed into the neighbouring one.
+  // A collapsed pane is only wide enough for the rotated header. Keep the pane
+  // body mounted so its state survives a collapse, but hide it to prevent its
+  // contents from bleeding into the neighbouring pane.
   const {collapsed} = usePane()
 
   const [searchQuery, setSearchQuery] = useState<string>('')
@@ -281,8 +280,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   useReconnectingToast(!connected)
 
   return (
-    <>
-      <Box data-testid="document-list-search" hidden={collapsed} paddingX={3} paddingBottom={3}>
+    <Activity mode={collapsed ? 'hidden' : 'visible'}>
+      <Box data-testid="document-list-search" paddingX={3} paddingBottom={3}>
         <Stack gap={3}>
           <TextInput
             aria-label={t('panes.document-list-pane.search-input.aria-label')}
@@ -341,6 +340,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         showIcons={showIcons}
         sortOrder={orderByIdsParam ? DEFAULT_ORDERING : sortOrder}
       />
-    </>
+    </Activity>
   )
 })
