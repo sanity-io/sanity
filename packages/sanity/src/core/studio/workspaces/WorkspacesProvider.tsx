@@ -25,7 +25,7 @@ import {prepareConfig} from '../../config/prepareConfig'
 import {type Config} from '../../config/types'
 import {getApiErrorCode} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
-import {createStudioFetch as createStudioFetchTransport} from '../requestErrors/createStudioFetch'
+import {createStudioRequestHandler as createStudioRequestHandlerFactory} from '../requestErrors/createStudioRequestHandler'
 import {
   createRequestFailureProbe,
   type RequestFailureResult,
@@ -151,7 +151,7 @@ export function WorkspacesProvider({
     [],
   )
 
-  // The transport wrapper does two global things, both outside any caller's
+  // The request handler does two global things, both outside any caller's
   // reach:
   //  1. CORS / config detection: a misconfigured origin or a missing
   //     project/dataset makes the studio unusable and no plugin can recover
@@ -182,12 +182,11 @@ export function WorkspacesProvider({
     [applyRequestFailure, corsCache],
   )
 
-  const createStudioFetch = useCallback(
-    (getClient: () => SanityClient) => () =>
-      createStudioFetchTransport({
+  const createStudioRequestHandler = useCallback(
+    (getClient: () => SanityClient) =>
+      createStudioRequestHandlerFactory({
         channel: requestErrorChannel,
         diagnostics: requestFailureDiagnostics,
-        fetch: globalThis.fetch,
         getClient,
         waitForCorsRetry: async () => {
           await firstValueFrom(corsRetry.pipe(take(1)))
@@ -200,7 +199,7 @@ export function WorkspacesProvider({
   const workspaces = useDeferredValue(
     prepareConfig(config, {
       basePath,
-      createStudioFetch,
+      createStudioRequestHandler,
       requestErrorChannel,
       requestFailureDiagnostics,
     }).workspaces satisfies WorkspacesContextValue,

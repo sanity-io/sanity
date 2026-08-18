@@ -5,11 +5,11 @@
  *
  * Why not patch XHR / fetch directly? get-it can swap transport adapters
  * (xhr in browsers, fetch in workers, possibly more in the future). A
- * client-layer composition is transport-agnostic — it sees only the
- * rxjs observable contract used by the test scenarios.
+ * client-layer composition is transport-agnostic and uses the same parsed
+ * response and normalized-error contract as normal client requests.
  */
 
-import {ClientError, type SanityClient, ServerError} from '@sanity/client'
+import {ClientError, type RequestHandler, type SanityClient, ServerError} from '@sanity/client'
 import {firstValueFrom, Observable, throwError} from 'rxjs'
 
 type RequestOptions = {method?: string; url: string}
@@ -248,40 +248,26 @@ function responseObservable(
  * responses. Non-matching requests fall through to the workspace request
  * handler unchanged.
  *
- * `_requestHandler` lives on the underlying `ClientConfig` (it's how
- * `withConfig` propagates handlers) but isn't on the public TypeScript
- * surface for `client.config()` / `withConfig`. The two casts below
- * launder that single internal field.
- *
  * @internal
  */
 export function makeDemoClient(baseClient: SanityClient): SanityClient {
-  type Fetch = (url: string, init?: {method?: string}) => Promise<Response>
-  type ClientWithFetchResolver = {
-    config(): {resolveFetch?: () => Fetch}
-    withConfig(config: {resolveFetch: () => Fetch}): SanityClient
+  const demoRequestHandler: RequestHandler = async (request, next) => {
+    const synthetic = synthesize(request)
+    if (!synthetic) return next(request)
+
+    const event = await firstValueFrom(synthetic)
+    if (event.type !== 'response') {
+      throw new Error('Synthetic request completed without a response')
+    }
+    return event.body
   }
-  const client = baseClient as unknown as ClientWithFetchResolver
-  const workspaceFetch = client.config().resolveFetch?.() ?? globalThis.fetch
 
-  return client.withConfig({
-    resolveFetch: () => async (url, init) => {
-      const synthetic = synthesize({
-        method: init?.method,
-        url,
-      })
-      if (!synthetic) return workspaceFetch(url, init)
-
-      const event = await firstValueFrom(synthetic)
-      if (event.type !== 'response') {
-        throw new Error('Synthetic request completed without a response')
-      }
-      return new Response(JSON.stringify(event.body), {
-        headers: event.headers,
-        status: event.statusCode,
-        statusText: event.statusMessage,
-      })
-    },
+  const workspaceRequestHandler = baseClient.config().requestHandler
+  return baseClient.withConfig({
+    requestHandler: workspaceRequestHandler
+      ? (request, next) =>
+          workspaceRequestHandler(request, (nextRequest) => demoRequestHandler(nextRequest, next))
+      : demoRequestHandler,
   })
 }
 

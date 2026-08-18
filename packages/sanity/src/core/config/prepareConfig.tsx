@@ -1,5 +1,5 @@
 import {fromUrl} from '@sanity/bifur-client'
-import {createClient, type ClientConfig, type SanityClient} from '@sanity/client'
+import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
@@ -271,7 +271,7 @@ export function prepareConfig(
   config: Config | MissingConfigFile,
   options?: {
     basePath?: string
-    createStudioFetch?: (getClient: () => SanityClient) => NonNullable<ClientConfig['resolveFetch']>
+    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -367,7 +367,7 @@ export function prepareConfig(
       }
 
       const auth = getAuthStore(source, {
-        createStudioFetch: options?.createStudioFetch,
+        createStudioRequestHandler: options?.createStudioRequestHandler,
         requestErrorChannel: options?.requestErrorChannel,
         requestFailureDiagnostics: options?.requestFailureDiagnostics,
       })
@@ -434,11 +434,11 @@ export function prepareConfig(
 function getAuthStore(
   source: SourceOptions,
   {
-    createStudioFetch,
+    createStudioRequestHandler,
     requestErrorChannel,
     requestFailureDiagnostics,
   }: {
-    createStudioFetch?: (getClient: () => SanityClient) => NonNullable<ClientConfig['resolveFetch']>
+    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -447,19 +447,19 @@ function getAuthStore(
     return source.auth
   }
 
-  const _clientFactory = source.unstable_clientFactory
+  const clientFactory = source.unstable_clientFactory ?? createClient
 
   const {projectId, dataset, apiHost} = source
   return createAuthStore({
     apiHost,
     ...source.auth,
     clientFactory: (config) => {
-      if (_clientFactory) return _clientFactory(config)
-
       let client: SanityClient
-      client = createClient({
+      client = clientFactory({
         ...config,
-        ...(createStudioFetch ? {resolveFetch: createStudioFetch(() => client)} : {}),
+        ...(createStudioRequestHandler
+          ? {requestHandler: createStudioRequestHandler(() => client)}
+          : {}),
       })
       return client
     },

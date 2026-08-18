@@ -1,3 +1,4 @@
+import {type HttpError} from '@sanity/client'
 import {type Observable} from 'rxjs'
 
 /**
@@ -32,9 +33,9 @@ export interface RequestErrorReportOptions {
  */
 export type RequestErrorClaim =
   | {type: 'networkError'; error: Error; retryable: boolean}
-  | {type: 'serverError'; error: Error; retryable: boolean}
-  | {type: 'rateLimited'; error: Error; retryAfterSeconds?: number; retryable: boolean}
-  | {type: 'unauthorized'; error: Error; projectId?: string}
+  | {type: 'serverError'; error: HttpError; retryable: boolean}
+  | {type: 'rateLimited'; error: HttpError; retryAfterSeconds?: number; retryable: boolean}
+  | {type: 'unauthorized'; error: HttpError; projectId?: string}
 
 /**
  * Call-site API for delegating unrecoverable request errors to the

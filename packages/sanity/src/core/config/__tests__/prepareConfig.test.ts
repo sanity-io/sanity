@@ -1,3 +1,4 @@
+import {createClient, type RequestHandler} from '@sanity/client'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getCollectedConfigWarnings} from '../configWarnings'
@@ -189,5 +190,21 @@ describe('prepareConfig — workspace hidden property', () => {
     ])
 
     expect(workspaces.find((w) => w.name === 'callback')?.hidden).toBe(hidden)
+  })
+})
+
+describe('prepareConfig — studio request handler', () => {
+  it('passes the handler to a custom client factory', () => {
+    const requestHandler: RequestHandler = (request, next) => next(request)
+    const clientFactory = vi.fn(createClient)
+
+    prepareConfig(createWorkspace({unstable_clientFactory: clientFactory}), {
+      createStudioRequestHandler: () => requestHandler,
+    })
+
+    expect(clientFactory).toHaveBeenCalled()
+    for (const [config] of clientFactory.mock.calls) {
+      expect(config.requestHandler).toBe(requestHandler)
+    }
   })
 })
