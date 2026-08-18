@@ -1,11 +1,43 @@
-import {getTheme_v2, rgba} from '@sanity/ui/theme'
-import {type ComponentType} from 'react'
-import {createGlobalStyle, css} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {rgba} from '@sanity/ui/theme'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {useInsertionEffect, useState} from 'react'
 
-import {useWorkspace} from './workspace'
+import {GLOBAL_STYLES_ATTRIBUTE} from './globalStyleConstants'
+import {
+  selectionBackgroundColor,
+  uiColorBg,
+  uiColorBorder,
+  uiColorMutedFg,
+  uiFontTextFamily,
+  uiFontTextWeightMedium,
+  webkitResizerBackgroundImage,
+} from './styles.css'
 
-const SCROLLBAR_SIZE = 12 // px
-const SCROLLBAR_BORDER_SIZE = 4 // px
+interface InitialVariable {
+  priority: string
+  value: string
+}
+
+interface GlobalStyleRegistry {
+  initialAttributePresent: boolean
+  initialVariables: Map<string, InitialVariable>
+  instances: Map<symbol, Record<string, string> | undefined>
+  root: HTMLElement
+}
+
+const registries = new WeakMap<Document, GlobalStyleRegistry>()
+const globalStyleVariableNames = Object.keys(
+  assignInlineVars({
+    [selectionBackgroundColor]: '',
+    [uiColorBg]: '',
+    [uiColorBorder]: '',
+    [uiColorMutedFg]: '',
+    [uiFontTextFamily]: '',
+    [uiFontTextWeightMedium]: '',
+    [webkitResizerBackgroundImage]: '',
+  }),
+)
 
 // Construct a resize handle icon as a data URI, to be displayed in browsers that support the `::-webkit-resizer` selector.
 function buildResizeHandleDataUri(hexColor: string) {
@@ -14,73 +46,126 @@ function buildResizeHandleDataUri(hexColor: string) {
   return `url("data:image/svg+xml,${encodedSvg}")`
 }
 
-export const GlobalStyle: ComponentType = () => {
-  const {
-    advancedVersionControl: {enabled: advancedVersionControlEnabled},
-  } = useWorkspace()
-
-  return <GlobalStyleSheet $documentEditorGutterEnabled={advancedVersionControlEnabled} />
+function applyVariables(root: HTMLElement, variables: Record<string, string>) {
+  for (const [name, value] of Object.entries(variables)) {
+    root.style.setProperty(name, value)
+  }
 }
 
-interface Props {
-  $documentEditorGutterEnabled: boolean
+function getLatestVariables(instances: Map<symbol, Record<string, string> | undefined>) {
+  let latest: Record<string, string> | undefined
+
+  for (const variables of instances.values()) {
+    if (variables) latest = variables
+  }
+
+  return latest
 }
 
-const GlobalStyleSheet = createGlobalStyle<Props>(({theme, $documentEditorGutterEnabled}) => {
-  const {color, font} = getTheme_v2(theme)
+function registerGlobalStyles(ownerDocument: Document, instanceId: symbol) {
+  const root = ownerDocument.documentElement
+  let registry = registries.get(ownerDocument)
 
-  return css`
-    ::-webkit-resizer {
-      background-image: ${buildResizeHandleDataUri(color.icon)};
-      background-repeat: no-repeat;
-      background-position: bottom right;
+  if (!registry) {
+    registry = {
+      initialAttributePresent: root.hasAttribute(GLOBAL_STYLES_ATTRIBUTE),
+      initialVariables: new Map(
+        globalStyleVariableNames.map((name) => [
+          name,
+          {
+            priority: root.style.getPropertyPriority(name),
+            value: root.style.getPropertyValue(name),
+          },
+        ]),
+      ),
+      instances: new Map(),
+      root,
+    }
+    registries.set(ownerDocument, registry)
+  }
+
+  registry.instances.set(instanceId, undefined)
+  registry.root.setAttribute(GLOBAL_STYLES_ATTRIBUTE, '')
+
+  return () => {
+    const currentRegistry = registries.get(ownerDocument)
+
+    if (!currentRegistry?.instances.delete(instanceId)) return
+
+    const latestVariables = getLatestVariables(currentRegistry.instances)
+    if (latestVariables) {
+      applyVariables(currentRegistry.root, latestVariables)
+      return
     }
 
-    ::-webkit-scrollbar {
-      width: ${SCROLLBAR_SIZE}px;
-      height: ${SCROLLBAR_SIZE}px;
+    for (const [name, initial] of currentRegistry.initialVariables) {
+      if (initial.value) {
+        currentRegistry.root.style.setProperty(name, initial.value, initial.priority)
+      } else {
+        currentRegistry.root.style.removeProperty(name)
+      }
     }
 
-    ::-webkit-scrollbar-corner {
-      background-color: transparent;
+    if (!currentRegistry.initialAttributePresent) {
+      currentRegistry.root.removeAttribute(GLOBAL_STYLES_ATTRIBUTE)
     }
 
-    ::-webkit-scrollbar-thumb {
-      background-clip: content-box;
-      background-color: var(--card-border-color, ${color.border});
-      border: ${SCROLLBAR_BORDER_SIZE}px solid transparent;
-    }
+    registries.delete(ownerDocument)
+  }
+}
 
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: var(--card-muted-fg-color, ${color.muted.fg});
-    }
+function updateGlobalStyles(
+  ownerDocument: Document,
+  instanceId: symbol,
+  variables: Record<string, string>,
+) {
+  const registry = registries.get(ownerDocument)
+  if (!registry?.instances.has(instanceId)) return
 
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
+  registry.instances.set(instanceId, variables)
 
-    *::selection {
-      background-color: ${rgba(color.focusRing, 0.3)};
-    }
+  let latestInstanceId: symbol | undefined
+  for (const id of registry.instances.keys()) {
+    latestInstanceId = id
+  }
 
-    html {
-      background-color: ${color.bg};
-    }
+  if (latestInstanceId === instanceId) {
+    applyVariables(registry.root, variables)
+  }
+}
 
-    body {
-      scrollbar-gutter: stable;
-    }
+export function GlobalStyle(): null {
+  const [instanceId] = useState(Symbol)
+  const {color, font} = useThemeV2()
+  const webkitResizerBackgroundImageValue = buildResizeHandleDataUri(color.icon)
+  const selectionBackgroundColorValue = rgba(color.focusRing, 0.3)
 
-    #sanity {
-      font-family: ${font.text.family};
-    }
+  useInsertionEffect(() => registerGlobalStyles(document, instanceId), [instanceId])
 
-    b {
-      font-weight: ${font.text.weights.medium};
-    }
+  useInsertionEffect(() => {
+    updateGlobalStyles(
+      document,
+      instanceId,
+      assignInlineVars({
+        [selectionBackgroundColor]: selectionBackgroundColorValue,
+        [uiColorBg]: color.bg,
+        [uiColorBorder]: color.border,
+        [uiColorMutedFg]: color.muted.fg,
+        [uiFontTextFamily]: font.text.family,
+        [uiFontTextWeightMedium]: font.text.weights.medium.toString(),
+        [webkitResizerBackgroundImage]: webkitResizerBackgroundImageValue,
+      }),
+    )
+  }, [
+    color.bg,
+    color.border,
+    color.muted.fg,
+    font.text.family,
+    font.text.weights.medium,
+    instanceId,
+    selectionBackgroundColorValue,
+    webkitResizerBackgroundImageValue,
+  ])
 
-    strong {
-      font-weight: ${font.text.weights.medium};
-    }
-  `
-})
+  return null
+}
