@@ -275,7 +275,6 @@
     "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "rolldown": "~1.2.3",
     "rxjs-etc": "^10.6.2",
     "styled-components": "catalog:",
     "tsdown": "catalog:",

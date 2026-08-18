@@ -1,13 +1,8 @@
 import {defineConfig} from '@repo/tsdown.config'
-import {mergeConfig} from 'tsdown'
 
 import pkg from './package.json' with {type: 'json'}
 
-// Emits `lib/analyze-data.md` (LLM-friendly module/chunk breakdown). Opt-in because analysis
-// adds work to the tsdown build. Usage: `pnpm analyze:sanity` from the repo root (see AGENTS.md).
-const isBundleAnalyzerEnabled = process.env.ENABLE_BUNDLE_ANALYZER === 'true'
-
-const config = await defineConfig({
+export default defineConfig({
   // Filenames under `_exports/` map 1:1 to export names (index, cli, structure, …)
   entry: './src/_exports/*.ts',
   // Also wipe legacy root-level entry artifacts from older pkg-utils layouts (a string[] replaces
@@ -41,14 +36,7 @@ const config = await defineConfig({
   // `sanity/_singletons`), which must stay external so they resolve through the exports map at
   // runtime instead of being inlined into every chunk that imports them
   deps: {neverBundle: [/^sanity(\/|$)/]},
+  // Emits `lib/analyze-data.md` (LLM-friendly module/chunk breakdown). Opt-in because analysis
+  // adds work to the tsdown build. Usage: `pnpm analyze:sanity` from the repo root (see AGENTS.md).
+  bundleAnalyzer: process.env.ENABLE_BUNDLE_ANALYZER === 'true',
 })
-
-export default isBundleAnalyzerEnabled
-  ? mergeConfig(config, {
-      plugins: [
-        (await import('rolldown/experimental')).bundleAnalyzerPlugin({
-          format: 'md',
-        }),
-      ],
-    })
-  : config
