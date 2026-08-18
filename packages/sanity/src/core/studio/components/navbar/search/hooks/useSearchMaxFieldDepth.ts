@@ -43,7 +43,7 @@ const INITIAL_LOADING_STATE: Settings = {
 function fetchMaxDepth({client}: {client: SanityClient}): Observable<PartialIndexSettings> {
   const {projectId, dataset} = client.config()
   return client.observable.request<PartialIndexSettings>({
-    url: `/projects/${projectId}/datasets/${dataset}/settings/indexing`,
+    uri: `/projects/${projectId}/datasets/${dataset}/settings/indexing`,
     tag: 'search.getPartialIndexSettings',
   })
 }

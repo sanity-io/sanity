@@ -26,7 +26,7 @@ catalog:
   '@optique/run': ^1.1.1
   '@playwright/test': 1.62.1
   '@rolldown/plugin-babel': ^0.2.3
-  '@sanity/client': ^8.1.0
+  '@sanity/client': ^7.26.2
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.25.0
@@ -78,11 +78,16 @@ minimumReleaseAgeExclude:
   - '@typescript/*'
   - '@vanilla-extract/*'
   - '@vercel/stega'
+  # Scoped packages of the yuku toolchain used by rolldown-plugin-dts (native codegen/parser
+  # bindings plus shared types), they release in lockstep with it (like @oxlint/* for oxlint)
+  - '@yuku-codegen/*'
+  - '@yuku-parser/*'
   - '@yuku-toolchain/*'
   - 'csstype'
   - 'data-uri-to-buffer@7.0.0'
   - 'eslint-plugin-boundaries'
   - 'get-it'
+  - 'get-uri@7.0.0'
   - 'groq-js'
   # lightningcss and its per-platform native bindings (lightningcss-linux-x64-gnu etc.) release
   # in lockstep; @sanity/tsdown-config tracks its latest so builds pick up new bindings together

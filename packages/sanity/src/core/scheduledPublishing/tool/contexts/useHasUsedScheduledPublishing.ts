@@ -24,7 +24,7 @@ function fetchUsedScheduledPublishing(
 ): Observable<HasUsedScheduledPublishing> {
   const {dataset, projectId} = client.config()
   return client.observable
-    .request({url: `/schedules/${projectId}/${dataset}?limit=1`, tag: 'scheduled-publishing-used'})
+    .request({uri: `/schedules/${projectId}/${dataset}?limit=1`, tag: 'scheduled-publishing-used'})
     .pipe(
       map((res) => {
         return {used: res.schedules?.length > 0, loading: false}

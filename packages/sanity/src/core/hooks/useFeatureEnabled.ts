@@ -37,7 +37,7 @@ export const FEATURES: Record<string, string> = {
  */
 function fetchFeatures({versionedClient}: {versionedClient: SanityClient}): Observable<string[]> {
   return versionedClient.observable.request<string[]>({
-    url: `/features`,
+    uri: `/features`,
     tag: 'features',
   })
 }

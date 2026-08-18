@@ -110,7 +110,7 @@ export async function uploadSchema(
     }
 
     const claimResponse = await client.request<ClaimResponse>({
-      url: '/descriptors/claim',
+      uri: '/descriptors/claim',
       method: 'POST',
       body: claimRequest,
       headers: {
@@ -127,7 +127,7 @@ export async function uploadSchema(
       if (syncRequest === null) return descriptorId
 
       syncResult = await client.request<SchemaSynchronizationResult>({
-        url: '/descriptors/synchronize',
+        uri: '/descriptors/synchronize',
         method: 'POST',
         body: syncRequest,
       })

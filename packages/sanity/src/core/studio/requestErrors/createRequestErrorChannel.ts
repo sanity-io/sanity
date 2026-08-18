@@ -1,4 +1,3 @@
-import {type HttpError} from '@sanity/client'
 import {BehaviorSubject, isObservable, lastValueFrom, type Observable} from 'rxjs'
 
 import {classifyRequestError, isInvalidSessionError} from './classify'
@@ -14,8 +13,10 @@ import {
  * (`https://{projectId}.api.sanity.io/...`). Used to route a delegated
  * 401 to the right workspace's auth store for forced logout.
  */
-function projectIdFromError(err: HttpError): string | undefined {
-  const url = err.response.url
+function projectIdFromError(err: Error): string | undefined {
+  const url =
+    (err as Error & {response?: {url?: string}}).response?.url ??
+    (err as Error & {request?: {url?: string}}).request?.url
   if (!url) return undefined
   try {
     const host = new URL(url).hostname
