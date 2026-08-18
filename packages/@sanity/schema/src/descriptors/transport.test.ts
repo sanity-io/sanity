@@ -1,144 +1,129 @@
-import {type BufferedResponse, HttpError} from 'get-it'
+import {HttpError} from 'get-it'
 import {createMockFetch} from 'get-it/mock'
-import {describe, expect, test} from 'vitest'
+import {afterEach, describe, expect, test} from 'vitest'
 
 import {createGetItRequester, defaultShouldRetry} from './transport'
 
-/** Build the v9 error an HTTP failure surfaces as (what `retry()` hands to `shouldRetry`). */
-function httpError(status: number): HttpError {
-  const body = new Uint8Array()
-  const response: BufferedResponse = {
-    status,
-    statusText: '',
-    headers: new Headers(),
-    body,
-    json: () => undefined,
-    text: () => '',
-    bytes: () => body,
+const BASE = 'https://api.example'
+const CLAIM = '/v2025-06-01/descriptors/claim'
+const COMMIT = '/v2025-06-01/descriptors/commit'
+const SYNCHRONIZE = '/v2025-06-01/descriptors/synchronize'
+
+const mock = createMockFetch()
+
+function requester() {
+  return createGetItRequester({baseUrl: BASE, fetch: mock.fetch})
+}
+
+/**
+ * Drive a real get-it request against a mocked status so `defaultShouldRetry`
+ * is asserted against the `HttpError` v9 actually throws — not a hand-built
+ * stand-in. `maxRetries: 0` keeps 5xx from being swallowed by the retry loop.
+ */
+async function httpErrorFrom(status: number): Promise<HttpError> {
+  mock.clear()
+  mock.on('POST', `${BASE}${CLAIM}`).respond({status, body: {error: 'x'}})
+  try {
+    await requester()({url: CLAIM, method: 'POST', body: {}, maxRetries: 0})
+  } catch (err) {
+    if (err instanceof HttpError) return err
+    throw err
   }
-  return new HttpError({
-    url: 'https://api.example/v2025-06-01/descriptors/claim',
-    method: 'POST',
-    status,
-    statusText: '',
-    headers: new Headers(),
-    body: '',
-    response,
-  })
+  throw new Error(`expected HTTP ${status}`)
 }
 
 describe('defaultShouldRetry', () => {
-  test('retries on 429 and 5xx, not on other 4xx or non-http errors', () => {
-    expect(defaultShouldRetry(httpError(429))).toBe(true)
-    expect(defaultShouldRetry(httpError(500))).toBe(true)
-    expect(defaultShouldRetry(httpError(503))).toBe(true)
-    expect(defaultShouldRetry(httpError(404))).toBe(false)
+  afterEach(() => {
+    mock.clear()
+  })
+
+  test('retries on 429 and 5xx, not on 4xx or non-http errors', async () => {
+    expect(defaultShouldRetry(await httpErrorFrom(429))).toBe(true)
+    expect(defaultShouldRetry(await httpErrorFrom(503))).toBe(true)
+    expect(defaultShouldRetry(await httpErrorFrom(500))).toBe(true)
+    expect(defaultShouldRetry(await httpErrorFrom(404))).toBe(false)
+    // A 2xx never becomes an HttpError; the v8-shaped bag the old test passed
+    // in is also not an HttpError, so the predicate stays false.
+    expect(defaultShouldRetry({response: {statusCode: 200}})).toBe(false)
     expect(defaultShouldRetry(new Error('boom'))).toBe(false)
     expect(defaultShouldRetry(undefined)).toBe(false)
   })
 })
 
 describe('createGetItRequester', () => {
-  test('resolves relative URLs against the base URL and sends Accept: application/json', async () => {
-    const mock = createMockFetch()
-    mock.on('POST', '/v2025-06-01/descriptors/claim').respond({status: 200, body: {ok: true}})
+  afterEach(() => {
+    mock.clear()
+  })
 
-    const requester = createGetItRequester({baseUrl: 'https://api.example'})
-    await requester({
-      url: '/v2025-06-01/descriptors/claim',
-      method: 'POST',
-      body: {descriptorId: 'd1'},
-      fetch: mock.fetch,
-    })
+  test('resolves relative URLs against the base URL and sends Accept: application/json', async () => {
+    mock.on('POST', `${BASE}${CLAIM}`).respond({status: 200, body: {ok: true}})
+
+    await requester()({url: CLAIM, method: 'POST', body: {descriptorId: 'd1'}})
 
     const [recorded] = mock.getRequests()
-    expect(recorded!.fullUrl).toBe('https://api.example/v2025-06-01/descriptors/claim')
+    expect(recorded!.method).toBe('POST')
+    expect(recorded!.fullUrl).toBe(`${BASE}${CLAIM}`)
     expect(recorded!.headers.get('accept')).toBe('application/json')
     mock.assertAllConsumed()
   })
 
   test('serializes an object body as JSON and resolves with the parsed response body', async () => {
-    const mock = createMockFetch()
     mock
-      .on('POST', '/v2025-06-01/descriptors/claim')
+      .on('POST', `${BASE}${CLAIM}`)
       .respond({status: 200, body: {synchronization: {type: 'complete'}, commitId: 'c1'}})
 
-    const requester = createGetItRequester({baseUrl: 'https://api.example'})
-    const result = await requester<{commitId: string}>({
-      url: '/v2025-06-01/descriptors/claim',
+    const result = await requester()<{commitId: string}>({
+      url: CLAIM,
       method: 'POST',
       body: {descriptorId: 'd1', permanent: true},
-      fetch: mock.fetch,
     })
 
     expect(result).toEqual({synchronization: {type: 'complete'}, commitId: 'c1'})
     const [recorded] = mock.getRequests()
     expect(recorded!.headers.get('content-type')).toBe('application/json')
     expect(recorded!.body).toEqual({descriptorId: 'd1', permanent: true})
+    mock.assertAllConsumed()
   })
 
   test('resolves undefined for an empty response body instead of throwing', async () => {
-    const mock = createMockFetch()
-    mock.on('POST', '/v2025-06-01/descriptors/commit').respond({status: 204})
+    mock.on('POST', `${BASE}${COMMIT}`).respond({status: 204})
 
-    const requester = createGetItRequester({baseUrl: 'https://api.example'})
-    const result = await requester({
-      url: '/v2025-06-01/descriptors/commit',
-      method: 'POST',
-      body: {id: 'c1'},
-      fetch: mock.fetch,
-    })
+    const result = await requester()({url: COMMIT, method: 'POST', body: {id: 'c1'}})
     expect(result).toBeUndefined()
+    mock.assertAllConsumed()
   })
 
   test('resolves with the raw text for non-JSON responses', async () => {
-    const mock = createMockFetch()
     mock
-      .on('POST', '/v2025-06-01/descriptors/commit')
+      .on('POST', `${BASE}${COMMIT}`)
       .respond({status: 200, body: 'ok', headers: {'content-type': 'text/plain'}})
 
-    const requester = createGetItRequester({baseUrl: 'https://api.example'})
-    const result = await requester({
-      url: '/v2025-06-01/descriptors/commit',
-      method: 'POST',
-      body: {id: 'c1'},
-      fetch: mock.fetch,
-    })
+    const result = await requester()({url: COMMIT, method: 'POST', body: {id: 'c1'}})
     expect(result).toBe('ok')
+    mock.assertAllConsumed()
   })
 
   test('retries a 429 and resolves with the eventual success body', async () => {
-    const mock = createMockFetch()
     mock
-      .on('POST', '/v2025-06-01/descriptors/claim')
+      .on('POST', `${BASE}${CLAIM}`)
       .respond({status: 429, body: {error: 'Too many requests'}})
       .respond({status: 200, body: {synchronization: {type: 'complete'}, commitId: 'c1'}})
 
-    const requester = createGetItRequester({baseUrl: 'https://api.example'})
-    const result = await requester<{commitId: string}>({
-      url: '/v2025-06-01/descriptors/claim',
+    const result = await requester()<{commitId: string}>({
+      url: CLAIM,
       method: 'POST',
       body: {descriptorId: 'd1'},
-      fetch: mock.fetch,
     })
 
     expect(result).toEqual({synchronization: {type: 'complete'}, commitId: 'c1'})
     expect(mock.getRequests()).toHaveLength(2)
+    mock.assertAllConsumed()
   })
 
   test('does not retry a 404', async () => {
-    const mock = createMockFetch()
-    mock
-      .on('POST', '/v2025-06-01/descriptors/claim')
-      .respondPersist({status: 404, body: {error: 'Not found'}})
+    mock.on('POST', `${BASE}${CLAIM}`).respondPersist({status: 404, body: {error: 'Not found'}})
 
-    const requester = createGetItRequester({baseUrl: 'https://api.example'})
-    const promise = requester({
-      url: '/v2025-06-01/descriptors/claim',
-      method: 'POST',
-      body: {descriptorId: 'd1'},
-      fetch: mock.fetch,
-    })
+    const promise = requester()({url: CLAIM, method: 'POST', body: {descriptorId: 'd1'}})
 
     await expect(promise).rejects.toBeInstanceOf(HttpError)
     await expect(promise).rejects.toMatchObject({status: 404})
@@ -146,18 +131,15 @@ describe('createGetItRequester', () => {
   })
 
   test('gives up on persistent 5xx after the per-request maxRetries budget', async () => {
-    const mock = createMockFetch()
     mock
-      .on('POST', '/v2025-06-01/descriptors/synchronize')
+      .on('POST', `${BASE}${SYNCHRONIZE}`)
       .respondPersist({status: 503, body: {error: 'Unavailable'}})
 
-    const requester = createGetItRequester({baseUrl: 'https://api.example'})
-    const promise = requester({
-      url: '/v2025-06-01/descriptors/synchronize',
+    const promise = requester()({
+      url: SYNCHRONIZE,
       method: 'POST',
       body: {id: 'd1'},
       maxRetries: 2,
-      fetch: mock.fetch,
     })
 
     await expect(promise).rejects.toMatchObject({status: 503})

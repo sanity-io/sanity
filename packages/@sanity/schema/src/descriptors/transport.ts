@@ -1,4 +1,10 @@
-import {type BufferedResponse, createRequester, HttpError, type RequestOptions} from 'get-it'
+import {
+  type BufferedResponse,
+  createRequester,
+  type FetchFunction,
+  HttpError,
+  type RequestOptions,
+} from 'get-it'
 import {retry} from 'get-it/middleware'
 
 /**
@@ -49,6 +55,11 @@ export function defaultShouldRetry(err: unknown): boolean {
  */
 export interface GetItRequesterOptions {
   baseUrl: string
+  /**
+   * Injectable fetch, forwarded to get-it. Tests pass `createMockFetch().fetch`;
+   * callers can supply a custom transport the same way.
+   */
+  fetch?: FetchFunction
 }
 
 /**
@@ -80,6 +91,7 @@ export function createGetItRequester(options: GetItRequesterOptions): Descriptor
     // request; v9 sets no Accept header by itself, so restore it here.
     // Per-request headers merge over (and can override) this default.
     headers: {Accept: 'application/json'},
+    fetch: options.fetch,
     // JSON request serialization and HTTP-error throwing are built into v9
     // (and on by default); only the retry policy needs middleware.
     middleware: [retry({shouldRetry: defaultShouldRetry})],
