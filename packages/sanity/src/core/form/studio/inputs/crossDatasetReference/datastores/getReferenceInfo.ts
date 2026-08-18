@@ -102,7 +102,7 @@ function fetchDocumentAvailability(
   id: string,
 ): Observable<DocumentAvailability | null> {
   const requestOptions = {
-    url: client.getDataUrl('doc', id),
+    uri: client.getDataUrl('doc', id),
     json: true,
     query: {excludeContent: 'true'},
     tag: `${REQUEST_TAG_BASE}.availability`,

@@ -1,4 +1,4 @@
-import {type SanityAssetDocument, type SanityClient, type UploadProgressEvent} from '@sanity/client'
+import {type ProgressEvent, type SanityAssetDocument, type SanityClient} from '@sanity/client'
 import {type FileAsset, type ImageAsset} from '@sanity/types'
 import {from, Observable, of as observableOf} from 'rxjs'
 import {catchError, map, mergeMap, startWith} from 'rxjs/operators'
@@ -13,7 +13,7 @@ import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 
 const MAX_CONCURRENT_UPLOADS = 4
 
-type UploadEvent = UploadProgressEvent | {type: 'complete'; id: string; asset: SanityAssetDocument}
+type UploadEvent = ProgressEvent | {type: 'complete'; id: string; asset: SanityAssetDocument}
 
 function uploadSanityAsset(
   client: SanityClient,
