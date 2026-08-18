@@ -5,7 +5,7 @@ import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
 import {defaultClientConditions, mergeConfig} from 'vite'
 
 const config: StorybookConfig = {
-  stories: ['../stories/**/*.stories.@(ts|tsx)'],
+  stories: ['../../../packages/{sanity,groq,@repo/*,@sanity/*}/src/**/*.stories.@(ts|tsx)'],
   addons: ['@chromatic-com/storybook', '@storybook/addon-vitest'],
   framework: {
     name: '@storybook/react-vite',
