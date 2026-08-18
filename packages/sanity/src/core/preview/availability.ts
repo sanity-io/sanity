@@ -91,7 +91,7 @@ function createDocumentAvailabilityObserver(
   function fetchDocumentReadabilityChunked(ids: string[]): Observable<DocumentAvailability[]> {
     return defer(() => {
       const requestOptions = {
-        url: versionedClient.getDataUrl('doc', ids.join(',')),
+        uri: versionedClient.getDataUrl('doc', ids.join(',')),
         json: true,
         query: {excludeContent: 'true'},
         tag: 'preview.documents-availability',

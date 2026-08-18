@@ -102,7 +102,7 @@ export async function registerStudioManifest(
   // Post the live manifest via the global api
   await studioClient.request({
     method: 'POST',
-    url: `/projects/${projectId}/user-applications/${id}/config/live-manifest`,
+    uri: `/projects/${projectId}/user-applications/${id}/config/live-manifest`,
     body: {
       value: liveManifest,
     },

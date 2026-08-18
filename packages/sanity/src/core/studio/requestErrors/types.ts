@@ -1,4 +1,3 @@
-import {type HttpError} from '@sanity/client'
 import {type Observable} from 'rxjs'
 
 /**
@@ -33,9 +32,9 @@ export interface RequestErrorReportOptions {
  */
 export type RequestErrorClaim =
   | {type: 'networkError'; error: Error; retryable: boolean}
-  | {type: 'serverError'; error: HttpError; retryable: boolean}
-  | {type: 'rateLimited'; error: HttpError; retryAfterSeconds?: number; retryable: boolean}
-  | {type: 'unauthorized'; error: HttpError; projectId?: string}
+  | {type: 'serverError'; error: Error; retryable: boolean}
+  | {type: 'rateLimited'; error: Error; retryAfterSeconds?: number; retryable: boolean}
+  | {type: 'unauthorized'; error: Error; projectId?: string}
 
 /**
  * Call-site API for delegating unrecoverable request errors to the
@@ -52,7 +51,7 @@ export type RequestErrorClaim =
  *
  * // 1. Thunk wrapper — the dialog's "Try again" re-invokes the thunk.
  * //    The thunk may return a promise or a (single-shot) observable:
- * const user = await attempt(() => client.request({url: '/users/me'}), {
+ * const user = await attempt(() => client.request({uri: '/users/me'}), {
  *   retryable: true,
  * })
  *

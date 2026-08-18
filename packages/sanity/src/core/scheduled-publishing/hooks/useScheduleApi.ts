@@ -29,7 +29,7 @@ function createScheduleApi(client: SanityClient) {
         name: roundedDate,
       },
       method: 'POST',
-      url: `/schedules/${projectId}/${dataset}`,
+      uri: `/schedules/${projectId}/${dataset}`,
     })
   }
 
@@ -37,7 +37,7 @@ function createScheduleApi(client: SanityClient) {
     debug('_delete:', scheduleId)
     return client.request<void>({
       method: 'DELETE',
-      url: `/schedules/${projectId}/${dataset}/${scheduleId}`,
+      uri: `/schedules/${projectId}/${dataset}/${scheduleId}`,
     })
   }
 
@@ -52,7 +52,7 @@ function createScheduleApi(client: SanityClient) {
 
     return client.request<{transactionId: string}>({
       method: 'POST',
-      url: `/schedules/${projectId}/${dataset}/${scheduleId}/publish`,
+      uri: `/schedules/${projectId}/${dataset}/${scheduleId}/publish`,
     })
   }
 
@@ -67,7 +67,7 @@ function createScheduleApi(client: SanityClient) {
     return client.request<{transactionId: string}>({
       body: documentSchedule,
       method: 'PATCH',
-      url: `/schedules/${projectId}/${dataset}/${scheduleId}`,
+      uri: `/schedules/${projectId}/${dataset}/${scheduleId}`,
     })
   }
 

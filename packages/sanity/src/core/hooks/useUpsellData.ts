@@ -84,7 +84,7 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
 
   const upsellResult$ = useMemo(
     () =>
-      client.observable.request<UpsellData | null>({url: dataUri}).pipe(
+      client.observable.request<UpsellData | null>({uri: dataUri}).pipe(
         map((data): UpsellResult => {
           if (!data) {
             return {upsellData: null, hasError: true}

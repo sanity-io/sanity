@@ -25,7 +25,7 @@ export function createServerStorage({client: _client}: ServerStorageOptions): Se
   const keyValueLoader = new DataLoader<string, KeyValueStoreValue | null>(async (keys) => {
     const value = await client
       .request<KeyValuePair[]>({
-        url: `/users/me/keyvalue/${keys.join(',')}`,
+        uri: `/users/me/keyvalue/${keys.join(',')}`,
       })
       .catch((error) => {
         console.error('Error fetching data:', error)
@@ -54,7 +54,7 @@ export function createServerStorage({client: _client}: ServerStorageOptions): Se
     return client
       .request<KeyValuePair[]>({
         method: 'PUT',
-        url: `/users/me/keyvalue`,
+        uri: `/users/me/keyvalue`,
         body: [{key, value: nextValue}],
       })
       .then(

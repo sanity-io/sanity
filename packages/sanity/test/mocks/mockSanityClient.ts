@@ -31,7 +31,7 @@ export interface MockClientLog {
 export function createMockSanityClient(
   data: {
     requests?: Record<string, any>
-    requestCallback?: (request: {url: string; method: HTTPMethod}) =>
+    requestCallback?: (request: {uri: string; method: HTTPMethod}) =>
       | {
           statusCode: number
           data: any
@@ -113,17 +113,17 @@ export function createMockSanityClient(
 
     config: () => mockConfig,
 
-    getUrl: (url: string) => {
-      return BASE_URL + url
+    getUrl: (uri: string) => {
+      return BASE_URL + uri
     },
 
     withConfig: () => mockClient,
 
-    request: (opts: {url: string; tag?: string; withCredentials?: boolean; method: HTTPMethod}) => {
+    request: (opts: {uri: string; tag?: string; withCredentials?: boolean; method: HTTPMethod}) => {
       $log.request.push(opts)
 
       const requestCallbackValue =
-        data.requestCallback && data.requestCallback({url: opts.url, method: opts.method})
+        data.requestCallback && data.requestCallback({uri: opts.uri, method: opts.method})
 
       if (requestCallbackValue) {
         return requestCallbackValue.statusCode >= 400
@@ -131,15 +131,15 @@ export function createMockSanityClient(
           : Promise.resolve(requestCallbackValue)
       }
 
-      if (opts.url.startsWith(requestUriPrefix)) {
-        const path = opts.url.slice(requestUriPrefix.length)
+      if (opts.uri.startsWith(requestUriPrefix)) {
+        const path = opts.uri.slice(requestUriPrefix.length)
 
         if (requests[path]) {
           return Promise.resolve(requests[path])
         }
       }
 
-      return Promise.resolve(requests[opts.url] || requests['*'] || null)
+      return Promise.resolve(requests[opts.uri] || requests['*'] || null)
     },
 
     listen: (query: string, params?: any) => {
@@ -177,7 +177,7 @@ export function createMockSanityClient(
       },
 
       request: (opts: {
-        url: string
+        uri: string
         tag?: string
         withCredentials?: boolean
         method: HTTPMethod
@@ -186,7 +186,7 @@ export function createMockSanityClient(
 
         $log.observable.request.push(opts)
         const requestCallbackValue =
-          data.requestCallback && data.requestCallback({url: opts.url, method: opts.method})
+          data.requestCallback && data.requestCallback({uri: opts.uri, method: opts.method})
 
         if (requestCallbackValue) {
           return requestCallbackValue.statusCode >= 400
@@ -194,15 +194,15 @@ export function createMockSanityClient(
             : of(requestCallbackValue.data)
         }
 
-        if (opts.url?.startsWith(requestUriPrefix)) {
-          const path = opts.url.slice(requestUriPrefix.length)
+        if (opts.uri?.startsWith(requestUriPrefix)) {
+          const path = opts.uri.slice(requestUriPrefix.length)
 
           if (requests[path]) {
             return of(requests[path])
           }
         }
 
-        return of(requests[opts.url] || requests['*'] || null)
+        return of(requests[opts.uri] || requests['*'] || null)
       },
 
       assets: {

@@ -25,7 +25,7 @@ async function getDatasetGrants(
   // `acl` stands for access control list and returns a list of grants
   const fetchGrants = () =>
     client.request<Grant[]>({
-      url: `/projects/${projectId}/datasets/${dataset}/acl`,
+      uri: `/projects/${projectId}/datasets/${dataset}/acl`,
       tag: 'acl.get',
     })
 

@@ -19,7 +19,7 @@ export function getTelemetryConsent$(client: SanityClient): Observable<ConsentSt
   let cached$ = cache.get(projectId)
   if (!cached$) {
     cached$ = client.observable
-      .request<{status: string}>({url: '/intake/telemetry-status', tag: 'telemetry-consent'})
+      .request<{status: string}>({uri: '/intake/telemetry-status', tag: 'telemetry-consent'})
       .pipe(
         map((res): ConsentStatus => (res?.status === 'granted' ? 'granted' : 'denied')),
         shareReplay(1),
