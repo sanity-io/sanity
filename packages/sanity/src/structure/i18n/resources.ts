@@ -111,6 +111,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.restore.confirm.message': 'Are you sure you want to restore this document?',
   /** Fallback tooltip for when user is looking at the initial revision */
   'action.restore.disabled.cannot-restore-initial': "You can't restore to the initial revision",
+  /** Tooltip when restore is disabled because the document schema is read-only */
+  'action.restore.disabled.read-only': 'This document is read-only',
 
   /** Label for the "Restore" document action */
   'action.restore.label': 'Revert to revision',

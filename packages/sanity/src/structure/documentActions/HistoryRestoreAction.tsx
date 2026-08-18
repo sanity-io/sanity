@@ -1,9 +1,13 @@
 import {RevertIcon} from '@sanity/icons/Revert'
+import {isActionEnabled} from '@sanity/schema/_internal'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDialogProps,
+  EMPTY_ARRAY,
   getPairTarget,
+  resolveConditionalProperty,
+  useCurrentUser,
   useDocumentOperation,
   useDocumentOperationEvent,
   useTranslation,
@@ -13,10 +17,20 @@ import {useRouter} from 'sanity/router'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 
+function restoreTooltipKey(isRevisionInitial: boolean, isDocumentReadOnly: boolean): string {
+  if (isRevisionInitial) {
+    return 'action.restore.disabled.cannot-restore-initial'
+  }
+  if (isDocumentReadOnly) {
+    return 'action.restore.disabled.read-only'
+  }
+  return 'action.restore.tooltip'
+}
+
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
 export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revision}) => {
-  const {revisionNotFound, targetDocumentState} = useDocumentPane()
+  const {revisionNotFound, targetDocumentState, schemaType, displayed} = useDocumentPane()
   // The scope of the document targeted by the selected perspective (undefined when the target is
   // still resolving or the draft/published pair applies). While resolving, the action is disabled
   // below instead of silently operating on the base pair.
@@ -27,6 +41,16 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
   const prevEvent = useRef(event)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const {t} = useTranslation(structureLocaleNamespace)
+  const currentUser = useCurrentUser()
+
+  const isSchemaReadOnly = resolveConditionalProperty(schemaType.readOnly, {
+    currentUser,
+    document: displayed ?? undefined,
+    parent: undefined,
+    value: displayed,
+    path: EMPTY_ARRAY,
+  })
+  const isDocumentReadOnly = isSchemaReadOnly || !isActionEnabled(schemaType, 'update')
 
   const handleConfirm = useCallback(() => {
     restore.execute(revision!)
@@ -70,6 +94,7 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
 
   const isRevisionInitial = revision === '@initial'
   const isRevisionLatest = revision === undefined // undefined means latest revision
+  const titleKey = restoreTooltipKey(isRevisionInitial, isDocumentReadOnly)
 
   return useMemo(() => {
     if (isRevisionLatest || revisionNotFound) {
@@ -80,16 +105,22 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
       label: t('action.restore.label'),
       tone: 'caution',
       onHandle: handle,
-      title: t(
-        isRevisionInitial
-          ? 'action.restore.disabled.cannot-restore-initial'
-          : 'action.restore.tooltip',
-      ),
+      title: t(titleKey),
       icon: RevertIcon,
       dialog,
-      disabled: isRevisionInitial || !isTargetReady,
+      disabled: isRevisionInitial || !isTargetReady || isDocumentReadOnly,
     }
-  }, [dialog, handle, isRevisionInitial, isRevisionLatest, isTargetReady, revisionNotFound, t])
+  }, [
+    dialog,
+    handle,
+    isDocumentReadOnly,
+    isRevisionInitial,
+    isRevisionLatest,
+    isTargetReady,
+    revisionNotFound,
+    t,
+    titleKey,
+  ])
 }
 
 useHistoryRestoreAction.action = 'restore'
