@@ -22,8 +22,8 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
 
 ## How the stories work
 
-- **Stories are package-owned and co-located.** Storybook discovers
-  `packages/**/src/**/*.stories.tsx`; `dev/storybook` owns only the Storybook, Chromatic, and
+- **Stories are package-owned and co-located.** Storybook discovers `*.stories.tsx` files in
+  workspace package `src` trees; `dev/storybook` owns only the Storybook, Chromatic, and
   addon-vitest infrastructure. Keep a story in the same `__tests__` directory as the component or
   harness it covers and use package-local imports instead of reaching across workspace boundaries.
 - **Harness reuse:** thin CSF files sit beside the `*Story.tsx` harness components that the vitest

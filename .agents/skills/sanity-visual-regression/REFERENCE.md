@@ -15,7 +15,8 @@
   studio ships. Divergence here would make snapshots render differently from production.
 - **Why stories are co-located:** each package owns its CSF files and keeps component, fixture,
   test-harness, and test-only imports within the same workspace boundary. `dev/storybook` is only
-  the shared host; its discovery glob finds `packages/**/src/**/*.stories.tsx`.
+  the shared host; its discovery globs target workspace package `src` roots without traversing
+  dependency symlinks under nested `node_modules` directories.
 - **One Chromatic project per integration type** (Chromatic constraint): `sanity` (Storybook),
   `sanity_e2e` (Playwright), plus a Vitest-type project once early access lands.
 

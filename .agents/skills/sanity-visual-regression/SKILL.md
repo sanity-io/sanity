@@ -21,8 +21,8 @@ baselines. Review diffs on the Chromatic build linked from the PR check.
 ## Quick start: add visual coverage for a component
 
 1. Add a co-located `*.stories.tsx` file to the owning package's `src` tree, usually in the same
-   `__tests__` directory as the component or harness. Storybook discovers
-   `packages/**/src/**/*.stories.tsx`. Two patterns:
+   `__tests__` directory as the component or harness. Storybook discovers story files in workspace
+   package `src` trees. Two patterns:
    - **Plain component states** (ui-components wrappers, tone/card sentinels): render variants
      directly — see
      [Button.stories.tsx](../../../packages/sanity/src/ui-components/button/__tests__/Button.stories.tsx).
