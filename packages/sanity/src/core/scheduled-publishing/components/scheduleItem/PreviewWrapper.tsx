@@ -6,7 +6,7 @@ import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
-import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator/DocumentStatusIndicator'
+import {DocumentVersionsStatusIndicator} from '../../../components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
@@ -204,5 +204,5 @@ export default PreviewWrapper
 
 function DocumentVersionsStatus({publishedDocumentId}: {publishedDocumentId: string}) {
   const {versions} = useDocumentVersions({documentId: publishedDocumentId})
-  return <DocumentStatusIndicator documentVersions={versions} />
+  return <DocumentVersionsStatusIndicator documentVersions={versions} />
 }

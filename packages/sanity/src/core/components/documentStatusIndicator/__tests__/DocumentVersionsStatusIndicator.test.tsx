@@ -12,7 +12,7 @@ import {type PerspectiveContextValue} from '../../../perspective/types'
 import {activeASAPRelease} from '../../../releases/__fixtures__/release.fixture'
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {variantAlphaAudience} from '../../../variants/__fixtures__/variants.fixture'
-import {DocumentStatusIndicator} from '../DocumentStatusIndicator'
+import {DocumentVersionsStatusIndicator} from '../DocumentVersionsStatusIndicator'
 
 vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
@@ -84,9 +84,12 @@ function wrapper({children}: {children: ReactNode}) {
 
 /** The rendered indicators, in DOM order. */
 function renderIndicator(documentVersions: VersionInfoDocumentStub[]): string[] {
-  const {container} = render(<DocumentStatusIndicator documentVersions={documentVersions} />, {
-    wrapper,
-  })
+  const {container} = render(
+    <DocumentVersionsStatusIndicator documentVersions={documentVersions} />,
+    {
+      wrapper,
+    },
+  )
 
   return Array.from(container.querySelectorAll(INDICATOR_SELECTOR)).map(
     (element) =>
@@ -103,7 +106,7 @@ const RELEASE_ICON = 'release-avatar-caution'
 const AGENT_ICON = 'release-avatar-suggest'
 
 // Cases follow resolveDocumentStatusIcons.ts: perspective first, then variant selection.
-describe('DocumentStatusIndicator', () => {
+describe('DocumentVersionsStatusIndicator', () => {
   beforeEach(() => {
     mockPerspective()
   })

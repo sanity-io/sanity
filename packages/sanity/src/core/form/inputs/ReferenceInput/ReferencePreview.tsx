@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 import {Box} from 'ui5'
 
 import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
-import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator/DocumentStatusIndicator'
+import {DocumentVersionsStatusIndicator} from '../../../components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {type PreviewLayoutKey} from '../../../components/previews/types'
 import {DocumentPreviewPresence} from '../../../presence/DocumentPreviewPresence'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
@@ -46,7 +46,7 @@ export function ReferencePreview(props: {
               <DocumentPreviewPresence presence={documentPresence} />
             )}
 
-            <DocumentStatusIndicator documentVersions={versions} />
+            <DocumentVersionsStatusIndicator documentVersions={versions} />
           </Inline>
         </Box>
       ),

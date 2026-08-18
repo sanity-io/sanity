@@ -4,7 +4,7 @@ import {definePlugin} from 'sanity'
 import {DocumentStatusDebug} from './DocumentStatusDebug'
 
 /**
- * Visual matrix of every `DocumentStatusIndicator` state, for eyeballing the icons against the
+ * Visual matrix of every `DocumentVersionsStatusIndicator` state, for eyeballing the icons against the
  * design without having to seed releases, variants and agent bundles in a dataset.
  */
 export const documentStatusDebugTool = definePlugin(() => ({

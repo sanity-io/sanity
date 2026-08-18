@@ -1,7 +1,7 @@
 import {DocumentIcon} from '@sanity/icons/Document'
 import {Box, Card, Flex, Heading, Stack, Switch, Text} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useState} from 'react'
-import {DocumentStatusIndicator, PreviewCard, SanityDefaultPreview} from 'sanity'
+import {DocumentVersionsStatusIndicator, PreviewCard, SanityDefaultPreview} from 'sanity'
 import {PerspectiveContext} from 'sanity/_singletons'
 
 import {type DebugRow, type DebugScenario, scenarios} from './fixtures'
@@ -12,7 +12,7 @@ const BUTTON_CARD_STYLE = {width: '100%', textAlign: 'left'} as const
 const ROWS_CARD_STYLE = {maxWidth: 350} as const
 
 /**
- * Renders every case documented on `DocumentStatusIndicator`, using fabricated documents. Only the
+ * Renders every case documented on `DocumentVersionsStatusIndicator`, using fabricated documents. Only the
  * version metadata the indicator actually reads is real, so nothing here needs to exist in the
  * dataset.
  */
@@ -134,7 +134,7 @@ function Row({
       <SanityDefaultPreview
         icon={DocumentIcon}
         layout="default"
-        status={<DocumentStatusIndicator documentVersions={row.versions} />}
+        status={<DocumentVersionsStatusIndicator documentVersions={row.versions} />}
         subtitle={row.expected}
         title={row.title}
         // The rows are pane-width, so both lines truncate. The tooltip is the only place the full

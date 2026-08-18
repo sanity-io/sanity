@@ -1,5 +1,5 @@
 // oxlint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
-import {Button, Text} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useObservable} from 'react-rx'
 import {useRouterState} from 'sanity/router'

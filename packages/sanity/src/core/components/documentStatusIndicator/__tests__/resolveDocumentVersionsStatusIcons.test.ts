@@ -2,12 +2,7 @@ import {describe, expect, it} from 'vitest'
 
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {variantAlphaAudience} from '../../../variants/__fixtures__/variants.fixture'
-import {
-  DOCUMENT_STATUS_ICONS_BY_OUTCOME,
-  type DocumentStatusIconsOutcome,
-  resolveDocumentStatusIcons,
-  resolveDocumentStatusIconsOutcome,
-} from '../resolveDocumentStatusIcons'
+import {resolveDocumentStatusIconsOutcome} from '../resolveDocumentStatusIcons'
 
 const PUBLISHED_ID = 'article-1'
 const RELEASE_BUNDLE_ID = 'rASAP'
