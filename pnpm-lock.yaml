@@ -6025,10 +6025,6 @@ packages:
     resolution: {integrity: sha512-oIIYUjr2At34+Nrl409HVRTO8T1wAEExAKVQIvGnuS2ZkJMvJN2tn7oPK1ImIZoQbizikHW+o3hqVSNd0agLlA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@portabletext/markdown@1.4.6':
-    resolution: {integrity: sha512-53iW/VB6I0B+HmgrMm4z+sqLMu3u3cGZ4HUzcm80pHhl+deYoaKNSNY+0LjP8HvnLFFD+ZkHNa7kafelx7suoA==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-
   '@portabletext/markdown@1.5.0':
     resolution: {integrity: sha512-TLlWrsLT6kXUeE4Fn6KWW+NMOBB/epT5qZiD92+15cJje6R7xmmQ/orCwViSicCiQ77t1/zwguilCUzdNB4XDA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -18076,13 +18072,6 @@ snapshots:
 
   '@portabletext/keyboard-shortcuts@2.1.4': {}
 
-  '@portabletext/markdown@1.4.6':
-    dependencies:
-      '@mdit/plugin-alert': 0.23.2(markdown-it@14.3.0)
-      '@portabletext/schema': 2.2.4
-      '@portabletext/toolkit': 5.0.2
-      markdown-it: 14.3.0
-
   '@portabletext/markdown@1.5.0':
     dependencies:
       '@mdit/plugin-alert': 0.23.2(markdown-it@14.3.0)
@@ -18388,7 +18377,7 @@ snapshots:
       '@googleapis/drive': 20.2.0(supports-color@8.1.1)
       '@inquirer/prompts': 8.5.2(@types/node@24.13.3)
       '@modelcontextprotocol/sdk': 1.30.0(supports-color@8.1.1)(zod@4.4.3)
-      '@portabletext/markdown': 1.4.6
+      '@portabletext/markdown': 1.5.0
       '@sanity/client': 7.26.2
       ajv: 8.20.0
       commander: 14.0.3
