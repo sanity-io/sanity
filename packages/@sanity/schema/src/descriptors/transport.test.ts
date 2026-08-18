@@ -60,11 +60,9 @@ describe('createGetItRequester', () => {
 
     await requester()({url: CLAIM, method: 'POST', body: {descriptorId: 'd1'}})
 
-    const [recorded] = mock.getRequests()
-    expect(recorded!.method).toBe('POST')
-    expect(recorded!.fullUrl).toBe(`${BASE}${CLAIM}`)
-    expect(recorded!.headers.get('accept')).toBe('application/json')
-    mock.assertAllConsumed()
+    expect(mock).toHaveReceivedRequest('POST', `${BASE}${CLAIM}`)
+    expect(mock.getRequests()[0]).toHaveHeader('accept', 'application/json')
+    expect(mock).toHaveConsumedAllMocks()
   })
 
   test('serializes an object body as JSON and resolves with the parsed response body', async () => {
@@ -79,10 +77,9 @@ describe('createGetItRequester', () => {
     })
 
     expect(result).toEqual({synchronization: {type: 'complete'}, commitId: 'c1'})
-    const [recorded] = mock.getRequests()
-    expect(recorded!.headers.get('content-type')).toBe('application/json')
-    expect(recorded!.body).toEqual({descriptorId: 'd1', permanent: true})
-    mock.assertAllConsumed()
+    expect(mock.getRequests()[0]).toHaveHeader('content-type', 'application/json')
+    expect(mock.getRequests()[0]).toHaveBody({descriptorId: 'd1', permanent: true})
+    expect(mock).toHaveConsumedAllMocks()
   })
 
   test('resolves undefined for an empty response body instead of throwing', async () => {
@@ -90,7 +87,7 @@ describe('createGetItRequester', () => {
 
     const result = await requester()({url: COMMIT, method: 'POST', body: {id: 'c1'}})
     expect(result).toBeUndefined()
-    mock.assertAllConsumed()
+    expect(mock).toHaveConsumedAllMocks()
   })
 
   test('resolves with the raw text for non-JSON responses', async () => {
@@ -100,7 +97,7 @@ describe('createGetItRequester', () => {
 
     const result = await requester()({url: COMMIT, method: 'POST', body: {id: 'c1'}})
     expect(result).toBe('ok')
-    mock.assertAllConsumed()
+    expect(mock).toHaveConsumedAllMocks()
   })
 
   test('retries a 429 and resolves with the eventual success body', async () => {
@@ -116,8 +113,8 @@ describe('createGetItRequester', () => {
     })
 
     expect(result).toEqual({synchronization: {type: 'complete'}, commitId: 'c1'})
-    expect(mock.getRequests()).toHaveLength(2)
-    mock.assertAllConsumed()
+    expect(mock).toHaveReceivedRequestTimes('POST', `${BASE}${CLAIM}`, 2)
+    expect(mock).toHaveConsumedAllMocks()
   })
 
   test('does not retry a 404', async () => {
@@ -127,7 +124,7 @@ describe('createGetItRequester', () => {
 
     await expect(promise).rejects.toBeInstanceOf(HttpError)
     await expect(promise).rejects.toMatchObject({status: 404})
-    expect(mock.getRequests()).toHaveLength(1)
+    expect(mock).toHaveReceivedRequestTimes('POST', `${BASE}${CLAIM}`, 1)
   })
 
   test('gives up on persistent 5xx after the per-request maxRetries budget', async () => {
@@ -143,6 +140,6 @@ describe('createGetItRequester', () => {
     })
 
     await expect(promise).rejects.toMatchObject({status: 503})
-    expect(mock.getRequests()).toHaveLength(3)
+    expect(mock).toHaveReceivedRequestTimes('POST', `${BASE}${SYNCHRONIZE}`, 3)
   })
 })
