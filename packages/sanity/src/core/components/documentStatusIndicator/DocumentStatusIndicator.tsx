@@ -7,9 +7,9 @@ import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {isSystemBundle} from '../../util/draftUtils'
 import {getTargetDocument, getVariantPublishedSibling} from '../../util/getTargetDocument'
-import {CircleSmallIcon} from './temporary-icons/CircleSmall'
-import {RhombusIcon} from './temporary-icons/Rhombus'
-import {RingIcon} from './temporary-icons/Ring'
+import {CircleSmallIcon} from '../temporary-icons/CircleSmall'
+import {RhombusIcon} from '../temporary-icons/Rhombus'
+import {RingIcon} from '../temporary-icons/Ring'
 
 interface DocumentStatusProps {
   documentVersions: VersionInfoDocumentStub[]
