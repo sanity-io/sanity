@@ -21,6 +21,7 @@ const DRAFTS: VariantDocumentVersion = {
 
 const RELEASE: VariantDocumentVersion = {
   documentId: 'doc-1',
+  bundleId: activeASAPRelease.name,
   releaseRef: activeASAPRelease._id,
   updatedAt: '2023-10-10T08:00:00Z',
 }
