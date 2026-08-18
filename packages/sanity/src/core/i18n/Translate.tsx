@@ -36,7 +36,7 @@ type FormatterFns = {list: (value: Iterable<string>) => string}
  *
  * @public
  */
-export type TranslateComponentMap<TComponentProps = unknown> = Record<
+export type TranslateComponentMap<TComponentProps extends object = object> = Record<
   string,
   ComponentType<{children?: ReactNode} & TComponentProps> | keyof React.JSX.IntrinsicElements
 >
@@ -46,7 +46,7 @@ export type TranslateComponentMap<TComponentProps = unknown> = Record<
  *
  * @public
  */
-export interface TranslationProps<TComponentProps = unknown> {
+export interface TranslationProps<TComponentProps extends object = object> {
   /**
    * The `t` function to use, from the `useTranslation` hook
    */
@@ -98,7 +98,9 @@ export interface TranslationProps<TComponentProps = unknown> {
  *
  * @public
  */
-export function Translate<TComponentProps = unknown>(props: TranslationProps<TComponentProps>) {
+export function Translate<TComponentProps extends object = object>(
+  props: TranslationProps<TComponentProps>,
+) {
   /**
    * The i18next API is kinda weird - the second parameter to `t` is a mixture of options and
    * replacement values. All of the following properties are options for the `t` function, at
@@ -133,7 +135,7 @@ export function Translate<TComponentProps = unknown>(props: TranslationProps<TCo
       tokens,
       props.values,
       componentMap as TranslateComponentMap,
-      props.componentProps as object | undefined,
+      props.componentProps,
       formatters,
     )
   } catch (error) {
