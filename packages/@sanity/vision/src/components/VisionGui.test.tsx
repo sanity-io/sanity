@@ -219,6 +219,29 @@ describe('VisionGui pinned release and variant', () => {
     )
   })
 
+  it('forces vX over a stored custom API version when a navbar variant is active', async () => {
+    seedVisionStorage({
+      perspective: 'pinnedRelease',
+      apiVersion: 'v2022-08-08',
+    })
+
+    const {fetchConfigs} = renderVision({
+      ...BASE_PERSPECTIVE,
+      selectedVariantName: 'french',
+    })
+
+    expect(getApiVersionSelector().value).toBe('vX')
+    expect(getApiVersionSelector().disabled).toBe(true)
+    expect(screen.queryByDisplayValue('v2022-08-08')).toBeNull()
+
+    await waitFor(() => {
+      expect(getQueryUrl()).toContain('/vX/')
+      expect(getQueryUrlParams().get('variant')).toBe('french')
+    })
+
+    expect(fetchConfigs.at(-1)?.apiVersion).toBe('vX')
+  })
+
   it('does not attach a variant while Vision is on a local perspective', async () => {
     seedVisionStorage({
       perspective: 'raw',

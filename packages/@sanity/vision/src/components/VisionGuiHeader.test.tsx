@@ -112,7 +112,6 @@ describe('VisionGuiHeader variant lock', () => {
     const selector = getApiVersionSelector()
     expect(selector.value).toBe('vX')
     expect(selector.disabled).toBe(true)
-    expect(screen.queryByLabelText('settings.custom-api-version-label')).toBeNull()
   })
 
   it('does not lock the API version for a variant when Vision is on a local perspective', () => {
