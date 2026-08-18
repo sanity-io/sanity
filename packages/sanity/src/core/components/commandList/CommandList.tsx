@@ -129,6 +129,7 @@ function CommandListComponent({
   ...responsivePaddingProps
 }: CommandListProps & RefAttributes<CommandListHandle>) {
   const isMountedRef = useRef(false)
+  const endReachedIndexRef = useRef<number | null>(null)
   const [commandListId] = useState(useId())
   const activeIndexRef = useRef(initialIndex ?? 0)
 
@@ -147,8 +148,16 @@ function CommandListComponent({
 
       const reachedEnd = lastItem.index >= items.length - onEndReachedIndexOffset - 1
 
-      // Make sure we only trigger `onEndReached` after initial mount
-      if (reachedEnd && isMountedRef.current) {
+      if (!reachedEnd) {
+        endReachedIndexRef.current = null
+        return
+      }
+
+      // Only trigger `onEndReached` once per arrival at the end, and only after initial mount.
+      // Notifications for an end we already reported would otherwise paginate again, e.g. when the
+      // virtualizer restores its scroll offset as an `<Activity>` ancestor is made visible again.
+      if (isMountedRef.current && endReachedIndexRef.current !== lastItem.index) {
+        endReachedIndexRef.current = lastItem.index
         onEndReached()
       }
     },
