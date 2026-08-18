@@ -1,11 +1,11 @@
 import {render, screen} from '@testing-library/react'
 import {type ComponentType} from 'react'
 import {EMPTY} from 'rxjs'
+import {usePaneRouter} from 'sanity'
 import {DocumentActionsStateContext} from 'sanity/_singletons'
 import {beforeAll, beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {type ResolvedAction} from '../../../components/RenderActionCollectionState'
 import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
@@ -22,17 +22,14 @@ vi.mock('sanity', async (importOriginal) => ({
   ),
   DocumentGroupInventory: () => null,
   usePausedScheduledDraft: vi.fn(() => ({isPaused: false, currentRelease: undefined})),
-}))
-
-vi.mock('../useDocumentPane', () => ({
-  useDocumentPane: vi.fn(),
-}))
-
-vi.mock('../../../components/paneRouter/usePaneRouter', () => ({
   usePaneRouter: vi.fn(() => ({
     params: {},
     setParams: vi.fn(),
   })),
+}))
+
+vi.mock('../useDocumentPane', () => ({
+  useDocumentPane: vi.fn(),
 }))
 
 vi.mock('../../../hooks/useDocumentPerspectiveList', () => ({

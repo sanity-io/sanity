@@ -1,8 +1,7 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
+import {PaneHeader, usePane} from 'sanity'
 
 import {Button} from '../../../ui-components/button/Button'
-import {PaneHeader} from '../../components/pane/PaneHeader'
-import {usePane} from '../../components/pane/usePane'
 import {PaneHeaderActions} from '../../components/paneHeaderActions/PaneHeaderActions'
 import {BackLink} from '../../components/paneRouter/BackLink'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'

@@ -6,10 +6,10 @@ import {
   PreviewCard,
   useDocumentPresence,
   useDocumentPreviewStore,
+  usePaneRouter,
 } from 'sanity'
 
 import {PaneItemPreview} from '../paneItem/PaneItemPreview'
-import {usePaneRouter} from '../paneRouter/usePaneRouter'
 
 interface IncomingReferencePreviewProps {
   type: SchemaType

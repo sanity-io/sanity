@@ -7,7 +7,8 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {DocumentInspectorPanel} from '../DocumentInspectorPanel'
 
-vi.mock('../../../../components/pane/usePane', () => ({
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
   usePane: vi.fn(() => ({collapsed: false})),
 }))
 

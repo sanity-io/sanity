@@ -1,9 +1,8 @@
 /* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type SanityDocument} from '@sanity/types'
 import {useMemo, useState} from 'react'
-import {getPublishedId, useTimelineSelector, useTimelineStore} from 'sanity'
+import {getPublishedId, usePaneRouter, useTimelineSelector, useTimelineStore} from 'sanity'
 
-import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {EMPTY_PARAMS} from './constants'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'

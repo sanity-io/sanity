@@ -10,6 +10,7 @@ import {
   SourceProvider,
   Translate,
   useDocumentType,
+  usePaneRouter,
   usePerspective,
   useSource,
   useTargetDocumentState,
@@ -17,7 +18,6 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
 import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'

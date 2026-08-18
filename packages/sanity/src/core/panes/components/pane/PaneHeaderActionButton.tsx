@@ -1,12 +1,14 @@
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {Menu} from '@sanity/ui/menu'
 import {type MouseEvent, useCallback, useId} from 'react'
-import {StatusButton, useI18nText, useTranslation} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
-import {Button} from '../../../ui-components/button/Button'
-import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
-import {type Intent} from '../../structureBuilder/Intent'
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {StatusButton} from '../../../components/StatusButton'
+import {useI18nText} from '../../../i18n/hooks/useI18nText'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type Intent} from '../../types/intent'
 import {PaneMenuButtonItem} from './PaneMenuButtonItem'
 import {type _PaneMenuGroup, type _PaneMenuItem} from './types'
 

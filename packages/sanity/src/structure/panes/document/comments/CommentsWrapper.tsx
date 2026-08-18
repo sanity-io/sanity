@@ -3,13 +3,13 @@ import {
   COMMENTS_INSPECTOR_NAME,
   CommentsEnabledProvider,
   CommentsProvider,
-  useCommentsEnabled,
   getTargetScopeId,
+  useCommentsEnabled,
+  usePaneRouter,
   usePerspective,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../useDocumentPane'
 
 interface CommentsWrapperProps {

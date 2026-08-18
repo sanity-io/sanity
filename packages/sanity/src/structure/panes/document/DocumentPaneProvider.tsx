@@ -41,6 +41,7 @@ import {
   useDocumentDivergences,
   useDocumentForm,
   useDocumentIdStack,
+  usePaneRouter,
   usePerspective,
   useSchema,
   useSource,
@@ -52,7 +53,6 @@ import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 import {useEffectEvent} from 'use-effect-event'
 
-import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentTitle} from '../../components/structureTool/StructureTitle'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDeletedDocumentLastRevision} from '../../hooks/useDeletedDocumentLastRevision'

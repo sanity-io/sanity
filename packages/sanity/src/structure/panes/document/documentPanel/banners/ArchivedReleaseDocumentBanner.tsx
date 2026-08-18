@@ -7,10 +7,10 @@ import {
   ReleaseTitle,
   Translate,
   useArchivedReleases,
+  usePaneRouter,
   useTranslation,
 } from 'sanity'
 
-import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 

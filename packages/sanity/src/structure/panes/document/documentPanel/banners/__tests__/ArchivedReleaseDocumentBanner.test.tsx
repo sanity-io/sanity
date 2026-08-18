@@ -12,22 +12,14 @@ vi.mock('sanity', async () => {
   return {
     ...sanity,
     useArchivedReleases: vi.fn(),
+    usePaneRouter: vi.fn(() => ({
+      params: {},
+      setParams: vi.fn(),
+    })),
   }
 })
 
-// NOTE: the banner imports `usePaneRouter` directly from
-// `../../../../components/paneRouter/usePaneRouter`, so the mock must target that
-// exact module specifier — mocking the `../components` barrel does not intercept it.
-vi.mock('../../../../../components/paneRouter/usePaneRouter', () => ({
-  usePaneRouter: vi.fn(() => ({
-    params: {},
-    setParams: vi.fn(),
-  })),
-}))
-
-const {usePaneRouter} = vi.mocked(
-  await import('../../../../../components/paneRouter/usePaneRouter'),
-)
+const {usePaneRouter} = vi.mocked(await import('sanity'))
 
 const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>
 

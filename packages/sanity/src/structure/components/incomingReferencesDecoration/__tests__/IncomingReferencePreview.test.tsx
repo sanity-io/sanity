@@ -10,7 +10,8 @@ vi.mock('../../paneItem/PaneItemPreview', () => ({
   PaneItemPreview: vi.fn(({value}) => <div>{value._id}</div>),
 }))
 
-vi.mock('../../paneRouter/usePaneRouter', () => ({
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
   usePaneRouter: vi.fn(() => ({
     ChildLink: vi.fn(({childId, childParameters, children}) => (
       <a href="#" data-child-id={childId} data-child-parameters={JSON.stringify(childParameters)}>

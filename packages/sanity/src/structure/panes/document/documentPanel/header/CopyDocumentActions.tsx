@@ -11,6 +11,7 @@ import {
   isNewDocument,
   isVersionId,
   useDocumentVersions,
+  usePaneRouter,
   usePerspective,
   useStudioUrl,
   useTargetDocumentState,
@@ -21,7 +22,6 @@ import {useRouter} from 'sanity/router'
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
-import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentIDCopied, DocumentURLCopied} from '../../__telemetry__/documentPanes.telemetry'
 import {useDocumentPane} from '../../useDocumentPane'

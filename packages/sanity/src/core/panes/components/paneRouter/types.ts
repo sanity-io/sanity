@@ -1,8 +1,8 @@
 import {type Path} from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
-import {type ReleaseId} from 'sanity'
 
-import {type RouterPanes, type RouterPaneSibling} from '../../types'
+import {type EditReferenceOptions} from '../../../form/studio/contexts/ReferenceInputOptions'
+import {type RouterPanes, type RouterPaneSibling} from '../../types/routerPanes'
 
 /**
  * @hidden
@@ -40,16 +40,7 @@ export interface ParameterizedLinkProps {
   payload?: unknown
 }
 
-/**
- * @hidden
- * @beta */
-export interface EditReferenceOptions {
-  parentRefPath: Path
-  id: string
-  type: string
-  version?: ReleaseId
-  template: {id: string; params?: Record<string, string | number | boolean>}
-}
+export {type EditReferenceOptions}
 
 /**
  * @hidden

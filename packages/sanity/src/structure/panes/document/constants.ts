@@ -1,4 +1,5 @@
-import {type PaneRouterContextValue} from '../../components/paneRouter/types'
+import {type PaneRouterContextValue} from 'sanity'
+
 import {type PaneMenuItemGroup} from '../../types'
 
 export const DOCUMENT_PANEL_MIN_WIDTH = 320

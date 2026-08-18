@@ -1,7 +1,14 @@
 import {Flex} from '@sanity/ui'
 import uniqBy from 'lodash-es/uniqBy.js'
 import {memo, useCallback, useMemo} from 'react'
-import {EMPTY_ARRAY, EMPTY_OBJECT, type InitialValueTemplateItem, useTemplates} from 'sanity'
+import {
+  EMPTY_ARRAY,
+  EMPTY_OBJECT,
+  type InitialValueTemplateItem,
+  PaneContextMenuButton,
+  PaneHeaderActionButton,
+  useTemplates,
+} from 'sanity'
 
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../menuNodes'
 import {
@@ -9,8 +16,6 @@ import {
   type PaneMenuItemGroup,
   type StructureToolPaneActionHandler,
 } from '../../types'
-import {PaneContextMenuButton} from '../pane/PaneContextMenuButton'
-import {PaneHeaderActionButton} from '../pane/PaneHeaderActionButton'
 import {PaneHeaderCreateButton} from './PaneHeaderCreateButton'
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {

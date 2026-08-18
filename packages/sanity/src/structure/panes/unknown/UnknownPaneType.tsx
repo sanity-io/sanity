@@ -1,9 +1,6 @@
 import {Box, Text} from '@sanity/ui'
-import {isRecord, Translate, useTranslation} from 'sanity'
+import {isRecord, Pane, PaneContent, PaneHeader, Translate, useTranslation} from 'sanity'
 
-import {Pane} from '../../components/pane/Pane'
-import {PaneContent} from '../../components/pane/PaneContent'
-import {PaneHeader} from '../../components/pane/PaneHeader'
 import {structureLocaleNamespace} from '../../i18n'
 
 interface UnknownPaneProps {

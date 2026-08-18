@@ -1,7 +1,7 @@
 import {Box, Card, Flex, LayerProvider, useElementSize} from '@sanity/ui'
 import {type ReactNode, type RefAttributes, useCallback, useMemo} from 'react'
-import {LegacyLayerProvider} from 'sanity'
 
+import {LegacyLayerProvider} from '../../../components/transitional/LegacyLayerProvider'
 import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
 import {usePane} from './usePane'
 

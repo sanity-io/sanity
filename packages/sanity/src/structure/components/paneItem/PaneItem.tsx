@@ -28,11 +28,11 @@ import {
   useDocumentPresence,
   useDocumentPreviewStore,
   useEditState,
+  usePaneRouter,
   useSchema,
 } from 'sanity'
 
 import {MissingSchemaType} from '../MissingSchemaType'
-import {usePaneRouter} from '../paneRouter/usePaneRouter'
 import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {

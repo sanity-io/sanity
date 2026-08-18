@@ -6,18 +6,18 @@ import {
   getDraftId,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
+  getTargetDocument,
   getVersionId,
   PerspectiveProvider,
   useArchivedReleases,
-  getTargetDocument,
+  useDocumentVersions,
   useEventsStore,
+  usePaneRouter,
   usePerspective,
   useSchema,
   useTargetDocumentState,
-  useDocumentVersions,
 } from 'sanity'
 
-import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {EMPTY_PARAMS} from './constants'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'

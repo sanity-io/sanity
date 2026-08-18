@@ -10,19 +10,19 @@ import {
   isVersionId,
   type TargetPerspective,
   useAgentVersionDisplay,
+  useAllVariants,
   useDocumentVersions,
   useFilteredReleases,
+  usePaneRouter,
   usePerspective,
   useSchema,
+  useSetVariant,
   useSingleDocRelease,
   useWorkspace,
-  useAllVariants,
   type VersionInfoDocumentStub,
-  useSetVariant,
 } from 'sanity'
 
 import {isLiveEditEnabled} from '../components/paneItem/helpers'
-import {usePaneRouter} from '../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {useDocumentPaneInfo} from '../panes/document/useDocumentPaneInfo'
 import {usePerspectiveNavigator} from './usePerspectiveNavigator'

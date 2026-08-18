@@ -11,10 +11,11 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {IsLastPaneProvider, LegacyLayerProvider} from 'sanity'
 import {PaneContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
+import {LegacyLayerProvider} from '../../../components/transitional/LegacyLayerProvider'
+import {IsLastPaneProvider} from '../../../tasks/context/isLastPane/IsLastPaneProvider'
 import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
 import {PaneDivider} from './PaneDivider'
 import {usePaneLayout} from './usePaneLayout'

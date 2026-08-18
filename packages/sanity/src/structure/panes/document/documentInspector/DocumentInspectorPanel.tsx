@@ -1,8 +1,7 @@
 import {Box} from '@sanity/ui'
 import {Suspense, useCallback} from 'react'
-import {Resizable} from 'sanity'
+import {Resizable, usePane} from 'sanity'
 
-import {usePane} from '../../../components/pane/usePane'
 import {useStructureTool} from '../../../useStructureTool'
 import {DOCUMENT_INSPECTOR_MAX_WIDTH, DOCUMENT_INSPECTOR_MIN_WIDTH} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'

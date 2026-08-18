@@ -1,7 +1,6 @@
 import {memo, useCallback} from 'react'
-import {SingleDocReleaseProvider, useSource} from 'sanity'
+import {SingleDocReleaseProvider, usePaneRouter, useSource} from 'sanity'
 
-import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentEventsPane} from './DocumentEventsPane'
 import {DocumentPaneWithLegacyTimelineStore} from './DocumentPaneLegacyTimeline'
 import {DocumentPerspectiveProvider} from './DocumentPerspectiveProvider'

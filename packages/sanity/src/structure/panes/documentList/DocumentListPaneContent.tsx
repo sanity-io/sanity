@@ -10,16 +10,16 @@ import {
   getPublishedId,
   isDev,
   LoadingBlock,
+  PaneContent,
   SanityDefaultPreview,
   Translate,
+  usePane,
+  usePaneLayout,
   useSchema,
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {PaneContent} from '../../components/pane/PaneContent'
-import {usePane} from '../../components/pane/usePane'
-import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {PaneItem} from '../../components/paneItem/PaneItem'
 import {structureLocaleNamespace} from '../../i18n'
 import {FULL_LIST_LIMIT} from './constants'
