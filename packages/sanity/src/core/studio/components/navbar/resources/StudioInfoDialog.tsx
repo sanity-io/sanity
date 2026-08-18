@@ -1,6 +1,5 @@
 import {CogIcon} from '@sanity/icons/Cog'
 import {GithubIcon} from '@sanity/icons/Github'
-import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {RefreshIcon} from '@sanity/icons/Refresh'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
@@ -10,10 +9,13 @@ import {useEffect, useId} from 'react'
 import semver, {type SemVer} from 'semver'
 import {styled} from 'styled-components'
 
-import {Button, Dialog, Tooltip} from '../../../../../ui-components'
-import {TextWithTone} from '../../../../components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {TextWithTone} from '../../../../components/textWithTone/TextWithTone'
 import {isProd} from '../../../../environment'
-import {Translate, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useWorkspace} from '../../../workspace'
@@ -124,7 +126,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
           <TextWithTone tone="caution">
             <WarningOutlineIcon />
           </TextWithTone>
-          <Stack space={4}>
+          <Stack gap={4}>
             <TextWithTone size={1} tone="caution" weight="medium">
               {t('about-dialog.configuration-issue.header')}
             </TextWithTone>
@@ -144,43 +146,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             </TextWithTone>
           </Stack>
         </Flex>
-        <Stack space={2} />
-      </Card>
-    ) : null
-
-  // A newer major version exists, but auto-update can't reach it (a reload only serves versions
-  // within the import map's version range unless the major jump has been explicitly allowed) —
-  // updating requires upgrading the studio's dependencies and redeploying
-  const majorUpgradeNote =
-    isAutoUpdating &&
-    latestTaggedVersion &&
-    latestTaggedVersion.major > currentVersion.major &&
-    (!autoUpdatingVersion || autoUpdatingVersion.major < latestTaggedVersion.major) ? (
-      <Card padding={4} tone="primary">
-        <Flex align="flex-start" gap={3}>
-          <TextWithTone tone="primary">
-            <InfoOutlineIcon />
-          </TextWithTone>
-          <Stack space={4}>
-            <TextWithTone size={1} tone="primary" weight="medium">
-              {t('about-dialog.version-info.major-upgrade.header')}
-            </TextWithTone>
-            <TextWithTone size={1} tone="primary">
-              {t('about-dialog.version-info.major-upgrade.description', {
-                latestVersion: latestTaggedVersion.version,
-              })}
-            </TextWithTone>
-            <Text muted size={1}>
-              <a
-                href="https://www.sanity.io/docs/upgrade"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t('about-dialog.version-info.major-upgrade.view-documentation')} &rarr;
-              </a>
-            </Text>
-          </Stack>
-        </Flex>
+        <Stack gap={2} />
       </Card>
     ) : null
 
@@ -198,13 +164,13 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
         </Flex>
       ) : null}
 
-      <Stack space={3} paddingY={3}>
+      <Stack gap={3} paddingY={3}>
         <Flex align="center" justify="center" paddingY={4}>
           <MonogramContainer>
             <SanityMonogram height={75} width={75} />
           </MonogramContainer>
         </Flex>
-        <Grid columns={2} gap={2}>
+        <Grid gridTemplateColumns={2} gap={2}>
           <Flex justify="flex-end" align="center">
             <Text as="h2" size={1} weight="semibold">
               Sanity Studio
@@ -214,7 +180,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             placement="bottom"
             content={
               <Card>
-                <Inline space={1}>
+                <Inline gap={1}>
                   <Badge tone={versionBadgeTone}>
                     {ensureVersionPrefix(currentVersion.version)}
                   </Badge>
@@ -294,8 +260,9 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 </Badge>
 
                 {
-                  // save some space by not showing "how to update"-button
-                  currentVersionType ? null : (
+                  // this row only renders when a reload won't deliver the latest version, so
+                  // link to how to upgrade manually (hidden on dev/prerelease builds to save space)
+                  currentVersionType !== 'default' ? null : (
                     <Button
                       as="a"
                       href="https://www.sanity.io/docs/upgrade"
@@ -312,7 +279,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             </>
           )}
         </Grid>
-        <Stack space={2} paddingY={3}>
+        <Stack gap={2} paddingY={3}>
           {isAutoUpdating ? (
             <Card tone="transparent" padding={2} radius={3} marginX={2}>
               <Flex align="center" justify="space-evenly" gap={2}>
@@ -350,7 +317,6 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               </Flex>
             </Card>
           ) : null}
-          {majorUpgradeNote}
           {importMapWarning}
         </Stack>
         <Stack paddingX={3}>

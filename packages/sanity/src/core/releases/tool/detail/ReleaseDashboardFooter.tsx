@@ -1,14 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Card, Flex} from '@sanity/ui'
-import {useMemo} from 'react'
 
-import {isReleaseScheduledOrScheduling} from '../../index'
-import {ReleasePublishAllButton} from '../components/releaseCTAButtons/ReleasePublishAllButton'
-import {ReleaseRevertButton} from '../components/releaseCTAButtons/ReleaseRevertButton/ReleaseRevertButton'
-import {ReleaseScheduleButton} from '../components/releaseCTAButtons/ReleaseScheduleButton'
-import {ReleaseUnscheduleButton} from '../components/releaseCTAButtons/ReleaseUnscheduleButton'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {type ReleaseEvent} from './events/types'
+import {ReleaseActionButton} from './ReleaseActionButton'
 import {ReleaseStatusItems} from './ReleaseStatusItems'
 import {type DocumentInRelease} from './types'
 
@@ -18,50 +13,6 @@ export function ReleaseDashboardFooter(props: {
   events: ReleaseEvent[]
 }) {
   const {documents, release, events} = props
-
-  const releaseActionButton = useMemo(() => {
-    if (release.state === 'archived') return null
-
-    if (isReleaseScheduledOrScheduling(release)) {
-      return (
-        <ReleaseUnscheduleButton
-          release={release}
-          documents={documents}
-          disabled={!documents.length}
-        />
-      )
-    }
-
-    if (release.state === 'active') {
-      if (release.metadata.releaseType === 'scheduled') {
-        return (
-          <ReleaseScheduleButton
-            release={release}
-            documents={documents}
-            disabled={!documents.length}
-          />
-        )
-      }
-
-      if (release.metadata.releaseType === 'asap') {
-        return (
-          <ReleasePublishAllButton
-            release={release}
-            documents={documents}
-            disabled={!documents.length}
-          />
-        )
-      }
-    }
-
-    if (release.state === 'published') {
-      return (
-        <ReleaseRevertButton release={release} documents={documents} disabled={!documents.length} />
-      )
-    }
-
-    return null
-  }, [documents, release])
 
   return (
     <Card flex="none">
@@ -73,7 +24,7 @@ export function ReleaseDashboardFooter(props: {
         </Flex>
 
         <Flex flex="none" gap={1} data-testid="release-dashboard-footer-actions">
-          {releaseActionButton}
+          <ReleaseActionButton release={release} documents={documents} />
           <ReleaseMenuButton
             release={release}
             documentsCount={documents.length}

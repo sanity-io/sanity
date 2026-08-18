@@ -1,12 +1,15 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 // oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
-import {Box, Button, Menu, MenuDivider, Text, TextInput} from '@sanity/ui'
+import {Button, Text, TextInput} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {oversizedButtonStyle} from '../../../perspective/styles'
 import {useSetVariant} from '../../../perspective/useSetVariant'
 import {variantsLocaleNamespace} from '../../i18n'
@@ -65,13 +68,13 @@ export function VariantsMenu(): React.JSX.Element {
   )
 
   const handleSelectDefault = useCallback(() => {
-    setVariant(undefined)
+    setVariant({variantId: undefined})
     setFilterQuery('')
   }, [setVariant])
 
   const handleSelectVariant = useCallback(
     (variant: SystemVariant) => {
-      setVariant(variant)
+      setVariant({variantId: variant._id})
       setFilterQuery('')
     },
     [setVariant],

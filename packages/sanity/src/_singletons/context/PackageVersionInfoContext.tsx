@@ -25,9 +25,7 @@ export type PackageVersionInfoContextValue = {
    * If an importmap for the sanity module exists in the DOM, includes details
    * will be undefined if no importmap is found
    */
-  importMapInfo?:
-    | {valid: false; error: Error}
-    | {valid: true; minVersion: SemVer; versionRange: string; appId?: string}
+  importMapInfo?: {valid: false; error: Error} | {valid: true; minVersion: SemVer; appId?: string}
 
   /**
    * What is the version tagged as latest (periodically checked)
@@ -41,9 +39,8 @@ export type PackageVersionInfoContextValue = {
 
   /**
    * What is the current auto-updating version (as periodically resolved via module server and configured via manage).
-   * Only set if the version can actually be reached by reloading the studio: the module CDN's
-   * `resolvedVersion` when provided, otherwise the configured version if it's within the import
-   * map's version range.
+   * This is the version the module CDN will serve for the studio's import map URL, so a reload
+   * applies exactly this version — it may also be below the current version (e.g. a pinned rollback).
    */
   autoUpdatingVersion?: SemVer
 }

@@ -477,6 +477,7 @@ function isFieldRequired(validation?: SchemaValidationValue): boolean {
     }
 
     if (typeof rule === 'object' && rule !== null && '_required' in rule) {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (rule._required === 'required') {
         return true
       }
@@ -519,8 +520,10 @@ function hasAssetRequired(validation?: SchemaValidationValue): boolean {
       typeof rule === 'object' &&
       rule !== null &&
       '_rules' in rule &&
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       Array.isArray(rule._rules)
     ) {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (rule._rules.some((r) => r.flag === 'assetRequired')) {
         return true
       }

@@ -1,10 +1,11 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {isProd} from '../../environment'
 
 interface CorsOriginErrorScreenProps {
@@ -126,7 +127,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
       <Card data-testid="studio-error-screen" data-error="CORS credentials disabled" height="fill">
         <CenteredContainer align="center" justify="center" padding={4}>
           <ContentWrapper paddingBottom={5}>
-            <Stack space={5}>
+            <Stack gap={5}>
               <Heading as="h1" size={2}>
                 Enable credentials for this Studio
               </Heading>
@@ -173,7 +174,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
     <Card data-testid="studio-error-screen" data-error="CORS origin error" height="fill">
       <CenteredContainer align="center" justify="center" padding={4}>
         <ContentWrapper paddingBottom={5}>
-          <Stack space={5}>
+          <Stack gap={5}>
             <Heading as="h1" size={2}>
               Connect this Studio to your project
             </Heading>
@@ -183,12 +184,12 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
               it.
             </Text>
 
-            <Grid columns={showRegisterOption ? [1, 1, 2] : 1} gapX={4} gapY={3}>
+            <Grid gridTemplateColumns={showRegisterOption ? [1, 1, 2] : 1} gapX={4} gapY={3}>
               {/* Register Studio Option */}
               {showRegisterOption && (
                 <Card border padding={4} radius={4}>
                   <Flex direction="column" gap={4} height="fill">
-                    <Stack space={4} flex={1}>
+                    <Stack gap={4} flex={1}>
                       <Text size={2} weight="medium">
                         Register Studio
                       </Text>
@@ -219,7 +220,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
               {/* Add CORS origin */}
               <Card border padding={4} radius={4}>
                 <Flex direction="column" gap={4} height="fill">
-                  <Stack space={4} flex={1}>
+                  <Stack gap={4} flex={1}>
                     <Text size={2} weight="medium">
                       Add CORS origin
                     </Text>

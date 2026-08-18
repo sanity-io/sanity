@@ -3,9 +3,9 @@ import {ElementQuery, Select, TabList} from '@sanity/ui'
 import {type ChangeEvent, memo, useCallback} from 'react'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {StatusIcon} from '../../../components/formField/ValidationStatusIcon'
-import {type FormFieldGroup} from '../../../store'
+import {type FormFieldGroup} from '../../../store/types/fieldGroup'
 import {useChildValidation} from '../../../studio/contexts/Validation'
 import {getFieldGroupValidationLevel} from './getFieldGroupValidationLevel'
 import {GroupOption, GroupTab} from './GroupTab'
@@ -50,7 +50,7 @@ const GroupTabs = ({
 }) => {
   const {t} = useTranslation()
   return (
-    <TabList space={2} data-testid="field-group-tabs">
+    <TabList gap={2} data-testid="field-group-tabs">
       {groups.map((group) => {
         const title = group.i18n?.title
           ? t(group.i18n.title.key, {ns: group.i18n.title.ns})

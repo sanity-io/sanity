@@ -31,23 +31,24 @@ test.describe.configure({mode: 'serial'})
  * It lists the document's existing variants (Published, Draft, releases) in a popover, with the
  * currently selected perspective marked via a `data-selected` attribute on the variant row.
  */
-function getInventoryVariant(page: Page, variantName: string) {
-  return page.getByTestId(`document-group-inventory-variant-${variantName.replaceAll(' ', '-')}`)
+function getInventoryVariant(
+  page: Page,
+  variantSet: string = 'Published',
+  variantName: string = 'All users (Default)',
+) {
+  const inventory = page.getByTestId('document-group-inventory')
+
+  return inventory.locator(
+    `[data-variant-set="${variantSet}"] [data-variant-name="${variantName}"]`,
+  )
 }
 
 async function openDocumentGroupInventory(page: Page) {
   const inventoryButton = page.getByTestId('action-document-group-inventory')
   await expect(inventoryButton).toBeVisible()
+  await expect(inventoryButton).toContainText('Manage versions')
   await inventoryButton.click()
   await expect(page.getByTestId('document-group-inventory')).toBeVisible()
-}
-
-/**
- * The inventory toggle button is labelled with the variant of the currently displayed document
- * (e.g. "Draft", "Published", or a release title).
- */
-async function expectDisplayedVariantLabel(page: Page, label: string) {
-  await expect(page.getByTestId('action-document-group-inventory')).toContainText(label)
 }
 
 test.describe('displayedDocument', () => {
@@ -184,9 +185,8 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
       // inventory: only the published variant exists, so it's the displayed document
-      await expectDisplayedVariantLabel(page, 'Published')
       await openDocumentGroupInventory(page)
-      await expect(getInventoryVariant(page, 'Published')).toBeVisible()
+      await expect(getInventoryVariant(page, 'Published')).toHaveAttribute('data-selected')
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
@@ -219,7 +219,6 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
       // inventory: both version variants exist (no draft); the first one is the displayed document
-      await expectDisplayedVariantLabel(page, 'ASAP Release A')
       await openDocumentGroupInventory(page)
       const asapVariant = getInventoryVariant(page, 'ASAP Release A')
       const undecidedVariant = getInventoryVariant(page, 'Undecided Release A')
@@ -260,7 +259,6 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
       // inventory: the published variant is the selected perspective and displayed document
-      await expectDisplayedVariantLabel(page, 'Published')
       await openDocumentGroupInventory(page)
       await expect(getInventoryVariant(page, 'Published')).toHaveAttribute('data-selected')
 
@@ -283,7 +281,6 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
       // inventory: the published variant is the selected perspective and displayed document
-      await expectDisplayedVariantLabel(page, 'Published')
       await openDocumentGroupInventory(page)
       await expect(getInventoryVariant(page, 'Published')).toHaveAttribute('data-selected')
 
@@ -335,7 +332,6 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
       // inventory: only the pinned version variant exists, and it's displayed/selected
-      await expectDisplayedVariantLabel(page, 'ASAP Release A')
       await openDocumentGroupInventory(page)
       const asapVariant = getInventoryVariant(page, 'ASAP Release A')
       await expect(asapVariant).toBeVisible()
@@ -361,7 +357,6 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
       // inventory: only the existing version variant is shown, and it's displayed/selected
-      await expectDisplayedVariantLabel(page, 'ASAP Release A')
       await openDocumentGroupInventory(page)
       const asapVariant = getInventoryVariant(page, 'ASAP Release A')
       await expect(asapVariant).toBeVisible()
@@ -385,7 +380,6 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
       // inventory: the pinned version variant is displayed/selected, the other version isn't
-      await expectDisplayedVariantLabel(page, 'Undecided Release A')
       await openDocumentGroupInventory(page)
       const undecidedVariant = getInventoryVariant(page, 'Undecided Release A')
       await expect(undecidedVariant).toBeVisible()
@@ -425,7 +419,6 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
       // inventory: the pinned release has no version, so the first existing version is displayed/selected
-      await expectDisplayedVariantLabel(page, 'ASAP Release A')
       await openDocumentGroupInventory(page)
       const asapVariant = getInventoryVariant(page, 'ASAP Release A')
       await expect(asapVariant).toBeVisible()

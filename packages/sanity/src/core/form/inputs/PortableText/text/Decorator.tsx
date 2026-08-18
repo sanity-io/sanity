@@ -5,12 +5,14 @@ import {toString as pathToString} from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
-import {type BlockDecoratorProps} from '../../../types'
+import {type BlockDecoratorProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {warnOnce} from '../warnOnce'
 import {TEXT_DECORATOR_TAGS} from './constants'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const Root = styled.span(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const isDark = theme.sanity.color.dark
 
   return css`

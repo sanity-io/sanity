@@ -1,11 +1,9 @@
+import {Flex, Text, usePortal} from '@sanity/ui'
 import {
-  Flex,
   Menu,
   // oxlint-disable-next-line no-restricted-imports
   MenuItem,
-  Text,
-  usePortal,
-} from '@sanity/ui'
+} from '@sanity/ui/menu'
 import {useCallback} from 'react'
 import {
   ContextMenuButton,
@@ -24,7 +22,7 @@ import {
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
 
-import {MenuButton} from '../../../../../ui-components'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TIMELINE_MENU_PORTAL} from '../timelineMenu'

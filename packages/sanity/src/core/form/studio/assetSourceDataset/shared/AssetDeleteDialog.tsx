@@ -3,10 +3,10 @@ import {type Asset as AssetType} from '@sanity/types'
 import {Box, Stack} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {Dialog} from '../../../../../ui-components'
-import {LoadingBlock} from '../../../../components/loadingBlock'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useLegacyReferringDocuments} from '../../../../hooks/useReferringDocuments'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {AssetUsageList} from './AssetUsageList'
 import {ConfirmMessage} from './ConfirmMessage'
 
@@ -25,6 +25,7 @@ export function AssetDeleteDialog({
   onClose,
   onDelete,
 }: UsageDialogProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {isLoading, referringDocuments} = useLegacyReferringDocuments(asset._id)
 
   const publishedDocuments = useMemo(() => {
@@ -70,7 +71,7 @@ export function AssetDeleteDialog({
         <Stack
           paddingX={hasResults ? [2, 3, 4] : 0}
           paddingY={hasResults ? [3, 3, 3, 4] : 0}
-          space={1}
+          gap={1}
         >
           <ConfirmMessage asset={asset} assetType={assetType} hasResults={hasResults} />
 

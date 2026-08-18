@@ -5,7 +5,7 @@ import {isValid} from 'date-fns/isValid'
 import {parse} from 'date-fns/parse'
 import {useCallback, useMemo} from 'react'
 
-import {Button} from '../../../ui-components/button'
+import {Button} from '../../../ui-components/button/Button'
 import {MONTH_PICKER_VARIANT} from '../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../components/inputs/DateInputs/DateTimeInput'

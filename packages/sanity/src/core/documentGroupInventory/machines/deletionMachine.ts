@@ -67,7 +67,6 @@ type DeletionEvents =
   | {type: 'selection.changed'; selectedIds: Set<string>}
 
 export const deletionMachine = setup({
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   types: {} as {
     context: DeletionContext
     events: DeletionEvents

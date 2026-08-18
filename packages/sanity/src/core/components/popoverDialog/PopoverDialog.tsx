@@ -13,20 +13,26 @@ import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'r
 import TrapFocus, {type ReactFocusLockProps} from 'react-focus-lock'
 import {css, styled} from 'styled-components'
 
-import {Button, Popover, type PopoverProps} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {Popover, type PopoverProps} from '../../../ui-components/popover/Popover'
 import {PopoverContainer} from './PopoverContainer'
 
 const StyledPopover = styled(Popover)(() => {
   return css`
-    /* Make the popover scrollable if it overflows the viewport */
+    /* Make the popover scrollable if it overflows the viewport.
+     * Reserve space for the scrollbar so content that grows past the viewport
+     * (e.g. when switching tabs) doesn't cause a horizontal layout shift. */
     [data-ui='Popover__wrapper'] {
       overflow: auto;
+      scrollbar-gutter: stable;
     }
   `
 })
 
 // This layer is sticky so that the header is always visible when scrolling
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const StickyLayer = styled(Layer)((props: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const radii = props.theme.sanity.radius[3]
 
   return css`

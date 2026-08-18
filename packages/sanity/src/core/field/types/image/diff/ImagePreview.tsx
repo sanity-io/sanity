@@ -2,15 +2,16 @@ import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset
 import {hues} from '@sanity/color'
 import {ImageIcon} from '@sanity/icons/Image'
 import {createImageUrlBuilder} from '@sanity/image-url'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {type SyntheticEvent, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {useClient} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
-import {useDocumentValues} from '../../../../store'
+import {useClient} from '../../../../hooks/useClient'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useDocumentValues} from '../../../../store/document/hooks/useDocumentValues'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {MetaInfo} from '../../../diff'
+import {MetaInfo} from '../../../diff/components/MetaInfo'
 import {getDeviceDpr, simpleHash} from './helpers'
 import {HotspotCropSVG} from './HotspotCropSVG'
 import {type ImagePreviewProps, type MinimalAsset} from './types'
@@ -126,7 +127,7 @@ export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
 
   return (
     <Flex direction="column" height="fill" flex={1}>
-      <Box flex={1} padding={2} paddingBottom={0}>
+      <Box flexBasis="0%" flexGrow={1} padding={2} paddingBottom={0}>
         <Flex
           as={ImageWrapper}
           direction="column"

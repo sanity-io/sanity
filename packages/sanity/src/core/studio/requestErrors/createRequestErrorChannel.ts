@@ -1,6 +1,6 @@
 import {BehaviorSubject, isObservable, lastValueFrom, type Observable} from 'rxjs'
 
-import {classifyRequestError, isSessionExpiredError} from './classify'
+import {classifyRequestError, isInvalidSessionError} from './classify'
 import {
   type RequestErrorChannel,
   type RequestErrorClaim,
@@ -50,13 +50,14 @@ export function createRequestErrorChannel(): RequestErrorChannel {
    * caller-domain and should be re-thrown by the caller of this function.
    */
   function tryClaim(err: unknown, options: RequestErrorReportOptions, entry: ParkedEntry): boolean {
-    if (isSessionExpiredError(err)) {
-      // The API positively signals a dead session (`SIO-401-AEX`) — force
-      // logout. A 401 *without* that code is a resource-level denial
-      // (some endpoints answer 401, not 403, for authenticated users
-      // lacking a grant) and stays caller-domain, same as a 403.
+    if (isInvalidSessionError(err)) {
+      // The API positively signals an invalid session (expired or not found,
+      // see INVALID_SESSION_ERROR_CODES) — force logout. A 401 *without* such
+      // a code is a resource-level denial (some endpoints answer 401, not
+      // 403, for authenticated users lacking a grant) and stays
+      // caller-domain, same as a 403.
       parked.push(entry)
-      // First expired-session 401 owns the dialog + logout; concurrent
+      // First invalid-session 401 owns the dialog + logout; concurrent
       // ones for the same teardown (including the logout request's own
       // 401) just park behind it rather than re-claiming.
       if (claimSubject.getValue()?.type !== 'unauthorized') {

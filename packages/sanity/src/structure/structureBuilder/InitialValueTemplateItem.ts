@@ -64,6 +64,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
    * @returns initial value template item builder based on description provided. See {@link InitialValueTemplateItemBuilder}
    */
   description(description: string): InitialValueTemplateItemBuilder {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return this.clone({description})
   }
 
@@ -71,6 +72,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
    * @returns initial value template item description. See {@link InitialValueTemplateItem}
    */
   getDescription(): Partial<InitialValueTemplateItem>['description'] {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return this.spec.description
   }
 
@@ -148,8 +150,10 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
       templateId: this.spec.id,
       schemaType: template.schemaType,
       type: 'initialValueTemplateItem',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       description: this.spec.description || template.description,
       title: this.spec.title || template.title,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       subtitle: this.spec.subtitle,
       icon: this.spec.icon || template.icon,
       initialDocumentId: this.spec.initialDocumentId,

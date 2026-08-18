@@ -1,7 +1,8 @@
 import {type SchemaType} from '@sanity/types'
-import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ElementType, type ReactNode, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
@@ -96,11 +97,7 @@ const PreviewWrapper = (props: Props) => {
               {/* Badge */}
               {schedule.action === 'unpublish' && (
                 <Flex style={{flexShrink: 0}}>
-                  <Badge
-                    fontSize={0}
-                    mode="outline"
-                    tone={SCHEDULE_ACTION_DICTIONARY[schedule.action].badgeTone}
-                  >
+                  <Badge fontSize={0} tone={SCHEDULE_ACTION_DICTIONARY[schedule.action].badgeTone}>
                     {schedule.action}
                   </Badge>
                 </Flex>
@@ -108,7 +105,7 @@ const PreviewWrapper = (props: Props) => {
 
               {/* Schedule date */}
               <Box display={['block', 'none']} style={{flexShrink: 0, width: '90px'}}>
-                <Stack space={2}>
+                <Stack gap={2}>
                   {scheduleDate ? (
                     <>
                       <Text size={1}>

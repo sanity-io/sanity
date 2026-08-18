@@ -3,11 +3,11 @@ import isEqual from 'lodash-es/isEqual.js'
 import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {SearchContext} from 'sanity/_singletons'
 
-import {type CommandListHandle} from '../../../../../../components'
-import {useSchema} from '../../../../../../hooks'
+import {type CommandListHandle} from '../../../../../../components/commandList/types'
+import {useSchema} from '../../../../../../hooks/useSchema'
 import {useActiveReleases} from '../../../../../../releases/store/useActiveReleases'
-import {type SearchHit, type SearchTerms} from '../../../../../../search'
-import {useCurrentUser} from '../../../../../../store'
+import {type SearchHit, type SearchTerms} from '../../../../../../search/common/types'
+import {useCurrentUser} from '../../../../../../store/user/hooks'
 import {useSource} from '../../../../../source'
 import {GlobalSearchLatencyMeasured} from '../../__telemetry__/search.telemetry'
 import {SEARCH_LIMIT} from '../../constants'
@@ -58,6 +58,7 @@ export function SearchProvider({
   const currentUser = useCurrentUser()
   const {
     search: {operators, filters, strategy},
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
   const telemetry = useTelemetry()
 

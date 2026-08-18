@@ -1,41 +1,40 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useRef} from 'react'
 import {tap} from 'rxjs/operators'
 
 import {pathToString} from '../../../../field/paths/helpers'
-import {useTranslation} from '../../../../i18n'
-import {useResolveInitialValueForType} from '../../../../store'
-import {useCopyPaste} from '../../../../studio'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useResolveInitialValueForType} from '../../../../store/document/useResolveInitialValueForType'
+import {useCopyPaste} from '../../../../studio/copyPaste/CopyPasteProvider'
 import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
 import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
-import {type ArrayOfObjectsItemMember} from '../../../store'
+import {insert, setIfMissing, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type PatchArg} from '../../../patch/types'
+import {type ArrayOfObjectsItemMember} from '../../../store/types/members'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {
-  CreateAppendedObject,
-  CreatePrependedObject,
-  NavigatedToViaArrayList,
-  RemovedObject,
+  ObjectCreated,
+  ObjectEdited,
+  ObjectRemoved,
 } from '../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
+import {type ArrayInputCopyEvent, type ArrayInputInsertEvent} from '../../../types/event'
+import {type FormDocumentValue} from '../../../types/formDocumentValue'
+import {type ObjectInputProps} from '../../../types/inputProps'
+import {type ObjectItem, type ObjectItemProps} from '../../../types/itemProps'
 import {
-  type ArrayInputCopyEvent,
-  type ArrayInputInsertEvent,
-  type FormDocumentValue,
-  type ObjectInputProps,
-  type ObjectItem,
-  type ObjectItemProps,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
@@ -90,6 +89,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const getFormValue = useGetFormValue()
   const {onCopy} = useCopyPaste()
   const telemetry = useTelemetry()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {
@@ -99,7 +99,8 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   })
 
   const onRemove = useCallback(() => {
-    telemetry.log(RemovedObject, {
+    telemetry.log(ObjectRemoved, {
+      location: 'array_list',
       path: pathToString(member.item.path),
       origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })
@@ -118,17 +119,12 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const telemetryInsertSiblingsTelemetry = useCallback(
     (event: Omit<ArrayInputInsertEvent<ObjectItem>, 'referenceItem'>) => {
-      if (event.position === 'before') {
-        telemetry.log(CreatePrependedObject, {
-          path: pathToString(member.item.path),
-          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-        })
-      } else {
-        telemetry.log(CreateAppendedObject, {
-          path: pathToString(member.item.path),
-          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-        })
-      }
+      telemetry.log(ObjectCreated, {
+        location: 'array_list',
+        position: event.position === 'before' ? 'prepended' : 'appended',
+        path: pathToString(member.item.path),
+        origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+      })
     },
     [enhancedObjectDialogEnabled, member.item.path, telemetry],
   )
@@ -277,7 +273,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   )
 
   const handleOpen = useCallback(() => {
-    telemetry.log(NavigatedToViaArrayList, {
+    telemetry.log(ObjectEdited, {
+      location: 'array_list',
+      position: 'nested',
       path: pathToString(member.item.path),
       origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })

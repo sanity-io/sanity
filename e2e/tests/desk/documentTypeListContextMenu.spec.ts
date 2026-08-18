@@ -1,6 +1,6 @@
 import {expect} from '@playwright/test'
 
-import {clearKeyValueKey} from '../../helpers'
+import {clearKeyValueKey} from '../../helpers/clearKeyValueKey'
 import {test} from '../../studio-test'
 
 const SORT_KEY = 'studio.structure-tool.sort-order.author'

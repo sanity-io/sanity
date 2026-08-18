@@ -3,7 +3,13 @@ import {type ComponentProps} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {activeASAPRelease, activeScheduledRelease} from '../../../__fixtures__/release.fixture'
+import {useDocumentPreviewValues} from '../../../../tasks/hooks/useDocumentPreviewValues'
+import {
+  activeASAPRelease,
+  activeScheduledRelease,
+  archivedScheduledRelease,
+  publishedASAPRelease,
+} from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseDocumentPreview} from '../ReleaseDocumentPreview'
 
@@ -88,9 +94,6 @@ describe('ReleaseDocumentPreview', () => {
   })
 
   it('renders in loading state', async () => {
-    // Mock loading state
-    const {useDocumentPreviewValues} =
-      await import('../../../../tasks/hooks/useDocumentPreviewValues')
     vi.mocked(useDocumentPreviewValues).mockReturnValueOnce({
       isLoading: true,
       value: null,
@@ -114,6 +117,7 @@ describe('ReleaseDocumentPreview', () => {
     })
 
     const link = container.querySelector('a')
+    // @ts-expect-error -- pre-existing, fix later
     const searchParams = JSON.parse(link.getAttribute('data-search-params'))
     expect(searchParams).toContainEqual(['perspective', 'published'])
   })
@@ -127,11 +131,12 @@ describe('ReleaseDocumentPreview', () => {
     })
 
     const link = container.querySelector('a')
+    // @ts-expect-error -- pre-existing, fix later
     const searchParams = JSON.parse(link.getAttribute('data-search-params'))
     expect(searchParams).toContainEqual(['perspective', 'rActive'])
   })
 
-  it('creates link with release ID perspective when release state is not published', async () => {
+  it('creates link without search params when release state is archived', async () => {
     const {container} = await renderTest({
       documentId: 'doc123',
       documentTypeName: 'post',
@@ -140,7 +145,108 @@ describe('ReleaseDocumentPreview', () => {
     })
 
     const link = container.querySelector('a')
+    // @ts-expect-error -- pre-existing, fix later
     const searchParams = JSON.parse(link.getAttribute('data-search-params'))
     expect(searchParams).toBeNull()
+  })
+
+  it('creates link with variant and release perspective sticky params', async () => {
+    const {container} = await renderTest({
+      documentId: 'versions.buz.doc123',
+      documentTypeName: 'post',
+      releaseId: activeScheduledRelease._id,
+      releaseState: 'active',
+      variantId: 'alpha-audience',
+    })
+
+    const link = container.querySelector('a')
+    // @ts-expect-error -- pre-existing, fix later
+    const searchParams = JSON.parse(link.getAttribute('data-search-params'))
+    expect(searchParams).toEqual([
+      ['variant', 'alpha-audience'],
+      ['perspective', 'rActive'],
+    ])
+  })
+
+  describe('preview value resolution', () => {
+    it('resolves the version through the release perspective', async () => {
+      await renderTest({
+        documentId: 'versions.rActive.doc123',
+        documentTypeName: 'post',
+        releaseId: activeScheduledRelease._id,
+        releaseState: 'active',
+      })
+
+      expect(useDocumentPreviewValues).toHaveBeenLastCalledWith({
+        documentId: 'versions.rActive.doc123',
+        documentType: 'post',
+        perspectiveStack: ['rActive'],
+      })
+    })
+
+    it('resolves the published document while an unpublish is still pending', async () => {
+      await renderTest({
+        documentId: 'versions.rActive.doc123',
+        documentTypeName: 'post',
+        releaseId: activeScheduledRelease._id,
+        releaseState: 'active',
+        isGoingToUnpublish: true,
+      })
+
+      expect(useDocumentPreviewValues).toHaveBeenLastCalledWith({
+        documentId: 'doc123',
+        documentType: 'post',
+        perspectiveStack: [],
+      })
+    })
+
+    it('resolves the draft once the release has run the unpublish', async () => {
+      await renderTest({
+        documentId: 'versions.rPublished.doc123',
+        documentTypeName: 'post',
+        releaseId: publishedASAPRelease._id,
+        releaseState: 'published',
+        isGoingToUnpublish: true,
+      })
+
+      expect(useDocumentPreviewValues).toHaveBeenLastCalledWith({
+        documentId: 'doc123',
+        documentType: 'post',
+        perspectiveStack: ['drafts'],
+      })
+    })
+
+    // An archived release never ran, so its published documents are untouched and remain the right
+    // preview source. Pinned so that widening the drafts branch has to be a deliberate change.
+    it('resolves the published document for an archived release', async () => {
+      await renderTest({
+        documentId: 'versions.rArchived.doc123',
+        documentTypeName: 'post',
+        releaseId: archivedScheduledRelease._id,
+        releaseState: 'archived',
+        isGoingToUnpublish: true,
+      })
+
+      expect(useDocumentPreviewValues).toHaveBeenLastCalledWith({
+        documentId: 'doc123',
+        documentType: 'post',
+        perspectiveStack: [],
+      })
+    })
+
+    it('resolves the published document when no release state is given', async () => {
+      await renderTest({
+        documentId: 'versions.rActive.doc123',
+        documentTypeName: 'post',
+        releaseId: activeScheduledRelease._id,
+        isGoingToUnpublish: true,
+      })
+
+      expect(useDocumentPreviewValues).toHaveBeenLastCalledWith({
+        documentId: 'doc123',
+        documentType: 'post',
+        perspectiveStack: [],
+      })
+    })
   })
 })

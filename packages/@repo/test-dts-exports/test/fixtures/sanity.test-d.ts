@@ -236,6 +236,7 @@ import type {
   CommentThreadItem,
   CommentUpdateOperationOptions,
   CommentUpdatePayload,
+  CommitError,
   CommitFunction,
   CommitRequest,
   CommittedEvent,
@@ -277,6 +278,7 @@ import type {
   CorsCheckResult,
   CorsOriginErrorScreen,
   CorsProbeOutcome,
+  CreatableTargetDocument,
   createAuthStore,
   CreateAuthStoreOptions,
   createBufferedDocument,
@@ -382,6 +384,7 @@ import type {
   defineSearchFilterOperators,
   defineSearchOperator,
   defineType,
+  Delay,
   DeleteDocumentGroupEvent,
   DeleteDocumentVersionEvent,
   DeleteMutation,
@@ -475,6 +478,7 @@ import type {
   DocumentOptions,
   DocumentPairLoadedEvent,
   DocumentPairPermissionsOptions,
+  DocumentPairTarget,
   DocumentPermission,
   DocumentPluginOptions,
   DocumentPresence,
@@ -683,6 +687,7 @@ import type {
   getApiErrorCode,
   getCalendarLabels,
   getConfigContextFromSource,
+  getCreatableVariantTarget,
   getDiffAtPath,
   getDocumentIdForCanvasLink,
   getDocumentIsInPerspective,
@@ -701,6 +706,7 @@ import type {
   getItemKeySegment,
   getNamelessWorkspaceIdentifier,
   getPairListener,
+  getPairTarget,
   getPreviewPaths,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
@@ -714,9 +720,11 @@ import type {
   getSearchableTypes,
   getSelectedVariant,
   getTargetDocument,
+  getTargetScopeId,
   getTemplatePermissions,
   getValueAtPath,
   getValueError,
+  getVariantPublishedSibling,
   getVariantTitle,
   getVersionFromId,
   getVersionId,
@@ -877,6 +885,7 @@ import type {
   isImageSchemaType,
   isIndexSegment,
   isIndexTuple,
+  isInvalidSessionError,
   isKeyedObject,
   isKeySegment,
   IsLastPaneProvider,
@@ -913,7 +922,6 @@ import type {
   isSanityDocument,
   isScheduleDocumentVersionEvent,
   isSearchStrategy,
-  isSessionExpiredError,
   isSlug,
   isSpanSchemaType,
   isString,
@@ -1193,6 +1201,7 @@ import type {
   PublishedId,
   QueryParams,
   ReactHook,
+  readVersionType,
   RebasePatchMsg,
   ReconnectEvent,
   Rect,
@@ -1454,6 +1463,7 @@ import type {
   TagsArrayInput,
   TagsArrayInputProps,
   TagValue,
+  TargetDocumentState,
   TargetPerspective,
   TelephoneInput,
   TelephoneInputProps,
@@ -1575,6 +1585,7 @@ import type {
   useConnectionStatusStore,
   useCopyErrorDetails,
   useCopyPaste,
+  useCreatableVariantInitialValue,
   useCurrentLocale,
   useCurrentUser,
   useDataset,
@@ -1704,6 +1715,7 @@ import type {
   useStudioFeedbackTags,
   useStudioUrl,
   useSyncState,
+  useTargetDocumentState,
   useTelemetryConsent,
   useTemplatePermissions,
   useTemplatePermissionsFromHookFactory,
@@ -1758,10 +1770,12 @@ import type {
   ValueError,
   ValuelessSearchOperatorBuilder,
   ValuelessSearchOperatorParams,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
   VERSION_FOLDER,
   VersionChip,
   VersionInfoDocumentStub,
   VersionInlineBadge,
+  VersionType,
   VirtualizerScrollInstance,
   VirtualizerScrollInstanceProvider,
   VisibleWorkspacesContextValue,
@@ -2064,7 +2078,7 @@ describe('sanity', () => {
     expectTypeOf<AuthStoreOptions>().toBeObject()
   })
   test('AutoCollapseMenu', () => {
-    expectTypeOf<typeof AutoCollapseMenu>().not.toBeNever()
+    expectTypeOf<typeof AutoCollapseMenu>().toBeFunction()
   })
   test('AutocompleteString', () => {
     expectTypeOf<AutocompleteString>().not.toBeNever()
@@ -2304,7 +2318,7 @@ describe('sanity', () => {
     expectTypeOf<typeof checkoutPair>().toBeFunction()
   })
   test('Chip', () => {
-    expectTypeOf<typeof Chip>().not.toBeNever()
+    expectTypeOf<typeof Chip>().toBeFunction()
   })
   test('Chunk', () => {
     expectTypeOf<Chunk>().not.toBeNever()
@@ -2322,10 +2336,10 @@ describe('sanity', () => {
     expectTypeOf<typeof classifyRequestError>().toBeFunction()
   })
   test('CollapseMenu', () => {
-    expectTypeOf<typeof CollapseMenu>().not.toBeNever()
+    expectTypeOf<typeof CollapseMenu>().toBeFunction()
   })
   test('CollapseMenuButton', () => {
-    expectTypeOf<typeof CollapseMenuButton>().not.toBeNever()
+    expectTypeOf<typeof CollapseMenuButton>().toBeFunction()
   })
   test('CollapseMenuButtonProps', () => {
     expectTypeOf<CollapseMenuButtonProps>().toBeObject()
@@ -2397,7 +2411,7 @@ describe('sanity', () => {
     expectTypeOf<typeof CommentDeleteDialog>().toBeFunction()
   })
   test('CommentDisabledIcon', () => {
-    expectTypeOf<typeof CommentDisabledIcon>().not.toBeNever()
+    expectTypeOf<typeof CommentDisabledIcon>().toBeFunction()
   })
   test('CommentDocument', () => {
     expectTypeOf<CommentDocument>().toBeObject()
@@ -2406,10 +2420,10 @@ describe('sanity', () => {
     expectTypeOf<CommentFieldCreatePayload>().toBeObject()
   })
   test('CommentInlineHighlightSpan', () => {
-    expectTypeOf<typeof CommentInlineHighlightSpan>().not.toBeNever()
+    expectTypeOf<typeof CommentInlineHighlightSpan>().toBeFunction()
   })
   test('CommentInput', () => {
-    expectTypeOf<typeof CommentInput>().not.toBeNever()
+    expectTypeOf<typeof CommentInput>().toBeFunction()
   })
   test('CommentInputHandle', () => {
     expectTypeOf<CommentInputHandle>().toBeObject()
@@ -2500,6 +2514,9 @@ describe('sanity', () => {
   })
   test('CommentUpdatePayload', () => {
     expectTypeOf<CommentUpdatePayload>().not.toBeNever()
+  })
+  test('CommitError', () => {
+    expectTypeOf<CommitError>().not.toBeNever()
   })
   test('CommitFunction', () => {
     expectTypeOf<CommitFunction>().not.toBeNever()
@@ -2601,7 +2618,7 @@ describe('sanity', () => {
     expectTypeOf<ConnectorContextValue>().toBeObject()
   })
   test('ContextMenuButton', () => {
-    expectTypeOf<typeof ContextMenuButton>().not.toBeNever()
+    expectTypeOf<typeof ContextMenuButton>().toBeFunction()
   })
   test('CookielessCompatibleLoginMethod', () => {
     expectTypeOf<CookielessCompatibleLoginMethod>().not.toBeNever()
@@ -2623,6 +2640,9 @@ describe('sanity', () => {
   })
   test('CorsProbeOutcome', () => {
     expectTypeOf<CorsProbeOutcome>().not.toBeNever()
+  })
+  test('CreatableTargetDocument', () => {
+    expectTypeOf<CreatableTargetDocument>().toBeObject()
   })
   test('createAuthStore', () => {
     expectTypeOf<typeof createAuthStore>().not.toBeNever()
@@ -2943,6 +2963,9 @@ describe('sanity', () => {
   test('defineType', () => {
     expectTypeOf<typeof defineType>().toBeFunction()
   })
+  test('Delay', () => {
+    expectTypeOf<typeof Delay>().toBeFunction()
+  })
   test('DeleteDocumentGroupEvent', () => {
     expectTypeOf<DeleteDocumentGroupEvent>().toBeObject()
   })
@@ -2974,7 +2997,7 @@ describe('sanity', () => {
     expectTypeOf<Diff<any, any>>().not.toBeNever()
   })
   test('DiffCard', () => {
-    expectTypeOf<typeof DiffCard>().not.toBeNever()
+    expectTypeOf<typeof DiffCard>().toBeFunction()
   })
   test('DiffCardProps', () => {
     expectTypeOf<DiffCardProps>().toBeObject()
@@ -3222,6 +3245,9 @@ describe('sanity', () => {
   })
   test('DocumentPairPermissionsOptions', () => {
     expectTypeOf<DocumentPairPermissionsOptions>().toBeObject()
+  })
+  test('DocumentPairTarget', () => {
+    expectTypeOf<DocumentPairTarget>().not.toBeNever()
   })
   test('DocumentPermission', () => {
     expectTypeOf<DocumentPermission>().not.toBeNever()
@@ -3701,7 +3727,7 @@ describe('sanity', () => {
     expectTypeOf<FormFieldProps>().toBeObject()
   })
   test('FormFieldSet', () => {
-    expectTypeOf<typeof FormFieldSet>().not.toBeNever()
+    expectTypeOf<typeof FormFieldSet>().toBeFunction()
   })
   test('FormFieldSetProps', () => {
     expectTypeOf<FormFieldSetProps>().toBeObject()
@@ -3794,7 +3820,7 @@ describe('sanity', () => {
     expectTypeOf<typeof fromMutationPatches>().toBeFunction()
   })
   test('FromTo', () => {
-    expectTypeOf<typeof FromTo>().not.toBeNever()
+    expectTypeOf<typeof FromTo>().toBeFunction()
   })
   test('FromToArrow', () => {
     expectTypeOf<typeof FromToArrow>().toBeFunction()
@@ -3851,6 +3877,9 @@ describe('sanity', () => {
   test('getConfigContextFromSource', () => {
     expectTypeOf<typeof getConfigContextFromSource>().toBeFunction()
   })
+  test('getCreatableVariantTarget', () => {
+    expectTypeOf<typeof getCreatableVariantTarget>().toBeFunction()
+  })
   test('getDiffAtPath', () => {
     expectTypeOf<typeof getDiffAtPath>().toBeFunction()
   })
@@ -3861,7 +3890,7 @@ describe('sanity', () => {
     expectTypeOf<typeof getDocumentIsInPerspective>().toBeFunction()
   })
   test('getDocumentPairPermissions', () => {
-    expectTypeOf<typeof getDocumentPairPermissions>().toBeFunction()
+    expectTypeOf<typeof getDocumentPairPermissions>().not.toBeNever()
   })
   test('getDocumentValuePermissions', () => {
     expectTypeOf<typeof getDocumentValuePermissions>().toBeFunction()
@@ -3907,6 +3936,9 @@ describe('sanity', () => {
   test('getPairListener', () => {
     expectTypeOf<typeof getPairListener>().toBeFunction()
   })
+  test('getPairTarget', () => {
+    expectTypeOf<typeof getPairTarget>().toBeFunction()
+  })
   test('getPreviewPaths', () => {
     expectTypeOf<typeof getPreviewPaths>().toBeFunction()
   })
@@ -3946,6 +3978,9 @@ describe('sanity', () => {
   test('getTargetDocument', () => {
     expectTypeOf<typeof getTargetDocument>().toBeFunction()
   })
+  test('getTargetScopeId', () => {
+    expectTypeOf<typeof getTargetScopeId>().toBeFunction()
+  })
   test('getTemplatePermissions', () => {
     expectTypeOf<typeof getTemplatePermissions>().toBeFunction()
   })
@@ -3954,6 +3989,9 @@ describe('sanity', () => {
   })
   test('getValueError', () => {
     expectTypeOf<typeof getValueError>().toBeFunction()
+  })
+  test('getVariantPublishedSibling', () => {
+    expectTypeOf<typeof getVariantPublishedSibling>().toBeFunction()
   })
   test('getVariantTitle', () => {
     expectTypeOf<typeof getVariantTitle>().toBeFunction()
@@ -4155,6 +4193,8 @@ describe('sanity', () => {
     expectTypeOf<ImageValue>().toBeObject()
   })
   test('ImperativeToast', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    expectTypeOf<typeof ImperativeToast>().toBeFunction()
     expectTypeOf<typeof ImperativeToast>().not.toBeNever()
   })
   test('ImplicitLocaleResourceBundle', () => {
@@ -4436,6 +4476,9 @@ describe('sanity', () => {
   test('isIndexTuple', () => {
     expectTypeOf<typeof isIndexTuple>().toBeFunction()
   })
+  test('isInvalidSessionError', () => {
+    expectTypeOf<typeof isInvalidSessionError>().toBeFunction()
+  })
   test('isKeyedObject', () => {
     expectTypeOf<typeof isKeyedObject>().toBeFunction()
   })
@@ -4543,9 +4586,6 @@ describe('sanity', () => {
   })
   test('isSearchStrategy', () => {
     expectTypeOf<typeof isSearchStrategy>().toBeFunction()
-  })
-  test('isSessionExpiredError', () => {
-    expectTypeOf<typeof isSessionExpiredError>().toBeFunction()
   })
   test('isSlug', () => {
     expectTypeOf<typeof isSlug>().toBeFunction()
@@ -5307,7 +5347,7 @@ describe('sanity', () => {
     expectTypeOf<PreviewableType>().not.toBeNever()
   })
   test('PreviewCard', () => {
-    expectTypeOf<typeof PreviewCard>().not.toBeNever()
+    expectTypeOf<typeof PreviewCard>().toBeFunction()
   })
   test('PreviewCardContextValue', () => {
     expectTypeOf<PreviewCardContextValue>().toBeObject()
@@ -5387,6 +5427,9 @@ describe('sanity', () => {
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()
   })
+  test('readVersionType', () => {
+    expectTypeOf<typeof readVersionType>().toBeFunction()
+  })
   test('RebasePatchMsg', () => {
     expectTypeOf<RebasePatchMsg>().toBeObject()
   })
@@ -5400,7 +5443,7 @@ describe('sanity', () => {
     expectTypeOf<Reference>().toBeObject()
   })
   test('ReferenceAutocomplete', () => {
-    expectTypeOf<typeof ReferenceAutocomplete>().not.toBeNever()
+    expectTypeOf<typeof ReferenceAutocomplete>().toBeFunction()
   })
   test('ReferenceBaseOptions', () => {
     expectTypeOf<ReferenceBaseOptions>().toBeObject()
@@ -5660,7 +5703,7 @@ describe('sanity', () => {
     expectTypeOf<RetryingStatus>().not.toBeNever()
   })
   test('RevertChangesButton', () => {
-    expectTypeOf<typeof RevertChangesButton>().not.toBeNever()
+    expectTypeOf<typeof RevertChangesButton>().toBeFunction()
   })
   test('RevertChangesConfirmDialog', () => {
     expectTypeOf<typeof RevertChangesConfirmDialog>().toBeFunction()
@@ -5789,7 +5832,7 @@ describe('sanity', () => {
     expectTypeOf<ScrollEventHandler>().not.toBeNever()
   })
   test('SearchButton', () => {
-    expectTypeOf<typeof SearchButton>().not.toBeNever()
+    expectTypeOf<typeof SearchButton>().toBeFunction()
   })
   test('SearchConfiguration', () => {
     expectTypeOf<SearchConfiguration>().toBeObject()
@@ -5807,7 +5850,7 @@ describe('sanity', () => {
     expectTypeOf<SearchFilterDefinition<any>>().not.toBeNever()
   })
   test('SearchHeader', () => {
-    expectTypeOf<typeof SearchHeader>().not.toBeNever()
+    expectTypeOf<typeof SearchHeader>().toBeFunction()
   })
   test('SearchOperatorBase', () => {
     expectTypeOf<SearchOperatorBase>().toBeObject()
@@ -6021,7 +6064,7 @@ describe('sanity', () => {
     expectTypeOf<Status>().not.toBeNever()
   })
   test('StatusButton', () => {
-    expectTypeOf<typeof StatusButton>().not.toBeNever()
+    expectTypeOf<typeof StatusButton>().toBeFunction()
   })
   test('StatusButtonProps', () => {
     expectTypeOf<StatusButtonProps>().not.toBeNever()
@@ -6174,6 +6217,9 @@ describe('sanity', () => {
   test('TagValue', () => {
     expectTypeOf<TagValue>().not.toBeNever()
   })
+  test('TargetDocumentState', () => {
+    expectTypeOf<TargetDocumentState>().not.toBeNever()
+  })
   test('TargetPerspective', () => {
     expectTypeOf<TargetPerspective>().not.toBeNever()
   })
@@ -6242,7 +6288,7 @@ describe('sanity', () => {
     expectTypeOf<TextSchemaType>().toBeObject()
   })
   test('TextWithTone', () => {
-    expectTypeOf<typeof TextWithTone>().not.toBeNever()
+    expectTypeOf<typeof TextWithTone>().toBeFunction()
   })
   test('TextWithToneProps', () => {
     expectTypeOf<TextWithToneProps>().not.toBeNever()
@@ -6287,7 +6333,7 @@ describe('sanity', () => {
     expectTypeOf<Tool<any>>().toBeObject()
   })
   test('ToolLink', () => {
-    expectTypeOf<typeof ToolLink>().not.toBeNever()
+    expectTypeOf<typeof ToolLink>().toBeFunction()
   })
   test('ToolLinkProps', () => {
     expectTypeOf<ToolLinkProps>().toBeObject()
@@ -6296,7 +6342,7 @@ describe('sanity', () => {
     expectTypeOf<ToolMenuProps>().toBeObject()
   })
   test('TooltipOfDisabled', () => {
-    expectTypeOf<typeof TooltipOfDisabled>().not.toBeNever()
+    expectTypeOf<typeof TooltipOfDisabled>().toBeFunction()
   })
   test('TrackedArea', () => {
     expectTypeOf<TrackedArea>().toBeObject()
@@ -6539,6 +6585,9 @@ describe('sanity', () => {
   })
   test('useCopyPaste', () => {
     expectTypeOf<typeof useCopyPaste>().not.toBeNever()
+  })
+  test('useCreatableVariantInitialValue', () => {
+    expectTypeOf<typeof useCreatableVariantInitialValue>().toBeFunction()
   })
   test('useCurrentLocale', () => {
     expectTypeOf<typeof useCurrentLocale>().toBeFunction()
@@ -6928,6 +6977,9 @@ describe('sanity', () => {
   test('useSyncState', () => {
     expectTypeOf<typeof useSyncState>().toBeFunction()
   })
+  test('useTargetDocumentState', () => {
+    expectTypeOf<typeof useTargetDocumentState>().toBeFunction()
+  })
   test('useTelemetryConsent', () => {
     expectTypeOf<typeof useTelemetryConsent>().toBeFunction()
   })
@@ -7091,6 +7143,9 @@ describe('sanity', () => {
   test('ValuelessSearchOperatorParams', () => {
     expectTypeOf<ValuelessSearchOperatorParams>().not.toBeNever()
   })
+  test('VARIANTS_STUDIO_CLIENT_OPTIONS', () => {
+    expectTypeOf<typeof VARIANTS_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
+  })
   test('VERSION_FOLDER', () => {
     expectTypeOf<typeof VERSION_FOLDER>().not.toBeNever()
   })
@@ -7102,6 +7157,9 @@ describe('sanity', () => {
   })
   test('VersionInlineBadge', () => {
     expectTypeOf<typeof VersionInlineBadge>().not.toBeNever()
+  })
+  test('VersionType', () => {
+    expectTypeOf<VersionType>().not.toBeNever()
   })
   test('VirtualizerScrollInstance', () => {
     expectTypeOf<VirtualizerScrollInstance>().toBeObject()

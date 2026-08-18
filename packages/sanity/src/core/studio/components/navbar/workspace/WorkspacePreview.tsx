@@ -1,8 +1,9 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {type ComponentType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 export const STATE_TITLES = {
   'loading': 'Checking…',
@@ -65,7 +66,7 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
     <Flex align="center" flex="none" gap={3}>
       <WorkspacePreviewIcon icon={icon} size="small" />
 
-      <Stack flex={1} space={2}>
+      <Stack flex={1} gap={2}>
         <Text size={1} textOverflow="ellipsis" weight="medium">
           {title}
         </Text>

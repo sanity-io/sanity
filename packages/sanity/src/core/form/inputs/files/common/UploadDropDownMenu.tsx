@@ -1,19 +1,15 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {UploadIcon} from '@sanity/icons/Upload'
 import {type AssetSource} from '@sanity/types'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import uniqueId from 'lodash-es/uniqueId.js'
-import {type ForwardedRef, forwardRef, memo, useCallback, useMemo} from 'react'
+import {memo, useCallback, useMemo, type RefAttributes} from 'react'
 
-import {
-  Button,
-  MenuButton,
-  type MenuButtonProps,
-  MenuGroup,
-  type MenuGroupProps,
-  MenuItem,
-} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuGroup, type MenuGroupProps} from '../../../../../ui-components/menuGroup/MenuGroup'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {getAssetSourceDisplayName, isComponentModeAssetSource} from './assetSourceUtils'
 import {openFilePicker} from './openFilePicker'
 
@@ -49,10 +45,10 @@ interface UploadDropDownButtonComponentProps {
 }
 
 function UploadDropDownMenuComponent(
-  props: UploadDropDownButtonComponentProps,
-  forwardedRef: ForwardedRef<HTMLButtonElement>,
+  props: UploadDropDownButtonComponentProps & RefAttributes<HTMLButtonElement>,
 ) {
   const {
+    ref: forwardedRef,
     accept,
     assetSources,
     capture,
@@ -177,4 +173,4 @@ function UploadDropDownMenuComponent(
 
   return null
 }
-export const UploadDropDownMenu = memo(forwardRef(UploadDropDownMenuComponent))
+export const UploadDropDownMenu = memo(UploadDropDownMenuComponent)

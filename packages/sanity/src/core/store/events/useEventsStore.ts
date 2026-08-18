@@ -1,9 +1,10 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {useCallback, useEffect, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable, useSyncObservable} from 'react-rx'
 import {of} from 'rxjs'
 
-import {useClient, useSchema} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
+import {useSchema} from '../../hooks/useSchema'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
@@ -64,6 +65,13 @@ export function useEventsStore({
       }),
     [client, documentId, documentType, releases$, isLiveEdit],
   )
+  // Deferred (per review): these events drive the review-changes list, which
+  // users don't expect to update synchronously on every edit. `revisionId` /
+  // `sinceId` and the `revision` / `sinceRevision` documents are all derived
+  // from this deferred value, so they lag together (coherently) rather than
+  // pairing a stale diff with fresh state. Verified against the
+  // `revertArrayChanges` e2e flow, which previously crashed only when the
+  // diff was deferred incoherently while events stayed live.
   const {events, loading, error, nextCursor} = useObservable(
     eventsStore.eventsObservable$,
     INITIAL_VALUE,
@@ -129,7 +137,7 @@ export function useEventsStore({
     () => (revisionId ? getDocumentAtRevision(revisionId) : of(null)),
     [getDocumentAtRevision, revisionId],
   )
-  const revision = useObservable(revision$, null)
+  const revision = useSyncObservable(revision$, null)
 
   const sinceId = useMemo(() => {
     if (since && since !== '@lastPublished') return since
@@ -168,7 +176,7 @@ export function useEventsStore({
     [eventsStore, revision$, since$],
   )
 
-  const sinceRevision = useObservable(since$, null)
+  const sinceRevision = useSyncObservable(since$, null)
 
   const documentVariantType = getDocumentVariantType(documentId)
   const findRangeForRevision = useCallback(

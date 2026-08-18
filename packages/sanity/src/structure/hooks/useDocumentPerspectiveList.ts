@@ -1,7 +1,6 @@
 import {type BadgeTone} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
-  getReleaseIdFromReleaseDocumentId,
   getVariantTitle,
   getVersionFromId,
   isDraftId,
@@ -15,7 +14,6 @@ import {
   useFilteredReleases,
   usePerspective,
   useSchema,
-  useSetPerspective,
   useSingleDocRelease,
   useWorkspace,
   useAllVariants,
@@ -42,8 +40,11 @@ interface DocumentPerspectiveList {
   } | null
   /** Returns the chip selection/disabled state for a given release id. */
   getReleaseChipState: (releaseId: string) => {selected: boolean; disabled?: boolean}
-  /** Navigates to the draft perspective after copying a version to drafts. */
-  handleCopyToDraftsNavigate: () => void
+  /**
+   * Clears the pane-local scheduled draft perspective when viewing one.
+   * Passed into version context menus for post copy-to-drafts cleanup.
+   */
+  clearScheduledDraftPerspective: () => void
   /** Navigates to the given perspective. */
   handlePerspectiveChange: (perspective: TargetPerspective) => void
   isDraftDisabled: boolean
@@ -72,7 +73,6 @@ interface DocumentPerspectiveList {
  */
 export function useDocumentPerspectiveList(): DocumentPerspectiveList {
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
-  const setPerspective = useSetPerspective()
   const {params} = usePaneRouter()
   const schema = useSchema()
   const {editState, displayed} = useDocumentPane()
@@ -94,17 +94,11 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
   const workspace = useWorkspace()
   const {onSetScheduledDraftPerspective} = useSingleDocRelease()
 
-  const handleCopyToDraftsNavigate = useCallback(() => {
-    // after copying to draft, we want to navigate to the draft version
+  const clearScheduledDraftPerspective = useCallback(() => {
     if (params?.scheduledDraft) {
-      // if currently viewing a scheduled draft, remove the scheduled draft perspective
-      // the global perspective is already set to drafts
       onSetScheduledDraftPerspective('')
-    } else {
-      // otherwise, only need to set the global perspective to drafts
-      setPerspective('drafts')
     }
-  }, [params, setPerspective, onSetScheduledDraftPerspective])
+  }, [params, onSetScheduledDraftPerspective])
 
   const {navigate: handlePerspectiveChange} = usePerspectiveNavigator()
 
@@ -232,7 +226,7 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
       const variantTitle = variant ? getVariantTitle(variant) : (variantId ?? '')
       return {
         displayName: `${variantTitle} [${version._system.bundleId || 'published'}]`,
-        tone: 'caution' as const,
+        tone: version._system.bundleId ? ('caution' as const) : ('positive' as const),
       }
     },
     [getAgentVersionDisplay, variants],
@@ -260,7 +254,11 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     (version: VersionInfoDocumentStub) => {
       const variantId = version._system.variant?._ref
       const variant = variantId ? variants.get(variantId) : undefined
-      setVariant(variant ?? undefined)
+      // Published version documents omit `bundleId`, so treat a missing bundle as published.
+      // Passing the perspective alongside the variant updates both sticky params atomically.
+      const versionBundle = version._system.bundleId
+      const perspective = !versionBundle ? 'published' : versionBundle
+      setVariant({variantId: variant?._id, perspective})
     },
     [setVariant, variants],
   )
@@ -269,7 +267,7 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     filteredReleases,
     getVersionDisplay,
     getReleaseChipState,
-    handleCopyToDraftsNavigate,
+    clearScheduledDraftPerspective,
     handlePerspectiveChange,
     isDraftDisabled,
     isDraftModelEnabled,

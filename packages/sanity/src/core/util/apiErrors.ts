@@ -6,16 +6,30 @@ export function isUnauthorizedError(err: unknown): err is ClientError {
 }
 
 /**
- * Whether a 401 positively signals a dead session. Every API endpoint tags
- * session-expiry 401s with the `SIO-401-AEX` error code; a 401 *without*
- * it is a resource-level denial (e.g. an authenticated user lacking a
- * grant — some endpoints answer those with 401, not 403) and must stay
- * caller-domain rather than force a logout.
+ * Error codes the API uses on 401s that positively signal an invalid session:
+ * - `SIO-401-AEX`: the session has expired
+ * - `SIO-401-ANF`: the token resolves to no session at all ("Session not
+ *   found" — revoked on another device, purged after expiry, or a stale/
+ *   corrupted stored token)
+ *
+ * Both mean no valid session exists, so both warrant a forced logout.
+ */
+const INVALID_SESSION_ERROR_CODES = ['SIO-401-AEX', 'SIO-401-ANF']
+
+/**
+ * Whether a 401 positively signals an invalid session (see
+ * {@link INVALID_SESSION_ERROR_CODES}). A 401 *without* one of these codes is
+ * a resource-level denial (e.g. an authenticated user lacking a grant —
+ * some endpoints answer those with 401, not 403) and must stay
+ * caller-domain rather than force a logout; grant denials only happen with
+ * a valid session, so they never carry these codes.
  *
  * @internal
  */
-export function isSessionExpiredError(err: unknown): err is ClientError {
-  return isUnauthorizedError(err) && getApiErrorCode(err) === 'SIO-401-AEX'
+export function isInvalidSessionError(err: unknown): err is ClientError {
+  if (!isUnauthorizedError(err)) return false
+  const code = getApiErrorCode(err)
+  return code !== undefined && INVALID_SESSION_ERROR_CODES.includes(code)
 }
 
 /**

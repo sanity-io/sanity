@@ -24,21 +24,16 @@ import _isEqual from 'lodash-es/isEqual.js'
 import {emptyValuesByType} from '../../field/diff/helpers'
 import {type FIXME} from '../../FIXME'
 import {type TargetPerspective} from '../../perspective/types'
-import {type FormNodePresence} from '../../presence'
-import {EMPTY_ARRAY, EMPTY_OBJECT, isRecord} from '../../util'
+import {type FormNodePresence} from '../../presence/types'
+import {EMPTY_ARRAY, EMPTY_OBJECT} from '../../util/empty'
+import {isRecord} from '../../util/isRecord'
 import {getFieldLevel} from '../studio/inputResolver/helpers'
 import {ALL_FIELDS_GROUP, MAX_FIELD_DEPTH} from './constants'
-import {
-  type FieldSetMember,
-  type HiddenField,
-  type ObjectArrayFormNode,
-  type PrimitiveFormNode,
-  type ProvenanceDiffAnnotation,
-  type StateTree,
-} from './types'
+import {type ProvenanceDiffAnnotation} from './types/diff'
 import {type FormFieldGroup} from './types/fieldGroup'
 import {type FieldError} from './types/memberErrors'
 import {
+  type FieldSetMember,
   type ArrayOfObjectsMember,
   type ArrayOfPrimitivesMember,
   type DecorationMember,
@@ -46,6 +41,9 @@ import {
   type ObjectMember,
 } from './types/members'
 import {
+  type HiddenField,
+  type ObjectArrayFormNode,
+  type PrimitiveFormNode,
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
   type ComputeDiff,
@@ -53,6 +51,7 @@ import {
   type NodeDiffProps,
   type ObjectFormNode,
 } from './types/nodes'
+import {type StateTree} from './types/state'
 import {createMemoizer, type FunctionDecorator} from './utils/createMemoizer'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 import {getId} from './utils/getId'
@@ -814,7 +813,6 @@ export function createPrepareFormState({
         ...parent,
         comparisonValue: fieldComparisonValue,
         value: fieldValue,
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
         schemaType: field.type as PrimitiveSchemaType,
         path: fieldPath,
         readOnly: scopedReadOnly,

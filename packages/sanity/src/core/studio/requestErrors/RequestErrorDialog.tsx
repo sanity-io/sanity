@@ -1,33 +1,53 @@
 /* eslint-disable i18next/no-literal-string */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {startTransition, useCallback, useEffect, useState} from 'react'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {type ReactNode, startTransition, useCallback, useEffect, useState} from 'react'
+import {Box} from 'ui5'
 
-import {Dialog} from '../../../ui-components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type RequestErrorClaim} from './types'
 
 /**
  * Things a user can check themselves when the studio can't reach the
  * Sanity API. Ordered most-likely-first.
  */
-const NETWORK_TROUBLESHOOTING = [
-  'Check that your device is online.',
-  'Disable VPNs, ad blockers, or browser extensions that may block requests.',
-  'Check status.sanity.io for ongoing incidents.',
+const NETWORK_TROUBLESHOOTING: {key: string; content: ReactNode}[] = [
+  {key: 'online', content: 'Check that your device is online.'},
+  {
+    key: 'blockers',
+    content: 'Disable VPNs, ad blockers, or browser extensions that may block requests.',
+  },
+  {
+    key: 'status',
+    content: (
+      <>
+        Check{' '}
+        <a
+          href="https://status.sanity.io"
+          rel="noopener noreferrer"
+          style={{color: 'var(--card-link-fg-color)'}}
+          target="_blank"
+        >
+          status.sanity.io
+        </a>{' '}
+        for ongoing incidents.
+      </>
+    ),
+  },
 ]
 
 function NetworkTroubleshooting() {
   return (
     <Card border radius={2} padding={3} tone="transparent">
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text size={1} weight="medium">
           Troubleshooting
         </Text>
-        <Stack as="ul" space={2} style={{margin: 0, paddingLeft: '1.25em'}}>
+        <Stack as="ul" gap={2} style={{margin: 0, paddingLeft: '1.25em'}}>
           {NETWORK_TROUBLESHOOTING.map((tip) => (
-            <Box as="li" key={tip}>
+            <Box as="li" key={tip.key}>
               <Text size={1} muted>
-                {tip}
+                {tip.content}
               </Text>
             </Box>
           ))}
@@ -134,7 +154,7 @@ export function RequestErrorDialog(props: {
             }
       }
     >
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text>{message}</Text>
         {claim.type === 'networkError' ? <NetworkTroubleshooting /> : null}
         {claim.type === 'serverError' ? (
@@ -194,7 +214,7 @@ function RateLimitedDialog(props: {
           },
         }}
       >
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text>Too many requests at once. Reload the Studio to try again.</Text>
         </Stack>
       </Dialog>
@@ -223,7 +243,7 @@ function RateLimitedDialog(props: {
         },
       }}
     >
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text>Too many requests at once. You can try again shortly.</Text>
       </Stack>
     </Dialog>

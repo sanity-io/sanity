@@ -1,7 +1,8 @@
-import {Box, Container, Flex} from '@sanity/ui'
+import {Container, Flex} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/SingleDocReleaseEnabledProvider'
 import {useSingleDocReleaseUpsell} from '../../../singleDocRelease/context/SingleDocReleaseUpsellProvider'

@@ -2,23 +2,26 @@ import {isBooleanSchemaType, isNumberSchemaType, type SchemaType} from '@sanity/
 import {type ChangeEvent, type FocusEvent, useCallback, useMemo, useRef, useState} from 'react'
 
 import {type FIXME} from '../../../../FIXME'
-import {useCopyPaste} from '../../../../studio'
+import {useCopyPaste} from '../../../../studio/copyPaste/CopyPasteProvider'
 import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
 import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {getEmptyValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/getEmptyValue'
-import {insert, type PatchArg, PatchEvent, set, unset} from '../../../patch'
-import {type ArrayOfPrimitivesItemMember} from '../../../store'
+import {insert, set, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type PatchArg} from '../../../patch/types'
+import {type ArrayOfPrimitivesItemMember} from '../../../store/types/members'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {type ArrayInputCopyEvent} from '../../../types/event'
+import {type FormDocumentValue} from '../../../types/formDocumentValue'
+import {type PrimitiveInputProps} from '../../../types/inputProps'
+import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {
-  type ArrayInputCopyEvent,
-  type FormDocumentValue,
-  type PrimitiveInputProps,
-  type PrimitiveItemProps,
   type RenderArrayOfPrimitivesItemCallback,
   type RenderInputCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
+import {stripStegaFromPasteEvent} from '../../../utils/stegaPaste'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
@@ -118,8 +121,10 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       'id': member.item.id,
       'ref': focusRef,
       'onChange': handleNativeChange,
+      'onPaste': stripStegaFromPasteEvent,
       'value': resolveNativeInputValue(member.item.schemaType, member.item.value, localValue),
       'readOnly': Boolean(member.item.readOnly),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       'placeholder': member.item.schemaType.placeholder,
       // Disable native browser autocomplete/autofill on content-editing fields
       'autoComplete': 'off',
@@ -144,13 +149,11 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     return {
       changed: member.item.changed,
       level: member.item.level,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       value: member.item.value as FIXME,
       compareValue: member.item.compareValue,
       __unstable_computeDiff: member.item.__unstable_computeDiff,
       hasUpstreamVersion: member.item.hasUpstreamVersion,
       readOnly: member.item.readOnly,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       schemaType: member.item.schemaType as FIXME,
       id: member.item.id,
       path: member.item.path,
@@ -213,7 +216,6 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       hasUpstreamVersion={member.item.hasUpstreamVersion}
       title={member.item.schemaType.title}
       description={member.item.schemaType.description}
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       schemaType={member.item.schemaType as FIXME}
       parentSchemaType={member.parentSchemaType}
       onInsert={onInsert}

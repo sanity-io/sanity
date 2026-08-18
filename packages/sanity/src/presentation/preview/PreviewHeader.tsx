@@ -8,7 +8,8 @@ import {useSelector} from '@xstate/react'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 
-import {Button, Tooltip} from '../../ui-components'
+import {Button} from '../../ui-components/button/Button'
+import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {presentationLocaleNamespace} from '../i18n'
 import {type HeaderOptions} from '../types'
 import {useId} from '../useId'
@@ -37,6 +38,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     overlaysConnection,
     presentationRef,
     perspective,
+    variant,
     previewUrl,
     setViewport,
     targetOrigin,
@@ -207,6 +209,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
                 previewLocationOrigin={previewLocationOrigin}
                 previewLocationRoute={previewLocationRoute}
                 perspective={perspective}
+                variant={variant}
                 targetOrigin={targetOrigin}
               />
             </Box>
@@ -252,6 +255,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
             previewLocationRoute={previewLocationRoute}
             initialUrl={initialUrl}
             perspective={perspective}
+            variant={variant}
           />
         </Flex>
       )}

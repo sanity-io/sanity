@@ -1,4 +1,4 @@
-import semver, {type SemVer} from 'semver'
+import semver from 'semver'
 
 const MODULE_PATH_REGEX = /^\/v1\/modules\/sanity\/[^/]+\/[^/]+\/[^/]+\/?$/
 // /v1/modules/by-app/some-appid-123/t1755876954/%5E4.5.0/sanity
@@ -33,18 +33,6 @@ export function parseImportMapModuleCdnUrl(
     appId,
     minVersion,
   }
-}
-
-/**
- * Checks whether a version resolved from the module CDN can actually be reached by reloading the
- * studio, given the version range from the studio's import map. The module CDN never serves a
- * version outside this range (e.g. a new major), so prompting the user to reload into one would
- * only send them into a reload loop.
- */
-export function isReloadableVersion(version: SemVer | string, versionRange: string): boolean {
-  // `includePrerelease` so that studios configured to auto-update to a prerelease tag still get
-  // the reload prompt, as long as the prerelease is within the import map's range
-  return semver.satisfies(version, versionRange, {includePrerelease: true})
 }
 
 function rawParseModuleCDNUrl(

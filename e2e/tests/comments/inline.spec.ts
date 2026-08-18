@@ -40,7 +40,9 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
   })
 
   // 5. Ensure the comment input field is displayed and the selected text is visually marked for commenting.
-  const commentInput = page.getByTestId('comment-input')
+  // Popovers keep their content mounted while closed, so several comment inputs can be in the
+  // DOM at once; only the one in the open popover is visible.
+  const commentInput = page.getByTestId('comment-input').filter({visible: true})
   await expect(commentInput).toBeVisible()
   await expect(commentInput).toBeEnabled()
 

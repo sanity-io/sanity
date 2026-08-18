@@ -9,6 +9,7 @@ import {type LocaleResourceBundle} from '../types'
  * @internal
  * @hidden
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Configuration issue" header */
   'about-dialog.configuration-issue.header': 'Configuration issue detected',
@@ -22,6 +23,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Enabled" status for auto-updates in About-dialog */
   'about-dialog.version-info.auto-updates.enabled': 'Auto Updates Enabled',
   /** @deprecated "Auto Updates" status header in About-dialog */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'about-dialog.version-info.auto-updates.header': 'Auto Updates',
   /** "How to enable" next to Disabled state for Auto updates in version info dialog */
   'about-dialog.version-info.auto-updates.how-to-enable': 'Enable',
@@ -35,16 +37,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Current version" header in version info dialog  */
   'about-dialog.version-info.current-version.header': 'Current version',
   /** @deprecated "How to upgrade" link text */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'about-dialog.version-info.how-to-upgrade': 'Update now',
   /** "Latest version" header in version info dialog */
   'about-dialog.version-info.latest-version.header': 'Latest version',
-  /** Explanation shown when a new major version exists but can't be applied by auto-update */
-  'about-dialog.version-info.major-upgrade.description':
-    'Sanity Studio v{{latestVersion}} is available, but auto-update can’t install it because it’s a new major version. To update, upgrade the studio’s dependencies and redeploy it.',
-  /** Header for the note shown when a new major version exists but can't be applied by auto-update */
-  'about-dialog.version-info.major-upgrade.header': 'New major version available',
-  /** "Learn how to upgrade" link for the major version upgrade note */
-  'about-dialog.version-info.major-upgrade.view-documentation': 'Learn how to upgrade',
   /** Info text when auto updates is enabled and a new version is available */
   'about-dialog.version-info.new-auto-update-version-available': 'New version available',
   /** "New version" header in version info dialog - Note that this is not necessary a *higher* version compared to current:
@@ -63,6 +59,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Up to date" tooltip in About-dialog */
   'about-dialog.version-info.tooltip.up-to-date': 'Up to date',
   /** @deprecated "Up to date" status in About-dialog */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'about-dialog.version-info.up-to-date': 'Up to date',
   /** "Upgrade"-button text */
   'about-dialog.version-info.update-button.text': 'Update',
@@ -149,10 +146,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text shown when selecting a file but there's no files to select from
    * @deprecated no longer in use
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'asset-source.dialog.no-assets_file': 'No files',
   /** Text shown when selecting an image but there's no images to select from
    * @deprecated no longer in use
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'asset-source.dialog.no-assets_image': 'No images',
   'asset-source.file.asset-list.action.delete.disabled-cannot-delete-current-file':
     'Cannot delete currently selected file',
@@ -314,6 +313,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'calendar.weekday-names.short.tuesday': 'Tue',
   /** Short weekday name for Wednesday */
   'calendar.weekday-names.short.wednesday': 'Wed',
+
+  /** The name of Content Agent, the product. */
+  'content-agent': 'Content Agent',
 
   /** Label for the close button label in Review Changes pane */
   'changes.action.close-label': 'Close history',
@@ -518,6 +520,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** --- Document inventory --- */
 
+  /** The label shown when dismissing the document group inventory */
+  'document-group-inventory.action.cancel': 'Cancel',
+  /** The label for the button that opens the document group inventory */
+  'document-group-inventory.action.manage-versions': 'Manage versions',
   /** The label used in the feedback dialog asking how easy the document group inventory is to use */
   'document-group-inventory.feedback.sentiment-label':
     'How easy or difficult is the new version inventory to use?',
@@ -534,6 +540,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** --- Document group --- */
 
+  /** The label given to a document group's base variant */
+  'document-group.base-variant': 'All users (Default)',
+  /** The header label for the variant creation flow before a variant definition has been selected */
+  'document-group.create-variant': 'Create variant',
+  /** The header label for the variant creation flow once a variant definition has been selected */
+  'document-group.create-variant.for-target': 'Create variant for {{variantDefinitionName}}',
+  /** The heading for the option to create a variant as a draft */
+  'document-group.create-variant.target-drafts': 'As a draft',
+  /** The label for the list of releases a variant can be created in */
+  'document-group.create-variant.target-releases': 'Into a release',
+  /** The label for the list of existing variants that can be viewed instead of creating a new one */
+  'document-group.create-variant.view-existing-variants': 'Or view existing variants',
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
   'document-group.delete.cancel-button.text': 'Cancel',
   /** Used in `document-group.delete.cdr-summary.title` */
@@ -1219,6 +1237,28 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.unknown-value.mark': 'Mark not defined in the schema: {{name}}',
   /** Tooltip on a block whose style is not defined in the schema */
   'inputs.portable-text.unknown-value.style': 'Style not defined in the schema: {{name}}',
+  /** Label for the table lane that appends a column */
+  'inputs.portable-text.table.add-column': 'Add column at end',
+  /** Label for the table lane that appends a row */
+  'inputs.portable-text.table.add-row': 'Add row at end',
+  /** Aria label for a table column's drag/select handle */
+  'inputs.portable-text.table.column-handle': 'Column handle',
+  /** Label for the trash chip that deletes the selected column */
+  'inputs.portable-text.table.delete-column': 'Delete column',
+  /** Label for the trash chip that deletes the selected row */
+  'inputs.portable-text.table.delete-row': 'Delete row',
+  /** Label for the table menu item that deletes the table */
+  'inputs.portable-text.table.delete-table': 'Delete table',
+  /** Label for the table menu's header row toggle */
+  'inputs.portable-text.table.header-row': 'Header row',
+  /** Aria label for the dots that insert a row or column at a boundary */
+  'inputs.portable-text.table.insert-here': 'Insert here',
+  /** Aria label for the table menu button */
+  'inputs.portable-text.table.menu-aria-label': 'Table options',
+  /** Aria label for a table row's drag/select handle */
+  'inputs.portable-text.table.row-handle': 'Row handle',
+  /** Label for the table menu item that selects the whole table */
+  'inputs.portable-text.table.select-table': 'Select table',
   /** Label for action to clear the current value of the reference field */
   'inputs.reference.action.clear': 'Clear',
   /** Label for action to copy the current item (used within arrays) */
@@ -1472,8 +1512,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for "Create new document" dialog */
   'new-document.title': 'Create new document',
   /** @deprecated Label for button that will make the browser reload when users' studio version is out-of-date */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'package-version.new-package-available.reload-button': 'Push to reload',
   /** @deprecated Title of the alert for studio users when packages in their studio are out-of-date */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'package-version.new-package-available.title': 'Sanity Studio is ready to update!',
   /** Label for action to invite members to the current studio project */
   'presence.action.manage-members': 'Invite members',
@@ -1518,6 +1560,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.discard-version': 'Discard version',
   /** Description for toast when version discarding failed */
   'release.action.discard-version.failure': 'Failed to discard version',
+  /** Tooltip/label for the action that opens the release edit dialog on the detail page */
+  'release.action.edit-details': 'Edit details',
   /** Action message for editing the schedule of a scheduled publish */
   'release.action.edit-schedule': 'Edit schedule',
   /** Action message for when a new release is created off an existing version, draft or published document */
@@ -1604,6 +1648,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.dialog.create.confirm': 'Create release',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'New release',
+  /** Label for the save action in the edit release dialog */
+  'release.dialog.edit.confirm': 'Save',
+  /** Field label for the release description in the edit release dialog */
+  'release.dialog.edit.description-label': 'Description',
+  /** Title for the edit release dialog */
+  'release.dialog.edit.title': 'Edit release',
+  /** Field label for the release title in the edit release dialog */
+  'release.dialog.edit.title-label': 'Title',
   /** Body text when deleting scheduled draft and draft is already up to date */
   'release.dialog.delete-schedule-draft.body-already-current':
     'Delete this scheduled draft? Your draft is already up to date.',
@@ -1669,13 +1721,17 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The toast description that will be shown when the user has a release perspective which is now archived
    * @deprecated – no longer needed
    * */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'release.toast.archived-release.description': 'This release has been unpinned',
   /** The toast title that will be shown when the user has a release perspective which is now archived
    * @deprecated – no longer needed
    * */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'release.toast.archived-release.title': "The '{{title}}' release was archived",
   /** The toast title that will be shown the creating a release fails */
   'release.toast.create-release-error.title': 'Failed to create release',
+  /** The toast title shown when saving edits to a release's details fails */
+  'release.toast.edit-release-error.title': 'Failed to save release details',
   /** Error toast for deleting a scheduled draft */
   'release.toast.delete-schedule-draft.error':
     'Failed to delete the scheduled draft document <strong>{{title}}</strong>: {{error}}',
@@ -1685,6 +1741,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The toast title that will be shown when the user has a release perspective which is now deleted
    * @deprecated – no longer needed
    * */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
   /** Error toast for pausing a scheduled draft */
   'release.toast.pause-scheduled-draft.error':
@@ -1698,10 +1755,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The toast description that will be shown when the user has a release perspective which is now published
    * @deprecated – no longer needed
    **/
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'release.toast.published-release.description': 'This release has been unpinned',
   /** The toast title that will be shown when the user has a release perspective which is now deleted
    * @deprecated – no longer needed
    **/
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'release.toast.published-release.title': "The '{{title}}' release was published",
   /** Error toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.error':
@@ -1716,6 +1775,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The toast title that will be shown when the user has a scheduled draft perspective which is now published
    * @deprecated – no longer needed
    * */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'release.toast.scheduled-draft-published.title': 'The scheduled draft was published',
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
@@ -2258,6 +2318,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * Label for latest revision for timeline menu dropdown
    * @deprecated as of `v3.47.0` `timeline.latest-revision` should be used instead. Note: _usage_ of this key is deprecated, but Studios on `< v3.47.0` still require this key to be _defined_
    * */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'timeline.latest-version': 'Latest revision',
   /** The aria-label for the list of revisions in the timeline */
   'timeline.list.aria-label': 'Document revisions',
@@ -2341,6 +2402,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'tree-editing-dialog.sidebar.action.expand': 'Expand',
   /** Label to open the sidebar */
   'tree-editing-dialog.sidebar.action.open': 'Open sidebar',
+  /** Label for action to claim a project created through unauthenticated provisioning */
+  'user-menu.action.claim-project': 'Claim this project',
   /** Label for the button showed after trial ended */
   'user-menu.action.free-trial-finished': 'Upgrade from free',
   /** Label for button showing the free trial days left */

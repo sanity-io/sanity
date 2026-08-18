@@ -1,5 +1,5 @@
 import {render, screen, waitFor} from '@testing-library/react'
-import {forwardRef, type HTMLProps} from 'react'
+import {type HTMLProps} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
@@ -31,10 +31,11 @@ vi.mock('sanity/router', async (importOriginal) => ({
       variantId ? `/variants/${variantId}` : '/variants',
     ),
   })),
-  StateLink: forwardRef(function MockStateLink(
-    {state, ...rest}: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>,
+  StateLink: function MockStateLink({
     ref,
-  ) {
+    state,
+    ...rest
+  }: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>) {
     return (
       <a
         {...rest}
@@ -42,7 +43,7 @@ vi.mock('sanity/router', async (importOriginal) => ({
         href={state?.variantId ? `/variants/${state.variantId}` : '/variants'}
       />
     )
-  }),
+  },
 }))
 
 vi.mock('../../store/useAllVariants', () => ({
@@ -90,7 +91,9 @@ describe('VariantsTool', () => {
     await renderTool()
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', {level: 1, name: 'Variants'})).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', {level: 1, name: 'Variant definitions'}),
+      ).toBeInTheDocument()
     })
   })
 

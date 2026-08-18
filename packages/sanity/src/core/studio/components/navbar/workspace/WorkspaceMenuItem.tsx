@@ -2,8 +2,8 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
-import {MenuItem} from '../../../../../ui-components'
-import {type WorkspaceSummary} from '../../../../config'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {type WorkspaceSummary} from '../../../../config/types'
 import {probeWorkspaceAuth} from '../../../../store/authStore/probeWorkspaceAuth'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 

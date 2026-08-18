@@ -1,5 +1,6 @@
-import {Box, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box, type Space} from 'ui5'
 
 import {TasksUserAvatar} from '../TasksUserAvatar'
 
@@ -13,7 +14,7 @@ const ActivityItemChildrenContainer = styled.div`
 interface ActivityItemProps {
   userId: string
   children: React.ReactNode
-  avatarPaddingTop?: number
+  avatarPaddingTop?: Space
 }
 export function ActivityItem({avatarPaddingTop = 1, userId, children}: ActivityItemProps) {
   return (

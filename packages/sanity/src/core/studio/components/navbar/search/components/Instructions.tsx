@@ -1,14 +1,15 @@
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {Flex, Inline, Text} from '@sanity/ui'
 
-import {Translate, useTranslation} from '../../../../../i18n'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../../i18n/Translate'
 
 export function Instructions() {
   const {t} = useTranslation()
 
   return (
     <Flex align="center" direction="column" gap={4} paddingX={4} paddingY={5}>
-      <Inline space={3}>
+      <Inline gap={3}>
         <Text muted>
           <Translate
             t={t}

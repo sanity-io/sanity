@@ -1,5 +1,5 @@
-import {useClient} from '../../../../hooks'
-import {useWorkspace} from '../../../../studio'
+import {useClient} from '../../../../hooks/useClient'
+import {useWorkspace} from '../../../../studio/workspace'
 import {
   API_HOST_PRODUCTION,
   API_HOST_STAGING,

@@ -1,10 +1,11 @@
-import {defineLocalesResources} from '../../i18n'
+import {defineLocalesResources} from '../../i18n/helpers'
 
 /**
  * Defined locale strings for the releases tool, in US English.
  *
  * @internal
  */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Action text for adding a document to release */
   'action.add-document': 'Add document',
@@ -93,6 +94,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'activity.panel.error': 'An error occurred getting the release activity',
   /** The title for the activity panel shown in the releases detail screen */
   'activity.panel.title': 'Activity',
+  /** Tooltip/label for the button that closes the activity overlay panel */
+  'activity.panel.close': 'Close activity',
 
   /** Header for the dialog confirming the archive of a release */
   'archive-dialog.confirm-archive-header': 'Are you sure you want to archive this release?',
@@ -129,6 +132,22 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'dashboard.details.pin-release': 'Pin release to studio',
   /** Text for the releases detail screen in the unpin release button. */
   'dashboard.details.unpin-release': 'Unpin release from studio',
+  /** Label for the schedule/type metadata in the release detail header zone. */
+  'dashboard.details.metadata.schedule': 'Schedule',
+  /** Label for the validation status metadata in the release detail header zone. */
+  'dashboard.details.metadata.status': 'Status',
+  /** Label for the "created" metadata in the release detail header zone. */
+  'dashboard.details.metadata.created': 'Created',
+  /** Label for the document-count metadata in the release detail header zone. */
+  'dashboard.details.metadata.documents': 'Documents',
+  /** Status badge value when every document in the release is valid. */
+  'dashboard.details.metadata.status-valid': 'Valid',
+  /** Status badge value when one or more documents have validation errors. */
+  'dashboard.details.metadata.status-errors': 'Errors',
+  /** Status badge value while document validation is still running. */
+  'dashboard.details.metadata.status-validating': 'Validating',
+  /** Status badge value when the release has no documents to validate. */
+  'dashboard.details.metadata.status-empty': 'No documents',
 
   /** Activity inspector button text */
   'dashboard.details.activity': 'Activity',
@@ -175,6 +194,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'document-validation.error_other': '{{count}} validation errors',
   /** Label for when a document in a release has a single validation warning */
   'document-validation.error_one': '{{count}} validation error',
+  /** Tooltip for the validation status when a document has no errors (the "ready" state) */
+  'document-validation.valid': 'No validation errors',
 
   /** Label when a release has been deleted by a different user */
   'deleted-release': "The '<strong>{{title}}</strong>' release has been deleted",
@@ -244,6 +265,9 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
 
   /** Text for the button name for the release tool */
   'overview.action.documentation': 'Documentation',
+  /** Label for the back button on a release detail page (returns to the releases list). The
+   * leading arrow already conveys "back", so the label names the destination only. */
+  'overview.back-to-all-releases': 'All releases',
   /** Tooltip for the calendar button in the release overview */
   'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */
@@ -283,6 +307,14 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Title for the dialog confirming the publish of a release */
   'publish-dialog.confirm-publish.title':
     'Are you sure you want to publish the release and all document versions?',
+  /** Label for the checkbox in the publish confirmation dialog for also updating existing drafts to match the release */
+  'publish-dialog.confirm-publish.update-drafts-checkbox': 'Update existing drafts',
+  /** Description for the update existing drafts checkbox when one document has an existing draft */
+  'publish-dialog.confirm-publish.update-drafts-description_one':
+    'The existing draft of {{draftDocumentsLength}} document will be discarded so that drafts match the published release. Unpublished draft changes will be lost.',
+  /** Description for the update existing drafts checkbox when multiple documents have existing drafts */
+  'publish-dialog.confirm-publish.update-drafts-description_other':
+    'The existing drafts of {{draftDocumentsLength}} documents will be discarded so that drafts match the published release. Unpublished draft changes will be lost.',
   /** Description for the dialog confirming the publish of a release with one document */
   'publish-dialog.confirm-publish-description_one':
     "The '<strong>{{title}}</strong>' release and its document will be published.",
@@ -424,6 +456,10 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'table-header.documents': 'Documents',
   /** Header for the document table in the release tool - edited */
   'table-header.edited': 'Edited',
+  /** Header for the document table - last editor (person) column */
+  'table-header.edited-by': 'Edited by',
+  /** Header for the document table - last edited (relative time) column */
+  'table-header.last-edited': 'Last edited',
   /** Header for the document table in the release tool - Published */
   'table-header.published-at': 'Published',
   /** Header for the document table in the release tool - Published */
@@ -442,6 +478,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'table-header.title': 'Release',
   /** Header for the document table in the release tool - type */
   'table-header.type': 'Type',
+  /** Header for the document table in the release tool - variant (which variant a document targets) */
+  'table-header.variant': 'Variant',
   /** Header for the document table in the release tool - action */
   'table-header.action': 'Action',
 
@@ -475,6 +513,9 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'toast.duplicate.success-link': 'View duplicated release',
   /** Text for toast when release failed to publish */
   'toast.publish.error': "Failed to publish '<strong>{{title}}</strong>': {{error}}",
+  /** Text for toast when the release was published but the existing drafts could not be updated */
+  'toast.publish.update-drafts-error':
+    'The release was published, but existing drafts could not be updated: {{error}}',
   /** Text for toast when release failed to schedule */
   'toast.schedule.error': "Failed to schedule '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been scheduled */

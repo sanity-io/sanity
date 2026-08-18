@@ -1,5 +1,5 @@
-import {type CookielessCompatibleLoginMethod, type LoginMethod} from '../../../config'
-import {isRecord} from '../../../util'
+import {type CookielessCompatibleLoginMethod, type LoginMethod} from '../../../config/auth/types'
+import {isRecord} from '../../../util/isRecord'
 import {type AuthStore} from '../types'
 
 /**
@@ -29,6 +29,5 @@ export function isCookielessCompatibleLoginMethod(
   loginMethod: LoginMethod,
 ): loginMethod is CookielessCompatibleLoginMethod {
   const cookielessCompatibleLoginMethods = ['dual', 'token']
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   return cookielessCompatibleLoginMethods.includes(loginMethod as CookielessCompatibleLoginMethod)
 }

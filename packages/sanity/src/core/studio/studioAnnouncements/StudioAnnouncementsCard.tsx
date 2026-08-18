@@ -1,11 +1,13 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useEffect} from 'react'
 import {css, keyframes, styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {Button, Popover} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {Popover} from '../../../ui-components/popover/Popover'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {SANITY_VERSION} from '../../version'
 import {ProductAnnouncementCardSeen} from './__telemetry__/studioAnnouncements.telemetry'
@@ -134,7 +136,7 @@ export function StudioAnnouncementsCard({
             role="button"
             aria-label={t('announcement.floating-button.open-label')}
           >
-            <Stack space={3}>
+            <Stack gap={3}>
               <Box marginRight={6}>
                 <Text as={'h3'} size={1} muted>
                   {preHeader}

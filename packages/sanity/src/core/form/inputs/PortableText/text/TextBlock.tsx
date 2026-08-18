@@ -4,27 +4,30 @@ import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 
-import {Tooltip} from '../../../../../ui-components'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
-import {pathToString} from '../../../../field'
-import {EMPTY_ARRAY} from '../../../../util'
+import {pathToString} from '../../../../field/paths/helpers'
+import {EMPTY_ARRAY} from '../../../../util/empty'
 import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
 import {useDocumentDivergences} from '../../../contexts/DivergencesProvider'
-import {useFormCallbacks} from '../../../studio'
+import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {
-  type BlockProps,
+  type RenderCustomMarkers,
+  type RenderBlockActionsCallback,
+} from '../../../types/_transitional'
+import {type BlockProps} from '../../../types/blockProps'
+import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
-  type RenderCustomMarkers,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
-import {type RenderBlockActionsCallback} from '../../../types/_transitional'
+} from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
+import {ReviewChangesHighlightBlock} from '../_common/ReviewChangesHighlightBlock'
+import {StyledChangeIndicatorWithProvidedFullPath} from '../_common/StyledChangeIndicatorWithProvidedFullPath'
 import {BlockActions} from '../BlockActions'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
@@ -65,7 +68,9 @@ export interface TextBlockProps {
   referenceBoundary: HTMLElement | null
   renderAnnotation?: RenderAnnotationCallback
   renderBlock?: RenderBlockCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderBlockActions?: RenderBlockActionsCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
   renderField: RenderFieldCallback
   renderInlineBlock?: RenderBlockCallback
@@ -113,10 +118,12 @@ export function TextBlock(props: TextBlockProps) {
   } = props
   // A path deeper than the root array means the block is nested in a container.
   const nested = relativePath.length > 1
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {Markers} = useFormBuilder().__internal.components
   const markers = usePortableTextMarkers(path)
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const {onChange} = useFormCallbacks()
@@ -173,7 +180,9 @@ export function TextBlock(props: TextBlockProps) {
       focus: point,
       anchor: point,
     }
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [path, editor])
 

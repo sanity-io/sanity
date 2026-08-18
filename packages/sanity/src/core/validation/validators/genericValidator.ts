@@ -1,6 +1,6 @@
 import {type ValidationMarker, type Validators} from '@sanity/types'
 
-import {type LocaleSource} from '../../i18n'
+import {type LocaleSource} from '../../i18n/types'
 import {deepEqualsIgnoreKey} from '../util/deepEqualsIgnoreKey'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'
@@ -19,6 +19,7 @@ const formatValidationErrors = (options: {
 
   // Intentionally hard-coded to use locale conjunction/disjunctions
   return options.i18n.t('{{messages, list}}', {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     messages: options.results.map((err) => err.message || err.item?.message),
     formatParams: {messages: {style: 'long', type: options.operation}},
   })

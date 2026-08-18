@@ -4,7 +4,7 @@ import assert from 'node:assert'
 import {describe, expect, it} from 'vitest'
 
 import {type AuthState} from '../../../store/authStore/types'
-import {type WorkspaceLike} from '../../workspaces'
+import {type WorkspaceLike} from '../../workspaces/types'
 import {createCommonBasePathRegex} from '../createCommonBasePathRegex'
 import {matchWorkspace as actualMatchWorkspace} from '../matchWorkspace'
 import {normalizedWorkspaces} from '../useNormalizedWorkspaces'
@@ -16,6 +16,7 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
       id: 'user1',
       name: 'Test User',
       email: 'test@test.com',
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       role: 'administrator',
       roles: [{name: 'administrator', title: 'Administrator'}],
       profileImage: '',
@@ -175,6 +176,97 @@ describe('matchWorkspace', () => {
 
     assert(result.type === 'redirect')
     expect(result.pathname).toBe(visible.basePath)
+  })
+
+  it('redirects to the first visible workspace when the pathname matches a statically hidden workspace', () => {
+    const hidden = {name: 'hidden', basePath: '/common/hidden', hidden: true}
+    const visible = {name: 'visible', basePath: '/common/visible'}
+
+    const result = matchWorkspace({
+      workspaces: [hidden, visible],
+      pathname: '/common/hidden',
+    })
+
+    assert(result.type === 'redirect')
+    expect(result.pathname).toBe(visible.basePath)
+  })
+
+  it('redirects to the first visible workspace when the pathname matches a function-hidden workspace', () => {
+    const fnHidden = {
+      name: 'fnHidden',
+      basePath: '/common/fn-hidden',
+      hidden: () => true,
+    }
+    const visible = {name: 'visible', basePath: '/common/visible'}
+
+    const result = matchWorkspace({
+      workspaces: [fnHidden, visible],
+      pathname: '/common/fn-hidden',
+      workspaceAuthStates: {fnHidden: createAuthState()},
+    })
+
+    assert(result.type === 'redirect')
+    expect(result.pathname).toBe(visible.basePath)
+  })
+
+  it('redirects a deep path within a hidden workspace to the first visible workspace basePath', () => {
+    const hidden = {name: 'hidden', basePath: '/common/hidden', hidden: true}
+    const visible = {name: 'visible', basePath: '/common/visible'}
+
+    const result = matchWorkspace({
+      workspaces: [hidden, visible],
+      pathname: '/common/hidden/structure/some-document',
+    })
+
+    assert(result.type === 'redirect')
+    expect(result.pathname).toBe(visible.basePath)
+  })
+
+  it('returns loading when the matched function-hidden workspace has no auth state yet', () => {
+    const fnHidden = {
+      name: 'fnHidden',
+      basePath: '/common/fn-hidden',
+      hidden: () => false,
+    }
+    const other = {name: 'other', basePath: '/common/other'}
+
+    const result = matchWorkspace({
+      workspaces: [fnHidden, other],
+      pathname: '/common/fn-hidden',
+      workspaceAuthStates: {},
+    })
+
+    expect(result.type).toBe('loading')
+  })
+
+  it('returns loading when the matched workspace is hidden and a redirect candidate is still resolving', () => {
+    const hidden = {name: 'hidden', basePath: '/common/hidden', hidden: true}
+    const fnHidden = {
+      name: 'fnHidden',
+      basePath: '/common/fn-hidden',
+      hidden: () => false,
+    }
+
+    const result = matchWorkspace({
+      workspaces: [hidden, fnHidden],
+      pathname: '/common/hidden',
+      workspaceAuthStates: {},
+    })
+
+    expect(result.type).toBe('loading')
+  })
+
+  it('returns the hidden match when every workspace is hidden', () => {
+    const hiddenA = {name: 'hiddenA', basePath: '/common/hidden-a', hidden: true}
+    const hiddenB = {name: 'hiddenB', basePath: '/common/hidden-b', hidden: true}
+
+    const result = matchWorkspace({
+      workspaces: [hiddenA, hiddenB],
+      pathname: '/common/hidden-a',
+    })
+
+    assert(result.type === 'match')
+    expect(result.workspace).toBe(hiddenA)
   })
 
   it('results in a redirect to the first workspace if the incoming `pathname` partially matches the common base path', () => {

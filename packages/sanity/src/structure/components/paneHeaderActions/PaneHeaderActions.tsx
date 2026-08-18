@@ -110,6 +110,16 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
   const actionNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
   const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
 
+  // Empty groups still resolve to nodes, so guard against a button that opens
+  // to nothing.
+  const hasContextMenuContent = useMemo(
+    () =>
+      contextMenuNodes.some(
+        (node) => node.type === 'item' || (node.type === 'group' && node.children.length > 0),
+      ),
+    [contextMenuNodes],
+  )
+
   const initialValueTemplateItemFromMenuItems = useMemo(() => {
     return menuItems
       .map((item, menuItemIndex) => {
@@ -151,6 +161,7 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
           title: item.title || template.title,
           i18n: item.i18n || template.i18n,
           icon: item.icon as InitialValueTemplateItem['icon'],
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           description: template.description,
           parameters: templateParams,
           schemaType: template.schemaType,
@@ -176,7 +187,7 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
         <PaneHeaderActionButton key={node.key} node={node} />
       ))}
 
-      {contextMenuNodes.length > 0 && <PaneContextMenuButton nodes={contextMenuNodes} />}
+      {hasContextMenuContent && <PaneContextMenuButton nodes={contextMenuNodes} />}
     </Flex>
   )
 })

@@ -4,7 +4,9 @@ import {css, styled} from 'styled-components'
 
 import {DEBUG} from '../../../../changeIndicators/constants'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const Root = styled(Card)((props: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {color, radius, space} = props.theme.sanity
 
   const overlay = css`
@@ -81,7 +83,9 @@ export const PreviewContainer = styled(Flex)`
 `
 
 export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ({theme, $hasChanges}: {theme: Theme; $hasChanges: boolean}) => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {space} = theme.sanity
 
     return css`
@@ -93,15 +97,19 @@ export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
       padding-left: ${space[1]}px;
       padding-right: ${space[2]}px;
       user-select: none;
-      ${DEBUG &&
-      css`
-        border: 1px solid red;
-      `}
+      ${
+        DEBUG &&
+        css`
+          border: 1px solid red;
+        `
+      }
 
-      ${!$hasChanges &&
-      css`
-        display: none;
-      `}
+      ${
+        !$hasChanges &&
+        css`
+          display: none;
+        `
+      }
 
       [data-dragged] & {
         visibility: hidden;

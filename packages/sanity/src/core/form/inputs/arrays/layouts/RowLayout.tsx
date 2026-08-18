@@ -73,7 +73,7 @@ export function RowLayout(props: RowLayoutProps) {
       padding={1}
       tone={tone}
     >
-      <Stack space={1}>
+      <Stack gap={1}>
         <Flex align="center" gap={1}>
           {dragHandle && <DragHandle paddingY={3} readOnly={readOnly} />}
 

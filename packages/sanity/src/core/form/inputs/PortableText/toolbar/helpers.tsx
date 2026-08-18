@@ -1,4 +1,5 @@
 import {type HotkeyOptions, PortableTextEditor} from '@portabletext/editor'
+import {type ApplicableSchema} from '@portabletext/editor/selectors'
 import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
 import {BlockElementIcon} from '@sanity/icons/BlockElement'
 import {BoldIcon} from '@sanity/icons/Bold'
@@ -26,9 +27,11 @@ import {
 } from './types'
 
 function getPTEFormatActions(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   editor: PortableTextEditor,
   schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
+  applicable: ApplicableSchema,
   hotkeyOpts: HotkeyOptions,
   t?: (key: string) => string,
 ): PTEToolbarAction[] {
@@ -44,11 +47,13 @@ function getPTEFormatActions(
 
     return {
       type: 'format',
-      disabled: disabled,
+      disabled: disabled || !applicable.decorators.has(decorator.value),
       icon: decorator?.icon,
       key: decorator.value,
       handle: (): void => {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.toggleMark(editor, decorator.value)
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.focus(editor)
       },
       hotkeys,
@@ -58,18 +63,21 @@ function getPTEFormatActions(
 }
 
 function getPTEListActions(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   editor: PortableTextEditor,
   schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
+  applicable: ApplicableSchema,
   t?: (key: string) => string,
 ): PTEToolbarAction[] {
   return schemaTypes.lists.map((listItem) => {
     return {
       type: 'listStyle',
       key: listItem.value,
-      disabled: disabled,
+      disabled: disabled || !applicable.lists.has(listItem.value),
       icon: listItem?.icon,
       handle: (): void => {
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         PortableTextEditor.toggleList(editor, listItem.value)
       },
       title: listItem.i18nTitleKey && t ? t(listItem.i18nTitleKey) : listItem.title,
@@ -87,23 +95,28 @@ function getAnnotationIcon(type: ObjectSchemaType): ComponentType | string | und
 }
 
 function getPTEAnnotationActions(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   editor: PortableTextEditor,
   schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
+  applicable: ApplicableSchema,
   onInsert: (type: ObjectSchemaType) => void,
   t?: (key: string) => string,
 ): PTEToolbarAction[] {
-  const focusChild = PortableTextEditor.focusChild(editor)
-  const hasText = focusChild && focusChild.text
   return schemaTypes.annotations.map((aType) => {
     return {
       type: 'annotation',
-      disabled: !hasText || disabled,
+      // Empty-block and cross-block disabling live at the render site
+      // (`ActionMenu`), which re-renders with the focused block; anything
+      // read here is frozen until the memoized action groups rebuild.
+      disabled: disabled || !applicable.annotations.has(aType.name),
       icon: getAnnotationIcon(aType),
       key: aType.name,
       handle: (active?: boolean): void => {
         if (active) {
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           PortableTextEditor.removeAnnotation(editor, aType)
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           PortableTextEditor.focus(editor)
         } else {
           onInsert(aType)
@@ -119,22 +132,34 @@ function getPTEAnnotationActions(
  * @internal
  */
 export function getPTEToolbarActionGroups(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   editor: PortableTextEditor,
   options: {
     schemaTypes: PortableTextMemberSchemaTypes
     disabled: boolean
+    applicable: ApplicableSchema
     onInsertAnnotation: (type: ObjectSchemaType) => void
     hotkeyOpts: HotkeyOptions
     t?: (key: string) => string
   },
 ): PTEToolbarActionGroup[] {
-  const {schemaTypes, disabled, onInsertAnnotation, hotkeyOpts, t} = options
+  const {schemaTypes, disabled, applicable, onInsertAnnotation, hotkeyOpts, t} = options
   return [
-    {name: 'format', actions: getPTEFormatActions(editor, schemaTypes, disabled, hotkeyOpts, t)},
-    {name: 'list', actions: getPTEListActions(editor, schemaTypes, disabled, t)},
+    {
+      name: 'format',
+      actions: getPTEFormatActions(editor, schemaTypes, disabled, applicable, hotkeyOpts, t),
+    },
+    {name: 'list', actions: getPTEListActions(editor, schemaTypes, disabled, applicable, t)},
     {
       name: 'annotation',
-      actions: getPTEAnnotationActions(editor, schemaTypes, disabled, onInsertAnnotation, t),
+      actions: getPTEAnnotationActions(
+        editor,
+        schemaTypes,
+        disabled,
+        applicable,
+        onInsertAnnotation,
+        t,
+      ),
     },
   ]
 }
@@ -163,25 +188,21 @@ export function getInsertMenuItems(
   onInsertBlock: (type: ObjectSchemaType) => void,
   onInsertInline: (type: ObjectSchemaType) => void,
 ): BlockItem[] {
-  const blockItems = types.blockObjects.map(
-    (type, index): BlockItem => ({
-      handle: () => onInsertBlock(type),
-      icon: getInsertMenuIcon(type, BlockElementIcon),
-      inline: false,
-      key: `block-${index}`,
-      type,
-    }),
-  )
+  const blockItems = types.blockObjects.map((type, index): BlockItem => ({
+    handle: () => onInsertBlock(type),
+    icon: getInsertMenuIcon(type, BlockElementIcon),
+    inline: false,
+    key: `block-${index}`,
+    type,
+  }))
 
-  const inlineItems = types.inlineObjects.map(
-    (type, index): BlockItem => ({
-      handle: () => onInsertInline(type),
-      icon: getInsertMenuIcon(type, InlineElementIcon),
-      inline: true,
-      key: `inline-${index}`,
-      type,
-    }),
-  )
+  const inlineItems = types.inlineObjects.map((type, index): BlockItem => ({
+    handle: () => onInsertInline(type),
+    icon: getInsertMenuIcon(type, InlineElementIcon),
+    inline: true,
+    key: `inline-${index}`,
+    type,
+  }))
 
   // Do not include items that are supposed to be hidden
   const filteredBlockItems = blockItems.concat(inlineItems).filter((item) => !item.type?.hidden)

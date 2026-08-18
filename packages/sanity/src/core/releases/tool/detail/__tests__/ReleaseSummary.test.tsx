@@ -11,7 +11,7 @@ import {
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getByDataUi} from '../../../../../../test/setup/customQueries'
+import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import type * as ConnectionStatusStoreMod from '../../../../store/connection-status/connection-status-store'
@@ -28,22 +28,12 @@ import {
   useBundleDocumentsMockReturnWithResults,
 } from './__mocks__/useBundleDocuments.mock'
 
-vi.mock('../../../index', () => ({
-  useDocumentPresence: vi.fn().mockReturnValue({
-    user: '',
-    path: '',
-    sessionId: '',
-    lastActiveAt: '',
-  }),
-  useDocumentPreviewStore: vi.fn().mockReturnValue({
-    unstable_observeDocumentIdSet: vi.fn(() => ({
-      pipe: vi.fn(),
-    })),
-  }),
-}))
-
 vi.mock('../useBundleDocuments', () => ({
   useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
+}))
+
+vi.mock('../CopyReleaseActions', () => ({
+  CopyReleaseActions: () => <div data-testid="copy-release-actions" />,
 }))
 
 vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
@@ -152,9 +142,13 @@ const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
   )
 }
 
-const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
+const renderTest = async (
+  props: Partial<ReleaseSummaryProps>,
+  options?: {variantsEnabled?: boolean},
+) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
+    ...(options?.variantsEnabled ? {config: {beta: {variants: {enabled: true}}}} : undefined),
   })
 
   return render(
@@ -202,7 +196,19 @@ describe('ReleaseSummary', () => {
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
       await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
-      await userEvent.click(screen.getByText('Discard version'))
+
+      // Every row keeps its menu mounted, and closed ones are hidden with `display: none`.
+      // Runtime styles are disabled in jsdom, so the open menu does not read as visible to
+      // `getByRole` either, which is why it is picked by the absence of that hidden style.
+      const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
+        (popover) => popover.style.display !== 'none',
+      )
+
+      await userEvent.click(
+        within(openMenu).getByRole('menuitem', {name: 'Discard version', hidden: true}),
+      )
+
+      expect(await screen.findByRole('dialog')).toBeInTheDocument()
     })
 
     it('allows for sorting of documents', async () => {
@@ -321,6 +327,35 @@ describe('ReleaseSummary', () => {
 
       expect(screen.queryByTestId('cardinality-one-empty-state')).not.toBeInTheDocument()
       expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+    })
+  })
+
+  describe('with beta.variants (DocumentTable command lane)', () => {
+    const prerenderVariantsTest = async (props: Partial<ReleaseSummaryProps> = {}) => {
+      await renderTest(props, {variantsEnabled: true})
+      await screen.findByTestId('document-table-card')
+    }
+
+    it('keeps the command lane when the release has no documents', async () => {
+      await prerenderVariantsTest({documents: []})
+
+      expect(screen.getByTestId('release-documents-search')).toBeInTheDocument()
+      expect(screen.getByText('Add document')).toBeInTheDocument()
+      // Copy and Activity are release-level actions that now live in the always-rendered header
+      // (ReleaseDashboardHeader), not in this table's command lane, so they stay reachable when the
+      // table is loading/errored/empty. The command lane holds table operations only.
+      expect(screen.queryByTestId('copy-release-actions')).not.toBeInTheDocument()
+    })
+
+    it('keeps filter tabs when search yields no results', async () => {
+      await prerenderVariantsTest()
+
+      const searchInput = screen.getByTestId('release-documents-search')
+      await userEvent.type(searchInput, 'nonexistent query')
+
+      expect(screen.queryAllByTestId('table-row')).toHaveLength(0)
+      expect(screen.getByRole('tab', {name: /all/i})).toBeInTheDocument()
+      expect(searchInput).toHaveFocus()
     })
   })
 

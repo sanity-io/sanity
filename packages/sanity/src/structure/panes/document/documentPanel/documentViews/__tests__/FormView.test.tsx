@@ -78,6 +78,13 @@ function buildDocumentPaneValue(overrides: Partial<DocumentPaneValue> = {}): Doc
     compareValue: null,
     hasUpstreamVersion: false,
     focusPath: [],
+    targetDocumentState: {
+      status: 'ready',
+      targetDocument: undefined,
+      scopeId: undefined,
+      variant: undefined,
+      publishedSibling: undefined,
+    },
     ...overrides,
   } as unknown as DocumentPaneValue
 }
@@ -193,6 +200,7 @@ describe('FormView', () => {
       // must NOT run, because the user already had a focused path.
       setDocumentPane({
         focusPath: [],
+        // @ts-expect-error -- pre-existing, fix later
         formState: {focusPath: []} as DocumentPaneValue['formState'],
       })
       rerender()

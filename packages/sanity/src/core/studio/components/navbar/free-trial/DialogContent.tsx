@@ -1,10 +1,12 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Box, Flex, Heading} from '@sanity/ui'
+import {Flex, Heading} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {Button, Dialog} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {useColorSchemeValue} from '../../../colorScheme'
-import {UpsellDescriptionSerializer} from '../../../upsell'
+import {UpsellDescriptionSerializer} from '../../../upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
 import {type TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
 import {type FreeTrialDialog} from './types'
 

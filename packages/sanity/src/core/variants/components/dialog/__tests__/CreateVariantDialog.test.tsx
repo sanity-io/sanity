@@ -25,7 +25,7 @@ const variantsMock = vi.hoisted(() => ({
   error: undefined as Error | undefined,
 }))
 
-vi.mock('@sanity/ui', async (importOriginal) => ({
+vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   ...(await importOriginal()),
   useToast: vi.fn(() => toastMock),
 }))
@@ -58,7 +58,7 @@ describe('CreateVariantDialog', () => {
     const result = render(<CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} />, {
       wrapper,
     })
-    await screen.findByRole('dialog', {name: 'Create variant'})
+    await screen.findByRole('dialog', {name: 'Create variant definition'})
     return result
   }
 
@@ -211,7 +211,7 @@ describe('CreateVariantDialog', () => {
     expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
   })
 
-  it('shows an error for invalid condition values', async () => {
+  it('allows colons in condition values', async () => {
     const user = userEvent.setup()
 
     await renderDialog()
@@ -221,8 +221,27 @@ describe('CreateVariantDialog', () => {
     await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal:customers')
     await user.click(screen.getByTestId('submit-variant-button'))
 
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
+
+    expect(createdVariant.conditions).toEqual({audience: 'loyal:customers'})
+  })
+
+  it('shows an error for condition values that contain commas', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal,customers')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
     expect(screen.getByTestId('variant-form-condition-value-error')).toHaveTextContent(
-      'Condition values cannot contain colons',
+      'Condition values cannot contain commas',
     )
     expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
   })
@@ -273,6 +292,51 @@ describe('CreateVariantDialog', () => {
     expect(screen.getByTestId('variant-form-title-error')).toHaveTextContent('Title is required')
   })
 
+  it('renders the priority field with a help tooltip', async () => {
+    await renderDialog()
+
+    expect(screen.getByTestId('variant-form-priority')).toHaveValue(0)
+    expect(screen.getByTestId('variant-form-priority-help')).toBeInTheDocument()
+  })
+
+  it('rejects an empty priority value', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal-customers')
+    await user.clear(screen.getByTestId('variant-form-priority'))
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    expect(screen.getByTestId('variant-form-priority-error')).toHaveTextContent(
+      'Priority must be a number',
+    )
+    expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
+  })
+
+  it('persists priority when creating a variant', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal-customers')
+    await user.clear(screen.getByTestId('variant-form-priority'))
+    await user.type(screen.getByTestId('variant-form-priority'), '75.5')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
+
+    expect(createdVariant.priority).toBe(75.5)
+  })
+
   it('creates a variant and calls submit with the generated id', async () => {
     const user = userEvent.setup()
 
@@ -313,12 +377,12 @@ describe('CreateVariantDialog', () => {
     expect(toastMock.push).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'error',
-        title: 'Unable to create variant',
+        title: 'Unable to create variant definition',
       }),
     )
     expect(onCancel).not.toHaveBeenCalled()
     expect(onSubmit).not.toHaveBeenCalled()
-    expect(screen.getByRole('dialog', {name: 'Create variant'})).toBeInTheDocument()
+    expect(screen.getByRole('dialog', {name: 'Create variant definition'})).toBeInTheDocument()
 
     consoleError.mockRestore()
   })

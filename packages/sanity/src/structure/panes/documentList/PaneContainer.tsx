@@ -1,4 +1,5 @@
-import {Card, Code} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import isEqual from 'lodash-es/isEqual.js'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
@@ -11,9 +12,8 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import shallowEquals from 'shallow-equals'
 
-import {Pane} from '../../components/pane'
+import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
 import {assignId} from '../../structureResolvers/assignId'
@@ -30,6 +30,7 @@ import {
 } from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder, type StaticSortOrder} from './types'
+import {useShallowUnique} from './useShallowUnique'
 
 /**
  * Type for custom menu item state storage.
@@ -133,6 +134,15 @@ export const appendRestoreDefaultItems = (options: {
 
   if (suppressRestoreDefaults) return menuItems
 
+  // Only attach a restore item to a group that already has items, so a pane
+  // that removed them (e.g. `menuItems([])`) does not get them back.
+  const hasSortItems = menuItems.some(
+    (item) => item.group === 'sorting' || item.action === 'setSortOrder',
+  )
+  const hasLayoutItems = menuItems.some(
+    (item) => item.group === 'layout' || item.action === 'setLayout',
+  )
+
   const restoreDefaultSortOrderItem: PaneMenuItem = {
     group: 'sorting',
     action: 'restoreDefaultSortOrder',
@@ -151,16 +161,11 @@ export const appendRestoreDefaultItems = (options: {
     ...(isLayoutDefault && {disabled: {reason: restoreLayoutDisabledReason}}),
   }
 
-  return [...menuItems, restoreDefaultSortOrderItem, restoreDefaultLayoutItem]
-}
-
-export function useShallowUnique<ValueType>(value: ValueType): ValueType {
-  const [previous, setPrevious] = useState<ValueType>(value)
-  if (!shallowEquals(previous, value)) {
-    setPrevious(value)
-    return value
-  }
-  return previous
+  return [
+    ...menuItems,
+    ...(hasSortItems ? [restoreDefaultSortOrderItem] : []),
+    ...(hasLayoutItems ? [restoreDefaultLayoutItem] : []),
+  ]
 }
 
 /**
@@ -170,6 +175,7 @@ export const PaneContainer = memo(function PaneContainer(
   props: BaseStructureToolPaneProps<'documentList'>,
 ) {
   const {index, isSelected, pane, paneKey} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {name: parentSourceName} = useSource()
 
   const {
@@ -236,14 +242,15 @@ export const PaneContainer = memo(function PaneContainer(
     [setStoredSortOrder, schemaType, defaultSortOrder],
   )
 
-  // Write the default back so its matching menu item regains its checkmark.
+  // Clear the stored preference instead of writing the default: the key is
+  // shared per type, so writing would leak this list's default onto its siblings.
   const handleRestoreDefaultSortOrder = useCallback(async () => {
-    await setStoredSortOrder(toStaticSortOrder(defaultSortOrder))
-  }, [setStoredSortOrder, defaultSortOrder])
+    await setStoredSortOrder(null)
+  }, [setStoredSortOrder])
 
   const handleRestoreDefaultLayout = useCallback(async () => {
-    await setLayout(defaultLayout)
-  }, [setLayout, defaultLayout])
+    await setLayout(null)
+  }, [setLayout])
 
   const [customMenuItemState, setCustomMenuItemState] = useState<CustomMenuItemState>({})
 

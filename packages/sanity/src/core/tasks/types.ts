@@ -64,6 +64,13 @@ export interface TaskTarget {
     _type: 'crossDatasetReference'
     _weak: boolean
   }
+  /**
+   * Set when the task was created for a version document (a release or variant version): the
+   * version segment of the document id (release id or variant scope id). The reference itself
+   * always stores the published id, so this is needed to resolve the exact version document the
+   * task belongs to. Absent for tasks targeting the draft/published document.
+   */
+  documentVersionId?: string
 }
 /**
  * @beta

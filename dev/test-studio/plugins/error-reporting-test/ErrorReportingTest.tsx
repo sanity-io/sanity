@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Card,
-  Code,
   Container,
   Flex,
   Heading,
@@ -13,6 +12,7 @@ import {
   TabPanel,
   Text,
 } from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {lazy, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CorsOriginErrorScreen, useClient, useProjectId, useStudioErrorHandler} from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -120,8 +120,8 @@ export function ErrorReportingTest() {
   return (
     <Box overflow="auto" padding={[3, 4, 5]}>
       <Container width={1}>
-        <Stack space={4}>
-          <TabList space={2}>
+        <Stack gap={4}>
+          <TabList gap={2}>
             <Tab
               aria-controls="errors-panel-boundary"
               id="errors-tab-boundary"
@@ -233,8 +233,8 @@ interface DemoEntry {
 function DemoSection(props: {heading: string; description?: ReactNode; demos: DemoEntry[]}) {
   return (
     <Card padding={4} radius={3} shadow={1}>
-      <Stack space={4}>
-        <Stack space={3}>
+      <Stack gap={4}>
+        <Stack gap={3}>
           <Heading size={2}>{props.heading}</Heading>
           {props.description && (
             <Text muted size={1}>
@@ -242,7 +242,7 @@ function DemoSection(props: {heading: string; description?: ReactNode; demos: De
             </Text>
           )}
         </Stack>
-        <Stack space={2}>
+        <Stack gap={2}>
           {props.demos.map((demo) => (
             <DemoRow key={demo.label} demo={demo} />
           ))}
@@ -255,11 +255,11 @@ function DemoSection(props: {heading: string; description?: ReactNode; demos: De
 function DemoRow({demo}: {demo: DemoEntry}) {
   return (
     <Card border padding={4} radius={2} tone="transparent">
-      <Stack space={3}>
+      <Stack gap={3}>
         <Flex align="center" gap={4} wrap="wrap">
           <Box flex={1} style={{minWidth: 240}}>
             {demo.description ? (
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text size={1} weight="medium">
                   {demo.label}
                 </Text>
@@ -283,7 +283,7 @@ function DemoRow({demo}: {demo: DemoEntry}) {
         </Flex>
         {demo.result && (
           <Card padding={3} radius={2} tone="transparent" border>
-            <Stack space={2}>
+            <Stack gap={2}>
               <Text muted size={0} weight="semibold">
                 Result
               </Text>
@@ -417,13 +417,12 @@ function RequestErrorsDemo() {
 
   const triggerUnauthorized = useCallback(
     async (label: string) => {
-      setResult(label, 'Issuing 401 request via the reporter…')
-      const bogusClient = client.withConfig({
-        token: 'invalid-demo-token-not-a-real-key',
-        ignoreBrowserTokenWarning: true,
-      })
+      setResult(label, 'Issuing untagged 401 via the reporter…')
       try {
-        await attempt(() => bogusClient.request({uri: '/users/me', tag: 'demo-401'}), {
+        // Synthetic, because a real bogus-token request no longer
+        // demonstrates this: the API tags those `SIO-401-ANF`, which the
+        // studio claims (forced logout — see the SIO-401-ANF demo below).
+        await attempt(() => client.request({url: demoUrl('unauthorized-untagged'), tag: 'demo'}), {
           retryable: true,
         })
         setResult(label, 'Request succeeded (unexpected).')
@@ -432,12 +431,33 @@ function RequestErrorsDemo() {
         setResult(
           label,
           `401 propagated to local catch: statusCode=${cerr.statusCode ?? '?'}. The 401 is not ` +
-            `tagged with the API's session-expiry code (SIO-401-AEX), so the studio treats it ` +
-            `as a resource-level denial — no forced logout.`,
+            `tagged with one of the API's invalid-session codes (SIO-401-AEX, SIO-401-ANF), so ` +
+            `the studio treats it as a resource-level denial — no forced logout.`,
         )
       }
     },
     [client, attempt, setResult],
+  )
+
+  const triggerSessionNotFound = useCallback(
+    (label: string) => {
+      setResult(label, 'Issuing SIO-401-ANF request — expect the forced-logout flow…')
+      // Plain request, no delegation: invalid-session 401s are claimed
+      // globally by the workspace request handler, so this exercises the
+      // middleware path. The claimed request parks (the promise never
+      // settles) while the logout tears the session down.
+      void client.request({url: demoUrl('session-not-found'), tag: 'demo'}).then(
+        () => setResult(label, 'Request succeeded (unexpected for this demo).'),
+        (err) =>
+          setResult(
+            label,
+            `Local catch ran (unexpected — the studio should have claimed this): ${
+              err instanceof Error ? err.message : String(err)
+            }`,
+          ),
+      )
+    },
+    [client, setResult],
   )
 
   const triggerCors = useCallback(
@@ -519,21 +539,41 @@ function RequestErrorsDemo() {
         result: results['Local handling only (no reporter)'],
       },
       {
-        label: '401 via reporter · not session expiry, propagated',
+        label: '401 via reporter · untagged, propagated',
         description: (
           <>
-            Real 401 from <InlineCode>/users/me</InlineCode> using a bogus token, delegated via{' '}
-            <InlineCode>attempt()</InlineCode>. The studio only claims 401s the API tags with its
-            session-expiry code (<InlineCode>SIO-401-AEX</InlineCode>); this one isn&apos;t tagged →
+            Synthetic untagged 401 (the shape some endpoints return for a missing grant), delegated
+            via <InlineCode>attempt()</InlineCode>. The studio only claims 401s the API tags with an
+            invalid-session code (<InlineCode>SIO-401-AEX</InlineCode> expired,{' '}
+            <InlineCode>SIO-401-ANF</InlineCode> not found); this one isn&apos;t tagged →
             resource-level denial → propagated to the local catch.{' '}
             <Text as="span" weight="semibold">
               You will NOT be logged out.
             </Text>
           </>
         ),
-        onClick: () => triggerUnauthorized('401 via reporter · not session expiry, propagated'),
+        onClick: () => triggerUnauthorized('401 via reporter · untagged, propagated'),
         tone: 'caution',
-        result: results['401 via reporter · not session expiry, propagated'],
+        result: results['401 via reporter · untagged, propagated'],
+      },
+      {
+        label: '401 tagged SIO-401-ANF · invalid session, forced logout',
+        description: (
+          <>
+            Synthetic 401 tagged <InlineCode>SIO-401-ANF</InlineCode> (&quot;Session not found&quot;
+            — revoked on another device, purged, or a stale stored token), via a plain{' '}
+            <InlineCode>client.request()</InlineCode>: invalid-session 401s are claimed globally by
+            the workspace request handler, no delegation needed. Expect the login screen with the
+            &quot;Your session is no longer valid&quot; toast (not &quot;expired&quot;).{' '}
+            <Text as="span" weight="semibold">
+              You WILL be logged out and have to sign in again.
+            </Text>
+          </>
+        ),
+        onClick: () =>
+          triggerSessionNotFound('401 tagged SIO-401-ANF · invalid session, forced logout'),
+        tone: 'critical',
+        result: results['401 tagged SIO-401-ANF · invalid session, forced logout'],
       },
       {
         label: 'CORS misconfig · origin not allowed',
@@ -580,6 +620,7 @@ function RequestErrorsDemo() {
       triggerCors,
       triggerLocalHandling,
       triggerUnauthorized,
+      triggerSessionNotFound,
       results,
       setShowCustomDomainPreview,
     ],
@@ -618,8 +659,8 @@ function RequestErrorsDemo() {
 
   return (
     <Card padding={4} radius={3} shadow={1}>
-      <Stack space={4}>
-        <Stack space={3}>
+      <Stack gap={4}>
+        <Stack gap={3}>
           <Heading size={2}>Request errors</Heading>
           <Text muted size={1}>
             Each button issues a real request through the studio&apos;s client pipeline. The call
@@ -628,7 +669,7 @@ function RequestErrorsDemo() {
             handled outcomes are shown in place under each row.
           </Text>
         </Stack>
-        <Stack space={2}>
+        <Stack gap={2}>
           {demos.map((demo) => (
             <DemoRow key={demo.label} demo={demo} />
           ))}

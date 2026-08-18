@@ -1,10 +1,12 @@
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ErrorInfo, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
+import {Box} from 'ui5'
 
-import {Button, ErrorBoundary} from '../../../../../../../../ui-components'
-import {supportsTouch} from '../../../../../../../util'
+import {Button} from '../../../../../../../../ui-components/button/Button'
+import {ErrorBoundary} from '../../../../../../../../ui-components/errorBoundary/ErrorBoundary'
+import {supportsTouch} from '../../../../../../../util/supportsTouch'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperatorDefinition} from '../../../definitions/operators'
@@ -83,7 +85,7 @@ export function FilterForm({filter}: FilterFormProps) {
 
           {/* Title, description and operator */}
           <Card padding={3}>
-            <Stack space={3}>
+            <Stack gap={3}>
               <Flex align="flex-start" gap={3} justify="space-between">
                 <Box paddingLeft={1} paddingRight={2} paddingY={1}>
                   <FilterDetails filter={filter} />

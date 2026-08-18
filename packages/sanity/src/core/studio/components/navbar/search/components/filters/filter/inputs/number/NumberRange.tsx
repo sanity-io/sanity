@@ -1,7 +1,8 @@
-import {Box, Flex, TextInput} from '@sanity/ui'
+import {Flex, TextInput} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useState} from 'react'
+import {Box} from 'ui5'
 
-import {useTranslation} from '../../../../../../../../../i18n'
+import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorNumberRangeValue} from '../../../../../definitions/operators/common'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
@@ -43,7 +44,7 @@ export function SearchFilterNumberRangeInput({
 
   return (
     <Flex gap={2}>
-      <Box flex={1}>
+      <Box flexBasis="0%" flexGrow={1}>
         <TextInput
           fontSize={fullscreen ? 2 : 1}
           onChange={handleFromChange}
@@ -54,7 +55,7 @@ export function SearchFilterNumberRangeInput({
           value={from}
         />
       </Box>
-      <Box flex={1}>
+      <Box flexBasis="0%" flexGrow={1}>
         <TextInput
           fontSize={fullscreen ? 2 : 1}
           onChange={handleToChange}

@@ -2,15 +2,14 @@ import {Card, Flex} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
 import {
-  isDocumentInSelectedVariant,
+  getCreatableVariantTarget,
   isPublishedPerspective,
   isReleaseDocument,
-  useDocumentVersions,
   usePerspective,
 } from 'sanity'
 
-import {usePaneRouter} from '../../../components'
-import {SpacerButton} from '../../../components/spacerButton'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
+import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
 import {EMPTY_PARAMS} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
@@ -29,10 +28,9 @@ const AnimatedCard = motion.create(Card)
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {documentId, editState, revisionNotFound} = useDocumentPane()
+  const {editState, revisionNotFound, targetDocumentState} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
-  const {selectedPerspective, selectedVariant, bundle} = usePerspective()
-  const documentVersions = useDocumentVersions({documentId})
+  const {selectedPerspective, selectedVariantName} = usePerspective()
 
   const showingRevision = Boolean(params.rev)
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
@@ -47,17 +45,25 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const shouldRender = useMemo(() => {
     const isReady = Boolean(editState?.ready && typeof collapsed === 'boolean')
 
-    // Hide the footer (status + actions) when the document has no variant-scoped version for the
-    // selected variant. Mirrors the not-in-variant banner and read-only form state.
+    // Hide the footer (status + actions) when a variant is requested but its target document has
+    // not resolved to an editable version (missing, invalid selection, or mid-transition).
+    // Mirrors the not-in-variant banner and read-only form state. Exception: a creatable missing
+    // draft variant is editable (typing creates it), so the footer renders like the base
+    // published-with-no-draft experience.
     if (
-      selectedVariant &&
-      !isDocumentInSelectedVariant({
-        selectedVariant,
-        bundle,
-        documentVersions: documentVersions.versions,
-      })
+      selectedVariantName &&
+      targetDocumentState.status !== 'ready' &&
+      !getCreatableVariantTarget(targetDocumentState)
     ) {
       return false
+    }
+
+    // Prefer `targetDocument` so published / release variants (which are not always present on
+    // `editState.published`) still render the footer.
+    const hasTargetDocument =
+      targetDocumentState.status === 'ready' && Boolean(targetDocumentState.targetDocument)
+    if (hasTargetDocument) {
+      return isReady
     }
 
     if (selectedPerspective) {
@@ -68,8 +74,9 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
         return isReady && Boolean(editState?.version)
       }
     }
+
     return isReady
-  }, [collapsed, editState, selectedPerspective, selectedVariant, bundle, documentVersions])
+  }, [collapsed, editState, selectedPerspective, selectedVariantName, targetDocumentState])
 
   let actions: React.JSX.Element | null = null
   if (showingRevision) {

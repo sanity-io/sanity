@@ -1,5 +1,6 @@
-import {Box, Card, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {memo} from 'react'
+import {Box} from 'ui5'
 
 import {type FilterMenuItemHeader} from '../../../../types'
 

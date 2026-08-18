@@ -2,7 +2,7 @@ import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo, version as reactVersion} from 'react'
 import {useRouterState} from 'sanity/router'
 
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {useProjectSubscriptions} from '../../hooks/useProjectSubscriptions'
 import {useProject} from '../../store/project/useProject'
 import {useProjectOrganizationData} from '../../store/project/useProjectOrganizationData'

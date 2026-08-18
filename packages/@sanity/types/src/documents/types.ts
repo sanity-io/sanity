@@ -5,6 +5,12 @@ export interface SanityDocument {
   _createdAt: string
   _updatedAt: string
   _rev: string
+  /**
+   * System-managed attributes. Which fields are present depends on the document (e.g.
+   * `variant`/`scopeId` only exist on version documents, and documents predating the `_system`
+   * migration may carry only some of them), hence the partial shape.
+   */
+  _system?: Partial<DocumentSystem>
   [key: string]: unknown
 }
 
@@ -21,9 +27,12 @@ export interface SanityDocumentLike {
   _createdAt?: string
   _updatedAt?: string
   _rev?: string
-  _system?: {
-    delete?: boolean
-  }
+  /**
+   * System-managed attributes. Which fields are present depends on the document (e.g.
+   * `variant`/`scopeId` only exist on version documents, and documents predating the `_system`
+   * migration may carry only some of them), hence the partial shape.
+   */
+  _system?: Partial<DocumentSystem>
   [key: string]: unknown
 }
 
@@ -71,6 +80,18 @@ export interface DocumentSystem {
    * Available only for version documents.
    */
   scopeId?: string
+  /**
+   * Set when the document is marked for unpublishing inside a release.
+   */
+  delete?: boolean
+  /**
+   * Only on variant-of-published documents: a weak reference to the (stable, server-generated)
+   * id the drafts-bundle sibling of this variant occupies — `versions.<scopeId>.<groupId>` —
+   * whether or not that document currently exists. Lets clients check out and create the draft
+   * variant without computing scope ids client-side. Not populated for normal published docs or
+   * variants of releases.
+   */
+  draft?: DocumentSystemRef
 }
 
 /**

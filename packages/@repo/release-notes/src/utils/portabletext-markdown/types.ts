@@ -62,6 +62,13 @@ export type PortableTextTable = {
   rows: unknown[]
 }
 
+export type PortableTextCallout = {
+  _type: 'callout'
+  _key: string
+  tone: string
+  content: Exclude<PortableTextMarkdownBlock, PortableTextHtml>[]
+}
+
 export type PortableTextMarkdownBlock =
   | PortableTextBlock
   | PortableTextCode
@@ -69,3 +76,4 @@ export type PortableTextMarkdownBlock =
   | PortableTextHorizontalRule
   | PortableTextHtml
   | PortableTextTable
+  | PortableTextCallout

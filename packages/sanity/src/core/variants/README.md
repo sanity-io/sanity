@@ -2,6 +2,8 @@
 
 This document describes the current architecture of the Variants Studio tool, what functionality is already covered, and the main work that is still pending.
 
+For how variant _document editing_ works through the document pair (target resolution, store guards, operation routing, publish-state UI), see [`EDITING.md`](./EDITING.md). For the underlying plan and per-workstream checklists, see [`EDITING_PLAN.md`](./EDITING_PLAN.md). For the user-facing guide (what variants are and how editors work with them), see [`USER_GUIDE.md`](./USER_GUIDE.md).
+
 ## Scope
 
 The Variants tool is registered by `plugin/index.tsx` under the `sanity/variants` plugin name and is gated by `beta.variants.enabled`. The tool route is `/variants`, with detail pages mounted at `/variants/:variantId`.
@@ -157,14 +159,17 @@ Data flow:
 
 To revert to one row per document version, pass the flat `useVariantDocuments()` results directly to the table and switch `rowId` from `groupId` to `document._id`.
 
-## Footer
+## Header and action rail
 
-`VariantDetailFooter.tsx` mirrors the release detail footer pattern.
+The footer pattern was replaced by the shared detail-spine header (matches the release detail
+page): `VariantActionRail.tsx` holds the right-side action rail and overflow `⋯` menu
+(`VariantMenuButton.tsx`); the created status moved into the `DetailPropertiesPanel` alongside the
+other detail metadata.
 
 Covered behavior:
 
-- created status on the left
-- right-side action slot
+- created status in the details properties panel
+- right-side action rail
 - detail-specific menu button
 - delete action navigates back to the overview after success
 
@@ -207,7 +212,7 @@ Covered areas include:
 Useful e2e type check:
 
 ```sh
-pnpm exec tsgo --project e2e/tsconfig.json --noEmit
+pnpm exec tsc --project e2e/tsconfig.json --noEmit
 ```
 
 The focused browser e2e command is:

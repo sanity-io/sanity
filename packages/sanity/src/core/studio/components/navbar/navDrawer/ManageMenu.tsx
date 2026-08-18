@@ -2,11 +2,11 @@ import {AddUserIcon} from '@sanity/icons/AddUser'
 import {CogIcon} from '@sanity/icons/Cog'
 import {Card, Stack} from '@sanity/ui'
 
-import {Button} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
-import {FreeTrial} from '../free-trial'
+import {FreeTrial} from '../free-trial/FreeTrial'
 import {useCanInviteProjectMembers} from '../useCanInviteMembers'
 
 export function ManageMenu() {
@@ -18,7 +18,7 @@ export function ManageMenu() {
 
   return (
     <Card borderTop flex="none" padding={2}>
-      <Stack as="ul" space={1}>
+      <Stack as="ul" gap={1}>
         <Stack as="li">
           <FreeTrial type="sidebar" />
         </Stack>

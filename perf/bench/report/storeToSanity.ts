@@ -1,0 +1,86 @@
+// oxlint-disable no-console
+/**
+ * `bench store` — write a merged BenchRunDocument to the metrics-studio
+ * Sanity project as a `benchRun` document for the trends dashboard.
+ *
+ * Three writers:
+ * - the daily `track-main` cron stores main HEAD, one doc per run (sha id),
+ *   building the absolute time series;
+ * - a labeled PR stores its experiment-side build under the PR branch, one
+ *   doc per PR (overwritten each push) so branch comparison has real data —
+ *   absolute-mode only, since an A/B verdict isn't comparable to the series;
+ * - an `ab_from`/`ab_to` dispatch stores its full comparison with `--ab` as a
+ *   `mode: 'ab'` document (git.sha = experiment, mergeBaseSha = reference) —
+ *   an investigation record for the Comparisons tool, which the trends
+ *   dashboard deliberately does not plot.
+ *
+ * Requires BENCH_METRICS_WRITE_TOKEN — the only real secret in the suite.
+ */
+import fs from 'node:fs'
+import path from 'node:path'
+import process from 'node:process'
+import {fileURLToPath} from 'node:url'
+
+import {readEnv} from '@repo/utils'
+import {createClient} from '@sanity/client'
+
+import {toStorableRun} from './storeShape'
+import {type BenchRunDocument} from './types'
+
+/** The metrics-studio project (browse the data with dev/metrics-studio). */
+const METRICS_PROJECT_ID = 'mhfozd0z'
+const METRICS_DATASET = 'bench'
+
+/**
+ * The stored document id decides overwrite-vs-append: a PR run overwrites one
+ * doc per PR number (latest push wins — branch comparison wants the newest
+ * build, not a pile), while main/cron runs get one doc per run (sha + CI run
+ * id) so the time series accumulates.
+ */
+export function documentIdForRun(run: BenchRunDocument): string {
+  return typeof run.git.prNumber === 'number'
+    ? `benchRun-pr-${run.git.prNumber}`
+    : `benchRun-${run.git.sha}-${run.runner.runId ?? 'local'}`
+}
+
+export async function storeRun(inputPathArg?: string, options: {ab?: boolean} = {}): Promise<void> {
+  const inputPath = path.resolve(
+    inputPathArg ??
+      path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'results', 'merged.json'),
+  )
+
+  if (!fs.existsSync(inputPath)) {
+    console.error(`No merged result document at ${inputPath} — run \`pnpm bench report\` first`)
+    process.exit(1)
+  }
+
+  const run = JSON.parse(fs.readFileSync(inputPath, 'utf8')) as BenchRunDocument
+
+  const client = createClient({
+    projectId: METRICS_PROJECT_ID,
+    dataset: METRICS_DATASET,
+    apiVersion: '2025-02-19',
+    token: readEnv('BENCH_METRICS_WRITE_TOKEN'),
+    useCdn: false,
+  })
+
+  // The mode must match the caller's stated intent: absolute runs are
+  // time-series points, ab runs are standalone comparison documents (the
+  // trend query filters on mode, so a mixup would silently mis-shelve the
+  // document rather than break loudly here).
+  const expectedMode = options.ab ? 'ab' : 'absolute'
+  if (run.mode !== expectedMode) {
+    console.error(
+      options.ab
+        ? `--ab expects an A/B comparison document, got a ${run.mode}-mode run`
+        : `Refusing to store a ${run.mode}-mode run as a time-series point: only absolute-mode ` +
+            `runs are comparable to the dashboard's series. (Pass --ab to store a comparison.)`,
+    )
+    process.exit(1)
+  }
+
+  const stored = await client.createOrReplace({...toStorableRun(run), _id: documentIdForRun(run)})
+  console.log(
+    `Stored ${stored._id} (${run.scenarios.length} scenario report(s), ${run.git.branch} @ ${run.git.sha.slice(0, 10)}) in ${METRICS_PROJECT_ID}/${METRICS_DATASET}`,
+  )
+}

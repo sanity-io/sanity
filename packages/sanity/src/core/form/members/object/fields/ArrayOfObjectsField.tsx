@@ -4,7 +4,7 @@ import {
   type Path,
   type SchemaType,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import noop from 'lodash-es/noop.js'
 import {
   type FocusEvent,
@@ -17,35 +17,39 @@ import {
 } from 'react'
 import {tap} from 'rxjs/operators'
 
-import {useTranslation} from '../../../../i18n'
-import {useResolveInitialValueForType} from '../../../../store'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useResolveInitialValueForType} from '../../../../store/document/useResolveInitialValueForType'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../inputs/files/common/assetSource'
-import {insert, type PatchArg, PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {applyAll} from '../../../patch/applyPatch'
-import {type ArrayOfObjectsFormNode, type FieldMember} from '../../../store'
+import {insert, set, setIfMissing, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type PatchArg} from '../../../patch/types'
+import {type FieldMember} from '../../../store/types/members'
+import {type ArrayOfObjectsFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {resolveUploader as defaultResolveUploader} from '../../../studio/uploads/resolveUploader'
 import {type FileLike} from '../../../studio/uploads/types'
 import {createInitialUploadPatches} from '../../../studio/uploads/utils'
+import {type ArrayInputInsertEvent, type ArrayInputMoveItemEvent} from '../../../types/event'
+import {type ArrayFieldProps} from '../../../types/fieldProps'
 import {
-  type ArrayFieldProps,
-  type ArrayInputInsertEvent,
-  type ArrayInputMoveItemEvent,
   type ArrayOfObjectsInputProps,
   type InputOnSelectFileFunctionProps,
-  type ObjectItem,
   type OnPathFocusPayload,
+} from '../../../types/inputProps'
+import {type ObjectItem} from '../../../types/itemProps'
+import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {ensureKey} from '../../../utils/ensureKey'
 import * as is from '../../../utils/is'
@@ -344,7 +348,9 @@ export function ArrayOfObjectsField(props: {
 
   const formBuilder = useFormBuilder()
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const supportsImageUploads = formBuilder.__internal.image.directUploads
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const supportsFileUploads = formBuilder.__internal.file.directUploads
 
   const resolveUploader = useCallback(
@@ -366,7 +372,6 @@ export function ArrayOfObjectsField(props: {
       handleSelectAssetFromSourceShared({
         assetsFromSource: assets,
         onChange: (patches) =>
-          // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
           handleChange(PatchEvent.from(patches as PatchEvent).prefixAll({_key: key})),
         type: schemaType,
         resolveUploader,
@@ -469,7 +474,6 @@ export function ArrayOfObjectsField(props: {
     return {
       level: member.field.level,
       members: member.field.members,
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
       value: member.field.value as any,
       readOnly: member.field.readOnly,
       schemaType: member.field.schemaType,

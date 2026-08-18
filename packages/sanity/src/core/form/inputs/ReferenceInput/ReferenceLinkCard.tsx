@@ -1,5 +1,5 @@
 import {Card, type CardProps} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+import {type HTMLProps, type Ref, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
 
 const StyledCard = styled(Card)`
@@ -25,11 +25,12 @@ interface ReferenceLinkCardProps extends CardProps {
   documentType: string | undefined
 }
 
-export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
-  props: ReferenceLinkCardProps & HTMLProps<HTMLElement>,
-  ref: ForwardedRef<HTMLElement>,
+export function ReferenceLinkCard(
+  props: ReferenceLinkCardProps &
+    Omit<HTMLProps<HTMLElement>, 'as' | 'ref'> &
+    RefAttributes<HTMLElement>,
 ) {
-  const {as, documentId, documentType, ...cardProps} = props
+  const {ref, as, documentId, documentType, ...cardProps} = props
 
   // If the child link is clicked without a document type, an error will be thrown.
   // This usually happens when the link is clicked before the document type has been resolved.
@@ -49,8 +50,7 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
       {...cardProps}
       {...linkProps}
       data-ui="ReferenceLinkCard"
-      // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
-      ref={ref as unknown as ForwardedRef<HTMLDivElement>}
+      ref={ref as unknown as Ref<HTMLDivElement>}
     />
   )
-})
+}

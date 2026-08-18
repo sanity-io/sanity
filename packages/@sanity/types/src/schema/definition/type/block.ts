@@ -1,6 +1,6 @@
 import {type ComponentType, type ReactNode} from 'react'
 
-import {type PortableTextBlock} from '../../../portableText'
+import {type PortableTextBlock} from '../../../portableText/types'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type ArrayOfType} from './array'
 import {type BaseSchemaDefinition, type BaseSchemaTypeOptions} from './common'

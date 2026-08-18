@@ -12,6 +12,11 @@ type LiveQueriesState = Map<
     query: string
     params: QueryParams
     perspective: ClientPerspective
+    /**
+     * The editing variant the loader asked for (bare variant id), if any. Loaders that predate
+     * variants never send one.
+     */
+    variant: string | undefined
   }
 >
 
@@ -35,6 +40,7 @@ type QueryListenAction = {
   type: 'query-listen'
   payload: {
     perspective: ClientPerspective
+    variant: string | undefined
     query: string
     params: QueryParams
     heartbeat: number | false
@@ -68,8 +74,13 @@ function gc(state: State): State {
   return {...state, queries: nextQueries, heartbeats: nextHeartbeats}
 }
 function queryListen(state: State, {payload}: QueryListenAction): State {
-  const key = getQueryCacheKey(payload.perspective, payload.query, payload.params)
-  const data = {query: payload.query, params: payload.params, perspective: payload.perspective}
+  const key = getQueryCacheKey(payload.perspective, payload.variant, payload.query, payload.params)
+  const data = {
+    query: payload.query,
+    params: payload.params,
+    perspective: payload.perspective,
+    variant: payload.variant,
+  }
 
   const nextHeartbeats = new Map(state.heartbeats)
   nextHeartbeats.set(key, {

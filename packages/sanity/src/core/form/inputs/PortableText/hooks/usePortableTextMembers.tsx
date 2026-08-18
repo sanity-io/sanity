@@ -1,16 +1,17 @@
 import {type Path} from '@sanity/types'
 import {isEqual, pathFor} from '@sanity/util/paths'
-import {type MutableRefObject, type ReactNode, useContext, useMemo, useRef} from 'react'
+import {type ReactNode, type RefObject, useContext, useMemo, useRef} from 'react'
 import {PortableTextMemberItemsContext} from 'sanity/_singletons'
 
-import {pathToString} from '../../../../field'
+import {pathToString} from '../../../../field/paths/helpers'
 import {type FIXME} from '../../../../FIXME'
-import {FormInput} from '../../../components'
+import {FormInput} from '../../../components/FormInput'
 import {isMemberArrayOfObjects} from '../../../members/object/fields/asserters'
 import {set} from '../../../patch/patch'
 import {type FormPatch} from '../../../patch/types'
-import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../../store'
-import {type ObjectInputProps, type PortableTextInputProps} from '../../../types'
+import {type ArrayOfObjectsItemMember} from '../../../store/types/members'
+import {type ObjectFormNode} from '../../../store/types/nodes'
+import {type ObjectInputProps, type PortableTextInputProps} from '../../../types/inputProps'
 import {isArrayOfObjectsFieldMember, isBlockType} from '../_helpers'
 import {type PortableTextMemberItem} from '../PortableTextInput'
 
@@ -53,7 +54,7 @@ export function usePortableTextMemberItemsFromProps(
     onPathFocus,
   } = props
 
-  const portableTextMemberItemsRef: MutableRefObject<PortableTextMemberItem[]> = useRef([])
+  const portableTextMemberItemsRef: RefObject<PortableTextMemberItem[]> = useRef([])
   return useMemo(() => {
     const result: {
       kind: PortableTextMemberItem['kind']

@@ -2,26 +2,19 @@
 // The design of the Studio version menu item doesn't align with the limitations of the
 // 'ui-components/menuItem/MenuItem.tsx' since we want both a subtitle and a top right aligned version badge.
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {
-  Badge,
-  Card,
-  type CardTone,
-  Flex,
-  MenuDivider,
-  MenuItem as UIMenuItem,
-  Text,
-} from '@sanity/ui'
+import {Badge, Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {MenuDivider, MenuItem as UIMenuItem} from '@sanity/ui/menu'
 import {Fragment, useCallback} from 'react'
 import {type SemVer} from 'semver'
 
-import {MenuItem} from '../../../../../ui-components'
-import {LoadingBlock} from '../../../../components/loadingBlock'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {isDev} from '../../../../environment'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
-import {useWorkspaces} from '../../../workspaces'
+import {useWorkspaces} from '../../../workspaces/useWorkspaces'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
 import {useCanDeployStudio} from './useCanDeployStudio'
 

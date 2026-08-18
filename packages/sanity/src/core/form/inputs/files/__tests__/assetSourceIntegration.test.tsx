@@ -14,12 +14,14 @@ import {
   observeImageAssetStub,
   observeVideoAssetStub,
 } from '../../../../../../test/fixtures/assetSourceMocks'
-import {renderFileInput, renderImageInput, renderVideoInput} from '../../../../../../test/form'
+import {renderFileInput} from '../../../../../../test/form/renderFileInput'
+import {renderImageInput} from '../../../../../../test/form/renderImageInput'
+import {renderVideoInput} from '../../../../../../test/form/renderVideoInput'
 import {BaseVideoInput} from '../../../../../media-library/plugin/VideoInput/VideoInput'
 import {MediaLibraryUploader} from '../../../studio/assetSourceMediaLibrary/uploader'
 import {getDataTestIdPrefix} from '../common/AssetSourceBrowser'
-import {BaseFileInput} from '../FileInput'
-import {BaseImageInput} from '../ImageInput'
+import {BaseFileInput} from '../FileInput/FileInput'
+import {BaseImageInput} from '../ImageInput/ImageInput'
 
 function getBrowseTestId(schemaTypeName: string, sourceName: string): string {
   const prefix = getDataTestIdPrefix({name: schemaTypeName, jsonType: 'object'})
@@ -545,6 +547,7 @@ describe.each(BROWSE_AFTER_UPLOAD_CONFIGS)(
     it('passes selectedAssets when opened via browse with existing value', async () => {
       const SelectedAssetsTestSource: AssetSource = {
         name: 'media-library-mock',
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         title: 'Test',
         component: (props) => (
           <div

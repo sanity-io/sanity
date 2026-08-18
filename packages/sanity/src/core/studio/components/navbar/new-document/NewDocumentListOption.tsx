@@ -1,12 +1,13 @@
 import {type CurrentUser} from '@sanity/types'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {isValidElement, type MouseEvent, useCallback, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {useIntentLink} from 'sanity/router'
+import {Box} from 'ui5'
 
-import {Tooltip} from '../../../../../ui-components'
-import {InsufficientPermissionsMessage} from '../../../../components'
-import {useI18nText} from '../../../../i18n'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
+import {useI18nText} from '../../../../i18n/hooks/useI18nText'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {type NewDocumentOption, type PreviewLayout} from './types'
 

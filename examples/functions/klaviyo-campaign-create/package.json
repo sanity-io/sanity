@@ -3,9 +3,9 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@portabletext/to-html": "^5.0.2",
-    "@sanity/client": "^7.23.0",
-    "@sanity/functions": "^1.4.0"
+    "@portabletext/to-html": "^6.0.0",
+    "@sanity/client": "^7.26.2",
+    "@sanity/functions": "^1.6.8"
   },
   "blueprintResourceItem": {
     "name": "klaviyo-campaign-create",

@@ -30,6 +30,7 @@ export function checkCors(
   options: {force?: boolean} = {},
 ): Promise<CorsProbeOutcome | null> {
   const config = client.config()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {projectId, apiHost, url: baseUrl} = config
   if (!projectId || !baseUrl) return Promise.resolve(null)
 

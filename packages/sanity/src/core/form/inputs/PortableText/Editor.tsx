@@ -15,14 +15,14 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useFormBuilder} from '../../useFormBuilder'
 import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useSpellCheck} from './hooks/useSpellCheck'
-import {Decorator} from './text'
-import {Toolbar} from './toolbar'
+import {Decorator} from './text/Decorator'
+import {Toolbar} from './toolbar/Toolbar'
 
 const noOutlineStyle = {outline: 'none'} as const
 

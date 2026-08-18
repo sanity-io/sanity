@@ -1,6 +1,5 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
   LayerProvider,
@@ -9,15 +8,15 @@ import {
 } from '@sanity/ui'
 import {
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   useCallback,
   useImperativeHandle,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import FocusLock from 'react-focus-lock'
+import {Box} from 'ui5'
 
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {LazyTextInput} from '../../../../components/inputs/DateInputs/LazyTextInput'
@@ -39,11 +38,9 @@ type Props = {
   timeZoneScope: TimeZoneScope
 }
 
-export const DateTimeInput = forwardRef(function DateTimeInput(
-  props: Props,
-  forwardedRef: ForwardedRef<HTMLInputElement>,
-) {
+export function DateTimeInput(props: Props & RefAttributes<HTMLInputElement>) {
   const {
+    ref: forwardedRef,
     value,
     inputValue,
     customValidation,
@@ -149,4 +146,4 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
       }
     />
   )
-})
+}

@@ -2,8 +2,9 @@ import {type ReleaseType} from '@sanity/client'
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {DotIcon} from '@sanity/icons/Dot'
-import {type BadgeTone, Box, Text} from '@sanity/ui'
+import {type BadgeTone, Text} from '@sanity/ui'
 import {type CSSProperties} from 'react'
+import {Box, type Space} from 'ui5'
 
 import {type TargetPerspective} from '../../perspective/types'
 import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
@@ -43,6 +44,7 @@ type ReleaseAvatarIconProps =
       releaseType?: never
     }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const ReleaseAvatarIcon = ({tone, release, releaseType}: ReleaseAvatarIconProps) => {
   const resolvedTone =
     tone ??
@@ -82,10 +84,10 @@ export function ReleaseAvatar({
   ...iconProps
 }: ReleaseAvatarIconProps & {
   fontSize?: number
-  padding?: number
+  padding?: Space
 }): React.JSX.Element {
   return (
-    <Box flex="none" padding={padding} style={{borderRadius: 3}}>
+    <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={padding} style={{borderRadius: 3}}>
       <Text size={fontSize}>
         <ReleaseAvatarIcon {...iconProps} />
       </Text>

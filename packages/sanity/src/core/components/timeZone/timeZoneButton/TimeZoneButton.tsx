@@ -3,7 +3,8 @@ import {Box, Inline, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode} from 'react'
 
-import {Button, Tooltip} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 
@@ -50,7 +51,7 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                     text={`${timeZone.city}`}
                   />
                 ) : (
-                  <Inline space={2} padding={2}>
+                  <Inline gap={2} padding={2}>
                     <Text weight={'medium'} size={1}>
                       <EarthAmericasIcon />
                     </Text>
@@ -69,7 +70,7 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                     text={`${timeZone.alternativeName} (${timeZone.namePretty})`}
                   />
                 ) : (
-                  <Inline space={2} padding={2}>
+                  <Inline gap={2} padding={2}>
                     <Text weight={'medium'} size={1}>
                       <EarthAmericasIcon />
                     </Text>
@@ -92,7 +93,7 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                   text={`${timeZone.alternativeName} (${timeZone.namePretty})`}
                 />
               ) : (
-                <Inline space={2} padding={2}>
+                <Inline gap={2} padding={2}>
                   <Text weight={'medium'} size={1}>
                     <EarthAmericasIcon />
                   </Text>

@@ -1,15 +1,18 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
-import {Box, Card, Label, Menu, MenuDivider} from '@sanity/ui'
+import {Card, Label} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {memo, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
-import {MenuButton, MenuItem} from '../../../../../ui-components'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {useSchema} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
 import {getPublishedId, getVersionFromId} from '../../../../util/draftUtils'
-import {DiscardVersionDialog} from '../../../components'
+import {DiscardVersionDialog} from '../../../components/dialog/DiscardVersionDialog'
 import {UnpublishVersionDialog} from '../../../components/dialog/UnpublishVersionDialog'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
@@ -31,6 +34,9 @@ const DocumentActionsInner = memo(
 
     const publishedId = getPublishedId(document.document._id)
     const type = document.document._type
+    // No `getTargetScopeId(useTargetDocumentState())` here: the version is derived from the table row's own
+    // document id (the release being viewed), in a variant release version this will also work because the scopeId
+    // is the same as the version from id.
     const version = getVersionFromId(document.document._id)
 
     const [discardVersionPermission, isDiscardVersionPermissionsLoading] =
@@ -113,7 +119,7 @@ const DocumentActionsInner = memo(
           <DiscardVersionDialog
             isGoingToUnpublish={isGoingToUnpublish(document.document)}
             onClose={() => setShowDiscardDialog(false)}
-            documentId={document.document._id}
+            versionId={document.document._id}
             documentType={document.document._type}
             fromPerspective={releaseTitle || t('release-placeholder.title')}
           />

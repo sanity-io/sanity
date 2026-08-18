@@ -4,27 +4,30 @@ import {fromString as pathFromString} from '@sanity/util/paths'
 import {memo, useMemo} from 'react'
 import {
   CopyPasteProvider,
+  getCreatableVariantTarget,
+  getPublishedId,
   ReferenceInputOptionsProvider,
   SourceProvider,
   Translate,
   useDocumentType,
   usePerspective,
   useSource,
+  useTargetDocumentState,
   useTemplatePermissions,
-  useTemplates,
   useTranslation,
 } from 'sanity'
 
-import {usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
 import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
-import {CommentsWrapper} from './comments'
-import {useDocumentLayoutComponent} from './document-layout'
+import {CommentsWrapper} from './comments/CommentsWrapper'
+import {useDocumentLayoutComponent} from './document-layout/useDocumentLayoutComponent'
 import {DocumentPaneProviderWrapper} from './DocumentPaneProviderWrapper'
 import {type DocumentPaneProviderProps} from './types'
+import {usePaneOptions} from './usePaneOptions'
 import {useResetHistoryParams} from './useResetHistoryParams'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
@@ -33,6 +36,7 @@ type DocumentPaneOptions = DocumentPaneNode['options']
  * @internal
  */
 export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {name: parentSourceName} = useSource()
 
   return (
@@ -46,11 +50,16 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 
 function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {resolveNewDocumentOptions} = useSource().document
-  const {selectedPerspectiveName} = usePerspective()
+  const {selectedPerspectiveName, selectedVariantName} = usePerspective()
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
+  // Resolution state of the document targeted by the selected perspective and variant. This
+  // subscription lives here — outside the keyed provider wrapper below — so it survives wrapper
+  // remounts and warm remounts resolve synchronously from the shared caches.
+  const targetDocumentState = useTargetDocumentState(getPublishedId(options.id))
   useResetHistoryParams()
   const DocumentLayout = useDocumentLayoutComponent()
 
@@ -115,7 +124,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         paneKey={paneKey}
         title={t('panes.document-pane.document-not-found.title')}
       >
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text as="p">
             <Translate
               t={t}
@@ -129,11 +138,43 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
     )
   }
 
+  // When a variant is requested, block mounting the editing subtree until the target document
+  // has resolved: listeners and patches must never be wired against the base draft/published
+  // pair while the actual target (an opaque, server-generated version id) is still unknown.
+  if (selectedVariantName && targetDocumentState.status === 'resolving') {
+    return (
+      <LoadingPane
+        flex={2.5}
+        minWidth={320}
+        paneKey={paneKey}
+        title={t('panes.document-pane.variant-target.loading')}
+      />
+    )
+  }
+
+  // Remount the editing subtree whenever the resolved variant target changes (variant switched,
+  // variant document created/discarded while open), so transitions pass back through the gate
+  // above instead of a mounted tree silently falling back to the base pair. Also prevents form
+  // state from being reused across variants. Inert when no variant is requested.
+  //
+  // A creatable missing draft variant is keyed by its advertised id — the same id the created
+  // stub arrives under — so the first keystroke's `variant-missing → ready` transition keeps the
+  // key stable and typing is not interrupted by a remount.
+  const creatableVariantTarget = getCreatableVariantTarget(targetDocumentState)
+  const variantTargetKey = selectedVariantName
+    ? `-${selectedVariantName}-${
+        targetDocumentState.status === 'ready'
+          ? (targetDocumentState.targetDocument?._id ?? 'none')
+          : (creatableVariantTarget?.id ?? targetDocumentState.status)
+      }`
+    : ''
+
   return (
     <DocumentPaneProviderWrapper
       // this needs to be here to avoid formState from being re-used across (incompatible) document types
       // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
-      key={`${documentType}-${options.id}-${selectedPerspectiveName || ''}`}
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      key={`${documentType}-${options.id}-${selectedPerspectiveName || ''}${variantTargetKey}`}
       {...providerProps}
     >
       {/* NOTE: this is a temporary location for this provider until we */}
@@ -153,36 +194,6 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       </ReferenceInputOptionsProvider>
     </DocumentPaneProviderWrapper>
   )
-}
-
-/**
- * @internal
- */
-export function usePaneOptions(
-  options: DocumentPaneOptions,
-  params: Record<string, string | undefined> = {},
-): DocumentPaneOptions {
-  const templates = useTemplates()
-
-  return useMemo(() => {
-    // The document type is provided, so return
-    if (options.type && options.type !== '*') {
-      return options
-    }
-
-    // Attempt to derive document type from the template configuration
-    const templateName = options.template || params.template
-    const template = templateName ? templates.find((t) => t.id === templateName) : undefined
-    const documentType = template?.schemaType
-
-    // No document type was found in a template
-    if (!documentType) {
-      return options
-    }
-
-    // The template provided the document type, so modify the pane’s `options` property
-    return {...options, type: documentType}
-  }, [options, params.template, templates])
 }
 
 function mergeDocumentType(

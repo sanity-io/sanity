@@ -5,7 +5,7 @@ import {type KeyedSegment, type Reference} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
 import {memo, useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {debounceTime, map} from 'rxjs/operators'
 import {
@@ -17,7 +17,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {usePaneRouter} from '../../../../components'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {type RouterPaneGroup} from '../../../../types'
 import {Banner} from './Banner'
@@ -91,30 +91,31 @@ export const ReferenceChangedBanner = memo(() => {
           // debounce to wait for more emissions because the value pulled
           // initially could be stale.
           debounceTime(750),
-          map(
-            ({draft, published, version}): ParentReferenceInfo => ({
-              loading: false,
-              result: {
-                availability: {
-                  draft: draft.availability,
-                  published: published.availability,
-                  ...(version?.availability
-                    ? {
-                        version: version.availability,
-                      }
-                    : {}),
-                },
-                refValue: pathGet<Reference>(
-                  version?.snapshot || draft.snapshot || published.snapshot,
-                  parentRefPath,
-                )?._ref,
+          map(({draft, published, version}): ParentReferenceInfo => ({
+            loading: false,
+            result: {
+              availability: {
+                draft: draft.availability,
+                published: published.availability,
+                ...(version?.availability
+                  ? {
+                      version: version.availability,
+                    }
+                  : {}),
               },
-            }),
-          ),
+              refValue: pathGet<Reference>(
+                version?.snapshot || draft.snapshot || published.snapshot,
+                parentRefPath,
+              )?._ref,
+            },
+          })),
         ),
     )
   }, [selectedPerspectiveName, documentPreviewStore, parentId, parentRefPath])
-  const referenceInfo = useObservable(referenceInfoObservable, {loading: true})
+  // Kept synchronous: `handleReloadReference` navigates to `refValue` from
+  // this snapshot, so a deferred value could point the reload action at a
+  // stale parent reference.
+  const referenceInfo = useSyncObservable(referenceInfoObservable, {loading: true})
 
   const handleReloadReference = useCallback(() => {
     if (referenceInfo.loading) return

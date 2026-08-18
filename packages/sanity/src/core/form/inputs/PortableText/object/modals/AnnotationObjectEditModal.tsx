@@ -12,6 +12,7 @@ export function AnnotationObjectEditModal(props: {
   onItemClose: () => void
   referenceBoundary: HTMLElement | null
 }) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const boundaryElement = useBoundaryElement().element
   const portableTextMemberItems = usePortableTextMemberItems()
@@ -28,9 +29,11 @@ export function AnnotationObjectEditModal(props: {
     props.onItemClose()
 
     if (openAnnotation.node.value && isEmptyItem(openAnnotation.node.value) && openAnnotation) {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       PortableTextEditor.removeAnnotation(editor, openAnnotation.node.schemaType)
     }
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [editor, props, openAnnotation])
 
@@ -40,7 +43,7 @@ export function AnnotationObjectEditModal(props: {
 
   const elementRef = elementRefs[openAnnotation.key]
 
-  if (!elementRef) {
+  if (!elementRef || !props.referenceBoundary?.contains(elementRef)) {
     return null
   }
 

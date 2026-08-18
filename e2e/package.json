@@ -17,12 +17,14 @@
     "test:auth": "playwright test --config=playwright.auth.config.ts"
   },
   "devDependencies": {
+    "@chromatic-com/playwright": "^0.14.11",
     "@playwright/test": "catalog:",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
     "@sanity/uuid": "^3.0.3",
-    "tsx": "^4.22.4"
+    "chromatic": "^18.2.0",
+    "tsx": "^4.23.12"
   },
   "engines": {
     "node": ">=22.12"

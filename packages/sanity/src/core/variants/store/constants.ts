@@ -9,11 +9,10 @@ export const VARIANT_DOCUMENT_TYPE: 'system.variant' = 'system.variant'
 export const VARIANT_DOCUMENTS_PATH: '_.variants' = '_.variants'
 
 /**
- * @internal This is the client options used for the variants studio client, using the `X` API version for now
- * Will change to a specific version soon.
- * TODO: Remove after API version is stable and support variants
+ * @internal
+ * This is the client options used for the variants studio client, using the `X` API version for now
+ * TODO: Replace with a dated version once we have a stable API version
  */
 export const VARIANTS_STUDIO_CLIENT_OPTIONS: SourceClientOptions = {
-  // TBD; using today for now
   apiVersion: 'X',
 }

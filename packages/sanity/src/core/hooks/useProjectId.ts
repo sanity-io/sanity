@@ -1,4 +1,4 @@
-import {useSource} from '../studio'
+import {useSource} from '../studio/source'
 
 /**
  * React hook that returns the current project id
@@ -14,5 +14,6 @@ import {useSource} from '../studio'
  * ```
  */
 export function useProjectId(): string {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return useSource().projectId
 }

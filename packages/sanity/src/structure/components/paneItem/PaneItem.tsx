@@ -32,7 +32,7 @@ import {
 } from 'sanity'
 
 import {MissingSchemaType} from '../MissingSchemaType'
-import {usePaneRouter} from '../paneRouter'
+import {usePaneRouter} from '../paneRouter/usePaneRouter'
 import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {
@@ -188,7 +188,9 @@ export function PaneItem(props: PaneItemProps) {
 
 function PreloadDocumentPane(props: {documentId: string; documentType: string}) {
   const {documentId, documentType} = props
-  // Preload the edit state for the document, and keep it alive until mouse leave
+  // Preload the edit state for the document, and keep it alive until mouse leave.
+  // No `getTargetScopeId(useTargetDocumentState())` here: this is a best-effort preload of the draft/published
+  // pair, so no version scope applies.
   useEditState(getPublishedId(documentId), documentType)
 
   return null

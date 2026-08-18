@@ -1,6 +1,12 @@
 import {Box} from '@sanity/ui'
 import {motion, type VariantLabels, type Variants} from 'motion/react'
-import {forwardRef, type ReactEventHandler, useEffect, useImperativeHandle, useRef} from 'react'
+import {
+  type ReactEventHandler,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  type RefAttributes,
+} from 'react'
 import {createGlobalStyle, styled} from 'styled-components'
 
 import {useId} from '../useId'
@@ -15,61 +21,59 @@ interface IFrameProps {
   style: React.CSSProperties
 }
 
-export const IFrame = forwardRef<HTMLIFrameElement, IFrameProps>(
-  function IFrame(props, forwardedRef) {
-    const {animate, initial, onLoad, preventClick, src, variants, style} = props
+export function IFrame(props: IFrameProps & RefAttributes<HTMLIFrameElement>) {
+  const {ref: forwardedRef, animate, initial, onLoad, preventClick, src, variants, style} = props
 
-    const ref = useRef<HTMLIFrameElement | null>(null)
-    // Forward the iframe ref to the parent component
-    useImperativeHandle<HTMLIFrameElement | null, HTMLIFrameElement | null>(
-      forwardedRef,
-      () => ref.current,
-    )
+  const ref = useRef<HTMLIFrameElement | null>(null)
+  // Forward the iframe ref to the parent component
+  useImperativeHandle<HTMLIFrameElement | null, HTMLIFrameElement | null>(
+    forwardedRef,
+    () => ref.current,
+  )
 
-    /**
-     * Ensure that clicking outside of menus and dialogs will close as focus shifts to the iframe
-     */
+  /**
+   * Ensure that clicking outside of menus and dialogs will close as focus shifts to the iframe
+   */
 
-    useEffect(() => {
-      if (!ref.current) {
-        return undefined
+  useEffect(() => {
+    if (!ref.current) {
+      return undefined
+    }
+    const instance = ref.current
+    function handleBlur() {
+      if (instance !== document.activeElement) {
+        return
       }
-      const instance = ref.current
-      function handleBlur() {
-        if (instance !== document.activeElement) {
-          return
-        }
 
-        instance.dispatchEvent(new MouseEvent('mousedown', {bubbles: true, cancelable: true}))
-      }
-      window.addEventListener('blur', handleBlur)
-      return () => {
-        window.removeEventListener('blur', handleBlur)
-      }
-    }, [])
+      instance.dispatchEvent(new MouseEvent('mousedown', {bubbles: true, cancelable: true}))
+    }
+    window.addEventListener('blur', handleBlur)
+    return () => {
+      window.removeEventListener('blur', handleBlur)
+    }
+  }, [])
 
-    const viewTransitionName = useId()
+  const viewTransitionName = useId()
 
-    return (
-      <>
-        <IFrameElement
-          style={{
-            ...style,
-            viewTransitionName,
-          }}
-          animate={animate}
-          initial={initial}
-          onLoad={onLoad}
-          ref={ref}
-          src={src}
-          variants={variants}
-        />
-        {preventClick && <IFrameOverlay />}
-        <GlobalViewTransition />
-      </>
-    )
-  },
-)
+  return (
+    <>
+      <IFrameElement
+        style={{
+          ...style,
+          viewTransitionName,
+        }}
+        animate={animate}
+        initial={initial}
+        onLoad={onLoad}
+        ref={ref}
+        src={src}
+        variants={variants}
+      />
+      {preventClick && <IFrameOverlay />}
+      <GlobalViewTransition />
+    </>
+  )
+}
 
 const IFrameElement = motion.create(styled.iframe`
   box-shadow: 0 0 0 1px var(--card-border-color);

@@ -11,8 +11,10 @@ import {type ComponentProps, type ReactNode, useCallback, useEffect, useRef, use
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
 
-import {Button, type PopoverProps} from '../../../../../../ui-components'
-import {PresenceOverlay} from '../../../../../presence'
+import {Button} from '../../../../../../ui-components/button/Button'
+import {type PopoverProps} from '../../../../../../ui-components/popover/Popover'
+import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'
+import {EditDialogOuterBoundaryProvider} from '../../../../components/EditDialogOuterBoundaryProvider'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'
 import {type ModalWidth} from './types'
@@ -119,58 +121,54 @@ function Content(props: PopoverEditDialogProps) {
     setBoundaryElement(contentElement.closest<HTMLElement>('[data-ui="Popover__wrapper"]'))
   }, [contentElement])
 
-  const handleFocusLockWhiteList = useCallback((element: HTMLElement) => {
-    // This is needed in order for focusLock not to trap focus in the
-    // popover when closing the popover and focus is to be returned to the editor
-    if (isClosedRef.current) return false
-
-    const target = element as Node
-    const portalElements = document.querySelectorAll('[data-portal]')
-    const isWithinPortal = Array.from(portalElements).some((portal) => portal.contains(target))
-
-    // We want to have an exception to the clicking when the target is outside of the portal
-    // And the popover is not closed.
-    // This is needed in order for focusLock not to trap focus in the modal
-    // Because then, if we are trying to change matters in an opened pane, focusLock will trap focus in the modal
-    if (!isWithinPortal && !isClosedRef.current) return false
-
-    return Boolean(element.contentEditable) || Boolean(containerElement.current?.contains(element))
-  }, [])
+  // react-focus-lock reclaims focus *toward* whitelisted elements, so whitelist only this
+  // popover's own wrapper: a menu opened over it (in a sibling portal) then keeps focus
+  // instead of being stolen back and closed. While closing, whitelist nothing so focus
+  // returns to the editor.
+  const handleFocusLockWhiteList = useCallback(
+    (element: HTMLElement) => {
+      if (isClosedRef.current) return false
+      return !boundaryElement || boundaryElement.contains(element)
+    },
+    [boundaryElement],
+  )
 
   return (
     <VirtualizerScrollInstanceProvider
       scrollElement={contentElement}
       containerElement={containerElement}
     >
-      <BoundaryElementProvider element={boundaryElement}>
-        <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
-          <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
-            <ContentHeaderBox flex="none" padding={1}>
-              <Flex align="center">
-                <Box flex={1} padding={2}>
-                  <Text weight="medium">{title}</Text>
-                </Box>
+      <EditDialogOuterBoundaryProvider>
+        <BoundaryElementProvider element={boundaryElement}>
+          <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
+            <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
+              <ContentHeaderBox flex="none" padding={1}>
+                <Flex align="center">
+                  <Box flex={1} padding={2}>
+                    <Text weight="medium">{title}</Text>
+                  </Box>
 
-                <Button
-                  autoFocus
-                  icon={CloseIcon}
-                  mode="bleed"
-                  onClick={handleClose}
-                  tooltipProps={{content: 'Close'}}
-                  data-testid="close-popover-edit-dialog-button"
-                />
-              </Flex>
-            </ContentHeaderBox>
-            <ContentScrollerBox flex={1}>
-              <PresenceOverlay margins={[0, 0, 1, 0]}>
-                <Box padding={3} ref={setContentElement}>
-                  {props.children}
-                </Box>
-              </PresenceOverlay>
-            </ContentScrollerBox>
-          </Flex>
-        </FocusLock>
-      </BoundaryElementProvider>
+                  <Button
+                    autoFocus
+                    icon={CloseIcon}
+                    mode="bleed"
+                    onClick={handleClose}
+                    tooltipProps={{content: 'Close'}}
+                    data-testid="close-popover-edit-dialog-button"
+                  />
+                </Flex>
+              </ContentHeaderBox>
+              <ContentScrollerBox flex={1}>
+                <PresenceOverlay margins={[0, 0, 1, 0]}>
+                  <Box padding={3} ref={setContentElement}>
+                    {props.children}
+                  </Box>
+                </PresenceOverlay>
+              </ContentScrollerBox>
+            </Flex>
+          </FocusLock>
+        </BoundaryElementProvider>
+      </EditDialogOuterBoundaryProvider>
     </VirtualizerScrollInstanceProvider>
   )
 }

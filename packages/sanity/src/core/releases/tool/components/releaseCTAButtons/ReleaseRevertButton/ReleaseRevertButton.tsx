@@ -1,13 +1,16 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Checkbox, Flex, Text, useToast} from '@sanity/ui'
+import {Card, Checkbox, Flex, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
-import {Dialog} from '../../../../../../ui-components/dialog'
-import {Translate, useTranslation} from '../../../../../i18n'
+import {Dialog} from '../../../../../../ui-components/dialog/Dialog'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../../i18n/Translate'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../../../i18n'
@@ -213,7 +216,7 @@ const ConfirmReleaseDialog = ({
           style={{display: 'block'}}
           checked={!stageNewRevertRelease}
         />
-        <Box flex={1} paddingLeft={3}>
+        <Box flexBasis="0%" flexGrow={1} paddingLeft={3}>
           <Text muted size={1}>
             <label htmlFor="immediate-revert-release">
               {t('revert-dialog.confirm-revert.stage-revert-checkbox-label')}

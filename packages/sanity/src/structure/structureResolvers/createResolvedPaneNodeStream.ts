@@ -3,7 +3,7 @@ import isEqual from 'lodash-es/isEqual.js'
 import {concat, NEVER, type Observable, of as observableOf} from 'rxjs'
 import {distinctUntilChanged, map, pairwise, scan, startWith, switchMap} from 'rxjs/operators'
 
-import {type StructureContext} from '../structureBuilder'
+import {type StructureContext} from '../structureBuilder/types'
 import {
   type DocumentPaneNode,
   type PaneNode,
@@ -255,8 +255,7 @@ function resolvePaneTree({
           nextStream = resolvePaneTree({
             unresolvedPane:
               typeof paneNode.child === 'function'
-                ? // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
-                  (memoBind(paneNode, 'child') as PaneNodeResolver)
+                ? (memoBind(paneNode, 'child') as PaneNodeResolver)
                 : paneNode.child,
             flattenedRouterPanes: rest,
             parent: paneNode,

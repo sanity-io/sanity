@@ -1,9 +1,10 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {type Observable, of, timer} from 'rxjs'
 import {distinctUntilChanged, map, mapTo, startWith, switchMap} from 'rxjs/operators'
 
-import {type DocumentStore, useDocumentStore} from '../store'
+import {useDocumentStore} from '../store/datastores'
+import {type DocumentStore} from '../store/document/document-store'
 
 /** @internal */
 export type ConnectionState = 'connecting' | 'reconnecting' | 'connected'
@@ -26,9 +27,9 @@ export function connectionState(
   return documentStore.pair.documentEvents(publishedDocId, docTypeName, version).pipe(
     map((ev: {type: string}) => ev.type),
     map((eventType) => eventType !== 'reconnect'),
-    switchMap(
-      (isConnected): Observable<ConnectionState> =>
-        isConnected ? of('connected') : timer(200).pipe(mapTo('reconnecting')),
+    switchMap((isConnected): Observable<ConnectionState> =>
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      isConnected ? of('connected') : timer(200).pipe(mapTo('reconnecting')),
     ),
     startWith(INITIAL),
     distinctUntilChanged(),
@@ -47,5 +48,8 @@ export function useConnectionState(
     () => connectionState(documentStore, publishedDocId, docTypeName, version),
     [docTypeName, documentStore, publishedDocId, version],
   )
-  return useObservable(observable, INITIAL)
+  // Kept synchronous: `useDocumentForm` gates the form's `ready` / `readOnly`
+  // state on this (a `reconnecting` connection makes the editor read-only), so
+  // a deferred value could leave the editor writable while reconnecting.
+  return useSyncObservable(observable, INITIAL)
 }

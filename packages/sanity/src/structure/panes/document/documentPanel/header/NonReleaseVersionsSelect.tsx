@@ -13,13 +13,14 @@ import {
   VersionChip,
 } from 'sanity'
 
-import {Popover, Tooltip} from '../../../../../ui-components'
+import {Popover} from '../../../../../ui-components/popover/Popover'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 
 export function NonReleaseVersionsSelect(props: {
   nonReleaseVersions: VersionInfoDocumentStub[]
   selectedPerspective?: string
   onSelectBundle: (version: VersionInfoDocumentStub) => void
-  onCopyToDraftsNavigate: () => void
+  onCopyToDraftsComplete: () => void
   releases: ReleaseDocument[]
   releasesLoading: boolean
   documentType: string
@@ -30,7 +31,7 @@ export function NonReleaseVersionsSelect(props: {
     nonReleaseVersions,
     selectedPerspective,
     onSelectBundle,
-    onCopyToDraftsNavigate,
+    onCopyToDraftsComplete,
     documentType,
     getVersionDisplay,
     releasesLoading,
@@ -84,9 +85,10 @@ export function NonReleaseVersionsSelect(props: {
               text={versionDisplay?.displayName ?? bundleId}
               tone={versionDisplay?.tone ?? 'default'}
               onClick={() => onSelectBundle(selectedNonReleaseVersion)}
-              onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+              onCopyToDraftsComplete={onCopyToDraftsComplete}
               contextValues={{
-                documentId: getPublishedId(selectedNonReleaseVersion._id),
+                documentGroupId: getPublishedId(selectedNonReleaseVersion._id),
+                versionId: selectedNonReleaseVersion._id,
                 releases,
                 releasesLoading: releasesLoading,
                 documentType: documentType,
@@ -144,9 +146,10 @@ export function NonReleaseVersionsSelect(props: {
                     contextMenuPortal={false}
                     tone={versionDisplay?.tone ?? 'default'}
                     onClick={() => onSelectBundle(nonReleaseVersion)}
-                    onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+                    onCopyToDraftsComplete={onCopyToDraftsComplete}
                     contextValues={{
-                      documentId: getPublishedId(nonReleaseVersion._id),
+                      documentGroupId: getPublishedId(nonReleaseVersion._id),
+                      versionId: nonReleaseVersion._id,
                       releases,
                       releasesLoading: releasesLoading,
                       documentType: documentType,

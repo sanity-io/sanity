@@ -11,7 +11,6 @@ import {
   type ComponentType,
   useCallback,
   useEffect,
-  useEffectEvent,
   useMemo,
   useRef,
   useState,
@@ -23,10 +22,10 @@ import {
   type DocumentFieldAction,
   type EditStateFor,
   EMPTY_ARRAY,
+  getCreatableVariantTarget,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
-  isDocumentInSelectedVariant,
   isGoingToUnpublish,
   isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
@@ -38,25 +37,30 @@ import {
   selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
+  useCreatableVariantInitialValue,
   useDocumentDivergences,
   useDocumentForm,
   useDocumentIdStack,
-  useDocumentVersions,
   usePerspective,
   useSchema,
   useSource,
+  useTargetDocumentState,
   useUnique,
   useWorkspace,
 } from 'sanity'
 import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
+import {useEffectEvent} from 'use-effect-event'
 
-import {usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentTitle} from '../../components/structureTool/StructureTitle'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDeletedDocumentLastRevision} from '../../hooks/useDeletedDocumentLastRevision'
 import {type PaneMenuItem} from '../../types'
-import {InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
+import {
+  InlineChangesSwitchedOff,
+  InlineChangesSwitchedOn,
+} from './__telemetry__/documentPanes.telemetry'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {
   type DocumentPaneContextValue,
@@ -87,10 +91,12 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     onFocusPath,
     onSetMaximizedPane,
     maximized = false,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     forcedVersion,
     historyStore,
   } = props
   const {
+    // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
     store: timelineStore,
     error: timelineError,
     ready: timelineReady,
@@ -112,6 +118,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       unstable_languageFilter: languageFilterResolver,
       drafts: {enabled: draftsEnabled},
     },
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
   const telemetry = useTelemetry()
   const router = useRouter()
@@ -123,10 +130,12 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     title = null,
     views: viewsProp = [],
   } = pane
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const paneOptions = useUnique(options)
   const documentIdRaw = paneOptions.id
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
   const perspective = usePerspective()
 
@@ -152,12 +161,23 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   const diffViewRouter = useDiffViewRouter()
 
-  const initialValue = useDocumentPaneInitialValue({
+  // Resolution state of the document targeted by the selected perspective and variant — the
+  // single source for in-pane consumers (initial value, read-only derivation, banners, footer,
+  // actions).
+  const targetDocumentState = useTargetDocumentState(documentId)
+
+  const templateInitialValue = useDocumentPaneInitialValue({
     paneOptions,
     documentId,
     documentType,
     params,
   })
+
+  // For a creatable missing draft variant, the initial value is the published sibling
+  // (re-identified as the draft target, `_system` rewritten for the draft): the form displays it
+  // until the document exists, and the first keystroke creates the draft variant seeded from it.
+  // Every other state passes the template-resolved initial value through.
+  const initialValue = useCreatableVariantInitialValue(targetDocumentState, templateInitialValue)
 
   const isInitialValueLoading = initialValue.loading
   const {
@@ -212,17 +232,16 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
-  const documentVersions = useDocumentVersions({documentId})
-
-  // When a variant is selected but no variant-scoped version exists for the current bundle, the
-  // form must be read-only (the not-in-variant banner offers to create it).
-  const isInSelectedVariant = perspective.selectedVariant
-    ? isDocumentInSelectedVariant({
-        selectedVariant: perspective.selectedVariant,
-        bundle: perspective.bundle,
-        documentVersions: documentVersions.versions,
-      })
-    : true
+  // When a variant is requested, the form is editable only once the variant target has resolved:
+  // `variant-missing` shows the not-in-variant banner offering to create it,
+  // `variant-definition-document-not-found` is an invalid selection, and `resolving` covers
+  // target transitions while the pane is mounted (initial mounts are gated in DocumentPane).
+  // Exception: a creatable missing draft variant (server-advertised id) is editable — typing
+  // creates the document seeded from the published sibling.
+  const isVariantTargetReadOnly =
+    Boolean(perspective.selectedVariantName) &&
+    targetDocumentState.status !== 'ready' &&
+    !getCreatableVariantTarget(targetDocumentState)
 
   const getIsReadOnly = useCallback(
     (editState: EditStateFor): boolean => {
@@ -235,16 +254,11 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       )
       const isPaused = isPausedCardinalityOneRelease(currentRelease)
 
-      // Temporary disable read-only for variant documents
-      // Variant documents cannot be edited yet in the studio. Coming soon.
-      if (perspective.selectedVariant) {
-        return true
-      }
       return (
         seeingHistoryDocument ||
         isDeleting ||
         isDeleted ||
-        !isInSelectedVariant ||
+        isVariantTargetReadOnly ||
         (!isPaused &&
           !isPerspectiveWriteable({
             selectedPerspective: perspective.selectedPerspective,
@@ -259,11 +273,10 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       isDraftModelEnabled,
       params.rev,
       perspective.selectedPerspective,
-      isInSelectedVariant,
+      isVariantTargetReadOnly,
       schemaType,
       releases,
       selectedReleaseId,
-      perspective.selectedVariant,
     ],
   )
 
@@ -384,6 +397,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     [documentId, documentType, languageFilterResolver],
   )
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const views = useUnique(viewsProp)
 
   const activeViewId = params.view || (views[0] && views[0].id) || null
@@ -583,14 +597,17 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         permissions,
         setTimelineRange,
         setIsDeleting,
+        targetDocumentState,
         isDeleting,
         isDocumentGroupInventoryActive,
         setIsDocumentGroupInventoryActive,
         isDeleted,
         timelineError,
+        // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
         timelineStore,
         title,
         value,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         selectedReleaseId,
         views,
         formState,
@@ -650,6 +667,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       isInitialValueLoading,
       permissions,
       setTimelineRange,
+      targetDocumentState,
       isDeleting,
       isDocumentGroupInventoryActive,
       isDeleted,

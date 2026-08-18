@@ -2,7 +2,7 @@ import {type BlockListItemRenderProps} from '@portabletext/editor'
 import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
 import {useMemo} from 'react'
 
-import {type BlockListItemProps} from '../../../types'
+import {type BlockListItemProps} from '../../../types/blockProps'
 
 const DefaultComponent = (dProps: BlockListItemProps) => {
   return <>{dProps.children}</>

@@ -8,6 +8,7 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {TIMELINE_LIST_WRAPPER_ID} from '../constants'
 import {ExpandableTimelineItemButton} from './expandableTimelineItemButton'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {TimelineItem} from './timelineItem'
@@ -29,8 +30,6 @@ interface TimelineProps {
    */
   listMaxHeight?: string
 }
-
-export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
 
 export const Timeline = ({
   chunks,
@@ -177,7 +176,7 @@ export const Timeline = ({
       data-ui="timeline"
     >
       {filteredChunks.length === 0 && (
-        <StackWrapper padding={3} space={3}>
+        <StackWrapper padding={3} gap={3}>
           <Text size={1} weight="medium">
             {t('timeline.error.no-document-history-title')}
           </Text>

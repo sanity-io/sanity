@@ -1,9 +1,11 @@
 import {
+  defineInlineObject,
+  defineTextBlock,
   type EditorSelection,
   PortableTextEditable,
-  type RenderBlockFunction,
   usePortableTextEditorSelection,
 } from '@portabletext/editor'
+import {NodePlugin} from '@portabletext/editor/plugins'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {useClickOutsideEvent} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
@@ -11,11 +13,12 @@ import isEqual from 'lodash-es/isEqual.js'
 import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Popover, type PopoverProps} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../../i18n'
-import {MentionsMenu, type MentionsMenuHandle} from '../../mentions'
-import {renderChild} from '../render'
+import {MentionsMenu, type MentionsMenuHandle} from '../../mentions/MentionsMenu'
+import {MentionInlineBlock} from '../blocks/MentionInlineBlock'
+import {type CommentInputRenderBlock} from './CommentInput'
 import {useCommentInput} from './useCommentInput'
 import {useCursorElement} from './useCursorElement'
 
@@ -35,6 +38,7 @@ const PlaceholderWrapper = styled.span((props) => {
 })
 
 const StyledPopover = styled(Popover)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space, radius} = theme.sanity
 
   return css`
@@ -60,12 +64,14 @@ const StyledPopover = styled(Popover)(({theme}) => {
 
 interface EditableProps {
   focusLock?: boolean
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
   onKeyDown?: (e: React.KeyboardEvent) => void
   onSubmit?: () => void
   placeholder?: React.ReactNode
-  renderBlock: RenderBlockFunction
+  renderBlock: CommentInputRenderBlock
 }
 
 interface EditableHandle {
@@ -88,6 +94,7 @@ export function Editable(props: EditableProps) {
   const [inputElement, setInputElement] = useState<HTMLDivElement | null>(null)
   const mentionsMenuRef = useRef<MentionsMenuHandle | null>(null)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
 
   const {
@@ -109,6 +116,39 @@ export function Editable(props: EditableProps) {
   const renderPlaceholder = useCallback(
     () => <PlaceholderWrapper>{placeholder}</PlaceholderWrapper>,
     [placeholder],
+  )
+
+  const nodes = useMemo(
+    () => [
+      defineTextBlock({
+        type: 'block',
+        render: (blockProps) => (
+          <div {...blockProps.attributes}>{renderBlock({children: blockProps.children})}</div>
+        ),
+      }),
+      defineInlineObject({
+        type: 'mention',
+        render: (mentionProps) =>
+          mentionProps.node.userId ? (
+            <span {...mentionProps.attributes}>
+              {/* Carries the engine's caret spacer; dropping this loses cursor placement around the mention. */}
+              {mentionProps.children}
+              {/* `draggable` makes the mention movable and keeps its text
+                  unselectable (a draggable element starts a drag instead of a
+                  text selection), matching the legacy pipeline's wrapper. */}
+              <span draggable={!mentionProps.readOnly} style={{display: 'inline-block'}}>
+                <MentionInlineBlock
+                  selected={mentionProps.selected}
+                  userId={mentionProps.node.userId as string}
+                />
+              </span>
+            </span>
+          ) : (
+            mentionProps.renderDefault(mentionProps)
+          ),
+      }),
+    ],
+    [renderBlock],
   )
 
   useClickOutsideEvent(mentionsMenuOpen && closeMentions, () => [popoverRef.current])
@@ -215,6 +255,7 @@ export function Editable(props: EditableProps) {
         ref={popoverRef}
         referenceElement={cursorElement}
       />
+      <NodePlugin nodes={nodes} />
       <PortableTextEditable
         data-testid="comment-input-editable"
         data-ui="EditableElement"
@@ -223,8 +264,6 @@ export function Editable(props: EditableProps) {
         onFocus={onFocus}
         onKeyDown={handleKeyDown}
         ref={setInputElement}
-        renderBlock={renderBlock}
-        renderChild={renderChild}
         renderPlaceholder={renderPlaceholder}
         selection={initialSelectionAtEndOfContent}
         style={INLINE_STYLE}

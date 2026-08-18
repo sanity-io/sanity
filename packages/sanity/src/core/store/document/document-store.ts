@@ -1,24 +1,30 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@sanity/types'
-import {type Observable} from 'rxjs'
+import {type Observable, of} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
-import {type SourceClientOptions} from '../../config'
-import {type LocaleSource} from '../../i18n'
-import {type DocumentPreviewStore} from '../../preview'
+import {type SourceClientOptions} from '../../config/types'
+import {type LocaleSource} from '../../i18n/types'
+import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {type Template} from '../../templates'
+import {type Template} from '../../templates/types'
 import {
-  getDocumentVariantType,
-  getIdPair,
   getPublishedId,
   getVersionFromId,
   isDraftId,
   isVersionId,
-} from '../../util'
+  getIdPair,
+} from '../../util/draftUtils'
+import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {type ValidationStatus} from '../../validation'
-import {type HistoryStore} from '../history'
-import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pair/checkoutPair'
+import {type HistoryStore} from '../history/createHistoryStore'
+import {
+  checkoutPair,
+  type CommitError,
+  type DocumentVersionEvent,
+  type Pair,
+} from './document-pair/checkoutPair'
+import {commitErrorStatus} from './document-pair/commitErrorStatus'
 import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
 import {editOperations} from './document-pair/editOperations'
@@ -28,13 +34,16 @@ import {
   operationEvents,
   type OperationSuccess,
 } from './document-pair/operationEvents'
-import {type OperationsAPI} from './document-pair/operations'
+import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
+import {type OperationsAPI} from './document-pair/operations/types'
 import {validation} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
-import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
+import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
+import {type InitialValueMsg} from './initialValue/types'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
+import {getPairTargetScopeId, normalizeDocumentPairTarget} from './normalizeDocumentPairTarget'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
-import {type IdPair} from './types'
+import {type DocumentPairTarget, type IdPair} from './types'
 
 /**
  * @hidden
@@ -79,6 +88,12 @@ export interface DocumentStore {
   resolveTypeForDocument: (id: string, specifiedType?: string) => Observable<string>
 
   pair: {
+    /** @internal */
+    commitErrorStatus: (
+      publishedId: string,
+      type: string,
+      version?: string,
+    ) => Observable<CommitError | undefined>
     consistencyStatus: (publishedId: string, type: string, version?: string) => Observable<boolean>
     /** @internal */
     documentEvents: (
@@ -86,11 +101,17 @@ export interface DocumentStore {
       type: string,
       version?: string,
     ) => Observable<DocumentVersionEvent>
-    /** @internal */
+    /**
+     * @internal
+     * `version` accepts either a plain version name (release/bundle) or a
+     * {@link DocumentPairTarget}. The guarded target kinds (`unresolved`, `target-missing`) emit
+     * a disabled operations API without checking out a pair, so operations can never reach the
+     * base draft/published pair while a selected target is unresolved or has no document.
+     */
     editOperations: (
       publishedId: string,
       type: string,
-      version?: string,
+      version?: string | DocumentPairTarget,
     ) => Observable<OperationsAPI>
     editState: (publishedId: string, type: string, version?: string) => Observable<EditStateFor>
     operationEvents: (
@@ -190,6 +211,14 @@ export function createDocumentStore({
       return resolveTypeForDocument(client, id, specifiedType)
     },
     pair: {
+      commitErrorStatus(publishedId, type, version) {
+        return commitErrorStatus(
+          ctx.client,
+          getIdPairFromPublished(publishedId, version),
+          type,
+          extraOptions,
+        )
+      },
       consistencyStatus(publishedId, type, version) {
         return consistencyStatus(
           ctx.client,
@@ -207,7 +236,24 @@ export function createDocumentStore({
         )
       },
       editOperations(publishedId, type, version) {
-        return editOperations(ctx, getIdPairFromPublished(publishedId, version), type)
+        const target = normalizeDocumentPairTarget(version)
+
+        // Guarded targets never check out a pair. Branching here (before the memoized
+        // `editOperations`) also keeps them out of `memoizeKeyGen`, which only keys on
+        // `publishedId + versionId` and would collide these with the base pair.
+        if (target?.kind === 'unresolved') {
+          return of(GUARDED)
+        }
+        if (target?.kind === 'target-missing') {
+          return of(TARGET_NOT_FOUND_OPERATIONS)
+        }
+
+        return editOperations(
+          ctx,
+          getIdPairFromPublished(publishedId, getPairTargetScopeId(target)),
+          type,
+          target,
+        )
       },
       editState(publishedId, type, version) {
         const idPair = getIdPairFromPublished(publishedId, version)

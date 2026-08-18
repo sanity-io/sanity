@@ -2,7 +2,7 @@ import {type BlockStyleRenderProps} from '@portabletext/editor'
 import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
 import {useCallback, useMemo} from 'react'
 
-import {type BlockStyleProps} from '../../../types'
+import {type BlockStyleProps} from '../../../types/blockProps'
 import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'
 
 type StyleProps = Pick<BlockStyleRenderProps, 'block' | 'children' | 'focused' | 'selected'> & {

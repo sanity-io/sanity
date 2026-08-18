@@ -6,6 +6,7 @@ import {
   dropMutations,
   duplicateMutations,
   expiredToken,
+  invalidSession,
   randomLatency,
   sendReset,
 } from './scenarios'
@@ -69,6 +70,48 @@ function fakeRes(): {res: ProxyResponse; captured: FakeRes} {
   }
   return {res: res as unknown as ProxyResponse, captured}
 }
+
+describe('invalidSession', () => {
+  const target = {url: new URL('https://example.localhost/v1/users/me')}
+
+  test('answers with the session-not-found 401 (SIO-401-ANF) when so configured', () => {
+    let forwarded = false
+    const handler = invalidSession(
+      () => {
+        forwarded = true
+        return {unsubscribe: () => {}} as never
+      },
+      () => true,
+      {errorCode: 'SIO-401-ANF'},
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('GET'), res, target)
+
+    expect(forwarded).toBe(false)
+    expect(captured.head?.status).toBe(401)
+    // The exact body the API returns for a token resolving to no session
+    expect(JSON.parse(captured.body ?? '{}')).toEqual({
+      error: 'Unauthorized',
+      statusCode: 401,
+      message: 'Session not found',
+      errorCode: 'SIO-401-ANF',
+    })
+  })
+
+  test('defaults to the expired-session 401 (SIO-401-AEX)', () => {
+    const handler = invalidSession(
+      () => ({unsubscribe: () => {}}) as never,
+      () => true,
+    )
+
+    const {res, captured} = fakeRes()
+    handler(fakeReq('GET'), res, target)
+
+    expect(captured.head?.status).toBe(401)
+    expect(JSON.parse(captured.body ?? '{}')).toMatchObject({errorCode: 'SIO-401-AEX'})
+  })
+})
 
 describe('expiredToken', () => {
   const target = {url: new URL('https://example.localhost/v1/users/me')}

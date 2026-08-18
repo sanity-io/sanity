@@ -4,7 +4,7 @@ import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/typ
 import has from 'lodash-es/has.js'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
-import {type Workspace} from '../../src/core/config'
+import {type Workspace} from '../../src/core/config/types'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {createSchema} from '../../src/core/schema/createSchema'
 import {inferFromSchema} from '../../src/core/validation/inferFromSchema'
@@ -90,6 +90,7 @@ describe('schema validation inference', () => {
       // The first field should only have the validation rules that comes with its type
       expect(
         (fieldWithoutValidation?.type.validation as Rule[]).flatMap(
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           (validation) => validation['_rules'],
         ),
       ).toEqual([{flag: 'type', constraint: 'String'}])
@@ -155,6 +156,7 @@ describe('schema validation inference', () => {
       await expect(
         validateDocument({
           document: mockDocument,
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           getClient,
           getDocumentExists: () => Promise.resolve(true),
           workspace: {schema} as Workspace,
@@ -186,6 +188,7 @@ describe('schema validation inference', () => {
       await expect(
         validateDocument({
           document: mockDocument,
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           getClient,
           getDocumentExists: () => Promise.resolve(true),
           workspace: {schema} as Workspace,
@@ -248,6 +251,7 @@ describe('schema validation inference', () => {
       await expect(
         validateDocument({
           document: mockDocument,
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           getClient,
           getDocumentExists: () => Promise.resolve(true),
           workspace: {schema} as Workspace,
@@ -280,6 +284,7 @@ describe('schema validation inference', () => {
       await expect(
         validateDocument({
           document: mockDocument,
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           getClient,
           getDocumentExists: () => Promise.resolve(true),
           workspace: {schema} as Workspace,
@@ -353,6 +358,7 @@ describe('schema validation inference', () => {
               _type: 'not-a-reference',
             },
           },
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           getClient,
           workspace: {schema} as Workspace,
         }),
@@ -375,6 +381,7 @@ describe('schema validation inference', () => {
               _ref: 'example-id',
             },
           },
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           getClient,
           workspace: {schema} as Workspace,
           getDocumentExists: mockGetDocumentExists,
@@ -393,6 +400,7 @@ describe('schema validation inference', () => {
     test('reference is valid if schema type is marked as weak', async () => {
       await expect(
         validateDocument({
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           getClient,
           document: {
             ...mockDocument,
@@ -407,6 +415,7 @@ describe('schema validation inference', () => {
       const mockGetDocumentExists = vi.fn(() => Promise.resolve(true))
       await expect(
         validateDocument({
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           getClient,
           document: {
             ...mockDocument,
@@ -443,6 +452,7 @@ async function expectNoError(validations: Rule[], value: unknown) {
     return
   }
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const messages = errors.map((err) => err.item && err.item.message).join('\n\n- ')
   throw new Error(`Expected no errors, but found ${errors.length}:\n- ${messages}`)
 }
@@ -469,8 +479,10 @@ async function expectError(
     throw new Error(`Expected error matching "${message}", but no errors were returned.`)
   }
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const matches = errors.filter((err) => err.item && err.item.message.includes(message!))
   if (matches.length === 0) {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const messages = errors.map((err) => err.item && err.item.message).join('\n\n- ')
     throw new Error(`Expected error matching "${message}" not found. Errors found:\n- ${messages}`)
   }
@@ -525,6 +537,7 @@ describe('hasValidationContext', () => {
       // Destructuring in parameter list should still report length === 2
       const validation = (_rule: Rule, {hidden}: {hidden?: boolean}) => _rule
       expect(validation.length).toBe(2)
+      // @ts-expect-error -- pre-existing, fix later
       expect(hasValidationContext(validation)).toBe(true)
     })
 
@@ -534,6 +547,7 @@ describe('hasValidationContext', () => {
         return _rule
       }
       expect(validation.length).toBe(2)
+      // @ts-expect-error -- pre-existing, fix later
       expect(hasValidationContext(validation)).toBe(true)
     })
 

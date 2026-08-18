@@ -10,7 +10,7 @@ import {
   createMockAssetSourceWithMediaLibraryUploader,
   observeVideoAssetStub,
 } from '../../../../../test/fixtures/assetSourceMocks'
-import {renderVideoInput} from '../../../../../test/form'
+import {renderVideoInput} from '../../../../../test/form/renderVideoInput'
 import {getDataTestIdPrefix} from '../../../../core/form/inputs/files/common/AssetSourceBrowser'
 import {StudioVideoInput} from '../StudioVideoInput'
 import {BaseVideoInput} from '../VideoInput'
@@ -102,6 +102,7 @@ describe('VideoInput - local tests', () => {
           directUploads: _directUploads,
           observeAsset: _observeAsset,
           resolveUploader: _resolveUploader,
+          // @ts-expect-error -- pre-existing, fix later
           t: _t,
           ...studioProps
         } = inputProps

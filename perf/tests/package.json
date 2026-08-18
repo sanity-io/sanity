@@ -1,6 +1,6 @@
 {
   "name": "sanity-perf-tests",
-  "version": "6.4.0",
+  "version": "6.9.2",
   "private": true,
   "description": "Sanity Studio perf tests",
   "license": "MIT",
@@ -27,8 +27,8 @@
     "@repo/tsconfig": "workspace:*",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "catalog:",
-    "esbuild": "0.28.1",
-    "tsx": "^4.22.4",
+    "esbuild": "0.28.2",
+    "tsx": "^4.23.12",
     "vite": "catalog:",
     "vitest": "catalog:"
   }

@@ -412,6 +412,7 @@ function transformValidation(validation: SchemaValidationValue): Validation {
   const disallowedConstraintTypes: (symbol | unknown)[] = [ConcreteRuleClass.FIELD_REF]
 
   const serializedValidation = validationArray
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     .map(({_rules, _message, _level}) => {
       const message: Partial<Pick<ManifestValidationGroup, 'message'>> =
         typeof _message === 'string' ? {message: _message} : {}

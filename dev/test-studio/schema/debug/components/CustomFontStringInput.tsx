@@ -11,6 +11,7 @@ export default function CustomFontStringInput(props: StringInputProps) {
       <input
         type="text"
         className={styles.input}
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         placeholder={schemaType.placeholder}
         onChange={(event) => {
           onChange(set(event.target.value))

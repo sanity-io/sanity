@@ -1,9 +1,9 @@
 import {RevertIcon} from '@sanity/icons/Revert'
-import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+import {type HTMLProps, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, type ButtonProps} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button, type ButtonProps} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 const Root = styled(Button)`
   [data-ui='Text'] {
@@ -16,7 +16,7 @@ const Root = styled(Button)`
 
   &:not([data-disabled='true']):hover,
   &:not([data-disabled='true']):focus {
-    --card-fg-color: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
+    --card-fg-color: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     --card-bg-color: transparent;
     --card-border-color: transparent;
 
@@ -27,12 +27,13 @@ const Root = styled(Button)`
 `
 
 /** @internal */
-export const RevertChangesButton = forwardRef(function RevertChangesButton(
+export function RevertChangesButton(
   props: Omit<ButtonProps, 'tooltipProps'> &
-    Omit<HTMLProps<HTMLButtonElement>, 'ref'> & {changeCount: number},
-  ref: ForwardedRef<HTMLButtonElement>,
-): React.JSX.Element {
-  const {selected, changeCount, ...restProps} = props
+    Omit<HTMLProps<HTMLButtonElement>, 'ref'> & {
+      changeCount: number
+    } & RefAttributes<HTMLButtonElement>,
+) {
+  const {ref, selected, changeCount, ...restProps} = props
   const {t} = useTranslation()
 
   return (
@@ -46,4 +47,4 @@ export const RevertChangesButton = forwardRef(function RevertChangesButton(
       {...restProps}
     />
   )
-})
+}

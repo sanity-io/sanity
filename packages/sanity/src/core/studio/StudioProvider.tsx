@@ -1,18 +1,18 @@
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
-import {ToastProvider} from '@sanity/ui'
+import {ToastProvider} from '@sanity/ui/toast'
 import {type ReactNode, useEffect, useMemo} from 'react'
 
-import {LoadingBlock} from '../components/loadingBlock'
+import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {errorReporter} from '../error/errorReporter'
-import {LocaleProvider} from '../i18n'
+import {LocaleProvider} from '../i18n/components/LocaleProvider'
 import {AssetLimitUpsellProvider} from '../limits/context/assets/AssetLimitUpsellProvider'
 import {DocumentLimitUpsellProvider} from '../limits/context/documents/DocumentLimitUpsellProvider'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
-import {ResourceCacheProvider} from '../store'
+import {ResourceCacheProvider} from '../store/ResourceCacheProvider'
 import {AppIdCacheProvider} from '../store/studio-app/AppIdCacheProvider'
 import {UserApplicationCacheProvider} from '../store/userApplications'
-import {UserColorManagerProvider} from '../user-color'
-import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
+import {UserColorManagerProvider} from '../user-color/provider'
+import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher/ActiveWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
@@ -20,20 +20,21 @@ import {Z_OFFSET} from './constants'
 import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplicationProvider'
 import {LiveManifestRegisterProvider} from './manifest'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
-import {
-  AuthenticateScreen,
-  ConfigErrorsScreen,
-  NotAuthenticatedScreen,
-  NotFoundScreen,
-} from './screens'
+import {AuthenticateScreen} from './screens/AuthenticateScreen'
+import {ConfigErrorsScreen} from './screens/ConfigErrorsScreen'
+import {NotAuthenticatedScreen} from './screens/NotAuthenticatedScreen'
+import {NotFoundScreen} from './screens/NotFoundScreen'
 import {type StudioProps} from './Studio'
 import {StudioAnnouncementsProvider} from './studioAnnouncements/StudioAnnouncementsProvider'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
-import {WorkspaceLoader} from './workspaceLoader'
-import {ConfigErrorGate, VisibleWorkspacesProvider, WorkspacesProvider} from './workspaces'
+import {UnclaimedProjectProvider} from './unclaimedProject/UnclaimedProjectProvider'
+import {WorkspaceLoader} from './workspaceLoader/WorkspaceLoader'
+import {ConfigErrorGate} from './workspaces/ConfigErrorGate'
+import {VisibleWorkspacesProvider} from './workspaces/VisibleWorkspacesProvider'
+import {WorkspacesProvider} from './workspaces/WorkspacesProvider'
 
 /**
  * @hidden
@@ -87,7 +88,9 @@ export function StudioProvider({
                       <StudioAnnouncementsProvider>
                         <GlobalPerspectiveProvider>
                           <DocumentLimitUpsellProvider>
-                            <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
+                            <AssetLimitUpsellProvider>
+                              <UnclaimedProjectProvider>{children}</UnclaimedProjectProvider>
+                            </AssetLimitUpsellProvider>
                           </DocumentLimitUpsellProvider>
                         </GlobalPerspectiveProvider>
                       </StudioAnnouncementsProvider>

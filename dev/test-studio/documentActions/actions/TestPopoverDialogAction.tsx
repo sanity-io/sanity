@@ -1,5 +1,6 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Button, Stack, Text, useToast} from '@sanity/ui'
+import {Button, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 
@@ -23,7 +24,7 @@ export const useTestPopoverDialogAction: DocumentActionComponent = () => {
       ({
         type: 'popover',
         content: (
-          <Stack padding={4} space={4}>
+          <Stack padding={4} gap={4}>
             <Text>
               This is the <code>popover</code> dialog
             </Text>

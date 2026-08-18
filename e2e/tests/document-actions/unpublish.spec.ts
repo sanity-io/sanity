@@ -33,8 +33,14 @@ test(`should be able to unpublish a published document`, async ({page, createDra
 
   const inventoryButton = page.getByTestId('action-document-group-inventory')
   const inventory = page.getByTestId('document-group-inventory')
-  const publishedVariant = inventory.getByRole('button', {name: 'Published', exact: true})
-  const draftVariant = inventory.getByRole('button', {name: 'Draft', exact: true})
+
+  const publishedVariant = inventory
+    .locator('[data-variant-set="Published"]')
+    .getByRole('button', {name: 'All users (Default)', exact: true})
+
+  const draftVariant = inventory
+    .locator('[data-variant-set="Draft"]')
+    .getByRole('button', {name: 'All users (Default)', exact: true})
 
   // Open the inventory and switch to the published variant.
   await inventoryButton.click()

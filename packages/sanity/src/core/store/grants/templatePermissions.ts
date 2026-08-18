@@ -3,21 +3,15 @@ import {useMemo} from 'react'
 import {combineLatest, defer, from, type Observable, of} from 'rxjs'
 import {catchError, map, mergeMap, switchMap, timeout, toArray} from 'rxjs/operators'
 
-import {useSchema, useTemplates} from '../../hooks'
-import {
-  type InitialValueTemplateItem,
-  RESOLVE_INITIAL_VALUE_TIMEOUT_MS,
-  resolveInitialValue,
-  type Template,
-} from '../../templates'
-import {
-  createHookFromObservableFactory,
-  getDraftId,
-  getPublishedId,
-  type PartialExcept,
-} from '../../util'
+import {useSchema} from '../../hooks/useSchema'
+import {useTemplates} from '../../hooks/useTemplates'
+import {RESOLVE_INITIAL_VALUE_TIMEOUT_MS, resolveInitialValue} from '../../templates/resolve'
+import {type InitialValueTemplateItem, type Template} from '../../templates/types'
+import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
+import {getDraftId, getPublishedId} from '../../util/draftUtils'
+import {type PartialExcept} from '../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
-import {useInitialValueResolverContext} from '../document'
+import {useInitialValueResolverContext} from '../document/useInitialValue'
 import {getDocumentValuePermissions} from './documentValuePermissions'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
@@ -131,21 +125,20 @@ export function getTemplatePermissions({
             ...resolvedInitialValue,
           },
         }).pipe(
-          map(
-            ({granted, reason}): TemplatePermissionsResult => ({
-              ...item,
-              granted,
-              reason,
-              resolvedInitialValue,
-              template,
-              i18n: item.i18n || template.i18n,
-              title: item.title || template.title,
-              subtitle:
-                schemaType.title === (item.title || template.title) ? undefined : schemaType.title,
-              description: item.description || template.description,
-              icon: item.icon || template.icon,
-            }),
-          ),
+          map(({granted, reason}): TemplatePermissionsResult => ({
+            ...item,
+            granted,
+            reason,
+            resolvedInitialValue,
+            template,
+            i18n: item.i18n || template.i18n,
+            title: item.title || template.title,
+            subtitle:
+              schemaType.title === (item.title || template.title) ? undefined : schemaType.title,
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+            description: item.description || template.description,
+            icon: item.icon || template.icon,
+          })),
         )
       }),
       // Collect all permission check observables

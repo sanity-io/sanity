@@ -50,8 +50,8 @@ vi.mock('../../../store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
-vi.mock('../../../index', () => ({
-  useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
+vi.mock('../../../util/util', async (importOriginal) => ({
+  ...(await importOriginal()),
   isReleaseScheduledOrScheduling: vi.fn(),
 }))
 
@@ -490,9 +490,12 @@ describe('after releases have loaded', () => {
       await renderTest()
 
       await waitFor(() => {
-        expect(mockUseRouterReturn.navigate).toHaveBeenCalledWith({
-          _searchParams: [['releaseNotFound', 'true']],
-        })
+        expect(mockUseRouterReturn.navigate).toHaveBeenCalledWith(
+          {
+            _searchParams: [['releaseNotFound', 'true']],
+          },
+          {replace: true},
+        )
       })
     })
 

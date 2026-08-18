@@ -1,6 +1,7 @@
-import {Box, Grid, Text} from '@sanity/ui'
+import {Grid, Text} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {isSameMonth} from 'date-fns/isSameMonth'
+import {Box} from 'ui5'
 
 import {type TimeZoneScope, useTimeZone} from '../../../../../hooks/useTimeZone'
 import {CalendarDay} from './CalendarDay'

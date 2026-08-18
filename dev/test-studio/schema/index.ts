@@ -80,6 +80,7 @@ import {locationResolverTest} from './debug/locationResolverTest'
 import {longValidationTestType} from './debug/longValidation'
 import manyFieldsTest from './debug/manyFieldsTest'
 import {manyViewsType} from './debug/manyViews'
+import {nestedArrayInsertMenuRepro} from './debug/nestedArrayInsertMenuRepro'
 import notitle from './debug/notitle'
 import {objectsDebug} from './debug/objectsDebug'
 import {patchOnMountDebug} from './debug/patchOnMount'
@@ -95,6 +96,7 @@ import recursive from './debug/recursive'
 import recursiveArray from './debug/recursiveArray'
 import recursiveObjectTest, {recursiveObject} from './debug/recursiveObject'
 import recursivePopover from './debug/recursivePopover'
+import {pageDocRepro, sectionDocRepro} from './debug/referenceCreateButtonRepro'
 import removeRestoreAction from './debug/removeRestoreAction'
 import reservedFieldNames from './debug/reservedFieldNames'
 import review from './debug/review'
@@ -103,6 +105,7 @@ import select from './debug/select'
 import {navbarSettingsDialogRepro} from './debug/settingsV2DialogRepro'
 import {simpleArrayOfObjects} from './debug/simpleArrayOfObjects'
 import {simpleReferences} from './debug/simpleReferences'
+import {twoArgValidationRepro} from './debug/twoArgValidationRepro'
 import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
@@ -134,7 +137,7 @@ import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
 import blocks from './standard/portableText/blocks'
 import {ptCustomBlockEditors} from './standard/portableText/customBlockEditors'
-import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
+import {ptCustomMarkersTestType} from './standard/portableText/customMarkers/schemaTypes'
 import {customPlugins} from './standard/portableText/customPlugins'
 import {ptCustomWithDefaultsType} from './standard/portableText/customWithDefaults'
 import manyEditors from './standard/portableText/manyEditors'
@@ -231,6 +234,7 @@ export function createSchemaTypes(projectId: string) {
     ctaType,
     tooltipAnnotationType,
     arrayModalWidthRepro,
+    nestedArrayInsertMenuRepro,
     arrayOfStringsGridCustomInput,
     button,
     collapsibleColumnsBug,
@@ -285,6 +289,8 @@ export function createSchemaTypes(projectId: string) {
     namedDeprecatedArray,
     notitle,
     objectsDebug,
+    pageDocRepro,
+    sectionDocRepro,
     longValidationTestType,
     poppers,
     presence,
@@ -313,6 +319,7 @@ export function createSchemaTypes(projectId: string) {
     reservedFieldNames,
     review,
     navbarSettingsDialogRepro,
+    twoArgValidationRepro,
     select,
     typeWithNoToplevelStrings,
     uploads,

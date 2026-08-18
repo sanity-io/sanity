@@ -85,8 +85,11 @@ jobs:
         run: |
           echo "Creating datasets: ${{ env.CHROMIUM_DATASET }} and ${{ env.FIREFOX_DATASET }}"
           SANITY_E2E_DATASET=${{ env.CHROMIUM_DATASET }} pnpm e2e:setup &
+          chromium_pid=$!
           SANITY_E2E_DATASET=${{ env.FIREFOX_DATASET }} pnpm e2e:setup &
-          wait
+          firefox_pid=$!
+          wait "$chromium_pid"
+          wait "$firefox_pid"
 
   deploy-preview:
     runs-on: ubuntu-8core
@@ -103,11 +106,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
-
-      # preferWorkspacePackages resolves sanity-plugin-media's "groq" import to the
-      # packages/groq workspace package, whose entry points only exist once built.
-      - name: Build groq package
-        run: pnpm --filter groq build
 
       - name: Pull Vercel Environment Information
         env:
@@ -219,6 +217,43 @@ jobs:
             e2e/blob-report
             e2e/results
           retention-days: 30
+
+  chromatic-e2e:
+    name: Chromatic E2E visual tests
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: [install, playwright-test]
+    permissions:
+      contents: read
+    # Only upload complete, green runs so partial results never become
+    # baselines. Fork PRs skip: the Chromatic token is a repository secret.
+    # Snapshots are curated opt-in via `takeChromaticSnapshot` (see
+    # e2e/studio-test.ts); the check is non-gating during burn-in
+    # (--exit-zero-on-changes) and merges to main auto-accept baselines.
+    if: needs.install.outputs.has_code_changes == 'true' && needs.playwright-test.result == 'success' && (github.event_name == 'push' || github.event.pull_request.head.repo.fork == false)
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Chromatic needs full git history to find baseline builds.
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Download Chromatic archives from test artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: playwright-report-*
+          merge-multiple: true
+          path: chromatic-artifacts
+
+      - name: Upload archives to Chromatic
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN_E2E }}
+          # Playwright's outputDir is e2e/results, and the test artifacts
+          # preserve the results/ folder (which contains chromatic-archives/),
+          # so point the Chromatic CLI at the merged copy.
+          CHROMATIC_ARCHIVE_LOCATION: ${{ github.workspace }}/chromatic-artifacts/results
+        run: pnpm --filter e2e exec chromatic --playwright --exit-zero-on-changes --auto-accept-changes main
 
   e2e-status:
     name: "E2E Status"

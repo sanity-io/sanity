@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "6.4.0",
+  "version": "6.9.2",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "cms",
@@ -27,11 +27,9 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
-      "source": "./src/index.ts",
       "monorepo": "./src/index.ts",
       "default": "./lib/index.js"
     },
@@ -44,29 +42,25 @@
     }
   },
   "scripts": {
-    "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/types/tsconfig.lib.json --erasableSyntaxOnly)",
-    "clean": "rimraf lib",
+    "build": "tsdown",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "watch": "pkg-utils watch"
+    "watch": "tsdown --watch"
   },
   "dependencies": {
     "@sanity/client": "catalog:",
-    "@sanity/media-library-types": "^1.5.0"
+    "@sanity/media-library-types": "^1.6.0"
   },
   "devDependencies": {
-    "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/insert-menu": "3.0.8",
-    "@sanity/pkg-utils": "catalog:",
+    "@repo/tsdown.config": "workspace:*",
     "@types/react": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "react": "catalog:",
-    "rimraf": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },

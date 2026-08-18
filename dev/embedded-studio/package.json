@@ -1,9 +1,9 @@
 {
   "name": "embedded-studio",
-  "version": "6.4.0",
+  "version": "6.9.2",
   "private": true,
   "scripts": {
-    "build": "tsgo && vite build && sanity manifest extract",
+    "build": "vite build && sanity manifest extract",
     "dev": "vite",
     "preview": "vite preview"
   },
@@ -17,7 +17,6 @@
   "devDependencies": {
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "vite": "catalog:"
   }

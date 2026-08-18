@@ -5,10 +5,10 @@ import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'rea
 import {styled} from 'styled-components'
 
 import {EMPTY_ARRAY} from '../../../util/empty'
-import {FormRow} from '../../components'
-import {ObjectInputMembers} from '../../members'
+import {FormRow} from '../../components/layout/FormRow'
+import {ObjectInputMembers} from '../../members/object/ObjectInputMembers'
 import {useRenderMembers} from '../../members/object/useRenderMembers'
-import {type ObjectInputProps} from '../../types'
+import {type ObjectInputProps} from '../../types/inputProps'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {AlignedBottomGrid, FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {UnknownFields} from './UnknownFields'
@@ -129,7 +129,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
 
   return (
     <RootStack
-      space={6}
+      gap={6}
       tabIndex={isFocusable ? 0 : undefined}
       onFocus={handleFocus}
       ref={wrapperRef}
@@ -153,7 +153,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         key={selectedGroup?.name}
       >
         {columns ? (
-          <AlignedBottomGrid columns={columns} gap={4} marginTop={1}>
+          <AlignedBottomGrid gridTemplateColumns={columns} gap={4} marginTop={1}>
             {renderObjectMembers()}
           </AlignedBottomGrid>
         ) : (

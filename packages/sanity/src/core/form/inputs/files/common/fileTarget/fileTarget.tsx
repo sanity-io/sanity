@@ -2,11 +2,8 @@ import {
   type ClipboardEvent,
   type ComponentType,
   type DragEvent,
-  type ForwardedRef,
-  forwardRef,
-  type ForwardRefExoticComponent,
   type KeyboardEvent,
-  type PropsWithoutRef,
+  type ReactNode,
   type RefAttributes,
   useCallback,
   useEffect,
@@ -76,15 +73,19 @@ const PASTE_INPUT_STYLE = {opacity: 0, position: 'absolute'} as const
  */
 export function fileTarget<ComponentProps>(
   Component: ComponentType<ComponentProps>,
-): ForwardRefExoticComponent<
-  PropsWithoutRef<Omit<ComponentProps, ManagedProps> & Props> & RefAttributes<HTMLElement>
-> {
-  // @ts-expect-error TODO fix PropsWithoutRef related union typings
-  return forwardRef(function FileTarget(
-    props: Omit<ComponentProps, ManagedProps> & Props,
-    forwardedRef: ForwardedRef<HTMLElement>,
+): (props: Omit<ComponentProps, ManagedProps> & Props & RefAttributes<HTMLElement>) => ReactNode {
+  return function FileTarget(
+    props: Omit<ComponentProps, ManagedProps> & Props & RefAttributes<HTMLElement>,
   ) {
-    const {onFiles, onFilesOver, onFilesOut, pasteTarget, disabled, ...rest} = props
+    const {
+      ref: forwardedRef,
+      onFiles,
+      onFilesOver,
+      onFilesOut,
+      pasteTarget,
+      disabled,
+      ...rest
+    } = props
     const [showPasteInput, setShowPasteInput] = useState(false)
 
     const pasteInput = useRef<HTMLDivElement | null>(null)
@@ -313,7 +314,7 @@ export function fileTarget<ComponentProps>(
         )}
       </>
     )
-  })
+  }
 }
 
 // this is a hack for Safari that reads pasted image(s) from an ContentEditable div instead of the onpaste event

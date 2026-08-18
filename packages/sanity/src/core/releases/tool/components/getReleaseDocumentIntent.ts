@@ -13,6 +13,8 @@ interface ReleaseDocumentIntentOptions {
   releaseState?: ReleaseState
   documentRevision?: string
   isCardinalityOneRelease?: boolean
+  /** Short variant id for the sticky `variant` search param. */
+  variantId?: string
   /** Optional field path (stringified) to focus when the document opens. */
   path?: string
 }
@@ -31,6 +33,7 @@ export function getReleaseDocumentIntent({
   releaseState,
   documentRevision,
   isCardinalityOneRelease,
+  variantId,
   path,
 }: ReleaseDocumentIntentOptions): {
   params: Record<string, string | undefined>
@@ -61,7 +64,10 @@ export function getReleaseDocumentIntent({
   const searchParams: [string, string][] | undefined =
     isCardinalityOneRelease || isArchivedRelease(releaseState)
       ? undefined
-      : [['perspective', releaseState === 'published' ? 'published' : releaseName]]
+      : [
+          ...(variantId ? [['variant', variantId] as [string, string]] : []),
+          ['perspective', releaseState === 'published' ? 'published' : releaseName],
+        ]
 
   return {
     params: {

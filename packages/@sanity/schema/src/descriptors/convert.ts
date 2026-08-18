@@ -368,7 +368,6 @@ function maybeBlockMarks(schemaType: SchemaType): BlockMarks | undefined {
     return undefined
   }
 
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
   const childrenField = (schemaType as ObjectSchemaType).fields?.find(
     (field) => field.name === 'children',
   )
@@ -636,17 +635,21 @@ function maybeValidation(val: unknown): Validation | undefined {
   // Handle Rule object
   if (isIRule(val)) {
     // Determine validation level
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const level: Validation['level'] = val._level || 'error'
 
     // Convert message
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const message = maybeValidationMessage(val._message)
 
     // Convert RuleSpec array to Rule array
     const rules: RuleType[] = []
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     for (const spec of val._rules || []) {
       // For custom rule spec, the optional property is determined by the rule.
       // This is used to determine the behaviour the rule when the value is undefined or null
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const optional = val._required === 'optional' || undefined
       const convertedRule = convertRuleSpec(spec, optional)
       if (convertedRule === undefined) {

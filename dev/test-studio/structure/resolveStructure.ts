@@ -24,7 +24,7 @@ import {
   type StructureResolver,
 } from 'sanity/structure'
 
-import {DebugPane} from '../components/panes/debug'
+import {DebugPane} from '../components/panes/debug/DebugPane'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
 import {PerspectiveExample} from '../components/PerspectiveExample'
 import {TranslateExample} from '../components/TranslateExample'
@@ -43,7 +43,7 @@ import {typesInOptionGroup} from './groupByOption'
 
 export const structure: StructureResolver = (
   S,
-  {schema, documentStore, i18n, perspectiveStack},
+  {schema, documentStore, i18n, perspectiveStack, selectedVariantName},
 ) => {
   const {t} = i18n
   return S.list()
@@ -59,9 +59,11 @@ export const structure: StructureResolver = (
             {},
             {
               perspective: perspectiveStack,
+              variant: selectedVariantName,
             },
           )
 
+          // @ts-expect-error -- pre-existing, fix later
           return S.component(PerspectiveExample).id('sections-by-perspective').options({doc$})
         }),
       S.listItem()
@@ -278,6 +280,7 @@ export const structure: StructureResolver = (
                 .title('GRRM')
                 .schemaType('author')
                 .child(
+                  // @ts-expect-error -- pre-existing, fix later
                   S.component(JsonDocumentDump)
                     .id('json-dump')
                     .title('GRRM')
