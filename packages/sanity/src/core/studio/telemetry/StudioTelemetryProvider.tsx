@@ -150,7 +150,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
     return {
       flushInterval: 30000,
       resolveConsent: () =>
-        client.request({url: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
+        client.request({uri: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
 
       // Each event is enriched with the current context
       sendEvents: (batch) => {
@@ -161,8 +161,9 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
           context,
         }))
         return client.request({
-          url: '/intake/batch',
+          uri: '/intake/batch',
           method: 'POST',
+          json: true,
           body: {projectId, batch: enrichedBatch},
         })
       },

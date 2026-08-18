@@ -22,7 +22,7 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
 
   const getAddonDatasetName = useCallback(async (): Promise<string | undefined> => {
     const res = await originalClient.request({
-      url: `/projects/${projectId}/datasets?datasetProfile=comments&addonFor=${dataset}`,
+      uri: `/projects/${projectId}/datasets?datasetProfile=comments&addonFor=${dataset}`,
       tag: 'sanity.studio',
     })
 
@@ -71,7 +71,7 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
     const run = async () => {
       // 1. Create the addon dataset
       const res = await originalClient.request({
-        url: `/comments/${dataset}/setup`,
+        uri: `/comments/${dataset}/setup`,
         method: 'POST',
       })
 

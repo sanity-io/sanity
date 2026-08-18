@@ -1,41 +1,33 @@
-import {type HttpError, isHttpError, isTimeoutError} from '@sanity/client'
+import {ClientError, ServerError} from '@sanity/client'
 import isNativeNetworkError from 'is-network-error'
 
 // These live in `util` so that non-studio code (e.g. the document store) can
 // depend on them without importing from `studio`; re-exported here to keep
 // the public API surface and existing import sites unchanged.
 export {getApiErrorCode, isInvalidSessionError, isUnauthorizedError} from '../../util/apiErrors'
-export {isTimeoutError}
 
-/**
- * Node / get-it v8 timeout codes. get-it v9 reports timeouts as
- * `TimeoutError` (caught by {@link isTimeoutError}); older transports used
- * `ESOCKETTIMEDOUT` (idle socket) or `ETIMEDOUT` (connect/request deadline)
- * on a plain Error, which `isTimeoutError` no longer matches.
- */
-const LEGACY_TIMEOUT_CODES = new Set(['ESOCKETTIMEDOUT', 'ETIMEDOUT'])
-
-/**
- * Timeouts the studio should treat as infrastructure failures and must not
- * diagnose via `/check/cors` (the probe would just time out too). Covers
- * get-it v9 / platform `TimeoutError` and leftover get-it v8 / Node codes.
- *
- * @internal
- */
-export function isRequestTimeoutError(error: unknown): error is Error {
-  if (isTimeoutError(error)) return true
-  if (typeof error !== 'object' || error === null) return false
-  return 'code' in error && typeof error.code === 'string' && LEGACY_TIMEOUT_CODES.has(error.code)
+/** @internal */
+export function isTimeoutError(
+  error: unknown,
+): error is Error & {code: 'ESOCKETTIMEDOUT' | 'ETIMEDOUT'} {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    (error.code === 'ESOCKETTIMEDOUT' || error.code === 'ETIMEDOUT')
+  )
 }
 
 /** @internal */
 export function isNetworkError(error: unknown): error is Error {
   if (typeof error !== 'object' || error === null) return false
-  // get-it sets isNetworkError=true on connection errors.
+  // get-it v8 sets isNetworkError=true on connection errors
+  // https://github.com/sanity-io/get-it/blob/9ffc7e0c2d41ffcfd3a33e7525d9d1f6b188f812/src/request/browser-request.ts#L194
   if ('isNetworkError' in error && error.isNetworkError === true) return true
-  // Treat both get-it header timeouts and platform request-deadline
-  // TimeoutErrors as network errors so they get the same treatment.
-  if (isRequestTimeoutError(error)) return true
+  // get-it's connect/socket timeout path publishes a plain Error with a code
+  // but does not set isNetworkError. Treat these timeouts as network errors
+  // so they get the same treatment.
+  if (isTimeoutError(error)) return true
   return isNativeNetworkError(error)
 }
 
@@ -45,8 +37,10 @@ export function isNetworkError(error: unknown): error is Error {
  *
  * @internal
  */
-export function parseRetryAfter(err: HttpError): number | undefined {
-  const value = err.response.headers['retry-after']
+export function parseRetryAfter(err: ClientError): number | undefined {
+  const headers = (err as ClientError & {response?: {headers?: Record<string, string>}}).response
+    ?.headers
+  const value = headers?.['retry-after']
   if (!value) return undefined
   // Numeric-looking values go through the integer path even when out of
   // range, so negative numbers don't accidentally fall through to the date
@@ -73,8 +67,8 @@ export function parseRetryAfter(err: HttpError): number | undefined {
  */
 export type RequestErrorClassification =
   | {type: 'networkError'; error: Error}
-  | {type: 'serverError'; error: HttpError}
-  | {type: 'rateLimited'; error: HttpError; retryAfterSeconds?: number}
+  | {type: 'serverError'; error: Error}
+  | {type: 'rateLimited'; error: Error; retryAfterSeconds?: number}
 
 /**
  * Classify an error as an infrastructure-level request failure, or return
@@ -89,15 +83,15 @@ export type RequestErrorClassification =
  * @internal
  */
 export function classifyRequestError(err: unknown): RequestErrorClassification | null {
-  if (isHttpError(err)) {
+  if (err instanceof ClientError) {
     if (err.statusCode === 429) {
       return {type: 'rateLimited', error: err, retryAfterSeconds: parseRetryAfter(err)}
     }
-    if (err.statusCode >= 500) return {type: 'serverError', error: err}
-    // 4xx other than 429 are caller-domain. They carry structured context
+    // 4xx other than 429 are caller-domain — they carry structured context
     // the caller is better positioned to render than a generic dialog.
     return null
   }
+  if (err instanceof ServerError) return {type: 'serverError', error: err}
   if (isNetworkError(err)) return {type: 'networkError', error: err}
   return null
 }
@@ -126,18 +120,10 @@ interface NotFoundBody {
   attributes?: {type?: unknown}
 }
 
-function notFoundBody(err: HttpError): NotFoundBody | undefined {
-  const body = err.response.body
-  if (!body || typeof body !== 'object') return undefined
-
-  const attributes = 'attributes' in body ? body.attributes : undefined
-  return {
-    error: 'error' in body ? body.error : undefined,
-    attributes:
-      attributes && typeof attributes === 'object'
-        ? {type: 'type' in attributes ? attributes.type : undefined}
-        : undefined,
-  }
+function notFoundBody(err: ClientError): NotFoundBody | undefined {
+  const body = (err as ClientError & {response?: {body?: unknown}}).response?.body
+  if (body && typeof body === 'object') return body as NotFoundBody
+  return undefined
 }
 
 /**
@@ -159,7 +145,7 @@ function notFoundBody(err: HttpError): NotFoundBody | undefined {
  * @internal
  */
 export function classifyConfigError(err: unknown): ConfigErrorClassification | null {
-  if (!isHttpError(err) || err.statusCode !== 404) return null
+  if (!(err instanceof ClientError) || err.statusCode !== 404) return null
   const body = notFoundBody(err)
   if (!body) return null
 
@@ -187,5 +173,5 @@ export function classifyConfigError(err: unknown): ConfigErrorClassification | n
  * @internal
  */
 export function isClientRequestError(err: unknown): boolean {
-  return isHttpError(err) || isNetworkError(err)
+  return err instanceof ClientError || err instanceof ServerError || isNetworkError(err)
 }

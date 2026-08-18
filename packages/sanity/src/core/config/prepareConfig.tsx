@@ -271,7 +271,8 @@ export function prepareConfig(
   config: Config | MissingConfigFile,
   options?: {
     basePath?: string
-    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    requestHandler?: RequestHandler
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -367,7 +368,7 @@ export function prepareConfig(
       }
 
       const auth = getAuthStore(source, {
-        createStudioRequestHandler: options?.createStudioRequestHandler,
+        requestHandler: options?.requestHandler,
         requestErrorChannel: options?.requestErrorChannel,
         requestFailureDiagnostics: options?.requestFailureDiagnostics,
       })
@@ -434,11 +435,12 @@ export function prepareConfig(
 function getAuthStore(
   source: SourceOptions,
   {
-    createStudioRequestHandler,
+    requestHandler,
     requestErrorChannel,
     requestFailureDiagnostics,
   }: {
-    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    requestHandler?: RequestHandler
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -447,21 +449,15 @@ function getAuthStore(
     return source.auth
   }
 
-  const clientFactory = source.unstable_clientFactory ?? createClient
+  const _clientFactory = source.unstable_clientFactory || createClient
 
   const {projectId, dataset, apiHost} = source
   return createAuthStore({
     apiHost,
     ...source.auth,
     clientFactory: (config) => {
-      let client: SanityClient
-      client = clientFactory({
-        ...config,
-        ...(createStudioRequestHandler
-          ? {requestHandler: createStudioRequestHandler(() => client)}
-          : {}),
-      })
-      return client
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      return _clientFactory({...config, _requestHandler: requestHandler})
     },
     // Passed as getters so this unhashable runtime wiring stays out of the
     // auth-store memo key.

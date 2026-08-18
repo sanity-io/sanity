@@ -46,7 +46,7 @@ function getMediaLibrariesForOrganization(
 ): Observable<MediaLibrary> {
   return client
     .request<{data?: MediaLibrary[]}>({
-      url: `/media-libraries?organizationId=${organizationId}`,
+      uri: `/media-libraries?organizationId=${organizationId}`,
       method: 'GET',
     })
     .pipe(
@@ -65,7 +65,7 @@ function getOrganizationIdFromLibraryId(
 ): Observable<string> {
   return client
     .request({
-      url: `/media-libraries/${libraryId}`,
+      uri: `/media-libraries/${libraryId}`,
       method: 'GET',
     })
     .pipe(
@@ -88,7 +88,7 @@ function getOrganizationIdFromProjectId(
 ): Observable<string> {
   return client
     .request({
-      url: `/projects/${projectId}`,
+      uri: `/projects/${projectId}`,
       method: 'GET',
     })
     .pipe(

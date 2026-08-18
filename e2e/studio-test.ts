@@ -1,6 +1,6 @@
 // oxlint-disable-next-line no-restricted-imports
 import {expect, test as baseTest} from '@playwright/test'
-import {createClient, type MultipleMutationResult, type SanityClient} from '@sanity/client'
+import {createClient, type SanityClient, type SanityDocument} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 
 import {watchForStudioErrors} from './helpers/studioErrors'
@@ -25,7 +25,7 @@ class _TestSanityContext {
   }
 
   // TODO: confirm we want this teardown, datasets are at the end, deleted (not in main), persisting the document could help us debug
-  teardown(sanityClient: SanityClient): Promise<MultipleMutationResult> {
+  teardown(sanityClient: SanityClient): Promise<SanityDocument<Record<string, unknown>>> {
     return sanityClient.delete({
       query: '*[_id in $ids]',
       params: {ids: [...this.documentIds].map((id) => `drafts.${id}`)},
