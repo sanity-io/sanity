@@ -75,7 +75,7 @@ function mockPerspective(...overrides: Partial<PerspectiveContextValue>[]) {
 
 // The rhombus has no test id of its own, so it is matched on its icon name instead.
 const INDICATOR_SELECTOR =
-  '[data-testid^="document-status-dot-"], [data-testid^="release-avatar-"], [data-sanity-icon="rhombus"]'
+  '[data-testid^="document-status-dot-"], [data-testid^="release-avatar-"], [data-sanity-icon="variant-status"]'
 
 function wrapper({children}: {children: ReactNode}) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -96,7 +96,7 @@ function renderIndicator(documentVersions: VersionInfoDocumentStub[]): string[] 
 
 const GREEN_DISC = 'document-status-dot-published'
 const YELLOW_RING = 'document-status-dot-draft'
-const RHOMBUS = 'rhombus'
+const RHOMBUS = 'variant-status'
 // `activeASAPRelease` is an asap release, and asap maps to the caution tone.
 const RELEASE_ICON = 'release-avatar-caution'
 // Agent bundles have no release document, so they fall back to the suggest-toned dot.

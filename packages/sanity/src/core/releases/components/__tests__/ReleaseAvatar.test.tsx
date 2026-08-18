@@ -21,22 +21,25 @@ describe('ReleaseAvatarIcon', () => {
     warnSpy.mockRestore()
   })
 
-  it('renders BoltIcon for ASAP releases', () => {
+  it('renders AsapReleaseIcon for ASAP releases', () => {
     render(<ReleaseAvatarIcon release={activeASAPRelease} />)
 
-    expect(screen.getByTestId('release-avatar-caution')).toHaveAttribute('data-sanity-icon', 'bolt')
+    expect(screen.getByTestId('release-avatar-caution')).toHaveAttribute(
+      'data-sanity-icon',
+      'asap-release',
+    )
   })
 
-  it('renders ClockIcon for scheduled releases', () => {
+  it('renders ScheduledReleaseIcon for scheduled releases', () => {
     render(<ReleaseAvatarIcon release={scheduledRelease} />)
 
     expect(screen.getByTestId('release-avatar-suggest')).toHaveAttribute(
       'data-sanity-icon',
-      'clock',
+      'scheduled-release',
     )
   })
 
-  it('renders ClockIcon for paused cardinality-one releases', () => {
+  it('renders ScheduledReleaseIcon for paused cardinality-one releases', () => {
     const pausedRelease = {
       ...activeScheduledRelease,
       metadata: {
@@ -50,28 +53,34 @@ describe('ReleaseAvatarIcon', () => {
 
     expect(screen.getByTestId('release-avatar-caution')).toHaveAttribute(
       'data-sanity-icon',
-      'clock',
+      'scheduled-release',
     )
   })
 
-  it('renders UnknownIcon for undecided releases', () => {
+  it('renders UndecidedReleaseIcon for undecided releases', () => {
     render(<ReleaseAvatarIcon release={activeUndecidedRelease} />)
 
     expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(
       'data-sanity-icon',
-      'unknown',
+      'undecided-release',
     )
   })
 
-  it('renders DotIcon with caution tone for drafts perspective', () => {
+  it('renders the draft ring with caution tone for drafts perspective', () => {
     render(<ReleaseAvatarIcon release={LATEST} />)
 
-    expect(screen.getByTestId('release-avatar-caution')).toHaveAttribute('data-sanity-icon', 'dot')
+    expect(screen.getByTestId('release-avatar-caution')).toHaveAttribute(
+      'data-sanity-icon',
+      'draft',
+    )
   })
 
-  it('renders DotIcon with positive tone for published perspective', () => {
+  it('renders the published disc with positive tone for published perspective', () => {
     render(<ReleaseAvatarIcon release={PUBLISHED} />)
 
-    expect(screen.getByTestId('release-avatar-positive')).toHaveAttribute('data-sanity-icon', 'dot')
+    expect(screen.getByTestId('release-avatar-positive')).toHaveAttribute(
+      'data-sanity-icon',
+      'published',
+    )
   })
 })

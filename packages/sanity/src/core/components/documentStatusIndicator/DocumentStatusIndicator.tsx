@@ -1,5 +1,5 @@
 import {Card, Flex, Text} from '@sanity/ui'
-import {type CSSProperties} from 'react'
+import {type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
 
 import {usePerspective} from '../../perspective/usePerspective'
@@ -7,17 +7,13 @@ import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {isSystemBundle} from '../../util/draftUtils'
 import {getTargetDocument, getVariantPublishedSibling} from '../../util/getTargetDocument'
-import {
-  DraftStatusIcon,
-  PublishedStatusIcon,
-  VariantStatusIcon,
-} from './DocumentStatusIndicatorIcons'
+import {CircleSmallIcon} from './temporary-icons/CircleSmall'
+import {RhombusIcon} from './temporary-icons/Rhombus'
+import {RingIcon} from './temporary-icons/Ring'
 
 interface DocumentStatusProps {
   documentVersions: VersionInfoDocumentStub[]
 }
-
-type Status = 'published' | 'draft'
 
 /**
  * The tone tokens the icons normally use have no contrast against the accent background of a
@@ -28,35 +24,53 @@ const selectedPreviewCardColor = css`
   [data-ui='PreviewCard'][data-selected] &,
   [data-ui='PreviewCard'][data-pressed] &,
   [data-ui='PreviewCard']:active & {
-    color: inherit;
-
-    /* ReleaseAvatarIcon sets --card-icon-color inline, so its icon has to be overridden directly. */
+    /* The icons take their color from --card-icon-color, so overriding that variable is not enough:
+       the release icons set it inline per tone. They have to be overridden directly. */
     [data-sanity-icon] {
       color: inherit;
     }
   }
 `
 
-const IconSlot = styled.div`
+const IconSlotRoot = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 15px;
-  height: 15px;
   flex-shrink: 0;
 
   &[data-status='published'] {
-    color: var(--card-badge-positive-dot-color);
+    --card-icon-color: var(--card-badge-positive-dot-color);
   }
   &[data-status='draft'] {
-    color: var(--card-badge-caution-dot-color);
+    --card-icon-color: var(--card-badge-caution-dot-color);
   }
   &[data-status='variant'] {
-    color: var(--card-accent-fg-color);
+    --card-icon-color: var(--card-accent-fg-color);
   }
 
   ${selectedPreviewCardColor}
 `
+
+/**
+ * The icons are `1em` boxes in a 25-unit viewBox, like everything in `@sanity/icons`, so a `Text` is
+ * what sizes them: it resolves the em to the text size's icon size — 17px at size 0 — and applies
+ * the negative margin that centres the glyph on the cap height. It is also what makes them honour
+ * `--card-icon-color`, which is how each icon gets its tone.
+ */
+function IconSlot({
+  status,
+  children,
+}: {
+  status?: 'published' | 'draft' | 'variant'
+  children: ReactNode
+}) {
+  return (
+    <IconSlotRoot data-status={status}>
+      <Text size={2}>{children}</Text>
+    </IconSlotRoot>
+  )
+}
 
 // Purple, matching the perspective bar's variant motif. The --card-badge-* vars only exist inside a
 // Badge, so a transparent suggest-toned Card provides --card-icon-color for the filled icon.
@@ -69,27 +83,10 @@ const VariantIconCard = styled(Card)`
 function VariantIcon() {
   return (
     <VariantIconCard tone="suggest">
-      <IconSlot data-status="variant">
-        <VariantStatusIcon />
+      <IconSlot status="variant">
+        <RhombusIcon />
       </IconSlot>
     </VariantIconCard>
-  )
-}
-
-/** Yellow draft ring followed by the green published disc. */
-function StatusDots({draft, published}: {draft: boolean; published: boolean}) {
-  const statuses: Status[] = []
-  if (draft) statuses.push('draft')
-  if (published) statuses.push('published')
-
-  return (
-    <>
-      {statuses.map((status) => (
-        <IconSlot key={status} data-status={status}>
-          {status === 'draft' ? <DraftStatusIcon /> : <PublishedStatusIcon />}
-        </IconSlot>
-      ))}
-    </>
   )
 }
 
@@ -149,9 +146,7 @@ export function DocumentStatusIndicator({documentVersions}: DocumentStatusProps)
       <Flex align="center">
         {inVariant ? <VariantIcon /> : null}
         <IconSlot>
-          <Text size={0}>
-            <ReleaseAvatarIcon release={selectedPerspective} />
-          </Text>
+          <ReleaseAvatarIcon release={selectedPerspective} size="small" />
         </IconSlot>
       </Flex>
     )
@@ -169,10 +164,16 @@ export function DocumentStatusIndicator({documentVersions}: DocumentStatusProps)
     return (
       <Flex align="center">
         <VariantIcon />
-        <StatusDots
-          draft={Boolean(variantTarget.draft)}
-          published={Boolean(variantTarget.published)}
-        />
+        {variantTarget.draft && (
+          <IconSlot status="draft">
+            <RingIcon />
+          </IconSlot>
+        )}
+        {variantTarget.published && (
+          <IconSlot status="published">
+            <CircleSmallIcon />
+          </IconSlot>
+        )}
       </Flex>
     )
   }
@@ -191,7 +192,16 @@ export function DocumentStatusIndicator({documentVersions}: DocumentStatusProps)
 
   return (
     <Flex align="center">
-      <StatusDots draft={draft} published={published} />
+      {draft && (
+        <IconSlot status="draft">
+          <RingIcon />
+        </IconSlot>
+      )}
+      {published && (
+        <IconSlot status="published">
+          <CircleSmallIcon />
+        </IconSlot>
+      )}
     </Flex>
   )
 }

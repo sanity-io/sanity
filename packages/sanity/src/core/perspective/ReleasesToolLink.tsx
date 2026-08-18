@@ -1,5 +1,5 @@
 // oxlint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
-import {Button} from '@sanity/ui'
+import {Button, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useObservable} from 'react-rx'
 import {useRouterState} from 'sanity/router'
@@ -48,7 +48,8 @@ export function ReleasesToolLink(): React.JSX.Element {
         as={OversizedButton}
         name={SCHEDULES_TOOL_NAME}
         data-as="a"
-        icon={<ReleaseAvatarIcon release={selectedPerspective} />}
+        fontSize={2}
+        icon={<ReleaseAvatarIcon size="small" release={selectedPerspective} />}
         mode="bleed"
         padding={2}
         radius="full"
