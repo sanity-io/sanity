@@ -1,7 +1,10 @@
 import {createGlobalVar, createVar, fallbackVar, globalStyle} from '@vanilla-extract/css'
 
+import {GLOBAL_STYLES_ATTRIBUTE} from './globalStyleConstants'
+
 const SCROLLBAR_SIZE = 12 // px
 const SCROLLBAR_BORDER_SIZE = 4 // px
+const globalStylesRoot = `html[${GLOBAL_STYLES_ATTRIBUTE}]`
 
 export const selectionBackgroundColor = createVar()
 export const uiColorBg = createVar()
@@ -14,55 +17,67 @@ export const webkitResizerBackgroundImage = createVar()
 const uiCardBorderColor = createGlobalVar('card-border-color')
 const uiCardMutedFgColor = createGlobalVar('card-muted-fg-color')
 
-globalStyle('::-webkit-resizer', {
+function globalElementStyle(selector: string, rule: Parameters<typeof globalStyle>[1]) {
+  globalStyle(`${globalStylesRoot}${selector}, ${globalStylesRoot} ${selector}`, rule)
+}
+
+globalElementStyle('::-webkit-resizer', {
   backgroundImage: webkitResizerBackgroundImage,
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'bottom right',
 })
-globalStyle('::-webkit-scrollbar', {
+
+globalElementStyle('::-webkit-scrollbar', {
   width: SCROLLBAR_SIZE,
   height: SCROLLBAR_SIZE,
 })
-globalStyle('::-webkit-scrollbar-corner', {
+
+globalElementStyle('::-webkit-scrollbar-corner', {
   backgroundColor: 'transparent',
 })
-globalStyle('::-webkit-scrollbar-thumb', {
+
+globalElementStyle('::-webkit-scrollbar-thumb', {
   backgroundClip: 'content-box',
   backgroundColor: fallbackVar(uiCardBorderColor, uiColorBorder),
   borderWidth: SCROLLBAR_BORDER_SIZE,
   borderStyle: 'solid',
   borderColor: 'transparent',
 })
-globalStyle('::-webkit-scrollbar-thumb:hover', {
+
+globalElementStyle('::-webkit-scrollbar-thumb:hover', {
   backgroundColor: fallbackVar(uiCardMutedFgColor, uiColorMutedFg),
 })
-globalStyle('::-webkit-scrollbar-track', {
+
+globalElementStyle('::-webkit-scrollbar-track', {
   background: 'transparent',
 })
 
-globalStyle('*::selection', {
+globalStyle(`${globalStylesRoot} *::selection`, {
   backgroundColor: selectionBackgroundColor,
 })
 
-globalStyle('html', {
+globalStyle(globalStylesRoot, {
   backgroundColor: uiColorBg,
 })
 
-globalStyle('body', {
+globalStyle(`${globalStylesRoot} body`, {
   scrollbarGutter: 'stable',
 })
 
 globalStyle('#sanity', {
-  fontFamily: uiFontTextFamily,
   vars: {
     '--static-css-file-loaded-studio': 'true',
   },
 })
 
-globalStyle('b', {
+globalStyle(`${globalStylesRoot} #sanity`, {
+  fontFamily: uiFontTextFamily,
+})
+
+globalStyle(`${globalStylesRoot} b`, {
   fontWeight: uiFontTextWeightMedium,
 })
 
-globalStyle('strong', {
+globalStyle(`${globalStylesRoot} strong`, {
   fontWeight: uiFontTextWeightMedium,
 })
