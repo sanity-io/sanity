@@ -29,7 +29,7 @@ catalog:
   '@sanity/client': ^7.26.2
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.24.1
+  '@sanity/tsdown-config': ^0.25.0
   '@sanity/ui': ^4.0.3
   '@types/node': ^24.13.3
   '@types/react': ^19.2.18
@@ -124,6 +124,10 @@ minimumReleaseAgeExclude:
 
 overrides:
   vitest: 'catalog:'
+  # @sanity/tsdown-config's `bundleAnalyzer` constructs a Rolldown BuiltinPlugin from
+  # `rolldown/experimental`. That instance must be the same rolldown tsdown runs
+  # (`~1.2.0` currently resolves 1.2.3; tsdown-config depends on ~1.2.4).
+  'tsdown>rolldown': ~1.2.4
 
 preferWorkspacePackages: true
 

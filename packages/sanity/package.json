@@ -28,7 +28,8 @@
     "lib",
     "dist",
     "static",
-    "mock-browser-env-stub-loader.mjs"
+    "mock-browser-env-stub-loader.mjs",
+    "!lib/analyze-data.md"
   ],
   "type": "module",
   "types": "./lib/index.d.ts",
