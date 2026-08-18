@@ -124,6 +124,9 @@ overrides:
   # (`~1.2.0` currently resolves 1.2.3; tsdown-config depends on ~1.2.4).
   'tsdown>rolldown': ~1.2.4
 
+patchedDependencies:
+  '@sanity/bifur-client@1.0.0': patches/@sanity__bifur-client@1.0.0.patch
+
 preferWorkspacePackages: true
 
 trustPolicy: no-downgrade

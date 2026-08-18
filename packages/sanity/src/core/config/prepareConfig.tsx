@@ -1,4 +1,4 @@
-import {createClient as createBifurClient} from '@sanity/bifur-client'
+import {fromUrl} from '@sanity/bifur-client'
 import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
@@ -35,7 +35,6 @@ import {type InitialValueTemplateItem, type Template, type TemplateItem} from '.
 import {canonicalHash} from '../util/canonicalHash'
 import {EMPTY_ARRAY} from '../util/empty'
 import {isNonNullable} from '../util/isNonNullable'
-import {createBifurConnection} from './bifurConnection'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
@@ -491,11 +490,12 @@ function getBifurClient(client: SanityClient, auth: AuthStore) {
   const urlWithTag = `${url}?tag=${requestTagPrefix}`
 
   const options = auth.token ? {token$: auth.token} : {}
-  // Temporary stand-in for `fromUrl` until the connection fix in `@sanity/bifur-client` is
-  // published (https://github.com/sanity-io/bifur-client/pull/30): momentary zero-subscriber
-  // gaps (React render/effect cycles) must not abort and reconnect the socket — see
-  // `createBifurConnection`.
-  return createBifurClient(createBifurConnection(urlWithTag), options)
+  // The `@sanity/bifur-client` dependency carries a pnpm patch
+  // (patches/@sanity__bifur-client@1.0.0.patch) applying the connection fix from
+  // https://github.com/sanity-io/bifur-client/pull/30 ahead of its release: momentary
+  // zero-subscriber gaps (React render/effect cycles) must not abort and reconnect the socket.
+  // TODO(bifur-client): drop the patch and bump the dependency once the fix is published.
+  return fromUrl(urlWithTag, options)
 }
 
 function resolveSource({

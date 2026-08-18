@@ -105,6 +105,9 @@ overrides:
   vitest: ^4.1.10
   tsdown>rolldown: ~1.2.4
 
+patchedDependencies:
+  '@sanity/bifur-client@1.0.0': 0b24c366a4a65c074d44bfe294bd5f85530559bf7e46d5c5e73417d2e8fbea38
+
 importers:
 
   .:
@@ -1828,7 +1831,7 @@ importers:
         version: 2.3.0
       '@sanity/bifur-client':
         specifier: ^1.0.0
-        version: 1.0.0
+        version: 1.0.0(patch_hash=0b24c366a4a65c074d44bfe294bd5f85530559bf7e46d5c5e73417d2e8fbea38)
       '@sanity/cli':
         specifier: ^8.0.2
         version: 8.0.2(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxfmt@0.63.0)(rolldown@1.2.4)(supports-color@8.1.1)(typescript@7.0.2)(vitest@4.1.10)(xstate@5.32.5)
@@ -18453,7 +18456,7 @@ snapshots:
       sanity: link:packages/sanity
       styled-components: 6.5.3(react-dom@19.2.8)(react@19.2.8)
 
-  '@sanity/bifur-client@1.0.0':
+  '@sanity/bifur-client@1.0.0(patch_hash=0b24c366a4a65c074d44bfe294bd5f85530559bf7e46d5c5e73417d2e8fbea38)':
     dependencies:
       nanoid: 5.1.16
       rxjs: 7.8.2
@@ -19075,7 +19078,7 @@ snapshots:
 
   '@sanity/sdk@2.19.0(@types/react@19.2.18)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)':
     dependencies:
-      '@sanity/bifur-client': 1.0.0
+      '@sanity/bifur-client': 1.0.0(patch_hash=0b24c366a4a65c074d44bfe294bd5f85530559bf7e46d5c5e73417d2e8fbea38)
       '@sanity/client': 7.26.2
       '@sanity/comlink': 4.0.3
       '@sanity/diff-match-patch': 3.2.0
