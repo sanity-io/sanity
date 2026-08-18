@@ -7,12 +7,7 @@ import {
 
 import {type SourceClientOptions, type Workspace} from '../config/types'
 
-export {
-  resolveTypeForArrayItem,
-  validateDocumentObservable,
-  type ValidateDocumentObservableOptions,
-  validateItem,
-} from '@sanity/validation/_internal'
+export {validateDocumentObservable, validateItem} from '@sanity/validation/_internal'
 
 /** @beta */
 export interface ValidateDocumentOptions {
@@ -59,6 +54,7 @@ export interface ValidateDocumentOptions {
 export function validateDocument({
   document,
   workspace,
+  // oxlint-disable-next-line no-deprecated -- compatibility with the existing public API
   getClient = workspace.getClient,
   getDocumentExists,
   environment = 'studio',

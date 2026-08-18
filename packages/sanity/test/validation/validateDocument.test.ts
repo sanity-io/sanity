@@ -2,7 +2,7 @@ import {type Rule, type SanityDocument} from '@sanity/types'
 import {validateDocument as validateHeadlessDocument} from '@sanity/validation'
 import {describe, expect, it, vi} from 'vitest'
 
-import {type Workspace} from '../../src/core/config'
+import {type Workspace} from '../../src/core/config/types'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {createSchema} from '../../src/core/schema/createSchema'
 import {validateDocument} from '../../src/core/validation/validateDocument'
@@ -41,7 +41,7 @@ describe('validateDocument', () => {
       getClient: () => client,
       i18n,
       schema,
-    } as Workspace
+    } as unknown as Workspace
 
     const [headlessMarkers, studioMarkers] = await Promise.all([
       validateHeadlessDocument({client, document, schema}),

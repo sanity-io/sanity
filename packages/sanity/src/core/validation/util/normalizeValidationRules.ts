@@ -1,1 +1,1 @@
-export {getTypeChain, normalizeValidationRules} from '@sanity/validation/_internal'
+export {normalizeValidationRules} from '@sanity/validation/_internal'
