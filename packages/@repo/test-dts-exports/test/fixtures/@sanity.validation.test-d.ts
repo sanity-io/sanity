@@ -3,16 +3,26 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
+  BuiltInValidationMarkerCode,
+  DocumentValidationMarker,
   validateDocument,
   ValidateDocumentOptions,
   validateDocumentWithWorkspace,
   ValidateDocumentWorkspaceOptions,
+  ValidationMarkerCode,
+  validationMarkerCodes,
   ValidationSource,
 } from '@sanity/validation'
 import type {Workspace} from 'sanity'
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/validation', () => {
+  test('BuiltInValidationMarkerCode', () => {
+    expectTypeOf<BuiltInValidationMarkerCode>().not.toBeNever()
+  })
+  test('DocumentValidationMarker', () => {
+    expectTypeOf<DocumentValidationMarker>().not.toBeNever()
+  })
   test('validateDocument', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof validateDocument>().toBeFunction()
@@ -20,6 +30,12 @@ describe('@sanity/validation', () => {
   })
   test('ValidateDocumentOptions', () => {
     expectTypeOf<ValidateDocumentOptions>().toBeObject()
+  })
+  test('ValidationMarkerCode', () => {
+    expectTypeOf<ValidationMarkerCode>().not.toBeNever()
+  })
+  test('validationMarkerCodes', () => {
+    expectTypeOf<typeof validationMarkerCodes>().not.toBeNever()
   })
   test('validateDocumentWithWorkspace', () => {
     expectTypeOf<typeof validateDocumentWithWorkspace>().toBeFunction()

@@ -1,4 +1,10 @@
 export {
+  type BuiltInValidationMarkerCode,
+  type DocumentValidationMarker,
+  type ValidationMarkerCode,
+  validationMarkerCodes,
+} from './codes'
+export {
   validateDocument,
   type ValidateDocumentOptions,
   type ValidateDocumentWorkspaceOptions,

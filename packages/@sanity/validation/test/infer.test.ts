@@ -6,7 +6,7 @@ import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/typ
 import has from 'lodash-es/has.js'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
-import {type ValidateDocumentOptions} from '../src'
+import {type ValidateDocumentOptions, validationMarkerCodes} from '../src'
 import {
   getFallbackLocaleSource,
   hasValidationContext,
@@ -181,6 +181,9 @@ describe('schema validation inference', () => {
         }),
       ).resolves.toEqual([
         {
+          __internal_metadata: undefined,
+          code: validationMarkerCodes.mediaNotFound,
+          details: {referenceId: 'media-library:abc:def'},
           item: {
             message: 'The asset could not be found in the Media Library',
           },
@@ -215,6 +218,7 @@ describe('schema validation inference', () => {
           __internal_metadata: {
             name: 'media',
           },
+          code: validationMarkerCodes.mediaCustom,
           item: {
             message: 'Image must be a summer image',
           },
@@ -306,6 +310,8 @@ describe('schema validation inference', () => {
         }),
       ).resolves.toMatchObject([
         {
+          code: validationMarkerCodes.slugNotUnique,
+          details: {slug: 'example-value'},
           path: ['slugField'],
           level: 'error',
           message: 'Slug is already in use',
@@ -378,6 +384,8 @@ describe('schema validation inference', () => {
         }),
       ).resolves.toMatchObject([
         {
+          code: validationMarkerCodes.referenceInvalid,
+          details: {actualType: 'object'},
           message: 'Must be a reference to a document',
           level: 'error',
           path: ['referenceField'],
@@ -401,6 +409,8 @@ describe('schema validation inference', () => {
         }),
       ).resolves.toMatchObject([
         {
+          code: validationMarkerCodes.referenceNotPublished,
+          details: {referenceId: 'example-id'},
           message: /.+/,
           level: 'error',
           path: ['referenceField'],

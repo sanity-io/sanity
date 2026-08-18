@@ -17,6 +17,7 @@ import uniqBy from 'lodash-es/uniqBy.js'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
+import {type DocumentValidationMarker, validationMarkerCodes} from './codes'
 import {getFallbackLocaleSource} from './i18n/fallback'
 import {type LocaleSource} from './i18n/types'
 import {resolveConditionalProperty} from './resolveConditionalProperty'
@@ -222,7 +223,7 @@ export function validateDocumentWithWorkspace({
   maxCustomValidationConcurrency,
   maxFetchConcurrency,
   currentUser,
-}: ValidateDocumentWorkspaceOptions): Promise<ValidationMarker[]> {
+}: ValidateDocumentWorkspaceOptions): Promise<DocumentValidationMarker[]> {
   return validateDocumentInternal({
     currentUser,
     document,
@@ -233,7 +234,7 @@ export function validateDocumentWithWorkspace({
     maxCustomValidationConcurrency,
     maxFetchConcurrency,
     schema: workspace.schema,
-  })
+  }) as Promise<DocumentValidationMarker[]>
 }
 
 /**
@@ -246,17 +247,19 @@ export function validateDocumentWithWorkspace({
  */
 export function validateDocument(
   options: ValidateDocumentWorkspaceOptions,
-): Promise<ValidationMarker[]>
+): Promise<DocumentValidationMarker[]>
 /**
  * Validates a document against a compiled schema. Returns validation markers
  * without deciding whether the document may be edited or published.
  *
  * @beta
  */
-export function validateDocument(options: ValidateDocumentOptions): Promise<ValidationMarker[]>
+export function validateDocument(
+  options: ValidateDocumentOptions,
+): Promise<DocumentValidationMarker[]>
 export function validateDocument(
   options: ValidateDocumentOptions | ValidateDocumentWorkspaceOptions,
-): Promise<ValidationMarker[]> {
+): Promise<DocumentValidationMarker[]> {
   if ('workspace' in options) {
     return validateDocumentWithWorkspace(options)
   }
@@ -269,7 +272,7 @@ export function validateDocument(
     getClient: ({apiVersion}) => client.withConfig({apiVersion}),
     i18n: getFallbackLocaleSource(),
     schema,
-  })
+  }) as Promise<DocumentValidationMarker[]>
 }
 
 /** @internal */
@@ -367,6 +370,8 @@ export function validateDocumentObservable({
 
     return of([
       {
+        code: validationMarkerCodes.documentUnknownType,
+        details: {documentType: document._type},
         level: 'warning',
         message: `Could not find schema type for type '${document._type}', skipping validation`,
         path: [],
@@ -404,6 +409,7 @@ export function validateDocumentObservable({
 
       const message = err?.message || 'Unknown error'
       const errorMarker: ValidationMarker = {
+        code: validationMarkerCodes.validationException,
         level: 'error',
         message,
         item: {message},
