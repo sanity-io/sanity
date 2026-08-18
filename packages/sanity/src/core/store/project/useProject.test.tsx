@@ -29,6 +29,16 @@ function sessionExpiredError(): ClientError {
   } as never)
 }
 
+function rateLimitedError(): ClientError {
+  return new ClientError({
+    statusCode: 429,
+    headers: {},
+    body: {},
+    url: 'https://abc123.api.sanity.io/v1/projects/abc123',
+    method: 'GET',
+  } as never)
+}
+
 function setup(get: ProjectStore['get'], errorHandler?: StudioErrorHandler) {
   vi.mocked(useProjectStore).mockReturnValue({get} as ProjectStore)
   const wrapper = ({children}: {children: ReactNode}) => (
@@ -65,9 +75,7 @@ describe('useProject', () => {
     const channel = createRequestErrorChannel()
     const get = vi
       .fn<ProjectStore['get']>()
-      .mockReturnValueOnce(
-        throwError(() => new ClientError({statusCode: 429, headers: {}, body: {}} as never)),
-      )
+      .mockReturnValueOnce(throwError(() => rateLimitedError()))
       .mockReturnValueOnce(of(projectData))
     const {result} = setup(get, channel)
     await waitFor(async () =>
