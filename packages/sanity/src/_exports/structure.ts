@@ -61,6 +61,7 @@ export {
   getTypeNamesFromFilter,
   type PartialDocumentList,
 } from '../structure/structureBuilder/DocumentList'
+export {getReleaseOrVariantMembership} from '../structure/structureBuilder/util/getReleaseOrVariantMembership'
 export {
   type DocumentListItem,
   DocumentListItemBuilder,

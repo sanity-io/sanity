@@ -174,4 +174,32 @@ describe('DocumentListPane perspective and variant', () => {
       expect.objectContaining({perspective: ['drafts'], variant: 'alpha-audience'}),
     )
   })
+
+  it('uses an explicit list perspective and ignores the navbar variant', async () => {
+    mockUsePerspective.mockReturnValue({...BASE_PERSPECTIVE, selectedVariantName: 'alpha-audience'})
+
+    const wrapper = await createTestProvider({
+      config: defineConfig({projectId: 'test', dataset: 'test'}),
+      resources: [structureUsEnglishLocaleBundle],
+    })
+
+    render(
+      <DocumentListPane
+        {...getPaneProps()}
+        pane={{
+          ...getPaneProps().pane,
+          options: {
+            filter: 'sanity::partOfRelease($releaseId)',
+            params: {releaseId: 'rSummer'},
+            perspective: 'raw',
+          },
+        }}
+      />,
+      {wrapper},
+    )
+
+    expect(mockUseDocumentList).toHaveBeenCalledWith(
+      expect.objectContaining({perspective: 'raw', variant: undefined}),
+    )
+  })
 })

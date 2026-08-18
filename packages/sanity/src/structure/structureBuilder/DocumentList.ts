@@ -1,3 +1,4 @@
+import {type ClientPerspective} from '@sanity/client'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {AddIcon} from '@sanity/icons/Add'
 import {type SchemaType, type SortOrderingItem} from '@sanity/types'
@@ -105,6 +106,15 @@ export interface DocumentListOptions {
   apiVersion?: string
   /** Document list API default ordering array. */
   defaultOrdering?: SortOrderingItem[]
+  /**
+   * Query perspective for this list. When set, the list uses this value instead of the
+   * navbar perspective stack and does not apply the selected navbar variant.
+   *
+   * Use `'raw'` for membership filters such as `sanity::partOfRelease()` /
+   * `sanity::partOfVariant()`, which match version documents that stacked
+   * perspectives do not expose.
+   */
+  perspective?: ClientPerspective
 }
 
 /**
@@ -216,6 +226,26 @@ export class DocumentListBuilder extends GenericListBuilder<
    */
   getDefaultOrdering(): SortOrderingItem[] | undefined {
     return this.spec.options?.defaultOrdering
+  }
+
+  /**
+   * Set the query perspective for this list.
+   *
+   * When set, the document list pane uses this value instead of the navbar
+   * perspective stack, and does not apply the selected navbar variant.
+   *
+   * @param perspective - Client perspective, e.g. `'raw'`
+   * @returns document list builder based on the perspective provided. See {@link DocumentListBuilder}
+   */
+  perspective(perspective: ClientPerspective): DocumentListBuilder {
+    return this.clone({options: {...(this.spec.options || {filter: ''}), perspective}})
+  }
+
+  /** Get Document list query perspective
+   * @returns query perspective, if set
+   */
+  getPerspective(): ClientPerspective | undefined {
+    return this.spec.options?.perspective
   }
 
   /** Serialize Document list

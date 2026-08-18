@@ -90,8 +90,12 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const releases = useActiveReleases()
   const {perspectiveStack, selectedVariantName} = usePerspective()
   const {displayOptions, options} = pane
-  const {apiVersion, filter} = options
+  const {apiVersion, filter, perspective: listPerspective} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
+  // An explicit list perspective owns the query options: do not also apply the
+  // navbar stack or selected variant (membership filters need `raw`).
+  const queryPerspective = listPerspective ?? perspectiveStack
+  const queryVariant = listPerspective === undefined ? selectedVariantName : undefined
   const typeName = useMemo(() => {
     const staticTypes = findStaticTypesInFilter(filter, params)
     if (staticTypes?.length === 1) return staticTypes[0]
@@ -182,8 +186,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   } = useDocumentList({
     client,
     filter,
-    perspective: perspectiveStack,
-    variant: selectedVariantName,
+    perspective: queryPerspective,
+    variant: queryVariant,
     params,
     searchQuery: trimmedSearchQuery,
     sortOrder: effectiveSortOrder,
