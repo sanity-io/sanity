@@ -1,4 +1,5 @@
-import {Box, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
+import {Box} from 'ui5'
 
 import {ScheduleItem} from '../../../components/scheduleItem'
 import {type Schedule} from '../../../types'

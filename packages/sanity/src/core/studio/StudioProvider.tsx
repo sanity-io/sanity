@@ -30,6 +30,7 @@ import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
+import {UnclaimedProjectProvider} from './unclaimedProject/UnclaimedProjectProvider'
 import {WorkspaceLoader} from './workspaceLoader/WorkspaceLoader'
 import {ConfigErrorGate} from './workspaces/ConfigErrorGate'
 import {VisibleWorkspacesProvider} from './workspaces/VisibleWorkspacesProvider'
@@ -87,7 +88,9 @@ export function StudioProvider({
                       <StudioAnnouncementsProvider>
                         <GlobalPerspectiveProvider>
                           <DocumentLimitUpsellProvider>
-                            <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
+                            <AssetLimitUpsellProvider>
+                              <UnclaimedProjectProvider>{children}</UnclaimedProjectProvider>
+                            </AssetLimitUpsellProvider>
                           </DocumentLimitUpsellProvider>
                         </GlobalPerspectiveProvider>
                       </StudioAnnouncementsProvider>

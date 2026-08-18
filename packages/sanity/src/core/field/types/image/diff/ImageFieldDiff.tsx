@@ -1,5 +1,6 @@
 import {type Image} from '@sanity/types'
-import {Box, Card, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type TFunction} from '../../../../i18n/types'

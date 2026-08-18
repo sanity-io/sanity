@@ -19,9 +19,12 @@ import {PopoverContainer} from './PopoverContainer'
 
 const StyledPopover = styled(Popover)(() => {
   return css`
-    /* Make the popover scrollable if it overflows the viewport */
+    /* Make the popover scrollable if it overflows the viewport.
+     * Reserve space for the scrollbar so content that grows past the viewport
+     * (e.g. when switching tabs) doesn't cause a horizontal layout shift. */
     [data-ui='Popover__wrapper'] {
       overflow: auto;
+      scrollbar-gutter: stable;
     }
   `
 })

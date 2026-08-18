@@ -1,8 +1,9 @@
 // oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
-import {Box, Flex, Button, Text} from '@sanity/ui'
+import {Button, Flex, Text} from '@sanity/ui'
 import {type HTMLProps, useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {AnimatedTextWidth} from '../../../perspective/navbar/AnimatedTextWidth'

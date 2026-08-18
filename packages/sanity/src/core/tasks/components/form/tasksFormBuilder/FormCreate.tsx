@@ -1,8 +1,9 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Flex, Switch, Text} from '@sanity/ui'
+import {Flex, Switch, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useState} from 'react'
+import {Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../../../../ui-components/button/Button'

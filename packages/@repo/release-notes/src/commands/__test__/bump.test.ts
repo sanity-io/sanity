@@ -1,6 +1,32 @@
 import {describe, expect, it} from 'vitest'
 
-import {computeVersion} from '../bump'
+import {type PnpmPackage, computeVersion, selectPackagesToBump} from '../bump'
+
+function pkg(name: string, version: string, isPrivate = false): PnpmPackage {
+  return {name, version, path: `/repo/packages/${name}`, private: isPrivate}
+}
+
+describe('selectPackagesToBump', () => {
+  it('includes a publishable package that has drifted from the root version', () => {
+    const selected = selectPackagesToBump([
+      pkg('sanity', '6.9.2'),
+      pkg('@sanity/access-ui', '6.9.1'),
+    ])
+
+    expect(selected.map((p) => p.name)).toStrictEqual(['sanity', '@sanity/access-ui'])
+  })
+
+  it('excludes private packages regardless of their version', () => {
+    const selected = selectPackagesToBump([
+      pkg('sanity', '6.9.2'),
+      pkg('sanity-root', '6.9.2', true),
+      pkg('sanity-test-studio', '6.9.2', true),
+      pkg('scripts', '4.11.0', true),
+    ])
+
+    expect(selected.map((p) => p.name)).toStrictEqual(['sanity'])
+  })
+})
 
 describe('computeVersion', () => {
   it('bumps a stable patch version', () => {

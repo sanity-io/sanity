@@ -87,7 +87,7 @@ The base published document is never affected by unpublishing a variant.
 
 ### Duplicating
 
-**Duplicate** on a variant document creates a new regular document (a base draft) with the variant's content. It does not create a new variant document.
+**Duplicate** on a variant document creates a new document in the **same variant** (and the same drafts / published / release bundle you were viewing). The copy is a new document, not a second version of the original.
 
 ## Reviewing changes and history
 

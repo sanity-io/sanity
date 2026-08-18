@@ -1,5 +1,6 @@
-import {Box, Text, type TextProps} from '@sanity/ui'
+import {Text, type TextProps} from '@sanity/ui'
 import {type CSSProperties, type ReactElement, type ReactNode} from 'react'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {getReleaseTitleDetails} from '../util/getReleaseTitleDetails'

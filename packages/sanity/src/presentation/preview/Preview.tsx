@@ -34,7 +34,7 @@ import {useEffectEvent} from 'use-effect-event'
 import {Button} from '../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {ErrorCard} from '../components/ErrorCard'
-import {MAX_TIME_TO_OVERLAYS_CONNECTION} from '../constants'
+import {MAX_TIME_TO_IFRAME_LOAD, MAX_TIME_TO_OVERLAYS_CONNECTION} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
 import {type PresentationMachineRef} from '../machines/presentation-machine'
 import {type PreviewUrlRef} from '../machines/preview-url'
@@ -197,20 +197,67 @@ export const Preview = memo(function PreviewComponent(
   const [somethingIsWrong, setSomethingIsWrong] = useState(false)
   const iframeIsBusy = isLoading || isRefreshing || overlaysConnection === 'connecting'
 
+  /**
+   * If the iframe never fires its `load` event — for example when the preview is stuck in a
+   * reload loop, like Next.js dev servers before 16.3.0 get in Firefox when embedded cross-origin
+   * (vercel/next.js#94128) — the presentation machine stays in `loading` forever. Surface the
+   * connection error UI after a deadline instead of spinning indefinitely.
+   */
+  const [loadTimedOut, setLoadTimedOut] = useState(false)
+
+  const [continueAnyway, setContinueAnyway] = useState(false)
+  /**
+   * Whether the current `continueAnyway` dismissal was for a load timeout, as opposed to an
+   * overlays connection error. The two are cleared at different times.
+   */
+  const dismissedLoadTimeoutRef = useRef(false)
+  const handleContinueAnyway = useCallback(() => {
+    dismissedLoadTimeoutRef.current = loadTimedOut
+    setContinueAnyway(true)
+  }, [loadTimedOut])
+
+  useEffect(() => {
+    /**
+     * Only `loading` waits on the iframe `load` event. `refreshing` waits for a
+     * `visual-editing/refreshed` ack from an already loaded preview, so it must not arm this
+     * deadline — a slow mutation or manual refresh is not a failed load.
+     */
+    if (!isLoading) {
+      // oxlint-disable-next-line react/react-compiler
+      setLoadTimedOut(false)
+      /**
+       * A load-timeout dismissal has to be cleared here, since `continueAnyway` is otherwise only
+       * reset once the overlays reconnect — which never happens in this scenario, leaving the
+       * loading and error UI suppressed for the rest of the session. Only clear our own dismissal:
+       * an overlays-error dismissal must survive reloads until the overlays reconnect.
+       */
+      setContinueAnyway((prev) => (dismissedLoadTimeoutRef.current ? false : prev))
+      dismissedLoadTimeoutRef.current = false
+      return undefined
+    }
+    if (loadTimedOut) {
+      return undefined
+    }
+    const timeout = setTimeout(() => {
+      setLoadTimedOut(true)
+      console.error(
+        `The preview iframe hasn't finished loading after ${MAX_TIME_TO_IFRAME_LOAD}ms. If the preview keeps reloading itself, note that Next.js dev servers older than 16.3.0 enter an infinite reload loop in Firefox when embedded cross-origin (https://github.com/vercel/next.js/pull/94128) — upgrade Next.js, or add \`experimental: {reactDebugChannel: false}\` to your Next.js config as a workaround.`,
+      )
+    }, MAX_TIME_TO_IFRAME_LOAD)
+    return () => clearTimeout(timeout)
+  }, [isLoading, loadTimedOut])
+
   const handleRetry = useCallback(() => {
     if (!ref.current) {
       return
     }
 
+    setLoadTimedOut(false)
     ref.current.src = previewUrl.toString()
 
     presentationRef.send({type: 'iframe reload'})
   }, [presentationRef, previewUrl])
 
-  const [continueAnyway, setContinueAnyway] = useState(false)
-  const handleContinueAnyway = useCallback(() => {
-    setContinueAnyway(true)
-  }, [])
   const [showOverlaysConnectionStatus, setShowOverlaysConnectionState] = useState(false)
   useEffect(() => {
     if (isLoading || isRefreshing) {
@@ -503,6 +550,7 @@ export const Preview = memo(function PreviewComponent(
                   </Flex>
                 </MotionFlex>
               ) : (isLoading || (overlaysConnection === 'connecting' && !isRefreshing)) &&
+                !loadTimedOut &&
                 !continueAnyway ? (
                 <MotionFlex
                   initial="initial"
@@ -530,7 +578,7 @@ export const Preview = memo(function PreviewComponent(
                     </Text>
                   </Flex>
                 </MotionFlex>
-              ) : somethingIsWrong && !continueAnyway ? (
+              ) : (somethingIsWrong || (loadTimedOut && isLoading)) && !continueAnyway ? (
                 <MotionFlex
                   initial="initial"
                   animate="animate"
@@ -542,6 +590,9 @@ export const Preview = memo(function PreviewComponent(
                     background: 'var(--card-bg-color)',
                     inset: '0',
                     position: 'absolute',
+                    // Stay above the click-prevention overlay so "Retry" stays clickable while
+                    // the iframe is still considered busy (e.g. a load that never finishes)
+                    zIndex: 1,
                   }}
                 >
                   <ErrorCard

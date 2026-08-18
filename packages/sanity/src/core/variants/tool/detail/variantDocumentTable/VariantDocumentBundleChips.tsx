@@ -1,7 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'

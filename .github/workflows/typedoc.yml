@@ -52,15 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v6
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-          package-manager-cache: false
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
 
       - name: Build packages
         run: pnpm build --filter=sanity --output-logs=full --log-order=grouped

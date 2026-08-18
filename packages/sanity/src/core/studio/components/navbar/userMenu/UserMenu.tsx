@@ -1,6 +1,5 @@
-import {LeaveIcon} from '@sanity/icons/Leave'
+import {getProviderTitle} from '@sanity/access-ui'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
   // Button with specific styling, user avatar.
@@ -9,21 +8,21 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {Menu} from '@sanity/ui/menu'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
-import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {getProviderTitle} from '../../../../store/authStore/providerTitle'
 import {useColorSchemeSetValue, useColorSchemeValue} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {LoginProviderLogo} from './LoginProviderLogo'
+import {UserMenuAuthAction} from './UserMenuAuthAction'
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
@@ -37,7 +36,7 @@ const AvatarBox = styled(Box)`
 `
 
 export function UserMenu() {
-  const {currentUser, auth} = useWorkspace()
+  const {currentUser} = useWorkspace()
   const scheme = useColorSchemeValue()
   const setScheme = useColorSchemeSetValue()
 
@@ -95,17 +94,7 @@ export function UserMenu() {
           {setScheme && <AppearanceMenu setScheme={setScheme} />}
           <LocaleMenu />
 
-          {auth.logout && (
-            <>
-              <MenuDivider />
-              <MenuItem
-                iconRight={LeaveIcon}
-                text={t('user-menu.action.sign-out')}
-                disabled={!auth.logout}
-                {...(auth.logout && {onClick: auth.logout})}
-              />
-            </>
-          )}
+          <UserMenuAuthAction layout="menu" />
         </StyledMenu>
       }
       popover={popoverProps}

@@ -1,7 +1,8 @@
 import {type Path, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {type MouseEvent, useCallback, useContext} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useDiffAnnotationColor} from '../../../../diff/annotations/hooks'

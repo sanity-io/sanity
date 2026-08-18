@@ -1,4 +1,4 @@
-import '@sanity-labs/ui-poc/styles.css'
+import 'ui5/styles.css'
 import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
@@ -1156,7 +1156,7 @@ export {
   createMockAuthStore,
   type MockAuthStoreOptions,
 } from '../core/store/authStore/createMockAuthStore'
-export {getProviderTitle} from '../core/store/authStore/providerTitle'
+export {getProviderTitle} from '@sanity/access-ui'
 export {
   type AuthProbeResult,
   type AuthState,

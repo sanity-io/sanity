@@ -280,6 +280,12 @@ const benchRun = defineType({
       fields: [
         defineField({name: 'sha', type: 'string'}),
         defineField({name: 'branch', type: 'string'}),
+        defineField({
+          name: 'committedAt',
+          type: 'datetime',
+          description:
+            'Committer date of the measured sha — the trend x-axis (differs from startedAt on backfilled runs). Absent on older documents.',
+        }),
         defineField({name: 'mergeBaseSha', type: 'string'}),
         defineField({name: 'prNumber', type: 'number'}),
       ],

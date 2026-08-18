@@ -1,44 +1,118 @@
 name: Release @next
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    # 08:00 and 15:00 CET (GitHub cron is UTC-only; during CEST/summer these fire at 09:00/16:00 local time)
+    - cron: "0 7,14 * * *"
+  # Manual trigger for an on-demand next release between scheduled runs. Publishing is still
+  # skipped if the current HEAD of main has already been published.
+  workflow_dispatch:
 
 permissions:
   contents: read # for checkout
 
-jobs:
-  release-next:
-    concurrency:
-      group: release_next
+concurrency:
+  group: release_next
+  cancel-in-progress: false
 
-    # this runs in main, and we want to skip running it when release PRs are merged
-    if: >
-      !startsWith(github.event.head_commit.message, 'chore(release): publish')
+jobs:
+  check:
+    # scheduled runs always use the default branch, but workflow_dispatch can be pointed at any
+    # ref — never publish next releases from anything but main
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.decide.outputs.publish }}
+      version: ${{ steps.decide.outputs.version }}
+      sha: ${{ steps.decide.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - name: Check for unpublished changes
+        id: decide
+        run: |
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+          # A release commit has nothing new to cut. Checking the commit subject covers the
+          # window where the release PR has merged but the release workflow hasn't pushed the
+          # vX.Y.Z tag yet…
+          subject=$(git log -1 --format=%s)
+          if [[ "$subject" == "chore(release): publish"* ]]; then
+            echo "Skipping: HEAD is the release commit ($subject)"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # …and HEAD sitting exactly on the latest release tag covers it once the tag exists.
+          # `--match "v*"` must stay in sync with readGitInfo() in
+          # packages/@repo/release-notes/src/commands/bump.ts
+          described=$(git describe --tags --long --first-parent --match "v*")
+          if [[ "$described" =~ -0-g[0-9a-f]+$ ]]; then
+            echo "Skipping: HEAD ($described) is the release commit"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          version=$(pnpm --silent release-notes bump --preid=next --suffix-type=commits-ahead --dry-run)
+          if [ -z "$version" ]; then
+            echo "Failed to compute the next version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          # Ask the registry whether this exact version already exists — the packages are
+          # versioned in lockstep, so checking `sanity` answers for all of them. Published
+          # versions are stored without the +hash build metadata, so strip it before the
+          # lookup. Anything other than 200/404 (registry outage etc.) fails the job rather
+          # than skipping silently.
+          http_status=$(curl -sS --retry 3 -o /dev/null -w '%{http_code}' "https://registry.npmjs.org/sanity/${version%%+*}")
+          if [ "$http_status" = "200" ]; then
+            echo "Skipping: sanity@$version is already published"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          elif [ "$http_status" = "404" ]; then
+            echo "Will publish sanity@$version"
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Failed to check the npm registry for sanity@$version (HTTP $http_status)"
+            exit 1
+          fi
+
+  release-next:
+    needs: [check]
+    if: needs.check.outputs.publish == 'true'
     permissions:
       id-token: write # to enable use of OIDC for npm provenance
+      pull-requests: write # to comment on the release PR after publishing
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       EXPECTED_NPM_USER: sanity-svc.npm
     steps:
-      - uses: actions/create-github-app-token@v3
-        id: generate-token
-        with:
-          app-id: ${{ secrets.ECOSPARK_APP_ID }}
-          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
-
-      # Publish packages to npm under the `next` tag on new commits to main.
+      # Publish packages to npm under the `next` tag. Pin the checkout to the commit the check
+      # job validated, in case main has moved since.
       - uses: actions/checkout@v7
         with:
+          ref: ${{ needs.check.outputs.sha }}
           fetch-depth: 0
 
       - uses: ./.github/actions/setup
 
       - name: Bump next versions
-        run: pnpm --silent release-notes bump --preid=next --suffix-type=commits-ahead
+        env:
+          EXPECTED_VERSION: ${{ needs.check.outputs.version }}
+        run: |
+          version=$(pnpm --silent release-notes bump --preid=next --suffix-type=commits-ahead)
+          echo "Bumped to $version"
+          if [ "$version" != "$EXPECTED_VERSION" ]; then
+            echo "::error::Version mismatch: check job computed $EXPECTED_VERSION but bump produced $version"
+            exit 1
+          fi
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -83,13 +157,35 @@ jobs:
           GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
         run: pnpm bundle-manager publish --tag=next
 
+      # The release PR (ci/release-main) collects everything unreleased on main, so it's the
+      # natural place to surface which next snapshot contains those changes. Scheduled runs have
+      # no PR in their event payload, so look it up — and skip quietly when none is open. The
+      # published version is the computed one minus the +hash build metadata, which npm strips.
+      - name: Find the release PR
+        id: release-pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.check.outputs.version }}
+        run: |
+          echo "number=$(gh pr list --repo "$GITHUB_REPOSITORY" --head ci/release-main --base main --state open --json number --jq '.[0].number // empty')" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION%%+*}" >> "$GITHUB_OUTPUT"
+
+      - name: Comment on the release PR
+        if: steps.release-pr.outputs.number != ''
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        with:
+          pr-number: ${{ steps.release-pr.outputs.number }}
+          comment-tag: "next-release"
+          message: |
+            The changes in this PR up to ${{ needs.check.outputs.sha }} are available on npm as [`sanity@${{ steps.release-pr.outputs.version }}`](https://www.npmjs.com/package/sanity/v/${{ steps.release-pr.outputs.version }}) (`npm install sanity@next`).
+
   notify-on-failure:
-    needs: [release-next]
+    needs: [check, release-next]
     if: failure()
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
-        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
           webhook-type: incoming-webhook

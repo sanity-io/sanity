@@ -23,12 +23,13 @@ import process from 'node:process'
 
 import {object} from '@optique/core/constructs'
 import {message} from '@optique/core/message'
-import {withDefault} from '@optique/core/modifiers'
+import {optional, withDefault} from '@optique/core/modifiers'
 import {type InferValue} from '@optique/core/parser'
 import {command, constant, option} from '@optique/core/primitives'
 import {string} from '@optique/core/valueparser'
 
 import {BENCH_ROOT} from '../benchRoot'
+import {linkHarnessModules} from './linkHarnessModules'
 
 export const prepareReferenceCommand = command(
   'prepare-reference',
@@ -40,6 +41,11 @@ export const prepareReferenceCommand = command(
       }),
       'main',
     ),
+    at: optional(
+      option('--at', string({metavar: 'SHA'}), {
+        description: message`Build the reference at this exact commit instead of the merge-base (A/B dispatch; full 40-char sha; fails loudly, no absolute-mode fallback)`,
+      }),
+    ),
   }),
   {
     description: message`CI: build the reference studio at the merge-base for A/B comparison (set CACHE_HIT=true to reuse a restored dist)`,
@@ -50,7 +56,7 @@ export type PrepareReferenceArgs = InferValue<typeof prepareReferenceCommand>
 
 const REPO_ROOT = path.dirname(path.dirname(BENCH_ROOT))
 
-function git(args: string[], cwd: string): string {
+export function git(args: string[], cwd: string): string {
   const result = spawnSync('git', args, {cwd, encoding: 'utf8'})
   if (result.status !== 0) {
     throw new Error(`git ${args.join(' ')} failed: ${result.stderr?.trim()}`)
@@ -58,15 +64,19 @@ function git(args: string[], cwd: string): string {
   return result.stdout.trim()
 }
 
-function step(executable: string, args: string[], cwd: string): void {
-  const result = spawnSync(executable, args, {cwd, stdio: 'inherit'})
+function step(executable: string, args: string[], cwd: string, env?: Record<string, string>): void {
+  const result = spawnSync(executable, args, {
+    cwd,
+    stdio: 'inherit',
+    ...(env ? {env: {...process.env, ...env}} : {}),
+  })
   if (result.status !== 0) {
     throw new Error(`${executable} ${args.join(' ')} exited with status ${result.status}`)
   }
 }
 
 /** Write a step output for the workflow, and echo it for humans/local runs. */
-function setOutput(key: string, value: string): void {
+export function setOutput(key: string, value: string): void {
   console.log(`${key}=${value}`)
   if (process.env.GITHUB_OUTPUT) {
     fs.appendFileSync(process.env.GITHUB_OUTPUT, `${key}=${value}\n`)
@@ -94,12 +104,50 @@ export function buildDistAtCommit(sha: string, targetDist: string): void {
     if (!fs.existsSync(path.join(worktree, 'perf/bench'))) {
       throw new Error(`commit ${sha.slice(0, 10)} predates perf/bench`)
     }
+    // Install BEFORE overlaying: a frozen install of the pristine historical
+    // tree is a bit-exact replay of that commit's own CI install — no
+    // resolution happens, so the supply-chain age gate has nothing to judge
+    // and product dependencies are provably historical
+    step('pnpm', ['install', '--frozen-lockfile'], worktree)
+
     // Overlay HEAD's committed perf/bench tree onto the worktree;
-    // remove first so files deleted at HEAD don't linger
+    // remove first so files deleted at HEAD don't linger (this also drops
+    // the historical harness node_modules — replaced below)
     fs.rmSync(path.join(worktree, 'perf/bench'), {recursive: true, force: true})
     step('git', ['checkout', headSha, '--', 'perf/bench'], worktree)
-    step('pnpm', ['install', '--no-frozen-lockfile'], worktree)
-    step('pnpm', ['turbo', 'run', 'build', '--filter=bench'], worktree)
+
+    // Borrow HEAD's installed harness dependencies instead of installing
+    // them (see linkHarnessModules.ts): no resolution, no lockfile edits —
+    // the toolchain is the very bytes HEAD's CI vetted, and workspace deps
+    // are remapped so the harness builds the historical product
+    linkHarnessModules({repoRoot: REPO_ROOT, worktree})
+
+    // The overlaid harness manifest intentionally disagrees with the
+    // historical lockfile, and pnpm's verify-deps-before-run check (on by
+    // default in pnpm 11) reacts to that by silently re-installing — a fresh
+    // registry resolution that both defeats the borrowed install and
+    // re-exposes the build to the supply-chain age gate. Turbo runs every
+    // task through `pnpm run`, so the check must be disabled via environment
+    // for the whole process tree. pnpm 11 only reads `pnpm_config_*` env
+    // keys, underscored (verified against v11.17/v11.21; `npm_config_*` and
+    // dashed spellings are ignored). Turbo is also invoked from .bin rather
+    // than through `pnpm turbo` so the outer wrapper never re-checks either.
+    step(
+      path.join(worktree, 'node_modules/.bin/turbo'),
+      ['run', 'build', '--filter=bench'],
+      worktree,
+      {pnpm_config_verify_deps_before_run: 'false'},
+    )
+
+    // Tripwire: if any pnpm invocation inside the build re-installed anyway
+    // (say, a turbo or pnpm version that filters the env override above), it
+    // re-resolved against the registry and rewrote the worktree lockfile.
+    // Fail loudly rather than measure a silently re-resolved harness.
+    if (git(['status', '--porcelain', '--', 'pnpm-lock.yaml'], worktree) !== '') {
+      throw new Error(
+        'the build modified the worktree lockfile — a nested pnpm install ran despite verify-deps-before-run being disabled',
+      )
+    }
 
     const builtDist = path.join(worktree, 'perf/bench/dist')
     if (!fs.existsSync(path.join(builtDist, 'index.html'))) {
@@ -122,6 +170,20 @@ export function buildDistAtCommit(sha: string, targetDist: string): void {
 
 export function prepareReference(argv: PrepareReferenceArgs): void {
   const referenceDist = path.join(BENCH_ROOT, '.reference/dist')
+
+  // Explicit reference commit (`ab_from`/`ab_to` dispatch): no merge-base, no
+  // cache, and no absolute-mode fallback — the comparison IS the run, so a
+  // reference that cannot build must fail it (mirrors prepare-backfill).
+  if (argv.at) {
+    if (!/^[0-9a-f]{40}$/i.test(argv.at)) {
+      throw new Error(`--at must be a full 40-char commit hash, got ${JSON.stringify(argv.at)}`)
+    }
+    setOutput('merge_base', argv.at)
+    buildDistAtCommit(argv.at, referenceDist)
+    setOutput('comparison', 'ab')
+    return
+  }
+
   const mergeBase = git(['merge-base', 'HEAD', `origin/${argv.baseRef}`], REPO_ROOT)
   setOutput('merge_base', mergeBase)
 

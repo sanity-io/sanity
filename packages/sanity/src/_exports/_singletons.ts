@@ -172,6 +172,10 @@ export {TasksNavigationContext} from '../_singletons/context/TasksNavigationCont
 export {TasksUpsellContext} from '../_singletons/context/TasksUpsellContext'
 export {UserApplicationCacheContext} from '../_singletons/context/UserApplicationCacheContext'
 export {UserColorManagerContext} from '../_singletons/context/UserColorManagerContext'
+export {
+  UnclaimedProjectContext,
+  type UnclaimedProjectContextValue,
+} from '../_singletons/context/UnclaimedProjectContext'
 export {ValidationContext} from '../_singletons/context/ValidationContext'
 export {VirtualizerScrollInstanceContext} from '../_singletons/context/VirtualizerScrollInstanceContext'
 export {VisibleWorkspacesContext} from '../_singletons/context/VisibleWorkspacesContext'
