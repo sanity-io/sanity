@@ -471,6 +471,10 @@ pnpm --filter sanity add <package>
 pnpm add -w -D <package>
 ```
 
+Catalog versions live in `pnpm-workspace.yaml`. After changing a catalog specifier, run `pnpm install` to refresh `pnpm-lock.yaml`.
+
+The workspace sets `minimumReleaseAge: 4320` (3 days) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally.
+
 ### Creating a New Test
 
 1. Create test file next to source: `MyComponent.test.tsx`
