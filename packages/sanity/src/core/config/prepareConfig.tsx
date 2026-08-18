@@ -492,8 +492,9 @@ function getBifurClient(client: SanityClient, auth: AuthStore) {
 
   const options = auth.token ? {token$: auth.token} : {}
   // Temporary stand-in for `fromUrl` until the connection fix in `@sanity/bifur-client` is
-  // published: momentary zero-subscriber gaps (React render/effect cycles) must not abort and
-  // reconnect the socket — see `createBifurConnection`.
+  // published (https://github.com/sanity-io/bifur-client/pull/30): momentary zero-subscriber
+  // gaps (React render/effect cycles) must not abort and reconnect the socket — see
+  // `createBifurConnection`.
   return createBifurClient(createBifurConnection(urlWithTag), options)
 }
 

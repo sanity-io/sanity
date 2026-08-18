@@ -128,6 +128,9 @@ describe('createBifurConnection', () => {
 
     expect(received).toEqual([sockets[0]])
     expect(sockets).toHaveLength(1)
+
+    // The resubscription cancelled the pending disconnect
+    vi.advanceTimersByTime(GRACE_PERIOD)
     expect(sockets[0].closeCalls).toHaveLength(0)
   })
 
@@ -137,9 +140,11 @@ describe('createBifurConnection', () => {
     sockets[0].finishHandshake()
     subscriptions.pop()!.unsubscribe()
 
+    // Not before the grace period has elapsed...
     vi.advanceTimersByTime(GRACE_PERIOD - 1)
     expect(sockets[0].closeCalls).toHaveLength(0)
 
+    // ...but as soon as it has
     vi.advanceTimersByTime(1)
     expect(sockets[0].closeCalls).toEqual([
       {

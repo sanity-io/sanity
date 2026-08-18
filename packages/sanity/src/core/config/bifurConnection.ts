@@ -1,21 +1,27 @@
 import {fromEvent, NEVER, Observable, ReplaySubject, timer} from 'rxjs'
 import {share, takeUntil} from 'rxjs/operators'
 
-// TODO(bifur-client): this module is a temporary in-repo copy of the connection fix that is
-// landing in `@sanity/bifur-client` itself. Once the studio depends on a client version whose
-// `fromUrl` has these connection semantics, `getBifurClient` can go back to `fromUrl` and this
-// module (plus its test) can be deleted.
+// TODO(bifur-client): this module is a temporary in-repo copy of the connection fix landing in
+// `@sanity/bifur-client` itself (https://github.com/sanity-io/bifur-client/pull/30). Once the
+// studio depends on a client version whose `fromUrl` has these connection semantics,
+// `getBifurClient` can go back to `fromUrl` and this module (plus its test) can be deleted.
 
 /**
  * How long the WebSocket stays connected after the last subscriber has unsubscribed.
  *
- * Consumers of the bifur streams (presence, connection status) subscribe and unsubscribe in
- * rapid succession as React mounts and unmounts components — most notably `useObservable`'s
- * render-phase warm-up subscription, which is torn down a microtask later while the real
- * `useSyncExternalStore` subscription only arrives in the effect phase. Without a grace period,
- * every such gap closes the socket mid-handshake (making browsers log "WebSocket is closed before
- * the connection is established") and immediately opens a new one. Same convention as
- * `LISTENER_RESET_DELAY` for the shared SSE listeners.
+ * Consumers of the bifur streams (presence, connection status) unsubscribe and resubscribe
+ * across React's render/effect cycle — most notably `useObservable`'s render-phase warm-up
+ * subscription, torn down a microtask later, with the real `useSyncExternalStore` subscription
+ * only arriving with the passive effects. Disconnecting the moment the subscriber count hits
+ * zero closes the socket mid-handshake (the "WebSocket is closed before the connection is
+ * established" browser warning) and immediately opens a replacement.
+ *
+ * This must be a wall-clock grace period, not a one-task `timer(0)` delay: during studio boot
+ * the passive-effect resubscription lands 100–200ms after the warm-up teardown (React's effect
+ * flush yields to other main-thread work), so a one-task delay still tears the connection down
+ * in between — observed as two to three connection attempts per page load, with abandoned
+ * sockets closed right after their handshake completes. Five seconds matches the
+ * `LISTENER_RESET_DELAY` convention used for the shared SSE listeners.
  */
 const DISCONNECT_GRACE_PERIOD = 5_000
 
