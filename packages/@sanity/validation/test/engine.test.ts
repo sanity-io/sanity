@@ -279,6 +279,53 @@ describe('validateItem', () => {
     ])
   })
 
+  it('does not treat truthy non-boolean hidden callback results as hidden', async () => {
+    const contexts: Array<{hidden?: boolean}> = []
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'hiddenDoc',
+          type: 'document',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+              hidden: (() => 'truthy') as never,
+              validation: (rule: RuleWithSkip, context?: ValidationContext) => {
+                contexts.push({hidden: context?.hidden})
+                return context?.hidden ? rule.skip() : rule.required()
+              },
+            },
+          ],
+        },
+      ],
+    })
+    const document: SanityDocument = {
+      _id: 'hidden-doc-id',
+      _type: 'hiddenDoc',
+      _createdAt: '2024-01-01T00:00:00.000Z',
+      _updatedAt: '2024-01-01T00:00:00.000Z',
+      _rev: 'hidden-doc-rev',
+    }
+
+    const result = await validateItem({
+      getClient,
+      schema,
+      value: document,
+      document,
+      parent: undefined,
+      path: [],
+      type: schema.get('hiddenDoc'),
+      i18n: getFallbackLocaleSource(),
+      environment: 'studio',
+      getDocumentExists: undefined,
+    })
+
+    expect(result).toMatchObject([{message: 'Required', path: ['title']}])
+    expect(contexts).toEqual([{hidden: false}])
+  })
+
   it('propagates hidden through hidden arrays', async () => {
     const contexts: Array<{
       path: ValidationContext['path']
