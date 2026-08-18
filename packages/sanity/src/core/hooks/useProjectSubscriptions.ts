@@ -104,7 +104,7 @@ function fetchProjectSubscriptions({
   versionedClient: SanityClient
 }): Observable<ProjectSubscriptionsResponse> {
   return versionedClient.observable.request<ProjectSubscriptionsResponse>({
-    uri: `/subscriptions/project/${versionedClient.config().projectId}`,
+    url: `/subscriptions/project/${versionedClient.config().projectId}`,
     tag: 'project-subscriptions',
   })
 }
