@@ -30,8 +30,9 @@ type FormatterFns = {list: (value: Iterable<string>) => string}
  * `<SearchTerm>{{term}}</SearchTerm>` (no whitespace in tag, nor attributes).
  *
  * Each component receives `children`, as well as any props provided through the `componentProps`
- * prop of `<Translate>`. Note that `componentProps` are only forwarded to function components in
- * this map - intrinsic HTML tags (eg `{strong: 'strong'}`) never receive them.
+ * prop of `<Translate>`. Note that `componentProps` are forwarded to every component in this map
+ * (including exotic ones like `memo` or `forwardRef` components) - intrinsic HTML tags
+ * (eg `{strong: 'strong'}`) never receive them.
  *
  * @public
  */
@@ -62,10 +63,10 @@ export interface TranslationProps<TComponentProps = unknown> {
   components?: TranslateComponentMap<NoInfer<TComponentProps>>
 
   /**
-   * Props forwarded to every function component declared in `components`. This makes it possible to
+   * Props forwarded to every component declared in `components`. This makes it possible to
    * pass data to the components without defining them inline during render (which creates a new
    * component identity on every render, violating `react/no-unstable-nested-components`). Props are
-   * only forwarded to function components - intrinsic HTML tags (eg `{strong: 'strong'}`) never
+   * only forwarded to components - intrinsic HTML tags (eg `{strong: 'strong'}`) never
    * receive them.
    */
   componentProps?: TComponentProps
@@ -188,8 +189,10 @@ function render(
     if (!Component) {
       throw new Error(`Component not found: ${head.name}`)
     }
-    // Only forward `componentProps` to function components, never to intrinsic HTML tags
-    const extraProps = typeof Component === 'function' ? componentProps : undefined
+    // Only forward `componentProps` to components, never to intrinsic HTML tags (string values).
+    // Checking for strings (rather than functions) keeps exotic components like `memo`,
+    // `forwardRef` and `lazy` — which are objects, not functions — receiving props.
+    const extraProps = typeof Component !== 'string' ? componentProps : undefined
     return (
       <>
         <Component {...extraProps} />
@@ -218,8 +221,10 @@ function render(
     const remaining = tail.slice(nextCloseIdx + 1)
 
     const As = Component ? Component : head.name
-    // Only forward `componentProps` to function components, never to intrinsic HTML tags
-    const extraProps = typeof As === 'function' ? componentProps : undefined
+    // Only forward `componentProps` to components, never to intrinsic HTML tags (string values).
+    // Checking for strings (rather than functions) keeps exotic components like `memo`,
+    // `forwardRef` and `lazy` — which are objects, not functions — receiving props.
+    const extraProps = typeof As !== 'string' ? componentProps : undefined
     return (
       <>
         <As {...extraProps}>
