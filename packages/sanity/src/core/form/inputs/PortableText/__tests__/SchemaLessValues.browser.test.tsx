@@ -144,11 +144,13 @@ describe('Portable Text Input', () => {
       })
 
       await userEvent.hover($portableTextInput.getByText('schema-less decorator'))
-      await expect.element(page.getByText('Mark not defined in the schema: em')).toBeVisible()
+      await expect
+        .element(page.getByText('Mark not defined in the schema: em', {exact: true}))
+        .toBeVisible()
 
       await userEvent.hover($portableTextInput.getByText('schema-less annotation'))
       await expect
-        .element(page.getByText('Annotation not defined in the schema: link'))
+        .element(page.getByText('Annotation not defined in the schema: link', {exact: true}))
         .toBeVisible()
     })
 
