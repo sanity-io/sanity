@@ -4,6 +4,7 @@ import {StrictMode, useCallback, useState} from 'react'
 import {afterAll, afterEach, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
+import {ScrollContainer} from '../../components/scroll/scrollContainer'
 import {ChangeFieldWrapper} from '../ChangeFieldWrapper'
 import {ChangeIndicator} from '../ChangeIndicator'
 import {scrollIntoView} from '../helpers/scrollIntoView'
@@ -210,6 +211,38 @@ describe('ConnectorsOverlay', () => {
 
     await waitForOverlayToSettle()
     expect(overlay.querySelector('path')).toBeNull()
+  })
+
+  it('re-measures the connector when a nested scroll container scrolls', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(
+      <ChangeConnectorRoot isReviewChangesOpen onOpenReviewChanges={() => {}} onSetFocus={() => {}}>
+        <ScrollContainer data-testid="nested-scroll-container" style={{overflow: 'auto'}}>
+          <ChangeIndicator hasFocus isChanged path={['title']}>
+            <div>field</div>
+          </ChangeIndicator>
+          <ChangeFieldWrapper hasRevertHover={false} path={['title']}>
+            <div>change</div>
+          </ChangeFieldWrapper>
+        </ScrollContainer>
+      </ChangeConnectorRoot>,
+      {wrapper: TestProvider},
+    )
+
+    const overlay = screen.getByTestId('change-connectors-overlay')
+
+    await waitForOverlayToSettle()
+    const initialPath = overlay.querySelector('path')?.getAttribute('d')
+    expect(initialPath).toBeTruthy()
+
+    trackedOffsetTop = 300
+    act(() => {
+      screen.getByTestId('nested-scroll-container').dispatchEvent(new Event('scroll'))
+    })
+
+    await waitForOverlayToSettle()
+    expect(overlay.querySelector('path')?.getAttribute('d')).not.toBe(initialPath)
   })
 
   it('re-measures the connector when the scroll container scrolls', async () => {

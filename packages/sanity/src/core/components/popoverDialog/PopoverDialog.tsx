@@ -9,8 +9,17 @@ import {
   type Theme,
   usePortal,
 } from '@sanity/ui'
-import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'react'
+import {
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+} from 'react'
 import TrapFocus, {type ReactFocusLockProps} from 'react-focus-lock'
+import {ScrollContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -19,15 +28,37 @@ import {PopoverContainer} from './PopoverContainer'
 
 const StyledPopover = styled(Popover)(() => {
   return css`
-    /* Make the popover scrollable if it overflows the viewport.
-     * Reserve space for the scrollbar so content that grows past the viewport
-     * (e.g. when switching tabs) doesn't cause a horizontal layout shift. */
+    /* The wrapper is the overflow node (constrainSize). position:relative makes
+     * it an offsetParent so connector geometry subtracts its scrollTop. */
     [data-ui='Popover__wrapper'] {
       overflow: auto;
+      position: relative;
       scrollbar-gutter: stable;
     }
   `
 })
+
+function PublishWrapperScroll(props: {children: ReactNode}) {
+  const {children} = props
+  const parentContext = useContext(ScrollContext)
+  const ref = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    const wrapper = ref.current?.closest<HTMLElement>('[data-ui="Popover__wrapper"]')
+    if (!wrapper || !parentContext) {
+      return undefined
+    }
+
+    const handleScroll = (event: Event) => {
+      parentContext.publish(event)
+    }
+
+    wrapper.addEventListener('scroll', handleScroll, {passive: true})
+    return () => wrapper.removeEventListener('scroll', handleScroll)
+  }, [parentContext])
+
+  return <div ref={ref}>{children}</div>
+}
 
 // This layer is sticky so that the header is always visible when scrolling
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -84,26 +115,33 @@ export function PopoverDialog(props: PopoverDialogProps) {
   const content = (
     <PopoverContainer width={width} data-testid="popover-dialog">
       <TrapFocus autoFocus whiteList={trapPaneFocus}>
-        <Stack ref={containerRef}>
-          <StickyLayer>
-            <Box padding={2} paddingLeft={4}>
-              <Flex align="center" gap={2}>
-                <Box flex={1}>
-                  <Text size={1} textOverflow="ellipsis" weight="medium">
-                    {header}
-                  </Text>
-                </Box>
-                <Button
-                  icon={CloseIcon}
-                  mode="bleed"
-                  onClick={handleClose}
-                  tooltipProps={{content: 'Close'}}
-                />
-              </Flex>
-            </Box>
-          </StickyLayer>
-          <Box padding={4}>{children}</Box>
-        </Stack>
+        <PublishWrapperScroll>
+          <Stack
+            ref={(node) => {
+              const wrapper = node?.closest<HTMLDivElement>('[data-ui="Popover__wrapper"]') ?? null
+              containerRef?.(wrapper)
+            }}
+          >
+            <StickyLayer>
+              <Box padding={2} paddingLeft={4}>
+                <Flex align="center" gap={2}>
+                  <Box flex={1}>
+                    <Text size={1} textOverflow="ellipsis" weight="medium">
+                      {header}
+                    </Text>
+                  </Box>
+                  <Button
+                    icon={CloseIcon}
+                    mode="bleed"
+                    onClick={handleClose}
+                    tooltipProps={{content: 'Close'}}
+                  />
+                </Flex>
+              </Box>
+            </StickyLayer>
+            <Box padding={4}>{children}</Box>
+          </Stack>
+        </PublishWrapperScroll>
       </TrapFocus>
     </PopoverContainer>
   )
