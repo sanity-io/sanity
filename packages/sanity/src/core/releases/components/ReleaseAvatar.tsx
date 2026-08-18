@@ -37,11 +37,7 @@ function renderReleaseTypeIcon(
     case 'scheduled':
       return size === 'default' ? <ClockIcon {...iconProps} /> : <ClockSmallIcon {...iconProps} />
     case 'undecided':
-      return size === 'default' ? (
-        <UnknownIcon {...iconProps} />
-      ) : (
-        <UnknownSmallIcon {...iconProps} />
-      )
+      return size === 'default' ? <DotIcon {...iconProps} /> : <UnknownSmallIcon {...iconProps} />
     default:
       return size === 'default' ? <DotIcon {...iconProps} /> : <CircleXsIcon {...iconProps} />
   }
