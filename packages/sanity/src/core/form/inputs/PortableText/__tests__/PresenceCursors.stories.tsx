@@ -1,8 +1,8 @@
 import {type SanityDocument} from '@sanity/types'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {type FormNodePresence} from 'sanity'
 
-import {PresenceCursorsStory} from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/PresenceCursorsStory'
+import {type FormNodePresence} from '../../../../presence/types'
+import {PresenceCursorsStory} from './PresenceCursorsStory'
 
 const TEXT = 'Hello, this is some text in the editor.'
 

@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {ToolbarStory} from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/ToolbarStory'
+import {ToolbarStory} from './ToolbarStory'
 
 /**
  * Reuses the `Toolbar.browser.test.tsx` harness. At the default 1280px

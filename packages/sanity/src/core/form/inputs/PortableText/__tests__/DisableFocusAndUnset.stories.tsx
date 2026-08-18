@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import DisableFocusAndUnsetStory from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/DisableFocusAndUnsetStory'
+import DisableFocusAndUnsetStory from './DisableFocusAndUnsetStory'
 
 /**
  * Reuses the `DisableFocusAndUnset.browser.test.tsx` harness: a document with

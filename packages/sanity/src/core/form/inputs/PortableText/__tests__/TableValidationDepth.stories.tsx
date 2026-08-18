@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {TableValidationDepthStory} from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/TableValidationDepthStory'
+import {TableValidationDepthStory} from './TableValidationDepthStory'
 
 /**
  * Reuses the `TableValidationDepth.browser.test.tsx` harness: Portable Text

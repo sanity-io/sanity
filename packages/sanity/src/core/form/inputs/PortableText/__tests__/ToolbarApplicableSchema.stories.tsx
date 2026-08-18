@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {ToolbarApplicableSchemaStory} from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/ToolbarApplicableSchemaStory'
+import {ToolbarApplicableSchemaStory} from './ToolbarApplicableSchemaStory'
 
 /**
  * Reuses the `ToolbarApplicableSchema.browser.test.tsx` harness: toolbar

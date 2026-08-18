@@ -3,7 +3,7 @@ import {PublishIcon} from '@sanity/icons/Publish'
 import {type ButtonTone, Flex, Grid, Stack, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {Button} from '../../../../packages/sanity/src/ui-components/button/Button'
+import {Button} from '../Button'
 
 // Card and tone-related coverage is prioritized while migrating from
 // styled-components to vanilla-extract and from @sanity/ui to ui5, since tone

@@ -1,8 +1,8 @@
 import {Card, Stack, Text, TextInput} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {ElementWithChangeBar} from '../../../../packages/sanity/src/core/changeIndicators/ElementWithChangeBar'
-import {TestWrapper} from '../../../../packages/sanity/test/browser/TestWrapper'
+import {TestWrapper} from '../../../../test/browser/TestWrapper'
+import {ElementWithChangeBar} from '../ElementWithChangeBar'
 
 /**
  * Vanilla-extract migration sentinel: the change indicator bar was one of the

@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {ReferenceItemCustomCreateButtonStory} from '../../../../packages/sanity/src/core/form/inputs/ReferenceInput/__tests__/ReferenceItemCustomCreateButtonStory'
+import {ReferenceItemCustomCreateButtonStory} from './ReferenceItemCustomCreateButtonStory'
 
 /**
  * Reuses the `ReferenceItemCustomCreateButton.browser.test.tsx` harness: a

@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {AnnotationsStory} from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/AnnotationsStory'
+import {AnnotationsStory} from './AnnotationsStory'
 
 /**
  * Reuses the `Annotations.browser.test.tsx` harness: a Portable Text input

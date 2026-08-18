@@ -3,7 +3,7 @@ import {Badge, Card, Flex, Text} from '@sanity/ui'
 import {type ThemeColorStateToneKey} from '@sanity/ui/theme'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {ToneIcon} from '../../../../packages/sanity/src/ui-components/toneIcon/ToneIcon'
+import {ToneIcon} from '../ToneIcon'
 
 const TONES: ThemeColorStateToneKey[] = ['default', 'primary', 'positive', 'caution', 'critical']
 
