@@ -16,5 +16,6 @@ export function resolveConditionalProperty(
 
   if (typeof property === 'boolean' || property === undefined) return Boolean(property)
 
-  return property({document: document as never, parent, value, currentUser, path})
+  // oxlint-disable-next-line no-unnecessary-boolean-literal-compare -- runtime callbacks may return non-booleans
+  return property({document: document as never, parent, value, currentUser, path}) === true
 }
