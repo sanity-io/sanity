@@ -1,4 +1,3 @@
-import {type BlockListItemRenderProps} from '@portabletext/editor'
 import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
 import {useMemo} from 'react'
 
@@ -8,10 +7,7 @@ const DefaultComponent = (dProps: BlockListItemProps) => {
   return <>{dProps.children}</>
 }
 
-type ListItemProps = Pick<
-  BlockListItemRenderProps,
-  'block' | 'children' | 'focused' | 'selected'
-> & {
+type ListItemProps = Pick<BlockListItemProps, 'block' | 'children' | 'focused' | 'selected'> & {
   /**
    * The list type's schema type, resolved by the caller against the
    * position's sub-schema. `undefined` when the schema doesn't define it.

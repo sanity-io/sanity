@@ -1,11 +1,10 @@
-import {type BlockStyleRenderProps} from '@portabletext/editor'
 import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
 import {useCallback, useMemo} from 'react'
 
 import {type BlockStyleProps} from '../../../types/blockProps'
 import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'
 
-type StyleProps = Pick<BlockStyleRenderProps, 'block' | 'children' | 'focused' | 'selected'> & {
+type StyleProps = Pick<BlockStyleProps, 'block' | 'children' | 'focused' | 'selected'> & {
   /**
    * The style's schema type, resolved by the caller against the position's
    * sub-schema. `undefined` when the schema doesn't define the style.
