@@ -68,10 +68,9 @@ export function useActionGroups({
       const initialValue = await resolveInitialValue(schemaType)
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const paths = PortableTextEditor.addAnnotation(editor, schemaType, initialValue)
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      if (paths && paths.markDefPath) {
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        onMemberOpen(paths.markDefPath)
+      const markDefPath = paths?.markDefPaths[0]
+      if (markDefPath) {
+        onMemberOpen(markDefPath)
       }
     },
     [editor, onMemberOpen, resolveInitialValue],

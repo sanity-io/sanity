@@ -1,19 +1,15 @@
 /* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Box, Card, Container, Heading, Inline, Stack, Text} from '@sanity/ui'
+import {Card, Container, Heading, Inline, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useEffect, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {of, take, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
-
-const View = styled(Box)`
-  align-items: center;
-`
 
 function reloadPage() {
   window.location.reload()
@@ -53,7 +49,7 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
       paddingX={4}
       sizing="border"
     >
-      <View display="flex" height="fill">
+      <Flex alignItems="center" height="100%">
         <Container width={3}>
           <Stack gap={6}>
             <Stack gap={4}>
@@ -89,7 +85,7 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
             </Stack>
           </Stack>
         </Container>
-      </View>
+      </Flex>
     </Card>
   )
 }
