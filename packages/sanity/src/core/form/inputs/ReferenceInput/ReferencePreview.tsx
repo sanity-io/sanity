@@ -1,6 +1,7 @@
 import {type ObjectSchemaType} from '@sanity/types'
-import {Badge, Box, Inline} from '@sanity/ui'
+import {Badge, Inline} from '@sanity/ui'
 import {useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator/DocumentStatusIndicator'

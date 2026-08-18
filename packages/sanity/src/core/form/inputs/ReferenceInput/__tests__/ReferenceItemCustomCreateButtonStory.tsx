@@ -1,6 +1,7 @@
 import {defineArrayMember, defineField, defineType, type ReferenceValue} from '@sanity/types'
-import {Box, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import {useCallback} from 'react'
+import {Box} from 'ui5'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
@@ -30,7 +31,9 @@ function CustomReferenceItem(props: ObjectItemProps<ReferenceValue & ObjectItem>
 
   return (
     <Flex align="center" data-testid="custom-reference-item" gap={3} paddingRight={3}>
-      <Box flex={1}>{props.renderDefault(props)}</Box>
+      <Box flexBasis="0%" flexGrow={1}>
+        {props.renderDefault(props)}
+      </Box>
       {value?._ref ? null : (
         <Button
           data-testid="custom-create-new-button"

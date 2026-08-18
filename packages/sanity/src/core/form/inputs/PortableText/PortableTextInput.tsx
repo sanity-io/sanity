@@ -15,7 +15,6 @@ import {getSpan} from '@portabletext/editor/traversal'
 import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path, type PortableTextBlock} from '@sanity/types'
-import {Box} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {randomKey} from '@sanity/util/content'
 import {fromString, startsWith} from '@sanity/util/paths'
@@ -30,6 +29,7 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
+import {Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {usePerspective} from '../../../perspective/usePerspective'
