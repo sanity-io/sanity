@@ -27,5 +27,3 @@ export function RhombusOutlinedIcon(props: SVGProps<SVGSVGElement> & RefAttribut
     </svg>
   )
 }
-
-export {RhombusOutlinedIcon as default}

@@ -25,5 +25,3 @@ export function RhombusIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSV
     </svg>
   )
 }
-
-export {RhombusIcon as default}
