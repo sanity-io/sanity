@@ -1,4 +1,4 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {AxisBottom, AxisLeft} from '@visx/axis'
 import {Group} from '@visx/group'
 import {scaleLinear, scaleTime} from '@visx/scale'
@@ -6,6 +6,8 @@ import {Area, LinePath} from '@visx/shape'
 import {useRef, useState} from 'react'
 
 import {formatValue, isSignedUnit, type TrendLine, type TrendPoint, type TrendSeries} from './data'
+import {baselineDetail, type DriftBaseline, type DriftResult} from './drift'
+import {ALL_LAYERS_VISIBLE, type LayerState} from './layers'
 import {categoricalColor} from './palette'
 import {RunDetailPopover} from './RunDetailPopover'
 
@@ -31,7 +33,17 @@ function previousShaFor(lines: TrendLine[], selected: TrendPoint): string | unde
 /** Theme-aware colors via the studio's CSS custom properties. */
 export const COLOR = {
   line: 'var(--card-accent-fg-color, #556bfc)',
-  band: 'var(--card-badge-primary-bg-color, rgba(85, 107, 252, 0.15))',
+  /**
+   * The p75–p90 band. This used to be `--card-badge-primary-bg-color` — a badge
+   * *background* token pressed into service as a data fill, which in dark mode
+   * resolves to a desaturated navy barely separable from the card behind it.
+   *
+   * Instead the band is now the series' own color at low alpha, applied via
+   * `fill`/`stroke` + opacity rather than baked into the value: it ties the band
+   * to the line it describes (a percentile spread belongs to its median), and it
+   * inherits whatever contrast that color already has in both schemes.
+   */
+  band: 'var(--card-accent-fg-color, #556bfc)',
   axis: 'var(--card-muted-fg-color, #727892)',
   /**
    * Context lines (host calibration) recede — reference, not measurement — but
@@ -41,6 +53,41 @@ export const COLOR = {
    * the dashes keep it reading as reference rather than a measured line.
    */
   context: 'var(--card-fg-color, #101112)',
+  /**
+   * Baseline-overlay marks on a drifted chart. Tone-matched to the card tint
+   * the drift badge already applies (critical for a regression, positive for an
+   * improvement), so the overlay reads as "this is the flagged thing" rather
+   * than as another measured series. Deliberately *not* COLOR.band — that fill
+   * is taken by the p75–p90 spread, and two shaded things in one hue would
+   * read as one thing.
+   */
+  baselineRegression: 'var(--card-badge-critical-fg-color, #d13415)',
+  baselineImprovement: 'var(--card-badge-positive-fg-color, #3ab577)',
+  /**
+   * A baseline that did not clear the thresholds. Drawn on every chart as a
+   * reference, so it has to recede — a neutral grey says "here are the two
+   * levels" without the tonal claim that something needs attention.
+   */
+  baselineNeutral: 'var(--card-muted-fg-color, #727892)',
+}
+
+/**
+ * Whether a p75–p90 band is worth drawing for this series.
+ *
+ * Some metrics are computed from very few samples (INP is n=4, so p75/p90
+ * interpolate between the 3rd and 4th values and are sometimes equal — 88/88 on
+ * some runs), which collapses the area to a sliver that reads as a line. That is
+ * actively misleading with the median layer hidden: you hide the median and
+ * something line-shaped remains. Exported so `ChartLegend` keys off the same
+ * predicate and never advertises a band the plot isn't drawing.
+ */
+export function seriesHasBand(series: TrendSeries): boolean {
+  if (series.lines.length !== 1) return false
+  return series.lines[0].points.some((point) => {
+    if (point.p75 === undefined || point.p90 === undefined) return false
+    // Relative, so it scales across ms / bytes / CLS without a per-unit table
+    return Math.abs(point.p90 - point.p75) > Math.abs(point.value) * 0.02
+  })
 }
 
 /** Per-line color: the studio accent for a lone line, categorical when comparing. */
@@ -54,28 +101,16 @@ function lineColorFor(series: TrendSeries, index: number): string {
 }
 
 /**
- * A run marker. Not interactive itself — the plot-wide capture rect handles
- * clicks (it sits above the dots) and opens the nearest run. The `emphasized`
- * dot tracks the crosshair; pointerEvents none so it never intercepts.
+ * Index of the run time closest to `targetMs`. Shared by the crosshair snapping
+ * and the keyboard stepper so they can never disagree about which run is
+ * "current". `times` must be sorted; -1 when empty.
  */
-function RunDot(props: {
-  point: TrendPoint
-  cx: number
-  cy: number
-  color: string
-  emphasized?: boolean
-}) {
-  const {cx, cy, color, emphasized} = props
-  return (
-    <circle
-      cx={cx}
-      cy={cy}
-      // Smaller resting dot; the hovered one grows and switches to the accent
-      // color (a color change reads far better than the old subtle white ring)
-      r={emphasized ? 4 : 2}
-      fill={emphasized ? 'var(--card-focus-ring-color, #556bfc)' : color}
-      pointerEvents="none"
-    />
+function nearestTimeIndex(times: number[], targetMs: number): number {
+  if (times.length === 0) return -1
+  return times.reduce(
+    (nearest, time, index) =>
+      Math.abs(time - targetMs) < Math.abs(times[nearest] - targetMs) ? index : nearest,
+    0,
   )
 }
 
@@ -109,8 +144,149 @@ function nearestPointAcrossLines(lines: TrendLine[], targetMs: number): TrendPoi
   return best
 }
 
-export function TrendChart(props: {series: TrendSeries; width: number; height: number}) {
-  const {series, width, height} = props
+/**
+ * Which baseline a chart draws, and whether it draws one at all.
+ *
+ * Only the *worst* fired baseline is drawn — the same one `driftBadge` turns
+ * into the header percentage — so the chart and the badge can never tell two
+ * different stories. Drawing both would put four horizontal rules on a
+ * ~120px-tall small multiple while the badge still reported only one of them.
+ * (Both baselines remain visible as text in the drift feed.)
+ *
+ * Suppressed when:
+ * - **comparing branches** — the p75–p90 band is already suppressed as "mud"
+ *   for the same reason; overlapping baseline spans across branches are worse.
+ * - **x is minutes** — soak charts plot one run's samples, not run history, so
+ *   a run-window baseline is meaningless there.
+ * - **the drifted branch isn't the one plotted** — a stale/mismatched entry
+ *   must not annotate someone else's line.
+ */
+export function baselineToDraw(
+  series: TrendSeries,
+  drift: DriftResult | undefined,
+): DriftBaseline | null {
+  if (!drift) return null
+  if (series.lines.length !== 1) return null
+  if (series.xKind === 'minute') return null
+  if (series.lines[0].branch !== drift.branch) return null
+  return drift.baseline
+}
+
+/**
+ * The baseline overlay: the two window medians the drift check compared, each
+ * drawn across the runs it was measured over. Two rules, no fill — the p75–p90
+ * band already owns the fill channel, and a second shaded region reads as one
+ * thing with it.
+ *
+ * Purely explanatory of the badge — `aria-hidden`, because the badge already
+ * states the move numerically and the capture rect carries it in its label; the
+ * legend names the marks so the meaning never rests on color alone.
+ */
+function BaselineOverlay(props: {
+  baseline: DriftBaseline
+  direction: DriftResult['direction']
+  xScale: (ms: number) => number
+  yScale: (value: number) => number
+  innerWidth: number
+  innerHeight: number
+}) {
+  const {baseline, direction, xScale, yScale, innerWidth, innerHeight} = props
+  const color =
+    direction === 'regression'
+      ? COLOR.baselineRegression
+      : direction === 'improvement'
+        ? COLOR.baselineImprovement
+        : COLOR.baselineNeutral
+  const {recentPointsMs, baselinePointsMs} = baseline
+  if (baselinePointsMs.length === 0 || recentPointsMs.length === 0) return null
+
+  const baselineY = yScale(baseline.baseline)
+  const recentY = yScale(baseline.recent)
+
+  // The y-scale's domain comes from the *visible* points, but the medians come
+  // from full history — in a short range over gappy history a level can fall
+  // outside it, and an unclamped rule would draw into the axis or the header.
+  // Clamping y (as x is, below) would draw the level at the wrong value, which
+  // is worse than not drawing it: skip the overlay instead. The badge and the
+  // drift feed still state the move.
+  if (baselineY < 0 || baselineY > innerHeight || recentY < 0 || recentY > innerHeight) {
+    return null
+  }
+
+  // Clamp to the plot: drift reads full history, so a window can begin before the
+  // visible range (a 30-day view against a 28-run trailing window).
+  const clampX = (ms: number) => Math.max(0, Math.min(innerWidth, xScale(ms)))
+  const recentTo = clampX(recentPointsMs.at(-1)!)
+
+  // A window can be narrower than it is readable: 7 runs is a comfortable slice
+  // of a 90-day view today, but not of an "all" view once the history runs to
+  // hundreds of runs, and the newest run sits flush against the right edge so
+  // there is no room to pad rightward.
+  //
+  // So both rules get a floor, laid out as one step anchored at the right edge:
+  // the recent level takes the rightmost slice and the baseline level extends
+  // leftward from there. Padding them independently (tried both ways) either
+  // inverted the dashed rule or pushed the solid one over runs it never
+  // measured. Spans become approximate only when a window falls under its floor
+  // — the exact runs stay in the tooltip and the drift feed — but the shape (two
+  // levels, one step) always reads.
+  const MIN_RULE_WIDTH = 28
+  const boundary = Math.max(0, Math.min(clampX(recentPointsMs[0]), recentTo - MIN_RULE_WIDTH))
+  const baselineFrom = Math.max(0, Math.min(clampX(baselinePointsMs[0]), boundary - MIN_RULE_WIDTH))
+  const recentX2 = Math.max(recentTo, boundary + 2)
+
+  return (
+    <g aria-hidden="true" pointerEvents="none">
+      {/* The "before" level: dashed and recessive, so it never competes with the
+          measured median line for attention. Ends where the recent window starts,
+          so the two rules meet at the boundary instead of overlapping. */}
+      <line
+        x1={baselineFrom}
+        x2={boundary}
+        y1={baselineY}
+        y2={baselineY}
+        stroke={color}
+        strokeWidth={1.5}
+        strokeDasharray="4 3"
+        opacity={0.55}
+      />
+      {/* The step between the two levels. Without this the rules read as two
+          unrelated horizontal lines; the connector is what makes them one claim
+          ("it moved from here to here"). */}
+      <line
+        x1={boundary}
+        x2={boundary}
+        y1={baselineY}
+        y2={recentY}
+        stroke={color}
+        strokeWidth={1}
+        strokeDasharray="2 2"
+        opacity={0.5}
+      />
+      {/* The "after" level: solid and heavier — the value the badge is about. */}
+      <line
+        x1={boundary}
+        x2={recentX2}
+        y1={recentY}
+        y2={recentY}
+        stroke={color}
+        strokeWidth={2}
+        opacity={0.9}
+      />
+    </g>
+  )
+}
+
+export function TrendChart(props: {
+  series: TrendSeries
+  width: number
+  height: number
+  /** Active drift for this series, if any — draws the baseline overlay. */
+  drift?: DriftResult
+  /** Which encoding layers to draw; defaults to all. */
+  layers?: LayerState
+}) {
+  const {series, width, height, drift, layers = ALL_LAYERS_VISIBLE} = props
   const {lines, unit} = series
   const [hoverMs, setHoverMs] = useState<number | null>(null)
   // The selected point only — its anchor coords are derived from the current
@@ -151,9 +327,13 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
   })
 
   const x = (point: TrendPoint) => xScale(point.date)
-  // The p75–p90 band only reads when there's one line — overlapping bands
-  // across branches would be mud, so comparison mode shows lines only
-  const showBand = lines.length === 1 && lines[0].points.some((p) => p.p75 !== undefined)
+  // The band only reads when there's one line — overlapping bands across branches
+  // would be mud, so comparison mode shows lines only (see seriesHasBand for the
+  // low-sample case)
+  const showBand = layers.visible('band') && seriesHasBand(series)
+  const overlayBaseline = layers.visible('baseline') ? baselineToDraw(series, drift) : null
+  // The band belongs to the line it describes, so it takes that line's color
+  const bandColor = lineColorFor(series, 0)
 
   const handleMove = (event: React.PointerEvent<SVGRectElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -168,14 +348,7 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
     if (stepTimes.length === 0) return
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
       event.preventDefault()
-      const current =
-        hoverMs === null
-          ? stepTimes.length - 1
-          : stepTimes.reduce(
-              (nearest, time, index) =>
-                Math.abs(time - hoverMs) < Math.abs(stepTimes[nearest] - hoverMs) ? index : nearest,
-              0,
-            )
+      const current = hoverMs === null ? stepTimes.length - 1 : nearestTimeIndex(stepTimes, hoverMs)
       const next = Math.max(
         0,
         Math.min(stepTimes.length - 1, current + (event.key === 'ArrowRight' ? 1 : -1)),
@@ -191,16 +364,27 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
     }
   }
 
-  const anchor = hoverMs === null ? null : xScale(new Date(hoverMs))
-  // Each line's nearest point to the hovered time, for the crosshair readout
+  // Snapped to the nearest run, not the raw pointer x: the crosshair *is* the
+  // run marker, so it has to sit on a run. It also has to be independent of any
+  // layer's y-value — a dot on the median is anchored to nothing once the median
+  // layer is toggled off.
+  const snappedIndex = hoverMs === null ? -1 : nearestTimeIndex(stepTimes, hoverMs)
+  // While a run's popover is open the marker stays on that run: reaching the
+  // popover means moving the pointer out of the plot, which clears `hoverMs`, and
+  // the line vanishing is exactly when you most need to see which run you opened.
+  const snappedMs =
+    snappedIndex === -1 ? (selected?.date.getTime() ?? null) : stepTimes[snappedIndex]
+  const anchor = snappedMs === null ? null : xScale(new Date(snappedMs))
+  // Read out the *snapped* run, so the rule and the tooltip always describe the
+  // same run rather than drifting apart by up to half a run's spacing
   const hovered =
-    hoverMs === null
+    snappedMs === null
       ? []
       : lines
           .map((line, index) => ({
             branch: line.branch,
             color: lineColorFor(series, index),
-            point: nearestPoint(line, hoverMs),
+            point: nearestPoint(line, snappedMs),
           }))
           .filter((entry): entry is {branch: string; color: string; point: TrendPoint} =>
             Boolean(entry.point),
@@ -224,20 +408,55 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
               opacity={0.4}
             />
           )}
-          {showBand && (
-            <Area<TrendPoint>
-              data={lines[0].points}
-              x={x}
-              y0={(point) => yScale(point.p75 ?? point.value)}
-              y1={(point) => yScale(point.p90 ?? point.value)}
-              fill={COLOR.band}
+          {/* Baseline overlay sits under the band, line and dots — it's
+              annotation, and must never obscure the measurement it explains */}
+          {overlayBaseline && drift && (
+            <BaselineOverlay
+              baseline={overlayBaseline}
+              direction={drift.direction}
+              xScale={(ms) => xScale(new Date(ms))}
+              yScale={yScale}
+              innerWidth={innerWidth}
+              innerHeight={innerHeight}
             />
+          )}
+          {showBand && (
+            <>
+              <Area<TrendPoint>
+                data={lines[0].points}
+                x={x}
+                y0={(point) => yScale(point.p75 ?? point.value)}
+                y1={(point) => yScale(point.p90 ?? point.value)}
+                fill={bandColor}
+                opacity={0.22}
+              />
+              {/* Faint strokes on both edges. Without them the fill's boundary
+                  is the most line-like thing in the plot, so with the median
+                  layer toggled off the band gets read as the median itself —
+                  two defined edges make it unmistakably a region. */}
+              <LinePath<TrendPoint>
+                data={lines[0].points}
+                x={x}
+                y={(point) => yScale(point.p75 ?? point.value)}
+                stroke={bandColor}
+                strokeWidth={1}
+                opacity={0.5}
+              />
+              <LinePath<TrendPoint>
+                data={lines[0].points}
+                x={x}
+                y={(point) => yScale(point.p90 ?? point.value)}
+                stroke={bandColor}
+                strokeWidth={1}
+                opacity={0.5}
+              />
+            </>
           )}
           {lines.map((line, index) => {
             const color = lineColorFor(series, index)
             return (
               <g key={line.branch}>
-                {line.points.length > 1 && (
+                {line.points.length > 1 && layers.visible('median') && (
                   <LinePath<TrendPoint>
                     data={line.points}
                     x={x}
@@ -252,39 +471,23 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
                     opacity={series.goal === 'context' ? 0.55 : 1}
                   />
                 )}
-                {line.points.map((point, pointIndex) => {
-                  const isHovered = hovered.some(
-                    (entry) => entry.branch === line.branch && entry.point === point,
-                  )
-                  return (
-                    // Soak charts encode one run as many minute samples, so every
-                    // point shares the same runId — index keeps the key unique
-                    <g key={`${point.runId}:${pointIndex}`}>
-                      {/* Soft halo behind the hovered point — reads clearly as
-                          "this run is targeted / clickable" */}
-                      {isHovered && (
-                        <circle
-                          cx={x(point)}
-                          cy={yScale(point.value)}
-                          r={9}
-                          fill={color}
-                          opacity={0.18}
-                          pointerEvents="none"
-                        />
-                      )}
-                      <RunDot
-                        point={point}
-                        cx={x(point)}
-                        cy={yScale(point.value)}
-                        color={color}
-                        emphasized={isHovered}
-                      />
-                    </g>
-                  )
-                })}
+                {/* A lone run draws no LinePath, so without a mark the chart
+                    would be blank — keep a resting dot for that case only
+                    (the `single-run` debug source, and a genuine first run). */}
+                {line.points.length === 1 && (
+                  <circle
+                    cx={x(line.points[0])}
+                    cy={yScale(line.points[0].value)}
+                    r={2.5}
+                    fill={color}
+                    pointerEvents="none"
+                  />
+                )}
               </g>
             )
           })}
+          {/* The run marker: a full-height rule snapped to the hovered/focused
+              run. Full height so it reads regardless of which layers are on. */}
           {anchor !== null && (
             <line
               x1={anchor}
@@ -293,7 +496,7 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
               y2={innerHeight}
               stroke={COLOR.axis}
               strokeWidth={1}
-              strokeDasharray="3 3"
+              opacity={0.7}
               pointerEvents="none"
             />
           )}
@@ -334,7 +537,19 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
             style={{cursor: 'pointer', outline: 'none'}}
             tabIndex={0}
             role="application"
-            aria-label={`${series.title} — ${stepTimes.length} run(s). Arrow keys inspect runs, Enter opens details.`}
+            aria-label={`${series.title} — ${stepTimes.length} run(s).${
+              overlayBaseline && drift
+                ? // "Flagged" only when something actually fired — neutral
+                  // overlays are drawn on nearly every chart, and announcing
+                  // those as flagged would dilute the word to nothing
+                  ` ${
+                    drift.direction === 'neutral' ? 'Baseline' : `Flagged ${drift.direction},`
+                  } ${baselineDetail(overlayBaseline)}: ${formatValue(
+                    overlayBaseline.baseline,
+                    unit,
+                  )} to ${formatValue(overlayBaseline.recent, unit)}.`
+                : ''
+            } Arrow keys inspect runs, Enter opens details.`}
             onPointerMove={handleMove}
             onPointerLeave={() => setHoverMs(null)}
             // Seed the crosshair on keyboard focus so there's an immediate
@@ -350,7 +565,10 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
           />
         </Group>
       </svg>
-      {anchor !== null && hovered.length > 0 && (
+      {/* Tied to actual hovering, not to the marker: the marker also stands on
+          the selected run while its popover is open, and a hover tooltip on top
+          of that popover would report the same run twice. */}
+      {hoverMs !== null && anchor !== null && hovered.length > 0 && (
         <div
           style={{
             position: 'absolute',
@@ -398,6 +616,37 @@ export function TrendChart(props: {series: TrendSeries; width: number; height: n
                   </Text>
                 </Flex>
               ))}
+              {/* What the overlay rules are. Unlabelled in the plot they invite a
+                  fair "that isn't the middle of the data" — a median ignores how
+                  far outliers fall, so it sits with the cluster rather than
+                  between the extremes. Naming the statistic and its window size
+                  makes that readable instead of surprising. */}
+              {overlayBaseline && (
+                <>
+                  <Box
+                    aria-hidden="true"
+                    style={{height: 1, background: 'var(--card-border-color)'}}
+                  />
+                  <Stack gap={1}>
+                    <Flex align="center" gap={2}>
+                      <Text size={0} muted>
+                        baseline (median of {overlayBaseline.baselinePointsMs.length} runs)
+                      </Text>
+                      <Text size={0} weight="semibold">
+                        {formatValue(overlayBaseline.baseline, unit)}
+                      </Text>
+                    </Flex>
+                    <Flex align="center" gap={2}>
+                      <Text size={0} muted>
+                        recent (median of {overlayBaseline.recentPointsMs.length} runs)
+                      </Text>
+                      <Text size={0} weight="semibold">
+                        {formatValue(overlayBaseline.recent, unit)}
+                      </Text>
+                    </Flex>
+                  </Stack>
+                </>
+              )}
             </Stack>
           </Card>
         </div>

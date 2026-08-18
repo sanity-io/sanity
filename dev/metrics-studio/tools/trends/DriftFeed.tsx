@@ -7,14 +7,9 @@ import {useState} from 'react'
 
 import {idSlug, SNOOZE_DAYS} from './acks'
 import {formatValue} from './data'
-import {type DriftBaseline, type DriftResult, worstOf} from './drift'
+import {baselineDetail, type DriftResult} from './drift'
 import {backlinksFor} from './links'
 import {type DriftState} from './useDriftState'
-
-const BASELINE_LABEL: Record<DriftBaseline['kind'], string> = {
-  trailing: 'vs prior 3 weeks',
-  step: 'vs same weekday',
-}
 
 function pct(fraction: number): string {
   const sign = fraction > 0 ? '+' : ''
@@ -30,7 +25,7 @@ function DriftRow(props: {
   onFocus: () => void
 }) {
   const {entry, showBranch, acked, onAck, onClear, onFocus} = props
-  const worst = worstOf(entry)
+  const worst = entry.baseline
   return (
     <Flex align="center" gap={2} wrap="wrap">
       <Badge tone={entry.direction === 'regression' ? 'critical' : 'positive'} fontSize={0}>
@@ -48,7 +43,7 @@ function DriftRow(props: {
       <Text size={0} muted>
         {formatValue(worst.baseline, entry.unit)} → {formatValue(worst.recent, entry.unit)}
         {' · '}
-        {entry.fired.map((f) => BASELINE_LABEL[f.kind]).join(', ')}
+        {baselineDetail(worst)}
       </Text>
       {backlinksFor(entry.latest).map((link) => (
         <Box

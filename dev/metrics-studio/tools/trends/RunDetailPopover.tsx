@@ -88,6 +88,11 @@ export function RunDetailPopover(props: {
       placement="top"
       fallbackPlacements={['bottom', 'right', 'left']}
       referenceElement={referenceElement}
+      // A drifted chart tints its card caution/positive, and the popover would
+      // otherwise inherit that tone through the theme context — making run
+      // details look like a warning about themselves. The run detail is neutral
+      // information; the flag belongs to the card, not to this panel.
+      tone="default"
       content={
         <Box ref={setContentEl} padding={4} style={{width: 288, maxWidth: '92vw'}}>
           <Stack gap={4}>

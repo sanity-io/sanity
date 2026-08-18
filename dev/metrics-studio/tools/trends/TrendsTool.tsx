@@ -49,8 +49,9 @@ import {
   type TrendSeries,
 } from './data'
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
-import {type DriftResult, worstBySeries, worstOf} from './drift'
+import {type DriftResult, worstBySeries} from './drift'
 import {DriftFeed} from './DriftFeed'
+import {type LayerState, useLayerState} from './layers'
 import {efpsSourceUrl, sourceFileUrl, webVitalDocUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
 import {TrendChart} from './TrendChart'
@@ -309,7 +310,7 @@ function chartDomId(seriesKey: string): string {
 }
 
 function driftBadge(entry: DriftResult): {tone: 'caution' | 'positive'; label: string} {
-  const worst = worstOf(entry)
+  const worst = entry.baseline
   const sign = worst.deltaFraction > 0 ? '+' : ''
   const arrow = entry.direction === 'regression' ? '↑' : '↓'
   return {
@@ -323,12 +324,19 @@ function SeriesCard(props: {
   height: number
   drift?: DriftResult
   silenced?: DriftResult
+  /** The baseline to draw, flagged or not. Falls back to the flagged one. */
+  baseline?: DriftResult
   focused?: boolean
   onFocus?: () => void
   onAck?: (state: 'silenced' | 'snoozed' | 'fixed') => void
   onUnack?: () => void
+  layers?: LayerState
 }) {
-  const {series, height, drift, silenced, focused, onFocus, onAck, onUnack} = props
+  const {series, height, drift, silenced, baseline, focused, onFocus, onAck, onUnack, layers} =
+    props
+  // The overlay draws from any computed baseline; the badge and tint only from a
+  // flagged one
+  const overlay = baseline ?? drift ?? silenced
   // Latest value of the first line — a headline number only when not comparing
   const latest = series.lines.length === 1 ? series.lines[0].points.at(-1) : undefined
   const badge = drift ? driftBadge(drift) : null
@@ -425,9 +433,17 @@ function SeriesCard(props: {
             inside an auto-height Stack row, and a 0-sized parent means no
             chart gets rendered at all */}
         <ParentSize debounceTime={50} style={{height}}>
-          {({width}) => <TrendChart series={series} width={width} height={height} />}
+          {({width}) => (
+            <TrendChart
+              series={series}
+              width={width}
+              height={height}
+              drift={overlay}
+              layers={layers}
+            />
+          )}
         </ParentSize>
-        <ChartLegend series={series} />
+        <ChartLegend series={series} drift={overlay} layers={layers} />
       </Stack>
     </Card>
   )
@@ -438,15 +454,19 @@ function ChartGrid(props: {
   series: TrendSeries[]
   driftBySeries?: Map<string, DriftResult>
   silencedBySeries?: Map<string, DriftResult>
+  /** Baselines for the chart overlay, including sub-threshold ones. */
+  baselineBySeries?: Map<string, DriftResult>
   drift?: DriftState
   focusedKey?: string | null
   onFocusMetric?: (seriesKey: string) => void
+  layers?: LayerState
 }) {
   return (
     <Grid gridTemplateColumns={[1, 1, 2, 3]} gap={3}>
       {props.series.map((entry) => {
         const entryDrift = props.driftBySeries?.get(entry.key)
         const entrySilenced = props.silencedBySeries?.get(entry.key)
+        const entryBaseline = props.baselineBySeries?.get(entry.key)
         return (
           <SeriesCard
             key={entry.key}
@@ -454,6 +474,7 @@ function ChartGrid(props: {
             height={128}
             drift={entryDrift}
             silenced={entrySilenced}
+            baseline={entryBaseline}
             focused={props.focusedKey === entry.key}
             onFocus={props.onFocusMetric ? () => props.onFocusMetric!(entry.key) : undefined}
             onAck={
@@ -462,6 +483,7 @@ function ChartGrid(props: {
             onUnack={
               entrySilenced && props.drift ? () => props.drift!.clear(entrySilenced) : undefined
             }
+            layers={props.layers}
           />
         )
       })}
@@ -477,6 +499,7 @@ function ChartGrid(props: {
 function SoakPanel(props: {
   slopes: TrendSeries[]
   endValues: TrendSeries[]
+  layers?: LayerState
   latest: {run: TrendRun; charts: TrendSeries[]} | null
 }) {
   const {slopes, endValues, latest} = props
@@ -525,7 +548,7 @@ function SoakPanel(props: {
           <Text size={1} muted>
             {active.hint}
           </Text>
-          <ChartGrid series={active.charts} />
+          <ChartGrid series={active.charts} layers={props.layers} />
         </Stack>
       </TabPanel>
     </Stack>
@@ -542,6 +565,10 @@ export function TrendsTool() {
   // is shareable and the tool is explorable before real runs exist.
   const [rangeParam, setRangeParam] = useUrlState('range', '90')
   const [sourceParam, setSourceParam] = useUrlState('source', 'live')
+  // Encoding layers (median / band / baseline overlay), toggled from any chart
+  // legend and applied to the whole grid — see layers.ts
+  const [layersParam, setLayersParam] = useUrlState('layers', '')
+  const layers = useLayerState(layersParam, setLayersParam)
   const source: DataSource =
     sourceParam === 'live' || DEBUG_SOURCES.includes(sourceParam as DebugSource)
       ? (sourceParam as DataSource)
@@ -596,6 +623,22 @@ export function TrendsTool() {
     [inRange, selectedBranches],
   )
   const series = useMemo(() => buildSeries(filtered), [filtered])
+  /**
+   * Drift is computed over *all* history for the selected branches, never the
+   * range-filtered view. Its baseline is defined in runs (last 7 vs prior 21),
+   * so feeding it a 30-day slice would leave the baseline drawing on ~23 of 30
+   * visible runs and — worse — make the verdict a function of the range picker:
+   * the same metric could flag at 90d and not at 30d. The charts still render
+   * `series` (the range the user chose); only the drift math reads the full
+   * history.
+   */
+  const driftSeries = useMemo(
+    () =>
+      buildSeries(
+        (runs ?? []).filter((run) => run.git && selectedBranches.includes(run.git.branch)),
+      ),
+    [runs, selectedBranches],
+  )
   const soakSlopes = useMemo(() => soakSlopeSeries(filtered), [filtered])
   // End-of-run soak values across runs — the "where did it land" history that
   // complements the slope view
@@ -654,7 +697,7 @@ export function TrendsTool() {
 
   // Shared drift state (feeds both the pinned feed and the per-tab badges, so
   // they can't disagree). Badge = active regressions in that group.
-  const drift = useDriftState(series)
+  const drift = useDriftState(driftSeries)
   const showBranch = series.some((s) => s.lines.length > 1)
   const [focusedKey, setFocusedKey] = useState<string | null>(null)
   // A deep-linked (?chart=) focus arms only once data is in: at mount the
@@ -709,6 +752,10 @@ export function TrendsTool() {
   // on more than one branch; keep the worst so the card shows the biggest move,
   // regressions winning over improvements.
   const driftBySeries = useMemo(() => worstBySeries(drift.active), [drift.active])
+  // Every series' baseline, flagged or not — the charts draw an overlay from this
+  // so the reference lines don't appear and disappear as metrics cross the
+  // threshold. Badge, card tint and the ack menu still key off `drift.active`.
+  const baselineBySeries = useMemo(() => worstBySeries(drift.all), [drift.all])
   // Silenced/snoozed per series — the card keeps a muted "acknowledged" marker
   // with an Un-ack, so you can reverse it without opening the feed. Active
   // drift takes precedence, so drop any series that's also active.
@@ -876,9 +923,11 @@ export function TrendsTool() {
                         slopes={soakSlopes}
                         endValues={soakEndValues}
                         latest={latestSoak}
+                        layers={layers}
                       />
                     ) : (
                       <ChartGrid
+                        layers={layers}
                         series={
                           activeTab.id === 'environment'
                             ? environmentSeries
@@ -886,6 +935,7 @@ export function TrendsTool() {
                         }
                         driftBySeries={driftBySeries}
                         silencedBySeries={silencedBySeries}
+                        baselineBySeries={baselineBySeries}
                         drift={drift}
                         focusedKey={focusedKey}
                         onFocusMetric={focusMetric}
