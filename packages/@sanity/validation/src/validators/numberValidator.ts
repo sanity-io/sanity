@@ -1,5 +1,6 @@
 import {type Validators} from '@sanity/types'
 
+import {validationMarkerCodes} from '../codes'
 import {genericValidators} from './genericValidator'
 
 const precisionRx = /(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/
@@ -9,7 +10,11 @@ export const numberValidators: Validators = {
 
   integer: (_unused, value, message, {i18n}) => {
     if (!Number.isInteger(value)) {
-      return message || i18n.t('validation:number.non-integer')
+      return {
+        code: validationMarkerCodes.numberInteger,
+        details: {actualValue: value},
+        message: message || i18n.t('validation:number.non-integer'),
+      }
     }
 
     return true
@@ -25,7 +30,11 @@ export const numberValidators: Validators = {
     )
 
     if (decimals > limit) {
-      return message || i18n.t('validation:number.maximum-precision', {limit})
+      return {
+        code: validationMarkerCodes.numberPrecision,
+        details: {actualPrecision: decimals, maximumPrecision: limit},
+        message: message || i18n.t('validation:number.maximum-precision', {limit}),
+      }
     }
 
     return true
@@ -36,7 +45,11 @@ export const numberValidators: Validators = {
       return true
     }
 
-    return message || i18n.t('validation:number.minimum', {minNumber})
+    return {
+      code: validationMarkerCodes.numberMinimum,
+      details: {actualValue: value, minimum: minNumber},
+      message: message || i18n.t('validation:number.minimum', {minNumber}),
+    }
   },
 
   max: (maxNumber, value, message, {i18n}) => {
@@ -44,7 +57,11 @@ export const numberValidators: Validators = {
       return true
     }
 
-    return message || i18n.t('validation:number.maximum', {maxNumber})
+    return {
+      code: validationMarkerCodes.numberMaximum,
+      details: {actualValue: value, maximum: maxNumber},
+      message: message || i18n.t('validation:number.maximum', {maxNumber}),
+    }
   },
 
   greaterThan: (threshold, value, message, {i18n}) => {
@@ -52,7 +69,11 @@ export const numberValidators: Validators = {
       return true
     }
 
-    return message || i18n.t('validation:number.greater-than', {threshold})
+    return {
+      code: validationMarkerCodes.numberGreaterThan,
+      details: {actualValue: value, threshold},
+      message: message || i18n.t('validation:number.greater-than', {threshold}),
+    }
   },
 
   lessThan: (threshold, value, message, {i18n}) => {
@@ -60,6 +81,10 @@ export const numberValidators: Validators = {
       return true
     }
 
-    return message || i18n.t('validation:number.less-than', {threshold})
+    return {
+      code: validationMarkerCodes.numberLessThan,
+      details: {actualValue: value, threshold},
+      message: message || i18n.t('validation:number.less-than', {threshold}),
+    }
   },
 }

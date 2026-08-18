@@ -11,6 +11,8 @@ import {
 } from '@sanity/types'
 import memoize from 'lodash-es/memoize.js'
 
+import {validationMarkerCodes} from '../codes'
+
 const DEFAULT_API_VERSION = '2025-02-19'
 
 const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
@@ -87,11 +89,18 @@ export const slugValidator: CustomValidator = async (value, context) => {
   const {i18n} = context
 
   if (typeof value !== 'object' || Array.isArray(value)) {
-    return i18n.t('validation:slug.not-object')
+    return {
+      code: validationMarkerCodes.slugInvalidType,
+      details: {actualType: Array.isArray(value) ? 'array' : typeof value},
+      message: i18n.t('validation:slug.not-object'),
+    }
   }
 
   if (!isSlug(value) || value.current.trim().length === 0) {
-    return i18n.t('validation:slug.missing-current')
+    return {
+      code: validationMarkerCodes.slugMissingCurrent,
+      message: i18n.t('validation:slug.missing-current'),
+    }
   }
 
   const options = context?.type?.options as {isUnique?: SlugIsUniqueValidator} | undefined
@@ -109,5 +118,9 @@ export const slugValidator: CustomValidator = async (value, context) => {
     return true
   }
 
-  return i18n.t('validation:slug.not-unique', {slug: value.current})
+  return {
+    code: validationMarkerCodes.slugNotUnique,
+    details: {slug: value.current},
+    message: i18n.t('validation:slug.not-unique', {slug: value.current}),
+  }
 }

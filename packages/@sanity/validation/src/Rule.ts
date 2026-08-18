@@ -10,6 +10,7 @@ import {
 } from '@sanity/types'
 import get from 'lodash-es/get.js'
 
+import {validationMarkerCodes} from './codes'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
 import {pathToString} from './util/pathToString'
@@ -36,6 +37,14 @@ const isFieldRef = (constraint: unknown): constraint is {type: symbol; path: str
 }
 
 const EMPTY_ARRAY: unknown[] = []
+
+const fallbackCodeForRule = (flag: string) => {
+  if (flag === 'custom') return validationMarkerCodes.custom
+  if (flag === 'media') return validationMarkerCodes.mediaCustom
+  if (flag === 'all') return validationMarkerCodes.ruleAllFailed
+  if (flag === 'either') return validationMarkerCodes.ruleEitherFailed
+  return validationMarkerCodes.validationFailed
+}
 
 /**
  * Concrete Rule implementation with validation logic.
@@ -140,13 +149,19 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
 
         try {
           const result = await validator(specConstraint, value, message, context)
-          return convertToValidationMarker(result, this._level, context)
+          return convertToValidationMarker(result, this._level, context, {
+            code: fallbackCodeForRule(curr.flag),
+          })
         } catch (err) {
           const errorMessage = `${pathToString(
             context.path,
           )}: Exception occurred while validating value: ${err.message}`
 
-          return convertToValidationMarker({message: errorMessage}, 'error', context)
+          return convertToValidationMarker(
+            {code: validationMarkerCodes.validationException, message: errorMessage},
+            'error',
+            context,
+          )
         }
       }),
     )

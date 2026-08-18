@@ -363,6 +363,15 @@ export interface ValidationErrorClass {
  */
 export interface ValidationError {
   /**
+   * A machine-readable identifier for the validation failure.
+   * Custom validators should namespace custom codes, for example `custom.seo-title`.
+   */
+  code?: string
+
+  /** Structured information about the validation failure. */
+  details?: Record<string, unknown>
+
+  /**
    * The message describing why the value is not valid. This message will be
    * included in the validation markers after validation has finished running.
    */
