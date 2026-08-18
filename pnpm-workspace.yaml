@@ -123,9 +123,6 @@ minimumReleaseAgeExclude:
 overrides:
   vitest: 'catalog:'
 
-patchedDependencies:
-  '@sanity/cli-build@5.2.0': patches/@sanity__cli-build@5.2.0.patch
-
 preferWorkspacePackages: true
 
 trustPolicy: no-downgrade
