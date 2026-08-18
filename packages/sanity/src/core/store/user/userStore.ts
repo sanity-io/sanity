@@ -39,7 +39,7 @@ export function createUserStore({client: _client, currentUser}: UserStoreOptions
   const userLoader = new DataLoader<string, User | null>(
     async (userIds) => {
       const value = await client.request<(User | null)[]>({
-        uri: `/users/${userIds.join(',')}`,
+        url: `/users/${userIds.join(',')}`,
         tag: 'users.get',
       })
       const response = Array.isArray(value) ? value : [value]

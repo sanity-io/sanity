@@ -25,7 +25,7 @@ export const createRelease = async ({
   metadata: Record<string, any>
 }) => {
   await sanityClient.withConfig(CLIENT_OPTIONS).request({
-    uri: `/data/actions/${dataset}`,
+    url: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
       actions: [
@@ -50,7 +50,7 @@ export const archiveRelease = async ({
 }) => {
   try {
     await sanityClient.withConfig(CLIENT_OPTIONS).request({
-      uri: `/data/actions/${dataset}`,
+      url: `/data/actions/${dataset}`,
       method: 'POST',
       body: {
         actions: [
@@ -78,7 +78,7 @@ export const unarchiveRelease = async ({
 }) => {
   try {
     await sanityClient.withConfig(CLIENT_OPTIONS).request({
-      uri: `/data/actions/${dataset}`,
+      url: `/data/actions/${dataset}`,
       method: 'POST',
       body: {
         actions: [
@@ -106,7 +106,7 @@ export const deleteRelease = async ({
 }) => {
   // delete release
   await sanityClient.withConfig(CLIENT_OPTIONS).request({
-    uri: `/data/actions/${dataset}`,
+    url: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
       actions: [
@@ -144,7 +144,7 @@ export const discardVersion = async ({
 }) => {
   // discard release
   await sanityClient.withConfig(CLIENT_OPTIONS).request({
-    uri: `/data/actions/${dataset}`,
+    url: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
       actions: [
