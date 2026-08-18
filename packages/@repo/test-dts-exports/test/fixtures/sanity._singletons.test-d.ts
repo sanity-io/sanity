@@ -131,6 +131,8 @@ import type {
   TasksEnabledContext,
   TasksNavigationContext,
   TasksUpsellContext,
+  UnclaimedProjectContext,
+  UnclaimedProjectContextValue,
   UserApplicationCacheContext,
   UserColorManagerContext,
   ValidationContext,
@@ -527,6 +529,12 @@ describe('sanity/_singletons', () => {
   })
   test('TasksUpsellContext', () => {
     expectTypeOf<typeof TasksUpsellContext>().not.toBeNever()
+  })
+  test('UnclaimedProjectContext', () => {
+    expectTypeOf<typeof UnclaimedProjectContext>().not.toBeNever()
+  })
+  test('UnclaimedProjectContextValue', () => {
+    expectTypeOf<UnclaimedProjectContextValue>().toBeObject()
   })
   test('UserApplicationCacheContext', () => {
     expectTypeOf<typeof UserApplicationCacheContext>().not.toBeNever()
