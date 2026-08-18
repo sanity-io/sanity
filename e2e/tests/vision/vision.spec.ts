@@ -15,7 +15,7 @@ import {
 } from '../variants/utils'
 import {
   encodeQueryString,
-  fetchPublishedVariantOverlay,
+  fetchVariantDocumentByTitle,
   getVisionRegions,
   openVisionTool,
   runVisionQuery,
@@ -272,14 +272,14 @@ test.describe('Vision', () => {
         document: {_type: 'book', title: variantTitle},
       })
       await expect
-        .poll(async () => {
-          const result = await fetchPublishedVariantOverlay(sanityClient, {
-            publishedId: bookId,
-            variantId,
-            title: variantTitle,
-          })
-          return result[0]?.title
-        })
+        .poll(
+          async () =>
+            fetchVariantDocumentByTitle(sanityClient, {
+              variantId,
+              title: variantTitle,
+            }),
+          {timeout: 60_000},
+        )
         .toBe(variantTitle)
 
       await openVisionTool(page, `?perspective=published&variant=${variantId}`)

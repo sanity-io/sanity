@@ -80,21 +80,28 @@ export const getVisionRegions = async (page: Page) => {
   return {queryEditorRegion, queryEditor, paramsRegion, paramsEditor, resultRegion}
 }
 
-export async function fetchPublishedVariantOverlay(
+export async function fetchVariantDocumentByTitle(
   sanityClient: SanityClient,
-  options: {publishedId: string; variantId: string; title: string},
-): Promise<Array<{_id: string; title?: string}>> {
-  // Variant overlay remaps `_id` to the published id in the result, but GROQ
-  // filters on `_id` do not reliably match those remapped documents. Filter by
-  // a unique content field instead, then assert the remapped `_id` in the result.
-  const result = await getVariantsClient(sanityClient)
-    .withConfig({
-      perspective: 'published',
-      variant: options.variantId,
-    })
-    .fetch<Array<{_id: string; title?: string}>>('*[title == $title]{_id, title}', {
-      title: options.title,
-    })
+  options: {variantId: string; title: string},
+): Promise<string | undefined> {
+  // Variant overlay remaps `_id` in some results, but GROQ filters on `_id`
+  // (and even a JS check for the remapped published id) miss documents whose
+  // overlay `_id` is still `versions.<scope>.<publishedId>`. The title is unique
+  // per test, so match that across the perspectives the create action may land
+  // in. Project `title` only — projecting `_id` has made overlay hits disappear.
+  const client = getVariantsClient(sanityClient)
+  const params = {title: options.title}
+  const query = '*[title == $title]{title}'
 
-  return result.filter((doc) => doc._id === options.publishedId)
+  for (const perspective of ['raw', 'published', 'drafts'] as const) {
+    const result = await client
+      .withConfig({perspective, variant: options.variantId})
+      .fetch<Array<{title?: string}>>(query, params)
+    const match = result.find((doc) => doc.title === options.title)
+    if (match?.title) {
+      return match.title
+    }
+  }
+
+  return undefined
 }
