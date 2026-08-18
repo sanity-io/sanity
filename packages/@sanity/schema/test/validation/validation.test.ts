@@ -1,4 +1,4 @@
-import {SquareIcon} from '@sanity/icons'
+import {SquareIcon} from '@sanity/icons/Square'
 import flatten from 'lodash-es/flatten.js'
 import {describe, expect, test} from 'vitest'
 

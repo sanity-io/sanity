@@ -38,7 +38,9 @@ export type PackageVersionInfoContextValue = {
   currentVersion: SemVer
 
   /**
-   * What is the current auto-updating version (as periodically resolved via module server and configured via manage)
+   * What is the current auto-updating version (as periodically resolved via module server and configured via manage).
+   * This is the version the module CDN will serve for the studio's import map URL, so a reload
+   * applies exactly this version — it may also be below the current version (e.g. a pinned rollback).
    */
   autoUpdatingVersion?: SemVer
 }

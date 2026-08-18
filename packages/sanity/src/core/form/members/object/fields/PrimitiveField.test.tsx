@@ -6,20 +6,80 @@ import {describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type FIXME} from '../../../../FIXME'
 import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
-import {PatchEvent, set} from '../../../patch'
-import {type FieldMember} from '../../../store'
+import {set} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type FieldMember} from '../../../store/types/members'
+import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
 import {
-  defaultRenderField,
-  defaultRenderInput,
   FormCallbacksProvider,
   type FormCallbacksValue,
-} from '../../../studio'
-import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
+} from '../../../studio/contexts/FormCallbacks'
+import {defaultRenderField, defaultRenderInput} from '../../../studio/defaults'
 import {PrimitiveField} from './PrimitiveField'
 
 const EMPTY_ARRAY: never[] = []
 
+/**
+ * Appends a fake stega sequence to the given text, mimicking text copied from a preview that uses
+ * `@sanity/client/stega` for visual editing.
+ */
+function stega(text: string): string {
+  return `${text}\u200b\u200b\u200b\u200b${'\u200c\u200d\ufeff\u200b'.repeat(4)}`
+}
+
 describe('PrimitiveField', () => {
+  describe('string', () => {
+    it('strips stega characters from pasted text', async () => {
+      // Given
+      const {member, formCallbacks, TestWrapper} = await setupTest('string', undefined)
+
+      render(
+        <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
+          member={member}
+          renderInput={defaultRenderInput}
+          renderField={defaultRenderField}
+        />,
+        {wrapper: TestWrapper},
+      )
+
+      // When
+      const input = screen.getByTestId('string-input') as HTMLInputElement
+      input.focus()
+      await userEvent.paste(stega('Hello world'))
+
+      // Then
+      expect(formCallbacks.onChange).toHaveBeenCalledWith(
+        PatchEvent.from(set('Hello world')).prefixAll(member.name),
+      )
+    })
+
+    it('leaves pasted text without stega characters untouched', async () => {
+      // Given
+      const {member, formCallbacks, TestWrapper} = await setupTest('string', undefined)
+
+      render(
+        <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
+          member={member}
+          renderInput={defaultRenderInput}
+          renderField={defaultRenderField}
+        />,
+        {wrapper: TestWrapper},
+      )
+
+      // When
+      const input = screen.getByTestId('string-input') as HTMLInputElement
+      input.focus()
+      await userEvent.paste('Hello world')
+
+      // Then
+      expect(formCallbacks.onChange).toHaveBeenCalledWith(
+        PatchEvent.from(set('Hello world')).prefixAll(member.name),
+      )
+    })
+  })
+
   describe('number', () => {
     it('renders empty input when given no value', async () => {
       // Given
@@ -28,6 +88,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -48,6 +109,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -67,6 +129,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -87,6 +150,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -106,6 +170,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -144,6 +209,7 @@ describe('PrimitiveField', () => {
 
       const {rerender} = render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -156,6 +222,7 @@ describe('PrimitiveField', () => {
 
       rerender(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -175,6 +242,7 @@ describe('PrimitiveField', () => {
 
       const {rerender} = render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -193,6 +261,7 @@ describe('PrimitiveField', () => {
 
       rerender(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -205,12 +274,13 @@ describe('PrimitiveField', () => {
       await waitFor(() => expect(input.value).toEqual('1.00'))
     })
 
-    it('wont trigger `onChange` callbacks when number input values are out of range', async () => {
+    it('strips stega characters from pasted numbers', async () => {
       // Given
-      const {formCallbacks, member, TestWrapper} = await setupTest('number', undefined)
+      const {member, formCallbacks, TestWrapper} = await setupTest('number', undefined)
 
       render(
         <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -220,11 +290,38 @@ describe('PrimitiveField', () => {
 
       // When
       const input = screen.getByTestId('number-input') as HTMLInputElement
+      input.focus()
+      await userEvent.paste(stega('42'))
+
+      // Then
+      expect(formCallbacks.onChange).toHaveBeenCalledWith(
+        PatchEvent.from(set(42)).prefixAll(member.name),
+      )
+    })
+
+    it('wont trigger `onChange` callbacks when number input values are out of range', async () => {
+      // Given
+      const {formCallbacks, member, TestWrapper} = await setupTest('number', undefined)
+
+      render(
+        <PrimitiveField
+          // @ts-expect-error -- pre-existing, fix later
+          member={member}
+          renderInput={defaultRenderInput}
+          renderField={defaultRenderField}
+        />,
+        {wrapper: TestWrapper},
+      )
+
+      // When
+      const input = screen.getByTestId('number-input') as HTMLInputElement
+      // @ts-expect-error -- pre-existing, fix later
       await userEvent.paste(input!, (Number.MIN_SAFE_INTEGER - 1).toString())
+      // @ts-expect-error -- pre-existing, fix later
       await userEvent.paste(input!, (Number.MAX_SAFE_INTEGER + 1).toString())
 
       // Then
-      expect(formCallbacks.onChange).toBeCalledTimes(0)
+      expect(formCallbacks.onChange).toHaveBeenCalledTimes(0)
     })
   })
 })
@@ -245,6 +342,7 @@ async function setupTest(type: string, value: string | number | boolean | undefi
     open: true,
     groups: [],
     inSelectedGroup: false,
+    // @ts-expect-error -- pre-existing, fix later
     field: {
       id: 'id',
       schemaType,

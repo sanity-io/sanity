@@ -13,7 +13,7 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../../ui-components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {UserAvatarStack} from './userAvatarStack'
@@ -131,7 +131,7 @@ export function TimelineItem({
   }, [timestamp, dateFormat])
 
   const handleClick = useCallback(
-    (evt: MouseEvent<HTMLDivElement>) => {
+    (evt: MouseEvent<HTMLButtonElement>) => {
       evt.preventDefault()
       evt.stopPropagation()
 
@@ -162,7 +162,7 @@ export function TimelineItem({
               <Text size={0}>{IconComponent && <IconComponent />}</Text>
             </IconBox>
           </div>
-          <Stack space={2}>
+          <Stack gap={2}>
             <Text size={1} weight="medium">
               {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type]) || <code>{type}</code>}
             </Text>

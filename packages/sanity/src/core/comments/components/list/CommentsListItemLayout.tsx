@@ -2,7 +2,6 @@ import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
 import {
   type AvatarSize,
-  Box,
   Card,
   Flex,
   Stack,
@@ -14,16 +13,15 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {useDidUpdate} from '../../../form'
-import {
-  type RelativeTimeOptions,
-  useDateTimeFormat,
-  useRelativeTime,
-  type UserListWithPermissionsHookValue,
-} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
-import {useUser} from '../../../store'
+import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
+import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
+import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
+import {useUser} from '../../../store/user/hooks'
 import {hasCommentMessageValue, isTextSelectionComment, useCommentHasChanged} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
@@ -35,11 +33,12 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
-import {CommentsAvatar, SpacerAvatar} from '../avatars'
+import {CommentsAvatar} from '../avatars/CommentsAvatar'
+import {SpacerAvatar} from '../avatars/SpacerAvatar'
 import {FLEX_GAP} from '../constants'
-import {CommentMessageSerializer} from '../pte'
-import {CommentInput, type CommentInputHandle} from '../pte/comment-input'
-import {CommentReactionsBar} from '../reactions'
+import {CommentInput, type CommentInputHandle} from '../pte/comment-input/CommentInput'
+import {CommentMessageSerializer} from '../pte/CommentMessageSerializer'
+import {CommentReactionsBar} from '../reactions/CommentReactionsBar'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'
 
@@ -52,6 +51,7 @@ const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
 const EMPTY_ARRAY: [] = []
 
 const TimeText = styled(Text)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const isDark = theme.sanity.color.dark
   const fg = hues.gray[isDark ? 200 : 800].hex
 
@@ -71,6 +71,7 @@ const HeaderFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
 })
 
 const IntentText = styled(Text)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const isDark = theme.sanity.color.dark
   const fg = hues.gray[isDark ? 200 : 800].hex
 
@@ -105,6 +106,7 @@ const RetryCardButton = styled(Card)`
 `
 
 const RootStack = styled(Stack)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = theme.sanity
 
   return css`
@@ -340,9 +342,9 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       data-testid="comments-list-item-layout"
       onKeyDown={handleRootKeyDown}
       ref={rootElementRef}
-      space={4}
+      gap={4}
     >
-      <InnerStack space={1} data-muted={displayError}>
+      <InnerStack gap={1} data-muted={displayError}>
         <HeaderFlex align="center" gap={FLEX_GAP} flex={1} $size={avatarSize}>
           {withAvatar && <CommentsAvatar user={user} size={avatarSize} />}
 
@@ -354,7 +356,9 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
               flex={1}
             >
               <Flex align="flex-end" gap={2}>
-                <Box flex={1}>{name}</Box>
+                <Box flexBasis="0%" flexGrow={1}>
+                  {name}
+                </Box>
 
                 {!displayError && (
                   <Flex align="center" gap={1}>
@@ -377,7 +381,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
             </Flex>
 
             {intent && (
-              <Box flex={1}>
+              <Box flexBasis="0%" flexGrow={1}>
                 <IntentText muted size={0} textOverflow="ellipsis">
                   <Translate
                     t={t}

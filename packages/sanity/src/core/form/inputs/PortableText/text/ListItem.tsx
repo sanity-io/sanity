@@ -1,14 +1,19 @@
-import {type BlockListItemRenderProps} from '@portabletext/editor'
+import {type PortableTextTextBlock} from '@sanity/types'
 import {useMemo} from 'react'
 
-import {type BlockListItemProps} from '../../../types'
+import {type BlockListItemProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 
 const DefaultComponent = (dProps: BlockListItemProps) => {
   return <>{dProps.children}</>
 }
 
-type ListItemProps = Pick<BlockListItemRenderProps, 'block' | 'children' | 'focused' | 'selected'>
+type ListItemProps = {
+  block: PortableTextTextBlock
+  children: React.JSX.Element
+  focused: boolean
+  selected: boolean
+}
 
 export const ListItem = (props: ListItemProps) => {
   const {block, children, selected, focused} = props

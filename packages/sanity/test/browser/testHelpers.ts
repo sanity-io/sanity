@@ -113,8 +113,9 @@ export function testHelpers() {
           data: text,
         }),
       )
-      // Wait for the text to appear
-      await expect.element(page.getByText(text)).toBeVisible()
+      // Wait for the text to appear. Scoped to the editor because short strings also match
+      // labels elsewhere on the page, such as the block style menu's "Heading 1".
+      await expect.element(page.elementLocator(el).getByText(text)).toBeVisible()
     },
 
     /**

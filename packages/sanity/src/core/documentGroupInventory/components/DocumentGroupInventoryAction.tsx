@@ -1,26 +1,30 @@
-import {ChevronDownIcon, ChevronUpIcon} from '@sanity/icons'
 import {LayerProvider, useClickOutsideEvent} from '@sanity/ui'
-import {type ComponentType, type PropsWithChildren, useMemo, useRef, useState} from 'react'
+import {type ComponentType, type PropsWithChildren, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
 import {map} from 'rxjs'
 import {styled} from 'styled-components'
 
 import {Button as BaseButton} from '../../../ui-components/button/Button'
 import {Popover} from '../../../ui-components/popover/Popover'
-import {useVersionRelease} from '../../hooks/useVersionRelease'
-import {type TargetPerspective} from '../../perspective/types'
-import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
-import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
+import {RhombusIcon} from '../../variants/plugin/components/PersonalizationIcons'
 
 export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{
     documentId: string
     portalElementName: string
+    isDocumentGroupInventoryActive: boolean
+    setIsDocumentGroupInventoryActive: (active: boolean) => void
   }>
-> = ({children, documentId, portalElementName}) => {
-  const [isActive, setIsActive] = useState<boolean>(false)
-  const displayedRelease = useVersionRelease(documentId)
+> = ({
+  children,
+  documentId,
+  portalElementName,
+  isDocumentGroupInventoryActive,
+  setIsDocumentGroupInventoryActive,
+}) => {
+  const {t} = useTranslation()
   const buttonElement = useRef<HTMLButtonElement | null>(null)
   const popoverElement = useRef<HTMLDivElement | null>(null)
 
@@ -43,7 +47,7 @@ export const DocumentGroupInventoryAction: ComponentType<
         }
       }
 
-      setIsActive(false)
+      setIsDocumentGroupInventoryActive(false)
     },
     () => [buttonElement.current, popoverElement.current],
   )
@@ -59,53 +63,21 @@ export const DocumentGroupInventoryAction: ComponentType<
         content={children}
         placement="top-end"
         padding={0}
-        open={isActive}
+        open={isDocumentGroupInventoryActive}
         portal={portalElementName}
       >
         <Button
           ref={buttonElement}
           data-testid="action-document-group-inventory"
-          text={variantLabel(displayedRelease?.release)}
+          text={t('document-group-inventory.action.manage-versions')}
           tone="neutral"
-          onClick={() => setIsActive((current) => !current)}
-          icon={<VariantIcon perspective={displayedRelease.release} />}
-          iconRight={isActive ? ChevronDownIcon : ChevronUpIcon}
-          tooltipProps={{}}
+          onClick={() => setIsDocumentGroupInventoryActive(!isDocumentGroupInventoryActive)}
+          icon={RhombusIcon}
           mode="ghost"
         />
       </Popover>
     </LayerProvider>
   )
-}
-
-function variantLabel(perspective: TargetPerspective | undefined): string {
-  if (typeof perspective === 'undefined') {
-    return ''
-  }
-
-  if (isDraftPerspective(perspective)) {
-    return 'Draft'
-  }
-
-  if (isPublishedPerspective(perspective)) {
-    return 'Published'
-  }
-
-  if (typeof perspective === 'string') {
-    return perspective
-  }
-
-  return perspective.metadata.title ?? perspective._id
-}
-
-const VariantIcon: ComponentType<{perspective: TargetPerspective | undefined}> = ({
-  perspective,
-}) => {
-  if (typeof perspective === 'undefined') {
-    return <ReleaseAvatarIcon tone="neutral" />
-  }
-
-  return <ReleaseAvatarIcon release={perspective} />
 }
 
 const Button = styled(BaseButton)`

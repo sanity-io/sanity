@@ -29,7 +29,7 @@ export function CalendarMonth(props: CalendarMonthProps) {
     <Box aria-hidden={hidden || false} data-ui="CalendarMonth">
       <Grid
         style={{
-          gridGap: '1px',
+          gap: '1px',
           gridTemplateColumns: 'repeat(7, 1fr)',
         }}
       >

@@ -1,12 +1,15 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon, TrashIcon} from '@sanity/icons'
-import {Menu, MenuDivider, Spinner} from '@sanity/ui'
+import {CalendarIcon} from '@sanity/icons/Calendar'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {Spinner} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {memo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
-import {useTranslation} from '../../../../i18n'
-import {useWorkspace} from '../../../../studio'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useWorkspace} from '../../../../studio/workspace'
+import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
 import {RELEASES_INTENT} from '../../../plugin'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {useHasCopyToDraftOption} from './CopyToDraftsMenuItem'
@@ -14,12 +17,10 @@ import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
 interface CanonicalReleaseContextMenuProps {
   bundleId: string
-  isVersion: boolean
   release?: ReleaseDocument
   onDiscard: () => void
   onCreateRelease: () => void
-  onCopyToDrafts: () => void
-  onCopyToDraftsNavigate: () => void
+  onCopyToDrafts: (options: CopyToDraftsOptions) => Promise<void>
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   locked?: boolean
@@ -32,7 +33,6 @@ interface CanonicalReleaseContextMenuProps {
    * Defaults to `true`.
    */
   isDiscardable?: boolean
-  documentId: string
   documentType: string
   releases: ReleaseDocument[]
   releasesLoading: boolean
@@ -45,11 +45,9 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     releases,
     releasesLoading,
     bundleId,
-    isVersion,
     onDiscard,
     onCreateRelease,
     onCopyToDrafts,
-    onCopyToDraftsNavigate,
     onCreateVersion,
     disabled,
     locked,
@@ -59,7 +57,6 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     hasDiscardPermission,
     isPublished,
     isDiscardable = true,
-    documentId,
     documentType,
   } = props
   const {t} = useTranslation()
@@ -93,11 +90,9 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
           bundleId={bundleId}
           onCreateRelease={onCreateRelease}
           onCopyToDrafts={onCopyToDrafts}
-          onCopyToDraftsNavigate={onCopyToDraftsNavigate}
           onCreateVersion={onCreateVersion}
           disabled={isCopyToReleaseDisabled}
           hasCreatePermission={hasCreatePermission}
-          documentId={documentId}
           documentType={documentType}
         />
       )}

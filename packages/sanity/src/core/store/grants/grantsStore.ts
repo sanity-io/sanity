@@ -6,6 +6,7 @@ import {refCountDelay} from 'rxjs-etc/operators'
 import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
+import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {debugGrants$} from './debug'
 import {
   type DocumentValuePermission,
@@ -19,14 +20,19 @@ async function getDatasetGrants(
   client: SanityClient,
   projectId: string,
   dataset: string,
+  errorHandler: StoreRequestErrorHandler | undefined,
 ): Promise<Grant[]> {
   // `acl` stands for access control list and returns a list of grants
-  const grants: Grant[] = await client.request({
-    uri: `/projects/${projectId}/datasets/${dataset}/acl`,
-    tag: 'acl.get',
-  })
+  const fetchGrants = () =>
+    client.request<Grant[]>({
+      url: `/projects/${projectId}/datasets/${dataset}/acl`,
+      tag: 'acl.get',
+    })
 
-  return grants
+  // Every permission check depends on this read, so there is no local
+  // recovery if it fails — delegate failures to the error handler when one
+  // is provided. Retryable: it's an idempotent GET, safe to re-run.
+  return errorHandler ? errorHandler.attempt(fetchGrants, {retryable: true}) : fetchGrants()
 }
 
 function getParams(userId: string | null): EvaluationParams {
@@ -60,6 +66,11 @@ async function matchesFilter(userId: string | null, filter: string, document: Sa
 interface GrantsStoreOptionsCurrentUser {
   client: SanityClient
   /**
+   * Optional handler for failures of requests made by the store. When
+   * omitted, request failures propagate to the permission streams.
+   */
+  errorHandler?: StoreRequestErrorHandler
+  /**
    * @deprecated The `currentUser` option is deprecated. Use `userId` instead.
    */
   currentUser: CurrentUser | null
@@ -67,6 +78,11 @@ interface GrantsStoreOptionsCurrentUser {
 
 interface GrantsStoreOptionsUserId {
   client: SanityClient
+  /**
+   * Optional handler for failures of requests made by the store. When
+   * omitted, request failures propagate to the permission streams.
+   */
+  errorHandler?: StoreRequestErrorHandler
   userId: string | null
 }
 
@@ -75,8 +91,9 @@ export type GrantsStoreOptions = GrantsStoreOptionsCurrentUser | GrantsStoreOpti
 
 /** @internal */
 export function createGrantsStore(opts: GrantsStoreOptions): GrantsStore {
-  const {client} = opts
+  const {client, errorHandler} = opts
   const versionedClient = client.withConfig({apiVersion: '2021-06-07'})
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const userId = 'userId' in opts ? opts.userId : opts?.currentUser?.id || null
 
   const datasetGrants$ = defer(() => of(versionedClient.config())).pipe(
@@ -84,12 +101,13 @@ export function createGrantsStore(opts: GrantsStoreOptions): GrantsStore {
       if (!projectId || !dataset) {
         throw new Error('Missing projectId or dataset')
       }
-      return getDatasetGrants(versionedClient, projectId, dataset)
+      return getDatasetGrants(versionedClient, projectId, dataset, errorHandler)
     }),
   )
 
   const currentUserDatasetGrants = debugGrants$.pipe(
     switchMap((debugGrants) => (debugGrants ? of(debugGrants) : datasetGrants$)),
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     publishReplay(1),
     refCountDelay(1000),
   )

@@ -1,9 +1,12 @@
-import {ArrowRightIcon, ComposeSparklesIcon, WarningOutlineIcon} from '@sanity/icons'
+import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
+import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SanityDocument} from '@sanity/types'
-import {type BadgeTone, Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type BadgeTone, Card, Flex, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {motion} from 'motion/react'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
@@ -27,6 +30,7 @@ const VersionChip = ({id, showSparkles}: {id: string; showSparkles?: boolean}) =
     <ChipCard tone={badgeTone} padding={2} paddingRight={3} radius={'full'}>
       <Flex gap={2} align="center">
         <Text size={1}>
+          {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
           <ReleaseAvatarIcon tone={documentVariantType === 'published' ? 'positive' : 'caution'} />
         </Text>
         <Text size={1} weight="medium">
@@ -65,7 +69,7 @@ export function LinkToCanvasDiff({
               <WarningOutlineIcon />
             </Text>
           </Box>
-          <Stack space={2}>
+          <Stack gap={2}>
             <Box padding={1}>
               <Text size={1} weight="semibold">
                 {t('dialog.confirm-document-changes.title')}

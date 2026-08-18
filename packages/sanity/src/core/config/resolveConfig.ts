@@ -3,7 +3,7 @@ import {type CurrentUser} from '@sanity/types'
 import {combineLatest, firstValueFrom, type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 
-import {createMockAuthStore} from '../store'
+import {createMockAuthStore} from '../store/authStore/createMockAuthStore'
 import {prepareConfig} from './prepareConfig'
 import {
   type Config,
@@ -25,6 +25,7 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
 
   return combineLatest(
     workspaces.flatMap((workspaceSummary) =>
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       combineLatest(workspaceSummary.__internal.sources.map(({source}) => source)).pipe(
         map((sources): Workspace => {
           const {releases: _releases, ...workspaceMetadata} = workspaceSummary

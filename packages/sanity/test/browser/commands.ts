@@ -8,6 +8,9 @@ import {type BrowserCommand} from 'vitest/node'
  * Used by browser tests that need to read test fixture files (e.g., images).
  */
 export const readFileAsBase64: BrowserCommand<[filePath: string]> = ({testPath}, filePath) => {
+  if (!testPath) {
+    throw new Error('readFileAsBase64 can only be used within a test file')
+  }
   const resolved = path.isAbsolute(filePath)
     ? filePath
     : path.resolve(path.dirname(testPath), filePath)

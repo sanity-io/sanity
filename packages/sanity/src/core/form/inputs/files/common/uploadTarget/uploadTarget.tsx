@@ -1,12 +1,9 @@
 import {type AssetSource, type SchemaType} from '@sanity/types'
-import {Box, type CardTone, Flex, Text, useToast} from '@sanity/ui'
+import {Box, type CardTone, Flex, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import uniqBy from 'lodash-es/uniqBy.js'
 import {
   type ComponentType,
-  type ForwardedRef,
-  forwardRef,
-  type ForwardRefExoticComponent,
-  type PropsWithoutRef,
   type ReactNode,
   type RefAttributes,
   useCallback,
@@ -17,9 +14,9 @@ import {
 import {styled} from 'styled-components'
 
 import {type FIXME} from '../../../../../FIXME'
-import {useClient} from '../../../../../hooks'
-import {useTranslation} from '../../../../../i18n'
-import {useSource} from '../../../../../studio'
+import {useClient} from '../../../../../hooks/useClient'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useSource} from '../../../../../studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {_isType} from '../../../../../util/schemaUtils'
 import {
@@ -31,11 +28,12 @@ import {
   matchesSchemaTypeAccept,
 } from '../../../../studio/uploads/matchSchemaTypeAccept'
 import {resolveUploadAssetSources} from '../../../../studio/uploads/resolveUploadAssetSources'
-import {type InputOnSelectFileFunctionProps, type UploadEvent} from '../../../../types'
+import {type UploadEvent} from '../../../../types/event'
+import {type InputOnSelectFileFunctionProps} from '../../../../types/inputProps'
 import {useFormBuilder} from '../../../../useFormBuilder'
 import {getAssetSourcesWithUpload, isComponentModeAssetSource} from '../assetSourceUtils'
 import {DropMessage} from '../DropMessage'
-import {type FileInfo, fileTarget} from '../fileTarget'
+import {type FileInfo, fileTarget} from '../fileTarget/fileTarget'
 import {UploadDestinationPicker} from '../UploadDestinationPicker'
 import {Overlay} from './styles'
 
@@ -72,17 +70,12 @@ const Root = styled.div`
 
 export function uploadTarget<Props>(
   Component: ComponentType<Props>,
-): ForwardRefExoticComponent<
-  PropsWithoutRef<UploadTargetProps & Props> & RefAttributes<HTMLElement>
-> {
+): (props: UploadTargetProps & Props & RefAttributes<HTMLElement>) => ReactNode {
   const FileTarget = fileTarget<FIXME>(Component)
 
-  // @ts-expect-error TODO fix PropsWithoutRef related union typings
-  return forwardRef(function UploadTarget(
-    props: UploadTargetProps & Props,
-    forwardedRef: ForwardedRef<HTMLElement>,
-  ) {
+  return function UploadTarget(props: UploadTargetProps & Props & RefAttributes<HTMLElement>) {
     const {
+      ref: forwardedRef,
       children,
       isReadOnly,
       onOpenSourceForUpload,
@@ -97,6 +90,7 @@ export function uploadTarget<Props>(
     const {push: pushToast} = useToast()
     const {t} = useTranslation()
     const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const source = useSource()
 
     const formBuilder = useFormBuilder()
@@ -375,7 +369,7 @@ export function uploadTarget<Props>(
         </FileTarget>
       </Root>
     )
-  })
+  }
 }
 
 /**

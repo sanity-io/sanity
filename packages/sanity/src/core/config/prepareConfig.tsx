@@ -1,5 +1,5 @@
 import {fromUrl} from '@sanity/bifur-client'
-import {createClient, type SanityClient} from '@sanity/client'
+import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
@@ -18,19 +18,23 @@ import {
   createSanityMediaLibraryFileSource,
   createSanityMediaLibraryImageSource,
 } from '../form/studio/assetSourceMediaLibrary'
-import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
-import {createSchema} from '../schema'
-import {type AuthStore, createAuthStore, isAuthStore} from '../store'
-import {validateWorkspaces} from '../studio'
+import {type LocaleSource} from '../i18n/types'
+import {createSchema} from '../schema/createSchema'
+import {createAuthStore, type RequestFailureDiagnostics} from '../store/authStore/createAuthStore'
+import {type AuthStore} from '../store/authStore/types'
+import {isAuthStore} from '../store/authStore/utils/asserters'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {fetchCanDeployStudio} from '../studio/manifest/canDeployStudio'
 import {uploadSchema} from '../studio/manifest/uploadSchema'
+import {type RequestErrorChannel} from '../studio/requestErrors/types'
+import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
-import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
-import {EMPTY_ARRAY, isNonNullable} from '../util'
+import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
 import {canonicalHash} from '../util/canonicalHash'
+import {EMPTY_ARRAY} from '../util/empty'
+import {isNonNullable} from '../util/isNonNullable'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
@@ -67,7 +71,8 @@ import {
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {recordConfigWarning} from './configWarnings'
 import {createDefaultIcon} from './createDefaultIcon'
-import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
+import {initialDocumentFieldActions} from './document/fieldActions'
+import {documentFieldActionsReducer} from './document/fieldActions/reducer'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
@@ -264,7 +269,12 @@ const createDatasetAssetSources = (config: SourceOptions, client: SanityClient) 
  */
 export function prepareConfig(
   config: Config | MissingConfigFile,
-  options?: {basePath?: string},
+  options?: {
+    basePath?: string
+    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    requestErrorChannel?: RequestErrorChannel
+    requestFailureDiagnostics?: RequestFailureDiagnostics
+  },
 ): PreparedConfig {
   if (!Array.isArray(config) && 'missingConfigFile' in config) {
     throw new ConfigResolutionError({
@@ -356,7 +366,11 @@ export function prepareConfig(
         throw new SchemaError(schema)
       }
 
-      const auth = getAuthStore(source)
+      const auth = getAuthStore(source, {
+        createStudioRequestHandler: options?.createStudioRequestHandler,
+        requestErrorChannel: options?.requestErrorChannel,
+        requestFailureDiagnostics: options?.requestFailureDiagnostics,
+      })
       const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {
@@ -399,10 +413,12 @@ export function prepareConfig(
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
       projectId: rootSource.projectId,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       theme: rootSource.theme || studioTheme,
       title,
       subtitle: rootSource.subtitle,
       hidden: rootSource.hidden,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       __internal: {
         sources: resolvedSources,
       },
@@ -415,14 +431,45 @@ export function prepareConfig(
   return {type: 'prepared-config', workspaces}
 }
 
-function getAuthStore(source: SourceOptions): AuthStore {
+function getAuthStore(
+  source: SourceOptions,
+  {
+    createStudioRequestHandler,
+    requestErrorChannel,
+    requestFailureDiagnostics,
+  }: {
+    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    requestErrorChannel?: RequestErrorChannel
+    requestFailureDiagnostics?: RequestFailureDiagnostics
+  },
+): AuthStore {
   if (isAuthStore(source.auth)) {
     return source.auth
   }
 
-  const clientFactory = source.unstable_clientFactory || createClient
+  const clientFactory = source.unstable_clientFactory ?? createClient
+
   const {projectId, dataset, apiHost} = source
-  return createAuthStore({apiHost, ...source.auth, clientFactory, dataset, projectId})
+  return createAuthStore({
+    apiHost,
+    ...source.auth,
+    clientFactory: (config) => {
+      let client: SanityClient
+      client = clientFactory({
+        ...config,
+        ...(createStudioRequestHandler
+          ? {requestHandler: createStudioRequestHandler(() => client)}
+          : {}),
+      })
+      return client
+    },
+    // Passed as getters so this unhashable runtime wiring stays out of the
+    // auth-store memo key.
+    getRequestErrorHandler: () => requestErrorChannel,
+    getRequestFailureDiagnostics: () => requestFailureDiagnostics,
+    dataset,
+    projectId,
+  })
 }
 
 interface ResolveSourceOptions {
@@ -437,6 +484,7 @@ interface ResolveSourceOptions {
 
 function getBifurClient(client: SanityClient, auth: AuthStore) {
   const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dataset, url: baseUrl, requestTagPrefix = 'sanity.studio'} = bifurVersionedClient.config()
   const url = `${baseUrl.replace(/\/+$/, '')}/socket/${dataset}`.replace(/^http/, 'ws')
   const urlWithTag = `${url}?tag=${requestTagPrefix}`
@@ -563,14 +611,13 @@ function resolveSource({
   const initialTemplatesResponses = templates
     // filter out the ones with parameters to fill
     .filter((template) => !template.parameters?.length)
-    .map(
-      (template): TemplateItem => ({
-        templateId: template.id,
-        description: template.description,
-        icon: template.icon,
-        title: template.title,
-      }),
-    )
+    .map((template): TemplateItem => ({
+      templateId: template.id,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      description: template.description,
+      icon: template.icon,
+      title: template.title,
+    }))
 
   const templateMap = templates.reduce((acc, template) => {
     acc.set(template.id, template)
@@ -631,7 +678,9 @@ function resolveSource({
             type: 'initialValueTemplateItem',
             title,
             i18n: response.i18n || template.i18n,
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             subtitle: response.subtitle || defaultSubtitle,
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
             description: response.description || template.description,
             icon: response.icon || template.icon || schemaType?.icon,
             initialDocumentId: response.initialDocumentId,
@@ -766,6 +815,7 @@ function resolveSource({
           reducer: documentLanguageFilterReducer,
         }),
       /** @todo this is deprecated so it will eventually be removed */
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       unstable_comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
@@ -871,6 +921,7 @@ function resolveSource({
 
     beta: {
       eventsAPI: {
+        // oxlint-disable-next-line no-deprecated -- still resolved so the legacy timeline opt-out keeps working until the next major
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },

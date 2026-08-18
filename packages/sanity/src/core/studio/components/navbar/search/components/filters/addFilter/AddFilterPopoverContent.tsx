@@ -1,13 +1,14 @@
-import {Box, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
+import {CommandList} from '../../../../../../../components/commandList/CommandList'
 import {
-  CommandList,
   type CommandListGetItemDisabledCallback,
   type CommandListRenderItemCallback,
-} from '../../../../../../../components'
-import {useSchema} from '../../../../../../../hooks'
-import {useTranslation} from '../../../../../../../i18n'
+} from '../../../../../../../components/commandList/types'
+import {useSchema} from '../../../../../../../hooks/useSchema'
+import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'

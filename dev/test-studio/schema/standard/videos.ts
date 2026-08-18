@@ -1,4 +1,4 @@
-import {VideoIcon} from '@sanity/icons'
+import {VideoIcon} from '@sanity/icons/Video'
 import {defineField, defineType} from 'sanity'
 import {defineVideoField} from 'sanity/media-library'
 

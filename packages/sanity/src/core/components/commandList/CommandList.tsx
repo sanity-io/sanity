@@ -1,9 +1,13 @@
 import {Box, rem, Stack} from '@sanity/ui'
-import {type ScrollToOptions, useVirtualizer, type Virtualizer} from '@tanstack/react-virtual'
+import {
+  measureElement,
+  type ScrollToOptions,
+  useVirtualizer,
+  type Virtualizer,
+} from '@tanstack/react-virtual'
 import throttle from 'lodash-es/throttle.js'
 import {
   cloneElement,
-  forwardRef,
   Fragment,
   isValidElement,
   memo,
@@ -14,6 +18,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
 
@@ -38,7 +43,7 @@ const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
 const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
   return css`
     bottom: ${-offset}px;
-    border-radius: ${rem(theme.sanity.radius[1])};
+    border-radius: ${rem(theme.sanity.radius[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
     left: ${-offset}px;
     pointer-events: none;
     position: absolute;
@@ -48,7 +53,9 @@ const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
 
     ${VirtualListBox}:focus-visible & {
       box-shadow: ${focusRingStyle({
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         base: theme.sanity.color.base,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         focusRing: theme.sanity.focusRing,
       })};
     }
@@ -95,35 +102,32 @@ const VirtualListChildBox = styled(Box) //
   width: 100%;
 `
 
-// oxlint-disable-next-line react/react-compiler
-const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(function CommandList(
-  {
-    activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,
-    ariaLabel,
-    ariaMultiselectable = false,
-    autoFocus,
-    canReceiveFocus,
-    fixedHeight,
-    focusRingOffset = 0,
-    getItemDisabled,
-    getItemKey,
-    getItemSelected,
-    initialIndex,
-    initialScrollAlign = 'start',
-    inputElement,
-    itemHeight,
-    items,
-    onEndReached,
-    onEndReachedIndexOffset = 0,
-    onlyShowSelectionWhenActive,
-    overscan,
-    renderItem,
-    testId,
-    wrapAround = true,
-    ...responsivePaddingProps
-  },
+function CommandListComponent({
   ref,
-) {
+  activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,
+  ariaLabel,
+  ariaMultiselectable = false,
+  autoFocus,
+  canReceiveFocus,
+  fixedHeight,
+  focusRingOffset = 0,
+  getItemDisabled,
+  getItemKey,
+  getItemSelected,
+  initialIndex,
+  initialScrollAlign = 'start',
+  inputElement,
+  itemHeight,
+  items,
+  onEndReached,
+  onEndReachedIndexOffset = 0,
+  onlyShowSelectionWhenActive,
+  overscan,
+  renderItem,
+  testId,
+  wrapAround = true,
+  ...responsivePaddingProps
+}: CommandListProps & RefAttributes<CommandListHandle>) {
   const isMountedRef = useRef(false)
   const [commandListId] = useState(useId())
   const activeIndexRef = useRef(initialIndex ?? 0)
@@ -157,6 +161,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
     getItemKey,
     getScrollElement: () => virtualListElement,
     estimateSize: () => itemHeight,
+    measureElement: measureVisibleElement,
     onChange: handleChange,
     overscan,
   })
@@ -628,7 +633,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
       )}
     </VirtualListBox>
   )
-})
+}
 
 /**
  * Renders a Command List with support for the following:
@@ -641,9 +646,9 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
  * @internal
  */
 export const CommandList = memo(CommandListComponent)
-CommandList.displayName = 'Memo(ForwardRef(CommandList))'
+CommandList.displayName = 'Memo(CommandList)'
 
-const CommandListItemComponent = forwardRef(function CommandListItem(
+function CommandListItemComponent(
   props: {
     children: React.ReactNode
     activeIndex: number | null
@@ -656,10 +661,10 @@ const CommandListItemComponent = forwardRef(function CommandListItem(
     selected: boolean
     virtualIndex: number
     virtualRowStart: number
-  },
-  forwardedRef: React.ForwardedRef<HTMLDivElement>,
+  } & RefAttributes<HTMLLIElement>,
 ) {
   const {
+    ref: forwardedRef,
     children,
     activeIndex,
     activeItemCount,
@@ -718,10 +723,10 @@ const CommandListItemComponent = forwardRef(function CommandListItem(
       {children}
     </Stack>
   )
-})
+}
 
 const CommandListItem = memo(CommandListItemComponent)
-CommandListItem.displayName = 'Memo(ForwardRef(CommandListItem))'
+CommandListItem.displayName = 'Memo(CommandListItem)'
 
 function getItemIndicies(
   items: FIXME[],
@@ -748,4 +753,40 @@ function getItemIndicies(
     }
     return acc
   }, [])
+}
+
+/**
+ * Retrieve the element's measured dimensions if its scroll element is visible
+ * or its measured dimensions are greater than zero, otherwise retrieve its
+ * cached or estimated dimensions.
+ *
+ * This prevents the element's lack of dimensions when its scroll element is
+ * hidden from poisoning its virtualization state.
+ */
+function measureVisibleElement(
+  element: Element,
+  entry: ResizeObserverEntry | undefined,
+  instance: Virtualizer<HTMLElement, Element>,
+): number {
+  const measuredSize = measureElement(element, entry, instance)
+
+  if (measuredSize > 0) {
+    return measuredSize
+  }
+
+  const scrollElement = instance.scrollElement
+  const isHidden = scrollElement?.offsetWidth === 0 || scrollElement?.offsetHeight === 0
+
+  if (!isHidden) {
+    return measuredSize
+  }
+
+  const index = instance.indexFromElement(element)
+  const cachedSize = instance.itemSizeCache.get(instance.options.getItemKey(index))
+
+  if (cachedSize !== undefined && cachedSize > 0) {
+    return cachedSize
+  }
+
+  return instance.options.estimateSize(index)
 }

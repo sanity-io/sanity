@@ -12,22 +12,25 @@ import {useMiddlewareComponents} from '../../../../config/components/useMiddlewa
 import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
 import {type MarkdownConfig, type PortableTextPluginsProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {PortableTextTablePlugin} from './TablePlugin'
 
 const markdownConfig: MarkdownConfig = {
-  boldDecorator: ({schema}) =>
+  boldDecorator: ({context: {schema}}) =>
     schema.decorators.find((decorator) => decorator.name === 'strong')?.name,
-  codeDecorator: ({schema}) =>
+  codeDecorator: ({context: {schema}}) =>
     schema.decorators.find((decorator) => decorator.name === 'code')?.name,
-  italicDecorator: ({schema}) =>
+  italicDecorator: ({context: {schema}}) =>
     schema.decorators.find((decorator) => decorator.name === 'em')?.name,
-  strikeThroughDecorator: ({schema}) =>
+  strikeThroughDecorator: ({context: {schema}}) =>
     schema.decorators.find((decorator) => decorator.name === 'strike-through')?.name,
-  defaultStyle: ({schema}) => schema.styles.find((style) => style.name === 'normal')?.name,
-  blockquoteStyle: ({schema}) => schema.styles.find((style) => style.name === 'blockquote')?.name,
-  headingStyle: ({schema, level}) =>
+  defaultStyle: ({context: {schema}}) =>
+    schema.styles.find((style) => style.name === 'normal')?.name,
+  blockquoteStyle: ({context: {schema}}) =>
+    schema.styles.find((style) => style.name === 'blockquote')?.name,
+  headingStyle: ({context: {schema}, props: {level}}) =>
     schema.styles.find((style) => style.name === `h${level}`)?.name,
-  orderedListStyle: ({schema}) => schema.lists.find((list) => list.name === 'number')?.name,
-  unorderedListStyle: ({schema}) => schema.lists.find((list) => list.name === 'bullet')?.name,
+  orderedList: ({context: {schema}}) => schema.lists.find((list) => list.name === 'number')?.name,
+  unorderedList: ({context: {schema}}) => schema.lists.find((list) => list.name === 'bullet')?.name,
 }
 
 export const PortableTextEditorPlugins = (props: {
@@ -86,6 +89,7 @@ export const PortableTextEditorPlugins = (props: {
     (): PortableTextPluginsProps => ({
       plugins: {
         markdown: {
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           config: markdownConfig,
         },
         pasteLink: {},
@@ -97,6 +101,7 @@ export const PortableTextEditorPlugins = (props: {
               ),
           }),
         },
+        table: {},
       },
       renderDefault: RenderDefault,
     }),
@@ -138,6 +143,7 @@ function DefaultPortableTextEditorPlugins(props: Omit<PortableTextPluginsProps, 
       <DefaultMarkdownShortcutsPlugin {...props.plugins.markdown} />
       <DefaultPasteLinkPlugin {...props.plugins.pasteLink} />
       <DefaultTypographyPlugin {...props.plugins.typography} />
+      <DefaultTablePlugin {...props.plugins.table} />
     </>
   )
 }
@@ -151,13 +157,16 @@ function DefaultMarkdownShortcutsPlugin(
     return null
   }
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   if (!props.config) {
     const {enabled: _enabled, config: _config, ...markdownShortcutsPluginProps} = props
 
     return <MarkdownShortcutsPlugin {...markdownShortcutsPluginProps} />
   }
 
+  // oxlint-disable-next-line no-deprecated -- backwards-compat bridge for plugin authors still using the old field names
   const {orderedList, orderedListStyle, unorderedList, unorderedListStyle, ...restMarkdownConfig} =
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     props.config
 
   return (
@@ -167,6 +176,15 @@ function DefaultMarkdownShortcutsPlugin(
       {...restMarkdownConfig}
     />
   )
+}
+
+function DefaultTablePlugin(props: PortableTextPluginsProps['plugins']['table']) {
+  // Tables are opt-in, unlike the other built-in plugins.
+  if (props?.enabled !== true) {
+    return null
+  }
+
+  return <PortableTextTablePlugin containers={props.containers} />
 }
 
 function DefaultPasteLinkPlugin(props: PortableTextPluginsProps['plugins']['pasteLink']) {

@@ -2,8 +2,8 @@ import {renderHook} from '@testing-library/react'
 import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {useFeatureEnabled} from '../../hooks'
 import {useClient} from '../../hooks/useClient'
+import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useWorkspace} from '../../studio/workspace'
 import {cachedUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'
 import {
@@ -11,7 +11,8 @@ import {
   useScheduledPublishingEnabled,
 } from './ScheduledPublishingEnabledProvider'
 
-vi.mock('../../hooks')
+vi.mock('../../hooks/useClient')
+vi.mock('../../hooks/useFeatureEnabled')
 
 vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({}),
@@ -21,6 +22,7 @@ vi.mock('../../hooks/useClient', () => ({
   useClient: vi.fn(),
 }))
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 const useClientMock = useClient as ReturnType<typeof vi.fn>
 const mockObservableRequest = vi.fn((schedules) => of({schedules}))
 const scheduleResponse = [

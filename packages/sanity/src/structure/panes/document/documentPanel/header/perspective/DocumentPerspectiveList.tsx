@@ -1,8 +1,11 @@
 import {Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 import {
+  getDraftId,
+  getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
+  getVersionId,
   isGoingToUnpublish,
   isReleaseScheduledOrScheduling,
   type ReleaseDocument,
@@ -77,16 +80,18 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {t} = useTranslation()
   const dateTimeFormat = useDateTimeFormat(DATE_TIME_FORMAT)
   const {loading} = useActiveReleases()
-  const {editState, displayed} = useDocumentPane()
+  const {editState, displayed, documentId} = useDocumentPane()
   const {documentType} = useDocumentPaneInfo()
-
+  const documentGroupId = getPublishedId(documentId)
   const {
     filteredReleases,
     getVersionDisplay,
     getReleaseChipState,
-    handleCopyToDraftsNavigate,
+    clearScheduledDraftPerspective,
     handlePerspectiveChange,
+    handleVariantSelectionChange,
     isDraftDisabled,
+    variantVersions,
     isDraftModelEnabled,
     isDraftSelected,
     isLiveEdit,
@@ -116,9 +121,10 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         selected={isPublishSelected}
         text={t('release.chip.published')}
         tone="positive"
-        onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+        onCopyToDraftsComplete={clearScheduledDraftPerspective}
         contextValues={{
-          documentId: editState?.published?._id || editState?.id || '',
+          documentGroupId,
+          versionId: getPublishedId(documentGroupId),
           releases: filteredReleases.notCurrentReleases,
           releasesLoading: loading,
           documentType,
@@ -161,9 +167,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           text={t('release.chip.draft')}
           tone={editState?.draft ? 'caution' : 'neutral'}
           onClick={() => handlePerspectiveChange('drafts')}
-          onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+          onCopyToDraftsComplete={clearScheduledDraftPerspective}
           contextValues={{
-            documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
+            documentGroupId,
+            // With no draft the chip displays the published document, so act on that instead —
+            // adding to a release should duplicate the content on screen.
+            versionId:
+              editState?.draft?._id ?? editState?.published?._id ?? getDraftId(documentGroupId),
             documentType: documentType,
             releases: filteredReleases.notCurrentReleases,
             releasesLoading: loading,
@@ -182,7 +192,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             <VersionChip
               tooltipContent={
                 isTruncated ? (
-                  <Stack space={2} style={{maxWidth: '300px'}}>
+                  <Stack gap={2} style={{maxWidth: '300px'}}>
                     <Text size={1} weight="medium">
                       {fullTitle}
                     </Text>
@@ -197,9 +207,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               locked={false}
               tone={getReleaseTone(filteredReleases.inCreation!)}
               text={displayTitle}
-              onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+              onCopyToDraftsComplete={clearScheduledDraftPerspective}
               contextValues={{
-                documentId: displayed?._id || '',
+                documentGroupId,
+                versionId: getVersionId(
+                  documentGroupId,
+                  getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation!._id),
+                ),
                 documentType,
                 disabled: true,
                 releases: filteredReleases.notCurrentReleases,
@@ -225,7 +239,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               <VersionChip
                 tooltipContent={
                   isTruncated ? (
-                    <Stack space={2} style={{maxWidth: '300px'}}>
+                    <Stack gap={2} style={{maxWidth: '300px'}}>
                       <Text size={1} weight="medium">
                         {fullTitle}
                       </Text>
@@ -240,9 +254,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
                 text={displayTitle}
                 tone={getReleaseTone(release)}
                 locked={isReleaseScheduledOrScheduling(release)}
-                onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+                onCopyToDraftsComplete={clearScheduledDraftPerspective}
                 contextValues={{
-                  documentId: displayed?._id || '',
+                  documentGroupId,
+                  versionId: getVersionId(
+                    documentGroupId,
+                    getReleaseIdFromReleaseDocumentId(release._id),
+                  ),
                   documentType,
                   releases: filteredReleases.notCurrentReleases,
                   releasesLoading: loading,
@@ -260,13 +278,30 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
       <NonReleaseVersionsSelect
         nonReleaseVersions={nonReleaseVersions}
         selectedPerspective={selectedPerspectiveName}
-        onSelectBundle={handlePerspectiveChange}
-        onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+        onSelectBundle={(version) => {
+          const scopeId = version._system.scopeId!
+          handlePerspectiveChange(scopeId)
+        }}
+        onCopyToDraftsComplete={clearScheduledDraftPerspective}
         releases={filteredReleases.notCurrentReleases}
         releasesLoading={loading}
         documentType={documentType}
         getVersionDisplay={getVersionDisplay}
+        mode="versions"
       />
+      {variantVersions.length > 0 ? (
+        <NonReleaseVersionsSelect
+          nonReleaseVersions={variantVersions}
+          selectedPerspective={selectedPerspectiveName}
+          onSelectBundle={handleVariantSelectionChange}
+          onCopyToDraftsComplete={clearScheduledDraftPerspective}
+          releases={filteredReleases.notCurrentReleases}
+          releasesLoading={loading}
+          documentType={documentType}
+          getVersionDisplay={getVersionDisplay}
+          mode="variants"
+        />
+      ) : null}
     </>
   )
 })

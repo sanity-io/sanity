@@ -1,12 +1,12 @@
 import {Stack, Text} from '@sanity/ui'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 /** @internal */
 export function NoChanges() {
   const {t} = useTranslation()
   return (
-    <Stack space={3} paddingTop={2}>
+    <Stack gap={3} paddingTop={2}>
       <Text size={1} weight="medium" as="h3">
         {t('changes.no-changes-title')}
       </Text>

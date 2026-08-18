@@ -1,8 +1,9 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {debounce, distinctUntilChanged, merge, share, shareReplay, skip, take, timer} from 'rxjs'
 
-import {type EditStateFor, useDocumentStore} from '../store'
+import {useDocumentStore} from '../store/datastores'
+import {type EditStateFor} from '../store/document/document-pair/editState'
 
 // Snapshot refs (draft/published/version) are preserved upstream when content
 // hasn't changed, so ref equality on those + ready + transactionSyncLock catches
@@ -50,5 +51,5 @@ export function useEditState(
    * We know that since the observable has a startWith operator, it will always emit a value
    * and that's why the non-null assertion is used here
    */
-  return useObservable(observable)!
+  return useSyncObservable(observable)!
 }

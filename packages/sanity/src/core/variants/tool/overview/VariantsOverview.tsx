@@ -1,33 +1,42 @@
-import {AddIcon, SearchIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {AddIcon} from '@sanity/icons/Add'
+import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {useTranslation} from '../../../i18n'
-import {Table, type TableProps} from '../../../releases/tool/components/Table/Table'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
+import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type SystemVariant} from '../../types'
-import {filterVariantsForSearch, getVariantId} from '../util'
+import {
+  buildConditionFacets,
+  filterVariantsForSearch,
+  getVariantId,
+  variantMatchesConditionFilters,
+} from '../util'
+import {VariantConditionFilters} from './VariantConditionFilters'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
-import {variantsOverviewColumnDefs} from './VariantsOverviewColumnDefs'
+import {type TableVariant, variantsOverviewColumnDefs} from './VariantsOverviewColumnDefs'
 
 const VARIANT_TABLE_ROW_ID = '_id'
+const getRowKey = (variant: TableVariant): string => variant._id
+// DocumentTable filters internally per-row; reuse the list matcher on a single-element list so the
+// search behaviour stays identical to the previous standalone search box.
+const searchPredicate = (variant: TableVariant, term: string): boolean =>
+  filterVariantsForSearch([variant], term).length > 0
 
-export function VariantsOverview() {
+export function VariantsOverview(): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const router = useRouter()
   const {data: variants, error, loading} = useAllVariants()
-  const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
   const [isCreateVariantDialogOpen, setIsCreateVariantDialogOpen] = useState(false)
+  const [conditionFilters, setConditionFilters] = useState<Record<string, string[]>>({})
 
-  const handleCreateVariant = useCallback(() => {
-    setIsCreateVariantDialogOpen(true)
-  }, [])
+  const handleCreateVariant = useCallback(() => setIsCreateVariantDialogOpen(true), [])
 
   const handleOnCreateVariant = useCallback(
     (createdVariantId: string) => {
@@ -38,18 +47,41 @@ export function VariantsOverview() {
   )
 
   const columnDefs = useMemo(() => variantsOverviewColumnDefs(t), [t])
-  const renderRowActions = useCallback<
-    NonNullable<TableProps<SystemVariant, undefined>['rowActions']>
-  >(({datum}) => <VariantMenuButton variant={datum as SystemVariant} />, [])
+
+  const renderRowActions = useCallback(
+    ({datum}: {datum: unknown}) => (
+      <VariantMenuButton
+        documentCount={(datum as TableVariant).documentCount}
+        variant={datum as SystemVariant}
+      />
+    ),
+    [],
+  )
 
   const variantsList = useMemo(() => variants ?? [], [variants])
+  const {data: documentCounts, error: documentCountsError} = useVariantsDocumentCounts()
 
-  const filteredVariants = useMemo(
-    () => filterVariantsForSearch(variantsList, searchQuery),
-    [variantsList, searchQuery],
+  // Facets come from the full list so the dropdown options never shrink as filters are applied.
+  const facets = useMemo(() => buildConditionFacets(variantsList), [variantsList])
+
+  // Rows are pre-filtered by the active condition filters; DocumentTable owns the free-text search
+  // on top of that via searchPredicate.
+  const rows = useMemo(
+    () =>
+      variantsList
+        .filter((variant) => variantMatchesConditionFilters(variant, conditionFilters))
+        .map((variant): TableVariant => ({
+          ...variant,
+          documentCount: documentCounts?.[variant._id] ?? (documentCountsError ? null : undefined),
+        })),
+    [variantsList, conditionFilters, documentCounts, documentCountsError],
   )
 
   const hasVariants = variantsList.length > 0
+  const hasActiveConditionFilters = useMemo(
+    () => Object.values(conditionFilters).some((values) => values.length > 0),
+    [conditionFilters],
+  )
 
   const createVariantButton = useMemo(
     () => (
@@ -57,7 +89,7 @@ export function VariantsOverview() {
         disabled={isCreateVariantDialogOpen}
         icon={AddIcon}
         onClick={handleCreateVariant}
-        text={t('overview.action.create-variant')}
+        text={t('overview.action.new-variant')}
       />
     ),
     [handleCreateVariant, isCreateVariantDialogOpen, t],
@@ -74,17 +106,28 @@ export function VariantsOverview() {
       )
     }
 
+    if (hasVariants && hasActiveConditionFilters && rows.length === 0) {
+      return (
+        <Flex align="center" direction="column" gap={3} justify="center" padding={4}>
+          <Text data-testid="variants-filter-empty-state" muted size={1}>
+            {t('overview.filter.no-matching-definitions')}
+          </Text>
+        </Flex>
+      )
+    }
+
     return <VariantsEmptyState createVariantButton={createVariantButton} />
-  }, [createVariantButton, error, hasVariants, t])
+  }, [createVariantButton, error, hasActiveConditionFilters, hasVariants, rows.length, t])
 
   return (
     <Flex direction="column" flex={1} height="fill">
-      {/* Same container width as releases document table (`container[3]` in Table), so chrome aligns with row content */}
+      {/* Same container width as the releases document table (`container[3]`), so the page header
+          aligns with the table's row content below. */}
       <Container flex="none" width={3}>
         <Flex direction="column" paddingX={3}>
-          <Card flex="none" paddingY={5}>
+          <Card flex="none" paddingBottom={4} paddingTop={5}>
             <Flex align="flex-start" gap={4} justify="space-between">
-              <Stack space={3}>
+              <Stack gap={2}>
                 <Text as="h1" size={4} weight="bold">
                   {t('overview.title')}
                 </Text>
@@ -96,39 +139,46 @@ export function VariantsOverview() {
             </Flex>
           </Card>
 
-          <Box flex="none" paddingBottom={4} paddingTop={2}>
-            <TextInput
-              clearButton={!!searchQuery}
-              fontSize={1}
-              icon={SearchIcon}
-              onChange={(event) => setSearchQuery(event.currentTarget.value)}
-              onClear={() => setSearchQuery('')}
-              placeholder={t('overview.search.placeholder')}
-              radius={3}
-              value={searchQuery}
-            />
-          </Box>
-
           {error && (
-            <Card flex="none" padding={3} tone="critical">
+            <Card flex="none" marginBottom={4} padding={3} tone="critical">
               <Text size={1}>{t('overview.error')}</Text>
             </Card>
           )}
         </Flex>
       </Container>
 
-      {/* Full-width scroll region so table borders span the tool pane (same pattern as release detail summary). */}
-      <Box flex={1} overflow="auto" ref={setScrollContainerRef}>
-        <Table<SystemVariant>
-          columnDefs={columnDefs}
-          data={filteredVariants}
-          emptyState={tableEmptyState}
-          loading={loading}
-          rowId={VARIANT_TABLE_ROW_ID}
-          rowActions={renderRowActions}
-          scrollContainerRef={scrollContainerRef}
-        />
-      </Box>
+      {/* Shared DocumentTable — the same table the release and variant detail surfaces use: search in
+          the command lane and per-row actions. (Multi-select is supported by the component but not
+          wired here yet — bulk operations ship separately once transactional batching lands.) */}
+      <DocumentTable<TableVariant>
+        alwaysShowCommandLane
+        columnDefs={columnDefs}
+        // Reserve the bordered filter group's height so selecting rows (which swaps in the shorter
+        // bulk toolbar) never shifts the table.
+        commandLaneMinHeight={47}
+        emptyState={tableEmptyState}
+        filterTabs={
+          // VariantConditionFilters renders nothing when there are no condition facets; passing the
+          // element unconditionally would still read as "tabs present" to DocumentTable and strand a
+          // fixed-width search with an empty gutter. Omit it so the search lane fills the row.
+          facets.length > 0 ? (
+            <VariantConditionFilters
+              facets={facets}
+              onChange={setConditionFilters}
+              value={conditionFilters}
+            />
+          ) : undefined
+        }
+        filterTabsScroll={false}
+        getRowKey={getRowKey}
+        id="variant-definitions-table"
+        loading={loading}
+        rowActions={renderRowActions}
+        rowId={VARIANT_TABLE_ROW_ID}
+        rows={rows}
+        searchPlaceholder={t('overview.search.placeholder')}
+        searchPredicate={searchPredicate}
+      />
 
       {isCreateVariantDialogOpen && (
         <CreateVariantDialog

@@ -2,8 +2,8 @@ import {SanityEncoder} from '@sanity/mutate'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type SanityDocument} from '@sanity/types'
 import {fromString, get} from '@sanity/util/paths'
-import {useContext, useEffect, useEffectEvent, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useContext, useEffect, useState} from 'react'
+import {useSyncObservable} from 'react-rx'
 import {
   type Observable,
   EMPTY,
@@ -20,6 +20,7 @@ import {
   zip,
 } from 'rxjs'
 import {DocumentDivergencesContext} from 'sanity/_singletons'
+import {useEffectEvent} from 'use-effect-event'
 
 import {useClient} from '../../hooks/useClient'
 import {useDocumentOperation} from '../../hooks/useDocumentOperation'
@@ -128,6 +129,8 @@ export function useDivergenceController(
     }),
   )
 
+  // No `getTargetScopeId(useTargetDocumentState())` here: the version is derived from the divergence's own
+  // document id, independent of the selected perspective.
   const readUpstreamHead: Observable<HydratedSnapshot> = documentStore.pair
     .editState(getPublishedId(documentId), documentType, getVersionFromId(documentId))
     .pipe(
@@ -156,12 +159,17 @@ export function useDivergenceController(
       }),
     )
 
-  const upstreamBase = useObservable(readUpstreamBase, {isLoading: true})
-  const upstreamHead = useObservable(readUpstreamHead, {isLoading: true})
+  // Kept synchronous: `markResolved` / `takeUpstreamValue` build and execute
+  // patches from `upstreamHead.value.document` (and gate on `isLoading`), so a
+  // deferred snapshot could act against a stale upstream document head.
+  const upstreamBase = useSyncObservable(readUpstreamBase, {isLoading: true})
+  const upstreamHead = useSyncObservable(readUpstreamHead, {isLoading: true})
 
   const isLoading = upstreamBase.isLoading || upstreamHead.isLoading
   const isReadOnly = contextReadOnly || isLoading || isActionPending
 
+  // No `getTargetScopeId(useTargetDocumentState())` here: the version is derived from the divergence's subject
+  // id, independent of the selected perspective.
   const {patch} = useDocumentOperation(
     getPublishedId(subjectId),
     documentType,

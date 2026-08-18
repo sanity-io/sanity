@@ -1,15 +1,14 @@
-import {
-  ChevronDownIcon,
-  CopyIcon,
-  DocumentsIcon,
-  UnknownIcon,
-  WarningOutlineIcon,
-} from '@sanity/icons'
-import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {CopyIcon} from '@sanity/icons/Copy'
+import {DocumentsIcon} from '@sanity/icons/Documents'
+import {UnknownIcon} from '@sanity/icons/Unknown'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
 import {
   ChevronWrapper,
@@ -78,12 +77,13 @@ export function ConfirmDeleteDialogBody({
   )
   const confirmationMessage = useCallback(
     () => (
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text as="p" size={1}>
           <Translate
             t={t}
             i18nKey="confirm-delete-dialog.confirmation.text"
             context={action}
+            values={{count: documentVersions.length}}
             components={{DocumentTitle: () => <strong>{documentTitle}</strong>}}
           />
         </Text>
@@ -151,7 +151,7 @@ export function ConfirmDeleteDialogBody({
       <Card radius={2} shadow={1} flex="auto" padding={1}>
         <Flex direction="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" space={2} data-testid="internal-references">
+            <Stack as="ul" gap={2} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
@@ -189,7 +189,7 @@ export function ConfirmDeleteDialogBody({
                     <Text size={1}>
                       <DocumentsIcon />
                     </Text>
-                    <Stack space={2}>
+                    <Stack gap={2}>
                       <Text textOverflow="ellipsis" size={1}>
                         {t('confirm-delete-dialog.cdr-summary.title', {
                           count: normalizedDatasetNames.length,

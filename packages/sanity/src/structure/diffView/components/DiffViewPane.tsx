@@ -10,12 +10,12 @@ import noop from 'lodash-es/noop.js'
 import {
   type ComponentType,
   type CSSProperties,
-  forwardRef,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {
   ChangeIndicatorsTracker,
@@ -64,10 +64,15 @@ interface DiffViewPaneProps {
   }
 }
 
-export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(function DiffViewPane(
-  {role, documentType, documentId, scrollElement, syncChannel, compareDocument},
+export function DiffViewPane({
   ref,
-) {
+  role,
+  documentType,
+  documentId,
+  scrollElement,
+  syncChannel,
+  compareDocument,
+}: DiffViewPaneProps & RefAttributes<HTMLDivElement>) {
   const containerElement = useRef<HTMLDivElement | null>(null)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
@@ -108,11 +113,9 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
           <BoundaryElementProvider element={boundaryElement}>
             <DiffViewPaneLayout
               ref={setBoundaryElement}
-              style={
-                {
-                  '--grid-area': `${role}-document`,
-                } as CSSProperties
-              }
+              style={{
+                '--grid-area': `${role}-document`,
+              }}
               borderLeft={role === 'next'}
             >
               <Scroller
@@ -141,7 +144,7 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
       </ChangeIndicatorsTracker>
     </ReviewChangesContext.Provider>
   )
-})
+}
 
 const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
   role,
@@ -260,6 +263,8 @@ type UseCompareValueOptions = Pick<DiffViewPaneProps, 'compareDocument'>
  * Fetch the contents of `compareDocument` for comparison with another version of the document.
  */
 function useCompareValue({compareDocument}: UseCompareValueOptions): SanityDocument | undefined {
+  // No `getTargetScopeId(useTargetDocumentState())` here: the version is derived from the specific
+  // compare-document id being diffed, not from the selected perspective.
   const compareDocumentEditState = useEditState(
     getPublishedId(compareDocument.id),
     compareDocument.type,

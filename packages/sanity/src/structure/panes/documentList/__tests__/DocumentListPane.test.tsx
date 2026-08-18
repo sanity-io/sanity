@@ -1,7 +1,7 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {defineConfig, type PerspectiveContextValue} from 'sanity'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {defineConfig, type PerspectiveContextValue, usePerspective} from 'sanity'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
@@ -21,19 +21,32 @@ vi.mock('../DocumentListPaneContent', () => ({
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useActiveReleases: vi.fn(() => ({loading: false, data: []})),
-  usePerspective: vi.fn(
-    (): PerspectiveContextValue => ({
-      perspectiveStack: ['drafts'],
-      excludedPerspectives: [],
-      selectedPerspective: 'drafts',
-      selectedPerspectiveName: undefined,
-      selectedReleaseId: undefined,
-    }),
-  ),
+  usePerspective: vi.fn((): PerspectiveContextValue => ({
+    perspectiveStack: ['drafts'],
+    excludedPerspectives: [],
+    selectedPerspective: 'drafts',
+    selectedPerspectiveName: undefined,
+    selectedReleaseId: undefined,
+    selectedVariantName: undefined,
+    selectedVariant: undefined,
+    bundle: 'drafts',
+  })),
   useReconnectingToast: vi.fn(),
 }))
 
 const mockUseDocumentList = vi.mocked(useDocumentList)
+const mockUsePerspective = vi.mocked(usePerspective)
+
+const BASE_PERSPECTIVE: PerspectiveContextValue = {
+  perspectiveStack: ['drafts'],
+  excludedPerspectives: [],
+  selectedPerspective: 'drafts',
+  selectedPerspectiveName: undefined,
+  selectedReleaseId: undefined,
+  selectedVariantName: undefined,
+  selectedVariant: undefined,
+  bundle: 'drafts',
+}
 
 const ORDERING_TESTID = 'document-list-search-ordering'
 
@@ -109,5 +122,56 @@ describe('DocumentListPane search ordering indicator', () => {
     // appear. Allow time for the debounced query to settle before asserting.
     await new Promise((resolve) => setTimeout(resolve, 400))
     expect(screen.queryByTestId(ORDERING_TESTID)).toBeNull()
+  })
+})
+
+describe('DocumentListPane perspective and variant', () => {
+  beforeEach(() => {
+    mockUseDocumentList.mockReturnValue({
+      error: null,
+      onRetry: vi.fn(),
+      isLoading: false,
+      items: [],
+      isRetrying: false,
+      canRetry: false,
+      retryCount: 0,
+      autoRetry: false,
+      connected: true,
+      fromCache: false,
+      onLoadFullList: vi.fn(),
+      isLoadingFullList: false,
+    })
+  })
+
+  afterEach(() => {
+    mockUsePerspective.mockReturnValue(BASE_PERSPECTIVE)
+  })
+
+  it('queries with the perspective stack and no variant by default', async () => {
+    const wrapper = await createTestProvider({
+      config: defineConfig({projectId: 'test', dataset: 'test'}),
+      resources: [structureUsEnglishLocaleBundle],
+    })
+
+    render(<DocumentListPane {...getPaneProps()} />, {wrapper})
+
+    expect(mockUseDocumentList).toHaveBeenCalledWith(
+      expect.objectContaining({perspective: ['drafts'], variant: undefined}),
+    )
+  })
+
+  it('queries with the selected variant alongside the perspective stack', async () => {
+    mockUsePerspective.mockReturnValue({...BASE_PERSPECTIVE, selectedVariantName: 'alpha-audience'})
+
+    const wrapper = await createTestProvider({
+      config: defineConfig({projectId: 'test', dataset: 'test'}),
+      resources: [structureUsEnglishLocaleBundle],
+    })
+
+    render(<DocumentListPane {...getPaneProps()} />, {wrapper})
+
+    expect(mockUseDocumentList).toHaveBeenCalledWith(
+      expect.objectContaining({perspective: ['drafts'], variant: 'alpha-audience'}),
+    )
   })
 })

@@ -7,15 +7,17 @@ import {
 } from '@sanity/types'
 import {type ErrorInfo, type ReactNode} from 'react'
 
-import {type LocaleConfigContext, type LocaleDefinition, type LocaleResourceBundle} from '../i18n'
-import {type Template, type TemplateItem} from '../templates'
+import {
+  type LocaleConfigContext,
+  type LocaleDefinition,
+  type LocaleResourceBundle,
+} from '../i18n/types'
+import {type Template, type TemplateItem} from '../templates/types'
 import {getPrintableType} from '../util/getPrintableType'
 import {isRecord} from '../util/isRecord'
-import {
-  type DocumentActionComponent,
-  type DocumentBadgeComponent,
-  type DocumentInspector,
-} from './document'
+import {type DocumentActionComponent} from './document/actions'
+import {type DocumentBadgeComponent} from './document/badges'
+import {type DocumentInspector} from './document/inspector'
 import {flattenConfig} from './flattenConfig'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {
@@ -342,6 +344,7 @@ export const documentCommentsEnabledReducer = (opts: {
   // The last plugin 'wins'.
   const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
     const resolver =
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       innerConfig.document?.comments?.enabled ?? innerConfig.document?.unstable_comments?.enabled
 
     if (!resolver && typeof resolver !== 'boolean') return acc

@@ -1,5 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
-import {Box, Code, Flex, Spinner, Text} from '@sanity/ui'
+import {Box, Flex, Spinner, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {type Ref, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {useClient} from 'sanity'
@@ -43,8 +44,10 @@ export function JsonDocumentDump(props: {
   useEffect(() => {
     const subscription = client.observable
       .listen(query, {itemId, draftId}, {includeAllVersions: true})
-      .subscribe((mut) => {
-        setDocument(mut.result || null)
+      .subscribe((event) => {
+        if (event.type === 'mutation') {
+          setDocument(event.result || null)
+        }
       })
     return () => subscription.unsubscribe()
   }, [client.observable, draftId, itemId])

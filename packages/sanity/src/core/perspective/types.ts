@@ -1,6 +1,6 @@
 import {type ClientPerspective, type ReleaseDocument} from '@sanity/client'
 // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
-import {type MenuItem} from '@sanity/ui'
+import {type MenuItem} from '@sanity/ui/menu'
 import {type ComponentProps} from 'react'
 
 import {type SystemBundle} from '../util/draftUtils'
@@ -54,7 +54,17 @@ export interface PerspectiveContextValue {
   /* The excluded perspectives */
   excludedPerspectives: string[]
   /**
-   * Resolved variant definition; undefined = default (all users) or still loading
+   * The raw variant name requested via the router sticky param, available synchronously and
+   * regardless of whether it has resolved to a variant definition yet.
+   * Undefined when no variant is requested.
+   * @beta
+   * @internal
+   */
+  selectedVariantName: string | undefined
+  /**
+   * Resolved variant definition; undefined when no variant is requested, while definitions are
+   * still loading (see `useAllVariants().loading`), or when `selectedVariantName` matches no
+   * definition.
    * @beta
    * @internal
    */

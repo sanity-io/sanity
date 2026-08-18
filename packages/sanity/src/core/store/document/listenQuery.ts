@@ -3,6 +3,8 @@ import {asyncScheduler, defer, merge, type Observable, of, partition, throwError
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {filter, mergeMap, share, take, throttleTime} from 'rxjs/operators'
 
+import {versionedClient} from '../../studioClient'
+import {variantApiVersion} from '../../variants/util/variantApiVersion'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
 
 /** @internal */
@@ -15,6 +17,11 @@ export interface ListenQueryOptions {
   tag?: string
   apiVersion?: string
   perspective?: ClientPerspective
+  /**
+   * The selected editing variant as a bare variant id. When set, documents are resolved as seen
+   * through that variant, on top of `perspective`.
+   */
+  variant?: string
   throttleTime?: number
   transitions?: ('update' | 'appear' | 'disappear')[]
 }
@@ -26,10 +33,11 @@ const fetch = (
   options: ListenQueryOptions,
 ) =>
   defer(() =>
-    client.observable.fetch(query, params, {
+    versionedClient(client, variantApiVersion(options.variant)).observable.fetch(query, params, {
       tag: options.tag,
       filterResponse: true,
       perspective: options.perspective,
+      variant: options.variant,
     }),
   )
 

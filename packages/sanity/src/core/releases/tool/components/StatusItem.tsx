@@ -1,5 +1,6 @@
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
+import {Box} from 'ui5'
 
 export function StatusItem(props: {avatar?: ReactNode; text: ReactNode; testId?: string}) {
   const {avatar, text, testId} = props

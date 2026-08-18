@@ -7,13 +7,14 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {DragHandle} from './DragHandle'
 
-vi.mock('../../../../i18n', () => ({
+vi.mock('../../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 
 function renderDragHandle(props: Partial<React.ComponentProps<typeof DragHandle>> = {}) {
   const id = 'item-1'
   return render(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider theme={studioTheme}>
       <DndContext>
         <SortableContext items={[id]}>

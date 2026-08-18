@@ -1,6 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
-import {Box, type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
+import {AddIcon} from '@sanity/icons/Add'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
+import {type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {AnimatePresence, motion} from 'motion/react'
 import {
@@ -13,13 +15,14 @@ import {
   useState,
 } from 'react'
 import {useRouter} from 'sanity/router'
+import {Box} from 'ui5'
 
-import {Tooltip} from '../../../../ui-components'
 import {Button} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
 import {useTimeZone} from '../../../hooks/useTimeZone'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/SingleDocReleaseEnabledProvider'
 import {useScheduledDraftsEnabled} from '../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
@@ -269,15 +272,18 @@ export function ReleasesOverview() {
     navigateRef.current = router.navigate
   })
 
-  // Sync filter/group state to URL, preserving the current cardinality view
+  // replace avoids a duplicate history entry alongside the user's navigation, which would swallow back clicks.
   useEffect(() => {
-    navigateRef.current({
-      _searchParams: buildReleasesSearchParams(
-        releaseFilterDate,
-        releaseGroupMode,
-        isScheduledDraftsEnabled ? cardinalityView : 'releases',
-      ),
-    })
+    navigateRef.current(
+      {
+        _searchParams: buildReleasesSearchParams(
+          releaseFilterDate,
+          releaseGroupMode,
+          isScheduledDraftsEnabled ? cardinalityView : 'releases',
+        ),
+      },
+      {replace: true},
+    )
   }, [releaseFilterDate, releaseGroupMode, cardinalityView, isScheduledDraftsEnabled])
 
   const [hasMounted, setHasMounted] = useState(false)

@@ -1,17 +1,19 @@
-import {ChevronDownIcon} from '@sanity/icons'
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {
   Flex,
   type Placement,
   PortalProvider,
   useClickOutsideEvent,
   useGlobalKeyDown,
-  useToast,
 } from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {type Chunk, useTimelineSelector, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button, Popover} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
+import {Popover} from '../../../../ui-components/popover/Popover'
 import {useDocumentPane} from '../useDocumentPane'
 import {Timeline} from './timeline'
 import {TimelineError} from './TimelineError'
@@ -189,7 +191,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         portal
         ref={setPopoverRef}
       >
-        <Flex width={'fill'}>
+        <Flex>
           <Button
             data-testid={open ? 'timeline-menu-close-button' : 'timeline-menu-open-button'}
             disabled={!ready}

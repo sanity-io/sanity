@@ -20,6 +20,7 @@ describe('useLiveQueries', () => {
           query: query1,
           params: params1,
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -30,6 +31,7 @@ describe('useLiveQueries', () => {
         query: query1,
         params: params1,
         perspective: perspective1,
+        variant: undefined,
       })
       expect(state.heartbeats.get(key)).toStrictEqual({
         receivedAt: expect.any(Number),
@@ -44,6 +46,7 @@ describe('useLiveQueries', () => {
           query: query1,
           params: params1,
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -53,6 +56,7 @@ describe('useLiveQueries', () => {
           query: query2,
           params: params2,
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -62,6 +66,7 @@ describe('useLiveQueries', () => {
           query: query1,
           params: params1,
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -72,6 +77,7 @@ describe('useLiveQueries', () => {
         query: query1,
         params: params1,
         perspective: perspective1,
+        variant: undefined,
       })
       expect(state.heartbeats.get(key1)).toStrictEqual({
         receivedAt: expect.any(Number),
@@ -81,6 +87,7 @@ describe('useLiveQueries', () => {
         query: query2,
         params: params2,
         perspective: perspective1,
+        variant: undefined,
       })
       expect(state.heartbeats.get(key2)).toStrictEqual({
         receivedAt: expect.any(Number),
@@ -98,6 +105,7 @@ describe('useLiveQueries', () => {
           query: query1,
           params: params1,
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -109,6 +117,7 @@ describe('useLiveQueries', () => {
           query: query1,
           params: {...params1},
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -125,6 +134,7 @@ describe('useLiveQueries', () => {
           query: query2,
           params: params2,
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -136,6 +146,7 @@ describe('useLiveQueries', () => {
           query: query2,
           params: {...params2},
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -148,6 +159,7 @@ describe('useLiveQueries', () => {
           query: query2,
           params: {...params2, type: 'bar'},
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -166,6 +178,7 @@ describe('useLiveQueries', () => {
             bar: {baz: true},
           },
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -181,6 +194,7 @@ describe('useLiveQueries', () => {
             bar: {baz: true},
           },
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -197,10 +211,76 @@ describe('useLiveQueries', () => {
             bar: {baz: true},
           },
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
       expect(state.queries).not.toBe(prevQueries)
+    })
+
+    test('the same query with different variants creates separate entries', () => {
+      const variant = 'Ab12cd34'
+      const prevState = reducer(initialState, {
+        type: 'query-listen',
+        payload: {
+          query: query1,
+          params: params1,
+          perspective: perspective1,
+          variant: undefined,
+          heartbeat,
+        },
+      })
+      const state = reducer(prevState, {
+        type: 'query-listen',
+        payload: {
+          query: query1,
+          params: params1,
+          perspective: perspective1,
+          variant,
+          heartbeat,
+        },
+      })
+      expect(state.queries.size).toBe(2)
+      const [key1, key2] = state.queries.keys()
+      expect(key1).not.toBe(key2)
+      expect(state.queries.get(key1)).toStrictEqual({
+        query: query1,
+        params: params1,
+        perspective: perspective1,
+        variant: undefined,
+      })
+      expect(state.queries.get(key2)).toStrictEqual({
+        query: query1,
+        params: params1,
+        perspective: perspective1,
+        variant,
+      })
+    })
+
+    test('listening again with the same variant is deduped', () => {
+      const variant = 'Ab12cd34'
+      const prevState = reducer(initialState, {
+        type: 'query-listen',
+        payload: {
+          query: query1,
+          params: params1,
+          perspective: perspective1,
+          variant,
+          heartbeat,
+        },
+      })
+      const state = reducer(prevState, {
+        type: 'query-listen',
+        payload: {
+          query: query1,
+          params: params1,
+          perspective: perspective1,
+          variant,
+          heartbeat,
+        },
+      })
+      expect(state.queries.size).toBe(1)
+      expect(state.queries).toBe(prevState.queries)
     })
 
     test('unstable perspective is fine', () => {
@@ -210,6 +290,7 @@ describe('useLiveQueries', () => {
           query: query2,
           params: params2,
           perspective: perspective2,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -221,6 +302,7 @@ describe('useLiveQueries', () => {
           query: query2,
           params: params2,
           perspective: [...perspective2],
+          variant: undefined,
           heartbeat,
         },
       })
@@ -234,6 +316,7 @@ describe('useLiveQueries', () => {
           query: query2,
           params: params2,
           perspective: ['rBAR', 'drafts'],
+          variant: undefined,
           heartbeat,
         },
       })
@@ -258,6 +341,7 @@ describe('useLiveQueries', () => {
           query: query1,
           params: params1,
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -290,6 +374,7 @@ describe('useLiveQueries', () => {
           query: query1,
           params: params1,
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -299,6 +384,7 @@ describe('useLiveQueries', () => {
           query: query2,
           params: params2,
           perspective: perspective1,
+          variant: undefined,
           heartbeat: false,
         },
       })
@@ -326,6 +412,7 @@ describe('useLiveQueries', () => {
         query: query2,
         params: params2,
         perspective: perspective1,
+        variant: undefined,
       })
       expect(state.heartbeats.get(key)).toStrictEqual({
         receivedAt: expect.any(Number),
@@ -342,6 +429,7 @@ describe('useLiveQueries', () => {
           query: query1,
           params: params1,
           perspective: perspective1,
+          variant: undefined,
           heartbeat,
         },
       })
@@ -351,6 +439,7 @@ describe('useLiveQueries', () => {
           query: query2,
           params: params2,
           perspective: perspective1,
+          variant: undefined,
           heartbeat: heartbeat * 2,
         },
       })
@@ -380,6 +469,7 @@ describe('useLiveQueries', () => {
         query: query2,
         params: params2,
         perspective: perspective1,
+        variant: undefined,
       })
       expect(state.heartbeats.get(key)).toStrictEqual({
         receivedAt: expect.any(Number),

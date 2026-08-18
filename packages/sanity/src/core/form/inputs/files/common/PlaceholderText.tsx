@@ -1,9 +1,12 @@
-import {AccessDeniedIcon, BinaryDocumentIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
+import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
+import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
+import {ImageIcon} from '@sanity/icons/Image'
+import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type FileLike} from '../../../studio/uploads/types'
 
 interface Props {

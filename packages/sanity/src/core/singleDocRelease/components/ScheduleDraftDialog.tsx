@@ -6,13 +6,13 @@ import {parse} from 'date-fns/parse'
 import {startOfMinute} from 'date-fns/startOfMinute'
 import {useCallback, useMemo, useState} from 'react'
 
-import {Dialog} from '../../../ui-components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {MONTH_PICKER_VARIANT} from '../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../form/inputs/DateInputs/utils'
 import {useTimeZone} from '../../hooks/useTimeZone'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../studio/constants'
 
 type ScheduleDraftDialogVariant = 'schedule' | 'edit-schedule'
@@ -114,13 +114,13 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
         },
       }}
     >
-      <Stack space={4} paddingX={4} paddingBottom={4} paddingTop={1}>
+      <Stack gap={4} paddingX={4} paddingBottom={4} paddingTop={1}>
         <Text size={1} muted>
           {t(dialogConfig.descriptionI18nKey)}
         </Text>
 
         <label>
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text size={1} weight="semibold">
               {t('release.schedule-dialog.select-publish-date-label')}
             </Text>

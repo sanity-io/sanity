@@ -5,15 +5,18 @@ import {
   type SingleMutationResult,
 } from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
-import {type SanityDocument} from '@sanity/types'
+import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
-import {defer, EMPTY, from, merge, type Observable, timer} from 'rxjs'
+import {combineLatest, defer, EMPTY, from, merge, type Observable, of, timer} from 'rxjs'
 import {
+  catchError,
+  distinctUntilChanged,
   filter,
   map,
   mergeMap,
   scan,
   share,
+  shareReplay,
   startWith,
   switchMap,
   takeUntil,
@@ -21,15 +24,20 @@ import {
   withLatestFrom,
 } from 'rxjs/operators'
 
+import {isInvalidSessionError} from '../../../util/apiErrors'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
+import {type VariantDocumentCreateFromDocumentAction} from '../../../variants/store/variantsClient'
+import {getVariantId} from '../../../variants/tool/util'
 import {
   type BufferedDocumentEvent,
-  type CommitRequest,
   createBufferedDocument,
+} from '../buffered-doc/createBufferedDocument'
+import {type CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
+import {
   type DocumentRebaseEvent,
   type MutationPayload,
   type RemoteSnapshotEvent,
-} from '../buffered-doc'
+} from '../buffered-doc/types'
 import {
   type DocumentStoreExtraOptions,
   getPairListener,
@@ -108,11 +116,32 @@ export interface DocumentVersion {
 }
 
 /**
+ * The error thrown by the most recent failed commit attempt. Wrapped in an
+ * object (rather than emitted raw) because a commit can reject with any
+ * thrown value — including `undefined`, which would otherwise be
+ * indistinguishable from the healthy state.
+ *
+ * @internal
+ */
+export type CommitError = {error: unknown}
+
+/**
  * @hidden
  * @beta */
 export type Pair = {
   /** @internal */
   transactionsPendingEvents$: Observable<PendingMutationsEvent>
+  /**
+   * The error from the most recent commit attempt while it failed and is
+   * being retried by the mutator, or `undefined` while commits are healthy.
+   * Resets to `undefined` on the next successful (or terminally cancelled)
+   * commit, and when the pair returns to a consistent state — i.e. the
+   * buffered edits the failure was about no longer exist. Distinguishes
+   * "commits are failing" from "the backlog is merely slow" — see
+   * `useDocumentSyncState`.
+   * @internal
+   */
+  commitError$: Observable<CommitError | undefined>
   published: DocumentVersion
   draft: DocumentVersion
   version?: DocumentVersion
@@ -146,6 +175,7 @@ function isLiveEditMutation(mutationParams: Mutation['params'], publishedId: str
 }
 
 function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[] {
+  // @ts-expect-error - TODO: remove this once the client types are updated to support VariantActions
   const actions = mutationParams.mutations.flatMap<Action>((mutations) => {
     // This action is not always interoperable with the equivalent mutation. It will fail if the
     // published version of the document already exists.
@@ -156,6 +186,16 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
     if (mutations.create) {
       // the actions API requires attributes._id to be set, while it's optional in the mutation API
       requireId(mutations.create)
+      const createSystem = (mutations.create as SanityDocumentLike)._system
+      if (mutations.create._id === idPair.versionId && createSystem?.variant) {
+        return {
+          actionType: 'sanity.action.document.variant.create',
+          publishedId: idPair.publishedId,
+          variantId: getVariantId(createSystem.variant._ref),
+          document: mutations.create,
+          bundleId: createSystem.bundleId,
+        } as VariantDocumentCreateFromDocumentAction
+      }
       return {
         actionType: 'sanity.action.document.create',
         publishedId: idPair.publishedId,
@@ -210,6 +250,7 @@ function commitMutations(
   mutationParams: Mutation['params'],
 ): Promise<MutationResult> {
   const {resultRev, ...mutation} = mutationParams
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return operationsApiClient(client, idPair).dataRequest('mutate', mutation, {
     visibility: 'async',
     returnDocuments: false,
@@ -220,26 +261,87 @@ function commitMutations(
   })
 }
 
+/**
+ * The 4xx statuses we positively know are terminal for a commit: resubmitting
+ * the same mutation can never succeed, so the buffered edits are cancelled
+ * (rejected + reset to server HEAD) instead of retried. Opt-in by explicit
+ * status rather than a blanket 4xx rule, because the buckets have opposite
+ * failure modes: wrongly retrying a terminal error leaves the document
+ * visibly stalled with the edits preserved (recoverable), while wrongly
+ * cancelling a transient error silently destroys the user's work. Statuses
+ * not listed here — including transient 4xx like 408/429 and any 4xx we
+ * haven't classified — take the conservative retry path.
+ *
+ * 401 is terminal only for resource-level denials (e.g. a missing grant —
+ * some endpoints answer those with 401, not 403). A 401 tagged as an invalid
+ * session (`SIO-401-AEX` expired, `SIO-401-ANF` not found) is carved out
+ * below: it says nothing about the mutation itself, and re-authenticating
+ * can make the retry succeed, so the buffered edits must be preserved
+ * rather than wiped mid-edit. The session itself is handled separately by
+ * the force-logout flow.
+ */
+const TERMINAL_COMMIT_STATUSES = new Set([400, 401, 402, 403, 404, 409, 410, 412, 413, 422])
+
+/**
+ * The result of a single commit attempt. Failures are routed to the mutator
+ * (`request.failure` → retry with backoff, `request.cancel` → terminal
+ * reset) *before* being emitted here, so this stream doubles as a
+ * side-channel for observing commit health without erroring the document
+ * event streams.
+ */
+type CommitAttemptResult =
+  | {
+      type: 'success'
+      result: (MultipleActionResult | MutationResult) & {_perfTimings?: PerfTimings}
+    }
+  | {type: 'failure'; error: unknown}
+  | {type: 'cancel'; error: unknown}
+
 function submitCommitRequest(
   client: SanityClient,
   idPair: IdPair,
   request: CommitRequest,
-): Observable<MultipleActionResult | MutationResult> {
+): Observable<CommitAttemptResult> {
   return from(commitActions(client, idPair, request.mutation.params)).pipe(
     tap({
-      error: (error) => {
-        const isBadRequest =
-          'statusCode' in error &&
-          typeof error.statusCode === 'number' &&
-          error.statusCode >= 400 &&
-          error.statusCode <= 500
-        if (isBadRequest) {
-          request.cancel(error)
-        } else {
-          request.failure(error)
-        }
-      },
       next: () => request.success(),
+    }),
+    map((result): CommitAttemptResult => ({type: 'success', result})),
+    // A failed commit is reported to the mutator via `request.cancel` /
+    // `request.failure` (which rejects the corresponding commit promise so
+    // the buffered document can retry/rebase on reconnect). After that, we
+    // must NOT let the error propagate down this observable: it feeds
+    // `commits$` → `combinedEvents` → the document `events` stream, and an
+    // errored events stream is rethrown by `useObservable` (react-rx) when
+    // `useEditState` reads it during render, crashing the document pane.
+    // Emit the attempt result as a value instead — the failure has already
+    // been routed through its proper channel.
+    catchError((error) => {
+      // A known-terminal client error cancels: the buffered mutations can't
+      // succeed by retrying, so the commit is rejected and the buffer reset
+      // to server HEAD (see TERMINAL_COMMIT_STATUSES for the rationale).
+      // Everything else — 5xx, transient 4xx (408/429), unclassified 4xx,
+      // session-expiry 401s, network errors — fails, so the mutator keeps
+      // the buffer and retries with backoff.
+      // `error` can be any thrown value — guard before using `in`, which
+      // throws on primitives.
+      const statusCode =
+        typeof error === 'object' &&
+        error !== null &&
+        'statusCode' in error &&
+        typeof error.statusCode === 'number'
+          ? error.statusCode
+          : undefined
+      if (
+        statusCode !== undefined &&
+        TERMINAL_COMMIT_STATUSES.has(statusCode) &&
+        !isInvalidSessionError(error)
+      ) {
+        request.cancel(error)
+        return of<CommitAttemptResult>({type: 'cancel', error})
+      }
+      request.failure(error)
+      return of<CommitAttemptResult>({type: 'failure', error})
     }),
   )
 }
@@ -288,10 +390,15 @@ export function checkoutPair(
     onSlowCommit,
     onReportMutationPerformance,
     onDocumentRebase,
+    snapshotFetchErrorHandler,
     tag,
   } = options
 
-  const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
+  const listenerEvents$ = getPairListener(client, idPair, {
+    onSyncErrorRecovery,
+    tag,
+    snapshotFetchErrorHandler,
+  }).pipe(share())
 
   const connectionChangeEvents$ = listenerEvents$.pipe(
     filter((ev) => ev.type === 'reconnect' || ev.type === 'welcome' || ev.type === 'welcomeback'),
@@ -326,28 +433,86 @@ export function checkoutPair(
     version ? version.commitRequest$ : EMPTY,
   ).pipe(share())
 
-  const commits$ = commitRequests$.pipe(
+  const commitAttemptResults$ = commitRequests$.pipe(
     mergeMap((commitRequest) => {
       const apiRequestSentAt = Date.now()
       return submitCommitRequest(client, idPair, commitRequest).pipe(
-        map((result) => ({
-          ...result,
-          _perfTimings: {
-            firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
-            apiRequestSentAt,
-            apiResponseReceivedAt: Date.now(),
-          },
-        })),
+        map((attemptResult): CommitAttemptResult =>
+          attemptResult.type === 'success'
+            ? {
+                ...attemptResult,
+                result: {
+                  ...attemptResult.result,
+                  _perfTimings: {
+                    firstMutationReceivedAt: commitRequest.firstMutationReceivedAt,
+                    apiRequestSentAt,
+                    apiResponseReceivedAt: Date.now(),
+                  },
+                },
+              }
+            : attemptResult,
+        ),
       )
     }),
     share(),
   )
+
+  // The successful commits — failures/cancels have already been routed to the
+  // mutator and must not reach the document event streams (see
+  // `submitCommitRequest`).
+  const commits$ = commitAttemptResults$.pipe(
+    filter(
+      (attemptResult): attemptResult is Extract<CommitAttemptResult, {type: 'success'}> =>
+        attemptResult.type === 'success',
+    ),
+    map((attemptResult) => attemptResult.result),
+    share(),
+  )
+
+  // Whether every buffered document in the pair is free of pending local
+  // mutations — the pair-level version of the per-document `consistency$`.
+  const consistent$ = combineLatest([
+    draft.consistency$,
+    published.consistency$,
+    version ? version.consistency$ : of(true),
+  ]).pipe(
+    map((states) => states.every(Boolean)),
+    distinctUntilChanged(),
+  )
+
+  // The error from the most recent commit attempt while the mutator is
+  // retrying it on backoff, `undefined` while commits are healthy. Multicast
+  // with replay so late subscribers (the sync-state hook mounts after the
+  // pair is checked out) see the current value, not just future attempt
+  // results — the silenced merge into `combinedEvents` below keeps it
+  // recording for the pair's lifetime.
+  const commitError$ = merge(
+    commitAttemptResults$.pipe(
+      map((attemptResult): CommitError | undefined =>
+        attemptResult.type === 'failure' ? {error: attemptResult.error} : undefined,
+      ),
+    ),
+    // Returning to consistency means the buffered edits the failure was
+    // about are gone — drained, discarded, or reset to server HEAD by a
+    // fresh snapshot — so nothing is being retried anymore. Note this is
+    // deliberately NOT keyed on listener reconnects (welcome/welcome-back):
+    // a live listener says nothing about commit health, and a reconnect
+    // while still unsynced must not mask an ongoing failure.
+    consistent$.pipe(
+      filter((isConsistent) => isConsistent),
+      map(() => undefined),
+    ),
+  ).pipe(startWith(undefined), distinctUntilChanged(), shareReplay({bufferSize: 1, refCount: true}))
 
   const pendingEnd$ = transactionsPendingEvents$.pipe(filter((ev) => ev.phase === 'end'))
   const commitResolved$ = merge(pendingEnd$, commits$)
 
   // Each new commit request restarts the timer via switchMap.
   // The timer is cancelled when the commit succeeds or pending mutations resolve.
+  // Note: a *failed* commit does not emit on `commits$` (failures are filtered
+  // out of `commitAttemptResults$` above), so `commitResolved$` does not fire for
+  // it — a commit that fails after SLOW_COMMIT_TIMEOUT_MS still triggers
+  // `onSlowCommit`. That's intentional: it was slow, and it's now failing.
   const slowCommitWarning$ = onSlowCommit
     ? commitRequests$.pipe(
         switchMap(() => timer(SLOW_COMMIT_TIMEOUT_MS).pipe(takeUntil(commitResolved$))),
@@ -385,6 +550,7 @@ export function checkoutPair(
         : merge(commits$, listenerEvents$),
       slowCommitWarning$,
       rebaseEvents$,
+      commitError$,
     ),
   ).pipe(
     mergeMap(() => EMPTY),
@@ -393,6 +559,7 @@ export function checkoutPair(
 
   return {
     transactionsPendingEvents$,
+    commitError$,
     draft: {
       ...draft,
       events: merge(combinedEvents, connectionChangeEvents$, draft.events).pipe(
@@ -449,26 +616,22 @@ function reportLatency(options: {
   }
 
   const submittedMutations = commits$.pipe(
-    map(
-      (ev): LatencyTrackingEntry => ({
-        type: 'submit' as const,
-        transactionId: ev.transactionId,
-        timestamp: new Date(),
-        perfTimings: ev._perfTimings,
-      }),
-    ),
+    map((ev): LatencyTrackingEntry => ({
+      type: 'submit' as const,
+      transactionId: ev.transactionId,
+      timestamp: new Date(),
+      perfTimings: ev._perfTimings,
+    })),
     share(),
   )
 
   const receivedMutations = listenerEvents$.pipe(
     filter((ev) => ev.type === 'mutation'),
-    map(
-      (ev): LatencyTrackingEntry => ({
-        type: 'receive' as const,
-        transactionId: ev.transactionId,
-        timestamp: new Date(),
-      }),
-    ),
+    map((ev): LatencyTrackingEntry => ({
+      type: 'receive' as const,
+      transactionId: ev.transactionId,
+      timestamp: new Date(),
+    })),
     share(),
   )
 

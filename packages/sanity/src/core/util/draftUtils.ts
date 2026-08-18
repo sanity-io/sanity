@@ -251,3 +251,19 @@ export function removeDupes(documents: SanityDocumentLike[]): SanityDocumentLike
     .map((entry) => entry.draft || entry.published || entry.versions[0])
     .filter(isNonNullable)
 }
+
+/**
+ * Checks whether `id` is a document group id, i.e. an id carrying neither the `drafts.` nor the
+ * `versions.` prefix. The group document is the published document, so this is the same check as
+ * {@link isPublishedId}, named for call sites that care about the group rather than the published
+ * version.
+ *
+ * @internal
+ *
+ * @param id - The document ID to check
+ *
+ * @returns `true` if the document ID is a group ID, `false` otherwise
+ */
+export function isDocumentGroupId(id: string): boolean {
+  return isPublishedId(id)
+}

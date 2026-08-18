@@ -7,6 +7,7 @@ const roleLessUser: CurrentUser = {
   id: 'pabc123',
   email: 'some@user.com',
   name: 'Some User',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   role: '',
   roles: [],
 }
@@ -20,12 +21,14 @@ const conditionalContextUser: ConditionalPropertyCallbackContext['currentUser'] 
 
 const adminUser: CurrentUser = {
   ...roleLessUser,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   role: 'administrator', // Legacy
   roles: [{name: 'administrator', title: 'Administrator'}],
 }
 
 const multiRoleUser: CurrentUser = {
   ...adminUser,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   role: 'editor', // Legacy
   roles: [
     {name: 'translator', title: 'Translator'},

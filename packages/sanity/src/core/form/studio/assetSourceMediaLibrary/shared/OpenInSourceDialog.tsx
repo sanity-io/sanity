@@ -3,8 +3,8 @@ import {type Asset} from '@sanity/types'
 import {Box, Card, Flex, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo} from 'react'
 
-import {Button} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useAuthType} from '../hooks/useAuthType'
 import {usePluginFrameUrl} from '../hooks/usePluginFrameUrl'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
@@ -37,6 +37,7 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
   } = props
   const theme = useTheme()
   const {t} = useTranslation()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dark} = theme.sanity.color
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
   const appHost = mediaLibraryConfig.__internal.hosts.app
@@ -90,7 +91,6 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
       width={3}
       footer={
         <Card
-          width="full"
           height="fill"
           padding={3}
           shadow={1}
@@ -99,7 +99,7 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
             minHeight: '2dvh',
           }}
         >
-          <Flex width="full" gap={3} align="center" justify="space-between">
+          <Flex gap={3} align="center" justify="space-between">
             <Button
               onClick={onSelectNewAsset}
               text={selectNewAssetButtonLabel}

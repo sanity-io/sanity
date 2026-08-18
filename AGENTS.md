@@ -2,6 +2,8 @@
 
 This document helps AI agents work successfully with the Sanity monorepo.
 
+> **Self-Improvement:** If you discover undocumented requirements, commands, or workflows during your work (e.g., a reviewer asks you to run something not covered here), update this file on the same PR. Keep this guide accurate and helpful for future agents.
+
 ## Prerequisites
 
 - **Node.js**: v24 or latest LTS
@@ -22,7 +24,7 @@ pnpm dev
 # Format code (MUST pass CI)
 pnpm chore:format:fix
 
-# Fix all lint issues (MUST pass CI)
+# Fix all lint issues (MUST pass CI) — includes TypeScript type checking via oxlint
 pnpm lint:fix
 
 # Run tests
@@ -31,8 +33,8 @@ pnpm test
 # Update snapshots if tests fail due to expected changes
 pnpm test -- -u
 
-# Type check
-pnpm check:types
+# Lint + type check (oxlint typeAware + typeCheck; no separate tsc step)
+pnpm check:oxlint
 ```
 
 ## CI Checks - What Must Pass
@@ -42,8 +44,7 @@ These checks run on every PR and **must pass**:
 | Check            | Command               | Notes                                                                                                                                                            |
 | ---------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Format**       | `pnpm check:format`   | Uses oxfmt. Fix with `pnpm chore:format:fix`                                                                                                                     |
-| **Oxlint**       | `pnpm check:oxlint`   | Rust linter (type-aware via tsgolint) plus ESLint plugins loaded as oxlint jsPlugins. Fix with `pnpm chore:oxlint:fix`                                           |
-| **Type Check**   | `pnpm check:types`    | TypeScript via tsgo + turbo                                                                                                                                      |
+| **Oxlint**       | `pnpm check:oxlint`   | Rust linter with type-aware rules and TypeScript type checking via tsgolint (`options.typeCheck`). Fix with `pnpm chore:oxlint:fix`                              |
 | **Unit Tests**   | `pnpm test`           | Vitest, sharded in CI                                                                                                                                            |
 | **Export Tests** | `pnpm test:exports`   | Ensures ESM/CJS/DTS work                                                                                                                                         |
 | **Dep Check**    | `pnpm depcheck`       | Finds unused/missing deps                                                                                                                                        |
@@ -79,7 +80,8 @@ sanity/
 │   ├── @sanity/          # Scoped packages (cli, types, schema, etc.)
 │   └── @repo/            # Internal tooling (test-config, tsconfig, etc.)
 ├── dev/                  # Development studios for testing
-│   └── test-studio/      # Primary dev studio (pnpm dev runs this)
+│   ├── test-studio/      # Primary dev studio (pnpm dev runs this)
+│   └── preview-iframe/   # Presentation preview iframe (vanilla Vite, port 3334)
 ├── e2e/                  # End-to-end Playwright tests
 ├── perf/                 # Performance testing
 └── examples/             # Example studios
@@ -145,19 +147,22 @@ Components that need auth context use `createMockAuthStore` in tests, so no real
 ### Running the Dev Studio (Auth Required)
 
 ```bash
-pnpm dev  # Starts at http://localhost:3333
+pnpm dev  # Starts test-studio at http://localhost:3333 and preview-iframe at http://localhost:3334
 ```
 
 - **Requires browser authentication** on first visit—you'll be prompted to log in with a Sanity account
 - Connects to a real Sanity project (configured in `dev/test-studio/sanity.config.ts`)
 - Uses staging API by default (`api.sanity.work`)
 - Session persists in browser, so subsequent visits won't require re-authentication
+- `pnpm dev` / `pnpm dev:test-studio` also starts `dev/preview-iframe` (vanilla Vite on port 3334) so Presentation can load its cross-origin iframe. Studio-only: `pnpm dev:test-studio:studio`. Preview-only: `pnpm dev:preview-iframe`.
+- Deployed preview iframe: Sanity Sandbox Vercel project `test-studio-preview-iframe` (`https://test-studio-preview-iframe.sanity.dev`)
 
 Use the dev studio when you need to:
 
 - Visually verify UI changes
 - Test real document editing workflows
 - Debug issues that only appear with real data
+- Exercise Presentation / visual editing against the local preview iframe
 
 ### Inspecting Production Builds with Vite DevTools
 
@@ -186,6 +191,31 @@ How it works:
 - Build sessions are written to `dev/test-studio/node_modules/.rolldown` (gitignored)
 - The flag is declared in `dev/test-studio/turbo.json` so turbo-cached builds are invalidated when it changes
 - Enabling devtools makes `sanity build` noticeably slower; that's why it's opt-in via the env flag
+
+### Analyzing the `sanity` package bundle
+
+The `sanity` package tsdown build can emit a Rolldown [bundle analyzer](https://rolldown.rs/builtin-plugins/bundle-analyzer) markdown report (module/chunk breakdown for humans and coding agents) when `ENABLE_BUNDLE_ANALYZER=true`:
+
+```bash
+pnpm analyze:sanity
+```
+
+The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with `lib/`). The flag is opt-in because analysis adds work to the package build; it is declared in `packages/sanity/turbo.json` so turbo-cached builds are invalidated when it changes. Wiring is `@sanity/tsdown-config`'s `bundleAnalyzer` option (`true` selects markdown). `pnpm-workspace.yaml` pins `tsdown>rolldown` to the same rolldown that `@sanity/tsdown-config` uses, so the analyzer BuiltinPlugin actually runs.
+
+### Studio performance benchmarks (perf/bench — No Auth Required)
+
+The `perf/bench` suite benchmarks a built studio against a **local mock** of the Sanity API — fully hermetic, no tokens, no network:
+
+```bash
+pnpm build:bench                                   # build packages + bench studio (required first)
+pnpm bench help                                    # list all bench CLI commands
+pnpm bench run --scenario singleString             # absolute interaction benchmark
+pnpm bench run --mode pageload --scenario singleString  # load vitals + bundle size
+pnpm bench:unit                                    # mock-contract + stats unit tests
+pnpm bench dev                                     # mock + `sanity dev` for interactive debugging
+```
+
+See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. `dev/efps` is the legacy perf suite, kept for reference while perf/bench burns in.
 
 ### E2E Tests (Token Required)
 
@@ -230,21 +260,74 @@ pnpm test:e2e --ui          # Interactive mode
 
 - Building packages (`pnpm build`)
 - Running unit tests (`pnpm test`)
-- Linting and formatting (`pnpm lint`, `pnpm lint:fix`)
-- Type checking (`pnpm check:types`)
+- Linting, formatting, and type checking (`pnpm lint`, `pnpm lint:fix`, `pnpm check:oxlint`)
 
 **Recommendation:** For most code changes, use `pnpm build && pnpm test` to verify correctness. This covers the vast majority of development tasks without any auth setup. Only use the dev studio when visual verification is specifically needed.
 
 ## Coding Standards
 
-Coding standards are enforced by **oxlint** (native Rust rules, type-aware rules via tsgolint, and a few ESLint plugins loaded through oxlint's `jsPlugins`). Check your code with:
+Coding standards are enforced by **oxlint** (native Rust rules, type-aware rules via tsgolint, TypeScript type checking via `options.typeCheck`, and a few ESLint plugins loaded through oxlint's `jsPlugins`). TypeScript type checking is included in `pnpm lint` / `pnpm check:oxlint` — no separate `tsc` step. Check your code with:
 
 ```bash
-pnpm lint              # Check for issues (oxlint)
+pnpm lint              # Check for issues (oxlint, includes type checking)
 pnpm lint:fix          # Auto-fix issues (oxfmt + oxlint --fix)
 ```
 
 All packages use **ESM** (`"type": "module"`). TypeScript strict mode is enabled.
+
+Rules that the linter already enforces (restricted imports, type-aware rules, React Compiler rules, i18n rules, module boundaries) are not repeated in this guide — run `pnpm lint` and follow the reported messages, which explain the expected pattern.
+
+### Do Not Weaken the Linter
+
+Fix the reported problem instead of silencing it. In order of preference:
+
+1. **Fix the code** so the rule passes. This is almost always the right answer.
+2. **Suppress the single line** as a last resort, when the rule is genuinely wrong for that one spot: `// oxlint-disable-next-line <rule> -- <why>`. Always name the specific rule and explain the exception after `--`. Never suppress a rule merely to make CI green.
+3. **Change `.oxlintrc.json` only when a human explicitly asks.** Do not turn rules off, downgrade severity, add `overrides` entries, or widen `ignorePatterns` on your own initiative — an override silences the rule for every current and future file it matches. If you think a rule is wrong, leave it failing and raise it in your summary or the PR description.
+
+File-wide `/* oxlint-disable <rule> */` is reserved for files that are an exception as a whole — vendored code, the `packages/sanity/src/ui-components` wrappers around raw `@sanity/ui`, CLI scripts that print to `console`. Follow that existing precedent rather than reaching for it to clear a handful of errors.
+
+`options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
+
+### Effect events: use `use-effect-event`, not React's native hook
+
+Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
+returns first-render values when the calling component is wrapped in `forwardRef` or `memo`
+([facebook/react#34818](https://github.com/facebook/react/issues/34818), fixed in 19.3 canaries).
+`eslint/no-restricted-imports` in `.oxlintrc.json` enforces this. The bug reaches any dependency that
+wraps the native hook, so check the implementation before trusting one — `react-rx` is safe on both
+v4 and v5 because `useObservableEvent` builds on the same `use-effect-event` ponyfill.
+
+### Refs: use `props.ref`, not `forwardRef`
+
+React 19 passes `ref` as a regular prop. Do not use `forwardRef` — destructure `ref` from props
+(so it is not left in a `...rest` spread) and forward it like any other prop.
+`eslint/no-restricted-imports` bans importing `forwardRef` from `react`.
+
+Prefer a named function declaration over `const X = function …` / arrow wrappers:
+
+```ts
+// preferred
+export function MyComponent(props: Props & RefAttributes<HTMLDivElement>) {
+  const {ref, ...rest} = props
+  return <div ref={ref} {...rest} />
+}
+
+// avoid
+export const MyComponent = function MyComponent(props: …) { … }
+export const MyComponent = (props: …) => { … }
+```
+
+When wrapping with `memo`, declare the component as a function first, then memoize:
+
+```ts
+function MyComponent(props: …) { … }
+export const MyComponentMemo = memo(MyComponent)
+```
+
+For typings, include `ref` on the props type: stop omitting `'ref'` from `HTMLProps` /
+`ComponentProps`, or intersect with `RefAttributes<T>`. Avoid `PropsWithRef` — in `@types/react`
+19 it is a deprecated identity alias and trips `typescript/no-deprecated`.
 
 ## Testing
 
@@ -263,6 +346,113 @@ Tests require a build first because some tests use compiled output:
 pnpm build && pnpm test
 ```
 
+#### Test Timeouts
+
+When a test needs a custom timeout, use the Vitest options object as the second argument (not the deprecated third-argument form). Prefer numeric separators for readability:
+
+```ts
+// Correct
+test('my test', {timeout: 30_000}, async () => {
+  // ...
+})
+
+// Wrong — timeout as third argument (deprecated)
+test('my test', async () => {
+  // ...
+}, 30000)
+```
+
+#### Testing components that suspend via `use()`
+
+Two traps when unit testing a component or hook that suspends on a promise with React's `use()`
+(see `packages/sanity/src/presentation/__tests__/useMainDocumentPolyfill.test.tsx`):
+
+- **Mount inside an awaited async `act`.** `render`/`renderHook` wrap the mount in an internal
+  _synchronous_ `act`, and React refuses to resume work that suspended inside an unawaited `act`
+  scope — the suspended tree parks forever and `waitFor` times out. Wrap the mount yourself:
+  `await act(async () => { renderHook(...) })` (suppress `testing-library/no-unnecessary-act` on
+  that line; this is the exception the rule doesn't know about). A `Suspense` wrapper is also
+  required.
+- **Keep the `use()` call sequence stable across the replay.** After the promise settles, React
+  _replays_ the suspended render reusing the recorded hook state. If the awaited promise's side
+  effect flips the condition guarding a conditional `use()` (e.g. a polyfill import that installs
+  a global the condition checks), the replay skips the `use()` call, hook accounting breaks, and
+  React throws `Update hook called on initial render` as a recoverable error — which vitest can
+  catch as an unhandled error and fail the run. Once a load has started, keep calling `use()` on
+  the same cached promise on every render instead of re-checking the environment.
+
+#### Vanilla-extract in jsdom tests
+
+The `sanity` and `@sanity/vision` jsdom suites import
+[`@vanilla-extract/css/disableRuntimeStyles`](https://vanilla-extract.style/documentation/test-environments/#disabling-runtime-styles)
+(`packages/sanity/test/setup/environment.ts`, and as a direct vitest `setupFiles` entry in
+`packages/@sanity/vision/vitest.config.mts`), so vanilla-extract skips injecting real stylesheets
+into jsdom. Class name identifiers still resolve, but computed styles are not available.
+
+Conventions that follow from this:
+
+- **Do not assert on vanilla-extract class names or computed styles in jsdom tests.** Assert on
+  `data-testid` attributes instead. Visual/style behavior belongs in the vitest browser mode
+  suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit) or the Playwright e2e tests, where
+  runtime styles stay enabled.
+- **Keep `vanillaExtractPlugin()` in the vitest configs.** The plugin's transform assigns file
+  scopes to `.css.ts` modules; without it any test that (transitively) imports a `.css.ts` file
+  throws "Styles were unable to be assigned to a file". `disableRuntimeStyles` only skips style
+  injection, not the transform.
+
+#### @sanity/ui overlays stay mounted when closed
+
+From `@sanity/ui` v4, Tooltip/Popover/Menu keep their content mounted via React `<Activity>`
+while closed (hidden with `display: none`). Consequences for tests:
+
+- Plain text / test-id queries can match **closed** overlay content. Prefer scoping to the
+  visible element under test (or assert visibility) instead of `getByText` / `getByTestId` on
+  the whole document.
+- In jsdom, asserting that closed content is hidden works (`expect(...).not.toBeVisible()`), but
+  selecting the **open** overlay by visibility does not. Runtime styles are disabled there, so
+  nothing overrides the `hidden` attribute `@sanity/ui` puts on an open popover, and
+  `getByRole` (which skips inaccessible nodes) finds neither the open nor the closed copy. Pick
+  the open one by the absence of the `display: none` that `<Activity>` applies to closed
+  overlays, rather than by index:
+
+  ```ts
+  const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
+    (popover) => popover.style.display !== 'none',
+  )
+  const item = within(openMenu).getByRole('menuitem', {name: 'Discard version', hidden: true})
+  ```
+
+  Selecting with `getAllByText(...)[0]` also works, but silently depends on portal ordering.
+  Visibility-based selection belongs in the browser-mode suite, where real styles apply and
+  `checkVisibility()` is meaningful.
+
+- Test routers must include intent routes (`route.create('/', [route.intents('/intent')])`).
+  Reference item menus render `IntentLink` ("Open in new tab") even while closed; without
+  intent routes, `resolveIntentLink` throws during render and the form subtree disappears.
+  See `packages/sanity/test/browser/TestWrapper.tsx` and `test/testUtils/TestProvider.tsx`.
+
+### Visual Regression Tests (Chromatic + Storybook)
+
+Visual regression runs on Chromatic via `.github/workflows/chromatic.yml`. Stories are co-located
+with their source under `packages/**/src/**/__tests__`; most reuse vitest browser-mode test
+harnesses (`TestWrapper` + `*Story.tsx` components), alongside authored migration sentinels for
+`ui-components` and vanilla-extract-migrated components. `dev/storybook` contains the shared
+Storybook, Chromatic, and addon-vitest infrastructure.
+
+```bash
+pnpm dev:storybook                    # Storybook dev server at http://localhost:6006
+pnpm build:storybook                  # Static build via turbo (dev/storybook/storybook-static)
+pnpm --filter sanity-storybook test   # Run every story as a vitest browser-mode test
+CHROMATIC=1 pnpm --filter sanity test:browser   # Chromatic archive capture run (chromium only)
+```
+
+Repo secrets: `CHROMATIC_PROJECT_TOKEN_STORYBOOK` (active), `CHROMATIC_PROJECT_TOKEN_E2E`
+(active, used by e2e), `CHROMATIC_PROJECT_TOKEN_VITEST` (dormant until Chromatic's Vitest early
+access is enabled — the CI job self-activates when the secret is added). Checks are non-gating
+during burn-in. See the `sanity-visual-regression` skill
+(`.agents/skills/sanity-visual-regression/SKILL.md`) for how to add coverage, determinism rules,
+and the Vitest activation runbook.
+
 ### E2E Tests (Playwright)
 
 ```bash
@@ -276,7 +466,7 @@ pnpm test:e2e --ui          # Interactive mode
 Lefthook runs on commit (see `lefthook.yml`), which:
 
 1. Runs oxfmt on staged files
-2. Runs oxlint `--fix` on staged `.js/.ts/.tsx` files
+2. Runs oxlint `--fix` on staged `.js/.ts/.tsx` files (with `--no-error-on-unmatched-pattern` so packages in oxlint `ignorePatterns`, e.g. `@repo/test-dts-exports`, can still be committed)
 
 If the hook fails, run `pnpm lint:fix` to fix issues.
 
@@ -291,6 +481,10 @@ pnpm --filter sanity add <package>
 # Add to root (dev dependency)
 pnpm add -w -D <package>
 ```
+
+Catalog versions live in `pnpm-workspace.yaml`. After changing a catalog specifier, run `pnpm install` to refresh `pnpm-lock.yaml`.
+
+The workspace sets `minimumReleaseAge: 4320` (3 days) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally.
 
 ### Creating a New Test
 
@@ -359,19 +553,71 @@ added new feature                       # missing type and scope
 
 ## Pull Request Workflow
 
-**Always create PRs as drafts first.**
+### 1. Create as Draft PR First
+
+**Always create PRs as drafts first.** The prompter (person who requested the work) reviews before the broader team.
 
 ```bash
 # Create a draft PR — title MUST follow conventional commit format
-gh pr create --draft --title "fix(scope): description" --body "..."
+gh pr create --draft --title "fix(scope): description" --body "..." --label "🤖 bot"
 ```
 
-Workflow:
+### 2. Apply the "🤖 bot" Label
 
-1. **Agent creates draft PR** - Push changes and open as draft
-2. **Prompter reviews** - The person who requested the changes reviews the draft
-3. **Mark ready for review** - Once the prompter approves, mark PR as ready: `gh pr ready`
-4. **Team reviews** - Team members review and approve
+**All PRs created by AI agents must be labeled with `🤖 bot`.** This label already exists on the repo and helps the team identify agent-created PRs for tracking and review workflows.
+
+When creating or updating a PR, always ensure the label is applied. If the create command did not accept `--label`, add it afterward:
+
+```bash
+gh pr edit --add-label "🤖 bot"
+```
+
+### 3. Move Out of Draft
+
+Once the prompter approves and CI is green, convert from draft to ready-for-review:
+
+```bash
+gh pr ready
+```
+
+### 4. What Not To Touch Unless Asked
+
+- **`.github/CODEOWNERS`** — do not add or change ownership rules unless explicitly requested
+- **Release automation / version bumps** — versioning is driven by conventional commits on merge; do not open manual version PRs unless asked
+
+### Useful PR Labels
+
+| Label                | When to use                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| `🤖 bot`             | **Required** on every AI-agent PR                                                    |
+| `trigger: preview`   | Publishes preview packages via [`pkg.pr.new`](https://pkg.pr.new) (maintainer-gated) |
+| `trigger:perf-bench` | Runs the `perf/bench` suite on the PR (maintainer-gated)                             |
+| `full-test-suite`    | Forces the full unit test suite to run                                               |
+
+Do **not** apply `trigger:*` labels unless the prompter or a maintainer asks — they kick off expensive or publish workflows.
+
+### Crediting Original Authors (Ported / Cherry-picked Work)
+
+When porting or rebasing someone else's PR (community contribution, backport, etc.), credit the **original author**, not only the agent or whoever opens the port PR:
+
+1. Prefer commits authored as the original contributor when history allows:
+
+   ```bash
+   git commit --author="their-name <their-github-email>" -m "..."
+   ```
+
+2. Otherwise add a `Co-authored-by:` trailer (and mention them in the PR description / Notes for release):
+
+   ```
+   Co-authored-by: Their Name <their-github-noreply@users.noreply.github.com>
+   ```
+
+Workflow summary:
+
+1. **Agent creates draft PR** with the `🤖 bot` label
+2. **Prompter reviews** the draft
+3. **Mark ready for review** once the prompter approves
+4. **Team reviews** and merges
 
 This ensures the person who prompted the changes can verify correctness before involving the broader team.
 
@@ -422,6 +668,7 @@ Key env vars used in development:
 - `SANITY_STUDIO_PROJECT_ID` - Project ID for dev studio
 - `SANITY_STUDIO_DATASET` - Dataset for dev studio
 - `SANITY_INTERNAL_ENV` - Internal environment flag
+- `ENABLE_BUNDLE_ANALYZER` - When `true`, the `sanity` package tsdown build emits `lib/analyze-data.md` (`pnpm analyze:sanity`)
 
 See `turbo.json` for full list of environment variables that affect builds.
 
@@ -430,3 +677,78 @@ See `turbo.json` for full list of environment variables that affect builds.
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Full contribution guidelines
 - [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) - Community guidelines
 - [packages/sanity/README.md](./packages/sanity/README.md) - Main package docs
+
+## Cursor Cloud specific instructions
+
+These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The startup update script already runs `pnpm install`.
+
+### Services
+
+| Service                                           | Port | Purpose                                          |
+| ------------------------------------------------- | ---- | ------------------------------------------------ |
+| Test studio (`pnpm dev` / `pnpm dev:test-studio`) | 3333 | Local Sanity Studio for manual verification      |
+| Preview iframe (`pnpm dev:preview-iframe`)        | 3334 | Cross-origin Presentation preview (vanilla Vite) |
+| Storybook (`pnpm dev:storybook`)                  | 6006 | Visual regression stories (Chromatic)            |
+
+No Docker, databases, or other local services are required for unit tests, lint, or build. CI-style verification (`pnpm lint`, `pnpm build`, `pnpm test`) runs entirely in-process.
+
+### Gotchas
+
+- **Root `typescript` is TypeScript 7.** Catalog `typescript` (^7) is a normal root dependency and provides the native `tsc` binary for vitest typecheck (`*.test-d.*`) and for tsdown `dts: {tsgo: true}` (packages also declare catalog `typescript`). CI type checking of application code is owned by oxlint (`options.typeCheck`). Tools that still need the TypeScript 6 compiler API keep that isolated: `@repo/typedoc` (typedoc) and `@repo/test-dts-exports` (ts-morph) depend on `typescript` aliased to `@typescript/typescript6`. The old symlink workaround for a missing root `tsc` is no longer needed.
+- **Dev studio auth for cloud agents — use the `STUDIO_AUTH_TOKEN` secret, not interactive login.** `pnpm dev` runs `sanity dev --no-auto-updates` (non-interactive, no upgrade prompt) and serves the app at `http://localhost:3333`. The test studio connects to Sanity Cloud (project `ppsg7ml5`); its default workspace is `/test`. Without auth the workspaces show "Signed out" / "Choose login provider". To authenticate, put the injected `STUDIO_AUTH_TOKEN` in the URL hash — Sanity consumes it on load and strips it from the address bar:
+  - Build the URL: `node -e "console.log('http://localhost:3333/test#token=' + encodeURIComponent(process.env.STUDIO_AUTH_TOKEN))"` (any workspace basePath works, e.g. `/test`).
+  - Because the Read tool redacts the token, you cannot paste the URL into browser instructions directly. A reliable trick is a tiny local HTTP server that reads `STUDIO_AUTH_TOKEN` from env and serves an HTML page doing `location.replace(<studio-url-with-token>)`, then point the browser at that server (keeps the secret out of prompts/screenshots). After load you land authenticated in the workspace and can create/publish documents (e.g. an `Author`).
+  - Most changes should still be verified with `pnpm build && pnpm test` (no auth needed); only use the studio for visual/manual verification.
+- **Seeding test documents for the `/test` workspace via API.** In local dev (non-staging), the `/test` workspace talks to the production API host, so `STUDIO_AUTH_TOKEN` works as a Bearer token against `https://ppsg7ml5.api.sanity.io/v2024-01-01/data/mutate/test` (it returns 401 "Session not found" on `api.sanity.work`). Caveat when testing history/review-changes features: documents created by raw API mutations (e.g. `createOrReplace` of a published id) do not produce publish events, so the Review changes inspector shows "There are no changes" / "Same revision selected". Instead, create only the draft (`drafts.<id>`) via the API, click Publish in the studio UI to create a real publish event, then edit fields in the form to create draft changes.
+- **Seeding releases for the `/test` workspace via API.** Releases and document versions are created through the actions endpoint (`POST https://ppsg7ml5.api.sanity.io/v2025-02-19/data/actions/test` with `{"actions": [...]}`, same Bearer token). Useful action types: `sanity.action.release.create`, `sanity.action.document.version.create` (pass `publishedId` plus a `document` with `_id: versions.<releaseId>.<publishedId>`), `sanity.action.document.version.unpublish`, `sanity.action.document.version.discard`, `sanity.action.release.archive`, `sanity.action.release.delete`. Note that a version created by the unpublish action alone is an empty tombstone carrying only `_system.delete: true` — to get a version with content, create the version first and then unpublish it. `/test` is a shared dataset, so archive and delete any release you seed once you are done.
+- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
+- **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
+- **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
+
+### Running e2e (Playwright) tests in the VM
+
+The e2e suite runs against the staging project `ittbm412` (see `.env.example`) on `api.sanity.work`. `STUDIO_E2E_AUTH_TOKEN` is injected into the VM for exactly this: it is a `manage-datasets` robot token on that project, so specs run the way CI runs them, with no source edits. Do not reach for `STUDIO_AUTH_TOKEN` or `SANITY_TEST_STUDIO_AUTH_TOKEN` here — those are production tokens and get 401 "Session not found" against `api.sanity.work`.
+
+1. **Build the packages.** `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH" && pnpm build`, then `git checkout packages/sanity/package.json` — the build rewrites its `inlinedDependencies`.
+
+2. **Install the browsers** (not preinstalled): `pnpm --filter e2e exec playwright install chromium firefox`.
+
+3. **Create a dataset.** Give every run its own, like CI does, and name it `cursor_ci_<random>` so the periodic cleanup can find it afterwards:
+
+   ```bash
+   export SANITY_E2E_PROJECT_ID=ittbm412
+   export SANITY_E2E_SESSION_TOKEN=$STUDIO_E2E_AUTH_TOKEN
+   export SANITY_E2E_DATASET=cursor_ci_$(openssl rand -hex 3)
+   pnpm e2e:setup # creates $SANITY_E2E_DATASET (public ACL) unless it already exists
+   ```
+
+4. **Start the studio** with those variables still exported. It serves on port 3339, which `playwright.config.ts` reuses instead of starting its own server:
+
+   ```bash
+   pnpm --filter studio-e2e-testing dev
+   ```
+
+   `sanity dev` needs no token of its own: Playwright authenticates the browser by seeding `SANITY_E2E_SESSION_TOKEN` into local storage through `storageState`.
+
+5. **Run specs**, again with those variables exported:
+
+   ```bash
+   cd e2e && pnpm exec playwright test --project=chromium tests/navbar/search.spec.ts --retries=0
+   ```
+
+   Keep `--retries=0` so a flake stays visible, and add `--repeat-each=N` when chasing one. `--project=firefox` runs the other browser CI uses. CI gives each browser its own dataset through `SANITY_E2E_DATASET_CHROMIUM` / `SANITY_E2E_DATASET_FIREFOX`; both fall back to `SANITY_E2E_DATASET`, so run one project at a time unless you create a dataset per browser — specs that touch per-user state (key-value keys such as recent searches or sort orders) otherwise interfere across browsers.
+
+6. **Delete the dataset when you are done:**
+
+   ```bash
+   curl -X DELETE "https://$SANITY_E2E_PROJECT_ID.api.sanity.work/v2023-02-03/datasets/$SANITY_E2E_DATASET" \
+     -H "Authorization: Bearer $STUDIO_E2E_AUTH_TOKEN"
+   ```
+
+   `pnpm e2e:cleanup`, scheduled every 6 hours, sweeps `cursor_ci_*` datasets older than 24 hours as a backstop — treat that as a safety net, not as the cleanup step.
+
+Debugging notes:
+
+- A fresh dataset is empty. Specs that need content seed it themselves; if one assumes documents exist, that is a bug in the spec, not a reason to point at the shared `staging` dataset.
+- The failure video is written to `e2e/results/<test>/video.webm`; extract frames with the bundled ffmpeg: `~/.cache/ms-playwright/ffmpeg-*/ffmpeg-linux -i video.webm -r 1 /tmp/frame_%03d.png` (this build has no `-vf fps=` filter).
+- To reproduce load-related flakiness, throttle the browser from within the spec: `const cdp = await page.context().newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 8})` (chromium only). Stub a slow or eventually-consistent backend with `page.route('**/data/query/**', …)`; the global search query is identifiable by its `findability-source: global` GROQ comment.

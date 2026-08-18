@@ -12,6 +12,7 @@ describe('createPortableTextDescription', () => {
     const description = createPortableTextDescription('  hello world  ')
 
     expect(description).toHaveLength(1)
+    // @ts-expect-error -- pre-existing, fix later
     expect(description[0]?.children[0]?.text).toBe('  hello world  ')
   })
 

@@ -1,11 +1,15 @@
-import {DesktopIcon, MobileDeviceIcon, PanelLeftIcon, RefreshIcon} from '@sanity/icons'
+import {DesktopIcon} from '@sanity/icons/Desktop'
+import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
+import {PanelLeftIcon} from '@sanity/icons/PanelLeft'
+import {RefreshIcon} from '@sanity/icons/Refresh'
 import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
 import {Box, Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 
-import {Button, Tooltip} from '../../ui-components'
+import {Button} from '../../ui-components/button/Button'
+import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {presentationLocaleNamespace} from '../i18n'
 import {type HeaderOptions} from '../types'
 import {useId} from '../useId'
@@ -34,6 +38,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     overlaysConnection,
     presentationRef,
     perspective,
+    variant,
     previewUrl,
     setViewport,
     targetOrigin,
@@ -204,6 +209,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
                 previewLocationOrigin={previewLocationOrigin}
                 previewLocationRoute={previewLocationRoute}
                 perspective={perspective}
+                variant={variant}
                 targetOrigin={targetOrigin}
               />
             </Box>
@@ -249,6 +255,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
             previewLocationRoute={previewLocationRoute}
             initialUrl={initialUrl}
             perspective={perspective}
+            variant={variant}
           />
         </Flex>
       )}

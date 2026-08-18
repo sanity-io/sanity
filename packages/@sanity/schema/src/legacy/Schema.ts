@@ -167,6 +167,7 @@ export class Schema {
  */
 export class DeprecatedDefaultSchema extends Schema {
   static compile(schemaDef: any): Schema {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return new DeprecatedDefaultSchema(schemaDef)
   }
 

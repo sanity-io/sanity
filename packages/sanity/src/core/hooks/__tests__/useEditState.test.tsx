@@ -2,7 +2,7 @@ import {act, renderHook, waitFor} from '@testing-library/react'
 import {BehaviorSubject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type EditStateFor} from '../../store'
+import {type EditStateFor} from '../../store/document/document-pair/editState'
 import {useEditState} from '../useEditState'
 
 const initialState: EditStateFor = {
@@ -16,6 +16,7 @@ const initialState: EditStateFor = {
   liveEditSchemaType: false,
   ready: false,
   release: undefined,
+  scopeId: undefined,
 }
 
 const mockEditState$ = new BehaviorSubject<EditStateFor>(initialState)
@@ -25,9 +26,7 @@ const mockDocumentStore = {
   pair: {editState: mockEditStateFn},
 }
 
-vi.mock('../../store', () => ({
-  useDocumentStore: () => mockDocumentStore,
-}))
+vi.mock('../../store/datastores', () => ({useDocumentStore: () => mockDocumentStore}))
 
 describe('useEditState', () => {
   beforeEach(() => {

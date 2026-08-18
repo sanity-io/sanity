@@ -53,10 +53,10 @@ describe('createBatchedGetDocumentExists', () => {
     expect(mockClient.observable.request).toHaveBeenCalledTimes(2)
     const [firstCall, secondCall] = mockClient.observable.request.mock.calls
 
-    expect(firstCall[0].uri).toEqual(
+    expect(firstCall[0].url).toEqual(
       `https://example.com/doc/${ids.slice(0, MAX_BUFFER_SIZE).join(',')}`,
     )
-    expect(secondCall[0].uri).toEqual(
+    expect(secondCall[0].url).toEqual(
       `https://example.com/doc/${ids.slice(MAX_BUFFER_SIZE).join(',')}`,
     )
   })

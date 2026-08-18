@@ -1,4 +1,4 @@
-import {useClient} from '../../../../hooks'
+import {useClient} from '../../../../hooks/useClient'
 import {DEFAULT_API_VERSION} from '../constants'
 
 export function useToken(): string | undefined {

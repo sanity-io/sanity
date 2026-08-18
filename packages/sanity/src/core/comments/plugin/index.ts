@@ -1,20 +1,24 @@
 import {lazy} from 'react'
 
-import {definePlugin} from '../../config'
+import {definePlugin} from '../../config/definePlugin'
 import {commentsUsEnglishLocaleBundle} from '../i18n'
 import {commentsInspector} from './inspector'
 
 const CommentsDocumentLayout = lazy(() =>
-  import('./document-layout').then((module) => ({default: module.CommentsDocumentLayout})),
+  import('./document-layout/CommentsDocumentLayout').then((module) => ({
+    default: module.CommentsDocumentLayout,
+  })),
 )
 const CommentsField = lazy(() =>
-  import('./field').then((module) => ({default: module.CommentsField})),
+  import('./field/CommentsField').then((module) => ({default: module.CommentsField})),
 )
 const CommentsInput = lazy(() =>
-  import('./input').then((module) => ({default: module.CommentsInput})),
+  import('./input/CommentsInput').then((module) => ({default: module.CommentsInput})),
 )
 const CommentsStudioLayout = lazy(() =>
-  import('./studio-layout').then((module) => ({default: module.CommentsStudioLayout})),
+  import('./studio-layout/CommentsStudioLayout').then((module) => ({
+    default: module.CommentsStudioLayout,
+  })),
 )
 
 export const comments = definePlugin({

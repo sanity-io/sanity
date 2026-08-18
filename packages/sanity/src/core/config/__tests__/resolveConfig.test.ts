@@ -3,7 +3,7 @@ import {firstValueFrom, lastValueFrom, of} from 'rxjs'
 import {bufferTime} from 'rxjs/operators'
 import {describe, expect, it} from 'vitest'
 
-import {createMockAuthStore} from '../../store'
+import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
 import {VARIANTS_NAME} from '../../variants/plugin'
 import {definePlugin} from '../definePlugin'
 import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'

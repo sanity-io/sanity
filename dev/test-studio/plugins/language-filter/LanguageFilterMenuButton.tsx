@@ -1,15 +1,6 @@
-import {TranslateIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Checkbox,
-  Flex,
-  Popover,
-  Stack,
-  Text,
-  useClickOutsideEvent,
-} from '@sanity/ui'
+import {TranslateIcon} from '@sanity/icons/Translate'
+import {Box, Button, Card, Checkbox, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Popover} from '@sanity/ui/popover'
 import {type FormEvent, useCallback, useRef, useState} from 'react'
 import {type ObjectSchemaType} from 'sanity'
 
@@ -37,6 +28,7 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleAll = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (event: FormEvent<HTMLInputElement>) => {
       const checked = event.currentTarget.checked
 
@@ -62,7 +54,7 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
     <Box overflow="auto" padding={1}>
       {defaultLanguages.length > 0 && (
         <Card radius={2} tone="primary">
-          <Stack padding={2} space={3}>
+          <Stack padding={2} gap={3}>
             <Text size={1} weight="semibold">
               Default language{defaultLanguages.length > 1 && <>s</>}
             </Text>
@@ -74,7 +66,7 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
         </Card>
       )}
 
-      <Stack marginTop={3} padding={2} space={2}>
+      <Stack marginTop={3} padding={2} gap={2}>
         <Box paddingBottom={1}>
           <Text size={1} weight="semibold">
             Show translations

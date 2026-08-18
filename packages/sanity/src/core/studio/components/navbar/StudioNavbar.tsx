@@ -1,7 +1,6 @@
-import {MenuIcon} from '@sanity/icons'
+import {MenuIcon} from '@sanity/icons/Menu'
 import {
   BoundaryElementProvider,
-  Box,
   Card,
   Flex,
   Grid,
@@ -14,30 +13,34 @@ import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'rea
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {CapabilityGate} from '../../../components/CapabilityGate'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
-import {useToolMenuComponent} from '../../studio-components-hooks'
+import {useToolMenuComponent} from '../../studio-components-hooks/useToolMenuComponent'
 import {useWorkspace} from '../../workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
-import {FreeTrial} from './free-trial'
+import {FreeTrial} from './free-trial/FreeTrial'
 import {FreeTrialProvider} from './free-trial/FreeTrialProvider'
 import {HomeButton} from './home/HomeButton'
-import {NavDrawer} from './navDrawer'
-import {NewDocumentButton, useNewDocumentOptions} from './new-document'
-import {PresenceMenu} from './presence'
+import {NavDrawer} from './navDrawer/NavDrawer'
+import {NewDocumentButton} from './new-document/NewDocumentButton'
+import {useNewDocumentOptions} from './new-document/useNewDocumentOptions'
+import {PresenceMenu} from './presence/PresenceMenu'
 import {ResourcesButton} from './resources/ResourcesButton'
-import {SearchButton, SearchDialog} from './search'
 import {SearchPopover} from './search/components/SearchPopover'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
-import {UserMenu} from './userMenu'
-import {WorkspaceMenuButton} from './workspace'
+import {SearchButton} from './search/SearchButton'
+import {SearchDialog} from './search/SearchDialog'
+import {UserMenu} from './userMenu/UserMenu'
+import {WorkspaceMenuButton} from './workspace/WorkspaceMenuButton'
 
 const EMPTY_ARRAY: [] = []
 
@@ -57,7 +60,7 @@ const RootCard = styled(Card)`
 
 const NavGrid = styled(Grid)`
   grid-template-columns: auto auto auto;
-  @media screen and (min-width: ${({theme}) => `${theme.sanity.media[4]}px`}) {
+  @media screen and (min-width: ${({theme}) => `${theme.sanity.media[4] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px`}) {
     grid-template-columns: 1fr auto 1fr;
   }
 `
@@ -84,7 +87,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchOpen,
   } = useContext(NavbarContext)
 
-  const {selectedPerspective, perspectiveStack} = usePerspective()
+  const {selectedPerspective, perspectiveStack, selectedVariantName} = usePerspective()
 
   const ToolMenu = useToolMenuComponent()
 
@@ -256,6 +259,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                             onClose={handleCloseSearchFullscreen}
                             onOpen={handleOpenSearchFullscreen}
                             open={searchFullscreenOpen}
+                            previewPerspective={perspectiveStack}
+                            previewVariant={selectedVariantName}
                           />
                         </PortalProvider>
                       ) : (
@@ -264,6 +269,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                           onOpen={handleOpenSearch}
                           open={searchOpen}
                           previewPerspective={perspectiveStack}
+                          previewVariant={selectedVariantName}
                         />
                       )}
                     </BoundaryElementProvider>
@@ -284,7 +290,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
                 {shouldRender.tools && (
                   <CapabilityGate capability="globalUserMenu">
-                    <Box flex="none" marginLeft={1}>
+                    <Box flexBasis="auto" flexGrow={0} flexShrink={0} marginLeft={1}>
                       <UserMenu />
                     </Box>
                   </CapabilityGate>

@@ -1,5 +1,5 @@
 import {Box, Card} from '@sanity/ui'
-import {type CSSProperties, lazy, type ReactNode, type RefObject, Suspense} from 'react'
+import {lazy, type ReactNode, type RefObject, Suspense} from 'react'
 
 import {MenuActionsWrapper} from '../../../core/form/inputs/files/common/MenuActionsWrapper.styled'
 import {OptionsMenuPopover} from '../../../core/form/inputs/files/common/OptionsMenuPopover'
@@ -46,11 +46,9 @@ export function VideoActionsMenu(props: Props) {
         <RatioBox
           tone="transparent"
           $isPortrait={aspectRatio !== undefined && aspectRatio < 0.75}
-          style={
-            {
-              '--aspect-ratio': aspectRatio,
-            } as CSSProperties
-          }
+          style={{
+            '--aspect-ratio': aspectRatio,
+          }}
         >
           {playbackId && (
             <Suspense fallback={<VideoSkeleton aspectRatio={aspectRatio} />}>

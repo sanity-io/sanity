@@ -1,0 +1,169 @@
+name: AI Literacy Eval
+
+on:
+  pull_request:
+    branches: [main]
+    paths: ["packages/@repo/ailf/**", ".github/workflows/ailf-eval.yml"]
+
+  workflow_dispatch:
+    inputs:
+      debug_mode:
+        description: "Run in debug mode (fewer tests, faster iteration)"
+        type: boolean
+        default: false
+
+  schedule:
+    # Every Monday at midnight.
+    - cron: "0 0 * * 1"
+
+concurrency:
+  group: ailf-eval-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evaluate:
+    name: AI Literacy Evaluation
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+        with:
+          node-version: lts
+
+      - name: Run evaluation
+        id: eval
+        working-directory: packages/@repo/ailf
+        env:
+          AILF_API_KEY: ${{ secrets.AILF_API_KEY }}
+          AILF_CLASSIFICATION: adhoc
+          AILF_OWNER_TEAM: "studio"
+          AILF_OWNER_INDIVIDUAL: ${{ github.actor }}
+        run: |
+          pnpm exec ailf run --remote \
+            --output /tmp/ailf-report.md \
+            ${{ inputs.debug_mode && '--debug' || '' }}
+
+      - name: Post PR comment
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+
+            // --- Constants ---
+            const MARKER = '<!-- ailf-score-report -->';
+            const HISTORY_START = '<!-- ailf-score-history -->';
+            const HISTORY_END = '<!-- /ailf-score-history -->';
+            const MAX_HISTORY = 3; // keep at most 3 prior runs
+
+            // --- Read new report ---
+            let newReport;
+            try {
+              newReport = fs.readFileSync('/tmp/ailf-report.md', 'utf-8');
+            } catch {
+              newReport = `## ⚠️ AI Literacy Evaluation\n\nNo report generated. Check the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).`;
+            }
+
+            const prNumber = context.issue?.number || context.payload?.pull_request?.number;
+            if (!prNumber) {
+              console.log('No PR number found, skipping comment');
+              return;
+            }
+
+            // --- Find existing comment ---
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            const existing = comments.find(c => c.body?.includes(MARKER));
+
+            // --- Build history from previous comment ---
+            let historyEntries = [];
+            if (existing) {
+              const oldBody = existing.body || '';
+
+              // Collect existing collapsed history entries
+              const histStart = oldBody.indexOf(HISTORY_START);
+              const histEnd = oldBody.indexOf(HISTORY_END);
+              if (histStart !== -1 && histEnd !== -1) {
+                const historyContent = oldBody.slice(histStart + HISTORY_START.length, histEnd).trim();
+                // Split on </details> boundaries to get individual entries
+                if (historyContent) {
+                  historyEntries = historyContent
+                    .split(/<\/details>\s*/)
+                    .map(s => s.trim())
+                    .filter(s => s.startsWith('<details>'))
+                    .map(s => s + '\n</details>');
+                }
+              }
+
+              // Extract the current report (will become the newest history entry)
+              let previousReport = '';
+              if (histStart !== -1) {
+                // Report is between MARKER and the "Previous runs" heading (or history section)
+                const markerIdx = oldBody.indexOf(MARKER);
+                // Find the --- separator before history
+                const separatorIdx = oldBody.lastIndexOf('---', histStart);
+                const endIdx = separatorIdx > markerIdx ? separatorIdx : histStart;
+                previousReport = oldBody.slice(markerIdx + MARKER.length, endIdx).trim();
+              } else {
+                // No history yet — everything after MARKER is the report
+                const markerIdx = oldBody.indexOf(MARKER);
+                if (markerIdx !== -1) {
+                  previousReport = oldBody.slice(markerIdx + MARKER.length).trim();
+                }
+              }
+
+              // Collapse the previous report into a <details> entry
+              if (previousReport) {
+                const scoreMatch = previousReport.match(/Overall:\s*(\d+)\/100/);
+                const score = scoreMatch ? scoreMatch[1] : '?';
+                const dateMatch = previousReport.match(/Generated by.*?·\s*([^·<\n*]+)/);
+                const date = dateMatch
+                  ? dateMatch[1].trim()
+                  : new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+                const entry = `<details>\n<summary>📜 ${date} — ${score}/100</summary>\n\n${previousReport}\n\n</details>`;
+                historyEntries.unshift(entry); // newest first
+              }
+
+              // Enforce max history limit
+              historyEntries = historyEntries.slice(0, MAX_HISTORY);
+            }
+
+            // --- Assemble final comment ---
+            const historySection = historyEntries.length > 0
+              ? `\n\n---\n\n### 📜 Previous runs\n\n${HISTORY_START}\n${historyEntries.join('\n\n')}\n${HISTORY_END}`
+              : '';
+            const finalBody = `${MARKER}\n${newReport}${historySection}`;
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                comment_id: existing.id, body: finalBody,
+              });
+              console.log(`Updated comment (${historyEntries.length} history entries)`);
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: prNumber, body: finalBody,
+              });
+              console.log('Created new PR comment');
+            }
+
+      - name: Summary
+        if: always()
+        run: |
+          if [ -f /tmp/ailf-report.md ]; then
+            cat /tmp/ailf-report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## ⚠️ AI Literacy Evaluation" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "No report generated. Check the workflow logs." >> "$GITHUB_STEP_SUMMARY"
+          fi

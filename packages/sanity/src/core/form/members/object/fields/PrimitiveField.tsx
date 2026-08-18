@@ -1,18 +1,19 @@
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
-import {type FieldMember, type PrimitiveFormNode} from '../../../store'
+import {set, unset} from '../../../patch/patch'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {type FormPatch} from '../../../patch/types'
+import {type FieldMember} from '../../../store/types/members'
+import {type PrimitiveFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useParseErrorForPath} from '../../../studio/contexts/ParseErrors'
-import {
-  type PrimitiveFieldProps,
-  type PrimitiveInputProps,
-  type RenderFieldCallback,
-  type RenderInputCallback,
-} from '../../../types'
+import {type PrimitiveFieldProps} from '../../../types/fieldProps'
+import {type PrimitiveInputProps} from '../../../types/inputProps'
+import {type RenderFieldCallback, type RenderInputCallback} from '../../../types/renderCallback'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
+import {stripStegaFromPasteEvent} from '../../../utils/stegaPaste'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
@@ -100,12 +101,14 @@ export function PrimitiveField(props: {
       'id': member.field.id,
       'ref': focusRef,
       'onChange': handleNativeChange,
+      'onPaste': stripStegaFromPasteEvent,
       'value': resolveNativeNumberInputValue(
         member.field.schemaType,
         member.field.value,
         localValue,
       ),
       'readOnly': Boolean(member.field.readOnly),
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       'placeholder': member.field.schemaType.placeholder,
       // Disable native browser autocomplete/autofill on content-editing fields
       'autoComplete': 'off',

@@ -1,9 +1,11 @@
 import {
   PortableTextEditor,
+  useEditor,
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@portabletext/editor'
-import {isKeyedObject, type KeyedObject, type Path} from '@sanity/types'
+import {getEnclosingBlock, getSpan} from '@portabletext/editor/traversal'
+import {type Path} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
 import {useLayoutEffect, useRef} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
@@ -13,17 +15,21 @@ import {usePortableTextMemberItems} from './usePortableTextMembers'
 
 interface Props {
   focusPath: Path
+  ptInputPath: Path
   boundaryElement: HTMLElement | null
   onItemClose: () => void
 }
 
 // This hook will track the form focusPath and make sure editor content is visible (opened), scrolled to, and (potentially) focused accordingly.
 export function useTrackFocusPath(props: Props): void {
-  const {focusPath, boundaryElement, onItemClose} = props
+  const {focusPath, ptInputPath, boundaryElement, onItemClose} = props
 
   const portableTextMemberItems = usePortableTextMemberItems()
   const elementRefs = usePortableTextMemberItemElementRefs()
-  const editor = usePortableTextEditor()
+  const editor = useEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  const legacyEditor = usePortableTextEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
 
   // Read selection from a ref instead of subscribing to it, so our own select() calls below don't
@@ -33,9 +39,33 @@ export function useTrackFocusPath(props: Props): void {
     selectionRef.current = selection
   }, [selection])
 
+  // The focusPath value that has already been effectuated: either applied to the editor
+  // (selected/focused below), or confirmed to match a selection the editor already owns.
+  // The effect re-runs on member/element-ref churn so that a focusPath whose target hasn't
+  // rendered yet can be retried, but a handled one must never be re-applied: unrelated re-runs
+  // (e.g. validation markers arriving while the user types) would otherwise re-select at
+  // offset 0 and hijack the caret to the start of the block (SAPP-4053). This matters whenever
+  // the editor transiently loses DOM focus while the form focusPath stays put — such as a brief
+  // readOnly flip toggling `contenteditable` off. Tracking by reference is safe because form
+  // paths are interned (`pathFor`), so the value only changes when focus actually moves; the
+  // ref is cleared whenever it does, keeping re-entry from outside (Visual Editing, #12894)
+  // working when the same path is focused again later.
+  const handledFocusPathRef = useRef<Path | null>(null)
+
   useLayoutEffect(() => {
+    // Focus moved elsewhere (or was cleared on blur): forget the handled path so that focusing
+    // the previous path again later is applied anew.
+    if (handledFocusPathRef.current !== focusPath) {
+      handledFocusPathRef.current = null
+    }
+
     // Don't do anything if no focusPath to track
     if (focusPath.length === 0) {
+      return
+    }
+
+    // This exact focusPath has already been effectuated; don't re-apply it on unrelated re-runs.
+    if (handledFocusPathRef.current === focusPath) {
       return
     }
 
@@ -67,15 +97,33 @@ export function useTrackFocusPath(props: Props): void {
       ) &&
       (editorHasDomFocus || Boolean(openEditingItem))
     ) {
+      handledFocusPathRef.current = focusPath
       return
     }
 
     // Find the focused editor member item (if any)
     const focusedItem = portableTextMemberItems.find((m) => m.member.item.focused)
 
-    // The related editor member to scroll to, or focus, according to the given focusPath
-    const relatedEditorItem = focusedItem || openItem
-    const elementRef = relatedEditorItem ? elementRefs[relatedEditorItem.member.key] : undefined
+    // Resolve the enclosing block for focusPath from the editor snapshot.
+    const snapshot = editor.getSnapshot()
+    const enclosingBlock = getEnclosingBlock(snapshot, focusPath)
+    const blockPath = enclosingBlock?.path
+    const span = getSpan(snapshot, focusPath)
+
+    // `blockPath` is editor-relative; member paths are doc-absolute. Compare
+    // against the full absolute path so blocks that share `_key` across depth
+    // don't collide (`_key` is unique per parent array, not globally).
+    const enclosingBlockItem = blockPath
+      ? portableTextMemberItems.find((m) =>
+          isEqual(m.member.item.path, [...ptInputPath, ...blockPath]),
+        )
+      : undefined
+
+    // The related editor member to scroll to, or focus, according to the given focusPath.
+    // Prefer the path-resolved enclosing block: open/focused heuristics fall back to
+    // ancestor containers at depth when nothing inside them is explicitly open.
+    const relatedEditorItem = focusedItem || enclosingBlockItem || openItem
+    const elementRef = relatedEditorItem ? elementRefs[relatedEditorItem.key] : undefined
 
     if (relatedEditorItem && elementRef) {
       if (boundaryElement) {
@@ -95,48 +143,23 @@ export function useTrackFocusPath(props: Props): void {
       }
 
       const isTextBlock = relatedEditorItem.kind === 'textBlock'
-      const isBlockFocusPath = focusPath.length === 1
 
       // Track focus and selection for focusPaths that are either inside text blocks,
       // or is pointing to the block itself (text and object blocks)
-      if (isTextBlock || isBlockFocusPath) {
-        const textBlockChildKey =
-          isTextBlock && isKeyedObject(focusPath[2]) ? focusPath[2]._key : undefined
-        const child =
-          textBlockChildKey && Array.isArray(relatedEditorItem.node.value?.children)
-            ? (relatedEditorItem.node.value?.children.find((c) => c._key === textBlockChildKey) as
-                | KeyedObject
-                | undefined)
-            : undefined
-
-        // Is the focusPath pointing to span's `.text` property?
-        const isSpanTextFocusPath =
-          (child &&
-            child._type === 'span' &&
-            focusPath.length === 4 &&
-            focusPath[1] === 'children' &&
-            focusPath[3] === 'text') ||
-          false
-
-        // Is focus directly on a text block child?
-        const isTextChildFocusPath =
-          isTextBlock &&
-          ((focusPath.length === 3 && focusPath[1] === 'children') || isSpanTextFocusPath)
-
+      if (isTextBlock || relatedEditorItem.kind === 'objectBlock') {
         let path: Path = []
-        // Known text block child
-        if (isTextChildFocusPath) {
-          path = focusPath.slice(0, 3)
-        } else if (
-          // Known text block, but unknown child. Select first child in that block.
-          isTextBlock &&
-          isBlockFocusPath &&
-          Array.isArray(relatedEditorItem.node.value?.children)
-        ) {
-          path = [focusPath[0], 'children', {_key: relatedEditorItem.node.value?.children[0]._key}]
+        if (span) {
+          // focusPath is on a span or descends into a primitive field on one. Use the span's path.
+          path = span.path
+        } else if (isTextBlock && blockPath && isEqual(focusPath, blockPath)) {
+          // Known text block, but no child in the focusPath. Select first child.
+          const children = enclosingBlock?.node.children
+          if (Array.isArray(children) && children.length) {
+            path = [...blockPath, 'children', {_key: children[0]._key}]
+          }
+        } else if (blockPath && isEqual(focusPath, blockPath)) {
           // Directly pointing to a non-text block
-        } else if (isBlockFocusPath) {
-          path = [{_key: relatedEditorItem.key}]
+          path = blockPath
         }
 
         // Select and focus the editor if we produced a path
@@ -148,19 +171,32 @@ export function useTrackFocusPath(props: Props): void {
             currentSelection?.focus.path &&
             isEqual(currentSelection.focus.path.slice(0, path.length), path)
           if (isTextBlock && isSameSelection) {
-            PortableTextEditor.select(editor, null)
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+            PortableTextEditor.select(legacyEditor, null)
           }
 
-          PortableTextEditor.select(editor, {
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+          PortableTextEditor.select(legacyEditor, {
             anchor: {path, offset: 0},
             focus: {path, offset: 0},
           })
           // Object blocks open their interface when focused, so only call focus for text blocks.
           if (isTextBlock) {
-            PortableTextEditor.focus(editor)
+            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+            PortableTextEditor.focus(legacyEditor)
           }
+          handledFocusPathRef.current = focusPath
         }
       }
     }
-  }, [boundaryElement, editor, elementRefs, focusPath, onItemClose, portableTextMemberItems])
+  }, [
+    boundaryElement,
+    editor,
+    elementRefs,
+    focusPath,
+    legacyEditor,
+    onItemClose,
+    portableTextMemberItems,
+    ptInputPath,
+  ])
 }

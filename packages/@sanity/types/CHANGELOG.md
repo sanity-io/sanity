@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.9.1](https://github.com/sanity-io/sanity/compare/v6.9.0...v6.9.1) (2026-08-06)
+
+### Bug Fixes
+
+* **form:** resolve context-aware validation rules in inputs ([#13878](https://github.com/sanity-io/sanity/issues/13878)) ([9ad5a19](https://github.com/sanity-io/sanity/commit/9ad5a19b5fe519a7907140e2bcef4a9b52771a18))
+## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
+
+### Bug Fixes
+
+* **core:** allow creating draft variants from published variant sibling ([#13741](https://github.com/sanity-io/sanity/issues/13741)) ([cf5a7da](https://github.com/sanity-io/sanity/commit/cf5a7da78f0f4d42a7c21106749b439a007efdf3))
+* **types:** preserve supplied schema helper properties ([#13237](https://github.com/sanity-io/sanity/issues/13237)) ([38002e4](https://github.com/sanity-io/sanity/commit/38002e4432aff0f917eee7461897c23bba35886e))
+## [6.6.0](https://github.com/sanity-io/sanity/compare/v6.5.0...v6.6.0) (2026-07-22)
+
+### Features
+
+* **variants:** enable editing variant documents through the document form ([#13505](https://github.com/sanity-io/sanity/issues/13505)) ([46d84dc](https://github.com/sanity-io/sanity/commit/46d84dc1977e7e0740782044a053342241723735))
+## [6.4.0](https://github.com/sanity-io/sanity/compare/v6.3.0...v6.4.0) (2026-07-07)
+
+### Features
+
+* **types:** add user attribute types to CurrentUser ([#13395](https://github.com/sanity-io/sanity/issues/13395)) ([b7b7fc1](https://github.com/sanity-io/sanity/commit/b7b7fc1fcbeee63fc211abff0cbaa67e0ce5d68c))
 ## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
 
 ### Features

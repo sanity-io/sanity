@@ -2,6 +2,62 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.10.0](https://github.com/sanity-io/sanity/compare/v6.9.2...v6.10.0) (2026-08-18)
+
+### Features
+
+* **vision:** pass navbar variant with pinned release queries ([#14063](https://github.com/sanity-io/sanity/issues/14063)) ([ee6ebee](https://github.com/sanity-io/sanity/commit/ee6ebee9f5b48aa933905dec06ea658b8d6405ba))
+
+### Bug Fixes
+
+* **vision:** stop swallowing paste events outside vision ([#14016](https://github.com/sanity-io/sanity/issues/14016)) ([75de447](https://github.com/sanity-io/sanity/commit/75de4472819f2c9ccc64fc0916b8ea8345cfa0e0))
+## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
+
+### Bug Fixes
+
+* **core:** avoid native useEffectEvent in forwardRef and memo ([#13821](https://github.com/sanity-io/sanity/issues/13821)) ([8f84cf4](https://github.com/sanity-io/sanity/commit/8f84cf4b0628e3b9bc8c4752f67ec793153aaaf6))
+
+### Performance Improvements
+
+* **sanity:** defer non-controlled useObservable subscriptions ([#13799](https://github.com/sanity-io/sanity/issues/13799)) ([2958d75](https://github.com/sanity-io/sanity/commit/2958d75de93601e987f640b0ff02f3827db3d4ec))
+## [6.8.0](https://github.com/sanity-io/sanity/compare/v6.7.0...v6.8.0) (2026-07-30)
+
+### Bug Fixes
+
+* **deps:** bump react-rx to 4.2.5 ([#13797](https://github.com/sanity-io/sanity/issues/13797)) ([d820ba1](https://github.com/sanity-io/sanity/commit/d820ba12450f8872aec5aebc690cc1ac44010035))
+## [6.7.0](https://github.com/sanity-io/sanity/compare/v6.6.0...v6.7.0) (2026-07-28)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.2.1 ([#13684](https://github.com/sanity-io/sanity/issues/13684)) ([ad2634f](https://github.com/sanity-io/sanity/commit/ad2634fd01e69a5090896f68524984c06e48c74a))
+## [6.6.0](https://github.com/sanity-io/sanity/compare/v6.5.0...v6.6.0) (2026-07-22)
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#13363](https://github.com/sanity-io/sanity/issues/13363)) ([5db6df4](https://github.com/sanity-io/sanity/commit/5db6df43857db362a127ceb6133d24fbb8f05954))
+* **deps:** update dependency @sanity/icons to ^5.1.0 ([#13529](https://github.com/sanity-io/sanity/issues/13529)) ([3f9749b](https://github.com/sanity-io/sanity/commit/3f9749b346b36debeea84c07fda510e6c47d92f0))
+* **deps:** update dependency @sanity/icons to ^5.2.0 ([#13652](https://github.com/sanity-io/sanity/issues/13652)) ([0f0d33e](https://github.com/sanity-io/sanity/commit/0f0d33ea6ca7e1d157def3d7457f4b3fd08eb84c))
+## [6.5.0](https://github.com/sanity-io/sanity/compare/v6.4.0...v6.5.0) (2026-07-14)
+
+### Bug Fixes
+
+* **vision:** make saved queries side panel scrollable ([#13449](https://github.com/sanity-io/sanity/issues/13449)) ([4e796ad](https://github.com/sanity-io/sanity/commit/4e796ade9d57126b7f968bdbae429797fa649cd1))
+## [6.4.0](https://github.com/sanity-io/sanity/compare/v6.3.0...v6.4.0) (2026-07-07)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^3.7.6 ([#13384](https://github.com/sanity-io/sanity/issues/13384)) ([260a282](https://github.com/sanity-io/sanity/commit/260a282c2dc38d88e8d03e1f89b677aca765f173))
+* **deps:** update dependency @sanity/icons to v5 ([#13409](https://github.com/sanity-io/sanity/issues/13409)) ([f788296](https://github.com/sanity-io/sanity/commit/f78829648671e05a48c0329ff47abe7dbc457d64))
+* **deps:** update dependency react-rx to ^4.2.3 ([#13405](https://github.com/sanity-io/sanity/issues/13405)) ([10d1a5a](https://github.com/sanity-io/sanity/commit/10d1a5a49647421567b49c7a7bcf2c7813674bfc))
+
+### Performance Improvements
+
+* **sanity:** debarrel @sanity/icons imports ([#13393](https://github.com/sanity-io/sanity/issues/13393)) ([2e250dc](https://github.com/sanity-io/sanity/commit/2e250dc720aa3d49312c79a03bb5697ef4e08fe8))
+## [6.3.0](https://github.com/sanity-io/sanity/compare/v6.2.0...v6.3.0) (2026-06-30)
+
+### Features
+
+* **core:** re-add bundle.css export via conditional exports ([#13322](https://github.com/sanity-io/sanity/issues/13322)) ([d0ce99f](https://github.com/sanity-io/sanity/commit/d0ce99f46b715c0cd6173046a1e3a3f730657128))
 ## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
 
 ### Bug Fixes

@@ -2,10 +2,11 @@ import {Box} from '@sanity/ui'
 import {Suspense, useCallback} from 'react'
 import {Resizable} from 'sanity'
 
-import {usePane} from '../../../components'
+import {usePane} from '../../../components/pane/usePane'
 import {useStructureTool} from '../../../useStructureTool'
 import {DOCUMENT_INSPECTOR_MAX_WIDTH, DOCUMENT_INSPECTOR_MIN_WIDTH} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
+import {DocumentInspectorErrorBoundary} from './DocumentInspectorErrorBoundary'
 
 interface DocumentInspectorPanelProps {
   documentId: string
@@ -29,9 +30,12 @@ export function DocumentInspectorPanel(
 
   const Component = inspector.component
   const element = (
-    <Suspense fallback={null}>
-      <Component onClose={handleClose} documentId={documentId} documentType={documentType} />
-    </Suspense>
+    // Keying on the inspector name clears a caught error when switching inspectors
+    <DocumentInspectorErrorBoundary key={inspector.name} onClose={handleClose}>
+      <Suspense fallback={null}>
+        <Component onClose={handleClose} documentId={documentId} documentType={documentType} />
+      </Suspense>
+    </DocumentInspectorErrorBoundary>
   )
 
   if (features.resizablePanes) {

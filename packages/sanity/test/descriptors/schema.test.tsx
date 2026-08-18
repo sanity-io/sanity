@@ -13,7 +13,8 @@ import {
   type EncodedNamedType,
   type ObjectField,
 } from '../../../@sanity/schema/src/descriptors/types'
-import {builtinSchema, createSchema, DESCRIPTOR_CONVERTER} from '../../src/core/schema'
+import {builtinSchema, createSchema} from '../../src/core/schema/createSchema'
+import {DESCRIPTOR_CONVERTER} from '../../src/core/schema/descriptors'
 import {Rule} from '../../src/core/validation'
 import {expectManifestSchemaConversion} from './utils'
 

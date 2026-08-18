@@ -1,5 +1,7 @@
-import {RevertIcon, TrashIcon, UnpublishIcon} from '@sanity/icons'
-import {useToast} from '@sanity/ui'
+import {RevertIcon} from '@sanity/icons/Revert'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {UnpublishIcon} from '@sanity/icons/Unpublish'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
 
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
@@ -8,7 +10,8 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
-import {useTranslation} from '../../../i18n'
+import {getTargetScopeId, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {UnpublishVersionDialog} from '../../components/dialog/UnpublishVersionDialog'
@@ -23,17 +26,29 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
 ): DocumentActionDescription | null => {
   const {id, type, release, published, version} = props
   const currentUser = useCurrentUser()
-  const isPublished = published !== null
   const {t} = useTranslation(releasesLocaleNamespace)
   const isAlreadyUnpublished = version ? isGoingToUnpublish(version) : false
   const {revertUnpublishVersion} = useVersionOperations()
   const toast = useToast()
   const {t: coreT} = useTranslation()
 
+  const targetDocumentState = useTargetDocumentState(id)
+  // The scope of the document targeted by the selected perspective (undefined when the target is
+  // still resolving or the draft/published pair applies). While resolving, the action is disabled
+  // below instead of silently operating on the base pair.
+  const isTargetReady = targetDocumentState.status === 'ready'
+  const scopeId = getTargetScopeId(targetDocumentState)
+  const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
+  // For variant release versions, "is there something published to unpublish" is answered by the
+  // variant-of-published sibling — the base `published` document says nothing about the variant.
+  const isPublished = isVariantTarget
+    ? targetDocumentState.publishedSibling !== undefined
+    : published !== null
+
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
+    version: scopeId,
     permission: 'unpublish',
   })
 
@@ -81,6 +96,9 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
             documentVersionId={version._id}
             documentType={type}
             onClose={() => setDialogOpen(false)}
+            // In the document pane `DocumentOperationResults` already toasts the unpublish
+            // operation events this dialog would report.
+            showCompletionToasts={false}
           />
         ),
       },
@@ -90,7 +108,7 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
       : t('action.unpublish-doc-actions'),
     icon: isAlreadyUnpublished ? RevertIcon : UnpublishIcon,
     onHandle: handleOnClick,
-    disabled: !isPublished,
+    disabled: !isPublished || !isTargetReady,
     /** @todo should be switched once we have the document actions updated */
     title: isAlreadyUnpublished
       ? t('action.revert-unpublish-actions')

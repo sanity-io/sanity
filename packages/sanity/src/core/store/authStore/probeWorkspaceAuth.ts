@@ -60,7 +60,7 @@ function resolveApiHost(apiHost?: string): string | undefined {
 async function callAuthId(client: SanityClient): Promise<WorkspaceAuthProbeResult> {
   try {
     const response = await client.request<{id?: string}>({
-      uri: '/auth/id',
+      url: '/auth/id',
       tag: 'auth.probe',
     })
     return typeof response?.id === 'string' ? AUTHENTICATED : UNAUTHENTICATED

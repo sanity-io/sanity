@@ -13,7 +13,7 @@ import {
   switchMap,
 } from 'rxjs'
 
-import {type AvailabilityResponse} from '../../preview'
+import {type AvailabilityResponse} from '../../preview/types'
 
 /**
  * The amount of time reserved for waiting for new IDs.
@@ -49,8 +49,7 @@ export function createBatchedGetDocumentExists(
         switchMap(() =>
           client.observable
             .request<AvailabilityResponse>({
-              uri: client.getDataUrl('doc', ids.join(',')),
-              json: true,
+              url: client.getDataUrl('doc', ids.join(',')),
               query: {excludeContent: 'true'},
               tag: 'documents-availability',
             })

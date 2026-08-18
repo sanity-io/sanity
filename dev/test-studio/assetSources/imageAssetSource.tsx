@@ -1,4 +1,4 @@
-import {ImagesIcon} from '@sanity/icons'
+import {ImagesIcon} from '@sanity/icons/Images'
 import {type AssetSource, type AssetSourceComponentProps} from '@sanity/types'
 import {Box, Button, Dialog, Text} from '@sanity/ui'
 import {useCallback} from 'react'
@@ -37,6 +37,7 @@ function ImageAssetSource(props: AssetSourceComponentProps) {
 
 export const imageAssetSource: AssetSource = {
   name: 'test-asset-source',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   title: 'Test',
   icon: ImagesIcon,
   component: ImageAssetSource,

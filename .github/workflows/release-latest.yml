@@ -126,6 +126,49 @@ jobs:
       - name: Publish packages to npm
         run: pnpm -r publish --provenance
 
+      - name: Wait for packages to be installable
+        # npm holds newly published versions for malware scanning (usually 5-15
+        # minutes, sometimes longer) before they become resolvable, so a package
+        # can be live while its exact-pinned workspace dependency still fails to
+        # install. Poll the registry until every published package resolves so
+        # the jobs that announce the release only run once it is installable.
+        # https://github.blog/changelog/2026-07-28-npm-publish-time-malware-scanning-and-dual-use-metadata/
+        run: |
+          # Get all published (non-private) packages in the workspace
+          pending=()
+          for pkg_dir in $(pnpm --silent tsx scripts/listPublishedPackages.ts); do
+            pending+=("$(jq -r '"\(.name)@\(.version)"' "$pkg_dir/package.json")")
+          done
+
+          echo "Waiting for ${#pending[@]} package(s) to resolve on the registry: ${pending[*]}"
+
+          deadline=$((SECONDS + 20 * 60))
+          while true; do
+            still_pending=()
+            for spec in "${pending[@]}"; do
+              if resolved=$(npm view "$spec" version --prefer-online 2>/dev/null) && [ -n "$resolved" ]; then
+                echo "✅ $spec is installable"
+              else
+                still_pending+=("$spec")
+              fi
+            done
+            pending=("${still_pending[@]}")
+
+            if [ "${#pending[@]}" -eq 0 ]; then
+              echo "✅ All published packages are installable"
+              break
+            fi
+
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "Error: timed out waiting for these packages to become installable:"
+              printf ' - %s\n' "${pending[@]}"
+              exit 1
+            fi
+
+            echo "⏳ Still waiting on ${#pending[@]} package(s): ${pending[*]} (retrying in 15s)"
+            sleep 15
+          done
+
   publish-releases:
     # Publish sanity.io Changelog & github release
     needs: [build-and-validate, npm-publish]
@@ -145,7 +188,7 @@ jobs:
       - name: Generate GitHub release
         id: generate-github-release
         run: |
-          pnpm --silent release-notes publish-releases --targetVersion="${{needs.build-and-validate.outputs.version}}"
+          pnpm --silent release-notes publish-releases --target-version="${{needs.build-and-validate.outputs.version}}"
 
         env:
           RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
@@ -204,7 +247,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
-        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
           webhook-type: incoming-webhook

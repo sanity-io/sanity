@@ -1,13 +1,13 @@
 import {Container, Stack, Text} from '@sanity/ui'
 
-import {useTranslation} from '../../../../../i18n'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 
 export function NoResults() {
   const {t} = useTranslation()
 
   return (
     <Container width={0}>
-      <Stack aria-live="assertive" space={4} paddingX={4} paddingY={5}>
+      <Stack aria-live="assertive" gap={4} paddingX={4} paddingY={5}>
         <Text align="center" muted size={1} weight="medium">
           {t('search.no-results-title')}
         </Text>

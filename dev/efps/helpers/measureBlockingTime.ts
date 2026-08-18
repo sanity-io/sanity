@@ -3,9 +3,10 @@ import {type Page} from 'playwright'
 const BLOCKING_TASK_THRESHOLD = 50
 
 export function measureBlockingTime(page: Page): () => Promise<number> {
-  const idleGapLengthsPromise = page.evaluate(
-    // Had to add this so we can run the tests
-    new Function(`
+  const idleGapLengthsPromise = page
+    .evaluate(
+      // Had to add this so we can run the tests
+      new Function(`
     return (async function() {
       const idleGapLengths = []
       const done = false
@@ -29,14 +30,23 @@ export function measureBlockingTime(page: Page): () => Promise<number> {
       return idleGapLengths
     })()
   `) as () => Promise<number[]>,
-  )
+    )
+    // This evaluate starts running immediately (before it is awaited in
+    // `getBlockingTime`). If the page/context is torn down first — e.g. the
+    // A/B harness closes browsers after one side fails — this promise would
+    // otherwise reject with no handler attached, surfacing as an *unhandled
+    // rejection* that crashes the whole process and bypasses the per-attempt
+    // retry machinery. Swallow that here so the failure stays catchable.
+    .catch((): number[] => [])
 
   async function getBlockingTime() {
-    await page.evaluate(
-      new Function(`
+    await page
+      .evaluate(
+        new Function(`
       document.dispatchEvent(new CustomEvent('__blockingTimeFinish'))
     `) as () => void,
-    )
+      )
+      .catch(() => {})
 
     const idleGapLengths = await idleGapLengthsPromise
 

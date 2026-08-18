@@ -12,6 +12,28 @@ beforeEach(() => {
   ;(isLiveEditEnabled as Mock).mockClear()
 })
 
+/**
+ * A variant-scoped version snapshot: `_system.variant` set, bundle per `bundleId`. Release
+ * bundles carry the `_system.release` reference, matching real release-scoped variant documents.
+ */
+function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocument {
+  const isReleaseBundle = Boolean(bundleId) && bundleId !== 'drafts'
+  return {
+    _id: 'versions.varscope.my-id',
+    _type: 'example',
+    _rev: 'variantRev',
+    _createdAt: '2021-09-14T22:48:02.303Z',
+    _updatedAt: '2021-09-14T22:48:02.303Z',
+    _system: {
+      ...(bundleId ? {bundleId} : {}),
+      ...(isReleaseBundle ? {release: {_ref: `_.releases.${bundleId}`, _weak: true}} : {}),
+      variant: {_ref: '_.variants.french', _weak: true},
+      group: {_ref: 'my-id', _weak: true},
+      scopeId: 'varscope',
+    },
+  }
+}
+
 describe('publish', () => {
   describe('disabled', () => {
     it('returns with LIVE_EDIT_ENABLED if isLiveEditEnabled', () => {
@@ -49,6 +71,39 @@ describe('publish', () => {
             draft: {} as SanityDocument,
             published: {} as SanityDocument,
           },
+        } as unknown as OperationArgs),
+      ).toBe(false)
+    })
+
+    it('returns ALREADY_PUBLISHED for a variant-of-published version', () => {
+      ;(isLiveEditEnabled as Mock).mockImplementation(() => false)
+
+      expect(
+        publish.disabled({
+          typeName: 'blah',
+          snapshots: {version: variantVersion(undefined)},
+        } as unknown as OperationArgs),
+      ).toBe('ALREADY_PUBLISHED')
+    })
+
+    it('returns NOT_PUBLISHABLE for a release-scoped variant version', () => {
+      ;(isLiveEditEnabled as Mock).mockImplementation(() => false)
+
+      expect(
+        publish.disabled({
+          typeName: 'blah',
+          snapshots: {version: variantVersion('rSummer')},
+        } as unknown as OperationArgs),
+      ).toBe('NOT_PUBLISHABLE')
+    })
+
+    it('is enabled for a variant-over-drafts version', () => {
+      ;(isLiveEditEnabled as Mock).mockImplementation(() => false)
+
+      expect(
+        publish.disabled({
+          typeName: 'blah',
+          snapshots: {version: variantVersion('drafts')},
         } as unknown as OperationArgs),
       ).toBe(false)
     })
@@ -228,6 +283,164 @@ describe('publish', () => {
       }).toThrow('cannot execute "publish" when draft or version is missing')
 
       expect(client.$log).toMatchSnapshot()
+    })
+
+    it('routes a variant-over-drafts version to the variant publish action', () => {
+      const client = createMockSanityClient()
+
+      publish.execute({
+        client,
+        idPair: {
+          draftId: 'drafts.my-id',
+          publishedId: 'my-id',
+          versionId: 'versions.varscope.my-id',
+        },
+        snapshots: {version: variantVersion('drafts')},
+      } as unknown as OperationArgs)
+
+      expect(client.$log.observable.action).toEqual([
+        {
+          actions: {
+            actionType: 'sanity.action.document.variant.publish',
+            publishedId: 'my-id',
+            variantId: 'french',
+            bundleId: 'drafts',
+            ifPublishedVariantRevisionId: undefined,
+          },
+          options: {tag: 'document.publish'},
+        },
+      ])
+    })
+
+    it('maps publishedRevisionId to ifPublishedVariantRevisionId for a variant publish', () => {
+      const client = createMockSanityClient()
+
+      publish.execute(
+        {
+          client,
+          idPair: {
+            draftId: 'drafts.my-id',
+            publishedId: 'my-id',
+            versionId: 'versions.varscope.my-id',
+          },
+          snapshots: {version: variantVersion('drafts')},
+        } as unknown as OperationArgs,
+        {publishedRevisionId: 'publishedSiblingRev'},
+      )
+
+      expect(client.$log.observable.action).toEqual([
+        {
+          actions: {
+            actionType: 'sanity.action.document.variant.publish',
+            publishedId: 'my-id',
+            variantId: 'french',
+            bundleId: 'drafts',
+            ifPublishedVariantRevisionId: 'publishedSiblingRev',
+          },
+          options: {tag: 'document.publish'},
+        },
+      ])
+    })
+
+    it('uses publishedRevisionId for ifPublishedRevisionId when provided on base publish', () => {
+      const client = createMockSanityClient()
+
+      publish.execute(
+        {
+          client,
+          idPair: {
+            draftId: 'drafts.my-id',
+            publishedId: 'my-id',
+          },
+          snapshots: {
+            draft: {
+              _createdAt: '2021-09-14T22:48:02.303Z',
+              _rev: 'draftRev',
+              _id: 'drafts.my-id',
+              _type: 'example',
+              _updatedAt: '2021-09-14T22:48:02.303Z',
+            },
+            published: {
+              _createdAt: '2021-09-14T22:48:02.303Z',
+              _rev: 'snapshotPublishedRev',
+              _id: 'my-id',
+              _type: 'example',
+              _updatedAt: '2021-09-14T22:48:02.303Z',
+            },
+          },
+        } as unknown as OperationArgs,
+        {publishedRevisionId: 'explicitPublishedRev'},
+      )
+
+      expect(client.$log.observable.action).toEqual([
+        {
+          actions: {
+            actionType: 'sanity.action.document.publish',
+            draftId: 'drafts.my-id',
+            publishedId: 'my-id',
+            ifPublishedRevisionId: 'explicitPublishedRev',
+          },
+          options: {tag: 'document.publish'},
+        },
+      ])
+    })
+
+    it('falls back to the published snapshot revision when publishedRevisionId is omitted', () => {
+      const client = createMockSanityClient()
+
+      publish.execute({
+        client,
+        idPair: {
+          draftId: 'drafts.my-id',
+          publishedId: 'my-id',
+        },
+        snapshots: {
+          draft: {
+            _createdAt: '2021-09-14T22:48:02.303Z',
+            _rev: 'draftRev',
+            _id: 'drafts.my-id',
+            _type: 'example',
+            _updatedAt: '2021-09-14T22:48:02.303Z',
+          },
+          published: {
+            _createdAt: '2021-09-14T22:48:02.303Z',
+            _rev: 'snapshotPublishedRev',
+            _id: 'my-id',
+            _type: 'example',
+            _updatedAt: '2021-09-14T22:48:02.303Z',
+          },
+        },
+      } as unknown as OperationArgs)
+
+      expect(client.$log.observable.action).toEqual([
+        {
+          actions: {
+            actionType: 'sanity.action.document.publish',
+            draftId: 'drafts.my-id',
+            publishedId: 'my-id',
+            ifPublishedRevisionId: 'snapshotPublishedRev',
+          },
+          options: {tag: 'document.publish'},
+        },
+      ])
+    })
+
+    it('throws when executing against a variant-of-published version', () => {
+      const client = createMockSanityClient()
+
+      expect(() => {
+        publish.execute({
+          client,
+          idPair: {
+            draftId: 'drafts.my-id',
+            publishedId: 'my-id',
+            versionId: 'versions.varscope.my-id',
+          },
+          snapshots: {version: variantVersion(undefined)},
+        } as unknown as OperationArgs)
+      }).toThrow('cannot execute "publish" on a variant-of-published document')
+
+      expect(client.$log.observable.action).toEqual([])
     })
   })
 })

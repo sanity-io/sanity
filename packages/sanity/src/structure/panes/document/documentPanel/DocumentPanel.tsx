@@ -24,31 +24,34 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
+import {PaneContent} from '../../../components/pane/PaneContent'
+import {usePane} from '../../../components/pane/usePane'
+import {usePaneLayout} from '../../../components/pane/usePaneLayout'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
-import {DocumentInspectorPanel} from '../documentInspector'
-import {InspectDialog} from '../inspectDialog'
+import {DocumentInspectorPanel} from '../documentInspector/DocumentInspectorPanel'
+import {InspectDialog} from '../inspectDialog/InspectDialog'
 import {useDocumentPane} from '../useDocumentPane'
-import {
-  DeletedDocumentBanners,
-  DeprecatedDocumentTypeBanner,
-  InsufficientPermissionBanner,
-  ReferenceChangedBanner,
-  ScheduledDraftOverrideBanner,
-} from './banners'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {ChooseNewDocumentDestinationBanner} from './banners/ChooseNewDocumentDestinationBanner'
+import {DeletedDocumentBanners} from './banners/DeletedDocumentBanners'
+import {DeprecatedDocumentTypeBanner} from './banners/DeprecatedDocumentTypeBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
+import {DocumentNotInVariantBanner} from './banners/DocumentNotInVariantBanner'
+import {InsufficientPermissionBanner} from './banners/InsufficientPermissionBanner'
 import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {PausedScheduledDraftBanner} from './banners/PausedScheduledDraftBanner'
+import {ReferenceChangedBanner} from './banners/ReferenceChangedBanner'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
+import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
-import {FormView} from './documentViews'
+import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
+import {FormView} from './documentViews/FormView'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
 interface DocumentPanelProps {
@@ -99,6 +102,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     permissions,
     isPermissionsLoading,
+    targetDocumentState,
   } = useDocumentPane()
 
   const {params} = usePaneRouter()
@@ -108,7 +112,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {features} = useStructureTool()
   const [_portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
-  const formContainerElement = useRef<HTMLDivElement | null>(null)
+  const formContainerElement = useRef<HTMLFormElement | null>(null)
   const workspace = useWorkspace()
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
@@ -189,7 +193,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName, selectedPerspective} = usePerspective()
+
+  const hasDocumentInRelease =
+    selectedPerspectiveName &&
+    targetDocumentState.status === 'ready' &&
+    Boolean(targetDocumentState.targetDocument)
 
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
@@ -215,7 +224,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       ),
     [archivedReleases, selectedPerspectiveName],
   )
-
   const banners = useMemo(() => {
     const archivedReleaseId =
       params?.historyVersion ??
@@ -280,13 +288,30 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     )
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
+
+    // A creatable missing draft variant renders no banner: the form is simply editable — typing
+    // creates the document at the server-advertised id — matching the base draft/published
+    // experience where editing the published fallback creates the draft.
+    if (targetDocumentState.status === 'variant-missing' && !targetDocumentState.creatableTarget) {
+      return <DocumentNotInVariantBanner />
+    }
+
+    if (targetDocumentState.status === 'variant-definition-document-not-found') {
+      return (
+        <VariantDefinitionNotFoundBanner
+          requestedVariantName={targetDocumentState.requestedVariantName}
+        />
+      )
+    }
+
     const isCurrentVersionGoingToUnpublish =
       editState?.version && isGoingToUnpublish(editState?.version)
 
     if (
       !isSystemBundle(selectedPerspective) &&
       displayed?._id &&
-      getVersionFromId(displayed._id) !== selectedPerspectiveName &&
+      selectedPerspectiveName &&
+      !hasDocumentInRelease &&
       ready &&
       !isPinnedDraftOrPublish &&
       isNewDocument(editState) === false &&
@@ -366,6 +391,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     selectedReleaseId,
     selectedPerspectiveName,
     editState,
+    hasDocumentInRelease,
     ready,
     activeView.type,
     isPermissionsLoading,
@@ -377,6 +403,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     filteredReleases,
     workspace,
     isPausedDraft,
+    targetDocumentState,
   ])
   const portalElements = useMemo(
     () => ({documentScrollElement: documentScrollElement}),
@@ -387,7 +414,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     <PaneContent>
       <Flex height="fill">
         {showFormView && (
-          <Flex height="fill" direction="column" width="fill" flex={2}>
+          <Flex height="fill" direction="column" flex={2}>
             <LegacyLayerProvider zOffset="paneHeader">
               {banners}
               <DocumentPanelSubHeader />

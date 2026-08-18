@@ -16,7 +16,7 @@ interface BumpOptions {
   dryRun?: boolean
 }
 
-interface PnpmPackage {
+export interface PnpmPackage {
   name: string
   version: string
   path: string
@@ -39,7 +39,10 @@ function readGitInfo(): GitInfo {
     encoding: 'utf-8',
   }).trim()
 
-  const tagInfo = execSync('git describe --tags --long --first-parent', {
+  // scope to release tags (getVersionBump uses the same `v` prefix) so stray non-release tags
+  // on main history can't reset the commit count. Must stay in sync with the `git describe`
+  // in .github/workflows/release-next.yml.
+  const tagInfo = execSync('git describe --tags --long --first-parent --match "v*"', {
     cwd: MONOREPO_ROOT,
     encoding: 'utf-8',
   }).trim()
@@ -49,16 +52,25 @@ function readGitInfo(): GitInfo {
   return {commitHash, commitCount}
 }
 
-function getWorkspacePackages(currentVersion: string): PnpmPackage[] {
+function getWorkspacePackages(): PnpmPackage[] {
   const output = execSync('pnpm ls -r --json --depth -1', {
     cwd: MONOREPO_ROOT,
     encoding: 'utf-8',
   })
-  const packages: PnpmPackage[] = JSON.parse(output)
-  return packages.filter((pkg) => pkg.version === currentVersion)
+  return selectPackagesToBump(JSON.parse(output))
 }
 
 // -- Pure computation --
+
+/**
+ * Every publishable package shares the root version, so selecting on `private` rather than on
+ * "already matches the root version" means a package added at the wrong version still gets
+ * bumped instead of being silently skipped and failing to publish. Private packages (dev
+ * studios, @repo tooling) are left alone — they are not published and have long since drifted.
+ */
+export function selectPackagesToBump(packages: PnpmPackage[]): PnpmPackage[] {
+  return packages.filter((pkg) => !pkg.private)
+}
 
 function zeroPad(value: number | string, length: number) {
   return String(value).padStart(length, '0')
@@ -128,10 +140,15 @@ export async function bump(options: BumpOptions = {}): Promise<void> {
   }
 
   // Write versions
-  const packages = getWorkspacePackages(currentVersion)
+  const packages = getWorkspacePackages()
   console.error(`Updating ${packages.length} packages`)
 
   for (const pkg of packages) {
+    if (pkg.version !== currentVersion) {
+      console.error(
+        `Note: ${pkg.name} was at ${pkg.version}, not the root version ${currentVersion} — syncing it to ${newVersion}`,
+      )
+    }
     writeVersion(pkg.path, newVersion)
   }
   writeVersion(MONOREPO_ROOT, newVersion)

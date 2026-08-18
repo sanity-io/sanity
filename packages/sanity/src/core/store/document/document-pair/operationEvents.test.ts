@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {of} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
-import {createSchema} from '../../../schema'
+import {createSchema} from '../../../schema/createSchema'
 import {editOperations} from './editOperations'
 import {type OperationsAPI} from './operations/types'
 

@@ -1,4 +1,4 @@
-import {CollapseIcon} from '@sanity/icons'
+import {CollapseIcon} from '@sanity/icons/Collapse'
 
 export default {
   name: 'focusTest',

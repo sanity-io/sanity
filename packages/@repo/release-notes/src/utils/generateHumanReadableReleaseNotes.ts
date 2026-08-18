@@ -1,11 +1,12 @@
 import {Anthropic} from '@anthropic-ai/sdk'
 import {toPlainText} from '@portabletext/toolkit'
 import {readEnv} from '@repo/utils'
-import {type PortableTextBlock, type SanityDocument} from '@sanity/types'
+import {type SanityDocument} from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
 import upperFirst from 'lodash-es/upperFirst.js'
 
 import {type KnownEnvVar, type StudioChangelogEntry} from '../types'
+import {toDocsArticleContent} from './docsArticleContent'
 
 export async function generateHumanReadableReleaseNotes({
   changelogDocument,
@@ -65,7 +66,7 @@ export async function generateHumanReadableReleaseNotes({
               },
             ],
           },
-          ...feature.contents.map(convertToDocsArticleContent),
+          ...feature.contents.flatMap((block) => toDocsArticleContent(block)),
         ])
       : [],
     bugfixes.length > 0
@@ -85,25 +86,13 @@ export async function generateHumanReadableReleaseNotes({
             ],
           },
           ...bugfixes.flatMap((bugfix) =>
-            bugfix.contents.map((block) =>
-              convertToDocsArticleContent({
-                ...block,
-                style: 'normal',
-                listItem: 'bullet',
-                level: 1,
-              }),
+            bugfix.contents.flatMap((block) =>
+              toDocsArticleContent(block, {style: 'normal', listItem: 'bullet', level: 1}),
             ),
           ),
         ]
       : [],
   ].flat()
-}
-
-function convertToDocsArticleContent(block: PortableTextBlock) {
-  if (block._type === 'code') {
-    return {_type: 'codeBlock', _key: block._key, blocks: [{_key: block._key, code: block}]}
-  }
-  return block
 }
 
 async function summarize(changes: string) {

@@ -1,13 +1,13 @@
-import {DocumentIcon} from '@sanity/icons'
+import {DocumentIcon} from '@sanity/icons/Document'
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {forwardRef, useMemo} from 'react'
+import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {useSchema} from '../../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {useDocumentPreviewValues} from '../../hooks'
+import {useDocumentPreviewValues} from '../../hooks/useDocumentPreviewValues'
 
 const StyledIntentLink = styled(IntentLink)((props) => {
   const theme = getTheme_v2(props.theme)
@@ -27,25 +27,29 @@ export function DocumentPreview({
 }) {
   const schema = useSchema()
   const documentSchema = schema.get(documentType)
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
   const {isLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,
     perspectiveStack,
+    variant: selectedVariantName,
   })
 
   const Link = useMemo(
     () =>
-      forwardRef(function LinkComponent(linkProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
+      function LinkComponent(
+        linkProps: React.ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>,
+      ) {
+        const {ref, ...rest} = linkProps
         return (
           <StyledIntentLink
-            {...linkProps}
+            {...rest}
             intent="edit"
             params={{id: documentId, type: documentType}}
             ref={ref}
           />
         )
-      }),
+      },
     [documentId, documentType],
   )
 

@@ -2,19 +2,18 @@ import {Flex} from '@sanity/ui'
 import {
   Children,
   cloneElement,
-  type ForwardedRef,
-  forwardRef,
   type ReactNode,
   useCallback,
   useMemo,
   useState,
+  type RefAttributes,
 } from 'react'
 import {styled} from 'styled-components'
 
-import {type MenuButtonProps} from '../../../ui-components'
+import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
 import {ObserveElement} from '../collapseMenu/ObserveElement'
-import {ContextMenuButton} from '../contextMenuButton'
+import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'
 
 function _isReactElement(node: unknown): node is React.JSX.Element {
   return Boolean(node)
@@ -50,11 +49,9 @@ interface CollapseTabListProps {
  * Similar to `<CollapseMenu />` but instead of collapsing the inner items by removing the text
  * it shows the items that fit, and the rest are rendered in a menu.
  * @internal */
-export const CollapseTabList = forwardRef(function CollapseTabList(
-  props: CollapseTabListProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
+export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref,
     children: childrenProp,
     gap,
     menuButtonProps,
@@ -153,4 +150,4 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
       </HiddenRow>
     </Flex>
   )
-})
+}

@@ -1,4 +1,5 @@
-import {Card, Code, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {isDev, Translate, useTranslation} from 'sanity'
 
 import {ErrorPane} from '../../error'
@@ -30,7 +31,7 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
       }
       tone="caution"
     >
-      <Stack space={4}>
+      <Stack gap={4}>
         {documentType && (
           <Text as="p">
             <Translate

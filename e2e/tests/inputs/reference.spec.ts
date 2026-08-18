@@ -1,7 +1,7 @@
 import {type Locator, type Page, expect} from '@playwright/test'
 
-import {withDefaultClient} from '../../helpers'
 import {expectPublishedStatus, expectSavedStatus} from '../../helpers/documentStatusAssertions'
+import {withDefaultClient} from '../../helpers/sanityClient'
 import {test} from '../../studio-test'
 
 /**
@@ -155,7 +155,9 @@ withDefaultClient((context) => {
     await page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton').click()
 
     // Wait for the new document referenced to be created & loaded
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
 
     // switch to original doc
     await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
@@ -196,7 +198,9 @@ withDefaultClient((context) => {
     await page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton').click()
 
     // Wait for the new document referenced to be created & loaded
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
 
     // switch to original doc
     await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
@@ -237,7 +241,9 @@ withDefaultClient((context) => {
     await page.getByTestId('create-new-document-select-referenceField-selectTypeMenuButton').click()
 
     // wait for the reference document to open
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
 
     // update and publish the reference
     await page.getByTestId('string-input').nth(1).fill('Reference test')
@@ -288,7 +294,9 @@ withDefaultClient((context) => {
       .click()
 
     // wait for the reference document to open
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
+    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
+      'New Simple references test',
+    )
 
     // update and publish the reference
     await page.getByTestId('string-input').nth(1).fill('Reference test')

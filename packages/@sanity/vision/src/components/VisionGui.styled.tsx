@@ -1,6 +1,6 @@
 import {Box, Card, Flex, Label, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {type ComponentProps, type ComponentPropsWithoutRef, forwardRef} from 'react'
+import {type ComponentProps, type ComponentPropsWithoutRef, type RefAttributes} from 'react'
 
 import {
   controlsContainer,
@@ -10,6 +10,8 @@ import {
   inputBackgroundContainerLeft,
   inputContainer,
   queryCopyLink,
+  queryRecallPaneContainer,
+  queryRecallPaneWrapper,
   result,
   resultContainer,
   resultContainerInvalid,
@@ -26,11 +28,12 @@ import {
   timingsTextMinHeightVar,
 } from './VisionGui.css'
 
-export const Root = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<typeof Flex>>(
-  function Root(props, ref) {
-    return <Flex {...props} ref={ref} className={root} />
-  },
-)
+export function Root({
+  ref,
+  ...props
+}: ComponentPropsWithoutRef<typeof Flex> & RefAttributes<HTMLDivElement>) {
+  return <Flex {...props} ref={ref} className={root} />
+}
 
 export function Header(props: ComponentProps<typeof Card>) {
   return <Card {...props} className={header} />
@@ -42,6 +45,22 @@ export function StyledLabel(props: ComponentProps<typeof Label>) {
 
 export function SplitpaneContainer(props: ComponentProps<typeof Box>) {
   return <Box {...props} className={splitpaneContainer} />
+}
+
+export function QueryRecallPaneContainer(props: ComponentProps<typeof Flex>) {
+  return <Flex {...props} direction="column" className={queryRecallPaneContainer} />
+}
+
+export function QueryRecallPaneWrapper(props: ComponentProps<typeof Flex>) {
+  return (
+    <Flex
+      {...props}
+      direction="column"
+      flex={1}
+      overflow="hidden"
+      className={queryRecallPaneWrapper}
+    />
+  )
 }
 
 export function QueryCopyLink(props: ComponentProps<'a'>) {

@@ -7,6 +7,7 @@ import type {
   AddonDatasetContext,
   AnnotationEntry,
   AppIdCacheContext,
+  ArrayItemRootElementContext,
   ArrayValidationContext,
   AssetLimitUpsellContext,
   AssetLimitUpsellContextValue,
@@ -23,6 +24,8 @@ import type {
   CommentsOnboardingContext,
   CommentsSelectedPathContext,
   CommentsUpsellContext,
+  ConfigErrorContext,
+  ConfigErrorValue,
   CopyPasteContext,
   DialogStackContext,
   DialogStackContextValue,
@@ -41,6 +44,7 @@ import type {
   DocumentLimitUpsellContextValue,
   DocumentPaneContext,
   DocumentPaneInfoContext,
+  EditDialogOuterBoundaryContext,
   EnhancedObjectDialogContext,
   EventsContext,
   FeedbackContext,
@@ -62,6 +66,8 @@ import type {
   LiveUserApplicationContextValue,
   LocaleContext,
   LocaleContextValue,
+  LoggedOutReason,
+  LoggedOutReasonContext,
   MediaLibraryIdsContext,
   MentionUserContext,
   NavbarContext,
@@ -119,11 +125,14 @@ import type {
   SourceContext,
   StructureToolContext,
   StudioAnnouncementContext,
+  StudioErrorHandlerContext,
   TableContext,
   TasksContext,
   TasksEnabledContext,
   TasksNavigationContext,
   TasksUpsellContext,
+  UnclaimedProjectContext,
+  UnclaimedProjectContextValue,
   UserApplicationCacheContext,
   UserColorManagerContext,
   ValidationContext,
@@ -148,6 +157,9 @@ describe('sanity/_singletons', () => {
   })
   test('AppIdCacheContext', () => {
     expectTypeOf<typeof AppIdCacheContext>().not.toBeNever()
+  })
+  test('ArrayItemRootElementContext', () => {
+    expectTypeOf<typeof ArrayItemRootElementContext>().not.toBeNever()
   })
   test('ArrayValidationContext', () => {
     expectTypeOf<typeof ArrayValidationContext>().not.toBeNever()
@@ -196,6 +208,12 @@ describe('sanity/_singletons', () => {
   })
   test('CommentsUpsellContext', () => {
     expectTypeOf<typeof CommentsUpsellContext>().not.toBeNever()
+  })
+  test('ConfigErrorContext', () => {
+    expectTypeOf<typeof ConfigErrorContext>().not.toBeNever()
+  })
+  test('ConfigErrorValue', () => {
+    expectTypeOf<ConfigErrorValue>().toBeObject()
   })
   test('CopyPasteContext', () => {
     expectTypeOf<typeof CopyPasteContext>().not.toBeNever()
@@ -250,6 +268,9 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentPaneInfoContext', () => {
     expectTypeOf<typeof DocumentPaneInfoContext>().not.toBeNever()
+  })
+  test('EditDialogOuterBoundaryContext', () => {
+    expectTypeOf<typeof EditDialogOuterBoundaryContext>().not.toBeNever()
   })
   test('EnhancedObjectDialogContext', () => {
     expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()
@@ -313,6 +334,12 @@ describe('sanity/_singletons', () => {
   })
   test('LocaleContextValue', () => {
     expectTypeOf<LocaleContextValue>().toBeObject()
+  })
+  test('LoggedOutReason', () => {
+    expectTypeOf<LoggedOutReason>().not.toBeNever()
+  })
+  test('LoggedOutReasonContext', () => {
+    expectTypeOf<typeof LoggedOutReasonContext>().not.toBeNever()
   })
   test('MediaLibraryIdsContext', () => {
     expectTypeOf<typeof MediaLibraryIdsContext>().not.toBeNever()
@@ -485,6 +512,9 @@ describe('sanity/_singletons', () => {
   test('StudioAnnouncementContext', () => {
     expectTypeOf<typeof StudioAnnouncementContext>().not.toBeNever()
   })
+  test('StudioErrorHandlerContext', () => {
+    expectTypeOf<typeof StudioErrorHandlerContext>().not.toBeNever()
+  })
   test('TableContext', () => {
     expectTypeOf<typeof TableContext>().not.toBeNever()
   })
@@ -499,6 +529,12 @@ describe('sanity/_singletons', () => {
   })
   test('TasksUpsellContext', () => {
     expectTypeOf<typeof TasksUpsellContext>().not.toBeNever()
+  })
+  test('UnclaimedProjectContext', () => {
+    expectTypeOf<typeof UnclaimedProjectContext>().not.toBeNever()
+  })
+  test('UnclaimedProjectContextValue', () => {
+    expectTypeOf<UnclaimedProjectContextValue>().toBeObject()
   })
   test('UserApplicationCacheContext', () => {
     expectTypeOf<typeof UserApplicationCacheContext>().not.toBeNever()

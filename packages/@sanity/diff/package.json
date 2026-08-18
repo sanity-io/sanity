@@ -1,6 +1,6 @@
 {
   "name": "@sanity/diff",
-  "version": "6.2.0",
+  "version": "6.10.0",
   "description": "Generates diffs between documents and primitive types",
   "keywords": [
     "cms",
@@ -26,11 +26,9 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
-      "source": "./src/index.ts",
       "monorepo": "./src/index.ts",
       "default": "./lib/index.js"
     },
@@ -43,21 +41,18 @@
     }
   },
   "scripts": {
-    "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/diff/tsconfig.lib.json --erasableSyntaxOnly)",
-    "clean": "rimraf lib coverage",
+    "build": "tsdown",
     "prepublishOnly": "turbo run build",
-    "watch": "pkg-utils watch"
+    "watch": "tsdown --watch"
   },
   "dependencies": {
     "@sanity/diff-match-patch": "^3.2.0"
   },
   "devDependencies": {
-    "@repo/package.config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/pkg-utils": "catalog:",
-    "@typescript/native-preview": "catalog:",
-    "rimraf": "catalog:"
+    "@repo/tsdown.config": "workspace:*",
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
   },
   "browserslist": [
     "node >=22.12",

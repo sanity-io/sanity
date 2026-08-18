@@ -1,7 +1,8 @@
-import {CheckmarkCircleIcon} from '@sanity/icons'
-import {Box, Flex} from '@sanity/ui'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {Flex} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import {useEffect, useMemo, useRef} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
@@ -65,7 +66,6 @@ const VirtualList = () => {
 
 export default VirtualList
 
-// oxlint-disable-next-line react/react-compiler
 function useVirtualizedSchedules(activeSchedules: Schedule[], sortBy?: ScheduleSort) {
   const containerRef = useRef<HTMLDivElement>(null)
 

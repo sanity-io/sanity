@@ -1,4 +1,4 @@
-import {ResetIcon} from '@sanity/icons'
+import {ResetIcon} from '@sanity/icons/Reset'
 import {TextInput, type TextInputClearButtonProps} from '@sanity/ui'
 import {
   type ChangeEvent,
@@ -134,7 +134,7 @@ export function PreviewLocationInput(props: {
         style={{zIndex: 1}}
         radius={2}
         ref={inputRef}
-        space={padding}
+        gap={padding}
         suffix={suffix}
         value={sessionValue === undefined ? new URL(value, targetOrigin).toString() : sessionValue}
       />

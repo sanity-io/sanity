@@ -1,5 +1,5 @@
 import {gray, red} from '@sanity/color'
-import {Box} from '@sanity/ui'
+import {Box} from 'ui5'
 
 interface Props {
   mode?: 'default' | 'failed'

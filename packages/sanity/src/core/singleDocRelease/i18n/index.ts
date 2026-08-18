@@ -1,4 +1,4 @@
-import {type LocaleResourceBundle} from '../../i18n'
+import {type LocaleResourceBundle} from '../../i18n/types'
 
 /**
  * The locale namespace for the releases tool
@@ -19,11 +19,3 @@ export const singleDocReleaseUsEnglishLocaleBundle: LocaleResourceBundle = {
   namespace: singleDocReleaseNamespace,
   resources: () => import('./resources'),
 }
-
-/**
- * The locale resource keys for the single doc release tool.
- *
- * @alpha
- * @hidden
- */
-export type {SingleDocReleaseLocaleResourceKeys} from './resources'

@@ -1,6 +1,7 @@
+import {type BadgeTone} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
-  getReleaseIdFromReleaseDocumentId,
+  getVariantTitle,
   getVersionFromId,
   isDraftId,
   isGoingToUnpublish,
@@ -13,9 +14,11 @@ import {
   useFilteredReleases,
   usePerspective,
   useSchema,
-  useSetPerspective,
   useSingleDocRelease,
   useWorkspace,
+  useAllVariants,
+  type VersionInfoDocumentStub,
+  useSetVariant,
 } from 'sanity'
 
 import {isLiveEditEnabled} from '../components/paneItem/helpers'
@@ -31,11 +34,17 @@ interface DocumentPerspectiveList {
    * Returns display overrides for a version document ID if it's the current
    * user's agent bundle, or `null` for all other versions.
    */
-  getVersionDisplay: ReturnType<typeof useAgentVersionDisplay>['getVersionDisplay']
+  getVersionDisplay: (version: VersionInfoDocumentStub) => {
+    displayName: string
+    tone: BadgeTone
+  } | null
   /** Returns the chip selection/disabled state for a given release id. */
   getReleaseChipState: (releaseId: string) => {selected: boolean; disabled?: boolean}
-  /** Navigates to the draft perspective after copying a version to drafts. */
-  handleCopyToDraftsNavigate: () => void
+  /**
+   * Clears the pane-local scheduled draft perspective when viewing one.
+   * Passed into version context menus for post copy-to-drafts cleanup.
+   */
+  clearScheduledDraftPerspective: () => void
   /** Navigates to the given perspective. */
   handlePerspectiveChange: (perspective: TargetPerspective) => void
   isDraftDisabled: boolean
@@ -44,8 +53,12 @@ interface DocumentPerspectiveList {
   isLiveEdit: boolean
   isPublishedChipDisabled: boolean
   isPublishSelected: boolean
-  /** Version document IDs that don't belong to a release (excluding drafts and published). */
-  nonReleaseVersions: string[]
+  /** Versions that don't belong to a release (excluding drafts and published). */
+  nonReleaseVersions: VersionInfoDocumentStub[]
+  /** Versions that belong to a variant. */
+  variantVersions: VersionInfoDocumentStub[]
+  /** Handles the selection of a variant. */
+  handleVariantSelectionChange: (version: VersionInfoDocumentStub) => void
 }
 
 /**
@@ -60,7 +73,6 @@ interface DocumentPerspectiveList {
  */
 export function useDocumentPerspectiveList(): DocumentPerspectiveList {
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
-  const setPerspective = useSetPerspective()
   const {params} = usePaneRouter()
   const schema = useSchema()
   const {editState, displayed} = useDocumentPane()
@@ -71,28 +83,22 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     displayed,
     documentId,
   })
+  const {byId: variants} = useAllVariants()
 
-  const {data: documentVersions} = useDocumentVersions({documentId})
+  const {versions: documentVersions, data: documentVersionsIds} = useDocumentVersions({documentId})
 
   const onlyHasVersions =
-    documentVersions &&
-    documentVersions.length > 0 &&
-    !documentVersions.some((version) => !isVersionId(version))
+    documentVersionsIds.length > 0 &&
+    !documentVersionsIds.some((versionId) => !isVersionId(versionId))
 
   const workspace = useWorkspace()
   const {onSetScheduledDraftPerspective} = useSingleDocRelease()
 
-  const handleCopyToDraftsNavigate = useCallback(() => {
-    // after copying to draft, we want to navigate to the draft version
+  const clearScheduledDraftPerspective = useCallback(() => {
     if (params?.scheduledDraft) {
-      // if currently viewing a scheduled draft, remove the scheduled draft perspective
-      // the global perspective is already set to drafts
       onSetScheduledDraftPerspective('')
-    } else {
-      // otherwise, only need to set the global perspective to drafts
-      setPerspective('drafts')
     }
-  }, [params, setPerspective, onSetScheduledDraftPerspective])
+  }, [params, onSetScheduledDraftPerspective])
 
   const {navigate: handlePerspectiveChange} = usePerspectiveNavigator()
 
@@ -201,32 +207,67 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
 
   const isDraftModelEnabled = workspace.document.drafts?.enabled
 
-  const {filteredVersionIds, getVersionDisplay} = useAgentVersionDisplay(
-    documentVersions,
+  const {filteredVersionIds, getVersionDisplay: getAgentVersionDisplay} = useAgentVersionDisplay(
+    documentVersionsIds,
     selectedPerspectiveName,
+  )
+  const filteredVersions = useMemo(
+    () => documentVersions.filter((version) => filteredVersionIds.includes(version._id)),
+    [documentVersions, filteredVersionIds],
+  )
+  const getVersionDisplay = useCallback(
+    (version: VersionInfoDocumentStub) => {
+      const isVariantVersion = Boolean(version._system.variant)
+      if (!isVariantVersion) {
+        return getAgentVersionDisplay(version._id)
+      }
+      const variantId = version._system.variant?._ref
+      const variant = variantId ? variants.get(variantId) : undefined
+      const variantTitle = variant ? getVariantTitle(variant) : (variantId ?? '')
+      return {
+        displayName: `${variantTitle} [${version._system.bundleId || 'published'}]`,
+        tone: version._system.bundleId ? ('caution' as const) : ('positive' as const),
+      }
+    },
+    [getAgentVersionDisplay, variants],
   )
 
   const nonReleaseVersions = useMemo(
     () =>
-      filteredVersionIds.filter((versionDocumentId) => {
-        if (isPublishedId(versionDocumentId) || isDraftId(versionDocumentId)) {
+      filteredVersions.filter((version) => {
+        if (isPublishedId(version._id) || isDraftId(version._id)) {
           return false
         }
-        const hasRelease = filteredReleases.currentReleases.some((release) => {
-          return (
-            getReleaseIdFromReleaseDocumentId(release._id) === getVersionFromId(versionDocumentId)
-          )
-        })
-        return !hasRelease
+        const hasRelease = Boolean(version._system.release)
+        const hasVariant = Boolean(version._system.variant)
+        return !hasRelease && !hasVariant
       }),
-    [filteredVersionIds, filteredReleases.currentReleases],
+    [filteredVersions],
+  )
+
+  const variantVersions = useMemo(
+    () => filteredVersions.filter((version) => Boolean(version._system.variant)),
+    [filteredVersions],
+  )
+  const setVariant = useSetVariant()
+  const handleVariantSelectionChange = useCallback(
+    (version: VersionInfoDocumentStub) => {
+      const variantId = version._system.variant?._ref
+      const variant = variantId ? variants.get(variantId) : undefined
+      // Published version documents omit `bundleId`, so treat a missing bundle as published.
+      // Passing the perspective alongside the variant updates both sticky params atomically.
+      const versionBundle = version._system.bundleId
+      const perspective = !versionBundle ? 'published' : versionBundle
+      setVariant({variantId: variant?._id, perspective})
+    },
+    [setVariant, variants],
   )
 
   return {
     filteredReleases,
     getVersionDisplay,
     getReleaseChipState,
-    handleCopyToDraftsNavigate,
+    clearScheduledDraftPerspective,
     handlePerspectiveChange,
     isDraftDisabled,
     isDraftModelEnabled,
@@ -235,5 +276,7 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     isPublishedChipDisabled,
     isPublishSelected,
     nonReleaseVersions,
+    variantVersions,
+    handleVariantSelectionChange,
   }
 }

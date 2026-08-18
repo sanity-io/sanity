@@ -1,13 +1,13 @@
-import {InfoFilledIcon} from '@sanity/icons'
+import {InfoFilledIcon} from '@sanity/icons/InfoFilled'
 import {Card, Stack, Text} from '@sanity/ui'
-import {forwardRef} from 'react'
+import {type ReactNode} from 'react'
 import {Translate, useTranslation} from 'sanity'
 
-export const TranslateExample = forwardRef(function TranslateExample() {
+export function TranslateExample() {
   const {t} = useTranslation('testStudio')
   return (
     <Card padding={4}>
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text>{t('use-translation.with-html')}</Text>
         <Text>
           {t('use-translation.interpolation-example', {
@@ -76,14 +76,14 @@ export const TranslateExample = forwardRef(function TranslateExample() {
       </Stack>
     </Card>
   )
-})
+}
 
-function VersionBadge({children}: {children?: React.ReactNode}) {
+function VersionBadge({children}: {children?: ReactNode}) {
   return <span style={{fontWeight: 'bold'}}>{children}</span>
 }
-function Red({children}: {children?: React.ReactNode}) {
+function Red({children}: {children?: ReactNode}) {
   return <span style={{color: 'red'}}>{children}</span>
 }
-function Bold({children}: {children?: React.ReactNode}) {
+function Bold({children}: {children?: ReactNode}) {
   return <b>{children}</b>
 }

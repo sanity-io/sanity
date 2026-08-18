@@ -21,7 +21,7 @@ import {
   usePerspective,
 } from 'sanity'
 
-import {TooltipDelayGroupProvider} from '../../../ui-components'
+import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -31,6 +31,12 @@ export interface PaneItemPreviewProps {
   schemaType: SchemaType
   sortOrder?: Pick<SortOrdering, 'by'>
   value: SanityDocument | {_id: string; _type: string}
+}
+
+const INITIAL_PREVIEW_STATE = {
+  snapshot: null,
+  isLoading: true,
+  original: null,
 }
 
 /**
@@ -43,9 +49,10 @@ export interface PaneItemPreviewProps {
 export function PaneItemPreview(props: PaneItemPreviewProps) {
   const {icon, layout, presence, schemaType, sortOrder, value} = props
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const versionsInfo = useDocumentVersionInfo(value._id)
 
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
     if (!sortOrder) return undefined
     return {
@@ -63,18 +70,26 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       value._id,
       perspectiveStack,
       viewOptions,
+      selectedVariantName,
     )
-  }, [props.documentPreviewStore, schemaType, value._id, perspectiveStack, viewOptions])
+  }, [
+    props.documentPreviewStore,
+    schemaType,
+    value._id,
+    perspectiveStack,
+    viewOptions,
+    selectedVariantName,
+  ])
 
+  // Deferred: react-rx v5's deferral is identity-coherent, so when a
+  // (recycled) list item switches to a new document id the live snapshot for
+  // the new id wins and the previous document's title/media never renders
+  // next to the new document's version badges.
   const {
     snapshot,
     original,
     isLoading: previewIsLoading,
-  } = useObservable(previewStateObservable, {
-    snapshot: null,
-    isLoading: true,
-    original: null,
-  })
+  } = useObservable(previewStateObservable, INITIAL_PREVIEW_STATE)
 
   const isLoading = previewIsLoading
 

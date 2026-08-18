@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 
-import {type SourceClientOptions} from '../config'
-import {useSource} from '../studio'
+import {type SourceClientOptions} from '../config/types'
+import {useSource} from '../studio/source'
 
 /**
  *
@@ -45,6 +45,7 @@ export function useClient(): SanityClient
  */
 export function useClient(clientOptions: SourceClientOptions): SanityClient
 export function useClient(clientOptions?: SourceClientOptions): SanityClient {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   if (!clientOptions) {
     console.warn(

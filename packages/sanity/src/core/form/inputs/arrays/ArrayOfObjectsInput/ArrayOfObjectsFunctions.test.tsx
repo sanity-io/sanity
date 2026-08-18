@@ -12,7 +12,7 @@ vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: () => ({log: vi.fn()}),
 }))
 
-vi.mock('../../../../i18n', () => ({
+vi.mock('../../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 
@@ -56,6 +56,7 @@ function createDefaultProps(schemaType: ArraySchemaType) {
 }
 
 function Wrapper({children}: {children: ReactNode}) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
 }
 

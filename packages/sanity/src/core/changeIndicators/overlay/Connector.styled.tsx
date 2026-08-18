@@ -1,37 +1,29 @@
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
 import {ClampedRect} from './ClampedRect'
+import {connectorPath, debugRect, interactivePath, rightBarWrapper} from './Connector.css'
 
-export const DebugRect = styled.rect`
-  stroke: #ccc;
-  fill: none;
-  pointer-events: none;
-  stroke-linecap: round;
-`
+export function DebugRect(props: ComponentProps<'rect'>) {
+  const {className, ...restProps} = props
 
-export const ConnectorPath = styled.path`
-  fill: none;
-  pointer-events: none;
-  stroke-linejoin: round;
-  stroke: var(--card-badge-caution-dot-color);
-`
+  return <rect {...restProps} className={clsx(debugRect, className)} />
+}
 
-export const InteractivePath = styled.path`
-  fill: none;
-  pointer-events: stroke;
-  stroke: transparent;
-  cursor: pointer;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0;
+export function ConnectorPath(props: ComponentProps<'path'>) {
+  const {className, ...restProps} = props
 
-  &:hover {
-    opacity: 0.2;
-  }
-`
+  return <path {...restProps} className={clsx(connectorPath, className)} />
+}
 
-export const RightBarWrapper = styled(ClampedRect)`
-  stroke: none;
-  pointer-events: none;
-  fill: var(--card-badge-caution-dot-color);
-`
+export function InteractivePath(props: ComponentProps<'path'>) {
+  const {className, ...restProps} = props
+
+  return <path {...restProps} className={clsx(interactivePath, className)} />
+}
+
+export function RightBarWrapper(props: ComponentProps<typeof ClampedRect>) {
+  const {className, ...restProps} = props
+
+  return <ClampedRect {...restProps} className={clsx(rightBarWrapper, className)} />
+}

@@ -39,7 +39,8 @@ vi.mock('../../store/events/getDocumentAtRevision', () => ({
 }))
 
 vi.mock('react-rx', () => ({
-  useObservable: (_observable: unknown, initial: unknown) => upstreamSnapshotRef.current ?? initial,
+  useSyncObservable: (_observable: unknown, initial: unknown) =>
+    upstreamSnapshotRef.current ?? initial,
 }))
 
 const emptySnapshots = {
@@ -103,6 +104,7 @@ function buildWrapper(
 ): (props: {children: ReactNode}) => ReactNode {
   function Wrapper({children}: {children: ReactNode}) {
     return (
+      // @ts-expect-error -- pre-existing, fix later
       <DocumentDivergencesContext.Provider value={divergencesValue}>
         {children}
       </DocumentDivergencesContext.Provider>

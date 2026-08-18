@@ -1,4 +1,4 @@
-import {PublishIcon} from '@sanity/icons'
+import {PublishIcon} from '@sanity/icons/Publish'
 // import DefaultAssetSource from 'part:@sanity/form-builder/input/image/asset-source-default'
 // import DefaultFileAssetSource from 'part:@sanity/form-builder/input/file/asset-source-default'
 // import petsAssetSource from '../../parts/assetSources/pets'

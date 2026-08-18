@@ -1,10 +1,12 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {EditIcon, TrashIcon} from '@sanity/icons'
+import {EditIcon} from '@sanity/icons/Edit'
+import {TrashIcon} from '@sanity/icons/Trash'
 import {Box, Flex, Text, useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useSelectedAnnotations} from '../contexts/SelectedAnnotationsContext'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
@@ -22,7 +24,9 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
   const rangeRef = useRef<Range | null>(null)
   const {sanity} = useTheme()
   const {t} = useTranslation()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
   const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 
@@ -38,6 +42,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
 
   // Close popover and return focus to editor
   const handleClosePopover = useCallback(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
     setPopoverOpen(false)
   }, [editor])

@@ -1,10 +1,11 @@
-import {Box, Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
+import {Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns/isValid'
 import get from 'lodash-es/get.js'
-import {type CSSProperties, Fragment, type HTMLProps, type RefAttributes, useMemo} from 'react'
+import {type CSSProperties, type ElementType, Fragment, useMemo} from 'react'
+import {Box} from 'ui5'
 
-import {TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {TableEmptyState} from './TableEmptyState'
 import {TableHeader} from './TableHeader'
 import {TableLayout} from './TableLayout'
@@ -15,11 +16,7 @@ type RowDatum<TableData, AdditionalRowTableData> = (AdditionalRowTableData exten
   ? TableData
   : TableData & AdditionalRowTableData) & {isLoading?: boolean}
 
-export type TableRowProps = Omit<
-  CardProps & Omit<HTMLProps<HTMLDivElement>, 'height' | 'as'>,
-  'ref'
-> &
-  RefAttributes<HTMLDivElement>
+export type TableRowProps = CardProps<ElementType>
 
 type VirtualDatum = {
   virtualRow: VirtualItem
@@ -51,7 +48,6 @@ export interface TableProps<TableData, AdditionalRowTableData> {
 const ITEM_HEIGHT = 59
 const LOADING_ROW_COUNT = 3
 
-// oxlint-disable-next-line react/react-compiler
 const TableInner = <TableData, AdditionalRowTableData>({
   columnDefs,
   data,
@@ -116,6 +112,11 @@ const TableInner = <TableData, AdditionalRowTableData>({
     () => ({
       id: 'actions',
       sorting: false,
+      // Header and body rows are independent flexboxes: this trailing gutter must be the SAME width
+      // in both, otherwise the flex:1 "Document" column absorbs the difference in the body only and
+      // every column to its right (Last edited, Edited by) drifts out of alignment with its header.
+      // The body cell below is content-box (width:25px + padding:3 => ~50px actual), so reserve 50
+      // here and size the header (border-box) to 50px to match — under-reserving clips the ⋯.
       width: 50,
       header: ({headerProps: {id}}) => (
         <Flex as="th" id={id} paddingY={3} paddingX={3} sizing="border" style={{width: '50px'}}>
@@ -152,7 +153,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
         datum: VirtualDatum &
           (TableData | (TableData & AdditionalRowTableData) | {_id: string; isLoading: boolean}),
       ) {
-        const cardRowProps = rowProps(datum as TableData)
+        const {style: rowPropsStyle, ...cardRowProps} = rowProps(datum as TableData)
         const cardKey = loading ? `skeleton-${datum.index}` : String(get(datum, rowId))
 
         return (
@@ -174,6 +175,9 @@ const TableInner = <TableData, AdditionalRowTableData>({
                 calc((100% - var(--maxInlineSize)) / 2),
                 var(--paddingInline)
               )`,
+              // Consumer-supplied row styles are merged (not clobbered) so they can tint/flag a row
+              // without dropping the virtualization layout (height/position/transform).
+              ...rowPropsStyle,
             }}
             {...cardRowProps}
           >

@@ -19,7 +19,9 @@ export function resolveUploadAssetSources(
   formBuilder: FormBuilderContextValue,
   file?: FileLike,
 ): AssetSource[] {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const supportsDirectImageUploads = formBuilder.__internal.image.directUploads
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const supportsDirectFileUploads = formBuilder.__internal.file.directUploads
   if (is.type('image', type)) {
     if (!supportsDirectImageUploads) {
@@ -28,6 +30,7 @@ export function resolveUploadAssetSources(
     if (file && !accepts(file, type.options?.accept || 'image/*')) {
       return []
     }
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return filterAssetSourcesWithFallback(formBuilder.__internal.image.assetSources)
   }
   if (is.type('file', type)) {
@@ -37,6 +40,7 @@ export function resolveUploadAssetSources(
     if (file && !accepts(file, type.options?.accept || '')) {
       return []
     }
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return filterAssetSourcesWithFallback(formBuilder.__internal.file.assetSources)
   }
   if (is.type('sanity.video', type)) {
@@ -47,6 +51,7 @@ export function resolveUploadAssetSources(
     if (file && !accepts(file, type.options?.accept || 'video/*')) {
       return []
     }
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return filterAssetSourcesWithFallback(formBuilder.__internal.file.assetSources)
   }
   return []

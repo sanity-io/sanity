@@ -1,8 +1,9 @@
-import {Box, Card, Container, Flex, Heading} from '@sanity/ui'
+import {Card, Container, Flex, Heading} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {Button} from '../../../../../ui-components'
-import {UpsellDescriptionSerializer} from '../../../upsell'
+import {Button} from '../../../../../ui-components/button/Button'
+import {UpsellDescriptionSerializer} from '../../../upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
 import {type TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
 import {type FreeTrialDialog} from './types'
 
@@ -21,7 +22,7 @@ interface PopoverContentProps {
 
 export function PopoverContent({content, handleClose, handleOpenNext}: PopoverContentProps) {
   return (
-    <Card radius={3} overflow={'hidden'} width={0}>
+    <Card radius={3} overflow={'hidden'}>
       <Container width={0}>
         {content.image && (
           <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
@@ -34,7 +35,7 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
             <UpsellDescriptionSerializer blocks={content.descriptionText} />
           </Box>
         </Flex>
-        <Flex width="full" gap={3} justify="flex-end" padding={3}>
+        <Flex gap={3} justify="flex-end" padding={3}>
           {content.secondaryButton?.text && (
             <Button
               mode="bleed"

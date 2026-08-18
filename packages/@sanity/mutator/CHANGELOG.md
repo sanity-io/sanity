@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.4.0](https://github.com/sanity-io/sanity/compare/v6.3.0...v6.4.0) (2026-07-07)
+
+### Features
+
+* improve request error handling ([#13367](https://github.com/sanity-io/sanity/issues/13367)) ([b2817c1](https://github.com/sanity-io/sanity/commit/b2817c1a49b5dbbfc65510db75f3f21c3b596bff))
 ## [6.2.0](https://github.com/sanity-io/sanity/compare/v6.1.0...v6.2.0) (2026-06-24)
 
 ### Bug Fixes

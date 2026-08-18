@@ -1,6 +1,6 @@
 import {validateApiPerspective} from '@sanity/client'
 import isEqual from 'fast-deep-equal'
-import {type MutableRefObject, useCallback, useMemo, useRef, useState} from 'react'
+import {type RefObject, useCallback, useMemo, useRef, useState} from 'react'
 import {getPublishedId} from 'sanity'
 
 import {type FrameState, type PresentationPerspective} from './types'
@@ -22,7 +22,7 @@ const warnOnceAboutCrossDatasetReference = defineWarnOnce()
  */
 export function useDocumentsOnPage(
   perspective: PresentationPerspective,
-  frameStateRef: MutableRefObject<FrameState>,
+  frameStateRef: RefObject<FrameState>,
 ): [
   DocumentOnPage[],
   (key: string, perspective: PresentationPerspective, state: DocumentOnPage[]) => void,

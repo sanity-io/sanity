@@ -1,16 +1,17 @@
 import {type Path} from '@sanity/types'
 import {isEqual, pathFor} from '@sanity/util/paths'
-import {type MutableRefObject, type ReactNode, useContext, useMemo, useRef} from 'react'
+import {type ReactNode, type RefObject, useContext, useMemo, useRef} from 'react'
 import {PortableTextMemberItemsContext} from 'sanity/_singletons'
 
-import {pathToString} from '../../../../field'
+import {pathToString} from '../../../../field/paths/helpers'
 import {type FIXME} from '../../../../FIXME'
-import {FormInput} from '../../../components'
+import {FormInput} from '../../../components/FormInput'
 import {isMemberArrayOfObjects} from '../../../members/object/fields/asserters'
 import {set} from '../../../patch/patch'
 import {type FormPatch} from '../../../patch/types'
-import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../../store'
-import {type ObjectInputProps, type PortableTextInputProps} from '../../../types'
+import {type ArrayOfObjectsItemMember} from '../../../store/types/members'
+import {type ObjectFormNode} from '../../../store/types/nodes'
+import {type ObjectInputProps, type PortableTextInputProps} from '../../../types/inputProps'
 import {isArrayOfObjectsFieldMember, isBlockType} from '../_helpers'
 import {type PortableTextMemberItem} from '../PortableTextInput'
 
@@ -53,7 +54,7 @@ export function usePortableTextMemberItemsFromProps(
     onPathFocus,
   } = props
 
-  const portableTextMemberItemsRef: MutableRefObject<PortableTextMemberItem[]> = useRef([])
+  const portableTextMemberItemsRef: RefObject<PortableTextMemberItem[]> = useRef([])
   return useMemo(() => {
     const result: {
       kind: PortableTextMemberItem['kind']
@@ -61,11 +62,24 @@ export function usePortableTextMemberItemsFromProps(
       node: ObjectFormNode
     }[] = []
 
-    for (const member of members) {
-      if (member.kind === 'item') {
+    // Walk `members` plus any nested portable-text arrays inside
+    // object-blocks (containers) iteratively, so members at any depth
+    // show up in the flat list.
+    const stack: (typeof members)[] = [members]
+    while (stack.length) {
+      const arrayMembers = stack.pop()!
+      for (const member of arrayMembers) {
+        if (member.kind !== 'item') continue
         const isObjectBlock = !isBlockType(member.item.schemaType)
         if (isObjectBlock) {
           result.push({kind: 'objectBlock', member, node: member.item})
+          // Only descend into arrays whose items are objects. Non-object
+          // arrays (primitives, references) surface no block-shaped items.
+          for (const field of member.item.members) {
+            if (field.kind === 'field' && isMemberArrayOfObjects(field)) {
+              stack.push(field.field.members)
+            }
+          }
         } else {
           // Also include regular text blocks with validation, presence, changes or that are open or focused.
           // This is a performance optimization to avoid accounting for blocks that
