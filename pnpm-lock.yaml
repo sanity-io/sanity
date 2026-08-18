@@ -939,8 +939,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       chromatic:
-        specifier: ^18.1.0
-        version: 18.1.0(@chromatic-com/playwright@0.14.11)(@chromatic-com/vitest@0.1.8)
+        specifier: ^18.2.0
+        version: 18.2.0(@chromatic-com/playwright@0.14.11)(@chromatic-com/vitest@0.1.8)
       tsx:
         specifier: ^4.23.12
         version: 4.23.12
@@ -2169,8 +2169,8 @@ importers:
         specifier: ^9.0.20240710
         version: 9.0.20240710
       chromatic:
-        specifier: ^18.1.0
-        version: 18.1.0(@chromatic-com/playwright@0.14.11)(@chromatic-com/vitest@0.1.8)
+        specifier: ^18.2.0
+        version: 18.2.0(@chromatic-com/playwright@0.14.11)(@chromatic-com/vitest@0.1.8)
       jsdom:
         specifier: 'catalog:'
         version: 29.1.1(@noble/hashes@2.2.0)
@@ -8862,22 +8862,6 @@ packages:
   chownr@3.0.0:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
     engines: {node: '>=18'}
-
-  chromatic@18.1.0:
-    resolution: {integrity: sha512-I9av8lUc5CQRlYzwKpmOG9cwYvZ4AFmTvtHeNrzOMC1353F9xYw45CHpSNIsNKuOiqqmzci9esXQd5akl0fi6w==}
-    engines: {node: '>=22.0.0'}
-    hasBin: true
-    peerDependencies:
-      '@chromatic-com/cypress': ^0.*.* || ^1.0.0
-      '@chromatic-com/playwright': ^0.*.* || ^1.0.0
-      '@chromatic-com/vitest': ^0.*.* || ^1.0.0
-    peerDependenciesMeta:
-      '@chromatic-com/cypress':
-        optional: true
-      '@chromatic-com/playwright':
-        optional: true
-      '@chromatic-com/vitest':
-        optional: true
 
   chromatic@18.2.0:
     resolution: {integrity: sha512-xyTKDhBQPDd4qrsXhJK7GAJyIStpRoSTs4b7EtPyliSL0luej3DcqkeCZ9osHxbiLXiViNyWfMxo5Xgzejex8A==}
@@ -21680,13 +21664,6 @@ snapshots:
   chownr@1.1.4: {}
 
   chownr@3.0.0: {}
-
-  chromatic@18.1.0(@chromatic-com/playwright@0.14.11)(@chromatic-com/vitest@0.1.8):
-    dependencies:
-      semver: 7.8.5
-    optionalDependencies:
-      '@chromatic-com/playwright': 0.14.11(@playwright/test@1.62.1)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)
-      '@chromatic-com/vitest': 0.1.8(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)(vitest@4.1.10)
 
   chromatic@18.2.0(@chromatic-com/playwright@0.14.11)(@chromatic-com/vitest@0.1.8):
     dependencies:
