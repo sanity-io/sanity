@@ -19,7 +19,6 @@ import {
   useAllVariants,
   type VersionInfoDocumentStub,
   useSetVariant,
-  getTargetDocument,
 } from 'sanity'
 
 import {isLiveEditEnabled} from '../components/paneItem/helpers'
@@ -60,8 +59,6 @@ interface DocumentPerspectiveList {
   variantVersions: VersionInfoDocumentStub[]
   /** Handles the selection of a variant. */
   handleVariantSelectionChange: (version: VersionInfoDocumentStub) => void
-  /** Display props for the currently selected variant in the active bundle, if any. */
-  selectedVariantDisplay: {displayName: string; tone: BadgeTone} | null
 }
 
 /**
@@ -75,7 +72,7 @@ interface DocumentPerspectiveList {
  * @internal
  */
 export function useDocumentPerspectiveList(): DocumentPerspectiveList {
-  const {selectedReleaseId, selectedPerspectiveName, selectedVariant, bundle} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {params} = usePaneRouter()
   const schema = useSchema()
   const {editState, displayed} = useDocumentPane()
@@ -266,24 +263,6 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     [setVariant, variants],
   )
 
-  // Temporarily display the selected variant in the header; this will be replaced by the inventory.
-  const selectedVariantDisplay = useMemo(() => {
-    if (!selectedVariant) {
-      return null
-    }
-
-    const targetVariantDocument = getTargetDocument({
-      bundle,
-      variant: selectedVariant._id,
-      documentVersions,
-    })
-
-    if (targetVariantDocument) {
-      return getVersionDisplay(targetVariantDocument)
-    }
-    return null
-  }, [selectedVariant, bundle, documentVersions, getVersionDisplay])
-
   return {
     filteredReleases,
     getVersionDisplay,
@@ -299,6 +278,5 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     nonReleaseVersions,
     variantVersions,
     handleVariantSelectionChange,
-    selectedVariantDisplay,
   }
 }
