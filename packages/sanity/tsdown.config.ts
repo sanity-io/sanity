@@ -1,5 +1,4 @@
 import {defineConfig} from '@repo/tsdown.config'
-import {bundleAnalyzerPlugin} from 'rolldown/experimental'
 import {mergeConfig} from 'tsdown'
 
 import pkg from './package.json' with {type: 'json'}
@@ -47,7 +46,7 @@ const config = await defineConfig({
 export default isBundleAnalyzerEnabled
   ? mergeConfig(config, {
       plugins: [
-        bundleAnalyzerPlugin({
+        (await import('rolldown/experimental')).bundleAnalyzerPlugin({
           format: 'md',
         }),
       ],
