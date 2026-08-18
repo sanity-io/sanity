@@ -110,7 +110,7 @@ minimumReleaseAgeExclude:
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-utils'
   # Fresh patch; exclude so 6.5.3 can install before the 3-day age gate
-  - 'styled-components'
+  - 'styled-components@6.5.3'
   - 'tsx'
   - 'tsdown'
   # verkit is part of the tsdown toolchain (tsdown dependency since 0.22.12)
