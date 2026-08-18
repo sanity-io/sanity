@@ -1,6 +1,7 @@
 import {hues} from '@sanity/color'
-import {Box, Card, type Theme} from '@sanity/ui'
+import {Card, type Theme} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 export const Root = styled(Card)(rootStyle)
 

@@ -1,7 +1,8 @@
 import {isFileSource} from '@sanity/asset-utils'
 import {type AssetSource} from '@sanity/types'
-import {Box, Card, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {AssetSourceBrowser} from '../common/AssetSourceBrowser'
