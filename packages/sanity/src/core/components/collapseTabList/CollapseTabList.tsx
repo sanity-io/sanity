@@ -114,7 +114,13 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   )
 
   return (
-    <Flex direction="column" ref={ref} sizing="border" style={{position: 'relative'}} {...rest}>
+    <Flex
+      direction="column"
+      ref={ref}
+      sizing="border"
+      {...rest}
+      style={{position: 'relative', minWidth: 0}}
+    >
       <Flex justify="center" gap={gap} flex={1}>
         {displayChildren}
         {(hiddenElements.length > 0 || collapsed) && (
