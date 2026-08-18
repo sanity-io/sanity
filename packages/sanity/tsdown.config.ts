@@ -36,4 +36,7 @@ export default defineConfig({
   // `sanity/_singletons`), which must stay external so they resolve through the exports map at
   // runtime instead of being inlined into every chunk that imports them
   deps: {neverBundle: [/^sanity(\/|$)/]},
+  // Emits `lib/analyze-data.md` (LLM-friendly module/chunk breakdown). Opt-in because analysis
+  // adds work to the tsdown build. Usage: `pnpm analyze:sanity` from the repo root (see AGENTS.md).
+  bundleAnalyzer: process.env.ENABLE_BUNDLE_ANALYZER === 'true',
 })

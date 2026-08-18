@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.10.0](https://github.com/sanity-io/sanity/compare/v6.9.2...v6.10.0) (2026-08-18)
+
+### Features
+
+* **vision:** pass navbar variant with pinned release queries ([#14063](https://github.com/sanity-io/sanity/issues/14063)) ([ee6ebee](https://github.com/sanity-io/sanity/commit/ee6ebee9f5b48aa933905dec06ea658b8d6405ba))
+
+### Bug Fixes
+
+* **vision:** stop swallowing paste events outside vision ([#14016](https://github.com/sanity-io/sanity/issues/14016)) ([75de447](https://github.com/sanity-io/sanity/commit/75de4472819f2c9ccc64fc0916b8ea8345cfa0e0))
 ## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
 
 ### Bug Fixes

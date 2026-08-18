@@ -192,6 +192,16 @@ How it works:
 - The flag is declared in `dev/test-studio/turbo.json` so turbo-cached builds are invalidated when it changes
 - Enabling devtools makes `sanity build` noticeably slower; that's why it's opt-in via the env flag
 
+### Analyzing the `sanity` package bundle
+
+The `sanity` package tsdown build can emit a Rolldown [bundle analyzer](https://rolldown.rs/builtin-plugins/bundle-analyzer) markdown report (module/chunk breakdown for humans and coding agents) when `ENABLE_BUNDLE_ANALYZER=true`:
+
+```bash
+pnpm analyze:sanity
+```
+
+The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with `lib/`). The flag is opt-in because analysis adds work to the package build; it is declared in `packages/sanity/turbo.json` so turbo-cached builds are invalidated when it changes. Wiring is `@sanity/tsdown-config`'s `bundleAnalyzer` option (`true` selects markdown). `pnpm-workspace.yaml` pins `tsdown>rolldown` to the same rolldown that `@sanity/tsdown-config` uses, so the analyzer BuiltinPlugin actually runs.
+
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
 The `perf/bench` suite benchmarks a built studio against a **local mock** of the Sanity API — fully hermetic, no tokens, no network:
@@ -423,10 +433,11 @@ while closed (hidden with `display: none`). Consequences for tests:
 
 ### Visual Regression Tests (Chromatic + Storybook)
 
-Visual regression runs on Chromatic via `.github/workflows/chromatic.yml`. `dev/storybook`
-contains the stories — most reuse the vitest browser-mode test harnesses (`TestWrapper` +
-`*Story.tsx` components), plus authored migration sentinels for `ui-components` and
-vanilla-extract-migrated components.
+Visual regression runs on Chromatic via `.github/workflows/chromatic.yml`. Stories are co-located
+with their source under `packages/**/src/**/__tests__`; most reuse vitest browser-mode test
+harnesses (`TestWrapper` + `*Story.tsx` components), alongside authored migration sentinels for
+`ui-components` and vanilla-extract-migrated components. `dev/storybook` contains the shared
+Storybook, Chromatic, and addon-vitest infrastructure.
 
 ```bash
 pnpm dev:storybook                    # Storybook dev server at http://localhost:6006
@@ -470,6 +481,10 @@ pnpm --filter sanity add <package>
 # Add to root (dev dependency)
 pnpm add -w -D <package>
 ```
+
+Catalog versions live in `pnpm-workspace.yaml`. After changing a catalog specifier, run `pnpm install` to refresh `pnpm-lock.yaml`.
+
+The workspace sets `minimumReleaseAge: 4320` (3 days) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally.
 
 ### Creating a New Test
 
@@ -653,6 +668,7 @@ Key env vars used in development:
 - `SANITY_STUDIO_PROJECT_ID` - Project ID for dev studio
 - `SANITY_STUDIO_DATASET` - Dataset for dev studio
 - `SANITY_INTERNAL_ENV` - Internal environment flag
+- `ENABLE_BUNDLE_ANALYZER` - When `true`, the `sanity` package tsdown build emits `lib/analyze-data.md` (`pnpm analyze:sanity`)
 
 See `turbo.json` for full list of environment variables that affect builds.
 
