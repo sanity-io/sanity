@@ -109,6 +109,74 @@ describe('validateDocument', () => {
     expect(fetch).toHaveBeenCalledWith('*[]')
   })
 
+  it('honors maxFetchConcurrency values across validation calls', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: ['first', 'second', 'third'].map((name) => ({
+          name,
+          type: 'string',
+          validation: (rule: Rule) =>
+            rule.custom(async (_value, context) => {
+              await context.getClient({apiVersion: '2026-01-01'}).fetch('*[]')
+              return true as const
+            }),
+        })),
+      },
+    ])
+    const document = createDocument({
+      _type: 'article',
+      first: 'one',
+      second: 'two',
+      third: 'three',
+    })
+
+    const validateWithConcurrency = async (maxFetchConcurrency: number) => {
+      let active = 0
+      let peak = 0
+      const client = {
+        fetch: async () => {
+          active += 1
+          peak = Math.max(peak, active)
+          await new Promise((resolve) => setTimeout(resolve, 5))
+          active -= 1
+          return null
+        },
+        withConfig: () => client,
+      } as unknown as SanityClient
+
+      await validateDocument({
+        client,
+        document,
+        getDocumentExists: async () => true,
+        maxFetchConcurrency,
+        schema,
+      })
+
+      return peak
+    }
+
+    await expect(validateWithConcurrency(1)).resolves.toBe(1)
+    await expect(validateWithConcurrency(2)).resolves.toBe(2)
+  })
+
+  it.each([0, -1, NaN, 1.5, Infinity])(
+    'rejects invalid maxFetchConcurrency value %s',
+    (maxFetchConcurrency) => {
+      const {client} = createMockClient()
+
+      expect(() =>
+        validateDocument({
+          client,
+          document: createDocument({_type: 'article'}),
+          maxFetchConcurrency,
+          schema: createSchema([{name: 'article', type: 'document', fields: []}]),
+        }),
+      ).toThrow('`maxFetchConcurrency` must be a positive integer')
+    },
+  )
+
   it('uses an explicit reference existence lookup when provided', async () => {
     const schema = createSchema([
       {

@@ -41,11 +41,18 @@ const DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY = 5
 
 const DEFAULT_VALIDATION_CLIENT_OPTIONS = {apiVersion: '2025-02-19'} as const
 
-let _limitConcurrency: ReturnType<typeof createClientConcurrencyLimiter> | undefined
+const concurrencyLimiters = new Map<number, ReturnType<typeof createClientConcurrencyLimiter>>()
 const getConcurrencyLimiter = (maxConcurrency: number) => {
-  if (_limitConcurrency) return _limitConcurrency
-  _limitConcurrency = createClientConcurrencyLimiter(maxConcurrency)
-  return _limitConcurrency
+  if (!Number.isInteger(maxConcurrency) || maxConcurrency <= 0) {
+    throw new RangeError('`maxFetchConcurrency` must be a positive integer')
+  }
+
+  let limiter = concurrencyLimiters.get(maxConcurrency)
+  if (!limiter) {
+    limiter = createClientConcurrencyLimiter(maxConcurrency)
+    concurrencyLimiters.set(maxConcurrency, limiter)
+  }
+  return limiter
 }
 
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
@@ -148,7 +155,8 @@ export interface ValidateDocumentOptions {
    * this value if you have complex custom validations that require many
    * `client.fetch` requests at once. It's possible for custom validator to
    * stall if there are not enough concurrent fetch requests available to
-   * fullfil the custom validation. This is 25 by default.
+   * fulfill the custom validation. Must be a positive integer. This is 25 by
+   * default.
    */
   maxFetchConcurrency?: number
 
@@ -261,7 +269,7 @@ export function validateDocumentObservable({
   currentUser,
 }: ValidateDocumentObservableOptions): Observable<ValidationMarker[]> {
   if (typeof document?._type !== 'string') {
-    throw new Error(`Tried to validated a value without a '_type'`)
+    throw new Error(`Tried to validate a value without a '_type'`)
   }
 
   const documentType = schema.get(document._type)
