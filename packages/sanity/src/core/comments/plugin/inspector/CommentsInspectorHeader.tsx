@@ -1,10 +1,11 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useCallback, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -38,13 +39,13 @@ export function CommentsInspectorHeader(
   return (
     <Root ref={ref}>
       <Flex padding={2}>
-        <Flex align="center" flex={1} gap={2} paddingY={2} padding={3}>
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} paddingY={2} padding={3}>
           <Text as="h1" size={1} weight="medium">
             {t('feature-name')}
           </Text>
         </Flex>
 
-        <Flex flex="none" padding={1} gap={2}>
+        <Flex flexBasis="auto" flexGrow={0} flexShrink={0} padding={1} gap={2}>
           <MenuButton
             id="comment-status-menu-button"
             button={

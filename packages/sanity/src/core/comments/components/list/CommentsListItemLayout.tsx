@@ -1,19 +1,11 @@
 import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
-import {
-  type AvatarSize,
-  Card,
-  Flex,
-  Stack,
-  Text,
-  TextSkeleton,
-  useClickOutsideEvent,
-} from '@sanity/ui'
+import {type AvatarSize, Card, Stack, Text, TextSkeleton, useClickOutsideEvent} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
@@ -345,23 +337,29 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       gap={4}
     >
       <InnerStack gap={1} data-muted={displayError}>
-        <HeaderFlex align="center" gap={FLEX_GAP} flex={1} $size={avatarSize}>
+        <HeaderFlex
+          alignItems="center"
+          gap={FLEX_GAP}
+          flexBasis="0%"
+          flexGrow={1}
+          $size={avatarSize}
+        >
           {withAvatar && <CommentsAvatar user={user} size={avatarSize} />}
 
-          <Flex direction="column" gap={2} paddingY={intent ? 2 : 0}>
+          <Flex flexDirection="column" gap={2} paddingY={intent ? 2 : 0}>
             <Flex
-              align="center"
+              alignItems="center"
               paddingBottom={comment.context?.intent ? 0 : 1}
-              sizing="border"
-              flex={1}
+              flexBasis="0%"
+              flexGrow={1}
             >
-              <Flex align="flex-end" gap={2}>
+              <Flex alignItems="flex-end" gap={2}>
                 <Box flexBasis="0%" flexGrow={1}>
                   {name}
                 </Box>
 
                 {!displayError && (
-                  <Flex align="center" gap={1}>
+                  <Flex alignItems="center" gap={1}>
                     <TimeText muted size={0}>
                       <time dateTime={createdDate.toISOString()} title={formattedCreatedAt}>
                         {createdTimeAgo}
@@ -434,7 +432,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
         )}
 
         {isEditing && (
-          <Flex align="flex-start" gap={2}>
+          <Flex alignItems="flex-start" gap={2}>
             {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
             <Stack flex={1}>
@@ -485,7 +483,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
         <ErrorFlex gap={FLEX_GAP} $size={avatarSize}>
           {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
-          <Flex align="center" gap={1} flex={1}>
+          <Flex alignItems="center" gap={1} flexBasis="0%" flexGrow={1}>
             <Text muted size={1}>
               {hasError && t('list-item.layout-failed-sent')}
               {isRetrying && t('list-item.layout-posting')}
