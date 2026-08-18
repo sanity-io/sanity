@@ -1069,6 +1069,7 @@ exports[`exports snapshot 1`] = `
     "form": "function",
     "getOrderingMenuItem": "function",
     "getOrderingMenuItemsForSchemaType": "function",
+    "getReleaseOrVariantMembership": "function",
     "getTypeNamesFromFilter": "function",
     "isDocumentListItem": "function",
     "isIncomingReferenceCreation": "function",
