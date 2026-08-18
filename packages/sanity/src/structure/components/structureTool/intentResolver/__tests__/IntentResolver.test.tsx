@@ -59,7 +59,7 @@ class Boundary extends Component<{children: ReactNode}, {error: unknown}> {
 
 function socketTimeoutError() {
   return Object.assign(new Error('Socket timed out on request to https://x.api.sanity.io/…'), {
-    code: 'ESOCKETTIMEDOUT',
+    isNetworkError: true,
   })
 }
 
