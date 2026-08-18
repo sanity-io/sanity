@@ -1,4 +1,4 @@
-import {fromUrl} from '@sanity/bifur-client'
+import {createClient as createBifurClient} from '@sanity/bifur-client'
 import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
@@ -35,6 +35,7 @@ import {type InitialValueTemplateItem, type Template, type TemplateItem} from '.
 import {canonicalHash} from '../util/canonicalHash'
 import {EMPTY_ARRAY} from '../util/empty'
 import {isNonNullable} from '../util/isNonNullable'
+import {createBifurConnection} from './bifurConnection'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
@@ -490,7 +491,10 @@ function getBifurClient(client: SanityClient, auth: AuthStore) {
   const urlWithTag = `${url}?tag=${requestTagPrefix}`
 
   const options = auth.token ? {token$: auth.token} : {}
-  return fromUrl(urlWithTag, options)
+  // The connection is created here rather than through the client's own `fromUrl` so that
+  // momentary zero-subscriber gaps (React render/effect cycles) don't abort and reconnect the
+  // socket — see `createBifurConnection`.
+  return createBifurClient(createBifurConnection(urlWithTag), options)
 }
 
 function resolveSource({
