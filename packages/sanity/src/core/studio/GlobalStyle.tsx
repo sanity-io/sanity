@@ -4,6 +4,7 @@ import {setElementVars} from '@vanilla-extract/dynamic'
 import {useInsertionEffect} from 'react'
 
 import {
+  globalStylesRoot,
   uiColorMutedFg,
   selectionBackgroundColor,
   uiColorBg,
@@ -26,7 +27,9 @@ export function GlobalStyle(): null {
   const selectionBackgroundColorValue = rgba(color.focusRing, 0.3)
 
   useInsertionEffect(() => {
-    setElementVars(document.documentElement, {
+    const root = document.documentElement
+    root.classList.add(globalStylesRoot)
+    setElementVars(root, {
       [selectionBackgroundColor]: selectionBackgroundColorValue,
       [uiColorBg]: color.bg,
       [uiColorBorder]: color.border,
@@ -37,14 +40,16 @@ export function GlobalStyle(): null {
     })
 
     return () => {
-      setElementVars(document.documentElement, {
-        [selectionBackgroundColor]: null,
-        [uiColorBg]: null,
-        [uiColorBorder]: null,
-        [uiColorMutedFg]: null,
-        [uiFontTextFamily]: null,
-        [uiFontTextWeightMedium]: null,
-        [webkitResizerBackgroundImage]: null,
+      root.classList.remove(globalStylesRoot)
+      // `setElementVars` skips nullish values, while an empty string removes the custom property.
+      setElementVars(root, {
+        [selectionBackgroundColor]: '',
+        [uiColorBg]: '',
+        [uiColorBorder]: '',
+        [uiColorMutedFg]: '',
+        [uiFontTextFamily]: '',
+        [uiFontTextWeightMedium]: '',
+        [webkitResizerBackgroundImage]: '',
       })
     }
   }, [

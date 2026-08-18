@@ -1,4 +1,4 @@
-import {createGlobalVar, createVar, fallbackVar, globalStyle} from '@vanilla-extract/css'
+import {createGlobalVar, createVar, fallbackVar, globalStyle, style} from '@vanilla-extract/css'
 
 const SCROLLBAR_SIZE = 12 // px
 const SCROLLBAR_BORDER_SIZE = 4 // px
@@ -14,55 +14,69 @@ export const webkitResizerBackgroundImage = createVar()
 const uiCardBorderColor = createGlobalVar('card-border-color')
 const uiCardMutedFgColor = createGlobalVar('card-muted-fg-color')
 
-globalStyle('::-webkit-resizer', {
+/**
+ * Added to `<html>` by `GlobalStyle`. This stylesheet is always loaded, so the rules below are
+ * scoped to it in order to stay opt-in through the `unstable_globalStyles` prop on `Studio`.
+ */
+export const globalStylesRoot = style({})
+
+// Scrollbars and selections have to be styled on `<html>` itself as well as everything inside it.
+function scoped(selector: string) {
+  return `${globalStylesRoot}${selector}, ${globalStylesRoot} ${selector}`
+}
+
+globalStyle(scoped('::-webkit-resizer'), {
   backgroundImage: webkitResizerBackgroundImage,
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'bottom right',
 })
-globalStyle('::-webkit-scrollbar', {
+globalStyle(scoped('::-webkit-scrollbar'), {
   width: SCROLLBAR_SIZE,
   height: SCROLLBAR_SIZE,
 })
-globalStyle('::-webkit-scrollbar-corner', {
+globalStyle(scoped('::-webkit-scrollbar-corner'), {
   backgroundColor: 'transparent',
 })
-globalStyle('::-webkit-scrollbar-thumb', {
+globalStyle(scoped('::-webkit-scrollbar-thumb'), {
   backgroundClip: 'content-box',
   backgroundColor: fallbackVar(uiCardBorderColor, uiColorBorder),
   borderWidth: SCROLLBAR_BORDER_SIZE,
   borderStyle: 'solid',
   borderColor: 'transparent',
 })
-globalStyle('::-webkit-scrollbar-thumb:hover', {
+globalStyle(scoped('::-webkit-scrollbar-thumb:hover'), {
   backgroundColor: fallbackVar(uiCardMutedFgColor, uiColorMutedFg),
 })
-globalStyle('::-webkit-scrollbar-track', {
+globalStyle(scoped('::-webkit-scrollbar-track'), {
   background: 'transparent',
 })
 
-globalStyle('*::selection', {
+globalStyle(scoped('::selection'), {
   backgroundColor: selectionBackgroundColor,
 })
 
-globalStyle('html', {
+globalStyle(globalStylesRoot, {
   backgroundColor: uiColorBg,
 })
 
-globalStyle('body', {
+globalStyle(`${globalStylesRoot} body`, {
   scrollbarGutter: 'stable',
 })
 
 globalStyle('#sanity', {
-  fontFamily: uiFontTextFamily,
   vars: {
     '--static-css-file-loaded-studio': 'true',
   },
 })
 
-globalStyle('b', {
+globalStyle(`${globalStylesRoot} #sanity`, {
+  fontFamily: uiFontTextFamily,
+})
+
+globalStyle(`${globalStylesRoot} b`, {
   fontWeight: uiFontTextWeightMedium,
 })
 
-globalStyle('strong', {
+globalStyle(`${globalStylesRoot} strong`, {
   fontWeight: uiFontTextWeightMedium,
 })
