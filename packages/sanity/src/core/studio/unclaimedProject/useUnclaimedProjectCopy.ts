@@ -124,7 +124,7 @@ export function useUnclaimedProjectCopy(enabled: boolean): UnclaimedProjectCopy 
           return response.json()
         })
       : client.observable.request<unknown>({
-          uri: UNCLAIMED_PROJECT_COPY_URI,
+          url: UNCLAIMED_PROJECT_COPY_URI,
           tag: 'unclaimed-project-copy',
         })
 

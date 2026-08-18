@@ -39,7 +39,7 @@ export async function getProviders({
   // sidesteps that — anonymous callers get the public provider list.
   const credentiallessClient = client.withConfig({token: undefined, withCredentials: false})
   const {providers} = await credentiallessClient.request<AuthProviderResponse>({
-    uri: '/auth/providers',
+    url: '/auth/providers',
   })
 
   return customProviders
