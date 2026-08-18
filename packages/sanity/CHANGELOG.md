@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.22.1](https://github.com/sanity-io/sanity/compare/v4.22.0...v4.22.1) (2026-08-18)
+
+### Bug Fixes
+
+* **core:** prevent task form operations from leaking into the main workspace store ([#12603](https://github.com/sanity-io/sanity/issues/12603)) ([f230731](https://github.com/sanity-io/sanity/commit/f230731ef63453e356be7698e958cb1d32b179cd)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** pin @tanstack/react-virtual to 3.13.12 ([#14134](https://github.com/sanity-io/sanity/issues/14134)) ([8e539bc](https://github.com/sanity-io/sanity/commit/8e539bc05501e40c33287fe5c07114b7b09afe13)) by claude[bot] (209825114+claude[bot]@users.noreply.github.com)
+
 ## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
 
 ### Features
