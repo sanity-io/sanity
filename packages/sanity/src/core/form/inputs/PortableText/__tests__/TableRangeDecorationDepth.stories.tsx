@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {TableRangeDecorationDepthStory} from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/TableRangeDecorationDepthStory'
+import {TableRangeDecorationDepthStory} from './TableRangeDecorationDepthStory'
 
 /**
  * Reuses the `TableRangeDecorationDepth.browser.test.tsx` harness: Portable

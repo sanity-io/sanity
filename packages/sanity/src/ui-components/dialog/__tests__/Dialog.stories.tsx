@@ -1,8 +1,8 @@
 import {Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {Dialog} from '../../../../packages/sanity/src/ui-components/dialog/Dialog'
-import {TestWrapper} from '../../../../packages/sanity/test/browser/TestWrapper'
+import {TestWrapper} from '../../../../test/browser/TestWrapper'
+import {Dialog} from '../Dialog'
 
 /**
  * The studio's `ui-components` wrapper around the `@sanity/ui` Dialog.

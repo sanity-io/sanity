@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {FocusPathDepthStory} from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/FocusPathDepthStory'
+import {FocusPathDepthStory} from './FocusPathDepthStory'
 
 /**
  * Reuses the `FocusPathDepth.browser.test.tsx` harness: deeply nested

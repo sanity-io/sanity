@@ -1,6 +1,6 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import FocusTrackingStory from '../../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/FocusTrackingStory'
+import FocusTrackingStory from './FocusTrackingStory'
 
 /**
  * Reuses the `FocusTracking.browser.test.tsx` harness: a document with
