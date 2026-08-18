@@ -1,16 +1,28 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Badge, Card, Flex, Text} from '@sanity/ui'
 import {type ThemeColorStateToneKey} from '@sanity/ui/theme'
+import {type Meta, type StoryObj} from '@storybook/react-vite'
 
 import {ToneIcon} from '../ToneIcon'
 
 const TONES: ThemeColorStateToneKey[] = ['default', 'primary', 'positive', 'caution', 'critical']
 
 /**
- * Studio ToneIcon sentinel: icon color via `--card-badge-*-icon-color`.
+ * The studio's `ui-components` ToneIcon, which colors an icon via the
+ * `--card-badge-*-icon-color` CSS custom properties. Tone-related coverage is
+ * prioritized for the ui5 migration since these variables cascade from Card.
  */
-export function ToneIconStory() {
-  return (
+const meta = {
+  title: 'UI Components/Tone Icon',
+  component: ToneIcon,
+} satisfies Meta<typeof ToneIcon>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const AllTones: Story = {
+  args: {tone: 'default', icon: InfoOutlineIcon},
+  render: () => (
     <Card padding={4}>
       <Flex gap={4}>
         {TONES.map((tone) => (
@@ -27,5 +39,5 @@ export function ToneIconStory() {
         ))}
       </Flex>
     </Card>
-  )
+  ),
 }

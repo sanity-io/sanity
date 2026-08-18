@@ -1,4 +1,5 @@
 import {type BadgeTone, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type Meta, type StoryObj} from '@storybook/react-vite'
 
 import {
   activeASAPRelease,
@@ -13,10 +14,19 @@ const TONES: BadgeTone[] = ['default', 'primary', 'positive', 'caution', 'critic
 
 /**
  * Chromatic sentinel for ui5 Box padding and badge-tone icon colors on
- * ReleaseAvatar / StatusItem. Shared with Storybook via a thin CSF wrapper.
+ * ReleaseAvatar / StatusItem. Icon color comes from `--card-badge-*-icon-color`.
  */
-export function ReleaseAvatarStory() {
-  return (
+const meta = {
+  title: 'Releases/Release Avatar',
+  component: ReleaseAvatar,
+} satisfies Meta<typeof ReleaseAvatar>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const AllVariants: Story = {
+  args: {releaseType: 'asap'},
+  render: () => (
     <Card padding={4}>
       <Stack gap={5}>
         <Stack gap={2}>
@@ -63,5 +73,5 @@ export function ReleaseAvatarStory() {
         </Stack>
       </Stack>
     </Card>
-  )
+  ),
 }

@@ -1,16 +1,25 @@
 import {Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
-import {DialogStory} from '../../../../packages/sanity/src/ui-components/dialog/__tests__/DialogStory'
+import {TestWrapper} from '../../../../test/browser/TestWrapper'
+import {Dialog} from '../Dialog'
 
 /**
- * Reuses the in-package harness: studio Dialog wrapper inside TestWrapper so
- * footer labels resolve through studio i18n.
+ * The studio's `ui-components` wrapper around the `@sanity/ui` Dialog.
+ * Rendered inside `TestWrapper` because the footer's default button labels
+ * resolve through the studio i18n instance the mock workspace registers.
  */
 const meta = {
   title: 'UI Components/Dialog',
-  component: DialogStory,
-} satisfies Meta<typeof DialogStory>
+  component: Dialog,
+  decorators: [
+    (Story) => (
+      <TestWrapper schemaTypes={[]}>
+        <Story />
+      </TestWrapper>
+    ),
+  ],
+} satisfies Meta<typeof Dialog>
 
 export default meta
 type Story = StoryObj<typeof meta>

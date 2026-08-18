@@ -22,12 +22,17 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
 
 ## How the stories work
 
-- **Internal studio components:** `*Story.tsx` harness in `packages/sanity/src/.../__tests__/`
-  (relative imports; `TestWrapper` inside the harness when i18n/workspace is needed). The
-  CSF file in `dev/storybook/stories/` imports only that harness — same as CommentInput,
-  Table, and Portable Text. Do not deep-import implementation files from Storybook.
-- **Public `sanity` exports / `@sanity/ui` primitives:** CSF may import those packages
-  directly (e.g. Card tones).
+- **Stories are package-owned and co-located.** Storybook discovers `*.stories.tsx` files in
+  workspace package `src` trees; `dev/storybook` owns only the Storybook, Chromatic, and
+  addon-vitest infrastructure. Keep a story in the same `__tests__` directory as the component or
+  harness it covers and use package-local imports instead of reaching across workspace boundaries.
+- **Harness reuse:** thin CSF files sit beside the `*Story.tsx` harness components that the vitest
+  browser-mode tests already use (`TestWrapper` + `TestForm` with a mock client/workspace —
+  deterministic, no network). The harnesses stay shared: tests exercise interactions, Chromatic
+  snapshots the rendered states.
+- **Authored migration sentinels:** component-local stories cover states the tests don't capture —
+  `ui-components` wrapper variants (the `@sanity/ui` → `ui5` surface, with card/tone coverage
+  prioritized) and vanilla-extract-migrated components.
 
 The Vite config in [.storybook/main.ts](.storybook/main.ts) mirrors
 `packages/sanity/vitest.browser.config.mts`: the `monorepo` exports condition resolves workspace

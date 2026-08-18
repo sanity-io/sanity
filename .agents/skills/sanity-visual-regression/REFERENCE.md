@@ -2,6 +2,10 @@
 
 ## Architecture and rationale
 
+- **Why stories are co-located:** each package owns its CSF files and keeps component, fixture,
+  test-harness, and test-only imports within the same workspace boundary. `dev/storybook` is only
+  the shared host; its discovery globs target workspace package `src` roots without traversing
+  dependency symlinks under nested `node_modules` directories.
 - **Why harness reuse instead of moving tests into Storybook:** the 25 `*.browser.test.tsx`
   files use `vitest-browser-react`, custom server commands (`readFileAsBase64`), clipboard/PTE
   helpers and mid-test `page.viewport()` mutations — none of which map onto Storybook `play()`

@@ -423,11 +423,11 @@ while closed (hidden with `display: none`). Consequences for tests:
 
 ### Visual Regression Tests (Chromatic + Storybook)
 
-Visual regression runs on Chromatic via `.github/workflows/chromatic.yml`. `dev/storybook`
-contains the CSF stories. For internal (non-exported) studio components, put a `*Story.tsx`
-harness in `packages/sanity/src/.../__tests__/` (relative imports, wrap `TestWrapper` there)
-and import only that harness from Storybook — do not deep-import implementation files.
-See the `sanity-visual-regression` skill for the full workflow.
+Visual regression runs on Chromatic via `.github/workflows/chromatic.yml`. Stories are co-located
+with their source under `packages/**/src/**/__tests__`; most reuse vitest browser-mode test
+harnesses (`TestWrapper` + `*Story.tsx` components), alongside authored migration sentinels for
+`ui-components` and vanilla-extract-migrated components. `dev/storybook` contains the shared
+Storybook, Chromatic, and addon-vitest infrastructure.
 
 ```bash
 pnpm dev:storybook                    # Storybook dev server at http://localhost:6006

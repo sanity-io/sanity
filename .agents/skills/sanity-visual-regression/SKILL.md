@@ -20,17 +20,19 @@ baselines. Review diffs on the Chromatic build linked from the PR check.
 
 ## Quick start: add visual coverage for a component
 
-1. Prefer a story in `dev/storybook/stories/`. Put render logic in a `*Story.tsx` harness inside
-   `packages/sanity` (see below) and keep the CSF file thin. Two patterns:
+1. Add a co-located `*.stories.tsx` file to the owning package's `src` tree, usually in the same
+   `__tests__` directory as the component or harness. Storybook discovers story files in workspace
+   package `src` trees. Two patterns:
    - **Plain component states** (ui-components wrappers, tone/card sentinels): render variants
-     in one harness (a grid) to keep snapshot count low — see
-     [TabStory.tsx](../../../packages/sanity/src/ui-components/tab/__tests__/TabStory.tsx).
-   - **Studio-context states** (form inputs, anything needing workspace/i18n/layers): wrap
-     `TestWrapper` (+ `TestForm` for form inputs) **inside the harness** — see
-     [ConfirmPopoverStory.tsx](../../../packages/sanity/src/ui-components/confirmPopover/__tests__/ConfirmPopoverStory.tsx)
+     directly — see
+     [Button.stories.tsx](../../../packages/sanity/src/ui-components/button/__tests__/Button.stories.tsx).
+     Put many variants in one story (a grid) to keep snapshot count low.
+   - **Studio-context states** (form inputs, anything needing workspace/i18n/layers): wrap in the
+     browser-test harness `TestWrapper` (+ `TestForm` for form inputs) — see
+     [Dialog.stories.tsx](../../../packages/sanity/src/ui-components/dialog/__tests__/Dialog.stories.tsx)
      and the Portable Text stories. If a vitest browser test already has a `*Story.tsx` harness,
-     reuse it (never fork it): the harness stays shared between the test and the story.
-     Public `sanity` exports and `@sanity/ui` primitives are fine when no harness is needed.
+     put the story beside it and reuse it (never fork it): the harness stays shared between the
+     test and the story.
 2. Verify locally: `pnpm dev:storybook` (port 6006), then `pnpm --filter sanity-storybook test`
    (every story runs as a vitest browser-mode test via `@storybook/addon-vitest`).
 3. Push — the `Chromatic / Storybook visual tests` check snapshots only affected stories
@@ -39,31 +41,6 @@ baselines. Review diffs on the Chromatic build linked from the PR check.
 Migration priority: card and tone-related components first (tones cascade through everything),
 box primitives later. Snapshot the _wrapper_ components in `packages/sanity/src/ui-components`
 and vanilla-extract-migrated components (change indicators, `DocumentLayout`) as sentinels.
-
-## Avoiding cross-package boundary imports
-
-Storybook stories in `dev/storybook/stories/` should **not** import directly from component source
-files in `packages/sanity/src/`. Instead, create a `*Story.tsx` harness inside the package:
-
-1. **Create the harness** in a `__tests__/` directory near the component:
-   ```
-   packages/sanity/src/core/comments/components/__tests__/CommentBreadcrumbsStory.tsx
-   ```
-2. **Use relative imports** within the package (e.g., `../CommentBreadcrumbs`).
-3. **Wrap with `TestWrapper`** if the component needs studio context (i18n, workspace, layers).
-4. **Import the harness** from the Storybook story:
-   ```ts
-   // dev/storybook/stories/comments/CommentBreadcrumbs.stories.tsx
-   import {CommentBreadcrumbsStory} from '../../../../packages/sanity/src/core/comments/components/__tests__/CommentBreadcrumbsStory'
-   ```
-
-This pattern keeps story logic inside the `sanity` package and matches existing stories like
-`CommentInputStory`, `TableStory`, and all Portable Text stories. The harness can also be reused
-by vitest browser tests. Do not import production components from `dev/storybook` via relative
-paths into `packages/sanity/src/` — that is a cross-package boundary.
-
-**Exception**: public `@sanity/ui` primitives (e.g. Card tones) may import the published
-package directly. `ui-components` wrappers should use an in-package harness.
 
 ## Determinism rules for stories
 
@@ -86,11 +63,11 @@ package directly. `ui-components` wrappers should use an in-package harness.
    code changes. Every browser test's end state becomes a snapshot; the first build is the full
    baseline.
 
-Afterwards, consider slimming the harness-reuse stories in `dev/storybook/stories` that overlap
-with end-of-test snapshots (keep them if the browsable workbench view is worth the snapshot
-spend). See [REFERENCE.md](REFERENCE.md) for local capture runs, `takeSnapshot()`/`configure()`
-usage inside tests (only valid once the plugin is active — `takeSnapshot()` THROWS in normal
-runs, so never commit calls to it while the integration is dormant), and cost controls.
+Afterwards, consider slimming co-located harness-reuse stories that overlap with end-of-test
+snapshots (keep them if the browsable workbench view is worth the snapshot spend). See
+[REFERENCE.md](REFERENCE.md) for local capture runs, `takeSnapshot()`/`configure()` usage inside
+tests (only valid once the plugin is active — `takeSnapshot()` THROWS in normal runs, so never
+commit calls to it while the integration is dormant), and cost controls.
 
 ## Playwright e2e snapshots
 
