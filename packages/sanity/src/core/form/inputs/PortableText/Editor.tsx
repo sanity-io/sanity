@@ -115,9 +115,12 @@ export function Editor(props: EditorProps): ReactNode {
     [t],
   )
   const spellCheck = useSpellCheck()
-  const renderDecorator = useCallback((decoratorProps: BlockDecoratorRenderProps) => {
-    return <Decorator {...decoratorProps} />
-  }, [])
+  const renderDecorator = useCallback(
+    (decoratorProps: BlockDecoratorRenderProps) => {
+      return <Decorator {...decoratorProps} portableTextPath={path} />
+    },
+    [path],
+  )
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 

@@ -34,9 +34,9 @@ import {toString as pathToString} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
+import {useListFormat} from '../../../hooks/useListFormat'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {EMPTY_ARRAY} from '../../../util/empty'
-import {useListFormat} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type RenderCustomMarkers, type RenderBlockActionsCallback} from '../../types/_transitional'
 import {type ArrayOfObjectsInputProps, type OnPasteFn} from '../../types/inputProps'
@@ -448,8 +448,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   )
 
   const renderSpan = useCallback(
-    (spanProps: SpanRenderProps) => <UnknownMarks {...spanProps} />,
-    [],
+    (spanProps: SpanRenderProps) => <UnknownMarks {...spanProps} portableTextPath={path} />,
+    [path],
   )
 
   // Stable reference: `NodePlugin` re-runs its registration effect when

@@ -1,5 +1,6 @@
 import {type BlockDecoratorRenderProps, useEditor} from '@portabletext/editor'
 import {getSanitySubSchema} from '@portabletext/sanity-bridge'
+import {type Path} from '@sanity/types'
 import {type Theme} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
@@ -24,8 +25,10 @@ const Root = styled.span(({theme}: {theme: Theme}) => {
   `
 })
 
-export function Decorator(props: BlockDecoratorRenderProps) {
-  const {value, focused, selected, children, path, schemaType} = props
+type DecoratorProps = BlockDecoratorRenderProps & {portableTextPath: Path}
+
+export function Decorator(props: DecoratorProps) {
+  const {value, focused, selected, children, path, portableTextPath, schemaType} = props
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const editor = useEditor()
   // Resolve against the position's sub-schema, not the merged root: a
@@ -35,7 +38,7 @@ export function Decorator(props: BlockDecoratorRenderProps) {
     schemaTypes.portableText,
     editor.getSnapshot().context.value,
     path,
-  ).decorators.find((type) => type.value === schemaType.value)
+  ).decorators.find((type) => type.value === schemaType.name)
   const tag = TEXT_DECORATOR_TAGS[value]
   const CustomComponent = sanitySchemaType?.component
   const DefaultComponent = useCallback(
@@ -53,7 +56,9 @@ export function Decorator(props: BlockDecoratorRenderProps) {
       // The value predates a schema change (for example a decorator that was
       // removed). Render the children without the mark styling instead of
       // crashing.
-      warnOnce(`Could not find schema type for decorator: ${value} at ${pathToString(path)}`)
+      warnOnce(
+        `Could not find schema type for decorator: ${value} at ${pathToString(portableTextPath.concat(path))}`,
+      )
       return <>{children}</>
     }
     const componentProps = {
@@ -76,6 +81,7 @@ export function Decorator(props: BlockDecoratorRenderProps) {
     children,
     focused,
     path,
+    portableTextPath,
     sanitySchemaType,
     selected,
     value,

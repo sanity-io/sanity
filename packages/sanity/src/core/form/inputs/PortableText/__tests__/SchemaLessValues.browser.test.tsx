@@ -1,12 +1,112 @@
+import {defineArrayMember, defineField, defineType, type Path} from '@sanity/types'
+import {toString as pathToString} from '@sanity/util/paths'
 import {describe, expect, it, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {SchemaLessValuesStory} from './SchemaLessValuesStory'
+
+const WARNING_PATH_SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    fields: ['primaryBody', 'secondaryBody'].map((name) =>
+      defineField({
+        type: 'array',
+        name,
+        of: [
+          defineArrayMember({
+            type: 'block',
+            marks: {decorators: [], annotations: []},
+          }),
+        ],
+      }),
+    ),
+  }),
+]
+
+function createSharedWarningValue() {
+  return [
+    {
+      _type: 'block',
+      _key: 'sharedWarningBlock',
+      style: 'normal',
+      markDefs: [{_type: 'regressionAnnotation', _key: 'sharedAnnotation'}],
+      children: [
+        {
+          _type: 'span',
+          _key: 'sharedWarningSpan',
+          text: 'shared schema-less values',
+          marks: ['regressionMark', 'sharedAnnotation'],
+        },
+      ],
+    },
+  ]
+}
+
+const WARNING_PATH_DOCUMENT = {
+  _id: 'warning-paths',
+  _type: 'test',
+  _createdAt: '2026-08-18T00:00:00Z',
+  _updatedAt: '2026-08-18T00:00:00Z',
+  _rev: 'warning-paths',
+  primaryBody: createSharedWarningValue(),
+  secondaryBody: createSharedWarningValue(),
+}
+
+const SHARED_SPAN_PATH: Path = [
+  {_key: 'sharedWarningBlock'},
+  'children',
+  {_key: 'sharedWarningSpan'},
+]
+
+function WarningPathsStory() {
+  return (
+    <TestWrapper schemaTypes={WARNING_PATH_SCHEMA_TYPES}>
+      <TestForm document={WARNING_PATH_DOCUMENT} />
+    </TestWrapper>
+  )
+}
 
 describe('Portable Text Input', () => {
   describe('Values whose types left the schema', () => {
+    it('warns once for identical mark locations in separate form fields', async () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+
+      try {
+        void render(<WarningPathsStory />)
+        const {getFocusedPortableTextInput} = testHelpers()
+        await getFocusedPortableTextInput('field-primaryBody')
+        await getFocusedPortableTextInput('field-secondaryBody')
+
+        const expectedWarnings = ['primaryBody', 'secondaryBody'].flatMap((fieldName) => {
+          const qualifiedPath = pathToString([fieldName, ...SHARED_SPAN_PATH])
+          return [
+            `Could not find schema type for mark: regressionMark at ${qualifiedPath}`,
+            `Could not find schema type for annotation: regressionAnnotation at ${qualifiedPath}`,
+          ]
+        })
+
+        await vi.waitFor(() => {
+          const relevantWarnings = warnSpy.mock.calls
+            .map(([message]) => message)
+            .filter(
+              (message) =>
+                typeof message === 'string' &&
+                (message.includes('regressionMark') || message.includes('regressionAnnotation')),
+            )
+
+          expect(relevantWarnings).toHaveLength(expectedWarnings.length)
+          expect(relevantWarnings).toEqual(expect.arrayContaining(expectedWarnings))
+        })
+      } finally {
+        warnSpy.mockRestore()
+      }
+    })
+
     // The story's document carries a `listItem`, a `style`, a decorator,
     // an annotation, and two stacked combinations that the (tightened)
     // schema no longer declares. Each block must render its text plainly

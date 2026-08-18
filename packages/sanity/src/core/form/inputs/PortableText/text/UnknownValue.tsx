@@ -1,14 +1,14 @@
 import {type SpanRenderProps, useEditor} from '@portabletext/editor'
 import {getSanitySubSchema} from '@portabletext/sanity-bridge'
-import {isPortableTextTextBlock} from '@sanity/types'
+import {isPortableTextTextBlock, type Path} from '@sanity/types'
 import {toString as pathToString} from '@sanity/util/paths'
 import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
-import {Tooltip} from '../../../../../ui-components'
-import {getValueAtPath} from '../../../../field'
-import {useListFormat} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {getValueAtPath} from '../../../../field/paths/helpers'
+import {useListFormat} from '../../../../hooks/useListFormat'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {warnOnce} from '../warnOnce'
 
@@ -16,6 +16,8 @@ const Root = styled.span`
   border: 1px dotted var(--card-muted-fg-color);
   border-radius: 2px;
 `
+
+type UnknownMarksProps = SpanRenderProps & {portableTextPath: Path}
 
 export function UnknownValue(props: {label: string; block?: boolean; children: ReactNode}) {
   return (
@@ -27,7 +29,7 @@ export function UnknownValue(props: {label: string; block?: boolean; children: R
   )
 }
 
-export function UnknownMarks(props: SpanRenderProps) {
+export function UnknownMarks({portableTextPath, ...props}: UnknownMarksProps) {
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const {t} = useTranslation()
   const listFormat = useListFormat()
@@ -44,6 +46,7 @@ export function UnknownMarks(props: SpanRenderProps) {
     const subSchema = getSanitySubSchema(schemaTypes.portableText, value, props.path)
     const block = getValueAtPath(value, props.path.slice(0, -2))
     const markDefs = isPortableTextTextBlock(block) ? (block.markDefs ?? []) : []
+    const fullyQualifiedPath = portableTextPath.concat(props.path)
 
     for (const mark of marks) {
       if (subSchema.decorators.some((decorator) => decorator.value === mark)) {
@@ -53,13 +56,15 @@ export function UnknownMarks(props: SpanRenderProps) {
       if (markDef) {
         if (!subSchema.annotations.some((annotation) => annotation.name === markDef._type)) {
           warnOnce(
-            `Could not find schema type for annotation: ${markDef._type} at ${pathToString(props.path)}`,
+            `Could not find schema type for annotation: ${markDef._type} at ${pathToString(fullyQualifiedPath)}`,
           )
           labels.push(t('inputs.portable-text.unknown-value.annotation', {name: markDef._type}))
         }
         continue
       }
-      warnOnce(`Could not find schema type for mark: ${mark} at ${pathToString(props.path)}`)
+      warnOnce(
+        `Could not find schema type for mark: ${mark} at ${pathToString(fullyQualifiedPath)}`,
+      )
       labels.push(t('inputs.portable-text.unknown-value.mark', {name: mark}))
     }
   }
