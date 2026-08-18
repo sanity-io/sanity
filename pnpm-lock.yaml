@@ -1913,8 +1913,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       '@sanity/workbench':
-        specifier: 0.1.0-alpha.36
-        version: 0.1.0-alpha.36(@sanity/sdk@2.19.0)(react@19.2.8)(xstate@5.32.5)
+        specifier: 0.1.0-alpha.41
+        version: 0.1.0-alpha.41(@sanity/sdk@2.19.0)(react@19.2.8)(xstate@5.32.5)
       '@sentry/react':
         specifier: ^10.69.0
         version: 10.69.0(react@19.2.8)
@@ -6943,11 +6943,11 @@ packages:
     resolution: {integrity: sha512-+mjSeXu7GhWWuG9xhOu3Vuv+Zxvy3d6tTUvVl6qdUr9r8IneIzDsp6WRUVwuqZSSwyG+V2Cy98TaEEcp7tppOQ==}
     engines: {node: '>=22.12'}
 
-  '@sanity/workbench@0.1.0-alpha.36':
-    resolution: {integrity: sha512-1gkMw1LezDFTu7I+F+R4RtruTkjdoy6B9LM56cNSMo48S1fAmFSWY5JIAv7aA/WipzXwiMVnctAmIAo7lF9rMQ==}
+  '@sanity/workbench@0.1.0-alpha.41':
+    resolution: {integrity: sha512-8k1jROB1DHD1T4tt+noGaYswLTzTDZv8lRankeusSh9UGGXdHBYaXv0mCfdV9P5kNnCqWN/cmhkAOmE/8or2Zg==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     peerDependencies:
-      '@sanity/sdk': ^2.9.0
+      '@sanity/sdk': ^3.0.0-rc.1
       xstate: ^5.31.0
 
   '@sanity/worker-channels@2.0.0':
@@ -19732,9 +19732,9 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/workbench@0.1.0-alpha.36(@sanity/sdk@2.19.0)(react@19.2.8)(xstate@5.32.5)':
+  '@sanity/workbench@0.1.0-alpha.41(@sanity/sdk@2.19.0)(react@19.2.8)(xstate@5.32.5)':
     dependencies:
-      '@module-federation/runtime': 2.8.1
+      '@module-federation/runtime': 2.8.2
       '@sanity/client': 7.26.2
       '@sanity/color': 3.0.8
       '@sanity/sdk': 2.19.0(@types/react@19.2.18)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
