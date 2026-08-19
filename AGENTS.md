@@ -6,7 +6,7 @@ This document helps AI agents work successfully with the Sanity monorepo.
 
 ## Prerequisites
 
-- **Node.js**: v24 or latest LTS
+- **Node.js**: v24 or latest LTS. Published packages must declare `"engines": { "node": ">=22.12" }` (`pnpm normalize-pkgfields` keeps this in sync; publint warns if the field is missing).
 - **Package Manager**: pnpm v10+ (exact version managed via `packageManager` field in package.json)
 
 ## Quick Reference
