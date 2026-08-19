@@ -80,6 +80,13 @@ export const presentationMachine = setup({
     'overlays connecting': ({context}) => context.overlaysConnection === 'connecting',
     'overlays reconnecting': ({context}) => context.overlaysConnection === 'reconnecting',
     'overlays dismissed': ({context}) => context.overlaysDismissed,
+    'status event resolves to idle': ({context, event}) => {
+      if (event.type !== 'overlays status') {
+        return false
+      }
+      const statusMap = reduceStatusMap(context.overlaysStatusMap, event.statusEvent)
+      return aggregateConnectionStatus(statusMap) === 'idle'
+    },
   },
   delays: {
     /**
@@ -177,14 +184,27 @@ export const presentationMachine = setup({
           description:
             'The iframe is loaded, watch the visual editing overlays connection and escalate to the connection status overlay, and eventually the error card, if it stays pending for too long',
           on: {
-            'overlays status': {
-              actions: {
-                type: 'assign overlays status',
-                params: ({event}) => ({statusEvent: event.statusEvent}),
+            'overlays status': [
+              {
+                // A disconnect that leaves no connections behind carries no new information about
+                // the preview: keep the current escalation state — including a visible failure
+                // card and its retry action — instead of resetting, so a dead channel cannot
+                // silently hide that visual editing is broken
+                guard: 'status event resolves to idle',
+                actions: {
+                  type: 'assign overlays status',
+                  params: ({event}) => ({statusEvent: event.statusEvent}),
+                },
               },
-              // Re-evaluate on every status change, restarting the escalation timers
-              target: '.checking',
-            },
+              {
+                actions: {
+                  type: 'assign overlays status',
+                  params: ({event}) => ({statusEvent: event.statusEvent}),
+                },
+                // Re-evaluate on every status change, restarting the escalation timers
+                target: '.checking',
+              },
+            ],
           },
           initial: 'checking',
           states: {

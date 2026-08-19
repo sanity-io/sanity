@@ -323,6 +323,63 @@ describe('Presentation machine', () => {
       expect(actor.getSnapshot().hasTag('show loading overlay')).toBe(true)
     })
 
+    test('a disconnect does not clear a visible failure card', () => {
+      const {actor, clock} = createTestActor()
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('handshaking'))
+      clock.increment(TIME_TO_SHOW_OVERLAYS_CONNECTION_STATUS)
+      clock.increment(MAX_TIME_TO_OVERLAYS_CONNECTION)
+      expect(actor.getSnapshot().hasTag('overlays connection timed out')).toBe(true)
+
+      // The failed connection goes away entirely — the preview is still broken, so the caution
+      // card (and its recovery actions) must stay up
+      actor.send(overlaysStatus('disconnected'))
+
+      let snapshot = actor.getSnapshot()
+      expect(snapshot.context.overlaysConnection).toBe('idle')
+      expect(snapshot.hasTag('overlays connection timed out')).toBe(true)
+
+      // A fresh connection attempt re-evaluates as usual
+      actor.send(overlaysStatus('handshaking', 'visual-editing-2'))
+      expect(actor.getSnapshot().hasTag('overlays connection timed out')).toBe(false)
+      actor.send(overlaysStatus('connected', 'visual-editing-2'))
+      expect(actor.getSnapshot().hasTag('show overlays connection status')).toBe(false)
+    })
+
+    test('a disconnect does not clear the reconnect error card', () => {
+      const {actor, clock} = createTestActor()
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('handshaking'))
+      actor.send(overlaysStatus('connected'))
+      actor.send(overlaysStatus('handshaking'))
+      clock.increment(TIME_TO_SHOW_OVERLAYS_CONNECTION_STATUS)
+      clock.increment(MAX_TIME_TO_OVERLAYS_CONNECTION)
+      expect(actor.getSnapshot().hasTag('show error card')).toBe(true)
+
+      actor.send(overlaysStatus('disconnected'))
+
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.context.overlaysConnection).toBe('idle')
+      expect(snapshot.hasTag('show error card')).toBe(true)
+    })
+
+    test('a disconnect during the grace period still escalates to recovery UI', () => {
+      const {actor, clock} = createTestActor()
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('handshaking'))
+      clock.increment(TIME_TO_SHOW_OVERLAYS_CONNECTION_STATUS - 1)
+
+      // The pending connection disappears before it ever connected
+      actor.send(overlaysStatus('disconnected'))
+      expect(actor.getSnapshot().context.overlaysConnection).toBe('idle')
+
+      // The escalation finishes on its established deadlines rather than silently resetting
+      clock.increment(1)
+      expect(actor.getSnapshot().hasTag('show overlays connection status')).toBe(true)
+      clock.increment(MAX_TIME_TO_OVERLAYS_CONNECTION)
+      expect(actor.getSnapshot().hasTag('overlays connection timed out')).toBe(true)
+    })
+
     test('aggregates the status of multiple connections', () => {
       const {actor} = createTestActor()
       actor.send({type: 'iframe loaded'})
