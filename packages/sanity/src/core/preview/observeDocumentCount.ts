@@ -12,13 +12,14 @@ import {
   toArray,
 } from 'rxjs/operators'
 
+import {canonicalHash} from '../util/canonicalHash'
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../util/const'
 import {bufferByByteSize} from './observeVersionDocumentIds'
 import {type InvalidationChannelEvent} from './types'
 import {combineCountQuery, demuxCountResult} from './utils/combineCountQuery'
 import {debounceCollect} from './utils/debounceCollect'
 
-const DEFAULT_TAG = 'structure.list-pane-counts'
+const DEFAULT_TAG = 'preview.observe-document-count'
 
 const BATCH_DEBOUNCE_MS = 100
 
@@ -57,28 +58,23 @@ interface DemuxedCount {
   count: number
 }
 
-function stableParamsKey(params: Record<string, unknown>): string {
-  const sortedEntries = Object.keys(params)
-    .sort()
-    .map((key) => [key, params[key]])
-  return JSON.stringify(sortedEntries)
+function resolveTag(observeOptions?: ObserveOptions): string {
+  return observeOptions?.tag ?? DEFAULT_TAG
 }
 
-function groupByPerspective(collectedArgs: CollectedArg[]): PerspectiveGroup[] {
+/** One query carries one tag, so callers asking for different tags cannot share a batch. */
+function groupByPerspectiveAndTag(collectedArgs: CollectedArg[]): PerspectiveGroup[] {
   const groupsByKey = collectedArgs.reduce(
     (accumulator, [descriptorFilter, params, perspective, observeOptions], originalIndex) => {
-      const perspectiveKey = perspective.join(',')
+      const tag = resolveTag(observeOptions)
+      const groupKey = `${perspective.join(',')}|${tag}`
       const member: GroupMember = {originalIndex, filter: descriptorFilter, params}
-      const existing = accumulator.get(perspectiveKey)
+      const existing = accumulator.get(groupKey)
 
       if (existing) {
         existing.members.push(member)
       } else {
-        accumulator.set(perspectiveKey, {
-          perspective,
-          tag: observeOptions?.tag ?? DEFAULT_TAG,
-          members: [member],
-        })
+        accumulator.set(groupKey, {perspective, tag, members: [member]})
       }
 
       return accumulator
@@ -136,13 +132,13 @@ function batchFetch(client: SanityClient, collectedArgs: CollectedArg[]): Observ
     return of([])
   }
 
-  const groups = groupByPerspective(collectedArgs)
+  const groups = groupByPerspectiveAndTag(collectedArgs)
 
   return combineLatest(groups.map((group) => fetchGroup(client, group))).pipe(
     // Realign the per-group results to the original `collectedArgs` order: `debounceCollect`
     // demuxes by position, so a misaligned array would hand callers the wrong counts.
     map((groupResults) => {
-      const output = Array.from<number>({length: collectedArgs.length}).fill(0)
+      const output = Array.from({length: collectedArgs.length}, () => 0)
       groupResults.forEach((entries) => {
         entries.forEach(({originalIndex, count}) => {
           output[originalIndex] = count
@@ -188,7 +184,8 @@ export function createObserveDocumentCount(options: {
     perspective: StackablePerspective[],
     observeOptions?: ObserveOptions,
   ): Observable<number> {
-    const key = `${descriptorFilter}|${stableParamsKey(params)}|${perspective.join(',')}`
+    const tag = resolveTag(observeOptions)
+    const key = `${descriptorFilter}|${canonicalHash(params)}|${perspective.join(',')}|${tag}`
     const cachedInstance = cache.get(key)
 
     if (cachedInstance) {

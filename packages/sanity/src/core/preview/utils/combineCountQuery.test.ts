@@ -37,12 +37,12 @@ describe('combineCountQuery', () => {
     expect(params).toEqual({c0_type: 'post', c0_category: 'news'})
   })
 
-  it('coerces array-of-string and non-primitive param values', () => {
+  it('namespaces param keys without touching their values', () => {
     const {params} = combineCountQuery([
       {filter: '_type in $types', params: {types: ['a', 'b'], nested: {deep: true}}},
     ])
 
-    expect(params).toEqual({c0_types: ['a', 'b'], c0_nested: '[object Object]'})
+    expect(params).toEqual({c0_types: ['a', 'b'], c0_nested: {deep: true}})
   })
 })
 

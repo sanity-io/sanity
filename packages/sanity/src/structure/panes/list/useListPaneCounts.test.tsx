@@ -19,7 +19,7 @@ function setTabVisibility(state: 'visible' | 'hidden') {
 }
 
 function listItem(id: string, filter: string): PaneListItem {
-  return {type: 'listItem', id, title: id, count: {filter, params: {}}}
+  return {type: 'listItem', id, title: id, count: {filter, params: {type: id}}}
 }
 
 function flushTimers() {

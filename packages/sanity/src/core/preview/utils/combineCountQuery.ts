@@ -14,36 +14,20 @@ export interface CombinedCountQuery {
 
 const GROQ_PARAM_TOKEN = /\$([a-zA-Z_][a-zA-Z0-9_]*)/g
 
-function coerceParamValue(value: unknown): QueryParams[string] {
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-    return value
-  }
-
-  if (Array.isArray(value) && value.every((entry) => typeof entry === 'string')) {
-    return value as string[]
-  }
-
-  return String(value)
-}
-
 interface NamespacedDescriptor {
-  index: number
   filter: string
   params: QueryParams
 }
 
 function namespaceDescriptor(descriptor: CountDescriptor, index: number): NamespacedDescriptor {
   const prefix = `c${index}_`
-  const filter = descriptor.filter.replace(GROQ_PARAM_TOKEN, `$$${prefix}$1`)
 
-  const params = Object.fromEntries(
-    Object.entries(descriptor.params).map(([key, value]) => [
-      `${prefix}${key}`,
-      coerceParamValue(value),
-    ]),
-  )
-
-  return {index, filter, params}
+  return {
+    filter: descriptor.filter.replace(GROQ_PARAM_TOKEN, `$$${prefix}$1`),
+    params: Object.fromEntries(
+      Object.entries(descriptor.params).map(([key, value]) => [`${prefix}${key}`, value]),
+    ),
+  }
 }
 
 /**
@@ -58,12 +42,11 @@ export function combineCountQuery(descriptors: CountDescriptor[]): CombinedCount
   const namespaced = descriptors.map(namespaceDescriptor)
 
   const projections = namespaced
-    .map(({index, filter}) => `${JSON.stringify(String(index))}: count(*[${filter}])`)
+    .map(({filter}, index) => `"${index}": count(*[${filter}])`)
     .join(',')
 
-  const params = namespaced.reduce<QueryParams>(
-    (merged, descriptor) => ({...merged, ...descriptor.params}),
-    {},
+  const params: QueryParams = Object.fromEntries(
+    namespaced.flatMap(({params: descriptorParams}) => Object.entries(descriptorParams)),
   )
 
   return {query: `{${projections}}`, params}
@@ -75,10 +58,10 @@ export function combineCountQuery(descriptors: CountDescriptor[]): CombinedCount
  *
  * @internal
  */
-export function demuxCountResult(result: unknown, count: number): number[] {
+export function demuxCountResult(result: unknown, descriptorCount: number): number[] {
   const record =
     typeof result === 'object' && result !== null ? (result as Record<string, unknown>) : {}
-  return Array.from({length: count}, (_unused, index) => {
+  return Array.from({length: descriptorCount}, (_unused, index) => {
     const value = record[String(index)]
     return typeof value === 'number' ? value : 0
   })

@@ -40,13 +40,7 @@ function getTabVisible(): boolean {
   return typeof document === 'undefined' || document.visibilityState === 'visible'
 }
 
-/**
- * Subscribes to the shared core count observer once per descriptor and merges the emissions into
- * a single `Record<itemId, number>`. `combineLatest` holds until every descriptor has emitted, so
- * nothing renders before the first resolve; a resolved `0` is kept as `0`. Identical descriptors
- * across panes are deduplicated inside the core observer, so each distinct filter rides one query
- * slice regardless of how many panes request it.
- */
+/** `combineLatest` holds until every descriptor has emitted, so no badge renders before them all. */
 function observePaneCounts(
   documentPreviewStore: DocumentPreviewStore,
   descriptors: CountDescriptor[],
@@ -67,12 +61,8 @@ function observePaneCounts(
 }
 
 /**
- * A single long-lived pipe fed by an input subject: when the identity key changes (descriptor set,
- * perspective, or active state), the current subscriptions are closed and new ones start inside the
- * same stream (`switchMap`), so there is never more than one active set of subscriptions. While
- * inactive (tab hidden or pane off-screen) it emits an empty result, which the `scan` merges over
- * the previous counts - so the count subscriptions drop (their slice leaves the shared batch) while
- * existing badges stay put.
+ * While inactive this emits an empty result, which `scan` merges over the previous counts: the
+ * subscriptions drop out of the shared batch while the resolved badges stay on screen.
  */
 function getListPaneCounts(
   documentPreviewStore: DocumentPreviewStore,
@@ -94,13 +84,10 @@ function getListPaneCounts(
 }
 
 /**
- * Keeps a live document count for every list item carrying a `count` descriptor by subscribing to
- * the shared core count observer, which batches every count requested studio-wide into one combined
- * query driven by the shared global listener.
+ * Keeps a live document count for every list item carrying a `count` descriptor.
  *
- * The subscriptions are dropped while the pane is off-screen (`enabled` is `false`) or the browser
- * tab is hidden, so a backgrounded studio holds no count in the batch. Counts already resolved stay
- * visible while paused, and a fresh fetch runs when the pane becomes active again.
+ * Unsubscribes while the pane is off-screen (`enabled` is `false`) or the browser tab is hidden, so
+ * a backgrounded studio contributes no count to the shared batch.
  *
  * @internal
  */
