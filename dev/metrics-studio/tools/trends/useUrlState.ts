@@ -26,6 +26,7 @@ export function useUrlState(
     const onPopState = () => setValue(read())
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
+    // oxlint-disable-next-line react/rule-suppression -- pre-existing violation, to be fixed in a follow-up
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, fallback])
 

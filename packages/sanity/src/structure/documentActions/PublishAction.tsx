@@ -134,7 +134,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
 
     if (!hasValidationErrors) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       doPublish()
     } else {
       // User tried to publish before validation was complete
@@ -152,6 +152,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     publishScheduled,
     validationStatus.revision,
     revision,
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     isValidating,
     validationStatus.isValidating,
     toast,
@@ -182,6 +183,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [changesOpen, publishState, currentPublishRevision, telemetry, id])
 
   const isWaitingToPublish = Boolean(

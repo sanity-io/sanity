@@ -205,9 +205,16 @@
     "react/rules-of-hooks": "error",
     // Prefer function components; allow class-based error boundaries (no hook equivalent yet)
     "react/prefer-function-component": ["error", {"allowErrorBoundary": true}],
-    // React Compiler rules, native nursery rule (replaces eslint-plugin-react-hooks compiler rules).
+    // React Compiler rules (https://oxc.rs/blog/2026-08-18-react-compiler-support.html#oxlint).
+    // The old nursery `react/react-compiler` rule was replaced by 22 category-specific rules.
+    // The `correctness`, `suspicious`, and `perf` rules are already enabled via `categories`
+    // above; the `restriction`-category rules are not, so they are enabled explicitly here.
     // Pre-existing violations are grandfathered with inline `oxlint-disable-next-line` suppressions.
-    "react/react-compiler": "error",
+    "react/unsupported-syntax": "error",
+    "react/invariant": "error",
+    "react/rule-suppression": "error",
+    "react/syntax": "error",
+    "react/todo": "error",
     // Import hygiene previously enforced by eslint-plugin-import
     "import/first": "error",
     "import/newline-after-import": "error",
