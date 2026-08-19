@@ -1,10 +1,16 @@
 /// <reference types="vite/client" />
+import {ActivityIcon} from '@sanity/icons/Activity'
+import {BoltIcon} from '@sanity/icons/Bolt'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ClockIcon} from '@sanity/icons/Clock'
+import {ControlsIcon} from '@sanity/icons/Controls'
+import {DropIcon} from '@sanity/icons/Drop'
 import {EllipsisVerticalIcon} from '@sanity/icons/EllipsisVertical'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
+import {PackageIcon} from '@sanity/icons/Package'
 import {
   Badge,
   Box,
@@ -26,7 +32,7 @@ import {
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {Popover} from '@sanity/ui/popover'
 import {ParentSize} from '@visx/responsive'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {type ComponentType, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
@@ -64,6 +70,16 @@ const RANGES = [
   {label: 'Last 90 days', days: 90},
   {label: 'All time', days: null},
 ] as const
+
+/** One glanceable glyph per metric-group tab; titles stay the identifier. */
+const GROUP_ICONS: Record<TrendGroup, ComponentType> = {
+  vitals: ActivityIcon,
+  responsiveness: BoltIcon,
+  load: ClockIcon,
+  bundle: PackageIcon,
+  soak: DropIcon,
+  environment: ControlsIcon,
+}
 
 type DataSource = 'live' | DebugSource
 
@@ -888,6 +904,7 @@ export function TrendsTool() {
                         key={tab.id}
                         id={`group-tab-${tab.id}`}
                         aria-controls={`group-panel-${tab.id}`}
+                        icon={GROUP_ICONS[tab.id]}
                         label={
                           <Flex align="center" gap={2}>
                             <span>{tab.title}</span>
