@@ -154,6 +154,7 @@ export function CalendarFilter(props: CalendarProps & RefAttributes<HTMLDivEleme
     ) {
       focusCurrentWeekDay()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [ref, focusCurrentWeekDay, focusedDate])
 
   // Select AND focus current date when 'today' is pressed

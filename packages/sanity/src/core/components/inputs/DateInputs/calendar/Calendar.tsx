@@ -175,7 +175,7 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
 
   useEffect(() => {
     // The change is coming from another source, so we need to update the timeValue to the new value.
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/no-deriving-state-in-effects, react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setTimeValue(timeFromDate)
   }, [timeFromDate])
 
@@ -252,6 +252,7 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
     ) {
       focusCurrentWeekDay()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [ref, focusCurrentWeekDay, focusedDate])
 
   const handleYesterdayClick = useCallback(

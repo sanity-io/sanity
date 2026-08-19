@@ -64,6 +64,7 @@ export function useGlobalCopyPasteElementHandler({
   })
 
   useEffect(() => {
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     element?.addEventListener('keydown', handleKeydown)
 
     return () => {

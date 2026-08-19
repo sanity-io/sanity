@@ -109,7 +109,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
   // misses the first click because annotations.length is still 0 when
   // selectionchange runs.
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     handleSelectionChange()
   }, [handleSelectionChange])
 
@@ -126,6 +126,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
     if (sel && sel.rangeCount > 0) {
       rangeRef.current = sel.getRangeAt(0)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [popoverOpen])
 
   // Listen for scroll events

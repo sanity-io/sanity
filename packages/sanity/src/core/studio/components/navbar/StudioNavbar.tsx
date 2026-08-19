@@ -238,7 +238,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             {/** Center flex */}
             <Flex align="center" justify="center" style={CENTER_TOOLS_STYLE}>
               {shouldRender.tools && (
-                // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
+                // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
                 <ToolMenu
                   activeToolName={activeToolName}
                   closeSidebar={handleCloseDrawer}

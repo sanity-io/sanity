@@ -144,7 +144,7 @@ export function PaneItem(props: PaneItemProps) {
   }, [])
 
   // Reset `clicked` state when `selected` prop changes
-  // oxlint-disable-next-line react/react-compiler
+  // oxlint-disable-next-line react/exhaustive-effect-dependencies, react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => setClicked(false), [selected])
 
   // Preloads the edit state on hover, using concurrent rendering with `startTransition` so preloads can be interrupted and not block rendering
