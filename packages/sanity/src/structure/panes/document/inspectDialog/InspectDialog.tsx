@@ -16,6 +16,8 @@ import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from
 import {JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
 
+const JSON_INSPECTOR_SEARCH_OPTIONS = {debounceTime: 200}
+
 interface InspectDialogProps {
   value: Partial<SanityDocument> | null
 }
@@ -117,6 +119,7 @@ export function InspectDialog(props: InspectDialogProps) {
                 isExpanded={isExpanded}
                 onClick={toggleExpanded}
                 search={Search}
+                searchOptions={JSON_INSPECTOR_SEARCH_OPTIONS}
                 filterOptions={{ignoreCase: true}}
               />
             </JSONInspectorWrapper>

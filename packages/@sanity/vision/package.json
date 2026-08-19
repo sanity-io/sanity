@@ -28,6 +28,7 @@
     "lib"
   ],
   "type": "module",
+  "sideEffects": true,
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
@@ -121,5 +122,8 @@
   "browserslist": [
     "node >=22.12",
     "baseline 2024"
-  ]
+  ],
+  "engines": {
+    "node": ">=22.12"
+  }
 }

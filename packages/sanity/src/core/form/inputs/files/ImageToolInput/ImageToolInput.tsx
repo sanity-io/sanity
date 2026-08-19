@@ -1,5 +1,5 @@
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
-import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {
   type ReactNode,
   useCallback,
@@ -10,6 +10,7 @@ import {
   useState,
 } from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -99,7 +100,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
   }, [onPathFocus])
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setLocalValue(value || DEFAULT_VALUE)
   }, [value])
 

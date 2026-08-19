@@ -6,7 +6,7 @@ This document helps AI agents work successfully with the Sanity monorepo.
 
 ## Prerequisites
 
-- **Node.js**: v24 or latest LTS
+- **Node.js**: v24 or latest LTS. Published packages must declare `"engines": { "node": ">=22.12" }` (`pnpm normalize-pkgfields` keeps this in sync; publint warns if the field is missing).
 - **Package Manager**: pnpm v10+ (exact version managed via `packageManager` field in package.json)
 
 ## Quick Reference
@@ -392,6 +392,16 @@ Two traps when unit testing a component or hook that suspends on a promise with 
   catch as an unhandled error and fail the run. Once a load has started, keep calling `use()` on
   the same cached promise on every render instead of re-checking the environment.
 
+#### Custom matchers shipped in node_modules (e.g. `get-it/vitest`)
+
+TypeScript 7 (the root `tsc` and oxlint's `typeCheck`) currently mis-scopes `declare module`
+augmentations shipped in node_modules `.d.ts` files: the file that directly contains the
+side-effect import (e.g. `import 'get-it/vitest'`) does not see the augmented types and gets
+TS2339 on every matcher, while every other file in the same program sees them fine.
+TypeScript 6 applies the augmentation in both cases. Workaround: put the side-effect import in
+a vitest setup file (registered via `test.setupFiles`) instead of the test file that uses the
+matchers — see `packages/@sanity/schema/test/setup.ts` and its `vitest.config.mts`.
+
 #### Vanilla-extract in jsdom tests
 
 The `sanity` and `@sanity/vision` jsdom suites import
@@ -715,6 +725,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
+- **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
 
 ### Running e2e (Playwright) tests in the VM
 

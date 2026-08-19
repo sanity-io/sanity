@@ -22,13 +22,13 @@ import {getSanitySubSchema} from '@portabletext/sanity-bridge'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {
   BoundaryElementProvider,
-  Box,
   Portal,
   PortalProvider,
   useBoundaryElement,
   usePortal,
 } from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {EMPTY_ARRAY} from '../../../util/empty'
@@ -390,6 +390,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   )
 
   const editorRenderAnnotation = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (annotationProps: BlockAnnotationRenderProps) => {
       const {
         children,

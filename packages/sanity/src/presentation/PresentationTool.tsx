@@ -312,12 +312,13 @@ export default function PresentationTool(props: {
     comlink.onStatus(setOverlaysConnection)
 
     const stop = comlink.start()
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setVisualEditingComlink(comlink)
     return () => {
       stop()
       setVisualEditingComlink(null)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [controller, presentationRef, setDocumentsOnPage, setOverlaysConnection, targetOrigin])
 
   useEffect(() => {
@@ -347,6 +348,7 @@ export default function PresentationTool(props: {
     })
 
     return comlink.start()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [controller, dataset, projectId, setDocumentsOnPage, setPreviewKitConnection, targetOrigin])
 
   const handleFocusPath = useMemo(

@@ -249,7 +249,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     if (isEditing) return
 
     startMessage.current = message
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setValue(message)
   }, [isEditing, message])
 

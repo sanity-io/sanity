@@ -186,6 +186,7 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
     ) {
       focusCurrentWeekDay()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [ref, focusCurrentWeekDay, focusedDate])
 
   const handleNowClick = useCallback(() => onSelect(new Date()), [onSelect])

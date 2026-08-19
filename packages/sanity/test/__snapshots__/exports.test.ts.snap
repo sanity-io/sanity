@@ -88,6 +88,7 @@ exports[`exports snapshot 1`] = `
     "DocumentPreviewPresence": "function",
     "DocumentStatus": "function",
     "DocumentStatusIndicator": "function",
+    "DocumentVersionsStatusIndicator": "function",
     "EMPTY_ARRAY": "object",
     "EMPTY_OBJECT": "object",
     "EditPortal": "function",

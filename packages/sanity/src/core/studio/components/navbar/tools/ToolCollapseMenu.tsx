@@ -10,6 +10,8 @@ import {type Tool} from '../../../../config/types'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {ToolLink, type ToolLinkProps} from './ToolLink'
 
+const TOOL_COLLAPSE_MENU_STYLE = {minWidth: 0} as const
+
 interface ToolCollapseMenuProps {
   activeToolName?: string
   tools: Tool[]
@@ -65,7 +67,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   )
 
   return (
-    <Flex justify="center" marginX={4}>
+    <Flex justify="center" marginX={4} style={TOOL_COLLAPSE_MENU_STYLE}>
       <CollapseTabList
         data-testid="tool-collapse-menu"
         gap={1}
