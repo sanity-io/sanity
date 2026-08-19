@@ -2,9 +2,8 @@ import {Menu} from '@sanity/ui/menu'
 import {render, screen} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
 
-import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
-import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {structureUsEnglishLocaleBundle} from '../../../i18n'
+import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {PaneMenuButtonItem} from '../PaneMenuButtonItem'
 import {type _PaneMenuGroup} from '../types'
 
@@ -27,7 +26,6 @@ describe('PaneMenuButtonItem regression (#13238)', () => {
     const wrapper = await createTestProvider({
       client: client as any,
       config: {projectId: 'test', dataset: 'test'},
-      resources: [structureUsEnglishLocaleBundle],
     })
 
     const group: _PaneMenuGroup = {

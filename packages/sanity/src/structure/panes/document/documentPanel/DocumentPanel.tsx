@@ -13,10 +13,14 @@ import {
   isReleaseScheduledOrScheduling,
   isSystemBundle,
   LegacyLayerProvider,
+  PaneContent,
   type ReleaseDocument,
   ScrollContainer,
   useArchivedReleases,
   useFilteredReleases,
+  usePane,
+  usePaneLayout,
+  usePaneRouter,
   usePausedScheduledDraft,
   usePerspective,
   useWorkspace,
@@ -24,10 +28,6 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {PaneContent} from '../../../components/pane/PaneContent'
-import {usePane} from '../../../components/pane/usePane'
-import {usePaneLayout} from '../../../components/pane/usePaneLayout'
-import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'

@@ -5,10 +5,10 @@ import {
   getCreatableVariantTarget,
   isPublishedPerspective,
   isReleaseDocument,
+  usePaneRouter,
   usePerspective,
 } from 'sanity'
 
-import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
 import {EMPTY_PARAMS} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'

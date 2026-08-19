@@ -1,86 +1,13 @@
-import {type SearchParam} from 'sanity/router'
+import {type BaseIntentParams, type Intent, type IntentJsonParams, type IntentParams} from 'sanity'
 
 import {type PartialDocumentList} from './DocumentList'
 import {type StructureNode} from './StructureNodes'
 import {getTypeNamesFromFilter} from './util/getTypeNamesFromFilter'
 
-/**
- * Intent parameters (json)
- *
- * @public
- */
-export type IntentJsonParams = {[key: string]: any}
-
-/**
- * Base intent parameters
- *
- * @public
- * @todo dedupe with core
- */
-export interface BaseIntentParams {
-  /**
-   * Document schema type name to create/edit.
-   * Required for `create` intents, optional for `edit` (but encouraged, safer and faster)
-   */
-  type?: string
-
-  /**
-   * ID of the document to create/edit.
-   * Required for `edit` intents, optional for `create`.
-   */
-  id?: string
-
-  /**
-   * Name (ID) of initial value template to use for `create` intent. Optional.
-   */
-  template?: string
-
-  /**
-   * Experimental field path
-   *
-   * @beta
-   * @experimental
-   * @hidden
-   */
-  path?: string
-
-  /**
-   * Optional "mode" to use for edit intent.
-   * Known modes are `structure` and `presentation`.
-   */
-  mode?: string
-
-  /**
-   * Arbitrary/custom parameters are generally discouraged - try to keep them to a minimum,
-   * or use `payload` (arbitrary JSON-serializable object) instead.
-   */
-  [key: string]: string | undefined
-}
+export {type BaseIntentParams, type Intent, type IntentJsonParams, type IntentParams}
 
 /** @internal */
 export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent')
-
-/**
- * Intent parameters
- * See {@link structure.BaseIntentParams} and {@link structure.IntentJsonParams}
- *
- * @public
- */
-export type IntentParams = BaseIntentParams | [BaseIntentParams, IntentJsonParams]
-
-/**
- * Interface for intents
- * @public */
-// TODO: intents should be unified somewhere
-export interface Intent {
-  /** Intent type */
-  type: string
-  /** Intent parameters. See {@link IntentParams}
-   */
-  params?: IntentParams
-
-  searchParams?: SearchParam[]
-}
 
 /**
  * Interface for intent checker

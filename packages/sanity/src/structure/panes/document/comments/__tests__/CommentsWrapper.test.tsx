@@ -1,8 +1,7 @@
 import {render} from '@testing-library/react'
-import {getTargetScopeId, usePerspective} from 'sanity'
+import {getTargetScopeId, usePaneRouter, usePerspective} from 'sanity'
 import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../useDocumentPane'
 import {CommentsWrapper} from '../CommentsWrapper'
 
@@ -27,19 +26,16 @@ vi.mock('sanity', () => ({
     perspectiveStack: ['drafts'],
     excludedPerspectives: [],
   })),
+  usePaneRouter: vi.fn(() => ({
+    params: {},
+    setParams: vi.fn(),
+  })),
 }))
 
 vi.mock('sanity/router', () => ({
   useRouter: vi.fn(() => ({
     state: {},
     resolveIntentLink: mockResolveIntentLink,
-  })),
-}))
-
-vi.mock('../../../../components/paneRouter/usePaneRouter', () => ({
-  usePaneRouter: vi.fn(() => ({
-    params: {},
-    setParams: vi.fn(),
   })),
 }))
 

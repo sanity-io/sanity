@@ -9,17 +9,17 @@ import {
   FieldActionsProvider,
   FieldActionsResolver,
   GetFormValueProvider,
+  Pane,
   type Path,
   useDocumentIdStack,
   useGlobalCopyPasteElementHandler,
+  usePaneLayout,
+  usePaneRouter,
   useTranslation,
   useZIndex,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {Pane} from '../../../components/pane/Pane'
-import {usePaneLayout} from '../../../components/pane/usePaneLayout'
-import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {DocumentActionsProvider} from '../../../DocumentActionsProvider'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'

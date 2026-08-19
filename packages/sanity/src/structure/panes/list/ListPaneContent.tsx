@@ -4,13 +4,13 @@ import {
   CommandList,
   type CommandListItemContext,
   type GeneralPreviewLayoutKey,
+  PaneContent,
   useGetI18nText,
   useI18nText,
+  usePaneLayout,
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {PaneContent} from '../../components/pane/PaneContent'
-import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {PaneItem} from '../../components/paneItem/PaneItem'
 import {type PaneListItem, type PaneListItemDivider} from '../../types'
 

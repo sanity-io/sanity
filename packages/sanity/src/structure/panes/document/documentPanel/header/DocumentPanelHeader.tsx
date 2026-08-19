@@ -16,24 +16,24 @@ import {
   type RefAttributes,
 } from 'react'
 import {
-  FieldPresenceInner,
+  type _PaneMenuNode,
   type DocumentActionDescription,
+  FieldPresenceInner,
+  PaneContextMenuButton,
+  PaneHeader,
+  PaneHeaderActionButton,
   useDocumentPresence,
   useFieldActions,
+  usePane,
+  usePaneRouter,
   useTranslation,
-  useZIndex,
   useWorkspace,
+  useZIndex,
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
-import {PaneContextMenuButton} from '../../../../components/pane/PaneContextMenuButton'
-import {PaneHeader} from '../../../../components/pane/PaneHeader'
-import {PaneHeaderActionButton} from '../../../../components/pane/PaneHeaderActionButton'
-import {type _PaneMenuNode} from '../../../../components/pane/types'
-import {usePane} from '../../../../components/pane/usePane'
-import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {
   RenderActionCollectionState,
   type ResolvedAction,

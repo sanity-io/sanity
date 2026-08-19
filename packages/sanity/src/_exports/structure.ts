@@ -6,18 +6,19 @@ export {
   type IncomingReferenceAction,
   type IncomingReferencesOptions,
 } from '../structure/components/incomingReferencesDecoration/types'
-export {Pane} from '../structure/components/pane/Pane'
-export {PaneContent} from '../structure/components/pane/PaneContent'
-export {PaneLayout} from '../structure/components/pane/PaneLayout'
 export {
   type BackLinkProps,
   type ChildLinkProps,
   type EditReferenceOptions,
+  Pane,
+  PaneContent,
+  PaneLayout,
+  PaneRouterContext,
   type PaneRouterContextValue,
   type ParameterizedLinkProps,
   type ReferenceChildLinkProps,
-} from '../structure/components/paneRouter/types'
-export {PaneRouterContext, usePaneRouter} from '../structure/components/paneRouter/usePaneRouter'
+  usePaneRouter,
+} from '../structure/reexportsFromCore'
 export {structureLocaleNamespace} from '../structure/i18n'
 export {type StructureLocaleResourceKeys} from '../structure/i18n/resources'
 export {DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'

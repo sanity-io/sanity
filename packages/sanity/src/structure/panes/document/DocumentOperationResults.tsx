@@ -5,11 +5,11 @@ import {
   Translate,
   useDocumentLimitsUpsellContext,
   useDocumentOperationEvent,
+  usePaneRouter,
   usePerspective,
   useTranslation,
 } from 'sanity'
 
-import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
 import {useDocumentPaneInfo} from './useDocumentPaneInfo'

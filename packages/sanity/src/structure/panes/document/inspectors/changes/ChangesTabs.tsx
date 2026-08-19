@@ -8,6 +8,7 @@ import {
   type TargetPerspective,
   type TFunction,
   Translate,
+  usePaneRouter,
   usePerspective,
   useSource,
   useTranslation,
@@ -17,7 +18,6 @@ import {styled} from 'styled-components'
 import {Button} from '../../../../../ui-components/button/Button'
 import {Tab} from '../../../../../ui-components/tab/Tab'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
-import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
 import {ChangesInspector} from './ChangesInspector'

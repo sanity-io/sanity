@@ -6,6 +6,7 @@ import {
   EMPTY_ARRAY,
   type GeneralDocumentListLayoutKey,
   type ObjectSchemaType,
+  Pane,
   SourceProvider,
   useI18nText,
   useSchema,
@@ -13,7 +14,6 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
 import {assignId} from '../../structureResolvers/assignId'

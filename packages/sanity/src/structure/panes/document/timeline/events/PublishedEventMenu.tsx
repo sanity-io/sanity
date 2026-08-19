@@ -15,6 +15,7 @@ import {
   RELEASES_INTENT,
   ReleaseTitle,
   Translate,
+  usePaneRouter,
   useSetPerspective,
   useTranslation,
   useWorkspace,
@@ -23,7 +24,6 @@ import {
 import {IntentLink} from 'sanity/router'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
-import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
 

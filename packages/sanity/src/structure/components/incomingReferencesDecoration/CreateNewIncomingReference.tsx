@@ -5,11 +5,11 @@ import {
   type CreateReferenceOption,
   getPublishedId,
   isNonNullable,
+  usePaneRouter,
   useReferenceInputOptions,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {usePaneRouter} from '../paneRouter/usePaneRouter'
 import {type IncomingReferenceCreationParams} from './isIncomingReferenceCreation'
 import {type IncomingReferencesOptions} from './types'
 

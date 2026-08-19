@@ -1,11 +1,15 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {memo, useMemo} from 'react'
-import {CapabilityGate, useActiveWorkspace, useTranslation} from 'sanity'
+import {
+  CapabilityGate,
+  PaneHeader,
+  useActiveWorkspace,
+  usePane,
+  usePaneRouter,
+  useTranslation,
+} from 'sanity'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import {PaneHeader} from '../../../../components/pane/PaneHeader'
-import {usePane} from '../../../../components/pane/usePane'
-import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useStructureTool} from '../../../../useStructureTool'
 import {useDocumentPane} from '../../useDocumentPane'

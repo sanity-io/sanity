@@ -1,15 +1,16 @@
-import {ConfirmDeleteDialog as _ConfirmDeleteDialog} from '../structure/components/confirmDeleteDialog'
-import {type ConfirmDeleteDialogProps as _ConfirmDeleteDialogProps} from '../structure/components/confirmDeleteDialog/ConfirmDeleteDialog'
-import {PaneLayout as _PaneLayout} from '../structure/components/pane/PaneLayout'
 import {
   type BackLinkProps as _BackLinkProps,
   type ChildLinkProps as _ChildLinkProps,
   type EditReferenceOptions as _EditReferenceOptions,
+  PaneLayout as _PaneLayout,
   type PaneRouterContextValue as _PaneRouterContextValue,
   type ParameterizedLinkProps as _ParameterizedLinkProps,
   type ReferenceChildLinkProps as _ReferenceChildLinkProps,
-} from '../structure/components/paneRouter/types'
-import {usePaneRouter as _usePaneRouter} from '../structure/components/paneRouter/usePaneRouter'
+  usePaneRouter as _usePaneRouter,
+} from 'sanity'
+
+import {ConfirmDeleteDialog as _ConfirmDeleteDialog} from '../structure/components/confirmDeleteDialog'
+import {type ConfirmDeleteDialogProps as _ConfirmDeleteDialogProps} from '../structure/components/confirmDeleteDialog/ConfirmDeleteDialog'
 import {structureLocaleNamespace as _structureLocaleNamespace} from '../structure/i18n'
 import {type StructureLocaleResourceKeys as _StructureLocaleResourceKeys} from '../structure/i18n/resources'
 import {DocumentInspectorHeader as _DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'

@@ -1,8 +1,7 @@
 import {type ComponentType, useContext, useMemo, type RefAttributes} from 'react'
+import {type BackLinkProps} from 'sanity'
 import {PaneRouterContext} from 'sanity/_singletons'
 import {StateLink} from 'sanity/router'
-
-import {type BackLinkProps} from './types'
 
 /**
  * @internal

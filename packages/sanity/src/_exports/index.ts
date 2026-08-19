@@ -988,6 +988,48 @@ export {
 } from '../core/i18n/types'
 export {useDocumentLimitsUpsellContext} from '../core/limits/context/documents/DocumentLimitUpsellProvider'
 export {isDocumentLimitError} from '../core/limits/context/documents/isDocumentLimitError'
+export {PANE_COLLAPSED_WIDTH, PANE_DEFAULT_MIN_WIDTH} from '../core/panes/components/pane/constants'
+export {Pane} from '../core/panes/components/pane/Pane'
+export {PaneContent} from '../core/panes/components/pane/PaneContent'
+export {PaneContextMenuButton} from '../core/panes/components/pane/PaneContextMenuButton'
+export {PaneFooter} from '../core/panes/components/pane/PaneFooter'
+export {PaneHeader, type PaneHeaderProps} from '../core/panes/components/pane/PaneHeader'
+export {
+  PaneHeaderActionButton,
+  type PaneHeaderActionButtonProps,
+} from '../core/panes/components/pane/PaneHeaderActionButton'
+export {PaneLayout, type PaneLayoutProps} from '../core/panes/components/pane/PaneLayout'
+export {PaneMenuButtonItem} from '../core/panes/components/pane/PaneMenuButtonItem'
+export {
+  type _PaneMenuDivider,
+  type _PaneMenuGroup,
+  type _PaneMenuItem,
+  type _PaneMenuNode,
+  type PaneContextValue,
+  type PaneLayoutContextValue,
+} from '../core/panes/components/pane/types'
+export {usePane} from '../core/panes/components/pane/usePane'
+export {usePaneLayout} from '../core/panes/components/pane/usePaneLayout'
+export {
+  type BackLinkProps,
+  type ChildLinkProps,
+  type PaneRouterContextValue,
+  type ParameterizedLinkProps,
+  type ReferenceChildLinkProps,
+} from '../core/panes/components/paneRouter/types'
+export {PaneRouterContext, usePaneRouter} from '../core/panes/components/paneRouter/usePaneRouter'
+export {
+  type BaseIntentParams,
+  type Intent,
+  type IntentJsonParams,
+  type IntentParams,
+} from '../core/panes/types/intent'
+export {
+  type RouterPaneGroup,
+  type RouterPanes,
+  type RouterPaneSibling,
+} from '../core/panes/types/routerPanes'
+export {toLowerCaseNoSpaces} from '../core/panes/util/toLowerCaseNoSpaces'
 export {getSelectedVariant} from '../core/perspective/getSelectedVariant'
 export {
   isPerspectiveWriteable,

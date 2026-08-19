@@ -1,7 +1,7 @@
 import {Box} from '@sanity/ui'
 import {type ReactNode, type RefAttributes} from 'react'
-import {LegacyLayerProvider} from 'sanity'
 
+import {LegacyLayerProvider} from '../../../components/transitional/LegacyLayerProvider'
 import {Root, RootCard} from './PaneFooter.styles'
 import {usePane} from './usePane'
 

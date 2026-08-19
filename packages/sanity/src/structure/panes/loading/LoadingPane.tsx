@@ -3,11 +3,9 @@ import {memo, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {isObservable, type Observable, of} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {Delay, LoadingBlock, useTranslation} from 'sanity'
+import {Delay, LoadingBlock, Pane, PaneContent, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Pane} from '../../components/pane/Pane'
-import {PaneContent} from '../../components/pane/PaneContent'
 import {structureLocaleNamespace} from '../../i18n'
 import {getWaitMessages, type WaitMessage} from './getWaitMessages'
 

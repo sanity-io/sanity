@@ -25,10 +25,6 @@ vi.mock('../../../useStructureToolSetting', () => ({
 vi.mock('../../../useStructureTool', () => ({
   useStructureTool: vi.fn().mockReturnValue({features: {}} as StructureToolContextValue),
 }))
-vi.mock('../../../components/pane/usePaneLayout', () => ({
-  usePaneLayout: vi.fn().mockReturnValue({panes: [], mount: vi.fn()}),
-}))
-
 // Stub the list body so tests render the pane header (and its menu) without the
 // heavy preview subtree, while preserving the testid the render test asserts on.
 vi.mock('../DocumentListPane', async () => {
@@ -37,6 +33,13 @@ vi.mock('../DocumentListPane', async () => {
     DocumentListPane: () => createElement('div', {'data-testid': 'document-list-pane'}),
   }
 })
+
+// `Pane` resolves `usePaneLayout` through a relative import inside core, so the
+// mock must target that exact module specifier — mocking the `sanity` barrel
+// does not intercept it.
+vi.mock('../../../../core/panes/components/pane/usePaneLayout', () => ({
+  usePaneLayout: vi.fn().mockReturnValue({panes: [], mount: vi.fn()}),
+}))
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),

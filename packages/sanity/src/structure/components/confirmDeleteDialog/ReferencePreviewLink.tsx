@@ -6,10 +6,10 @@ import {
   type SanityDocument,
   useDocumentPresence,
   useDocumentPreviewStore,
+  usePaneRouter,
 } from 'sanity'
 
 import {PaneItemPreview} from '../paneItem/PaneItemPreview'
-import {usePaneRouter} from '../paneRouter/usePaneRouter'
 
 const EMPTY_ARRAY: [] = []
 

@@ -5,11 +5,10 @@ import {
   isReleaseDocument,
   type TargetPerspective,
   useGetDefaultPerspective,
+  usePaneRouter,
   useSetPerspective,
   useSingleDocRelease,
 } from 'sanity'
-
-import {usePaneRouter} from '../components/paneRouter/usePaneRouter'
 
 interface PerspectiveNavigator {
   /**

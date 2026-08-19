@@ -8,8 +8,10 @@ import {
   Hotkeys,
   isGoingToUnpublish,
   isSanityDefinedAction,
+  toLowerCaseNoSpaces,
   useClient,
   useDocumentStore,
+  usePaneRouter,
   usePausedScheduledDraft,
   usePerspective,
   useSource,
@@ -21,7 +23,6 @@ import {ReferencePreviewLink} from '../../../components/confirmDeleteDialog/Refe
 import {referringDocuments} from '../../../components/confirmDeleteDialog/useReferringDocuments'
 import {VersionsPreviewList} from '../../../components/confirmDeleteDialog/VersionsPreviewList'
 import {DocTitle} from '../../../components/DocTitle'
-import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {
   RenderActionCollectionState,
   type ResolvedAction,
@@ -29,7 +30,6 @@ import {
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {useHistoryRestoreAction} from '../../../documentActions/HistoryRestoreAction'
 import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'
-import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
