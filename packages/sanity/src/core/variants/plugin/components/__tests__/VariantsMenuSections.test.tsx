@@ -57,7 +57,7 @@ describe('VariantsMenuSections', () => {
     setVersions([])
   })
 
-  it('shows a single flat section when no document is selected', async () => {
+  it('shows an unheaded flat list when no document is selected', async () => {
     await renderSections(
       <VariantsMenuSections
         documentId={undefined}
@@ -67,7 +67,9 @@ describe('VariantsMenuSections', () => {
       />,
     )
 
-    expect(screen.getByText('Other variants')).toBeInTheDocument()
+    // "Other" only means something next to a "has" section, so neither heading
+    // appears — just the list.
+    expect(screen.queryByText('Other variants')).not.toBeInTheDocument()
     expect(screen.queryByText(/^Has /)).not.toBeInTheDocument()
     expect(screen.getByText('Alpha audience')).toBeInTheDocument()
     expect(screen.getByText('Norwegian market')).toBeInTheDocument()
@@ -87,7 +89,7 @@ describe('VariantsMenuSections', () => {
     expect(mockUseDocumentVersions).not.toHaveBeenCalled()
   })
 
-  it('stays flat for a selected document with no variants', async () => {
+  it('stays unheaded for a selected document with no variants', async () => {
     await renderSections(
       <VariantsMenuSections
         documentId="book-1"
@@ -97,8 +99,9 @@ describe('VariantsMenuSections', () => {
       />,
     )
 
-    expect(screen.getByText('Other variants')).toBeInTheDocument()
+    expect(screen.queryByText('Other variants')).not.toBeInTheDocument()
     expect(screen.queryByText(/^Has /)).not.toBeInTheDocument()
+    expect(screen.getByText('Alpha audience')).toBeInTheDocument()
   })
 
   it('splits into "Has N variants" and "Other variants"', async () => {
@@ -179,6 +182,7 @@ describe('VariantsMenuSections', () => {
     )
 
     expect(screen.queryByText(/^Has /)).not.toBeInTheDocument()
-    expect(screen.getByText('Other variants')).toBeInTheDocument()
+    expect(screen.queryByText('Other variants')).not.toBeInTheDocument()
+    expect(screen.getByText('Alpha audience')).toBeInTheDocument()
   })
 })

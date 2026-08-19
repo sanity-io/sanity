@@ -81,25 +81,31 @@ interface SectionsProps {
   onSelect: (variant: SystemVariant) => void
 }
 
-/** The flat list as it reads when nothing narrows it down to one document. */
-function OtherVariantsOnly({
+/**
+ * The variants the selected document does not have — or, with nothing selected,
+ * simply all of them.
+ *
+ * The heading is supplied by the caller rather than baked in, mirroring
+ * `ReleaseTypeMenuSection` on the release side. "Other" only means something when
+ * a "has" section sits above it, so the default state and the no-variants
+ * fallback render the list unheaded.
+ */
+function OtherVariantsSection({
   variants,
   selectedVariantId,
   onSelect,
-  filled = false,
-}: SectionsProps & {filled?: boolean}): React.JSX.Element | null {
-  const {t} = useTranslation(variantsLocaleNamespace)
-
+  heading,
+}: SectionsProps & {heading?: string}): React.JSX.Element | null {
   if (variants.length === 0) return null
 
   return (
     <>
-      <VariantSectionHeader>{t('navbar.variant.other')}</VariantSectionHeader>
+      {heading && <VariantSectionHeader>{heading}</VariantSectionHeader>}
       <VariantList
         variants={variants}
         selectedVariantId={selectedVariantId}
         onSelect={onSelect}
-        filled={filled}
+        filled={false}
       />
     </>
   )
@@ -133,7 +139,7 @@ function DocumentVariantSections({
 
   if (has.length === 0) {
     return (
-      <OtherVariantsOnly
+      <OtherVariantsSection
         variants={others}
         selectedVariantId={selectedVariantId}
         onSelect={onSelect}
@@ -150,7 +156,8 @@ function DocumentVariantSections({
         onSelect={onSelect}
         filled
       />
-      <OtherVariantsOnly
+      <OtherVariantsSection
+        heading={t('navbar.variant.other')}
         variants={others}
         selectedVariantId={selectedVariantId}
         onSelect={onSelect}
@@ -160,8 +167,8 @@ function DocumentVariantSections({
 }
 
 /**
- * The variant list, split into "Has N variants" and "Other variants" when a
- * document is selected.
+ * The variant list, split into "Has N variants" and "Other variants" when the
+ * selected document has at least one. Otherwise a single unheaded list.
  *
  * `DocumentVariantSections` is a separate component so `useDocumentVersions` is
  * only ever called with a real id — it has no empty-id guard and would otherwise
@@ -177,5 +184,5 @@ export function VariantsMenuSections({
     return <DocumentVariantSections documentId={documentId} {...rest} />
   }
 
-  return <OtherVariantsOnly {...rest} />
+  return <OtherVariantsSection {...rest} />
 }
