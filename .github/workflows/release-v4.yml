@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - v4
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -11,7 +12,7 @@ permissions:
 jobs:
   build-and-validate:
     if: >
-      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/v4') ||
       startsWith(github.event.head_commit.message, 'chore(release): publish ')
     runs-on: ubuntu-latest
     permissions:
@@ -70,8 +71,18 @@ jobs:
 
       - name: Tag and push version
         run: |
-          git tag v$RELEASE_AS -m v$RELEASE_AS
-          git push origin v$RELEASE_AS
+          if git rev-parse -q --verify "refs/tags/v$RELEASE_AS" >/dev/null; then
+            # a pre-existing tag is fine on a rerun, but only if it tags this
+            # history — not some unrelated commit
+            if ! git merge-base --is-ancestor "v$RELEASE_AS" HEAD; then
+              echo "Error: tag v$RELEASE_AS exists but is not an ancestor of HEAD"
+              exit 1
+            fi
+            echo "Tag v$RELEASE_AS already exists, skipping"
+          else
+            git tag v$RELEASE_AS -m v$RELEASE_AS
+            git push origin v$RELEASE_AS
+          fi
         env:
           RELEASE_AS: ${{ needs.build-and-validate.outputs.version || steps.release-as.outputs.version }}
 
@@ -111,9 +122,33 @@ jobs:
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
-        run: pnpm -r publish --tag maintenance-v4
+        # stdin from /dev/null so an unexpected interactive prompt fails fast
+        # instead of hanging; timeout as a backstop for any other stall
+        timeout-minutes: 15
+        run: pnpm -r publish --tag maintenance-v4 --no-git-checks < /dev/null
         env:
           NPM_CONFIG_PROVENANCE: true
+
+      - name: Verify release reached the registry
+        # pnpm publish can exit 0 without publishing anything (e.g. when its
+        # git-check prompt is auto-declined in CI), so a green publish step
+        # does not prove the release happened. All packages publish in the
+        # same run, so the sanity package is checked as a proxy for the set.
+        run: |
+          for i in {1..10}; do
+            published=$(npm view "sanity@$RELEASE_AS" version 2>/dev/null || true)
+            tagged=$(npm view sanity "dist-tags.maintenance-v4" 2>/dev/null || true)
+            if [ "$published" = "$RELEASE_AS" ] && [ "$tagged" = "$RELEASE_AS" ]; then
+              echo "✅ sanity@$RELEASE_AS is on npm and maintenance-v4 points at it"
+              exit 0
+            fi
+            echo "sanity@$RELEASE_AS not visible yet (version: '${published:-none}', maintenance-v4: '${tagged:-none}'), retrying in 15s..."
+            sleep 15
+          done
+          echo "Error: sanity@$RELEASE_AS was not published"
+          exit 1
+        env:
+          RELEASE_AS: ${{ needs.build-and-validate.outputs.version }}
 
   bundle-upload:
     needs: npm-publish
