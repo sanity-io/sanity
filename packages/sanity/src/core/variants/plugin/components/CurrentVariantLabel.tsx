@@ -1,5 +1,5 @@
 // oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
-import {Button, Flex, Text} from '@sanity/ui'
+import {Button, Text} from '@sanity/ui'
 import {type HTMLProps, useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -12,7 +12,6 @@ import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
 import {VARIANTS_INTENT} from '../index'
-import {RhombusIcon} from './PersonalizationIcons'
 
 const OversizedButton = styled(IntentLink)`
   ${oversizedButtonStyle}
@@ -44,7 +43,6 @@ function VariantDetailLink({variant}: {variant: SystemVariant}) {
       as={VariantLink}
       data-as="a"
       data-testid="variants-nav-label-link"
-      icon={RhombusIcon}
       mode="bleed"
       padding={2}
       radius="full"
@@ -70,14 +68,9 @@ export function CurrentVariantLabel({
     <AnimatedTextWidth text={animationKey}>
       {!selectedVariant ? (
         <Box padding={2} style={{userSelect: 'none', overflow: 'hidden'}}>
-          <Flex align="center" gap={2}>
-            <Text size={0}>
-              <RhombusIcon />
-            </Text>
-            <Text data-testid="variants-nav-label" size={1} textOverflow="ellipsis" weight="medium">
-              {t('navbar.variant.default')}
-            </Text>
-          </Flex>
+          <Text data-testid="variants-nav-label" size={1} textOverflow="ellipsis" weight="medium">
+            {t('navbar.variant.default')}
+          </Text>
         </Box>
       ) : (
         <VariantDetailLink variant={selectedVariant} />

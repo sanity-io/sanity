@@ -43,7 +43,7 @@ export function fetchReleaseLimits(
 
   return clientX.observable
     .request<ReleaseLimitsResponse>({
-      uri: `projects/${projectId}/new-content-release-allowed`,
+      url: `projects/${projectId}/new-content-release-allowed`,
       /**
        * In a particular case when both releaseLimits
        * and orgActiveReleaseCount stores are empty, 2 fetch calls are made

@@ -15,10 +15,10 @@ import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {EditedByAvatar} from '../../../../components/documentTable/EditedByCell'
 import {RelativeTime} from '../../../../components/RelativeTime'
+import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
 import {AvatarSkeleton, UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useSchema} from '../../../../hooks/useSchema'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
-import {RhombusIcon} from '../../../../variants/plugin/components/PersonalizationIcons'
 import {
   getVariantConditionsText,
   getVariantIdFromDocument,
@@ -240,7 +240,7 @@ const VariantCell = memo(
       >
         <Flex align="center" gap={2} style={{minWidth: 0}}>
           <Card tone="suggest" padding={0} style={VARIANT_ICON_CARD_STYLE}>
-            <Text size={1} style={VARIANT_ICON_STYLE}>
+            <Text size={2} style={VARIANT_ICON_STYLE}>
               <RhombusIcon />
             </Text>
           </Card>

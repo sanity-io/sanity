@@ -11,6 +11,7 @@ import {
   UnclaimedProjectCountdown,
   UnclaimedProjectNudge,
 } from '../UnclaimedProjectNudge'
+import {UnclaimedProjectProvider} from '../UnclaimedProjectProvider'
 
 const {
   mockClearUnclaimedProjectRecord,
@@ -73,7 +74,9 @@ const COPY = {
 }
 
 const wrapper = ({children}: {children: ReactNode}) => (
-  <ThemeProvider theme={theme}>{children}</ThemeProvider>
+  <ThemeProvider theme={theme}>
+    <UnclaimedProjectProvider>{children}</UnclaimedProjectProvider>
+  </ThemeProvider>
 )
 
 function renderNudge(
@@ -105,6 +108,13 @@ function latestToast(): Record<string, unknown> {
 describe('UnclaimedProjectNudge', () => {
   beforeEach(() => {
     localStorage.clear()
+    mockEnvironment.isDev = true
+    mockUseWorkspace.mockReturnValue({
+      auth: {logout: mockLogout},
+      currentUser: {provider: 'sanity-token'},
+      projectId: PROJECT_ID,
+    })
+    mockUseUnclaimedProject.mockReturnValue(undefined)
   })
 
   afterEach(() => {

@@ -1,9 +1,10 @@
 {
   "name": "sanity-root",
-  "version": "6.9.2",
+  "version": "6.10.1",
   "private": true,
   "type": "module",
   "scripts": {
+    "analyze:sanity": "ENABLE_BUNDLE_ANALYZER=true turbo run build --filter=sanity && echo 'Wrote packages/sanity/lib/analyze-data.md'",
     "bench": "pnpm --silent --filter bench run cli",
     "bench:dev": "pnpm --filter bench dev",
     "bench:report": "pnpm --filter bench report",
