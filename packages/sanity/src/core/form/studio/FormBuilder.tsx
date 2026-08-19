@@ -52,7 +52,17 @@ export interface FormBuilderProps extends Omit<
   | '_allMembers'
   | '__unstable_computeDiff'
   | 'displayInlineChanges'
+  | 'changedFromBaseVariant'
+  | 'hasBaseVariant'
 > {
+  /**
+   * Whether the value differs to the document's base variant.
+   */
+  changedFromBaseVariant?: boolean
+  /**
+   * Whether the document has a base variant.
+   */
+  hasBaseVariant?: boolean
   /** @internal */
   __internal_fieldActions?: DocumentFieldAction[]
   /** @internal Considered internal – do not use. */
@@ -117,6 +127,9 @@ export function FormBuilder(props: FormBuilderProps) {
     validation,
     value,
     compareValue,
+    changedFromBaseVariant = false,
+    hasBaseVariant = false,
+    baseVariantValue,
   } = props
 
   const handleCollapseField = useCallback(
@@ -210,6 +223,8 @@ export function FormBuilder(props: FormBuilderProps) {
     const diffProps = prepareDiffProps({
       comparisonValue: compareValue,
       hasUpstreamVersion,
+      baseVariantValue,
+      hasBaseVariant,
       value,
       schemaType,
       perspective,
@@ -259,6 +274,9 @@ export function FormBuilder(props: FormBuilderProps) {
       changed: members.some((m) => m.kind === 'field' && m.field.changed),
       displayInlineChanges: false,
       hasUpstreamVersion: diffProps.hasUpstreamVersion,
+      changedFromBaseVariant,
+      baseVariantValue: diffProps.baseVariantValue,
+      hasBaseVariant: diffProps.hasBaseVariant,
     }
   }, [
     compareValue,
@@ -276,6 +294,9 @@ export function FormBuilder(props: FormBuilderProps) {
     handleOpenField,
     handleSelectFieldGroup,
     hasUpstreamVersion,
+    changedFromBaseVariant,
+    baseVariantValue,
+    hasBaseVariant,
     id,
     members,
     onPathFocus,
