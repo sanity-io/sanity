@@ -1,5 +1,6 @@
-import {Box, type ButtonMode, type ButtonTone, Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {type ButtonMode, type ButtonTone, Card, type CardTone, Flex, Text} from '@sanity/ui'
 import {type ComponentType, type ElementType, type ReactNode} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 

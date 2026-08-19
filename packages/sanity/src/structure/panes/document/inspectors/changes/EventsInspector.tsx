@@ -1,5 +1,5 @@
 import {diffInput, wrap} from '@sanity/diff'
-import {BoundaryElementProvider, Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type ReactElement, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
@@ -23,6 +23,7 @@ import {
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
@@ -246,7 +247,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
       <Card flex={1} paddingX={2} paddingY={2}>
         <BoundaryElementProvider element={scrollRef}>
           <Scroller data-ui="Scroller" ref={setScrollRef}>
-            <Box flex={1} paddingX={3} height="fill">
+            <Box flexBasis="0%" flexGrow={1} paddingX={3} height="100%">
               {showChanges && (
                 <Content
                   documentContext={documentContext}

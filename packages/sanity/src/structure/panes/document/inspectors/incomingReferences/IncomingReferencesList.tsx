@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {Suspense, use, useCallback, useMemo} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {map} from 'rxjs'
@@ -14,6 +14,7 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
+import {Box} from 'ui5'
 
 import {CrossDatasetIncomingReferenceDocumentPreview} from '../../../../components/incomingReferencesDecoration/CrossDatasetIncomingReference/CrossDatasetIncomingReferenceDocumentPreview'
 import {
