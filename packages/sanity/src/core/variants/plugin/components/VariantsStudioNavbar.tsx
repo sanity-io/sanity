@@ -26,7 +26,7 @@ import {VariantsMenu} from './VariantsMenu'
 export function VariantsStudioNavbar(props: NavbarProps) {
   const {t} = useTranslation(variantsLocaleNamespace)
   const {t: coreT} = useTranslation()
-  const {selectedPerspective, selectedPerspectiveName, selectedVariant} = usePerspective()
+  const {selectedPerspective, selectedVariant} = usePerspective()
   const router = useRouter()
   const releasesToolAvailable = useReleasesToolAvailable()
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
@@ -72,7 +72,6 @@ export function VariantsStudioNavbar(props: NavbarProps) {
             label={versionTitle.displayTitle}
           >
             <GlobalPerspectiveMenu
-              selectedPerspectiveName={selectedPerspectiveName}
               areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
               trigger={
                 <Button

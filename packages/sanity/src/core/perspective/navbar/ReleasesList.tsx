@@ -81,6 +81,11 @@ export function ReleasesList({
   // below it — `MENU_PINNED_BLOCK_HEIGHT_VAR` explains why an offset is needed at
   // all. Re-runs on `loading` because neither node exists while the spinner is up.
   useEffect(() => {
+    // Nothing is rendered but the spinner while loading, so there is no block to
+    // measure yet. Checked directly rather than leaning on the refs being null,
+    // which reads as an unused dependency.
+    if (loading) return undefined
+
     const root = rootRef.current
     const pinned = pinnedRef.current
     if (!root || !pinned) return undefined
