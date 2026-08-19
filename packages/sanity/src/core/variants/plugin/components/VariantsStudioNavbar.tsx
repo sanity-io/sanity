@@ -76,7 +76,7 @@ export function VariantsStudioNavbar(props: NavbarProps) {
               trigger={
                 <Button
                   data-testid="global-perspective-menu-button"
-                  icon={<ReleaseAvatarIcon release={selectedPerspective} />}
+                  icon={<ReleaseAvatarIcon size="small" release={selectedPerspective} />}
                   iconRight={ChevronDownIcon}
                   mode="bleed"
                   text={versionTitle.displayTitle}
