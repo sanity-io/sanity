@@ -13,13 +13,13 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {useSetVariant} from '../../../perspective/useSetVariant'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
-import {isReleaseDocument} from '../../../releases/store/types'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
-import {isDraftPerspective, isPublishedPerspective} from '../../../releases/util/util'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
+import {useAgentBundles} from '../../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../../studio/workspace'
 import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantTitle} from '../../tool/util'
+import {getVersionFilterLabel} from './getVersionFilterLabel'
 import {PerspectiveFilter} from './PerspectiveFilter'
 import {VariantsMenu} from './VariantsMenu'
 
@@ -35,15 +35,12 @@ export function VariantsStudioNavbar(props: NavbarProps) {
   const hasVariantSelection = Boolean(router.stickyParams.variant)
   const defaultPerspective = useGetDefaultPerspective()
   const hasVersionSelection = selectedPerspective !== defaultPerspective
+  const {bundles} = useAgentBundles()
 
-  const versionLabel = useMemo(() => {
-    if (isPublishedPerspective(selectedPerspective)) return coreT('release.chip.published')
-    if (isDraftPerspective(selectedPerspective)) return coreT('release.chip.draft')
-    if (isReleaseDocument(selectedPerspective)) {
-      return selectedPerspective.metadata?.title ?? coreT('release.placeholder-untitled-release')
-    }
-    return String(selectedPerspective)
-  }, [selectedPerspective, coreT])
+  const versionTitle = useMemo(
+    () => getVersionFilterLabel(selectedPerspective, coreT, bundles),
+    [selectedPerspective, coreT, bundles],
+  )
 
   const variantLabel = selectedVariant
     ? getVariantTitle(selectedVariant)
@@ -72,7 +69,7 @@ export function VariantsStudioNavbar(props: NavbarProps) {
             tone={getReleaseTone(selectedPerspective)}
             onRemove={hasVersionSelection ? handleClearVersion : undefined}
             removeLabel={t('navbar.version.clear')}
-            label={versionLabel}
+            label={versionTitle.displayTitle}
           >
             <GlobalPerspectiveMenu
               selectedPerspectiveName={selectedPerspectiveName}
@@ -83,7 +80,10 @@ export function VariantsStudioNavbar(props: NavbarProps) {
                   icon={<ReleaseAvatarIcon release={selectedPerspective} />}
                   iconRight={ChevronDownIcon}
                   mode="bleed"
-                  text={versionLabel}
+                  text={versionTitle.displayTitle}
+                  tooltipProps={
+                    versionTitle.isTruncated ? {content: versionTitle.fullTitle} : undefined
+                  }
                 />
               }
             />

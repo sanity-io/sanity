@@ -29,6 +29,10 @@ vi.mock('../../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 
+vi.mock('../../../../store/agent/useAgentBundles', () => ({
+  useAgentBundles: vi.fn(() => ({bundles: [], loading: false})),
+}))
+
 vi.mock('../../../../perspective/navbar/GlobalPerspectiveMenu', () => ({
   GlobalPerspectiveMenu: () => <div data-testid="global-perspective-menu" />,
 }))
@@ -76,7 +80,7 @@ describe('VariantsStudioNavbar', () => {
     await renderNavbar()
 
     expect(
-      within(getFilter('Version')).getByTestId('perspective-filter-remove'),
+      within(getFilter('Version')).getByRole('button', {name: 'Clear version selection'}),
     ).toBeInTheDocument()
     expect(
       within(getFilter('Variant')).queryByTestId('perspective-filter-remove'),
@@ -92,7 +96,7 @@ describe('VariantsStudioNavbar', () => {
       within(getFilter('Version')).queryByTestId('perspective-filter-remove'),
     ).not.toBeInTheDocument()
     expect(
-      within(getFilter('Variant')).getByTestId('perspective-filter-remove'),
+      within(getFilter('Variant')).getByRole('button', {name: 'Clear variant selection'}),
     ).toBeInTheDocument()
   })
 
@@ -102,7 +106,7 @@ describe('VariantsStudioNavbar', () => {
     await renderNavbar()
 
     expect(
-      within(getFilter('Variant')).getByTestId('perspective-filter-remove'),
+      within(getFilter('Variant')).getByRole('button', {name: 'Clear variant selection'}),
     ).toBeInTheDocument()
   })
 

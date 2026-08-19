@@ -12,8 +12,12 @@ interface PerspectiveFilterProps {
   tone: CardTone
   /** The filter's main control — a single button that opens the filter's menu. */
   children: ReactNode
-  /** When set, the pill gains a remove segment that clears just this filter. */
+  /**
+   * When set with `removeLabel`, the pill gains a remove segment that clears just this filter.
+   * Both must be provided; an icon-only control is not rendered without an accessible label.
+   */
   onRemove?: () => void
+  /** Tooltip and accessible name for the remove segment. Required when `onRemove` is set. */
   removeLabel?: string
   label?: string
 }
@@ -40,18 +44,19 @@ export function PerspectiveFilter({
       <Card tone={tone} radius={2} border>
         <Flex align="center">
           {label ? <AnimatedTextWidth text={label}>{children}</AnimatedTextWidth> : children}
-          {onRemove && (
+          {onRemove && removeLabel ? (
             <>
               <div className={SegmentDivider} />
               <Button
+                aria-label={removeLabel}
                 data-testid="perspective-filter-remove"
                 icon={RemoveIcon}
                 mode="bleed"
                 onClick={onRemove}
-                tooltipProps={removeLabel ? {content: removeLabel} : null}
+                tooltipProps={{content: removeLabel}}
               />
             </>
-          )}
+          ) : null}
         </Flex>
       </Card>
     </Flex>
