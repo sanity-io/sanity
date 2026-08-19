@@ -71,4 +71,64 @@ describe('ReleaseAvatarIcon', () => {
 
     expect(screen.getByTestId('release-avatar-positive')).toHaveAttribute('data-sanity-icon', 'dot')
   })
+
+  it('renders the bolt-small icon for ASAP releases when size is small', () => {
+    render(<ReleaseAvatarIcon release={activeASAPRelease} size="small" />)
+
+    expect(screen.getByTestId('release-avatar-caution')).toHaveAttribute(
+      'data-sanity-icon',
+      'bolt-small',
+    )
+  })
+
+  it('renders the clock-small icon for scheduled releases when size is small', () => {
+    render(<ReleaseAvatarIcon release={scheduledRelease} size="small" />)
+
+    expect(screen.getByTestId('release-avatar-suggest')).toHaveAttribute(
+      'data-sanity-icon',
+      'clock-small',
+    )
+  })
+
+  it('renders the clock-small icon for paused cardinality-one releases when size is small', () => {
+    const pausedRelease = {
+      ...activeScheduledRelease,
+      metadata: {
+        ...activeScheduledRelease.metadata,
+        cardinality: 'one' as const,
+        intendedPublishAt: '2023-10-10T10:00:00.000Z',
+      },
+    }
+
+    render(<ReleaseAvatarIcon release={pausedRelease} size="small" />)
+
+    expect(screen.getByTestId('release-avatar-caution')).toHaveAttribute(
+      'data-sanity-icon',
+      'clock-small',
+    )
+  })
+
+  it('renders the unknown-small icon for undecided releases when size is small', () => {
+    render(<ReleaseAvatarIcon release={activeUndecidedRelease} size="small" />)
+
+    expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(
+      'data-sanity-icon',
+      'unknown-small',
+    )
+  })
+
+  it('renders the draft ring with caution tone for drafts perspective', () => {
+    render(<ReleaseAvatarIcon release={LATEST} size="small" />)
+
+    expect(screen.getByTestId('release-avatar-caution')).toHaveAttribute('data-sanity-icon', 'ring')
+  })
+
+  it('renders the published disc with positive tone for published perspective', () => {
+    render(<ReleaseAvatarIcon release={PUBLISHED} size="small" />)
+
+    expect(screen.getByTestId('release-avatar-positive')).toHaveAttribute(
+      'data-sanity-icon',
+      'circle-small',
+    )
+  })
 })

@@ -1,5 +1,14 @@
 import {isHotkey} from 'is-hotkey-esm'
-import {type ElementType, type HTMLProps, memo, type Ref, useCallback, useState} from 'react'
+import {
+  type ElementType,
+  type HTMLProps,
+  memo,
+  type Ref,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import {type DocumentActionDescription, LegacyLayerProvider} from 'sanity'
 
 import {RenderActionCollectionState} from '../../../components/RenderActionCollectionState'
@@ -18,7 +27,7 @@ export interface KeyboardShortcutResponderProps {
   states: DocumentActionDescription[]
 }
 
-const KeyboardShortcutResponder = memo(function KeyboardShortcutResponder(
+export const KeyboardShortcutResponder = memo(function KeyboardShortcutResponder(
   props: KeyboardShortcutResponderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height'>,
 ) {
   const {
@@ -35,6 +44,19 @@ const KeyboardShortcutResponder = memo(function KeyboardShortcutResponder(
   } = props
 
   const activeAction = states[activeIndex]
+  const activeDialog = activeAction?.dialog
+  const hadDialogRef = useRef(false)
+
+  useEffect(() => {
+    if (activeDialog) {
+      hadDialogRef.current = true
+      return
+    }
+    if (activeIndex !== -1 && hadDialogRef.current) {
+      hadDialogRef.current = false
+      onActionStart(-1)
+    }
+  }, [activeDialog, activeIndex, onActionStart])
 
   const handleKeyDown = useCallback(
     (event: any) => {

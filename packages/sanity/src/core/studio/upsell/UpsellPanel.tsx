@@ -41,7 +41,7 @@ interface CommentsUpsellPanelProps {
 /**
  * First 2 viewport sizes are always vertical, 3rd is horizontal
  */
-const HORIZONTAL_PADDING_Y = [3, 3, 5]
+const HORIZONTAL_PADDING_Y: [3, 3, 5] = [3, 3, 5]
 
 export function UpsellPanel(props: CommentsUpsellPanelProps) {
   const {

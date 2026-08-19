@@ -13,6 +13,10 @@
   condition resolves `sanity` (and other workspace packages) to TypeScript source; the
   vanilla-extract plugin compiles `.css.ts`; the React Compiler babel preset matches what the
   studio ships. Divergence here would make snapshots render differently from production.
+- **Why stories are co-located:** each package owns its CSF files and keeps component, fixture,
+  test-harness, and test-only imports within the same workspace boundary. `dev/storybook` is only
+  the shared host; its discovery globs target workspace package `src` roots without traversing
+  dependency symlinks under nested `node_modules` directories.
 - **One Chromatic project per integration type** (Chromatic constraint): `sanity` (Storybook),
   `sanity_e2e` (Playwright), plus a Vitest-type project once early access lands.
 
@@ -83,9 +87,10 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
   play) via portable stories. The project is intentionally NOT in the root `vitest.config.mts`
   multi-project list — same reason as `sanity-browser` (needs a real browser).
 - Story files: CSF3 with `satisfies Meta<typeof Component>`; titles group by area
-  (`Portable Text/…`, `UI Components/…`). Import harness components by relative path — they are
-  not part of the published `sanity` package exports, and lint boundaries only apply inside
-  `packages/sanity`.
+  (`Portable Text/…`, `UI Components/…`). Put each story in the owning package's `src` tree,
+  normally in the same `__tests__` directory as its component or `*Story.tsx` harness, and use
+  package-local relative imports. Do not deep-import implementation or test files from another
+  workspace.
 - Icons: import per-icon subpaths (`@sanity/icons/Add`), never the barrel. `@sanity/ui` v4:
   `ToastProvider` comes from `@sanity/ui/toast`; `Stack`/`Grid` use `gap`/`gridTemplateColumns`.
 - Components that call `useTranslation` (directly or via `ui-components`) must render inside

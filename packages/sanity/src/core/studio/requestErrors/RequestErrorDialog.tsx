@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {startTransition, useCallback, useEffect, useState} from 'react'
+import {type ReactNode, startTransition, useCallback, useEffect, useState} from 'react'
 import {Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
@@ -11,10 +11,29 @@ import {type RequestErrorClaim} from './types'
  * Things a user can check themselves when the studio can't reach the
  * Sanity API. Ordered most-likely-first.
  */
-const NETWORK_TROUBLESHOOTING = [
-  'Check that your device is online.',
-  'Disable VPNs, ad blockers, or browser extensions that may block requests.',
-  'Check status.sanity.io for ongoing incidents.',
+const NETWORK_TROUBLESHOOTING: {key: string; content: ReactNode}[] = [
+  {key: 'online', content: 'Check that your device is online.'},
+  {
+    key: 'blockers',
+    content: 'Disable VPNs, ad blockers, or browser extensions that may block requests.',
+  },
+  {
+    key: 'status',
+    content: (
+      <>
+        Check{' '}
+        <a
+          href="https://status.sanity.io"
+          rel="noopener noreferrer"
+          style={{color: 'var(--card-link-fg-color)'}}
+          target="_blank"
+        >
+          status.sanity.io
+        </a>{' '}
+        for ongoing incidents.
+      </>
+    ),
+  },
 ]
 
 function NetworkTroubleshooting() {
@@ -24,11 +43,11 @@ function NetworkTroubleshooting() {
         <Text size={1} weight="medium">
           Troubleshooting
         </Text>
-        <Stack as="ul" gap={2} style={{margin: 0, paddingLeft: '1.25em'}}>
+        <Stack as="ul" gap={3} style={{margin: 0, paddingLeft: '1.25em'}}>
           {NETWORK_TROUBLESHOOTING.map((tip) => (
-            <Box as="li" key={tip}>
+            <Box as="li" key={tip.key}>
               <Text size={1} muted>
-                {tip}
+                {tip.content}
               </Text>
             </Box>
           ))}
@@ -159,7 +178,7 @@ export function RequestErrorDialog(props: {
 }
 
 function RateLimitedDialog(props: {
-  claim: {type: 'rateLimited'; error: Error; retryAfterSeconds?: number; retryable: boolean}
+  claim: Extract<RequestErrorClaim, {type: 'rateLimited'}>
   onRetry: () => void
 }) {
   const {claim, onRetry} = props
