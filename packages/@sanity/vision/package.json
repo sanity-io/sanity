@@ -28,6 +28,7 @@
     "lib"
   ],
   "type": "module",
+  "sideEffects": true,
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
