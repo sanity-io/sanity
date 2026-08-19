@@ -2,7 +2,7 @@ import {AddIcon} from '@sanity/icons/Add'
 import {Text, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {type JSX, useCallback, useMemo, useState} from 'react'
-import {useIntentLink, useRouter} from 'sanity/router'
+import {useRouter, useStateLink} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
@@ -18,7 +18,7 @@ import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {decodeVariantIdFromRoute, filterVariantsForSearch} from '../../tool/util'
 import {isVariantId, type SystemVariant} from '../../types'
-import {VARIANTS_INTENT} from '../index'
+import {VARIANTS_TOOL_NAME} from '../index'
 import {VariantsMenuSections} from './VariantsMenuSections'
 import {suggestIconColor} from './VariantsNav.css'
 
@@ -105,7 +105,15 @@ export function VariantsMenu({
     [setVariant],
   )
 
-  const viewVariantsLink = useIntentLink({intent: VARIANTS_INTENT, params: {}})
+  // Links straight at the tool rather than through the `variant` intent. That
+  // intent exists to open one specific variant, so with no id there is nothing for
+  // the params segment — `useIntentLink` then builds `/intent/variant//`, which
+  // decodes without a `params` key and makes `resolveIntentState` throw
+  // "intent params must be a string". Mirrors what `ToolLink` does internally,
+  // including clearing the tool's own state on the way in.
+  const viewVariantsLink = useStateLink({
+    state: {tool: VARIANTS_TOOL_NAME, [VARIANTS_TOOL_NAME]: undefined},
+  })
 
   const isDefaultSelected = !selectedVariant
   // Filled means "the selected document exists in this variant". A selected
