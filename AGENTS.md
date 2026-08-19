@@ -304,7 +304,7 @@ Components passed to `<Translate>`'s `components` map must be stable, module-sco
 defining them inline during render creates a new component identity every render and remounts
 the subtree. Pass render-scoped data through the `componentProps` prop instead, and map plain
 HTML wrappers as strings (eg `{Code: 'code'}`). The in-repo oxlint rule
-`@repo/i18n/no-inline-translate-components` (see `lint/oxlint-plugin-repo-i18n.mjs`) enforces
+`@repo/i18n/no-inline-translate-components` (see `packages/@repo/oxlint-plugin-i18n`) enforces
 this for object literals in the JSX attribute; maps built during render via `useMemo` or factory
 functions are equally wrong even though the rule cannot see them. See the `sanity-i18n-translate`
 skill (`.agents/skills/sanity-i18n-translate/SKILL.md`) for the full conversion patterns.

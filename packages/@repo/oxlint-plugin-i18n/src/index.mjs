@@ -1,7 +1,7 @@
 /**
  * In-repo oxlint jsPlugin with i18n rules that complement the published
- * `@sanity/eslint-plugin-i18n` plugin. Loaded from `.oxlintrc.json` via a relative
- * `jsPlugins` specifier, so it needs no workspace package.
+ * `@sanity/eslint-plugin-i18n` plugin. Loaded from `.oxlintrc.json` via the `jsPlugins`
+ * entry named `@repo/i18n`.
  */
 
 /**

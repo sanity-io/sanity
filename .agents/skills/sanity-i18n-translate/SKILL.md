@@ -20,8 +20,8 @@ Components in the `components` map MUST be stable, module-scope components. Neve
 inline during render — each render then creates a new component identity, so React unmounts and
 remounts the subtree (losing state, DOM, and focus). This is the same class of bug as
 `react/no-unstable-nested-components`, and it is enforced for `<Translate>` by the in-repo oxlint
-rule `@repo/i18n/no-inline-translate-components` (implemented in
-`lint/oxlint-plugin-repo-i18n.mjs`, wired via `jsPlugins` in `.oxlintrc.json`).
+rule `@repo/i18n/no-inline-translate-components` (implemented in the
+`@repo/oxlint-plugin-i18n` workspace package, wired via `jsPlugins` in `.oxlintrc.json`).
 
 The rule only sees object literals written directly in the JSX attribute. Maps built during
 render some other way (`useMemo`, `useCallback`, factory calls) are just as wrong — hoist those
