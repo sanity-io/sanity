@@ -73,6 +73,7 @@ function ReleaseDetailsEditorProduction({release}: {release: ReleaseDocument}): 
     return () => {
       isMounted.current = false
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [checkWithPermissionGuard, release, release._id, updateRelease])
 
   return (

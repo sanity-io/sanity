@@ -154,7 +154,7 @@ export const Preview = memo(function PreviewComponent(
       /**
        * Only set the stable perspective if it hasn't been set yet.
        */
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setStablePerspective((prev) => (prev === null ? perspective : prev))
     }
   }, [handlesPerspectiveChange, perspective])
@@ -166,7 +166,7 @@ export const Preview = memo(function PreviewComponent(
      * variant changes in `src` so they no longer cause a full page reload.
      */
     if (handlesVariantChange) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setStableVariant((prev) => (prev === null ? variant : prev))
     }
   }, [handlesVariantChange, variant])
@@ -339,6 +339,7 @@ export const Preview = memo(function PreviewComponent(
       stop()
       controller.destroy()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [checkOrigin])
   useEffect(() => {
     if (overlaysConnection === 'connecting' || overlaysConnection === 'reconnecting') {
@@ -384,6 +385,7 @@ export const Preview = memo(function PreviewComponent(
       }
     }
     return undefined
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [overlaysConnection])
 
   return (
