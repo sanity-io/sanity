@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.10.1](https://github.com/sanity-io/sanity/compare/v6.10.0...v6.10.1) (2026-08-18)
+
+### Bug Fixes
+
+* **build:** bake correct package version into cdn module bundles ([#14155](https://github.com/sanity-io/sanity/issues/14155)) ([3e5a82e](https://github.com/sanity-io/sanity/commit/3e5a82e1a10b7247a92db4cd6f2388406bd1db5b))
 ## [6.10.0](https://github.com/sanity-io/sanity/compare/v6.9.2...v6.10.0) (2026-08-18)
 
 ### Features

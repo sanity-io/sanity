@@ -1,6 +1,7 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ReactNode, type RefObject} from 'react'
+import {Box} from 'ui5'
 
 import {formatBytes} from '../../common/helper'
 import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
