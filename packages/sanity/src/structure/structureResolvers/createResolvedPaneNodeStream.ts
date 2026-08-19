@@ -276,10 +276,14 @@ function resolvePaneTree({
   } catch (e) {
     if (e instanceof PaneResolutionError) {
       if (e.context) {
+        const helpSuffix =
+          e.helpId && e.helpId !== 'structure-item-returned-no-child'
+            ? ` - see ${generateHelpUrl(e.helpId)}`
+            : ''
         console.warn(
           `Pane resolution error at index ${e.context.index}${
             e.context.splitIndex > 0 ? ` for split pane index ${e.context.splitIndex}` : ''
-          }: ${e.message}${e.helpId ? ` - see ${generateHelpUrl(e.helpId)}` : ''}`,
+          }: ${e.message}${helpSuffix}`,
           e,
         )
       }

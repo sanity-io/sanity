@@ -509,6 +509,7 @@ import type {
   DocumentVersionEvent,
   DocumentVersionEventType,
   DocumentVersionSnapshots,
+  DocumentVersionsStatusIndicator,
   DraftId,
   DRAFTS_FOLDER,
   DraftsModelDocument,
@@ -3338,6 +3339,9 @@ describe('sanity', () => {
   })
   test('DocumentVersionSnapshots', () => {
     expectTypeOf<DocumentVersionSnapshots>().toBeObject()
+  })
+  test('DocumentVersionsStatusIndicator', () => {
+    expectTypeOf<typeof DocumentVersionsStatusIndicator>().toBeFunction()
   })
   test('DraftId', () => {
     expectTypeOf<DraftId>().not.toBeNever()

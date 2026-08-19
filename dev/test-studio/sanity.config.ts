@@ -41,6 +41,7 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
+import {documentStatusDebugTool} from './plugins/document-status-debug/plugin'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
 import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
@@ -263,6 +264,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       themerTool(),
       routerDebugTool(),
       formBuilderReproTool(),
+      documentStatusDebugTool(),
       errorReportingTestPlugin(),
       media(),
       wave(),
