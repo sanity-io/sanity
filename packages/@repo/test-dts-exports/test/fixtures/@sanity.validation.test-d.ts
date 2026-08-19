@@ -9,8 +9,10 @@ import type {
   ValidateDocumentOptions,
   validateDocumentWithWorkspace,
   ValidateDocumentWorkspaceOptions,
+  ValidationClient,
   ValidationMarkerCode,
   validationMarkerCodes,
+  ValidationSchema,
   ValidationSource,
 } from '@sanity/validation'
 import type {Workspace} from 'sanity'
@@ -31,6 +33,9 @@ describe('@sanity/validation', () => {
   test('ValidateDocumentOptions', () => {
     expectTypeOf<ValidateDocumentOptions>().toBeObject()
   })
+  test('ValidationClient', () => {
+    expectTypeOf<ValidationClient>().toBeObject()
+  })
   test('ValidationMarkerCode', () => {
     expectTypeOf<ValidationMarkerCode>().not.toBeNever()
   })
@@ -46,5 +51,8 @@ describe('@sanity/validation', () => {
   test('ValidationSource', () => {
     expectTypeOf<ValidationSource>().toBeObject()
     expectTypeOf<Workspace>().toMatchTypeOf<ValidationSource>()
+  })
+  test('ValidationSchema', () => {
+    expectTypeOf<ValidationSchema>().toBeObject()
   })
 })
