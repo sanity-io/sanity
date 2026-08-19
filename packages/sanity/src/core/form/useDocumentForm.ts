@@ -53,6 +53,7 @@ import {usePresenceStore} from '../store/datastores'
 import {type EditStateFor} from '../store/document/document-pair/editState'
 import {type InitialValueState} from '../store/document/initialValue/types'
 import {isNewDocument} from '../store/document/isNewDocument'
+import {selectBaseVariant} from '../store/document/selectBaseVariant'
 import {selectUpstreamVersion} from '../store/document/selectUpstreamVersion'
 import {useDocumentValuePermissions} from '../store/grants/documentValuePermissions'
 import {type PermissionCheckResult} from '../store/grants/types'
@@ -64,6 +65,7 @@ import {
   isSystemBundle,
 } from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
+import {getTargetDocument} from '../util/getTargetDocument'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {type PatchEvent} from './patch/PatchEvent'
@@ -108,7 +110,7 @@ interface DocumentFormOptions {
    */
   isOlderRevision?: boolean
 }
-interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
+interface DocumentFormValue extends NodeChronologyProps {
   /**
    * `EditStateFor` for the displayed document.
    * */
@@ -172,7 +174,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
-  const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
+  const {
+    data: documentVersions,
+    versions: documentVersionStubs,
+    loading: documentVersionsLoading,
+  } = useDocumentVersions({
     documentId,
   })
   const {selectedVariantName, bundle} = usePerspective()
@@ -335,12 +341,31 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     getVersionFromId(upstreamId ?? ''),
   )
 
+  const shouldCompareBaseVariant = isVariantTarget && !isOlderRevision
+
+  const baseVariantTarget = useMemo(
+    () =>
+      shouldCompareBaseVariant
+        ? getTargetDocument({bundle, variant: undefined, documentVersions: documentVersionStubs})
+        : undefined,
+    [bundle, shouldCompareBaseVariant, documentVersionStubs],
+  )
+
+  const baseVariantEditState = useEditState(
+    documentId,
+    documentType,
+    'default',
+    shouldCompareBaseVariant ? baseVariantTarget?._system.scopeId : targetScopeId,
+  )
+
   const comparisonValue = useMemo(() => {
     if (typeof comparisonValueRaw === 'function') {
       return comparisonValueRaw(upstreamEditState)
     }
     return comparisonValueRaw
   }, [comparisonValueRaw, upstreamEditState])
+
+  const baseVariant = selectBaseVariant(baseVariantEditState, baseVariantTarget?._id)
 
   const presence$ = useMemo(
     () =>
@@ -612,12 +637,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   }, [getFormDocumentValue, value])
 
   const hasUpstreamVersion = selectUpstreamVersion(upstreamEditState) !== null
+  const hasBaseVariant = baseVariant !== null
 
   const formState = useFormState({
     schemaType,
     documentValue: formDocumentValue,
     readOnly,
     comparisonValue: comparisonValue || value,
+    baseVariantValue: baseVariant ?? undefined,
+    hasBaseVariant,
     focusPath,
     openPath,
     perspective: selectedPerspective,
@@ -776,6 +804,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     isPermissionsLoading,
     formStateRef,
     hasUpstreamVersion,
+    hasBaseVariant,
 
     collapsedFieldSets,
     collapsedPaths,

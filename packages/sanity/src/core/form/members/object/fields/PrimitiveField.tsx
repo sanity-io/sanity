@@ -150,6 +150,9 @@ export function PrimitiveField(props: {
       schemaType: member.field.schemaType as any,
       changed: member.field.changed,
       hasUpstreamVersion: member.field.hasUpstreamVersion,
+      changedFromBaseVariant: member.field.changedFromBaseVariant,
+      baseVariantValue: member.field.baseVariantValue,
+      hasBaseVariant: member.field.hasBaseVariant,
       id: member.field.id,
       path: member.field.path,
       focused: member.field.focused,
@@ -170,6 +173,9 @@ export function PrimitiveField(props: {
     member.field.schemaType,
     member.field.changed,
     member.field.hasUpstreamVersion,
+    member.field.changedFromBaseVariant,
+    member.field.baseVariantValue,
+    member.field.hasBaseVariant,
     member.field.id,
     member.field.path,
     member.field.focused,
@@ -184,6 +190,7 @@ export function PrimitiveField(props: {
     <RenderField
       actions={fieldActions}
       changed={member.field.changed}
+      changedFromBaseVariant={member.field.changedFromBaseVariant}
       description={member.field.schemaType.description}
       index={member.index}
       inputId={member.field.id}

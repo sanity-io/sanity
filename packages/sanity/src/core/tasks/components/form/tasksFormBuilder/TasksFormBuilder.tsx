@@ -125,6 +125,7 @@ const TasksFormBuilderInner = ({
             schemaType={schemaType}
             value={value}
             hasUpstreamVersion={false}
+            hasBaseVariant={false}
           />
         </FormBuilderRoot>
       )}
