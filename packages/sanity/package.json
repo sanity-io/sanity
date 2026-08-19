@@ -188,6 +188,7 @@
     "@sanity/workbench": "0.1.0-alpha.42",
     "@sentry/react": "^10.69.0",
     "@tanstack/react-virtual": "^3.14.9",
+    "@vanilla-extract/dynamic": "catalog:",
     "@xstate/react": "^6.1.0",
     "clsx": "^2.1.1",
     "color2k": "^2.0.4",
