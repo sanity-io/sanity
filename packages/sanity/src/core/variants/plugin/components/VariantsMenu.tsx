@@ -26,10 +26,8 @@ import {type SystemVariant} from '../../types'
 import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
 
 const StyledMenu = styled(Menu)`
-  /* Fixed, not a 240-320px range: see the note in GlobalPerspectiveMenu. A
-     right-aligned popover whose width tracks its content shifts sideways as you
-     move through the list. */
-  width: 320px;
+  min-width: 240px;
+  max-width: 320px;
 
   > [data-ui='Stack'] {
     gap: 0;

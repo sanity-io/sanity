@@ -14,12 +14,8 @@ import {ReleasesList} from './ReleasesList'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
 const StyledMenu = styled(Menu)`
-  /* A fixed width rather than a 200-320px range. The popover is right-aligned
-     (placement: bottom-end), so any content-driven width change — a scrollbar
-     appearing, a longer release title rendering — moves the menu's left edge,
-     which reads as the menu jittering left and right while you move through the
-     list. A pinned width cannot move. */
-  width: 320px;
+  min-width: 200px;
+  max-width: 320px;
   /* Remove the default menu gap*/
   > [data-ui='Stack'] {
     gap: 0;
