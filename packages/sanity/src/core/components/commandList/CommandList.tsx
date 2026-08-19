@@ -127,7 +127,7 @@ function CommandListComponent({
   renderItem,
   testId,
   wrapAround = true,
-  ...responsivePaddingProps
+  ...paddingProps
 }: CommandListProps & RefAttributes<CommandListHandle>) {
   const isMountedRef = useRef(false)
   const [commandListId] = useState(useId())
@@ -577,7 +577,7 @@ function CommandListComponent({
       ref={setVirtualListElement}
       tabIndex={rootTabIndex}
       data-testid={testId}
-      {...responsivePaddingProps}
+      {...paddingProps}
     >
       {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset} />}
       <PointerOverlayDiv aria-hidden="true" data-enabled="false" ref={setPointerOverlayElement} />
