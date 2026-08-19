@@ -83,5 +83,8 @@
   "browserslist": [
     "node >=22.12",
     "baseline 2024"
-  ]
+  ],
+  "engines": {
+    "node": ">=22.12"
+  }
 }
