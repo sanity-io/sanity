@@ -88,7 +88,7 @@ export function baselineLabel(baseline: DriftBaseline): string {
 }
 
 export function baselineDetail(baseline: DriftBaseline): string {
-  return `median of the last ${baseline.recentPointsMs.length} runs vs the prior ${baseline.baselinePointsMs.length}`
+  return `median of the last ${baseline.recentPointsMs.length} runs vs the prior ${baseline.baselinePointsMs.length} runs`
 }
 
 export interface DriftResult {
@@ -96,7 +96,11 @@ export interface DriftResult {
   title: string
   unit: TrendUnit
   branch: string
-  /** The move that cleared the thresholds. */
+  /**
+   * The window comparison for this line. Not necessarily a flagged move:
+   * neutral entries exist so charts can draw the overlay everywhere — check
+   * `direction` before treating it as a finding.
+   */
   baseline: DriftBaseline
   direction: DriftDirection
   /** The most recent run in this line — for backlinks to the likely culprit. */

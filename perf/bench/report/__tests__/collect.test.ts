@@ -107,7 +107,7 @@ function sample(
     lcpMs: 2000,
     cls: 0,
     clsAttribution: [{source: '[data-testid="pane-content"]', totalValue: 0.01}],
-    jsUrls: ['/static/sanity-abc.js'],
+    jsPaths: ['/static/sanity-abc.js'],
     blockingMs: 50,
     loafAttribution: [
       {
@@ -199,7 +199,7 @@ describe('collectPageLoad', () => {
       ]),
       new Map(),
       undefined,
-      new Map([['/static/sanity-abc.js', 140_000]]),
+      {experiment: new Map([['/static/sanity-abc.js', 140_000]])},
     )
     const bootJs = report.metrics.find((metric) => metric.label === 'boot-cold · boot JS')
     expect(bootJs?.unit).toBe('bytes')
@@ -223,9 +223,37 @@ describe('collectPageLoad', () => {
       new Map([['experiment', [sample('boot-cold', 4000)]]]),
       new Map(),
       undefined,
-      new Map([['/static/other.js', 1]]),
+      {experiment: new Map([['/static/other.js', 1]])},
     )
     expect(noMatches.metrics.some((metric) => metric.label.includes('boot JS'))).toBe(false)
+  })
+
+  // Chunk names are content-hashed, so a side must be valued against its own
+  // build's sizes — the experiment map would give the reference side a partial
+  // sum that reads as a fake A/B diff
+  it('values each side of boot JS against its own chunk sizes', () => {
+    const referenceSample = {...sample('boot-cold', 4200), jsPaths: ['/static/sanity-old.js']}
+    const bothSides = new Map([
+      ['experiment', [sample('boot-cold', 4000)]],
+      ['reference', [referenceSample]],
+    ])
+    const withBoth = collectPageLoad('singleString', bothSides, new Map(), undefined, {
+      experiment: new Map([['/static/sanity-abc.js', 140_000]]),
+      reference: new Map([['/static/sanity-old.js', 120_000]]),
+    })
+    const bootJs = withBoth.metrics.find((metric) => metric.label === 'boot-cold · boot JS')
+    expect(bootJs?.experiment.summary.median).toBe(140_000)
+    expect(bootJs?.reference?.summary.median).toBe(120_000)
+
+    // Without a reference size map the row stays experiment-only
+    const withoutReferenceSizes = collectPageLoad('singleString', bothSides, new Map(), undefined, {
+      experiment: new Map([['/static/sanity-abc.js', 140_000]]),
+    })
+    const experimentOnly = withoutReferenceSizes.metrics.find(
+      (metric) => metric.label === 'boot-cold · boot JS',
+    )
+    expect(experimentOnly?.experiment.summary.median).toBe(140_000)
+    expect(experimentOnly?.reference).toBeUndefined()
   })
 
   it('aggregates cls attribution across experiment samples, largest first', () => {

@@ -42,7 +42,7 @@ export interface PageLoadSample {
    * with the dist's exact gzip sizes at report time to measure what booting
    * actually downloads (the index.html entry chunk is a fraction of it).
    */
-  jsUrls: string[]
+  jsPaths: string[]
   /** Total LoAF blocking during load. */
   blockingMs: number
   /**
@@ -268,7 +268,7 @@ async function measureLoad(options: {
       .filter((shift) => !shift.hadRecentInput)
       .reduce((sum, shift) => sum + shift.value, 0),
     clsAttribution: foldClsAttribution(entries.layoutShifts),
-    jsUrls: bootJsPaths(entries.resources, timeToEditable.duration),
+    jsPaths: bootJsPaths(entries.resources, timeToEditable.duration),
     blockingMs: entries.loafs.reduce((sum, loaf) => sum + loaf.blockingDuration, 0),
     loafAttribution: foldLoafAttribution(entries.loafs),
     auth: deriveAuthMilestones(entries.resources, timeToEditable.duration),

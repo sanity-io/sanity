@@ -269,7 +269,7 @@ test('labels count the actual window on short history', () => {
 
   expect(fired.baselinePointsMs).toHaveLength(5)
   expect(baselineLabel(fired)).toBe('vs prior 5 runs')
-  expect(baselineDetail(fired)).toBe('median of the last 7 runs vs the prior 5')
+  expect(baselineDetail(fired)).toBe('median of the last 7 runs vs the prior 5 runs')
 })
 
 // Neutral entries share the list with flagged ones now, so precedence has to be

@@ -299,16 +299,21 @@ function bootJsBytes(paths: string[], sizes: ReadonlyMap<string, number>): numbe
 
 /**
  * pageLoad samples (both sides) → scenario report. `chunkGzipSizes` (dist
- * path → exact gzip bytes, from measureBundleSize) enables the "boot JS" row:
- * what booting actually downloads, as opposed to the entry chunk the bundle
- * report counts.
+ * path → exact gzip bytes per side, from measureBundleSize) enables the
+ * "boot JS" row: what booting actually downloads, as opposed to the entry
+ * chunk the bundle report counts. Per side because chunk names are
+ * content-hashed: valuing reference-side fetches against the experiment
+ * build's sizes would produce a partial sum that reads as a fake A/B diff.
  */
 export function collectPageLoad(
   scenario: string,
   samplesBySide: Map<string, PageLoadSample[]>,
   comparisons: Map<LoadCondition, {interval: DiffInterval; verdict: Verdict}>,
   sourceFile?: string,
-  chunkGzipSizes?: ReadonlyMap<string, number>,
+  chunkGzipSizes?: {
+    experiment: ReadonlyMap<string, number>
+    reference?: ReadonlyMap<string, number>
+  },
 ): ScenarioReport {
   const experiment = samplesBySide.get('experiment') ?? []
   const reference = samplesBySide.get('reference')
@@ -318,17 +323,17 @@ export function collectPageLoad(
     condition: LoadCondition,
     label: string,
     unit: MetricReport['unit'],
-    value: (sample: PageLoadSample) => number | null,
+    value: (sample: PageLoadSample, side: 'experiment' | 'reference') => number | null,
   ): MetricReport[] => {
-    const values = (samples: PageLoadSample[] | undefined) =>
+    const values = (samples: PageLoadSample[] | undefined, side: 'experiment' | 'reference') =>
       (samples ?? [])
         .filter((sample) => sample.condition === condition)
-        .map(value)
+        .map((sample) => value(sample, side))
         .filter((sampleValue): sampleValue is number => sampleValue !== null)
         .map((sampleValue) => [sampleValue])
-    const experimentValues = values(experiment)
+    const experimentValues = values(experiment, 'experiment')
     if (experimentValues.length === 0) return []
-    const referenceValues = values(reference)
+    const referenceValues = values(reference, 'reference')
     return [
       {
         label: `${condition} · ${label}`,
@@ -408,9 +413,14 @@ export function collectPageLoad(
         // replays the same set from cache. (The bundle report's entry-chunk
         // number is only what index.html references.)
         ...(condition === 'boot-cold' && chunkGzipSizes
-          ? reportOnly(condition, 'boot JS', 'bytes', (sample) =>
-              bootJsBytes(sample.jsUrls, chunkGzipSizes),
-            )
+          ? reportOnly(condition, 'boot JS', 'bytes', (sample, side) => {
+              // Each side's fetches valued against its own build's chunk
+              // sizes; a side without a size map gets no value at all rather
+              // than a misleading partial sum
+              const sizes =
+                side === 'reference' ? chunkGzipSizes.reference : chunkGzipSizes.experiment
+              return sizes ? bootJsBytes(sample.jsPaths, sizes) : null
+            })
           : []),
       ]
     },
