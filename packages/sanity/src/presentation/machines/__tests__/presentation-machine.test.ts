@@ -238,6 +238,50 @@ describe('Presentation machine', () => {
       expect(actor.getSnapshot().hasTag('show error card')).toBe(false)
     })
 
+    test('a disconnect does not clear the connection timeout UI', () => {
+      const {actor, clock} = createTestActor()
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('handshaking'))
+      clock.increment(TIME_TO_SHOW_OVERLAYS_CONNECTION_STATUS)
+      clock.increment(MAX_TIME_TO_OVERLAYS_CONNECTION)
+      expect(actor.getSnapshot().hasTag('overlays connection timed out')).toBe(true)
+
+      // The connection giving up entirely must not tear down the caution card
+      actor.send(overlaysStatus('disconnected'))
+      let snapshot = actor.getSnapshot()
+      expect(snapshot.context.overlaysConnection).toBe('idle')
+      expect(snapshot.hasTag('show overlays connection status')).toBe(true)
+      expect(snapshot.hasTag('overlays connection timed out')).toBe(true)
+
+      // Only an actual connection resolves the failure
+      actor.send(overlaysStatus('handshaking', 'visual-editing-2'))
+      expect(actor.getSnapshot().hasTag('overlays connection timed out')).toBe(true)
+      actor.send(overlaysStatus('connected', 'visual-editing-2'))
+      snapshot = actor.getSnapshot()
+      expect(snapshot.hasTag('show overlays connection status')).toBe(false)
+      expect(snapshot.hasTag('overlays connection timed out')).toBe(false)
+    })
+
+    test('a disconnect does not clear the reconnect failure error card', () => {
+      const {actor, clock} = createTestActor()
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('handshaking'))
+      actor.send(overlaysStatus('connected'))
+      actor.send(overlaysStatus('handshaking'))
+      clock.increment(TIME_TO_SHOW_OVERLAYS_CONNECTION_STATUS)
+      clock.increment(MAX_TIME_TO_OVERLAYS_CONNECTION)
+      expect(actor.getSnapshot().hasTag('show error card')).toBe(true)
+
+      // The connection giving up entirely must not tear down the error card
+      actor.send(overlaysStatus('disconnected'))
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.context.overlaysConnection).toBe('idle')
+      expect(snapshot.hasTag('show error card')).toBe(true)
+
+      actor.send(overlaysStatus('connected', 'visual-editing-2'))
+      expect(actor.getSnapshot().hasTag('show error card')).toBe(false)
+    })
+
     test('status changes restart the escalation timers', () => {
       const {actor, clock} = createTestActor()
       actor.send({type: 'iframe loaded'})

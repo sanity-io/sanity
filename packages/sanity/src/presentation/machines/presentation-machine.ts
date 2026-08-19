@@ -197,7 +197,9 @@ export const presentationMachine = setup({
                 {target: 'ok'},
               ],
             },
-            ok: {},
+            ok: {
+              id: 'overlays ok',
+            },
             dismissed: {
               id: 'overlays dismissed',
               description:
@@ -232,7 +234,16 @@ export const presentationMachine = setup({
                       actions: 'assign overlays dismissed',
                       target: '#overlays dismissed',
                     },
+                    // The failure UI is sticky: status churn (e.g. a disconnect draining the
+                    // status map back to idle) must not clear it — only a connection does
+                    'overlays status': {
+                      actions: {
+                        type: 'assign overlays status',
+                        params: ({event}) => ({statusEvent: event.statusEvent}),
+                      },
+                    },
                   },
+                  always: {guard: 'overlays connected', target: '#overlays ok'},
                 },
               },
             },
@@ -262,7 +273,16 @@ export const presentationMachine = setup({
                       actions: 'assign overlays dismissed',
                       target: '#overlays dismissed',
                     },
+                    // The failure UI is sticky: status churn (e.g. a disconnect draining the
+                    // status map back to idle) must not clear it — only a connection does
+                    'overlays status': {
+                      actions: {
+                        type: 'assign overlays status',
+                        params: ({event}) => ({statusEvent: event.statusEvent}),
+                      },
+                    },
                   },
+                  always: {guard: 'overlays connected', target: '#overlays ok'},
                 },
               },
             },
