@@ -1,4 +1,5 @@
 import 'ui5/styles.css'
+import './preview.css'
 
 import {type ClientPerspective} from '@sanity/client'
 import {
