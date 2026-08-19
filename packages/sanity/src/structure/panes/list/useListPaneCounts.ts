@@ -14,13 +14,16 @@ import {type PaneListItem, type PaneListItemDivider} from '../../types'
 
 const COUNTS_TAG = 'structure.list-pane-counts'
 
+/** The only filter a list pane count is ever fetched with: a list item names a type, never a query. */
+const COUNT_FILTER = '_type == $type'
+
 type ListPaneCounts = Record<string, number>
 
 const EMPTY_COUNTS: ListPaneCounts = {}
 
 interface CountDescriptor {
   id: string
-  count: ListItemCount
+  typeName: string
 }
 
 interface CountsInput {
@@ -50,8 +53,8 @@ function observePaneCounts(
     descriptors.map((descriptor) =>
       documentPreviewStore
         .unstable_observeDocumentCount(
-          descriptor.count.filter,
-          descriptor.count.params,
+          COUNT_FILTER,
+          {type: descriptor.typeName},
           perspectiveStack,
           {tag: COUNTS_TAG},
         )
@@ -115,7 +118,7 @@ export function useListPaneCounts(
 
   const descriptors = items
     .filter(isCountableItem)
-    .map((item) => ({id: item.id, count: item.count}))
+    .map((item) => ({id: item.id, typeName: item.count.type}))
 
   const active = ready && enabled && tabVisible && descriptors.length > 0
 
@@ -123,9 +126,7 @@ export function useListPaneCounts(
   const identityKey = [
     active,
     perspectiveKey,
-    ...descriptors
-      .map((descriptor) => `${descriptor.id}:${JSON.stringify(descriptor.count)}`)
-      .toSorted(),
+    ...descriptors.map((descriptor) => `${descriptor.id}:${descriptor.typeName}`).toSorted(),
   ].join('|')
 
   const input$ = useMemo(

@@ -354,7 +354,7 @@ export interface PaneListItem<TParams = unknown> {
   displayOptions?: ListItemDisplayOptions
   action?: (t: TParams) => unknown
   params?: TParams
-  /** Query descriptor for a live document count. See {@link ListItemCount} */
+  /** Document schema type to show a live count for. See {@link ListItemCount} */
   count?: ListItemCount
 }
 

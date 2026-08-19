@@ -117,9 +117,7 @@ export function PaneItem(props: PaneItemProps) {
         status={
           <Flex align="center" gap={2}>
             {typeof count === 'number' && (
-              <Badge mode="outline" data-testid="pane-item-count">
-                {numberFormat.format(count)}
-              </Badge>
+              <Badge data-testid="pane-item-count">{numberFormat.format(count)}</Badge>
             )}
             <Box style={{opacity: 0.5}}>
               <Text muted size={1}>

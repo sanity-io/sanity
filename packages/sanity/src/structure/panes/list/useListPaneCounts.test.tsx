@@ -18,8 +18,8 @@ function setTabVisibility(state: 'visible' | 'hidden') {
   Object.defineProperty(document, 'visibilityState', {configurable: true, get: () => state})
 }
 
-function listItem(id: string, filter: string): PaneListItem {
-  return {type: 'listItem', id, title: id, count: {filter, params: {type: id}}}
+function listItem(id: string, typeName: string = id): PaneListItem {
+  return {type: 'listItem', id, title: id, count: {type: typeName}}
 }
 
 function flushTimers() {
@@ -35,11 +35,12 @@ beforeEach(() => {
   vi.clearAllMocks()
   setTabVisibility('visible')
   countSubjects = new Map()
-  observeDocumentCount = vi.fn((filter: string) => {
-    const existing = countSubjects.get(filter)
+  observeDocumentCount = vi.fn((filter: string, params: {type: string}) => {
+    expect(filter).toBe('_type == $type')
+    const existing = countSubjects.get(params.type)
     if (existing) return existing
     const subject = new Subject<number>()
-    countSubjects.set(filter, subject)
+    countSubjects.set(params.type, subject)
     return subject
   })
   mockUseDocumentPreviewStore.mockReturnValue({
@@ -53,8 +54,22 @@ afterEach(() => {
 })
 
 describe('useListPaneCounts', () => {
+  it('authors the whole-type filter itself, from the type the descriptor names', async () => {
+    const items = [listItem('featured-authors', 'author')]
+    renderHook(() => useListPaneCounts(items, true))
+
+    await waitFor(() => expect(observeDocumentCount).toHaveBeenCalled())
+
+    expect(observeDocumentCount).toHaveBeenCalledWith(
+      '_type == $type',
+      {type: 'author'},
+      ['drafts'],
+      {tag: 'structure.list-pane-counts'},
+    )
+  })
+
   it('emits a record of counts from the observer emissions, keeping a resolved 0 as 0', async () => {
-    const items = [listItem('author', '_type == "author"'), listItem('book', '_type == "book"')]
+    const items = [listItem('author'), listItem('book')]
     const {result} = renderHook(() => useListPaneCounts(items, true))
 
     await waitFor(() => expect(observeDocumentCount).toHaveBeenCalled())
@@ -63,15 +78,15 @@ describe('useListPaneCounts', () => {
     expect(result.current).toEqual({})
 
     act(() => {
-      countSubjects.get('_type == "author"')?.next(3)
-      countSubjects.get('_type == "book"')?.next(0)
+      countSubjects.get('author')?.next(3)
+      countSubjects.get('book')?.next(0)
     })
 
     await waitFor(() => expect(result.current).toEqual({author: 3, book: 0}))
   })
 
   it('does not subscribe while disabled and returns the retained (empty) record', async () => {
-    const items = [listItem('author', '_type == "author"')]
+    const items = [listItem('author')]
     const {result} = renderHook(() => useListPaneCounts(items, false))
 
     await flushTimers()
@@ -82,7 +97,7 @@ describe('useListPaneCounts', () => {
 
   it('does not subscribe while the tab is hidden', async () => {
     setTabVisibility('hidden')
-    const items = [listItem('author', '_type == "author"')]
+    const items = [listItem('author')]
     renderHook(() => useListPaneCounts(items, true))
 
     await flushTimers()
@@ -91,14 +106,14 @@ describe('useListPaneCounts', () => {
   })
 
   it('retains the last resolved counts when it becomes inactive', async () => {
-    const items = [listItem('author', '_type == "author"')]
+    const items = [listItem('author')]
     const {result, rerender} = renderHook(({enabled}) => useListPaneCounts(items, enabled), {
       initialProps: {enabled: true},
     })
 
     await waitFor(() => expect(observeDocumentCount).toHaveBeenCalled())
     act(() => {
-      countSubjects.get('_type == "author"')?.next(5)
+      countSubjects.get('author')?.next(5)
     })
     await waitFor(() => expect(result.current).toEqual({author: 5}))
 
