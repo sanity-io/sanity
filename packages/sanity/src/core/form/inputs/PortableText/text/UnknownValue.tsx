@@ -1,0 +1,78 @@
+import {type SpanRenderProps, useEditor} from '@portabletext/editor'
+import {getSanitySubSchema} from '@portabletext/sanity-bridge'
+import {isPortableTextTextBlock, type Path} from '@sanity/types'
+import {toString as pathToString} from '@sanity/util/paths'
+import {type ReactNode} from 'react'
+import {styled} from 'styled-components'
+
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {getValueAtPath} from '../../../../field/paths/helpers'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {warnOnce} from '../warnOnce'
+
+const Root = styled.span`
+  border: 1px dotted var(--card-muted-fg-color);
+  border-radius: 2px;
+`
+
+type UnknownMarksProps = SpanRenderProps & {portableTextPath: Path}
+
+export function UnknownValue(props: {labels: string[]; block?: boolean; children: ReactNode}) {
+  return (
+    <Tooltip content={props.labels.join('; ')} placement="top" portal>
+      <Root as={props.block ? 'div' : 'span'} data-testid="unknown-value">
+        {props.children}
+      </Root>
+    </Tooltip>
+  )
+}
+
+export function UnknownMarks({portableTextPath, ...props}: UnknownMarksProps) {
+  const schemaTypes = usePortableTextMemberSchemaTypes()
+  const {t} = useTranslation()
+  const editor = useEditor()
+
+  const marks = props.node.marks ?? []
+  const labels: string[] = []
+
+  if (marks.length > 0) {
+    // Spans can sit inside containers (for example table cells), so both the
+    // member types and the containing block are resolved by path, not from
+    // the document root.
+    const value = editor.getSnapshot().context.value
+    const subSchema = getSanitySubSchema(schemaTypes.portableText, value, props.path)
+    const block = getValueAtPath(value, props.path.slice(0, -2))
+    const markDefs = isPortableTextTextBlock(block) ? (block.markDefs ?? []) : []
+    const fullyQualifiedPath = portableTextPath.concat(props.path)
+
+    for (const mark of marks) {
+      if (subSchema.decorators.some((decorator) => decorator.value === mark)) {
+        continue
+      }
+      const markDef = markDefs.find((candidate) => candidate._key === mark)
+      if (markDef) {
+        if (!subSchema.annotations.some((annotation) => annotation.name === markDef._type)) {
+          warnOnce(
+            `Could not find schema type for annotation: ${markDef._type} at ${pathToString(fullyQualifiedPath)}`,
+          )
+          labels.push(t('inputs.portable-text.unknown-value.annotation', {name: markDef._type}))
+        }
+        continue
+      }
+      warnOnce(
+        `Could not find schema type for mark: ${mark} at ${pathToString(fullyQualifiedPath)}`,
+      )
+      labels.push(t('inputs.portable-text.unknown-value.mark', {name: mark}))
+    }
+  }
+
+  if (labels.length === 0) {
+    return props.renderDefault(props)
+  }
+
+  return props.renderDefault({
+    ...props,
+    children: <UnknownValue labels={labels}>{props.children}</UnknownValue>,
+  })
+}

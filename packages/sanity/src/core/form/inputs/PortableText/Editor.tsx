@@ -116,10 +116,13 @@ export function Editor(props: EditorProps): ReactNode {
     [t],
   )
   const spellCheck = useSpellCheck()
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const renderDecorator = useCallback((decoratorProps: BlockDecoratorRenderProps) => {
-    return <Decorator {...decoratorProps} />
-  }, [])
+  const renderDecorator = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    (decoratorProps: BlockDecoratorRenderProps) => {
+      return <Decorator {...decoratorProps} portableTextPath={path} />
+    },
+    [path],
+  )
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 

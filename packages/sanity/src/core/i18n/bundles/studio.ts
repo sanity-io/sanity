@@ -1231,6 +1231,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.style.normal': 'Normal',
   /** Title of the "quote" block style */
   'inputs.portable-text.style.quote': 'Quote',
+  /** Tooltip on text whose annotation type is not defined in the schema */
+  'inputs.portable-text.unknown-value.annotation': 'Annotation not defined in the schema: {{name}}',
+  /** Tooltip on a block whose list type is not defined in the schema */
+  'inputs.portable-text.unknown-value.list-item': 'List type not defined in the schema: {{name}}',
+  /** Tooltip on text carrying a mark that is not defined in the schema */
+  'inputs.portable-text.unknown-value.mark': 'Mark not defined in the schema: {{name}}',
+  /** Tooltip on a block whose style is not defined in the schema */
+  'inputs.portable-text.unknown-value.style': 'Style not defined in the schema: {{name}}',
   /** Label for the table lane that appends a column */
   'inputs.portable-text.table.add-column': 'Add column at end',
   /** Label for the table lane that appends a row */

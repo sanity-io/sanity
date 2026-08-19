@@ -54,6 +54,12 @@ export interface TextBlockProps {
   floatingBoundary: HTMLElement | null
   focused: boolean
   isFullscreen?: boolean
+  /**
+   * The block's `listItem`, only when the schema defines it. The caller
+   * resolves it against the position's sub-schema; an unknown list type
+   * arrives as `undefined` and renders without list decoration.
+   */
+  listItem: string | undefined
   onItemClose: () => void
   onItemOpen: (path: Path) => void
   onItemRemove: (itemKey: string) => void
@@ -87,6 +93,7 @@ export function TextBlock(props: TextBlockProps) {
     floatingBoundary,
     focused,
     isFullscreen,
+    listItem,
     onItemClose,
     onItemOpen,
     onPathFocus,
@@ -183,7 +190,7 @@ export function TextBlock(props: TextBlockProps) {
   const text = useMemo(() => {
     return (
       <TextFlex align="flex-start" $level={value?.level}>
-        {value.listItem && (
+        {listItem && (
           <ListPrefixWrapper contentEditable={false}>
             <Text data-list-prefix="">
               <TextContainer />
@@ -195,7 +202,7 @@ export function TextBlock(props: TextBlockProps) {
         </div>
       </TextFlex>
     )
-  }, [value.listItem, value.level, children])
+  }, [listItem, value.level, children])
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (nested) {
@@ -223,12 +230,14 @@ export function TextBlock(props: TextBlockProps) {
   }, [isFullscreen, renderBlockActions, nested])
 
   const outerPaddingProps: PaddingProps = useMemo(() => {
+    // List markers are schema-resolved through `listItem`, but spacing follows
+    // the raw value so legacy list blocks keep the same document rhythm.
     if (value.listItem) {
       return {paddingY: 2}
     }
 
     return TEXT_STYLE_PADDING[value.style || 'normal'] || {paddingY: 2}
-  }, [value])
+  }, [value.listItem, value.style])
 
   const isOpen = Boolean(memberItem?.member.open)
   const parentSchemaType = schemaTypes.portableText
@@ -346,7 +355,7 @@ export function TextBlock(props: TextBlockProps) {
                 <TextRoot
                   $level={value.level || 1}
                   data-error={hasError ? '' : undefined}
-                  data-list-item={value.listItem}
+                  data-list-item={listItem}
                   data-markers={hasMarkers ? '' : undefined}
                   data-read-only={readOnly}
                   data-testid="text-block__text"
