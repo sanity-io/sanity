@@ -5,6 +5,7 @@ import {beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type DocumentFieldActionNode} from '../../../../config/document/fieldActions/types'
+import {studioDefaultLocaleResources, studioLocaleStrings} from '../../../../i18n/bundles/studio'
 import {FieldActionMenu} from '../FieldActionMenu'
 
 const mockNodes: DocumentFieldActionNode[] = [
@@ -66,5 +67,30 @@ describe('FieldActionMenu', () => {
 
     // The menu should open
     expect(onMenuOpenChange).toHaveBeenCalledWith(true)
+  })
+
+  it('should use the translated string for the overflow trigger accessible name', async () => {
+    const onMenuOpenChange = vi.fn()
+    const TranslatedWrapper = await createTestProvider({
+      resources: [
+        {
+          ...studioDefaultLocaleResources,
+          resources: {
+            ...studioLocaleStrings,
+            'form.field.actions-menu.title': 'Custom field actions label',
+          },
+        },
+      ],
+    })
+
+    render(
+      <TranslatedWrapper>
+        <FieldActionMenu nodes={mockNodes} onMenuOpenChange={onMenuOpenChange} />
+      </TranslatedWrapper>,
+    )
+
+    const trigger = screen.getByTestId('field-actions-trigger')
+    expect(trigger).toHaveAttribute('aria-label', 'Custom field actions label')
+    expect(screen.getByRole('button', {name: 'Custom field actions label'})).toBe(trigger)
   })
 })
