@@ -8,8 +8,13 @@ const AGENT_VERSION_ID_PREFIX = `${VERSION_FOLDER}.${AGENT_BUNDLE_PREFIX}`
 /**
  * GROQ clause that matches Content Agent version documents: path-based ids
  * (`versions.agent-*.<id>`) and opaque ids that carry an agent `_system.bundleId`.
+ *
+ * `_system.bundleId` is unset on most documents, making `string::startsWith`
+ * return `null` there. The `== true` comparison keeps the clause boolean so the
+ * negated filter still matches those documents (`!null` is `null` in GROQ,
+ * which would silently drop them).
  */
-const IS_AGENT_VERSION_GROQ = `(string::startsWith(_id, "${AGENT_VERSION_ID_PREFIX}") || string::startsWith(_system.bundleId, "${AGENT_BUNDLE_PREFIX}"))`
+const IS_AGENT_VERSION_GROQ = `(string::startsWith(_id, "${AGENT_VERSION_ID_PREFIX}") || string::startsWith(_system.bundleId, "${AGENT_BUNDLE_PREFIX}") == true)`
 
 /**
  * Filter used when searching with `perspective: 'raw'` so agent versions do not
