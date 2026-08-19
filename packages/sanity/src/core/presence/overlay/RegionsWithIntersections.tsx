@@ -14,6 +14,7 @@ import {
   type RegionWithIntersectionDetails,
   type ReportedRegionWithRect,
 } from '../types'
+import {arePresenceRegionDetailsEqual} from './arePresenceRegionDetailsEqual'
 import {getPresenceOverlayPosition} from './getPresenceOverlayPosition'
 import {createIntersectionObserver} from './intersectionObserver'
 import {
@@ -108,12 +109,15 @@ export function RegionsWithIntersections(
     const topSentinel = topSentinelRef.current
     const bottomSentinel = bottomSentinelRef.current
     if (!topSentinel || !bottomSentinel) {
-      setRegionsWithIntersectionDetails(EMPTY_REGION_DETAILS)
+      setRegionsWithIntersectionDetails((current) =>
+        current.length === 0 ? current : EMPTY_REGION_DETAILS,
+      )
       return
     }
 
-    setRegionsWithIntersectionDetails(
-      getRegionsWithIntersectionDetails(regionsRef.current, topSentinel, bottomSentinel),
+    const next = getRegionsWithIntersectionDetails(regionsRef.current, topSentinel, bottomSentinel)
+    setRegionsWithIntersectionDetails((current) =>
+      arePresenceRegionDetailsEqual(current, next) ? current : next,
     )
   }, [])
 
@@ -132,16 +136,20 @@ export function RegionsWithIntersections(
 
     const observer = new ResizeObserver((entries) => {
       const entry = entries[0]
-      if (entry) {
-        setOverlayWidth(entry.contentRect.width)
+      if (!entry) {
+        return
       }
-      updateFromSentinels()
+
+      setOverlayWidth((currentWidth) => {
+        const nextWidth = entry.contentRect.width
+        return currentWidth === nextWidth ? currentWidth : nextWidth
+      })
     })
 
     observer.observe(overlayRef.current)
 
     return () => observer.disconnect()
-  }, [updateFromSentinels])
+  }, [])
 
   return (
     <RootWrapper ref={ref}>
