@@ -34,7 +34,6 @@ import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
-import {useListFormat} from '../../../hooks/useListFormat'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
@@ -121,7 +120,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const setElementRef = useSetPortableTextMemberItemElementRef()
   const editor = useEditor()
   const {t} = useTranslation()
-  const listFormat = useListFormat()
 
   // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with
   // Sanity-specific PortableTextMemberSchemaTypes instead of the editor's
@@ -236,7 +234,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       }
       if (unknownValueLabels.length > 0) {
         inner = (
-          <UnknownValue block label={listFormat.format(unknownValueLabels)}>
+          <UnknownValue block labels={unknownValueLabels}>
             {inner}
           </UnknownValue>
         )
@@ -298,7 +296,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
-      listFormat,
       schemaTypes.block,
       schemaTypes.portableText,
       scrollElement,
