@@ -490,11 +490,6 @@ function getBifurClient(client: SanityClient, auth: AuthStore) {
   const urlWithTag = `${url}?tag=${requestTagPrefix}`
 
   const options = auth.token ? {token$: auth.token} : {}
-  // The `@sanity/bifur-client` dependency carries a pnpm patch
-  // (patches/@sanity__bifur-client@1.0.0.patch) applying the connection fix from
-  // https://github.com/sanity-io/bifur-client/pull/30 ahead of its release: momentary
-  // zero-subscriber gaps (React render/effect cycles) must not abort and reconnect the socket.
-  // TODO(bifur-client): drop the patch and bump the dependency once the fix is published.
   return fromUrl(urlWithTag, options)
 }
 

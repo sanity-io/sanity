@@ -3,9 +3,8 @@ import {type Subscription} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 /**
- * Guards the WebSocket connection semantics of `@sanity/bifur-client`'s `fromUrl`, which the
- * studio currently gets from a pnpm patch (`patches/@sanity__bifur-client@1.0.0.patch`) applying
- * https://github.com/sanity-io/bifur-client/pull/30 ahead of its release:
+ * Guards the WebSocket connection semantics `@sanity/bifur-client`'s `fromUrl` gained in
+ * https://github.com/sanity-io/bifur-client/pull/30 (v2), which the studio relies on:
  *
  * - a socket that is still `CONNECTING` is never closed mid-handshake (which browsers punish
  *   with the "WebSocket is closed before the connection is established" console warning) — a
@@ -14,8 +13,8 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
  *   e.g. react-rx `useObservable`'s render-phase warm-up subscription) instead of disconnecting
  *   the moment the subscriber count blips to zero.
  *
- * The suite runs against whatever `@sanity/bifur-client` resolves to, so once the patch is
- * replaced by a version bump it verifies the released client preserves these semantics.
+ * The suite runs against whatever `@sanity/bifur-client` resolves to, so it also flags any
+ * future client release that regresses these semantics.
  */
 
 class FakeWebSocket {
@@ -64,7 +63,7 @@ const GRACEFUL_CLOSE = {
   reason: 'WebSockets connection closed by client',
 }
 
-describe('the patched @sanity/bifur-client connection (fromUrl)', () => {
+describe('the @sanity/bifur-client connection (fromUrl)', () => {
   let subscriptions: Subscription[]
 
   const createHeartbeats = () =>
