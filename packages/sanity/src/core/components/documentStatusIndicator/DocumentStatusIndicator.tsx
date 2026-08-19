@@ -52,7 +52,7 @@ type Status = 'published' | 'draft' | 'asap' | 'scheduled' | 'undecided'
 /**
  * Renders a dot indicating the current document status.
  *
- * @internal
+ * @deprecated Use `DocumentVersionsStatusIndicator` instead.
  */
 export function DocumentStatusIndicator({draft, published, versions}: DocumentStatusProps) {
   const {data: releases} = useActiveReleases()

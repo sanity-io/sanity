@@ -4,6 +4,8 @@
  * @internal
  */
 const variantsLocaleStrings = {
+  /** Tooltip for the variants tool link in the navbar. */
+  'navbar.tooltip': 'View variants',
   /** Label for the variants navigation row. */
   'navbar.view-as': 'View as',
   /** Label for the version selector in the variants navigation row. */

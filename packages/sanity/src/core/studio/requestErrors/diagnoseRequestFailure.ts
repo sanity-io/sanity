@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 
 import {checkCors, type CorsCheckCache} from '../workspaces/corsCheck'
-import {classifyConfigError, isNetworkError, isTimeoutError} from './classify'
+import {classifyConfigError, isNetworkError, isRequestTimeoutError} from './classify'
 
 /**
  * A diagnosed request failure — the reason a request the studio can't recover
@@ -68,8 +68,9 @@ export function createRequestFailureProbe(
     }
 
     // Opaque network/CORS failure — probe `/check/cors` to learn why. Skip
-    // timeouts (the probe itself would just time out).
-    if (!isNetworkError(err) || isTimeoutError(err)) {
+    // timeouts (the probe itself would just time out), including leftover
+    // get-it v8 / Node timeout codes that `isTimeoutError` no longer matches.
+    if (!isNetworkError(err) || isRequestTimeoutError(err)) {
       return {type: 'unknown'}
     }
 

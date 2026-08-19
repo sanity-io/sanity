@@ -51,14 +51,17 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
     if (uniquePresence.length === 1) {
       const firstPresence = uniquePresence[0]
       const documentId = firstPresence?.documentId
-      const release = documentId
-        ? releases.find(
-            (r) => getReleaseIdFromReleaseDocumentId(r._id) === getVersionFromId(documentId),
-          )
-        : undefined
+      const versionId = documentId ? getVersionFromId(documentId) : undefined
+      const displayName = firstPresence.user.displayName
+
+      if (!versionId) {
+        return t('presence.tooltip.one-without-release', {displayName})
+      }
+
+      const release = releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === versionId)
       const releaseTitle = release?.metadata?.title
       return t('presence.tooltip.one', {
-        displayName: firstPresence.user.displayName,
+        displayName,
         releaseTitle: releaseTitle || t('release-placeholder.title'),
       })
     }

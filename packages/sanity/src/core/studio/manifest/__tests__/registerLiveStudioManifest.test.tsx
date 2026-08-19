@@ -133,7 +133,7 @@ describe('registerStudioManifest', () => {
 
       expect(mockRequest).toHaveBeenCalledWith({
         method: 'POST',
-        uri: '/projects/app-project/user-applications/app-123/config/live-manifest',
+        url: '/projects/app-project/user-applications/app-123/config/live-manifest',
         body: {
           value: expect.objectContaining({
             workspaces: expect.any(Array),

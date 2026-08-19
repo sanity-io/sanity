@@ -1,7 +1,8 @@
 import {type AssetSource} from '@sanity/types'
-import {Box, Flex, Stack, Text, useGlobalKeyDown} from '@sanity/ui'
+import {Flex, Stack, Text, useGlobalKeyDown} from '@sanity/ui'
 import {useCallback} from 'react'
 import {isValidElementType} from 'react-is'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
