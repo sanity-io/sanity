@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 
 import {usePresenceStore} from '../datastores'
 import {type DocumentPresence} from './types'
@@ -13,5 +13,10 @@ export function useDocumentPresence(documentId: string): DocumentPresence[] {
     () => presenceStore.documentPresence(documentId),
     [presenceStore, documentId],
   )
-  return useObservable(presence$, initial)
+  // Kept synchronous: presence emits per collaborator report with no incoming
+  // rate limit, and deferred delivery lets a sustained burst restart the
+  // in-flight render pass indefinitely — the pane never settles while the
+  // burst lasts. Synchronous delivery commits every update, so rendering
+  // always makes progress.
+  return useSyncObservable(presence$, initial)
 }
