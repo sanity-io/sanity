@@ -22,6 +22,8 @@ const variantsLocaleStrings = {
   'navbar.clear': 'Clear',
   /** Tooltip for clearing the selected variant. */
   'navbar.variant.clear': 'Clear variant selection',
+  /** Tooltip for the button that clears the selected version */
+  'navbar.version.clear': 'Clear version selection',
   /** Label for the Variants overview primary create action (mirrors "New release"). */
   'overview.action.new-variant': 'New variant definition',
   /** Label for the Variants overview row edit action. */

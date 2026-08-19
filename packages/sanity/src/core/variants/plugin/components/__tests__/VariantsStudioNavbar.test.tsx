@@ -40,12 +40,12 @@ vi.mock('../../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
 }))
 
-vi.mock('../../../../perspective/navbar/ReleasesNav', () => ({
-  ReleasesNav: () => <div data-testid="releases-nav" />,
+vi.mock('../../../../perspective/navbar/GlobalPerspectiveMenu', () => ({
+  GlobalPerspectiveMenu: () => <div data-testid="global-perspective-menu" />,
 }))
 
-vi.mock('../VariantsNav', () => ({
-  VariantsNav: () => <div data-testid="variants-nav" />,
+vi.mock('../VariantsMenu', () => ({
+  VariantsMenu: () => <div data-testid="variants-menu" />,
 }))
 
 describe('VariantsStudioNavbar', () => {
@@ -66,35 +66,37 @@ describe('VariantsStudioNavbar', () => {
     return view
   }
 
-  it('does not show clear when version and variant are at default', async () => {
+  it('disables clear when version and variant are at default', async () => {
     await renderNavbar()
 
-    expect(screen.queryByTestId('view-as-clear-button')).not.toBeInTheDocument()
+    // The button keeps its place in the bar rather than unmounting, so the
+    // filters do not shift sideways the moment a selection is made.
+    expect(screen.getByTestId('view-as-clear-button')).toBeDisabled()
   })
 
-  it('shows clear when a non-default perspective is selected', async () => {
+  it('enables clear when a non-default perspective is selected', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
 
     await renderNavbar()
 
-    expect(screen.getByTestId('view-as-clear-button')).toBeInTheDocument()
+    expect(screen.getByTestId('view-as-clear-button')).toBeEnabled()
   })
 
-  it('shows clear when a variant is selected', async () => {
+  it('enables clear when a variant is selected', async () => {
     routerMock.stickyParams = {variant: getVariantId(variantAlphaAudience._id)}
 
     await renderNavbar()
 
-    expect(screen.getByTestId('view-as-clear-button')).toBeInTheDocument()
+    expect(screen.getByTestId('view-as-clear-button')).toBeEnabled()
   })
 
-  it('shows clear when sticky variant is set but not resolved in the store', async () => {
+  it('enables clear when sticky variant is set but not resolved in the store', async () => {
     routerMock.stickyParams = {variant: 'missing-variant'}
     variantsMock.byId = new Map()
 
     await renderNavbar()
 
-    expect(screen.getByTestId('view-as-clear-button')).toBeInTheDocument()
+    expect(screen.getByTestId('view-as-clear-button')).toBeEnabled()
   })
 
   it('clears version and variant when clear is clicked', async () => {

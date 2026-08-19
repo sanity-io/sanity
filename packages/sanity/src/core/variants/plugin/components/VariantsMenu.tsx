@@ -26,8 +26,10 @@ import {type SystemVariant} from '../../types'
 import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
 
 const StyledMenu = styled(Menu)`
-  min-width: 240px;
-  max-width: 320px;
+  /* Fixed, not a 240-320px range: see the note in GlobalPerspectiveMenu. A
+     right-aligned popover whose width tracks its content shifts sideways as you
+     move through the list. */
+  width: 320px;
 
   > [data-ui='Stack'] {
     gap: 0;
@@ -46,7 +48,15 @@ const OversizedButton = styled(Button)`
 /**
  * @internal
  */
-export function VariantsMenu(): React.JSX.Element {
+export function VariantsMenu({
+  trigger,
+}: {
+  /**
+   * Overrides the chevron-only trigger. The perspective bar passes a full
+   * labelled button so the whole pill is one touch target.
+   */
+  trigger?: React.ReactElement
+} = {}): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const router = useRouter()
   const setVariant = useSetVariant()
@@ -95,13 +105,15 @@ export function VariantsMenu(): React.JSX.Element {
   return (
     <MenuButton
       button={
-        <OversizedButton
-          data-testid="variants-nav-menu-button"
-          iconRight={ChevronDownIcon}
-          mode="bleed"
-          padding={2}
-          radius="full"
-        />
+        trigger ?? (
+          <OversizedButton
+            data-testid="variants-nav-menu-button"
+            iconRight={ChevronDownIcon}
+            mode="bleed"
+            padding={2}
+            radius="full"
+          />
+        )
       }
       id="variants-nav-menu"
       onClose={handleMenuClose}

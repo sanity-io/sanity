@@ -14,8 +14,12 @@ import {ReleasesList} from './ReleasesList'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
 const StyledMenu = styled(Menu)`
-  min-width: 200px;
-  max-width: 320px;
+  /* A fixed width rather than a 200-320px range. The popover is right-aligned
+     (placement: bottom-end), so any content-driven width change — a scrollbar
+     appearing, a longer release title rendering — moves the menu's left edge,
+     which reads as the menu jittering left and right while you move through the
+     list. A pinned width cannot move. */
+  width: 320px;
   /* Remove the default menu gap*/
   > [data-ui='Stack'] {
     gap: 0;
@@ -29,10 +33,16 @@ export function GlobalPerspectiveMenu({
   selectedPerspectiveName,
   areReleasesEnabled = true,
   menuItemProps,
+  trigger,
 }: {
   selectedPerspectiveName: string | undefined
   areReleasesEnabled: boolean
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  /**
+   * Overrides the chevron-only trigger. The perspective bar passes a full
+   * labelled button so the whole pill is one touch target.
+   */
+  trigger?: React.ReactElement
 }): React.JSX.Element {
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
@@ -57,13 +67,15 @@ export function GlobalPerspectiveMenu({
     <>
       <MenuButton
         button={
-          <OversizedButton
-            data-testid="global-perspective-menu-button"
-            iconRight={ChevronDownIcon}
-            mode="bleed"
-            padding={2}
-            radius="full"
-          />
+          trigger ?? (
+            <OversizedButton
+              data-testid="global-perspective-menu-button"
+              iconRight={ChevronDownIcon}
+              mode="bleed"
+              padding={2}
+              radius="full"
+            />
+          )
         }
         id="releases-menu"
         onClose={resetRangeVisibility}

@@ -1706,6 +1706,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.navbar.published': 'Published',
   /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'View scheduling',
+  /** Tooltip for the button that toggles the perspective bar's visibility in the navbar */
+  'release.navbar.view-as-toggle': 'Show perspective bar',
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
   /** Description for warning that the published schedule time is in the past */
