@@ -90,7 +90,7 @@ export function VariantsStudioNavbar(props: NavbarProps) {
               tone={getReleaseTone(selectedPerspective)}
               onRemove={hasVersionSelection ? handleClearVersion : undefined}
               removeLabel={t('navbar.version.clear')}
-              animateOn={versionLabel}
+              label={versionLabel}
             >
               <GlobalPerspectiveMenu
                 selectedPerspectiveName={selectedPerspectiveName}
@@ -112,7 +112,7 @@ export function VariantsStudioNavbar(props: NavbarProps) {
               tone={hasVariantSelection ? 'suggest' : 'default'}
               onRemove={hasVariantSelection ? handleClearVariant : undefined}
               removeLabel={t('navbar.variant.clear')}
-              animateOn={variantLabel}
+              label={variantLabel}
             >
               <VariantsMenu
                 trigger={

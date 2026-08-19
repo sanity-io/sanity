@@ -1,8 +1,6 @@
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-// oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
-import {Button, Text, TextInput, Flex} from '@sanity/ui'
+import {Text, TextInput, Flex} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState, type JSX} from 'react'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
@@ -12,7 +10,6 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {oversizedButtonStyle} from '../../../perspective/styles'
 import {useSetVariant} from '../../../perspective/useSetVariant'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -39,22 +36,10 @@ const SectionHeader = styled(Text)`
   letter-spacing: 0.04em;
 `
 
-const OversizedButton = styled(Button)`
-  ${oversizedButtonStyle}
-`
-
 /**
  * @internal
  */
-export function VariantsMenu({
-  trigger,
-}: {
-  /**
-   * Overrides the chevron-only trigger. The perspective bar passes a full
-   * labelled button so the whole pill is one touch target.
-   */
-  trigger?: React.ReactElement
-} = {}): React.JSX.Element {
+export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const router = useRouter()
   const setVariant = useSetVariant()
@@ -102,17 +87,7 @@ export function VariantsMenu({
 
   return (
     <MenuButton
-      button={
-        trigger ?? (
-          <OversizedButton
-            data-testid="variants-nav-menu-button"
-            iconRight={ChevronDownIcon}
-            mode="bleed"
-            padding={2}
-            radius="full"
-          />
-        )
-      }
+      button={trigger}
       id="variants-nav-menu"
       onClose={handleMenuClose}
       menu={
