@@ -18,8 +18,6 @@ const variantsLocaleStrings = {
   'navbar.variant.filter-placeholder': 'Filter variants…',
   /** Section header for non-default variants in the dropdown. */
   'navbar.variant.other': 'Other variants',
-  /** Label for clearing version and variant selections. */
-  'navbar.clear': 'Clear',
   /** Tooltip for clearing the selected variant. */
   'navbar.variant.clear': 'Clear variant selection',
   /** Tooltip for the button that clears the selected version */

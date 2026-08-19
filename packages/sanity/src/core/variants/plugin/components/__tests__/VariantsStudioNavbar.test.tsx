@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react'
+import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -9,7 +9,6 @@ import {activeASAPRelease} from '../../../../releases/__fixtures__/release.fixtu
 import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {getVariantId} from '../../../tool/util'
-import {type SystemVariant} from '../../../types'
 import {VariantsStudioNavbar} from '../VariantsStudioNavbar'
 
 const mockNavigate = vi.fn()
@@ -18,21 +17,11 @@ const routerMock = vi.hoisted(() => ({
   stickyParams: {} as Record<string, string | undefined>,
 }))
 
-const variantsMock = vi.hoisted(() => ({
-  byId: new Map<string, SystemVariant>(),
-}))
-
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   useRouter: vi.fn(() => ({
     stickyParams: routerMock.stickyParams,
     navigate: mockNavigate,
-  })),
-}))
-
-vi.mock('../../../store/useAllVariants', () => ({
-  useAllVariants: vi.fn(() => ({
-    byId: variantsMock.byId,
   })),
 }))
 
@@ -48,12 +37,21 @@ vi.mock('../VariantsMenu', () => ({
   VariantsMenu: () => <div data-testid="variants-menu" />,
 }))
 
+function getFilter(prefix: string) {
+  const prefixText = screen.getByText(prefix)
+  const filter = prefixText.closest('[data-ui="PerspectiveFilter"]')
+  if (!filter) {
+    throw new Error(`PerspectiveFilter with prefix "${prefix}" not found`)
+  }
+  return filter as HTMLElement
+}
+
 describe('VariantsStudioNavbar', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     routerMock.stickyParams = {}
-    variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
     usePerspectiveMockReturn.selectedPerspective = 'drafts'
+    usePerspectiveMockReturn.selectedVariant = undefined
   })
 
   const renderNavbar = async () => {
@@ -66,52 +64,74 @@ describe('VariantsStudioNavbar', () => {
     return view
   }
 
-  it('disables clear when version and variant are at default', async () => {
+  it('hides remove controls when version and variant are at default', async () => {
     await renderNavbar()
 
-    // The button keeps its place in the bar rather than unmounting, so the
-    // filters do not shift sideways the moment a selection is made.
-    expect(screen.getByTestId('view-as-clear-button')).toBeDisabled()
+    expect(screen.queryByTestId('perspective-filter-remove')).not.toBeInTheDocument()
   })
 
-  it('enables clear when a non-default perspective is selected', async () => {
+  it('shows version remove when a non-default perspective is selected', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
 
     await renderNavbar()
 
-    expect(screen.getByTestId('view-as-clear-button')).toBeEnabled()
+    expect(
+      within(getFilter('Version')).getByTestId('perspective-filter-remove'),
+    ).toBeInTheDocument()
+    expect(
+      within(getFilter('Variant')).queryByTestId('perspective-filter-remove'),
+    ).not.toBeInTheDocument()
   })
 
-  it('enables clear when a variant is selected', async () => {
+  it('shows variant remove when a variant is selected', async () => {
     routerMock.stickyParams = {variant: getVariantId(variantAlphaAudience._id)}
 
     await renderNavbar()
 
-    expect(screen.getByTestId('view-as-clear-button')).toBeEnabled()
+    expect(
+      within(getFilter('Version')).queryByTestId('perspective-filter-remove'),
+    ).not.toBeInTheDocument()
+    expect(
+      within(getFilter('Variant')).getByTestId('perspective-filter-remove'),
+    ).toBeInTheDocument()
   })
 
-  it('enables clear when sticky variant is set but not resolved in the store', async () => {
+  it('shows variant remove when sticky variant is set but not resolved in the store', async () => {
     routerMock.stickyParams = {variant: 'missing-variant'}
-    variantsMock.byId = new Map()
 
     await renderNavbar()
 
-    expect(screen.getByTestId('view-as-clear-button')).toBeEnabled()
+    expect(
+      within(getFilter('Variant')).getByTestId('perspective-filter-remove'),
+    ).toBeInTheDocument()
   })
 
-  it('clears version and variant when clear is clicked', async () => {
+  it('clears version when version remove is clicked', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeASAPRelease
-    routerMock.stickyParams = {variant: getVariantId(variantAlphaAudience._id)}
 
     await renderNavbar()
 
     const user = userEvent.setup()
-    await user.click(screen.getByTestId('view-as-clear-button'))
+    await user.click(within(getFilter('Version')).getByTestId('perspective-filter-remove'))
 
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {
         excludedPerspectives: null,
         perspective: '',
+      },
+    })
+  })
+
+  it('clears variant when variant remove is clicked', async () => {
+    routerMock.stickyParams = {variant: getVariantId(variantAlphaAudience._id)}
+
+    await renderNavbar()
+
+    const user = userEvent.setup()
+    await user.click(within(getFilter('Variant')).getByTestId('perspective-filter-remove'))
+
+    expect(mockNavigate).toHaveBeenCalledWith({
+      stickyParams: {
         variant: null,
       },
     })

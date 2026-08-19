@@ -1,5 +1,4 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {CloseIcon} from '@sanity/icons/Close'
 import {Card, Flex} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
@@ -67,50 +66,48 @@ export function VariantsStudioNavbar(props: NavbarProps) {
         paddingX={3}
         borderBottom
       >
-        <Flex align="center" gap={2}>
-          <Flex flex={1} align="center" justify="center" gap={2} wrap="wrap">
-            <PerspectiveFilter
-              prefix={t('navbar.version')}
-              tone={getReleaseTone(selectedPerspective)}
-              onRemove={hasVersionSelection ? handleClearVersion : undefined}
-              removeLabel={t('navbar.version.clear')}
-              label={versionLabel}
-            >
-              <GlobalPerspectiveMenu
-                selectedPerspectiveName={selectedPerspectiveName}
-                areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
-                trigger={
-                  <Button
-                    data-testid="global-perspective-menu-button"
-                    icon={<ReleaseAvatarIcon release={selectedPerspective} />}
-                    iconRight={ChevronDownIcon}
-                    mode="bleed"
-                    text={versionLabel}
-                  />
-                }
-              />
-            </PerspectiveFilter>
+        <Flex align="center" justify="center" gap={2} wrap="wrap">
+          <PerspectiveFilter
+            prefix={t('navbar.version')}
+            tone={getReleaseTone(selectedPerspective)}
+            onRemove={hasVersionSelection ? handleClearVersion : undefined}
+            removeLabel={t('navbar.version.clear')}
+            label={versionLabel}
+          >
+            <GlobalPerspectiveMenu
+              selectedPerspectiveName={selectedPerspectiveName}
+              areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
+              trigger={
+                <Button
+                  data-testid="global-perspective-menu-button"
+                  icon={<ReleaseAvatarIcon release={selectedPerspective} />}
+                  iconRight={ChevronDownIcon}
+                  mode="bleed"
+                  text={versionLabel}
+                />
+              }
+            />
+          </PerspectiveFilter>
 
-            <PerspectiveFilter
-              prefix={t('navbar.variant')}
-              tone={hasVariantSelection ? 'suggest' : 'default'}
-              onRemove={hasVariantSelection ? handleClearVariant : undefined}
-              removeLabel={t('navbar.variant.clear')}
-              label={variantLabel}
-            >
-              <VariantsMenu
-                trigger={
-                  <Button
-                    data-testid="variants-nav-menu-button"
-                    icon={RhombusIcon}
-                    iconRight={ChevronDownIcon}
-                    mode="bleed"
-                    text={variantLabel}
-                  />
-                }
-              />
-            </PerspectiveFilter>
-          </Flex>
+          <PerspectiveFilter
+            prefix={t('navbar.variant')}
+            tone={hasVariantSelection ? 'suggest' : 'default'}
+            onRemove={hasVariantSelection ? handleClearVariant : undefined}
+            removeLabel={t('navbar.variant.clear')}
+            label={variantLabel}
+          >
+            <VariantsMenu
+              trigger={
+                <Button
+                  data-testid="variants-nav-menu-button"
+                  icon={RhombusIcon}
+                  iconRight={ChevronDownIcon}
+                  mode="bleed"
+                  text={variantLabel}
+                />
+              }
+            />
+          </PerspectiveFilter>
         </Flex>
       </Card>
     </Flex>
