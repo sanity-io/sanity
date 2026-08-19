@@ -1,6 +1,7 @@
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {type PreviewProps} from 'sanity'
+import {Box} from 'ui5'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'

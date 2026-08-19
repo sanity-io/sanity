@@ -1,8 +1,9 @@
 import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {UploadIcon} from '@sanity/icons/Upload'
 import {type SchemaType} from '@sanity/types'
-import {Box, Inline, Text} from '@sanity/ui'
+import {Inline, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {resolveUploadAssetSources} from '../../../studio/uploads/resolveUploadAssetSources'

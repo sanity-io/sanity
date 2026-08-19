@@ -32,6 +32,7 @@
     "!lib/analyze-data.md"
   ],
   "type": "module",
+  "sideEffects": true,
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
@@ -155,7 +156,7 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/access-ui": "workspace:*",
     "@sanity/asset-utils": "^2.3.0",
-    "@sanity/bifur-client": "^1.0.0",
+    "@sanity/bifur-client": "^2.0.2",
     "@sanity/cli": "^8.0.3",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.8",
@@ -250,7 +251,7 @@
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.15",
     "@storybook/react-vite": "^10.5.8",
-    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.4",
     "@types/debug": "^4.1.13",

@@ -1,6 +1,7 @@
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useState} from 'react'
+import {Box} from 'ui5'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'

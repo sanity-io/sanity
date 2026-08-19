@@ -24,7 +24,6 @@ import {getSanitySubSchema} from '@portabletext/sanity-bridge'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {
   BoundaryElementProvider,
-  Box,
   Portal,
   PortalProvider,
   useBoundaryElement,
@@ -32,6 +31,7 @@ import {
 } from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {useListFormat} from '../../../hooks/useListFormat'
