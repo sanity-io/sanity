@@ -155,7 +155,7 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/access-ui": "workspace:*",
     "@sanity/asset-utils": "^2.3.0",
-    "@sanity/bifur-client": "^2.0.1",
+    "@sanity/bifur-client": "^2.0.2",
     "@sanity/cli": "^8.0.2",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.8",
