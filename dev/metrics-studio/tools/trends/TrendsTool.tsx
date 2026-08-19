@@ -47,6 +47,7 @@ import {
   type TrendGroup,
   type TrendRun,
   type TrendSeries,
+  vitalSections,
 } from './data'
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
 import {type DriftResult, worstBySeries} from './drift'
@@ -285,11 +286,11 @@ function AckMenu(props: {
       menu={
         <Menu>
           {props.acked ? (
-            <MenuItem text="Un-ack" onClick={props.onUnack} />
+            <MenuItem text="Reopen" onClick={props.onUnack} />
           ) : (
             <>
               <MenuItem text="Silence" onClick={() => props.onAck('silenced')} />
-              <MenuItem text="Snooze 7d" onClick={() => props.onAck('snoozed')} />
+              <MenuItem text="Snooze 7 days" onClick={() => props.onAck('snoozed')} />
               {/* "Mark fixed" only makes sense for a regression — an improvement
                   has nothing to fix */}
               {props.direction === 'regression' && (
@@ -367,7 +368,7 @@ function SeriesCard(props: {
               <Box
                 as="button"
                 onClick={onFocus}
-                title="Focus this chart"
+                title="Go to chart"
                 style={{
                   background: 'none',
                   border: 0,
@@ -507,20 +508,20 @@ function SoakPanel(props: {
     slopes.length > 0 && {
       id: 'slope',
       label: 'Slope over runs',
-      hint: 'Per-minute slope, across runs — is a leak or degradation worsening release over release?',
+      hint: 'Per-minute slope, across runs. Is a leak or degradation worsening release over release?',
       charts: slopes,
     },
     endValues.length > 0 && {
       id: 'end',
       label: 'End of run',
-      hint: 'End-of-run value, across runs — where each metric landed by the end of the soak.',
+      hint: 'End-of-run value, across runs: where each metric landed by the end of the soak.',
       charts: endValues,
     },
     latest &&
       latest.charts.length > 0 && {
         id: 'latest',
         label: 'Latest run',
-        hint: `Latest soak run — ${latest.run.git?.branch ?? 'unknown'} @ ${latest.run.git?.sha?.slice(0, 10) ?? '?'} · minute-by-minute.`,
+        hint: `Latest soak run: ${latest.run.git?.branch ?? 'unknown'} @ ${latest.run.git?.sha?.slice(0, 10) ?? '?'}, minute by minute.`,
         charts: latest.charts,
       },
   ].filter(Boolean) as {id: string; label: string; hint: string; charts: TrendSeries[]}[]
@@ -835,13 +836,13 @@ export function TrendsTool() {
                 <Stack gap={3}>
                   <Text size={1} muted>
                     One benchmark run per day of the studio built from <code>main</code>, measured
-                    against a local API mock (no network, no real project) — see{' '}
-                    <code>perf/bench</code>. Each chart tracks one metric over time; each dot is one
-                    run — click it for the run details and links to the PR, commit, and CI run.
+                    against a local API mock (no network, no real project); see{' '}
+                    <code>perf/bench</code>. Each chart tracks one metric over time. Click anywhere
+                    in a chart to open the nearest run, with links to the PR, commit, and CI run.
                   </Text>
                   <Text size={1} muted>
-                    Because the CI machine varies day to day, absolute numbers are host-relative:
-                    before trusting a spike, check the host calibration in the Calibration tab — if
+                    Because the CI machine varies day to day, absolute numbers depend on the host:
+                    before trusting a spike, check the host calibration in the Calibration tab. If
                     it spikes on the same day, suspect the runner, not the studio. Flat lines are
                     the goal; the ⓘ on each chart explains what it measures.
                   </Text>
@@ -851,7 +852,9 @@ export function TrendsTool() {
 
             {error && (
               <Card tone="critical" border padding={3} radius={2}>
-                <Text size={1}>Failed to load runs: {error}</Text>
+                <Text size={1}>
+                  Couldn't load benchmark runs: {error}. Reload the page to try again.
+                </Text>
               </Card>
             )}
             {loading && (
@@ -862,8 +865,8 @@ export function TrendsTool() {
             {!error && !loading && series.length === 0 && (
               <Card tone="transparent" border padding={4} radius={2}>
                 <Text size={1} muted>
-                  No benchmark runs in this range yet. The daily track-main cron stores one run per
-                  day once perf/bench is on the main branch.
+                  No benchmark runs in this range. Try a longer range, or wait for the daily
+                  benchmark (one run per day from main).
                 </Text>
               </Card>
             )}
@@ -925,6 +928,39 @@ export function TrendsTool() {
                         latest={latestSoak}
                         layers={layers}
                       />
+                    ) : activeTab.id === 'vitals' ? (
+                      // One section per vital, so the overview reads by metric
+                      // ("how is LCP doing, everywhere?") — see vitalSections.
+                      // The extra top padding separates the first section
+                      // header from the tab description it would otherwise hug.
+                      <Stack gap={6} paddingTop={3}>
+                        {vitalSections(series.filter((entry) => entry.group === 'vitals')).map(
+                          (section) => (
+                            <Stack key={section.vital} gap={4}>
+                              <Flex align="baseline" gap={2}>
+                                <Text size={1} weight="semibold">
+                                  {section.vital}
+                                </Text>
+                                {section.name && (
+                                  <Text size={1} muted>
+                                    {section.name}
+                                  </Text>
+                                )}
+                              </Flex>
+                              <ChartGrid
+                                layers={layers}
+                                series={section.series}
+                                driftBySeries={driftBySeries}
+                                silencedBySeries={silencedBySeries}
+                                baselineBySeries={baselineBySeries}
+                                drift={drift}
+                                focusedKey={focusedKey}
+                                onFocusMetric={focusMetric}
+                              />
+                            </Stack>
+                          ),
+                        )}
+                      </Stack>
                     ) : (
                       <ChartGrid
                         layers={layers}

@@ -5,13 +5,22 @@ import {scaleLinear, scaleTime} from '@visx/scale'
 import {Area, LinePath} from '@visx/shape'
 import {useRef, useState} from 'react'
 
-import {formatValue, isSignedUnit, type TrendLine, type TrendPoint, type TrendSeries} from './data'
+import {
+  formatTick,
+  formatValue,
+  INP_MIN_INTERACTIONS,
+  isSignedUnit,
+  type TrendLine,
+  type TrendPoint,
+  type TrendSeries,
+} from './data'
 import {baselineDetail, type DriftBaseline, type DriftResult} from './drift'
 import {ALL_LAYERS_VISIBLE, type LayerState} from './layers'
 import {categoricalColor} from './palette'
 import {RunDetailPopover} from './RunDetailPopover'
 
-const MARGIN = {top: 8, right: 8, bottom: 22, left: 44}
+// Left gutter is computed per chart from its tick labels — see marginLeft
+const MARGIN = {top: 8, right: 8, bottom: 22}
 
 /**
  * The nearest earlier point on the selected point's own line that measured a
@@ -69,6 +78,14 @@ export const COLOR = {
    * levels" without the tonal claim that something needs attention.
    */
   baselineNeutral: 'var(--card-muted-fg-color, #727892)',
+  /**
+   * The web.dev "good" threshold rule on vitals charts. Amber because crossing
+   * it is a caution, and because the other overlay hues are claimed: critical
+   * red / positive green are the drift directions, grey is the neutral
+   * baseline — a grey-dashed quality bar would be indistinguishable from a
+   * neutral baseline's before-rule.
+   */
+  goodThreshold: 'var(--card-badge-caution-fg-color, #a35200)',
 }
 
 /**
@@ -298,8 +315,45 @@ export function TrendChart(props: {
   const allPoints = lines.flatMap((line) => line.points)
   if (width < 10 || allPoints.length === 0) return null
 
-  const innerWidth = width - MARGIN.left - MARGIN.right
   const innerHeight = height - MARGIN.top - MARGIN.bottom
+
+  // Signed units (slopes) center on zero with a symmetric domain, so a
+  // near-flat metric reads as a calm line through the middle rather than
+  // magnified jitter. Unsigned metrics keep the 0→max framing.
+  const values = allPoints.map((point) => point.value)
+  // The "good" bar is part of the question a vitals chart answers ("how far
+  // under the bar are we?"), so the domain always includes it — a bar clipped
+  // away because we're comfortably good would hide exactly that comfort. The
+  // resolution cost is real but bounded: the bar is never far from plausible
+  // values of its own metric.
+  const highs = allPoints.map((point) => point.p90 ?? point.value)
+  const dataTop = Math.max(...highs, series.goodThreshold ?? 0)
+  const yScale = scaleLinear({
+    domain: isSignedUnit(unit)
+      ? (() => {
+          const extent = Math.max(0.5, ...values.map((value) => Math.abs(value))) * 1.2
+          return [-extent, extent]
+        })()
+      : [0, dataTop > 0 ? dataTop * 1.1 : 1],
+    range: [innerHeight, 0],
+    nice: true,
+  })
+  const yDomainMax = yScale.domain().at(-1) ?? 0
+
+  // The gutter is sized to the labels it will actually hold, not hardcoded: a
+  // fixed width kept losing to whichever unit produced the widest tick next —
+  // and a label that overflows by a couple of pixels is the worst failure
+  // mode, shaving the leading glyph's left stroke so "8000ms" reads "3000ms".
+  // The labels are knowable here (scale.ticks(3) is exactly what AxisLeft
+  // draws for numTicks=3), so measure the longest and pad for the tick mark.
+  // 6.2px/char over-approximates fontSize 10 digits; the floor keeps charts
+  // with tiny labels ("0", "3") from hugging the card edge.
+  const tickLabels = yScale.ticks(3).map((tick) => formatTick(tick, unit, yDomainMax))
+  const marginLeft = Math.max(
+    36,
+    Math.ceil(Math.max(0, ...tickLabels.map((label) => label.length)) * 6.2) + 12,
+  )
+  const innerWidth = width - marginLeft - MARGIN.right
 
   const dates = allPoints.map((point) => point.date.getTime())
   let [minDate, maxDate] = [Math.min(...dates), Math.max(...dates)]
@@ -309,22 +363,6 @@ export function TrendChart(props: {
     maxDate += 24 * 60 * 60 * 1000
   }
   const xScale = scaleTime({domain: [new Date(minDate), new Date(maxDate)], range: [0, innerWidth]})
-
-  // Signed units (slopes) center on zero with a symmetric domain, so a
-  // near-flat metric reads as a calm line through the middle rather than
-  // magnified jitter. Unsigned metrics keep the 0→max framing.
-  const values = allPoints.map((point) => point.value)
-  const highs = allPoints.map((point) => point.p90 ?? point.value)
-  const yScale = scaleLinear({
-    domain: isSignedUnit(unit)
-      ? (() => {
-          const extent = Math.max(0.5, ...values.map((value) => Math.abs(value))) * 1.2
-          return [-extent, extent]
-        })()
-      : [0, Math.max(...highs) > 0 ? Math.max(...highs) * 1.1 : 1],
-    range: [innerHeight, 0],
-    nice: true,
-  })
 
   const x = (point: TrendPoint) => xScale(point.date)
   // The band only reads when there's one line — overlapping bands across branches
@@ -395,8 +433,10 @@ export function TrendChart(props: {
       {/* No role="img": the plot is interactive (see the focusable capture
           rect below), not a static image — claiming "img" would hide that */}
       <svg width={width} height={height}>
-        <Group left={MARGIN.left} top={MARGIN.top}>
-          {/* Zero reference for signed slope charts — the "flat is good" line */}
+        <Group left={marginLeft} top={MARGIN.top}>
+          {/* Zero reference for signed slope charts — the "flat is good" line.
+              Dashed like the other reference marks: solid, it reads as a flat
+              data series the moment the median layer is toggled off. */}
           {isSignedUnit(unit) && (
             <line
               x1={0}
@@ -405,7 +445,24 @@ export function TrendChart(props: {
               y2={yScale(0)}
               stroke={COLOR.axis}
               strokeWidth={1}
+              strokeDasharray="3 3"
               opacity={0.4}
+            />
+          )}
+          {/* The web.dev "good" bar. Long dashes so it never reads as the
+              baseline overlay's rules ("4 3" dashed) or the zero line ("3 3");
+              the legend names it, so the meaning never rests on color alone. */}
+          {series.goodThreshold !== undefined && (
+            <line
+              x1={0}
+              x2={innerWidth}
+              y1={yScale(series.goodThreshold)}
+              y2={yScale(series.goodThreshold)}
+              stroke={COLOR.goodThreshold}
+              strokeWidth={1}
+              strokeDasharray="7 4"
+              opacity={0.5}
+              pointerEvents="none"
             />
           )}
           {/* Baseline overlay sits under the band, line and dots — it's
@@ -520,7 +577,9 @@ export function TrendChart(props: {
             numTicks={3}
             stroke={COLOR.axis}
             tickStroke={COLOR.axis}
-            tickFormat={(value) => formatValue(Number(value), unit)}
+            // domainMax keeps every tick of one axis in one unit (all-seconds
+            // once the scale top crosses 10s, all-ms below it)
+            tickFormat={(value) => formatTick(Number(value), unit, yScale.domain().at(-1))}
             tickLabelProps={{fill: COLOR.axis, fontSize: 10, textAnchor: 'end', dx: -2, dy: 3}}
           />
           {/* Transparent capture rect over the plot area drives the crosshair
@@ -537,7 +596,7 @@ export function TrendChart(props: {
             style={{cursor: 'pointer', outline: 'none'}}
             tabIndex={0}
             role="application"
-            aria-label={`${series.title} — ${stepTimes.length} run(s).${
+            aria-label={`${series.title}: ${stepTimes.length} ${stepTimes.length === 1 ? 'run' : 'runs'}.${
               overlayBaseline && drift
                 ? // "Flagged" only when something actually fired — neutral
                   // overlays are drawn on nearly every chart, and announcing
@@ -548,6 +607,10 @@ export function TrendChart(props: {
                     overlayBaseline.baseline,
                     unit,
                   )} to ${formatValue(overlayBaseline.recent, unit)}.`
+                : ''
+            }${
+              series.goodThreshold !== undefined
+                ? ` Good is ${formatValue(series.goodThreshold, unit)} or less (web.dev).`
                 : ''
             } Arrow keys inspect runs, Enter opens details.`}
             onPointerMove={handleMove}
@@ -574,9 +637,8 @@ export function TrendChart(props: {
             position: 'absolute',
             top: 0,
             // Flip past the midpoint so the tooltip never runs off the edge
-            left: anchor + MARGIN.left > width / 2 ? undefined : anchor + MARGIN.left + 8,
-            right:
-              anchor + MARGIN.left > width / 2 ? width - (anchor + MARGIN.left) + 8 : undefined,
+            left: anchor + marginLeft > width / 2 ? undefined : anchor + marginLeft + 8,
+            right: anchor + marginLeft > width / 2 ? width - (anchor + marginLeft) + 8 : undefined,
             pointerEvents: 'none',
           }}
         >
@@ -599,6 +661,25 @@ export function TrendChart(props: {
                   <Text size={0} weight="semibold">
                     {formatValue(entry.point.value, unit)}
                   </Text>
+                  {/* INP confidence: the count qualifies the value, so it sits
+                      right next to it — caution-toned when below the floor the
+                      percentile rule wants, since that INP is a weak estimate */}
+                  {entry.point.interactions !== undefined && (
+                    <Text
+                      size={0}
+                      muted={entry.point.interactions >= INP_MIN_INTERACTIONS}
+                      style={
+                        entry.point.interactions < INP_MIN_INTERACTIONS
+                          ? {color: 'var(--card-badge-caution-fg-color)'}
+                          : undefined
+                      }
+                    >
+                      n={entry.point.interactions}
+                      {entry.point.interactions < INP_MIN_INTERACTIONS
+                        ? ` of ${INP_MIN_INTERACTIONS}`
+                        : ''}
+                    </Text>
+                  )}
                   <Text size={0} muted>
                     {lines.length > 1
                       ? entry.branch
@@ -660,7 +741,7 @@ export function TrendChart(props: {
             ref={setAnchorEl}
             style={{
               position: 'absolute',
-              left: MARGIN.left + x(selected),
+              left: marginLeft + x(selected),
               top: MARGIN.top + yScale(selected.value),
               width: 1,
               height: 1,

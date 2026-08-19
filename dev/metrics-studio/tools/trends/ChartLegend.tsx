@@ -1,6 +1,6 @@
 import {Flex, Text} from '@sanity/ui'
 
-import {type TrendSeries} from './data'
+import {formatValue, type TrendSeries} from './data'
 import {baselineDetail, baselineLabel, type DriftResult} from './drift'
 import {ALL_LAYERS_VISIBLE, type Layer, type LayerState} from './layers'
 import {categoricalColor} from './palette'
@@ -51,7 +51,7 @@ function LegendItem(props: {
       aria-pressed={!hidden}
       title={[hint, hidden ? `Show ${label} on all charts` : `Hide ${label} on all charts`]
         .filter(Boolean)
-        .join(' — ')}
+        .join('. ')}
       style={{
         background: 'none',
         border: 0,
@@ -92,6 +92,32 @@ export function ChartLegend(props: {
         ? COLOR.baselineImprovement
         : COLOR.baselineNeutral
 
+  // The web.dev "good" bar. Not a toggleable layer: it's the tab's whole
+  // frame of reference, and hiding it would make the amber rule unexplained.
+  const goodItem = series.goodThreshold !== undefined && (
+    <Flex
+      gap={1}
+      align="center"
+      title="web.dev 'good' recommendation, measured on field data at the 75th percentile; the lab medians here are not directly comparable"
+    >
+      <Swatch>
+        <line
+          x1={0}
+          y1={5}
+          x2={16}
+          y2={5}
+          stroke={COLOR.goodThreshold}
+          strokeWidth={1.5}
+          strokeDasharray="5 3"
+          opacity={0.7}
+        />
+      </Swatch>
+      <Text size={0} muted>
+        good ≤ {formatValue(series.goodThreshold, series.unit)}
+      </Text>
+    </Flex>
+  )
+
   if (comparing) {
     return (
       <Flex gap={3} wrap="wrap" align="center">
@@ -105,6 +131,7 @@ export function ChartLegend(props: {
             </Text>
           </Flex>
         ))}
+        {goodItem}
         {series.goal === 'lower' && (
           <Text size={0} muted>
             · lower is better
@@ -127,7 +154,7 @@ export function ChartLegend(props: {
         <LegendItem
           layer="median"
           layers={layers}
-          label={series.goal === 'context' ? 'reference' : 'median (p50)'}
+          label={series.goal === 'context' ? 'reference' : (series.lineLabel ?? 'median (p50)')}
           swatch={
             <line
               x1={0}
@@ -190,6 +217,7 @@ export function ChartLegend(props: {
           }
         />
       )}
+      {goodItem}
       {series.goal === 'lower' && (
         <Text size={0} muted>
           lower is better

@@ -26,17 +26,13 @@ export function ciRunUrl(runId: string, attempt?: number): string {
 }
 
 /**
- * `gh` command dispatching an A/B bench run that compares two commits
- * (bench.yml `ab_from`/`ab_to` inputs). A command to copy rather than a link:
- * GitHub has no URL that prefills workflow_dispatch inputs.
+ * GitHub compare view listing every commit between two runs' commits — the
+ * question a suspicious step in a chart raises is "what landed between these
+ * two points". Three dots deliberately: the commit *range* reachable from
+ * `toSha` but not `fromSha`, not a two-endpoint diff.
  */
-export function abDispatchCommand(fromSha: string, toSha: string): string {
-  return `gh workflow run bench.yml -R ${REPO} -f ab_from=${fromSha} -f ab_to=${toSha}`
-}
-
-/** The dispatched-runs list, for watching an A/B comparison after copying. */
-export function dispatchRunsUrl(): string {
-  return `https://github.com/${REPO}/actions/workflows/bench.yml?query=event%3Aworkflow_dispatch`
+export function compareUrl(fromSha: string, toSha: string): string {
+  return `https://github.com/${REPO}/compare/${fromSha}...${toSha}`
 }
 
 /** Link a scenario's source file on the branch it was measured on (or main). */

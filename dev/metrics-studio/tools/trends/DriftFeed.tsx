@@ -64,7 +64,7 @@ function DriftRow(props: {
       ))}
       <Box flex={1} />
       {acked ? (
-        <Button mode="bleed" fontSize={0} padding={2} text="Un-ack" onClick={onClear} />
+        <Button mode="bleed" fontSize={0} padding={2} text="Reopen" onClick={onClear} />
       ) : (
         <MenuButton
           // Slugged: series keys contain spaces/`·`, which are invalid in DOM
@@ -74,7 +74,7 @@ function DriftRow(props: {
           menu={
             <Menu>
               <MenuItem text="Silence" onClick={() => onAck('silenced')} />
-              <MenuItem text={`Snooze ${SNOOZE_DAYS}d`} onClick={() => onAck('snoozed')} />
+              <MenuItem text={`Snooze ${SNOOZE_DAYS} days`} onClick={() => onAck('snoozed')} />
               {/* "Mark fixed" only for regressions — an improvement has nothing
                   to fix */}
               {entry.direction === 'regression' && (
