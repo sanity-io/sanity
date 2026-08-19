@@ -1,9 +1,12 @@
 import {
-  type BlockAnnotationRenderProps,
+  type AnnotationRenderProps,
   type BlockObjectRenderProps,
+  defineAnnotation,
   defineBlockObject,
+  defineDecorator,
   defineInlineObject,
   defineTextBlock,
+  type DecoratorRenderProps,
   type EditorSelection,
   type HotkeyOptions,
   type InlineObjectRenderProps,
@@ -49,6 +52,7 @@ import {BlockObject} from './object/BlockObject'
 import {CombinedAnnotationPopover} from './object/CombinedAnnotationPopover'
 import {InlineObject} from './object/InlineObject'
 import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditModal'
+import {Decorator} from './text/Decorator'
 import {ListItem} from './text/ListItem'
 import {Style} from './text/Style'
 import {TextBlock} from './text/TextBlock'
@@ -378,37 +382,28 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     ],
   )
 
-  // Stable reference: `NodePlugin` re-runs its registration effect when
-  // `nodes` changes by reference.
-  const catchAllNodes = useMemo<RegistrableNode[]>(
-    () => [
-      defineTextBlock({type: '*', render: renderTextBlock}),
-      defineBlockObject({type: '*', render: renderBlockObject}),
-      defineInlineObject({type: '*', render: renderInlineObject}),
-    ],
-    [renderTextBlock, renderBlockObject, renderInlineObject],
-  )
+  const renderDecorator = useCallback((decoratorProps: DecoratorRenderProps) => {
+    return <Decorator {...decoratorProps} />
+  }, [])
 
   const editorRenderAnnotation = useCallback(
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    (annotationProps: BlockAnnotationRenderProps) => {
+    (annotationProps: AnnotationRenderProps) => {
       const {
+        annotation,
         children,
         focused: editorNodeFocused,
         path: aPath,
         selected,
-        schemaType: aSchemaType,
-        value: aValue,
       } = annotationProps
-      const annotationPath = [...aPath.slice(0, -2), 'markDefs', {_key: aValue._key}]
+      const annotationPath = [...aPath.slice(0, -2), 'markDefs', {_key: annotation._key}]
       const sanitySchemaType = getSanitySubSchema(
         schemaTypes.portableText,
         editor.getSnapshot().context.value,
         annotationPath,
-      ).annotations.find((t) => t.name === aSchemaType.name)
+      ).annotations.find((t) => t.name === annotation._type)
       if (!sanitySchemaType) {
         // This should never happen
-        throw new Error(`Could not find Sanity schema type for annotation: ${aSchemaType.name}`)
+        throw new Error(`Could not find Sanity schema type for annotation: ${annotation._type}`)
       }
       return (
         <Annotation
@@ -432,7 +427,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           schemaType={sanitySchemaType}
           selected={selected}
           setElementRef={setElementRef}
-          value={aValue}
+          value={annotation}
         >
           {children}
         </Annotation>
@@ -460,6 +455,26 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       editor,
     ],
   )
+
+  // Stable reference: `NodePlugin` re-runs its registration effect when
+  // `nodes` changes by reference.
+  const catchAllNodes = useMemo<RegistrableNode[]>(
+    () => [
+      defineTextBlock({type: '*', render: renderTextBlock}),
+      defineBlockObject({type: '*', render: renderBlockObject}),
+      defineInlineObject({type: '*', render: renderInlineObject}),
+      defineDecorator({type: '*', render: renderDecorator}),
+      defineAnnotation({type: '*', render: editorRenderAnnotation}),
+    ],
+    [
+      renderTextBlock,
+      renderBlockObject,
+      renderInlineObject,
+      renderDecorator,
+      editorRenderAnnotation,
+    ],
+  )
+
   const ariaDescribedBy = elementProps['aria-describedby']
 
   // Create an initial editor selection based on the focusPath
@@ -516,7 +531,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             path={path}
             rangeDecorations={rangeDecorations}
             readOnly={readOnly}
-            renderAnnotation={editorRenderAnnotation}
             setPortalElement={setPortalElement}
             scrollElement={scrollElement}
             setScrollElement={setScrollElement}
@@ -546,7 +560,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       handleToggleFullscreen,
       path,
       rangeDecorations,
-      editorRenderAnnotation,
       scrollElement,
     ],
   )
