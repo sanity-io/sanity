@@ -1,4 +1,3 @@
-import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {MenuIcon} from '@sanity/icons/Menu'
 import {
   BoundaryElementProvider,
@@ -229,17 +228,6 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   {...newDocumentOptions}
                   modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
                 />
-                {/* Perspective bar visibility toggle */}
-                {beta?.variants?.enabled && (
-                  <Button
-                    mode="bleed"
-                    icon={EyeOpenIcon}
-                    tooltipProps={{
-                      content: t('release.navbar.view-as-toggle'),
-                      placement: 'bottom',
-                    }}
-                  />
-                )}
                 {/* Search button (desktop) */}
                 {!shouldRender.searchFullscreen && (
                   <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
