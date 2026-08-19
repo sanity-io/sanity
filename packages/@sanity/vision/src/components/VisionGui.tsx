@@ -657,6 +657,7 @@ export function VisionGui(props: VisionGuiProps) {
       return
     }
     handleStudioVariantChange()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [activeVariant])
 
   const handleStudioPerspectiveChange = useEffectEvent((stack: StackablePerspective[]) => {
@@ -667,6 +668,7 @@ export function VisionGui(props: VisionGuiProps) {
   // Handle pinned perspective changes
   useEffect(() => {
     handleStudioPerspectiveChange(perspectiveStack)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [perspectiveStack])
 
   const generateUrl = useCallback(

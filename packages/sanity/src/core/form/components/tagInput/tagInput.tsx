@@ -249,6 +249,7 @@ export function TagInput(
       inputElement.style.width = '0'
       inputElement.style.width = `calc(${inputElement.scrollWidth}px + 1rem)`
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [inputValue])
 
   return (

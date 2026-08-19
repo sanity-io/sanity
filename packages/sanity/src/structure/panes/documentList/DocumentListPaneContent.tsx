@@ -129,6 +129,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     return () => {
       clearTimeout(timer)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [collapsed, items])
 
   const renderItem = useCallback<CommandListRenderItemCallback<SanityDocument>>(

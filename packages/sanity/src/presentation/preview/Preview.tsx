@@ -155,7 +155,7 @@ export const Preview = memo(function PreviewComponent(
       /**
        * Only set the stable perspective if it hasn't been set yet.
        */
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setStablePerspective((prev) => (prev === null ? perspective : prev))
     }
   }, [handlesPerspectiveChange, perspective])
@@ -167,7 +167,7 @@ export const Preview = memo(function PreviewComponent(
      * variant changes in `src` so they no longer cause a full page reload.
      */
     if (handlesVariantChange) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setStableVariant((prev) => (prev === null ? variant : prev))
     }
   }, [handlesVariantChange, variant])
@@ -223,7 +223,7 @@ export const Preview = memo(function PreviewComponent(
      * deadline — a slow mutation or manual refresh is not a failed load.
      */
     if (!isLoading) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setLoadTimedOut(false)
       /**
        * A load-timeout dismissal has to be cleared here, since `continueAnyway` is otherwise only
@@ -278,7 +278,7 @@ export const Preview = memo(function PreviewComponent(
       return undefined
     }
     if (overlaysConnection === 'connected') {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setSomethingIsWrong(false)
       setShowOverlaysConnectionState(false)
       setTimedOut(false)
@@ -422,6 +422,7 @@ export const Preview = memo(function PreviewComponent(
       stop()
       controller.destroy()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [checkOrigin])
   useEffect(() => {
     if (overlaysConnection === 'connecting' || overlaysConnection === 'reconnecting') {
@@ -455,6 +456,7 @@ export const Preview = memo(function PreviewComponent(
             'origin' in data.data &&
             typeof data.data.origin === 'string'
           ) {
+            // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
             reportMismatchingOrigin(data.data.origin)
           }
         },
