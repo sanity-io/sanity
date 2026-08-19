@@ -52,6 +52,7 @@ interface EditorProps {
   path: Path
   readOnly?: boolean
   rangeDecorations?: RangeDecoration[]
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderAnnotation: RenderAnnotationFunction
   scrollElement: HTMLElement | null
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
@@ -115,6 +116,7 @@ export function Editor(props: EditorProps): ReactNode {
     [t],
   )
   const spellCheck = useSpellCheck()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const renderDecorator = useCallback((decoratorProps: BlockDecoratorRenderProps) => {
     return <Decorator {...decoratorProps} />
   }, [])
@@ -129,7 +131,9 @@ export function Editor(props: EditorProps): ReactNode {
       onPaste,
       rangeDecorations,
       'ref': elementRef,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       renderAnnotation,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       renderDecorator,
       renderPlaceholder,
       scrollSelectionIntoView,
