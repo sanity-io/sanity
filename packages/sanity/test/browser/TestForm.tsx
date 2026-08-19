@@ -45,6 +45,7 @@ const NOOP = () => null
 const windowWithDocumentState = window as Window & {documentState?: unknown}
 
 interface TestFormProps {
+  baseVariantDocument?: SanityDocument
   document?: SanityDocument
   focusPath?: Path
   id?: string
@@ -69,6 +70,7 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 
 export function TestForm(props: TestFormProps) {
   const {
+    baseVariantDocument,
     document: documentFromProps,
     focusPath: focusPathFromProps,
     id: idFromProps = 'root',
@@ -178,6 +180,8 @@ export function TestForm(props: TestFormProps) {
     documentValue: document,
     perspective: 'published',
     hasUpstreamVersion: false,
+    baseVariantValue: baseVariantDocument,
+    hasBaseVariant: Boolean(baseVariantDocument),
   })
 
   const formStateRef = useRef(formState)
@@ -263,13 +267,16 @@ export function TestForm(props: TestFormProps) {
     () => ({
       __internal_patchChannel: patchChannel,
       __internal_fieldActions: fieldActions,
+      baseVariantValue: baseVariantDocument,
       changed: false,
+      changedFromBaseVariant: formState?.changedFromBaseVariant,
       changesOpen: false,
       collapsedFieldSets: undefined,
       collapsedPaths: undefined,
       focused: formState?.focused,
       focusPath: formState?.focusPath || EMPTY_ARRAY,
       groups: formState?.groups || EMPTY_ARRAY,
+      hasBaseVariant: Boolean(baseVariantDocument),
       hasUpstreamVersion: false,
       id: idFromProps,
       level: formState?.level || 0,
@@ -290,7 +297,9 @@ export function TestForm(props: TestFormProps) {
       value: formState?.value as FormDocumentValue,
     }),
     [
+      baseVariantDocument,
       fieldActions,
+      formState?.changedFromBaseVariant,
       formState?.focused,
       formState?.focusPath,
       formState?.groups,

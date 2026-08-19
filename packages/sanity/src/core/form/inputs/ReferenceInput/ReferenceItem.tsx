@@ -87,6 +87,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     validation,
     inputId,
     changed,
+    changedFromBaseVariant,
     focused,
     children,
     inputProps: {onChange, focusPath, onPathFocus, renderPreview, elementProps},
@@ -355,6 +356,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               deprecated={schemaType.deprecated}
               schemaType={schemaType}
               path={path}
+              changedFromBaseVariant={changedFromBaseVariant}
               readOnly={readOnly}
             >
               {children}

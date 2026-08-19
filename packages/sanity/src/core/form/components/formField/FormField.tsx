@@ -48,6 +48,10 @@ export interface FormFieldProps {
   validation?: FormNodeValidation[]
   deprecated?: DeprecatedProperty
   path: Path
+  /**
+   * Whether the value differs to the document's base variant.
+   */
+  changedFromBaseVariant?: boolean
 }
 
 /** @internal */
@@ -62,6 +66,7 @@ export const FormField = memo(function FormField(
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_comments: comments,
     children,
+    changedFromBaseVariant = false,
     description,
     inputId,
     level,
@@ -76,7 +81,11 @@ export const FormField = memo(function FormField(
 
   return (
     <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
-      <FormRow gutterStartCell={<FormFieldGutter path={path} />}>
+      <FormRow
+        gutterStartCell={
+          <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
+        }
+      >
         <Stack
           {...restProps}
           data-level={level}
