@@ -20,6 +20,14 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 class FakeWebSocket {
   static instances: FakeWebSocket[] = []
 
+  // The platform exposes the readyState constants both statically
+  // (`WebSocket.OPEN`) and on instances (`ws.OPEN`); mirror both so the double
+  // stays faithful regardless of which form the client compares against.
+  static CONNECTING = 0 as const
+  static OPEN = 1 as const
+  static CLOSING = 2 as const
+  static CLOSED = 3 as const
+
   CONNECTING = 0 as const
   OPEN = 1 as const
   CLOSING = 2 as const
