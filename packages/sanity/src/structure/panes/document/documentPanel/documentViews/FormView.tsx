@@ -173,6 +173,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
       handleInitialValue()
     }
     // React to changes in hasRev only
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [hasRev])
 
   const [formRef, setFormRef] = useState<null | HTMLFormElement>(null)
@@ -192,7 +193,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
 
   useEffect(() => {
     if (focusPath.length !== 0) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setHasFocusedAnyPath(true)
     }
   }, [focusPath])

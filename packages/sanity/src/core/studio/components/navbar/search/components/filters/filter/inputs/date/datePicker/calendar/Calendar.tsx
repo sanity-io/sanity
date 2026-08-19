@@ -150,6 +150,7 @@ export function Calendar(props: CalendarProps) {
     ) {
       focusCurrentWeekDay()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [focusCurrentWeekDay, focusedDate])
 
   useEffect(() => {
@@ -162,7 +163,7 @@ export function Calendar(props: CalendarProps) {
     // Only date has changed
     if (onlyDateChanged) {
       if (dateIsAfterEndDate) {
-        // oxlint-disable-next-line react/react-compiler
+        // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
         setSelectEndValue(true)
         onSelect({date, endDate: null})
       }

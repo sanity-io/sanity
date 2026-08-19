@@ -57,6 +57,7 @@ export function EditReleaseDialog({
         status: 'error',
         title: t('release.toast.edit-release-error.title'),
       })
+      // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
     } finally {
       isSavingRef.current = false
       setIsSaving(false)

@@ -289,7 +289,7 @@ export function ReleasesOverview() {
   const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setHasMounted(true)
   }, [])
 

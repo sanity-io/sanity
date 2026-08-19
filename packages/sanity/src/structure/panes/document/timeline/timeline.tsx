@@ -62,7 +62,7 @@ export const Timeline = ({
       const selected = chunksWithMetadata.find((chunk) => chunk.id === selectedChunkId)
       if (selected && isNonPublishChunk(selected) && selected.parentId) {
         const parentId = selected.parentId
-        // oxlint-disable-next-line react/react-compiler
+        // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
         setExpandedParents((prev) => {
           if (prev.has(parentId)) return prev
           const next = new Set(prev)
@@ -160,7 +160,7 @@ export const Timeline = ({
     ],
   )
 
-  // oxlint-disable-next-line react/react-compiler
+  // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => setMounted(true), [])
 
   return (

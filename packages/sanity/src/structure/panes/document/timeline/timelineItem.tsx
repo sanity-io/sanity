@@ -159,7 +159,7 @@ export function TimelineItem({
           <div style={{position: 'relative'}}>
             <UserAvatarStack maxLength={3} userIds={authorUserIds} size={2} />
             <IconBox align="center" justify="center" $color={TIMELINE_ITEM_EVENT_TONE[type]}>
-              {/* oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work */}
+              {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
               <Text size={0}>{IconComponent && <IconComponent />}</Text>
             </IconBox>
           </div>

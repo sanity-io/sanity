@@ -233,7 +233,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   useEffect(() => {
     if (!enableSearchSpinner && !isLoading) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setEnableSearchSpinner(paneKey)
     }
   }, [enableSearchSpinner, isLoading, paneKey])
@@ -241,9 +241,10 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   useEffect(() => {
     // Clear search field and disable search spinner
     // when switching between panes (i.e. when paneKey changes).
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     handleClearSearch()
     setEnableSearchSpinner()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [paneKey, handleClearSearch])
 
   useEffect(() => {
@@ -252,7 +253,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     // applied ordering back to relevance.
     if (!trimmedSearchQuery) {
       // TODO: Refactor search ordering reset to avoid effect state updates.
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setSearchOrderingId(RELEVANCE_ORDERING_ID)
     }
   }, [trimmedSearchQuery])
