@@ -390,6 +390,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   )
 
   const editorRenderAnnotation = useCallback(
+    // oxlint-disable-next-line no-deprecated -- pending @portabletext/editor render props migration
     (annotationProps: BlockAnnotationRenderProps) => {
       const {
         children,

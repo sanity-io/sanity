@@ -21,6 +21,7 @@ const Root = styled.span(({theme}: {theme: Theme}) => {
   `
 })
 
+// oxlint-disable-next-line no-deprecated -- pending @portabletext/editor render props migration
 export function Decorator(props: BlockDecoratorRenderProps) {
   const {value, focused, selected, children, schemaType} = props
   const schemaTypes = usePortableTextMemberSchemaTypes()
