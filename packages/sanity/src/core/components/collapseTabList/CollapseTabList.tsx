@@ -2,6 +2,7 @@ import {Flex} from '@sanity/ui'
 import {
   Children,
   cloneElement,
+  type CSSProperties,
   type ReactNode,
   useCallback,
   useMemo,
@@ -43,6 +44,7 @@ interface CollapseTabListProps {
   onMenuClose?: () => void
   collapsed?: boolean
   disableRestoreFocusOnClose?: boolean
+  style?: CSSProperties
 }
 
 /**
@@ -58,6 +60,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
     disableRestoreFocusOnClose,
     onMenuClose,
     collapsed,
+    style,
     ...rest
   } = props
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
@@ -119,7 +122,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
       ref={ref}
       sizing="border"
       {...rest}
-      style={{position: 'relative', minWidth: 0}}
+      style={{position: 'relative', minWidth: 0, ...style}}
     >
       <Flex justify="center" gap={gap} flex={1}>
         {displayChildren}
