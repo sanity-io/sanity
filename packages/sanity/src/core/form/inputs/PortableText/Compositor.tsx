@@ -465,6 +465,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   )
 
   const editorRenderAnnotation = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (annotationProps: BlockAnnotationRenderProps) => {
       const {
         children,

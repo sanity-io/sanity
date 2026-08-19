@@ -107,7 +107,7 @@ export function TestForm(props: TestFormProps) {
 
   useEffect(() => {
     if (documentFromProps) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setDocument(documentFromProps)
       windowWithDocumentState.documentState = documentFromProps
     }
@@ -115,7 +115,7 @@ export function TestForm(props: TestFormProps) {
 
   useEffect(() => {
     if (focusPathFromProps) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setFocusPath(focusPathFromProps)
 
       const lastSegment = focusPathFromProps[focusPathFromProps.length - 1]
@@ -273,12 +273,10 @@ export function TestForm(props: TestFormProps) {
       id: idFromProps,
       level: formState?.level || 0,
       members: formState?.members || EMPTY_ARRAY,
-      // oxlint-disable-next-line react/react-compiler
       onChange: handleChange,
       onFieldGroupSelect: NOOP,
       onPathBlur: handleBlur,
       onPathFocus: handleFocus,
-      // oxlint-disable-next-line react/react-compiler
       onPathOpen: setOpenPath,
       onSelectFieldGroup: handleSetActiveFieldGroup,
       onSetFieldSetCollapsed: handleOnSetCollapsedFieldSet,

@@ -46,13 +46,14 @@ export function ValidationProgressIndicator({
       return () => clearTimeout(timer)
     }
     return undefined
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [isFinished, showCheckmark])
 
   useEffect(() => {
     // If it's not validating, we should not be showing the checkmark
     // it is only shown after a delay set by the previous useEffect
     if (isValidating) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setShowCheckmark(false)
     }
   }, [isValidating])

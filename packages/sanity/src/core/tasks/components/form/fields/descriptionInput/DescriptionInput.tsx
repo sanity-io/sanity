@@ -70,8 +70,9 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
 
   useEffect(() => {
     if (!rootRef) return
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setTextboxHeight(rootRef)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [value, setTextboxHeight, rootRef])
 
   if (!currentUser) return null
