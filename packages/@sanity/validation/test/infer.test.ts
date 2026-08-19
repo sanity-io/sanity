@@ -6,11 +6,12 @@ import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/typ
 import has from 'lodash-es/has.js'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
-import {type ValidateDocumentOptions, validationMarkerCodes} from '../src'
+import {validationMarkerCodes} from '../src'
 import {
   getFallbackLocaleSource,
   hasValidationContext,
   inferFromSchema,
+  type ValidateDocumentInternalOptions,
   validateDocumentInternal,
 } from '../src/_internal'
 import {createMockSanityClient} from './mocks/mockSanityClient'
@@ -24,7 +25,12 @@ function createSchema(schemaDef: {name: string; types: any[]}) {
   return inferFromSchema(SchemaBuilder.compile({...schemaDef, parent: builtinSchema}))
 }
 
-function validateDocument({client: documentClient, ...options}: ValidateDocumentOptions) {
+function validateDocument({
+  client: documentClient,
+  ...options
+}: Omit<ValidateDocumentInternalOptions, 'environment' | 'getClient' | 'i18n'> & {
+  client: SanityClient
+}) {
   return validateDocumentInternal({
     ...options,
     environment: 'studio',
