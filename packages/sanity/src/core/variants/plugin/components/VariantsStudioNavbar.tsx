@@ -11,6 +11,8 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {GlobalPerspectiveMenu} from '../../../perspective/navbar/GlobalPerspectiveMenu'
 import {useGetDefaultPerspective} from '../../../perspective/useGetDefaultPerspective'
 import {usePerspective} from '../../../perspective/usePerspective'
+import {useSetPerspective} from '../../../perspective/useSetPerspective'
+import {useSetVariant} from '../../../perspective/useSetVariant'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {isReleaseDocument} from '../../../releases/store/types'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
@@ -18,34 +20,22 @@ import {isDraftPerspective, isPublishedPerspective} from '../../../releases/util
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
 import {useWorkspace} from '../../../studio/workspace'
 import {variantsLocaleNamespace} from '../../i18n'
-import {useAllVariants} from '../../store/useAllVariants'
-import {decodeVariantIdFromRoute, getVariantTitle} from '../../tool/util'
+import {getVariantTitle} from '../../tool/util'
 import {PerspectiveFilter} from './PerspectiveFilter'
 import {VariantsMenu} from './VariantsMenu'
 
 export function VariantsStudioNavbar(props: NavbarProps) {
   const {t} = useTranslation(variantsLocaleNamespace)
   const {t: coreT} = useTranslation()
-  const {selectedPerspective, selectedPerspectiveName} = usePerspective()
+  const {selectedPerspective, selectedPerspectiveName, selectedVariant} = usePerspective()
   const router = useRouter()
   const releasesToolAvailable = useReleasesToolAvailable()
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
-  const {byId: variantsById} = useAllVariants()
-
-  const selectedVariantDocumentId = decodeVariantIdFromRoute(
-    router.stickyParams.variant ?? undefined,
-  )
-  const selectedVariant = selectedVariantDocumentId
-    ? variantsById.get(selectedVariantDocumentId)
-    : undefined
-
-  // Keyed off the sticky param rather than the resolved variant: a param that
-  // points at a variant the store cannot resolve still counts as a selection,
-  // otherwise clearing is disabled and the dangling param cannot be removed.
+  const setVariant = useSetVariant()
+  const setPerspective = useSetPerspective()
   const hasVariantSelection = Boolean(router.stickyParams.variant)
   const defaultPerspective = useGetDefaultPerspective()
   const hasVersionSelection = selectedPerspective !== defaultPerspective
-  const canClear = hasVariantSelection || hasVersionSelection
 
   const versionLabel = useMemo(() => {
     if (isPublishedPerspective(selectedPerspective)) return coreT('release.chip.published')
@@ -60,19 +50,13 @@ export function VariantsStudioNavbar(props: NavbarProps) {
     ? getVariantTitle(selectedVariant)
     : t('navbar.variant.default')
 
-  const handleClearAll = useCallback(() => {
-    router.navigate({
-      stickyParams: {excludedPerspectives: null, perspective: '', variant: null},
-    })
-  }, [router])
-
   const handleClearVersion = useCallback(() => {
-    router.navigate({stickyParams: {excludedPerspectives: null, perspective: ''}})
-  }, [router])
+    setPerspective(undefined)
+  }, [setPerspective])
 
   const handleClearVariant = useCallback(() => {
-    router.navigate({stickyParams: {variant: null}})
-  }, [router])
+    setVariant({variantId: undefined})
+  }, [setVariant])
 
   return (
     <Flex direction="column">
@@ -127,15 +111,6 @@ export function VariantsStudioNavbar(props: NavbarProps) {
               />
             </PerspectiveFilter>
           </Flex>
-
-          <Button
-            data-testid="view-as-clear-button"
-            disabled={!canClear}
-            icon={CloseIcon}
-            mode="bleed"
-            onClick={handleClearAll}
-            tooltipProps={{content: t('navbar.clear')}}
-          />
         </Flex>
       </Card>
     </Flex>

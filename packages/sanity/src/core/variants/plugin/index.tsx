@@ -13,7 +13,10 @@ const VariantsStudioNavbar = lazy(() =>
   })),
 )
 
-const VARIANTS_NAME = 'sanity/variants'
+/**
+ * @internal
+ */
+export const VARIANTS_NAME = 'sanity/variants'
 
 const VARIANTS_INTENT = 'variant'
 
