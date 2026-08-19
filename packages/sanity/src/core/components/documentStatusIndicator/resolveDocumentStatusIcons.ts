@@ -3,19 +3,9 @@ import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {isSystemBundle} from '../../util/draftUtils'
 import {getTargetDocument, getVariantPublishedSibling} from '../../util/getTargetDocument'
 
-/**
- * Which icons to render, in fixed order: variant rhombus, release icon, draft ring, published disc.
- *
- * @internal
- */
-export type DocumentStatusIconKind = 'variant' | 'release' | 'draft' | 'published'
+type DocumentStatusIconKind = 'variant' | 'release' | 'draft' | 'published'
 
-/**
- * Named outcome of the icon resolution logic.
- *
- * @internal
- */
-export type DocumentStatusIconsOutcome =
+type DocumentStatusIconsOutcome =
   | 'variantPublishedWithDraft'
   | 'variantPublished'
   | 'variantDraftOnly'
@@ -26,8 +16,7 @@ export type DocumentStatusIconsOutcome =
   | 'inRelease'
   | 'notInRelease'
 
-/** @internal */
-export const DOCUMENT_STATUS_ICONS_BY_OUTCOME: Record<
+const DOCUMENT_STATUS_ICONS_BY_OUTCOME: Record<
   DocumentStatusIconsOutcome,
   DocumentStatusIconKind[]
 > = {
@@ -42,8 +31,7 @@ export const DOCUMENT_STATUS_ICONS_BY_OUTCOME: Record<
   notInRelease: [],
 }
 
-/** @internal */
-export interface DocumentStatusIconsContext {
+interface DocumentStatusIconsContext {
   bundle: PerspectiveBundle
   variantId: string | undefined
   documentVersions: VersionInfoDocumentStub[]
