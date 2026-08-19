@@ -37,8 +37,6 @@
     "playwright": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "sanity": "workspace:*",
-    "source-map": "^0.8.0",
-    "tinyglobby": "^0.2.17"
+    "sanity": "workspace:*"
   }
 }

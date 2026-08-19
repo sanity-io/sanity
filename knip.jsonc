@@ -1,15 +1,5 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignoreWorkspaces": [
-    "dev/*",
-    "perf/*",
-    "packages/@repo/test-exports",
-    "packages/@repo/test-dts-exports",
-    "packages/@repo/test-config",
-    "packages/@repo/tsconfig",
-    "packages/@repo/package.bundle",
-    "packages/sanity/fixtures/examples/*",
-  ],
   "ignoreExportsUsedInFile": {
     "interface": true,
     "type": true,
@@ -52,6 +42,85 @@
         // CLI invoked as `pnpm --filter e2e exec chromatic --playwright` in
         // .github/workflows/e2e.yml, which knip can't trace
         "chromatic",
+      ],
+    },
+    // Studios that set `reactCompiler` in sanity.cli.ts need babel-plugin-react-compiler
+    // in their dependencies: `sanity dev` / `sanity build` resolve the babel plugin by
+    // name at runtime, which knip can't trace.
+    "dev/auth-test-studio": {
+      "ignoreDependencies": ["babel-plugin-react-compiler"],
+    },
+    // Same situation as the e2e workspace: the playwright plugin is disabled because
+    // playwright.config.ts throws on missing SANITY_E2E_* env vars at load time (when CI
+    // is set). Treat every file as an entry so dependency usage is still traced.
+    "dev/e2e-embedded-studio-vite": {
+      "entry": ["**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+      "playwright": false,
+    },
+    // The dev/perf app workspaces below carry pre-existing unused files/exports (example
+    // and debug code, out of scope for dependency checking). Like the e2e workspace,
+    // treat every file as an entry so the full `pnpm knip` run doesn't report them,
+    // while dependency usage is still traced.
+    "dev/efps": {
+      "entry": ["**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+      "ignoreDependencies": ["babel-plugin-react-compiler"],
+    },
+    "dev/media-library-aspects-studio": {
+      "entry": ["**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+    },
+    "dev/metrics-studio": {
+      "entry": ["**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+      "ignoreDependencies": ["babel-plugin-react-compiler"],
+    },
+    "dev/page-building-studio": {
+      "ignoreDependencies": ["babel-plugin-react-compiler"],
+    },
+    "dev/sdk-app": {
+      // Knip's sanity plugin doesn't know about `app.entry` in sanity.cli.ts
+      "entry": ["src/App.tsx"],
+    },
+    "dev/starter-studio": {
+      "ignoreDependencies": ["babel-plugin-react-compiler"],
+    },
+    "dev/storybook": {
+      "ignoreDependencies": [
+        // Referenced as a string in `resolve.dedupe` in .storybook/main.ts, which knip
+        // can't trace
+        "sanity",
+      ],
+    },
+    "dev/studio-e2e-testing": {
+      "entry": ["**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+      "ignoreDependencies": ["babel-plugin-react-compiler"],
+    },
+    "dev/test-create-integration-studio": {
+      "entry": ["**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+    },
+    "dev/test-studio": {
+      // Also covers migrations/**, which `sanity migration run` loads without imports
+      "entry": ["**/*.{js,ts,tsx}"],
+      "project": ["**/*.{js,ts,tsx}"],
+      "ignoreDependencies": ["babel-plugin-react-compiler"],
+    },
+    "perf/bench": {
+      "entry": ["**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+    },
+    "perf/studio": {
+      "ignoreDependencies": ["babel-plugin-react-compiler"],
+    },
+    "perf/tests": {
+      "entry": ["**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+      "ignoreBinaries": [
+        // Knip doesn't understand `cd perf/studio && ... pnpm dev` in the studio:dev script
+        "dev",
       ],
     },
     "packages/sanity": {
@@ -109,6 +178,17 @@
     },
     "packages/@repo/release-notes": {
       "project": ["src/**/*.ts"],
+    },
+    "packages/@repo/test-exports": {
+      // Plain `node --test` suite; the test files are the entry points
+      "entry": ["test/**/*.{mjs,cjs}"],
+      "ignoreDependencies": [
+        // The suite enumerates its own package.json `dependencies` at runtime and
+        // dynamically imports every export of each (test/exports.cjs), so everything
+        // listed there is used by definition — knip can't trace the dynamic requires
+        "@sanity/*",
+        "groq",
+      ],
     },
     "packages/@repo/utils": {
       "project": ["src/**/*.ts"],
