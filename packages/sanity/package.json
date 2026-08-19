@@ -251,7 +251,7 @@
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.15",
     "@storybook/react-vite": "^10.5.8",
-    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.4",
     "@types/debug": "^4.1.13",
