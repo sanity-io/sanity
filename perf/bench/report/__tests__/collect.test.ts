@@ -103,10 +103,11 @@ function sample(
   return {
     condition,
     timeToEditableMs,
-    ttfbMs: 100,
     fcpMs: 1000,
     lcpMs: 2000,
     cls: 0,
+    clsAttribution: [{source: '[data-testid="pane-content"]', totalValue: 0.01}],
+    jsUrls: ['/static/sanity-abc.js'],
     blockingMs: 50,
     loafAttribution: [
       {
@@ -140,7 +141,6 @@ describe('collectPageLoad', () => {
     const labels = report.metrics.map((metric) => `${metric.label} (${metric.unit})`)
     expect(labels).toEqual([
       'boot-cold · time to editable (ms)',
-      'boot-cold · TTFB (ms)',
       'boot-cold · FCP (ms)',
       'boot-cold · LCP (ms)',
       'boot-cold · CLS (cls)',
@@ -178,7 +178,6 @@ describe('collectPageLoad', () => {
     )
     expect(report.metrics.map((metric) => metric.label)).toEqual([
       'boot-cold · time to editable',
-      'boot-cold · TTFB',
       'boot-cold · FCP',
       'boot-cold · LCP',
       'boot-cold · CLS',
@@ -186,6 +185,65 @@ describe('collectPageLoad', () => {
       // auth first request is skipped (firstRequestMs is null in this fixture)
       'boot-cold · auth round trips',
       'boot-cold · auth in flight',
+    ])
+  })
+
+  it('emits a boot-cold boot JS row when chunk gzip sizes are provided', () => {
+    const report = collectPageLoad(
+      'singleString',
+      new Map([
+        [
+          'experiment',
+          [sample('boot-cold', 4000), sample('boot-cold', 4100), sample('open-doc-warm', 3900)],
+        ],
+      ]),
+      new Map(),
+      undefined,
+      new Map([['/static/sanity-abc.js', 140_000]]),
+    )
+    const bootJs = report.metrics.find((metric) => metric.label === 'boot-cold · boot JS')
+    expect(bootJs?.unit).toBe('bytes')
+    expect(bootJs?.experiment.summary.median).toBe(140_000)
+    // Warm pages replay the same chunk set from cache — no row for them
+    expect(report.metrics.some((metric) => metric.label.includes('open-doc-warm · boot JS'))).toBe(
+      false,
+    )
+  })
+
+  it('omits the boot JS row without chunk sizes and when no fetched path matches', () => {
+    const withoutSizes = collectPageLoad(
+      'singleString',
+      new Map([['experiment', [sample('boot-cold', 4000)]]]),
+      new Map(),
+    )
+    expect(withoutSizes.metrics.some((metric) => metric.label.includes('boot JS'))).toBe(false)
+
+    const noMatches = collectPageLoad(
+      'singleString',
+      new Map([['experiment', [sample('boot-cold', 4000)]]]),
+      new Map(),
+      undefined,
+      new Map([['/static/other.js', 1]]),
+    )
+    expect(noMatches.metrics.some((metric) => metric.label.includes('boot JS'))).toBe(false)
+  })
+
+  it('aggregates cls attribution across experiment samples, largest first', () => {
+    const shifted = {
+      ...sample('boot-cold', 4000),
+      clsAttribution: [
+        {source: 'div.banner', totalValue: 0.02},
+        {source: '[data-testid="pane-content"]', totalValue: 0.005},
+      ],
+    }
+    const report = collectPageLoad(
+      'singleString',
+      new Map([['experiment', [shifted, sample('boot-cold', 4100)]]]),
+      new Map(),
+    )
+    expect(report.clsAttribution).toEqual([
+      {source: 'div.banner', totalValue: 0.02},
+      {source: '[data-testid="pane-content"]', totalValue: 0.005 + 0.01},
     ])
   })
 })

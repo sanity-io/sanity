@@ -197,14 +197,17 @@ export async function runBench(argv: RunArgs): Promise<void> {
         scenarioReports.push(collectInp(scenario.name, results, scenario.sourceFile))
       }
     } else if (argv.mode === 'pageload') {
-      const sizes = await measureBundleSize(dist)
+      // sizesByPath feeds the per-scenario "boot JS" metric but must not be
+      // stored — it's ~400 map entries of per-chunk noise in a document
+      const {sizesByPath, ...sizes} = await measureBundleSize(dist)
       console.log(
         `bundle (experiment): initial JS ${(sizes.initialJsBytes / 1024).toFixed(1)} KB gzip, ` +
           `total ${(sizes.totalJsBytes / 1024).toFixed(1)} KB gzip across ${sizes.chunkCount} chunks`,
       )
       bundleReport = {experiment: sizes}
       if (referenceDist) {
-        const referenceSizes = await measureBundleSize(referenceDist)
+        const {sizesByPath: _referenceSizesByPath, ...referenceSizes} =
+          await measureBundleSize(referenceDist)
         bundleReport = {experiment: sizes, reference: referenceSizes}
         console.log(
           `bundle (reference):  initial JS ${(referenceSizes.initialJsBytes / 1024).toFixed(1)} KB gzip ` +
@@ -314,7 +317,13 @@ export async function runBench(argv: RunArgs): Promise<void> {
           }
         }
         scenarioReports.push(
-          collectPageLoad(scenario.name, bySide, conditionComparisons, scenario.sourceFile),
+          collectPageLoad(
+            scenario.name,
+            bySide,
+            conditionComparisons,
+            scenario.sourceFile,
+            sizesByPath,
+          ),
         )
       }
     } else {

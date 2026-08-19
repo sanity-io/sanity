@@ -201,7 +201,7 @@ test('vitals group into per-vital sections', () => {
     vitalStub('singleString · INP'),
     vitalStub('recipe · boot-cold · LCP'),
     vitalStub('article · boot-cold · LCP'),
-    vitalStub('article · boot-cold · TTFB'),
+    vitalStub('article · boot-cold · FCP'),
   ])
   expect(
     sections.map((section) => [section.vital, section.series.map((entry) => entry.title)]),
@@ -209,8 +209,31 @@ test('vitals group into per-vital sections', () => {
     ['INP', ['singleString · INP']],
     ['LCP', ['article · boot-cold · LCP', 'recipe · boot-cold · LCP']],
     ['CLS', ['recipe · boot-cold · CLS']],
-    ['TTFB', ['article · boot-cold · TTFB']],
+    ['FCP', ['article · boot-cold · FCP']],
   ])
+})
+
+// TTFB is no longer collected (a constant of the local mock, not a studio
+// signal), but stored history still carries it — it must not chart
+test('TTFB metrics in stored documents are skipped', () => {
+  const base = run({id: 'a', sha: 'sha-1', day: 0, value: 100})
+  const withTtfb: TrendRun = {
+    ...base,
+    scenarios: [
+      {
+        scenario: 'singleString',
+        kind: 'pageload',
+        metrics: [
+          {
+            label: 'boot-cold · TTFB',
+            unit: 'ms' as const,
+            experiment: {summary: {median: 3.5, p75: 3.6, p90: 5.2}},
+          },
+        ],
+      },
+    ],
+  }
+  expect(buildSeries([withTtfb])).toHaveLength(0)
 })
 
 // A metric in the vitals group that isn't a known vital must still render —
@@ -278,6 +301,13 @@ test('byte-unit ticks compact to fit the gutter', () => {
   expect(formatTick(41.8, 'megabytes')).toBe('41.8MB')
   expect(formatTick(150_000, 'bytes')).toBe('146KB')
   expect(formatTick(0, 'bytes')).toBe('0KB')
+  expect(formatTick(2_424_945, 'bytes')).toBe('2.3MB')
+})
+
+// The total-JS series is in the megabytes; a KB rendering buries the magnitude
+test('byte values past 1 MiB render in MB', () => {
+  expect(formatValue(2_424_945, 'bytes')).toBe('2.31 MB')
+  expect(formatValue(150_981, 'bytes')).toBe('147.4 KB')
 })
 
 // One unit per axis: formatValue's per-value 10s cutoff put "10.0s" above

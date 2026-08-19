@@ -50,7 +50,6 @@ const WEB_VITAL_DOCS: Record<string, string> = {
   INP: 'https://web.dev/articles/inp',
   CLS: 'https://web.dev/articles/cls',
   FCP: 'https://web.dev/articles/fcp',
-  TTFB: 'https://web.dev/articles/ttfb',
 }
 
 export function webVitalDocUrl(label: string): string | undefined {

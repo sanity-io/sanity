@@ -16,7 +16,7 @@ export interface TrendRun {
     mergeBaseSha?: string
   } | null
   runner: {calibrationMs: number; runId?: string; runAttempt?: number} | null
-  bundle: {experiment: {initialJsBytes: number} | null} | null
+  bundle: {experiment: {initialJsBytes: number; totalJsBytes?: number | null} | null} | null
   scenarios:
     | {
         scenario: string
@@ -59,7 +59,7 @@ export const TREND_QUERY = `*[_type == "benchRun" && mode == "absolute"] | order
   mode,
   git{sha, branch, committedAt, prNumber, mergeBaseSha},
   runner{calibrationMs, runId, runAttempt},
-  bundle{experiment{initialJsBytes}},
+  bundle{experiment{initialJsBytes, totalJsBytes}},
   scenarios[]{
     scenario,
     sourceFile,
@@ -249,7 +249,7 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
     // The individual vitals are named (and spelled out) by the per-vital
     // section headers right below, so the description doesn't list them
     description:
-      'Google Core Web Vitals and supporting load metrics. Lower is better on all of them.',
+      'Google Core Web Vitals and supporting load metrics; lower is better on all of them. Measured in a canned environment (local API mock, no external network), so vitals that would only measure that setup are left out. TTFB, for example, would just time the mock.',
   },
   {
     id: 'responsiveness',
@@ -264,7 +264,8 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
   {
     id: 'bundle',
     title: 'Bundle size',
-    description: 'JavaScript shipped to boot the studio.',
+    description:
+      'How much JavaScript the build ships, and how much of it booting actually downloads.',
   },
   {
     id: 'soak',
@@ -306,14 +307,6 @@ function describeSeries(
   }
   // goodThreshold values are the web.dev "good" recommendations
   // (https://web.dev/articles/defining-core-web-vitals-thresholds)
-  if (label.endsWith('TTFB')) {
-    return {
-      group: 'vitals',
-      description: 'Time to first byte of the document response.',
-      goal: 'lower',
-      goodThreshold: 800,
-    }
-  }
   if (label.endsWith('FCP')) {
     return {
       group: 'vitals',
@@ -346,6 +339,14 @@ function describeSeries(
         'Interaction to Next Paint: a high percentile of interaction latencies (click/type → next paint) under a realistic interaction mix (Core Web Vital).',
       goal: 'lower',
       goodThreshold: 200,
+    }
+  }
+  if (label.includes('boot JS')) {
+    return {
+      group: 'bundle',
+      description:
+        'Exact gzip sum of the JS chunks fetched before the document was editable (boot-cold): what booting actually downloads. The entry-chunk chart counts only what index.html references.',
+      goal: 'lower',
     }
   }
   if (label.includes('auth round trips')) {
@@ -384,7 +385,13 @@ function describeSeries(
 export function formatValue(value: number, unit: TrendUnit): string {
   if (unit === 'count') return value.toFixed(0)
   if (unit === 'cls') return value.toFixed(3) // unitless layout-shift score
-  if (unit === 'bytes') return `${(value / 1024).toFixed(1)} KB`
+  // MB past 1 MiB: the total-JS series runs to megabytes, where "2368.1 KB"
+  // buries the magnitude a reader actually wants
+  if (unit === 'bytes') {
+    return Math.abs(value) >= 1024 * 1024
+      ? `${(value / (1024 * 1024)).toFixed(2)} MB`
+      : `${(value / 1024).toFixed(1)} KB`
+  }
   if (unit === 'megabytes') return `${value.toFixed(1)} MB`
   // Slope units are signed and typically fractional — keep the sign and
   // enough precision that a near-zero rate reads as "~0", not a rounded 0
@@ -432,7 +439,11 @@ export function formatValue(value: number, unit: TrendUnit): string {
 export function formatTick(value: number, unit: TrendUnit, domainMax = 0): string {
   if (isSignedUnit(unit)) return parseFloat(value.toFixed(2)).toString()
   if (unit === 'megabytes') return `${parseFloat(value.toFixed(1))}MB`
-  if (unit === 'bytes') return `${Math.round(value / 1024)}KB`
+  if (unit === 'bytes') {
+    return Math.abs(value) >= 1024 * 1024
+      ? `${parseFloat((value / (1024 * 1024)).toFixed(1))}MB`
+      : `${Math.round(value / 1024)}KB`
+  }
   if (unit === 'ms' && Math.max(Math.abs(value), domainMax) >= 1_000) {
     return `${parseFloat((value / 1000).toFixed(1))}s`
   }
@@ -581,6 +592,10 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
       )?.experiment?.summary?.median
       for (const metric of scenario.metrics ?? []) {
         if (metric.label === 'INP interactions') continue
+        // TTFB is no longer collected (against the local mock it was a 2–10ms
+        // constant of the bench setup, not a studio signal) — but documents
+        // stored before its removal still carry it, so skip it here too
+        if (metric.label.endsWith('TTFB')) continue
         const summary = metric.experiment?.summary
         if (!summary) continue
         push(
@@ -602,13 +617,18 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
     }
     const initialJs = run.bundle?.experiment?.initialJsBytes
     if (typeof initialJs === 'number') {
+      // Key stays 'bundle:initialJs' (acks and deep links reference it), but
+      // the title stopped claiming this is what boot downloads: it's only the
+      // chunk index.html references, ~6% of the build — the studio loads the
+      // rest through dynamic imports before it is usable.
       push(
         'bundle:initialJs',
-        'bundle · initial JS (gzip)',
+        'bundle · entry chunk (gzip)',
         'bytes',
         {
           group: 'bundle',
-          description: 'Initial JavaScript downloaded to boot the studio, gzip-compressed.',
+          description:
+            'The one JS chunk index.html references, gzip-compressed. Not what boot downloads: the studio dynamic-imports most of its code from here.',
           goal: 'lower',
           // A build measures one size — there is no distribution to take a
           // median of, so the default 'median (p50)' legend would be false
@@ -616,6 +636,23 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
         },
         run,
         {value: initialJs},
+      )
+    }
+    const totalJs = run.bundle?.experiment?.totalJsBytes
+    if (typeof totalJs === 'number') {
+      push(
+        'bundle:totalJs',
+        'bundle · total JS (gzip)',
+        'bytes',
+        {
+          group: 'bundle',
+          description:
+            'Gzipped bytes of every JS chunk in the build; the ceiling on what a session can download. Boot fetches most of it through dynamic imports.',
+          goal: 'lower',
+          lineLabel: 'size per run',
+        },
+        run,
+        {value: totalJs},
       )
     }
   }
@@ -641,7 +678,6 @@ const VITALS = [
   {vital: 'LCP', name: 'Largest Contentful Paint'},
   {vital: 'CLS', name: 'Cumulative Layout Shift'},
   {vital: 'FCP', name: 'First Contentful Paint'},
-  {vital: 'TTFB', name: 'Time to First Byte'},
 ] as const
 
 export interface VitalSection {

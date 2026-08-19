@@ -96,13 +96,35 @@ function install(): void {
     }
   })
 
+  // Describe a shifted node compactly. data-testid first (stable across
+  // refactors), @sanity/ui's data-ui second, tag#id.class as the fallback —
+  // enough to find the element, small enough to store per shift.
+  function describeShiftedNode(node: Node | null | undefined): string {
+    if (!node || !(node instanceof Element)) return '(detached)'
+    const testId = node.getAttribute('data-testid')
+    if (testId) return `[data-testid="${testId}"]`
+    const ui = node.getAttribute('data-ui')
+    if (ui) return `[data-ui="${ui}"]`
+    const id = node.id ? `#${node.id}` : ''
+    const className =
+      typeof node.className === 'string' && node.className
+        ? `.${node.className.split(/\s+/)[0]}`
+        : ''
+    return `${node.tagName.toLowerCase()}${id}${className}`
+  }
+
   observe('layout-shift', (entries) => {
     for (const entry of entries) {
-      const shift = entry as PerformanceEntry & {value: number; hadRecentInput: boolean}
+      const shift = entry as PerformanceEntry & {
+        value: number
+        hadRecentInput: boolean
+        sources?: {node?: Node | null}[]
+      }
       layoutShifts.push({
         startTime: shift.startTime,
         value: shift.value,
         hadRecentInput: shift.hadRecentInput,
+        sources: (shift.sources ?? []).map((source) => describeShiftedNode(source.node)),
       })
     }
   })

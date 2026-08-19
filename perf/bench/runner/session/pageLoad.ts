@@ -24,11 +24,25 @@ export interface PageLoadSample {
   condition: LoadCondition
   /** Headline: navigation start → form editable + probe keystroke landed. */
   timeToEditableMs: number
-  ttfbMs: number | null
+  // No ttfbMs: the document is served by the local mock, so its TTFB is a
+  // 2–10ms constant of the bench setup (the navigation request also bypasses
+  // the emulated network latency) — a number we chose, not one we measure
   fcpMs: number | null
   lcpMs: number | null
   /** Cumulative layout shift (entries without recent input). */
   cls: number
+  /**
+   * Which elements shifted, with each one's summed contribution — so a CLS
+   * regression names its culprit. Directional: a shift entry listing several
+   * sources credits its full value to each of them.
+   */
+  clsAttribution: {source: string; totalValue: number}[]
+  /**
+   * Pathnames of the JS chunks fetched before the form was editable — joined
+   * with the dist's exact gzip sizes at report time to measure what booting
+   * actually downloads (the index.html entry chunk is a fraction of it).
+   */
+  jsUrls: string[]
   /** Total LoAF blocking during load. */
   blockingMs: number
   /**
@@ -92,6 +106,45 @@ export function foldLoafAttribution(
     }
   }
   return [...byScript.values()].sort((a, b) => b.totalMs - a.totalMs).slice(0, top)
+}
+
+/** Fold layout shifts into per-element value totals, largest first. */
+export function foldClsAttribution(
+  shifts: {value: number; hadRecentInput: boolean; sources: string[]}[],
+  top = 10,
+): PageLoadSample['clsAttribution'] {
+  const bySource = new Map<string, {source: string; totalValue: number}>()
+  for (const shift of shifts) {
+    if (shift.hadRecentInput) continue
+    for (const source of shift.sources) {
+      const existing = bySource.get(source) ?? {source, totalValue: 0}
+      existing.totalValue += shift.value
+      bySource.set(source, existing)
+    }
+  }
+  return [...bySource.values()].sort((a, b) => b.totalValue - a.totalValue).slice(0, top)
+}
+
+/**
+ * Pathnames of JS chunks fetched before the form became editable, deduped and
+ * sorted. Pathname only: the origin is the bench server, and the report-time
+ * gzip lookup is keyed by dist-relative path.
+ */
+export function bootJsPaths(
+  resources: {url: string; responseEnd: number}[],
+  editableAtMs: number,
+): string[] {
+  const paths = new Set<string>()
+  for (const resource of resources) {
+    if (resource.responseEnd <= 0 || resource.responseEnd > editableAtMs) continue
+    try {
+      const {pathname} = new URL(resource.url)
+      if (/\.m?js$/.test(pathname)) paths.add(pathname)
+    } catch {
+      // Not a URL (data: etc.) — not a chunk
+    }
+  }
+  return [...paths].sort()
 }
 
 /** Derive the auth milestones from resource timing (see PageLoadSample.auth). */
@@ -209,12 +262,13 @@ async function measureLoad(options: {
   return {
     condition,
     timeToEditableMs: timeToEditable.duration,
-    ttfbMs: entries.navigation?.responseStart ?? null,
     fcpMs: fcp?.startTime ?? null,
     lcpMs: entries.largestContentfulPaint?.startTime ?? null,
     cls: entries.layoutShifts
       .filter((shift) => !shift.hadRecentInput)
       .reduce((sum, shift) => sum + shift.value, 0),
+    clsAttribution: foldClsAttribution(entries.layoutShifts),
+    jsUrls: bootJsPaths(entries.resources, timeToEditable.duration),
     blockingMs: entries.loafs.reduce((sum, loaf) => sum + loaf.blockingDuration, 0),
     loafAttribution: foldLoafAttribution(entries.loafs),
     auth: deriveAuthMilestones(entries.resources, timeToEditable.duration),
