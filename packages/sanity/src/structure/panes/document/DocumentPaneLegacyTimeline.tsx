@@ -1,13 +1,18 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type SanityDocument} from '@sanity/types'
 import {useMemo, useState} from 'react'
 import {getPublishedId, useTimelineSelector, useTimelineStore} from 'sanity'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {EMPTY_PARAMS} from './constants'
-import {usePaneOptions} from './DocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'
+import {usePaneOptions} from './usePaneOptions'
 
+/**
+ * @deprecated Use `DocumentEventsPane` instead. The legacy document timeline will be removed in the
+ * next major version, together with the `beta.eventsAPI.documents` opt-out that routes to it.
+ */
 export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderProps) => {
   const {pane} = props
   const paneRouter = usePaneRouter()
@@ -17,6 +22,7 @@ export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderP
 
   const [timelineError, setTimelineError] = useState<Error | null>(null)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const store = useTimelineStore({
     documentId: getPublishedId(options.id),
     documentType: options.type,

@@ -1,5 +1,5 @@
-import {Box} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 const INDICATOR_LEFT_OFFSET = 20
 const INDICATOR_WIDTH = 1

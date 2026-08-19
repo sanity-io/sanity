@@ -51,11 +51,32 @@ export function useReleaseHistory(
     return getVersionId(releaseDocumentId, releaseId)
   }, [releaseDocumentId, releaseId])
 
+  // Reset to the loading state during render when the (versionId, documentRevision) identity
+  // changes, before the new fetch settles — React's recommended "adjusting state when a prop
+  // changes" pattern (setState during render bails out and re-renders immediately, without the
+  // extra commit an effect-based reset would cause). Keying on documentRevision too (not just
+  // versionId) matches the sibling useDocumentLastEditedBy hook's full cache key: without it, a
+  // revision change on the same version would keep showing the previous history with
+  // `loading: false` while the new fetch runs — the same false-settled flash, just triggered by an
+  // edit instead of a version switch. A cache hit or the `!versionId` short-circuit in
+  // `fetchAndParse` still settles synchronously within the same effect tick, so there's no visible
+  // flicker for those.
+  const resetKey = `${versionId}-${documentRevision ?? ''}`
+  const [prevResetKey, setPrevResetKey] = useState(resetKey)
+  if (resetKey !== prevResetKey) {
+    setPrevResetKey(resetKey)
+    setHistory(null)
+  }
+
   const cancelledRef = useRef(false)
 
   const fetchAndParse = useCallback(async (): Promise<void> => {
     if (!versionId) {
-      setHistory(null)
+      // No document to fetch history for (e.g. a pending / just-added placeholder row passes an
+      // undefined id). Settle to an empty history so `loading` reports false instead of hanging
+      // true — otherwise the Edited / Edited-by cells keep an endless skeleton on rows that will
+      // never resolve a history.
+      setHistory([])
       return
     }
 
@@ -108,8 +129,14 @@ export function useReleaseHistory(
 
   return useMemo(() => {
     const collaborators: string[] = []
-    if (!history || history.length === 0) {
+    // `null` = not yet fetched → genuinely loading. `[]` = settled with no history (a legitimately
+    // empty log, or a failed fetch that set `[]` on line 93) → NOT loading, just nothing to show.
+    // Keying `loading` off length would leave those rows on a permanent skeleton.
+    if (history === null) {
       return {documentHistory: undefined, collaborators, loading: true}
+    }
+    if (history.length === 0) {
+      return {documentHistory: undefined, collaborators, loading: false}
     }
 
     const aggregated: DocumentHistory = {

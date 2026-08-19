@@ -1,4 +1,4 @@
-import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
+import {DialogProvider, type DialogProviderProps, Flex, useElementSize} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
@@ -104,10 +104,10 @@ export function DocumentLayout() {
   const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
-  const footerRect = useElementRect(footerElement)
-  const headerRect = useElementRect(headerElement)
-  const footerHeight = footerRect?.height
-  const headerHeight = headerRect?.height
+  const footerSize = useElementSize(footerElement)
+  const headerSize = useElementSize(headerElement)
+  const footerHeight = footerSize?.border.height
+  const headerHeight = headerSize?.border.height
   const currentMinWidth =
     DOCUMENT_PANEL_INITIAL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
   const minWidth = DOCUMENT_PANEL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)

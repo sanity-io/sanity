@@ -2,8 +2,10 @@ import {AddDocumentIcon} from '@sanity/icons/AddDocument'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type SchemaType, type UploadState} from '@sanity/types'
-import {Box, Card, type CardTone, Menu} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../../ui-components/menuItem/MenuItem'
@@ -77,6 +79,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const maxReached = arrayValidation?.maxReached
   const maxReachedReason = arrayValidation?.maxReachedReason
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   // The edit portal should open if the item is open and:
@@ -306,6 +309,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
 
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <EnhancedObjectDialogProvider>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         <Box paddingX={1}>{item}</Box>

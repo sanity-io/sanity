@@ -89,6 +89,7 @@ export interface SanityFormConfig {
    * @beta
    */
   unstable?: {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     CustomMarkers?: FormBuilderCustomMarkersComponent
     Markers?: FormBuilderMarkersComponent
   }
@@ -638,6 +639,7 @@ export interface WorkspaceOptions extends SourceOptions {
    * @hidden
    * @beta
    */
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme?: StudioTheme
 
   /**
@@ -973,6 +975,7 @@ export interface Source {
      * @beta
      */
     unstable?: {
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       CustomMarkers?: FormBuilderCustomMarkersComponent
       Markers?: FormBuilderMarkersComponent
     }
@@ -1111,6 +1114,7 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
    * @internal
    */
   apiHost?: string
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: StudioTheme
   schema: Schema
   i18n: LocaleSource
@@ -1167,6 +1171,17 @@ export interface ScheduledPublishingPluginOptions {
  */
 export interface Workspace extends Omit<Source, 'type'> {
   type: 'workspace'
+  /**
+   * The API hostname *explicitly configured* on the workspace (custom CNAMEs,
+   * non-default environments). Undefined when the config sets none — note the
+   * effective host may still differ from the production default in that case
+   * (e.g. staging inferred via `isStaging`); environment defaults are applied
+   * where clients are created, not here. Carried over from the workspace
+   * summary at runtime; typed here so consumers don't have to re-derive it
+   * from a client.
+   * @internal
+   */
+  apiHost?: string
   /**
    * URL base path to use, for instance `/myWorkspace`
    * Note that this will be prepended with any _studio_ base path, eg `/studio/myWorkspace`,
@@ -1327,6 +1342,10 @@ export interface BetaFeatures {
    * If it is not enabled, it will continue using the legacy Timeline.
    */
   eventsAPI?: {
+    /**
+     * @deprecated This option will be removed in the next major version, after which document
+     * history will always use the events API and the legacy Timeline will no longer be available.
+     */
     documents?: boolean
     releases?: boolean
   }

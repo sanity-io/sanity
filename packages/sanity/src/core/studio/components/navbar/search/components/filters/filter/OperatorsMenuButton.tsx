@@ -1,5 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Inline, Menu, MenuDivider} from '@sanity/ui'
+import {Inline} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useId} from 'react'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'

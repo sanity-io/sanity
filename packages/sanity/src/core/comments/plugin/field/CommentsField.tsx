@@ -52,6 +52,7 @@ export function CommentsField(props: FieldProps) {
 }
 
 const HighlightDiv = styled(motion.div)(({theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {radius, space, color} = theme.sanity
   const bg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][color.dark ? 900 : 50].hex
 
@@ -328,6 +329,7 @@ function CommentFieldInner(
     <FieldStack {...applyCommentsFieldAttr(PathUtils.toString(props.path))} ref={rootRef}>
       {props.renderDefault({
         ...props,
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         __internal_comments: internalComments,
       })}
 

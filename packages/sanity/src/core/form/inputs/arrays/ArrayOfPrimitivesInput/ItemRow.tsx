@@ -4,8 +4,10 @@ import {InsertAboveIcon} from '@sanity/icons/InsertAbove'
 import {InsertBelowIcon} from '@sanity/icons/InsertBelow'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type SchemaType} from '@sanity/types'
-import {Box, Flex, Menu} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
+import {Flex} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {useCallback, useMemo, type RefAttributes} from 'react'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -28,11 +30,9 @@ export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {
 const MENU_BUTTON_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 const EMPTY_ARRAY: never[] = []
 
-export const ItemRow = forwardRef(function ItemRow(
-  props: DefaultItemProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
+export function ItemRow(props: DefaultItemProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref,
     sortable,
     value,
     insertableTypes,
@@ -207,11 +207,11 @@ export const ItemRow = forwardRef(function ItemRow(
     >
       <Flex align={schemaType ? 'flex-end' : 'center'} ref={ref}>
         <Flex align="flex-end" flex={1}>
-          <Box flex={1} marginRight={2}>
+          <Box flexBasis="0%" flexGrow={1} marginRight={2}>
             {children}
           </Box>
         </Flex>
       </Flex>
     </RowLayout>
   )
-})
+}

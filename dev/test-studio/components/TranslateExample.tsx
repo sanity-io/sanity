@@ -1,13 +1,12 @@
 import {InfoFilledIcon} from '@sanity/icons/InfoFilled'
 import {Card, Stack, Text} from '@sanity/ui'
-import {forwardRef} from 'react'
 import {Translate, useTranslation} from 'sanity'
 
-export const TranslateExample = forwardRef(function TranslateExample() {
+export function TranslateExample() {
   const {t} = useTranslation('testStudio')
   return (
     <Card padding={4}>
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text>{t('use-translation.with-html')}</Text>
         <Text>
           {t('use-translation.interpolation-example', {
@@ -82,4 +81,4 @@ export const TranslateExample = forwardRef(function TranslateExample() {
       </Stack>
     </Card>
   )
-})
+}

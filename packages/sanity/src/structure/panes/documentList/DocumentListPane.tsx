@@ -1,7 +1,7 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
 import {Box, Stack, TextInput} from '@sanity/ui'
-import {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {Activity, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
@@ -19,6 +19,7 @@ import {
 } from 'sanity'
 import {keyframes, styled} from 'styled-components'
 
+import {usePane} from '../../components/pane/usePane'
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
@@ -31,9 +32,9 @@ import {
 } from './DocumentListPaneSearchOrdering'
 import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
 import {isOrderByIdsParam, reorderItemsByIdsParam} from './orderByIdsParam'
-import {useShallowUnique} from './PaneContainer'
 import {type LoadingVariant, type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
+import {useShallowUnique} from './useShallowUnique'
 
 /**
  * @internal
@@ -88,7 +89,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
   const releases = useActiveReleases()
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -102,6 +103,10 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const {t} = useTranslation(structureLocaleNamespace)
   const {title} = useI18nText(pane)
+  // A collapsed pane is only wide enough for the rotated header. Keep the pane
+  // body mounted so its state survives a collapse, but hide it to prevent its
+  // contents from bleeding into the neighbouring pane.
+  const {collapsed} = usePane()
 
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchInputValue, setSearchInputValue] = useState<string>('')
@@ -121,6 +126,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
       ? applyOrderingFunctions(sortOrderRaw, schema.get(typeName) as any)
       : sortOrderRaw
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const sortOrder = useUnique(sortWithOrderingFn)
 
   // The sentinel ordering has no server-side meaning, so the fetch falls back to
@@ -145,6 +151,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     ? undefined
     : searchOrderings.find((ordering) => getSearchOrderingId(ordering) === searchOrderingId)
   const searchSchemaType = typeName ? schema.get(typeName) : undefined
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const effectiveSortOrder = useUnique(
     selectedSearchOrdering?.params?.by
       ? // Run the chosen ordering through `applyOrderingFunctions` so it picks up
@@ -181,6 +188,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     client,
     filter,
     perspective: perspectiveStack,
+    variant: selectedVariantName,
     params,
     searchQuery: trimmedSearchQuery,
     sortOrder: effectiveSortOrder,
@@ -272,9 +280,9 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   useReconnectingToast(!connected)
 
   return (
-    <>
-      <Box paddingX={3} paddingBottom={3}>
-        <Stack space={3}>
+    <Activity mode={collapsed ? 'hidden' : 'visible'}>
+      <Box data-testid="document-list-search" paddingX={3} paddingBottom={3}>
+        <Stack gap={3}>
           <TextInput
             aria-label={t('panes.document-list-pane.search-input.aria-label')}
             autoComplete="off"
@@ -332,6 +340,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         showIcons={showIcons}
         sortOrder={orderByIdsParam ? DEFAULT_ORDERING : sortOrder}
       />
-    </>
+    </Activity>
   )
 })

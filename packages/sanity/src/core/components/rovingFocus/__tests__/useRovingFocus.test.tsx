@@ -24,6 +24,7 @@ function RenderTestComponent(props: TestProps) {
   })
 
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider theme={studioTheme}>
       <Card ref={setRootElement} id="rootElement">
         <Button text="Test" disabled={withDisabledButtons} />

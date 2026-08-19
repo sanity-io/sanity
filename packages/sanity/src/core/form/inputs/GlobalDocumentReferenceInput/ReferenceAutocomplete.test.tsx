@@ -14,16 +14,9 @@
  * `useFormBuilder` mocked with a `focusPath` that matches the `path` passed in props so the
  * component can mount.
  */
-import {type Autocomplete, type AutocompleteProps} from '@sanity/ui'
+import {type Autocomplete, type AutocompleteProps} from '@sanity/ui/autocomplete'
 import {render, waitFor} from '@testing-library/react'
-import {
-  type ForwardedRef,
-  forwardRef,
-  type ReactNode,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
+import {type ReactNode, type Ref, useLayoutEffect, useRef, useState} from 'react'
 import {describe, expect, test, vi, beforeEach} from 'vitest'
 
 import {type PopoverProps as UIPopoverProps} from '../../../../ui-components/popover/Popover'
@@ -39,7 +32,7 @@ let lastPopoverProps: PopoverBoundaryCapture | null = null
 /** Element returned from the mocked `useBoundaryElement` hook (null = no provider). */
 let mockBoundaryElement: HTMLElement | null = null
 
-function assignForwardedRef<T>(ref: ForwardedRef<T>, value: T | null): void {
+function assignForwardedRef<T>(ref: Ref<T> | undefined, value: T | null): void {
   if (typeof ref === 'function') {
     ref(value)
   } else if (ref) {
@@ -57,17 +50,14 @@ vi.mock('../../useFormBuilder', () => ({
   }),
 }))
 
-vi.mock('@sanity/ui', async (importOriginal) => {
+vi.mock('@sanity/ui/autocomplete', async (importOriginal) => {
   const mod = (await importOriginal()) as Record<string, unknown>
 
   /**
    * Minimal Autocomplete that always invokes `renderPopover` so StyledPopover mounts (mirrors open search UI).
    */
-  const AutocompleteStub = forwardRef(function AutocompleteStub(
-    props: AutocompleteProps,
-    ref: ForwardedRef<HTMLInputElement>,
-  ) {
-    const {renderPopover} = props
+  function AutocompleteStub(props: AutocompleteProps & {ref?: Ref<HTMLInputElement>}) {
+    const {ref, renderPopover} = props
     const contentRef = useRef<HTMLDivElement>(null)
     const [popover, setPopover] = useState<ReactNode>(null)
 
@@ -104,16 +94,19 @@ vi.mock('@sanity/ui', async (importOriginal) => {
         {popover}
       </div>
     )
-  })
-
-  // Mock `useBoundaryElement` so we can drive the hook under test without rendering a real
-  // `BoundaryElementProvider` (which would require importing from the mocked module and trips
-  // hoisting inside `importOriginal`).
-  const useBoundaryElement = () => ({version: 0.0, element: mockBoundaryElement})
+  }
 
   // @ts-expect-error -- pre-existing, fix later
-  return {...mod, Autocomplete: AutocompleteStub as Autocomplete, useBoundaryElement}
+  return {...mod, Autocomplete: AutocompleteStub as Autocomplete}
 })
+
+// Mock `useBoundaryElement` so we can drive the hook under test without rendering a real
+// `BoundaryElementProvider` (which would require importing from the mocked module and trips
+// hoisting inside `importOriginal`).
+vi.mock('@sanity/ui', async (importOriginal) => ({
+  ...((await importOriginal()) as Record<string, unknown>),
+  useBoundaryElement: () => ({version: 0.0, element: mockBoundaryElement}),
+}))
 
 vi.mock('../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
@@ -124,7 +117,8 @@ vi.mock('../../../i18n/Translate', () => ({
 
 vi.mock('../../../../ui-components/popover/Popover', async (importOriginal) => {
   const mod = (await importOriginal()) as Record<string, unknown>
-  const Forward = forwardRef<HTMLDivElement, UIPopoverProps>(function PopoverCapture(props, ref) {
+  function PopoverCapture(props: UIPopoverProps & {ref?: Ref<HTMLDivElement>}) {
+    const {ref} = props
     useLayoutEffect(() => {
       lastPopoverProps = {
         floatingBoundary: props.floatingBoundary,
@@ -132,8 +126,8 @@ vi.mock('../../../../ui-components/popover/Popover', async (importOriginal) => {
       }
     }, [props.floatingBoundary, props.referenceBoundary])
     return <div ref={ref} data-testid="popover-capture" data-floating-ui-role="popover" />
-  })
-  return {...mod, Popover: Forward}
+  }
+  return {...mod, Popover: PopoverCapture}
 })
 
 /**

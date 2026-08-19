@@ -45,7 +45,7 @@ const COUNT_DEMO_TYPES = ['author', 'book', 'species']
 
 export const structure: StructureResolver = (
   S,
-  {schema, documentStore, i18n, perspectiveStack},
+  {schema, documentStore, i18n, perspectiveStack, selectedVariantName},
 ) => {
   const {t} = i18n
   return S.list()
@@ -61,6 +61,7 @@ export const structure: StructureResolver = (
             {},
             {
               perspective: perspectiveStack,
+              variant: selectedVariantName,
             },
           )
 
@@ -70,7 +71,6 @@ export const structure: StructureResolver = (
       S.listItem()
         .id('translate')
         .title('Translate Test')
-        // @ts-expect-error -- pre-existing, fix later
         .child(S.component(TranslateExample).id('example')),
       S.listItem()
         .title('Untitled repro')

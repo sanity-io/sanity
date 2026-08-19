@@ -18,15 +18,7 @@ import {
   type LoaderNodeMsg,
 } from '@sanity/presentation-comlink'
 import isEqual from 'fast-deep-equal'
-import {
-  memo,
-  startTransition,
-  useDeferredValue,
-  useEffect,
-  useEffectEvent,
-  useMemo,
-  useState,
-} from 'react'
+import {memo, startTransition, useDeferredValue, useEffect, useMemo, useState} from 'react'
 import {
   isReleasePerspective,
   RELEASES_STUDIO_CLIENT_OPTIONS,
@@ -37,6 +29,7 @@ import {
   useProjectId,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
 import {type LoaderConnection, type PresentationPerspective} from '../types'

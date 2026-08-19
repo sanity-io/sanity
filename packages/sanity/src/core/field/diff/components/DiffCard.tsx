@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {Card, rem} from '@sanity/ui'
-import {type ElementType, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
+import {type ElementType, type HTMLProps, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {type Annotation, type Diff} from '../../types'
@@ -23,8 +23,8 @@ interface StyledCardProps {
 }
 
 const StyledCard = styled(Card)<StyledCardProps>`
-  --diff-card-radius: ${({theme}) => rem(theme.sanity.radius[2])};
-  --diff-card-bg-color: ${({theme}) => theme.sanity.color.card.enabled.bg};
+  --diff-card-radius: ${({theme}) => rem(theme.sanity.radius[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
+  --diff-card-bg-color: ${({theme}) => theme.sanity.color.card.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
 
   max-width: 100%;
   position: relative;
@@ -78,11 +78,9 @@ const StyledCard = styled(Card)<StyledCardProps>`
 const EMPTY_PATH: Path = []
 
 /** @internal */
-export const DiffCard = forwardRef(function DiffCard(
-  props: DiffCardProps & Omit<HTMLProps<HTMLElement>, 'as' | 'height'>,
-  ref,
-) {
+export function DiffCard(props: DiffCardProps & Omit<HTMLProps<HTMLElement>, 'as' | 'height'>) {
   const {
+    ref,
     annotation: annotationProp,
     as = 'div',
     children,
@@ -131,4 +129,4 @@ export const DiffCard = forwardRef(function DiffCard(
   }
 
   return element
-})
+}

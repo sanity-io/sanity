@@ -162,7 +162,7 @@ export function TimelineItem({
               <Text size={0}>{IconComponent && <IconComponent />}</Text>
             </IconBox>
           </div>
-          <Stack space={2}>
+          <Stack gap={2}>
             <Text size={1} weight="medium">
               {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type]) || <code>{type}</code>}
             </Text>

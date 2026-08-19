@@ -1,7 +1,9 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui/menu'
 import {Fragment, useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {TASK_STATUS} from '../../constants/TaskStatus'
 import {type TaskDocument, type TaskStatus} from '../../types'
@@ -54,7 +56,7 @@ function TaskList(props: TaskListProps) {
         </Flex>
       </SummaryBox>
 
-      <Stack space={4} marginTop={3} paddingBottom={5}>
+      <Stack gap={4} marginTop={3} paddingBottom={5}>
         {tasks?.length > 0 ? (
           tasks.map((task, index) => {
             const showDivider = index < tasks.length - 1
@@ -110,7 +112,7 @@ export function TasksList(props: TasksListProps) {
   const hasClosedTasks = tasksByStatus.closed?.length > 0
 
   return (
-    <Stack space={4} flex={1}>
+    <Stack gap={4} flex={1}>
       {!hasOpenTasks && !hasClosedTasks ? (
         <EmptyTasksListState />
       ) : (

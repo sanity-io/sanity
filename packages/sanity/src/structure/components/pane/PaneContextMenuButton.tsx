@@ -1,4 +1,4 @@
-import {Menu, MenuDivider} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {type ReactNode, useId} from 'react'
 import {ContextMenuButton} from 'sanity'
 

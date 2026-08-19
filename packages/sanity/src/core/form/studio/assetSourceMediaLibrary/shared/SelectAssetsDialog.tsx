@@ -10,8 +10,10 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {Box, Card, Flex, useTheme, useToast} from '@sanity/ui'
+import {Card, Flex, useTheme} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useClient} from '../../../../hooks/useClient'
@@ -49,6 +51,7 @@ export interface SelectAssetsDialogProps {
 export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const theme = useTheme()
   const {t} = useTranslation()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {dark} = theme.sanity.color
   const mediaLibraryIds = useMediaLibraryIds()
 

@@ -289,7 +289,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
 
-    if (targetDocumentState.status === 'variant-missing') {
+    // A creatable missing draft variant renders no banner: the form is simply editable — typing
+    // creates the document at the server-advertised id — matching the base draft/published
+    // experience where editing the published fallback creates the draft.
+    if (targetDocumentState.status === 'variant-missing' && !targetDocumentState.creatableTarget) {
       return <DocumentNotInVariantBanner />
     }
 

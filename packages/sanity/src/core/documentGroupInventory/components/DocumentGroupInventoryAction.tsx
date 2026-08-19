@@ -1,5 +1,3 @@
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
 import {LayerProvider, useClickOutsideEvent} from '@sanity/ui'
 import {type ComponentType, type PropsWithChildren, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
@@ -8,14 +6,9 @@ import {styled} from 'styled-components'
 
 import {Button as BaseButton} from '../../../ui-components/button/Button'
 import {Popover} from '../../../ui-components/popover/Popover'
-import {useVersionRelease} from '../../hooks/useVersionRelease'
+import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {type TFunction} from '../../i18n/types'
-import {type TargetPerspective} from '../../perspective/types'
-import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
-import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
-import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 
 export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{
@@ -32,7 +25,6 @@ export const DocumentGroupInventoryAction: ComponentType<
   setIsDocumentGroupInventoryActive,
 }) => {
   const {t} = useTranslation()
-  const displayedRelease = useVersionRelease(documentId)
   const buttonElement = useRef<HTMLButtonElement | null>(null)
   const popoverElement = useRef<HTMLDivElement | null>(null)
 
@@ -77,57 +69,15 @@ export const DocumentGroupInventoryAction: ComponentType<
         <Button
           ref={buttonElement}
           data-testid="action-document-group-inventory"
-          text={variantLabel({perspective: displayedRelease?.release, t})}
+          text={t('document-group-inventory.action.manage-versions')}
           tone="neutral"
           onClick={() => setIsDocumentGroupInventoryActive(!isDocumentGroupInventoryActive)}
-          icon={<VariantIcon perspective={displayedRelease.release} />}
-          iconRight={isDocumentGroupInventoryActive ? ChevronDownIcon : ChevronUpIcon}
-          tooltipProps={{}}
+          icon={RhombusIcon}
           mode="ghost"
         />
       </Popover>
     </LayerProvider>
   )
-}
-
-function variantLabel({
-  perspective,
-  t,
-}: {
-  perspective: TargetPerspective | undefined
-  t: TFunction
-}): string {
-  if (typeof perspective === 'undefined') {
-    return ''
-  }
-
-  if (isAgentBundleName(perspective)) {
-    return t('version.agent-bundle.proposed-changes')
-  }
-
-  if (isDraftPerspective(perspective)) {
-    return 'Draft'
-  }
-
-  if (isPublishedPerspective(perspective)) {
-    return 'Published'
-  }
-
-  if (typeof perspective === 'string') {
-    return perspective
-  }
-
-  return perspective.metadata.title ?? perspective._id
-}
-
-const VariantIcon: ComponentType<{perspective: TargetPerspective | undefined}> = ({
-  perspective,
-}) => {
-  if (typeof perspective === 'undefined') {
-    return <ReleaseAvatarIcon tone="neutral" />
-  }
-
-  return <ReleaseAvatarIcon release={perspective} />
 }
 
 const Button = styled(BaseButton)`

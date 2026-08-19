@@ -94,6 +94,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const {handleOpenDialog} = useCommentsUpsell()
   const [mousePressed, setMousePressed] = useState<boolean>(false)
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editorRef = useRef<PortableTextEditor | null>(null)
 
   // Read through a ref because `useFormValue([])` changes identity on every
@@ -130,6 +131,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
   const getFragment = useCallback(() => {
     if (!editorRef.current) return EMPTY_ARRAY
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return PortableTextEditor.getFragment(editorRef.current)
   }, [])
 
@@ -304,6 +306,10 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const debounceSelectionChange = useDebounceSelectionChange(handleSelectionChange)
 
   const handleMouseDown = useCallback(() => {
+    // A mouse press inside the editor means the selection that follows is
+    // made by the user, not restored by a re-focus, so the `blurred` guard
+    // in `handleSelectionChange` must not swallow it.
+    blurred.current = false
     startTransition(() => setMousePressed(true))
   }, [])
 
@@ -353,6 +359,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
       // The below code will update the comment object to reflect the new selection
       if (!editorRef.current) return
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
       const [updatedDecoration] = buildRangeDecorationSelectionsFromComments({
@@ -418,6 +425,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const handleBuildRangeDecorations = useCallback(
     (commentsToDecorate: CommentDocument[]) => {
       if (!editorRef.current) return EMPTY_ARRAY
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
       return buildCommentRangeDecorations({
@@ -492,12 +500,14 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         return addedCommentsDecorations.some((d) => {
           if (!editorRef.current) return false
 
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           const testA = PortableTextEditor.isSelectionsOverlapping(
             editorRef.current,
             currentSelection,
             d.selection,
           )
 
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           const testB = PortableTextEditor.isSelectionsOverlapping(
             editorRef.current,
             d.selection,

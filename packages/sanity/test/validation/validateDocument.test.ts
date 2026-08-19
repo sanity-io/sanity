@@ -126,6 +126,7 @@ describe('validateDocument', () => {
     }
 
     const result = await validateDocument({
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       getClient,
       document,
       workspace: {schema} as Workspace,

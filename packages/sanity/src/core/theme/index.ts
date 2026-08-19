@@ -1,5 +1,6 @@
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type StudioTheme, type StudioThemeColorSchemeKey} from './types'
 
 let _defaultTheme: RootTheme | undefined
@@ -24,15 +25,19 @@ export function getDefaultTheme(): RootTheme {
  * */
 export const defaultTheme: RootTheme = /* @__PURE__ */ new Proxy({} as RootTheme, {
   get(_target, prop, receiver) {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return Reflect.get(getDefaultTheme(), prop, receiver)
   },
   ownKeys() {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return Reflect.ownKeys(getDefaultTheme())
   },
   getOwnPropertyDescriptor(_target, prop) {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return Object.getOwnPropertyDescriptor(getDefaultTheme(), prop)
   },
   has(_target, prop) {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return prop in getDefaultTheme()
   },
 })

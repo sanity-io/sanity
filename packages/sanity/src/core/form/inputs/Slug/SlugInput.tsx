@@ -7,9 +7,10 @@ import {
   type SlugSourceFn,
   type SlugValue,
 } from '@sanity/types'
-import {Box, Card, Flex, Stack, TextInput} from '@sanity/ui'
+import {Card, Flex, Stack, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {type FormEvent, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -106,6 +107,7 @@ export function SlugInput(props: SlugInputProps) {
   const isUpdating = generateState?.status === 'pending'
 
   const handleChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (event: FormEvent<HTMLInputElement>) => updateSlug(event.currentTarget.value),
     [updateSlug],
   )
@@ -143,9 +145,9 @@ export function SlugInput(props: SlugInputProps) {
   useImperativeHandle(elementProps.ref, () => inputRef.current)
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Flex gap={1}>
-        <Box flex={1}>
+        <Box flexBasis="0%" flexGrow={1}>
           <TextInput
             customValidity={errors.length > 0 ? errors[0].message : ''}
             disabled={isUpdating}

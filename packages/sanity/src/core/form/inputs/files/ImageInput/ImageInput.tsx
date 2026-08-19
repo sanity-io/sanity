@@ -5,7 +5,8 @@ import {
   type ImageAsset,
   type UploadState,
 } from '@sanity/types'
-import {Stack, useToast} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import get from 'lodash-es/get.js'
 import {Fragment, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
@@ -450,7 +451,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   return (
     // The Stack space should match the space in ObjectInput
-    <Stack space={5} data-testid="image-input">
+    <Stack gap={5} data-testid="image-input">
       {renderedMembers.map((member) => {
         if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
           // we're rendering these separately

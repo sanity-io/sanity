@@ -2,9 +2,11 @@ import {AddDocumentIcon} from '@sanity/icons/AddDocument'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type SchemaType, type UploadState} from '@sanity/types'
-import {Box, Card, type CardTone, Menu} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../../ui-components/menuItem/MenuItem'
@@ -94,6 +96,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   const maxReached = arrayValidation?.maxReached
   const maxReachedReason = arrayValidation?.maxReachedReason
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined
@@ -317,6 +320,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
   return (
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <EnhancedObjectDialogProvider>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         {item}

@@ -4,6 +4,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
   type CommandListRenderItemCallback,
+  Delay,
   ErrorActions,
   type GeneralPreviewLayoutKey,
   getPublishedId,
@@ -16,7 +17,6 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {Delay} from '../../components/Delay'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePane} from '../../components/pane/usePane'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
@@ -71,7 +71,7 @@ function LoadingView(props: {layout?: GeneralPreviewLayoutKey}) {
   const {layout} = props
 
   return (
-    <Stack paddingX={3} paddingY={2} paddingTop={0} space={1}>
+    <Stack paddingX={3} paddingY={2} paddingTop={0} gap={1}>
       {SKELETON_ITEMS.map((num) => (
         <SanityDefaultPreview key={num} isPlaceholder layout={layout} />
       ))}
@@ -221,7 +221,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       return (
         <Flex align="center" direction="column" height="fill" justify="center">
           <Container width={1}>
-            <Stack paddingX={4} paddingY={5} space={4}>
+            <Stack paddingX={4} paddingY={5} gap={4}>
               <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
               <Text as="p">
                 {isDev ? (

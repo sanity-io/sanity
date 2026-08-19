@@ -25,7 +25,7 @@ const variantsMock = vi.hoisted(() => ({
   error: undefined as Error | undefined,
 }))
 
-vi.mock('@sanity/ui', async (importOriginal) => ({
+vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   ...(await importOriginal()),
   useToast: vi.fn(() => toastMock),
 }))
@@ -211,7 +211,7 @@ describe('CreateVariantDialog', () => {
     expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
   })
 
-  it('shows an error for invalid condition values', async () => {
+  it('allows colons in condition values', async () => {
     const user = userEvent.setup()
 
     await renderDialog()
@@ -221,8 +221,27 @@ describe('CreateVariantDialog', () => {
     await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal:customers')
     await user.click(screen.getByTestId('submit-variant-button'))
 
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
+
+    expect(createdVariant.conditions).toEqual({audience: 'loyal:customers'})
+  })
+
+  it('shows an error for condition values that contain commas', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'loyal,customers')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
     expect(screen.getByTestId('variant-form-condition-value-error')).toHaveTextContent(
-      'Condition values cannot contain colons',
+      'Condition values cannot contain commas',
     )
     expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
   })

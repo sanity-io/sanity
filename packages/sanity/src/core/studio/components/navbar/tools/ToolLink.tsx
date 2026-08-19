@@ -1,4 +1,4 @@
-import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useCallback} from 'react'
+import {type HTMLProps, type ReactNode, useCallback, type RefAttributes} from 'react'
 import {StateLink, useRouterState} from 'sanity/router'
 
 /**
@@ -12,11 +12,12 @@ export interface ToolLinkProps {
 /**
  * @hidden
  * @beta */
-export const ToolLink = forwardRef(function ToolLink(
-  props: ToolLinkProps & Omit<HTMLProps<HTMLAnchorElement>, 'href' | 'name'>,
-  ref: ForwardedRef<HTMLAnchorElement>,
+export function ToolLink(
+  props: ToolLinkProps &
+    Omit<HTMLProps<HTMLAnchorElement>, 'href' | 'name'> &
+    RefAttributes<HTMLAnchorElement>,
 ) {
-  const {name, ...rest} = props
+  const {ref, name, ...rest} = props
   const state = useRouterState(
     useCallback(
       () => ({
@@ -29,4 +30,4 @@ export const ToolLink = forwardRef(function ToolLink(
   )
 
   return <StateLink state={state} {...rest} ref={ref} />
-})
+}

@@ -1,7 +1,9 @@
 import {ResetIcon as ClearIcon} from '@sanity/icons/Reset'
 import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Card, Flex, Inline, Stack, useClickOutsideEvent} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {
   type FocusEvent,
   type KeyboardEvent,
@@ -290,9 +292,9 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         <DisabledFeatureWarning value={value} onClearValue={handleClear} />
       )}
       {(featureInfo.isLoading || featureInfo.enabled) && (
-        <Stack space={1}>
+        <Stack gap={1}>
           {isEditing ? (
-            <Stack space={2} ref={clickOutsideBoundaryRef}>
+            <Stack gap={2} ref={clickOutsideBoundaryRef}>
               <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
                 <div ref={setAutocompletePopoverReferenceElement}>
                   <ReferenceAutocomplete

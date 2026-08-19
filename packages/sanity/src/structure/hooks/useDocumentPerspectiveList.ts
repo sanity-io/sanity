@@ -1,7 +1,6 @@
 import {type BadgeTone} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
-  getReleaseIdFromReleaseDocumentId,
   getVariantTitle,
   getVersionFromId,
   isDraftId,
@@ -15,13 +14,11 @@ import {
   useFilteredReleases,
   usePerspective,
   useSchema,
-  useSetPerspective,
   useSingleDocRelease,
   useWorkspace,
   useAllVariants,
   type VersionInfoDocumentStub,
   useSetVariant,
-  getTargetDocument,
 } from 'sanity'
 
 import {isLiveEditEnabled} from '../components/paneItem/helpers'
@@ -43,8 +40,11 @@ interface DocumentPerspectiveList {
   } | null
   /** Returns the chip selection/disabled state for a given release id. */
   getReleaseChipState: (releaseId: string) => {selected: boolean; disabled?: boolean}
-  /** Navigates to the draft perspective after copying a version to drafts. */
-  handleCopyToDraftsNavigate: () => void
+  /**
+   * Clears the pane-local scheduled draft perspective when viewing one.
+   * Passed into version context menus for post copy-to-drafts cleanup.
+   */
+  clearScheduledDraftPerspective: () => void
   /** Navigates to the given perspective. */
   handlePerspectiveChange: (perspective: TargetPerspective) => void
   isDraftDisabled: boolean
@@ -59,8 +59,6 @@ interface DocumentPerspectiveList {
   variantVersions: VersionInfoDocumentStub[]
   /** Handles the selection of a variant. */
   handleVariantSelectionChange: (version: VersionInfoDocumentStub) => void
-  /** Display props for the currently selected variant in the active bundle, if any. */
-  selectedVariantDisplay: {displayName: string; tone: BadgeTone} | null
 }
 
 /**
@@ -74,8 +72,7 @@ interface DocumentPerspectiveList {
  * @internal
  */
 export function useDocumentPerspectiveList(): DocumentPerspectiveList {
-  const {selectedReleaseId, selectedPerspectiveName, selectedVariant, bundle} = usePerspective()
-  const setPerspective = useSetPerspective()
+  const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {params} = usePaneRouter()
   const schema = useSchema()
   const {editState, displayed} = useDocumentPane()
@@ -97,17 +94,11 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
   const workspace = useWorkspace()
   const {onSetScheduledDraftPerspective} = useSingleDocRelease()
 
-  const handleCopyToDraftsNavigate = useCallback(() => {
-    // after copying to draft, we want to navigate to the draft version
+  const clearScheduledDraftPerspective = useCallback(() => {
     if (params?.scheduledDraft) {
-      // if currently viewing a scheduled draft, remove the scheduled draft perspective
-      // the global perspective is already set to drafts
       onSetScheduledDraftPerspective('')
-    } else {
-      // otherwise, only need to set the global perspective to drafts
-      setPerspective('drafts')
     }
-  }, [params, setPerspective, onSetScheduledDraftPerspective])
+  }, [params, onSetScheduledDraftPerspective])
 
   const {navigate: handlePerspectiveChange} = usePerspectiveNavigator()
 
@@ -272,29 +263,11 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     [setVariant, variants],
   )
 
-  // Temporarily display the selected variant in the header; this will be replaced by the inventory.
-  const selectedVariantDisplay = useMemo(() => {
-    if (!selectedVariant) {
-      return null
-    }
-
-    const targetVariantDocument = getTargetDocument({
-      bundle,
-      variant: selectedVariant._id,
-      documentVersions,
-    })
-
-    if (targetVariantDocument) {
-      return getVersionDisplay(targetVariantDocument)
-    }
-    return null
-  }, [selectedVariant, bundle, documentVersions, getVersionDisplay])
-
   return {
     filteredReleases,
     getVersionDisplay,
     getReleaseChipState,
-    handleCopyToDraftsNavigate,
+    clearScheduledDraftPerspective,
     handlePerspectiveChange,
     isDraftDisabled,
     isDraftModelEnabled,
@@ -305,6 +278,5 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     nonReleaseVersions,
     variantVersions,
     handleVariantSelectionChange,
-    selectedVariantDisplay,
   }
 }

@@ -1,16 +1,15 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button as UIButton,
   Flex,
-  Menu,
-  MenuDivider,
   Stack,
   Text,
 } from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useState} from 'react'
 import {take} from 'rxjs/operators'
+import {Box} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -90,7 +89,7 @@ export function WorkspaceMenuButton() {
                   </Text>
                 </Box>
 
-                <Stack ref={stackRef} space={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
+                <Stack ref={stackRef} gap={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
                   {visibleWorkspaces.map((workspace) => (
                     <WorkspaceMenuItem
                       key={workspace.name}

@@ -1,10 +1,16 @@
+import {type SingleActionResult} from '@sanity/client'
 import {useCallback} from 'react'
 
 import {useClient} from '../../hooks/useClient'
-import {type TargetPerspective} from '../../perspective/types'
-import {createVariantScopedDocument} from '../documents/createVariantScopedDocument'
+import {
+  createVariantScopedDocument,
+  type CreateVariantScopedDocumentOptions,
+} from '../documents/createVariantScopedDocument'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../store/constants'
-import {type SystemVariant} from '../types'
+
+type DistributiveOmit<Type, Key extends PropertyKey> = Type extends unknown
+  ? Omit<Type, Key>
+  : never
 
 /**
  * @internal
@@ -12,18 +18,16 @@ import {type SystemVariant} from '../types'
 export function useVariantDocumentOperations() {
   const client = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
 
-  const createVariantDocument = useCallback(
-    async (options: {
-      baseId: string
-      baseRevisionId?: string
-      variant: SystemVariant
-      selectedPerspective: TargetPerspective
-    }) => {
-      await createVariantScopedDocument({
+  const createVariantDocument = useCallback<
+    (
+      options: DistributiveOmit<CreateVariantScopedDocumentOptions, 'client'>,
+    ) => Promise<SingleActionResult>
+  >(
+    (options) =>
+      createVariantScopedDocument({
         client,
         ...options,
-      })
-    },
+      }),
     [client],
   )
 

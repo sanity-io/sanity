@@ -18,6 +18,7 @@ import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_KEY = {
+  ALREADY_UNPUBLISHED: 'action.unpublish.disabled.already-unpublished',
   NOT_PUBLISHED: 'action.unpublish.disabled.not-published',
   NOT_READY: 'action.unpublish.disabled.not-ready',
   LIVE_EDIT_ENABLED: 'action.unpublish.disabled.live-edit-enabled',
@@ -79,6 +80,9 @@ export const useUnpublishAction: DocumentActionComponent = ({
             id={draft?._id || id}
             type={type}
             action="unpublish"
+            // Published variants can always be unpublished — incoming refs point
+            // at the base published id, not the variant id.
+            checkIncomingReferences={!isVariantTarget}
             onCancel={handleCancel}
             onConfirm={handleConfirm}
           />
@@ -87,7 +91,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
     }
 
     return null
-  }, [draft, id, handleCancel, handleConfirm, isConfirmDialogOpen, type])
+  }, [draft, handleCancel, handleConfirm, id, isConfirmDialogOpen, isVariantTarget, type])
 
   return useMemo(() => {
     if (release || isDraft) {

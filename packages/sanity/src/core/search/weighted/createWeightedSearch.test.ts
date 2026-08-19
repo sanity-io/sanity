@@ -34,6 +34,7 @@ const searchHits = defer(() =>
 
 const {
   result: {current: client},
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 } = renderHook(() => useClient())
 const search = createWeightedSearch(getSearchableTypes(mockSchema), client, {unique: true})
 
@@ -49,6 +50,26 @@ describe('createWeightedSearch', () => {
     )
 
     expect(client.withConfig).toHaveBeenCalledWith({apiVersion: 'v2025-02-19'})
+  })
+
+  it('overrides to use the variants api version and passes the variant when searching a variant', async () => {
+    await lastValueFrom(
+      search({query: 'harry', types: []} as SearchTerms, {
+        perspective: ['r123', 'drafts'],
+        variant: 'alpha-audience',
+      }),
+    )
+
+    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: 'X'})
+
+    const versionedClient = (client.withConfig as Mock).mock.results.at(-1)?.value as {
+      observable: {fetch: Mock}
+    }
+    expect(versionedClient.observable.fetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(Object),
+      expect.objectContaining({variant: 'alpha-audience', perspective: ['r123', 'drafts']}),
+    )
   })
 
   it('should order hits by score by default', async () => {

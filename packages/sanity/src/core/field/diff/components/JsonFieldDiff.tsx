@@ -1,4 +1,5 @@
-import {Card, Code, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {type CSSProperties} from 'react'
 import {styled} from 'styled-components'
 
@@ -62,7 +63,7 @@ export const JsonFieldDiff: DiffComponent = ({diff}) => {
   const content =
     from && to ? (
       <DiffTooltip description={changeVerb} diff={diff}>
-        <Stack space={3}>
+        <Stack gap={3}>
           {from}
           <FromToArrow direction="down" align="center" />
           {to}
@@ -79,7 +80,7 @@ export const JsonFieldDiff: DiffComponent = ({diff}) => {
     ) : null
 
   return (
-    <Stack space={4} paddingY={1}>
+    <Stack gap={4} paddingY={1}>
       <Card border padding={3} radius={2} tone="caution">
         <Text size={1}>{t('changes.unknown-schema-field.description')}</Text>
       </Card>

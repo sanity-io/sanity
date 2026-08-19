@@ -11,6 +11,7 @@ import {type DocumentPaneProviderProps} from './types'
  * @internal
  */
 export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProps) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const {setParams, params} = usePaneRouter()
   const handleSetScheduledDraftPerspective = useCallback(
@@ -30,9 +31,11 @@ export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProp
   return (
     <DocumentPerspectiveProvider>
       <SingleDocReleaseProvider onSetScheduledDraftPerspective={handleSetScheduledDraftPerspective}>
+        {/* oxlint-disable-next-line no-deprecated -- the legacy timeline opt-out keeps working until the next major */}
         {source.beta?.eventsAPI?.documents ? (
           <DocumentEventsPane {...props} />
         ) : (
+          // oxlint-disable-next-line no-deprecated -- rendered only for the legacy timeline opt-out
           <DocumentPaneWithLegacyTimelineStore {...props} />
         )}
       </SingleDocReleaseProvider>

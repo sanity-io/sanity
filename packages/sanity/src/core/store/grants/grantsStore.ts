@@ -25,7 +25,7 @@ async function getDatasetGrants(
   // `acl` stands for access control list and returns a list of grants
   const fetchGrants = () =>
     client.request<Grant[]>({
-      uri: `/projects/${projectId}/datasets/${dataset}/acl`,
+      url: `/projects/${projectId}/datasets/${dataset}/acl`,
       tag: 'acl.get',
     })
 
@@ -93,6 +93,7 @@ export type GrantsStoreOptions = GrantsStoreOptionsCurrentUser | GrantsStoreOpti
 export function createGrantsStore(opts: GrantsStoreOptions): GrantsStore {
   const {client, errorHandler} = opts
   const versionedClient = client.withConfig({apiVersion: '2021-06-07'})
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const userId = 'userId' in opts ? opts.userId : opts?.currentUser?.id || null
 
   const datasetGrants$ = defer(() => of(versionedClient.config())).pipe(
@@ -106,6 +107,7 @@ export function createGrantsStore(opts: GrantsStoreOptions): GrantsStore {
 
   const currentUserDatasetGrants = debugGrants$.pipe(
     switchMap((debugGrants) => (debugGrants ? of(debugGrants) : datasetGrants$)),
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     publishReplay(1),
     refCountDelay(1000),
   )

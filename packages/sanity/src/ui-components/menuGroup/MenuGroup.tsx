@@ -1,5 +1,5 @@
 /* oxlint-disable no-restricted-imports */
-import {MenuGroup as UIMenuGroup, type MenuGroupProps as UIMenuGroupProps} from '@sanity/ui'
+import {MenuGroup as UIMenuGroup, type MenuGroupProps as UIMenuGroupProps} from '@sanity/ui/menu'
 import {type ComponentProps} from 'react'
 
 import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'

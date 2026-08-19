@@ -1,7 +1,8 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Flex, Stack, Text} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -50,7 +51,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   const hasValidations = validation.length > 0
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Flex align="center" paddingY={1}>
         <Flex align="center">
           <Text as="label" htmlFor={inputId} weight="medium" size={1}>

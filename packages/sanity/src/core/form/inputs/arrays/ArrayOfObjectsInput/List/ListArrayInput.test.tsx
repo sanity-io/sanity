@@ -25,7 +25,7 @@ vi.mock('./VirtualizedArrayList', () => ({
 function MockItemComponent() {
   return null
 }
-vi.mock('../../../../form-components-hooks/componentHooks', () => ({
+vi.mock('../../../../form-components-hooks/useItemComponent', () => ({
   useItemComponent: () => MockItemComponent,
 }))
 
@@ -70,6 +70,7 @@ function renderListArrayInput(options: {
 
   return render(<ListArrayInput {...props} />, {
     wrapper: ({children}: {children: ReactNode}) => (
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>
     ),
   })

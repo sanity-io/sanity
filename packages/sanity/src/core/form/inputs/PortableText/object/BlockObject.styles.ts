@@ -1,10 +1,13 @@
 import {hues} from '@sanity/color'
-import {Box, Card, Flex, type Theme} from '@sanity/ui'
+import {Card, Flex, type Theme} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {DEBUG} from '../../../../changeIndicators/constants'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const Root = styled(Card)((props: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {color, radius, space} = props.theme.sanity
 
   const overlay = css`
@@ -81,7 +84,9 @@ export const PreviewContainer = styled(Flex)`
 `
 
 export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ({theme, $hasChanges}: {theme: Theme; $hasChanges: boolean}) => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {space} = theme.sanity
 
     return css`

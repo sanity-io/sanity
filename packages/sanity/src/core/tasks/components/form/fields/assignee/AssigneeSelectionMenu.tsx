@@ -1,19 +1,14 @@
 import {UserIcon} from '@sanity/icons/User'
+import {Badge, Container, Flex, Text, TextInput, VirtualList} from '@sanity/ui'
 import {
-  Badge,
-  Box,
-  Container,
-  Flex,
   Menu,
   // oxlint-disable-next-line no-restricted-imports
   MenuItem,
-  Text,
-  TextInput,
-  VirtualList,
-} from '@sanity/ui'
+} from '@sanity/ui/menu'
 import deburr from 'lodash-es/deburr.js'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
@@ -43,11 +38,7 @@ function MentionUserMenuItem(props: {
           </Text>
         </Flex>
 
-        {!user.granted && (
-          <Badge fontSize={1} mode="outline">
-            {t('form.input.assignee.unauthorized.text')}
-          </Badge>
-        )}
+        {!user.granted && <Badge fontSize={1}>{t('form.input.assignee.unauthorized.text')}</Badge>}
       </Flex>
     </MenuItem>
   )

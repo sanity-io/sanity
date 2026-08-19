@@ -1,8 +1,8 @@
-import {ClientError} from '@sanity/client'
+import {type HttpError, isHttpError} from '@sanity/client'
 
 /** @internal */
-export function isUnauthorizedError(err: unknown): err is ClientError {
-  return err instanceof ClientError && err.statusCode === 401
+export function isUnauthorizedError(err: unknown): err is HttpError {
+  return isHttpError(err) && err.statusCode === 401
 }
 
 /**
@@ -26,7 +26,7 @@ const INVALID_SESSION_ERROR_CODES = ['SIO-401-AEX', 'SIO-401-ANF']
  *
  * @internal
  */
-export function isInvalidSessionError(err: unknown): err is ClientError {
+export function isInvalidSessionError(err: unknown): err is HttpError {
   if (!isUnauthorizedError(err)) return false
   const code = getApiErrorCode(err)
   return code !== undefined && INVALID_SESSION_ERROR_CODES.includes(code)
@@ -42,11 +42,13 @@ export function isInvalidSessionError(err: unknown): err is ClientError {
  * @internal
  */
 export function getApiErrorCode(err: unknown): string | undefined {
-  if (!(err instanceof ClientError)) return undefined
-  const fromResponse = readErrorCode(err.response?.body)
+  if (!isHttpError(err)) return undefined
+  const fromResponse = readErrorCode(err.response.body)
   if (fromResponse) return fromResponse
+  const responseBody = 'responseBody' in err ? err.responseBody : undefined
+  if (typeof responseBody !== 'string') return undefined
   try {
-    return readErrorCode(JSON.parse(err.responseBody ?? ''))
+    return readErrorCode(JSON.parse(responseBody))
   } catch {
     return undefined
   }

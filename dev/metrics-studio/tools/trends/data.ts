@@ -7,7 +7,14 @@ export interface TrendRun {
   _id: string
   startedAt: string
   mode: 'ab' | 'absolute'
-  git: {sha: string; branch: string; prNumber?: number; mergeBaseSha?: string} | null
+  git: {
+    sha: string
+    branch: string
+    /** Committer date of `sha` — absent on documents stored before it existed. */
+    committedAt?: string | null
+    prNumber?: number
+    mergeBaseSha?: string
+  } | null
   runner: {calibrationMs: number; runId?: string; runAttempt?: number} | null
   bundle: {experiment: {initialJsBytes: number} | null} | null
   scenarios:
@@ -43,11 +50,14 @@ export interface TrendRun {
     | null
 }
 
-export const TREND_QUERY = `*[_type == "benchRun"] | order(startedAt asc) {
+// Absolute-mode only: A/B dispatch runs store mode:'ab' comparison documents
+// (two builds measured against each other) whose numbers are not points on
+// any branch's series — they'd inject a historical commit into the main line.
+export const TREND_QUERY = `*[_type == "benchRun" && mode == "absolute"] | order(coalesce(git.committedAt, startedAt) asc) {
   _id,
   startedAt,
   mode,
-  git{sha, branch, prNumber, mergeBaseSha},
+  git{sha, branch, committedAt, prNumber, mergeBaseSha},
   runner{calibrationMs, runId, runAttempt},
   bundle{experiment{initialJsBytes}},
   scenarios[]{
@@ -112,6 +122,18 @@ export interface TrendSeries {
   xKind?: 'date' | 'minute'
   /** One line per branch (usually just one — comparison overlays several). */
   lines: TrendLine[]
+}
+
+/**
+ * Where a run sits on the time axis: the measured commit's committer date.
+ * Backfilled runs measure a historical commit long after the fact — plotting
+ * them at `startedAt` stacks them all on the day the backfill ran instead of
+ * spreading them across the dates being repaired. Older documents predate
+ * `git.committedAt` and fall back to `startedAt` (within a day of the commit
+ * for cron runs, so the axis stays honest).
+ */
+export function runDate(run: TrendRun): Date {
+  return new Date(run.git?.committedAt || run.startedAt)
 }
 
 /** All git branches present in the runs, `main` first, then alphabetical. */
@@ -363,7 +385,7 @@ function slopeUnitFor(baseUnit: TrendUnit): TrendUnit {
 export function filterByRange(runs: TrendRun[], days: number | null): TrendRun[] {
   if (days === null) return runs
   const cutoff = Date.now() - days * 24 * 60 * 60 * 1000
-  return runs.filter((run) => new Date(run.startedAt).getTime() >= cutoff)
+  return runs.filter((run) => runDate(run).getTime() >= cutoff)
 }
 
 /**
@@ -401,7 +423,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
       line = {branch, points: []}
       existing.lines.push(line)
     }
-    line.points.push({date: new Date(run.startedAt), ...pointMeta(run), ...point})
+    line.points.push({date: runDate(run), ...pointMeta(run), ...point})
     series.set(key, existing)
   }
 
@@ -469,7 +491,7 @@ export function calibrationSeries(runs: TrendRun[]): TrendSeries {
     }
     for (const value of values) {
       line.points.push({
-        date: new Date(run.startedAt),
+        date: runDate(run),
         value,
         ...pointMeta(run),
       })
@@ -589,7 +611,7 @@ function soakHistory(
       sourceFile ??= file
       const branch = run.git?.branch ?? 'unknown'
       const line = lineByBranch.get(branch) ?? {branch, points: []}
-      line.points.push({date: new Date(run.startedAt), value, ...pointMeta(run)})
+      line.points.push({date: runDate(run), value, ...pointMeta(run)})
       lineByBranch.set(branch, line)
     }
     return {

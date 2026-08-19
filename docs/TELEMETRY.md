@@ -80,6 +80,53 @@ src/
     ...
 ```
 
+## Standard property value sets
+
+Some interactions happen on more than one UI surface or through more than one
+trigger. Rather than baking that context into the event name (which fragments a
+single action across many high-cardinality names), encode it as a property on a
+generic event. For those properties to be aggregatable, the values must come
+from a shared, low-cardinality vocabulary.
+
+The value sets below are canonical. When instrumenting a new event, reuse an
+existing value where one fits; only introduce a new value when no existing one
+describes the surface or trigger, and coordinate additions with the Data /
+Analytics team so downstream dbt models and Looker dashboards stay in sync.
+
+**Owner:** Studio App team (`SAPP`), in coordination with Data / Analytics.
+
+### `location`
+
+The UI surface an interaction happened on.
+
+| Value                  | Description                                           |
+| ---------------------- | ----------------------------------------------------- |
+| `document_pane`        | The main document editor pane                         |
+| `array_list`           | An array-of-objects list field                        |
+| `nested_object_dialog` | A nested object edit dialog or popover (tree editing) |
+
+### `position`
+
+Where in a collection an object was created or edited. Pairs with
+`location: "array_list"`.
+
+| Value       | Description                                 |
+| ----------- | ------------------------------------------- |
+| `new`       | Created via the array's primary add control |
+| `appended`  | Inserted after an existing item             |
+| `prepended` | Inserted before an existing item            |
+| `nested`    | An existing nested item opened for editing  |
+
+### `path`
+
+How a navigation or open interaction was triggered.
+
+| Value               | Description               |
+| ------------------- | ------------------------- |
+| `breadcrumb`        | Via a breadcrumb control  |
+| `close_button`      | Via a dialog close button |
+| `keyboard_shortcut` | Via a keyboard shortcut   |
+
 ## How Events Are Sent
 
 ### React Hook
@@ -229,16 +276,17 @@ Tracked automatically via `web-vitals/attribution` library:
 
 ### Releases
 
-| Event                               | When                        |
-| ----------------------------------- | --------------------------- |
-| `Version Document Added to Release` | Document added to a release |
-| `Release Created/Deleted/Published` | Release lifecycle           |
-| `Release Scheduled/Unscheduled`     | Release scheduling          |
-| `Release Archived/Unarchived`       | Release archival            |
-| `Release Reverted/Duplicated`       | Release management          |
-| `Release Link/ID/Title Copied`      | Clipboard actions           |
-| `Navigated to Releases Overview`    | Navigation                  |
-| `Navigated to Scheduled Drafts`     | Navigation                  |
+| Event                               | When                                                                                                                       |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `Version Document Added to Release` | Document added to a release                                                                                                |
+| `Release Created/Deleted/Published` | Release lifecycle                                                                                                          |
+| `Release Scheduled/Unscheduled`     | Release scheduling                                                                                                         |
+| `Release Archived/Unarchived`       | Release archival                                                                                                           |
+| `Release Reverted/Duplicated`       | Release management                                                                                                         |
+| `Release Description Set`           | Release description usage - set at creation or edited in Studio (action, character count, contains-URL; never the content) |
+| `Release Link/ID/Title Copied`      | Clipboard actions                                                                                                          |
+| `Navigated to Releases Overview`    | Navigation                                                                                                                 |
+| `Navigated to Scheduled Drafts`     | Navigation                                                                                                                 |
 
 ### Scheduled Drafts
 

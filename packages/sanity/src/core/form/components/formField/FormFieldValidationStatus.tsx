@@ -1,6 +1,7 @@
 import {type FormNodeValidation} from '@sanity/types'
-import {Box, Flex, type Placement, Stack, Text} from '@sanity/ui'
+import {Flex, type Placement, Stack, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useListFormat} from '../../../hooks/useListFormat'
@@ -49,7 +50,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   return (
     <Tooltip
       content={
-        <StyledStack space={3}>
+        <StyledStack gap={3}>
           {showSummary && <FormFieldValidationSummary validation={validation} />}
 
           {!showSummary && (
@@ -85,7 +86,7 @@ function FormFieldValidationStatusItem(props: {validation: FormNodeValidation}) 
           <StatusIcon status={validation.level} />
         </Text>
       </Box>
-      <Box flex={1}>
+      <Box flexBasis="0%" flexGrow={1}>
         <Text size={1}>{validation.message}</Text>
       </Box>
     </Flex>

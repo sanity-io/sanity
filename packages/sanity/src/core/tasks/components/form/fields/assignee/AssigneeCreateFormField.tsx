@@ -58,9 +58,7 @@ export function AssigneeCreateFormField(props: StringInputProps) {
             </Flex>
 
             {value && mentionedUser && !mentionedUser.granted && (
-              <Badge fontSize={1} mode="outline">
-                {t('form.input.assignee.unauthorized.text')}
-              </Badge>
+              <Badge fontSize={1}>{t('form.input.assignee.unauthorized.text')}</Badge>
             )}
           </Flex>
         </FocusableCard>

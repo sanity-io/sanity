@@ -1,5 +1,6 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Box, Button, Card, Code, Dialog, Grid, Inline, Stack, Text} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Grid, Inline, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, of, type Observable} from 'rxjs'
@@ -62,6 +63,7 @@ const INITIAL_DOCUMENT_JSON_STATE: DocumentJsonState = {
   loading: true,
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function buildDocumentQueryUrl(client: ReturnType<typeof useClient>, documentId: string): string {
   const searchParams = new URLSearchParams()
   searchParams.set('query', DOCUMENT_QUERY)
@@ -256,20 +258,16 @@ function DocumentJsonDialog(props: {documentId: string; label: string; onClose: 
   const documentState$ = useMemo(
     () =>
       observeFullDocument(documentPreviewStore, documentId).pipe(
-        map(
-          (result): DocumentJsonState => ({
-            document: result ?? null,
+        map((result): DocumentJsonState => ({
+          document: result ?? null,
+          loading: false,
+        })),
+        catchError((observeError: unknown): Observable<DocumentJsonState> =>
+          of({
+            document: undefined,
             loading: false,
+            error: observeError instanceof Error ? observeError.message : 'Failed to load document',
           }),
-        ),
-        catchError(
-          (observeError: unknown): Observable<DocumentJsonState> =>
-            of({
-              document: undefined,
-              loading: false,
-              error:
-                observeError instanceof Error ? observeError.message : 'Failed to load document',
-            }),
         ),
       ),
     [documentId, documentPreviewStore],
@@ -436,8 +434,8 @@ export function VariantVersionsView(props: {documentId: string}) {
   return (
     <Card overflow="auto" style={{minHeight: '100%'}} tone="transparent">
       <Box padding={4}>
-        <Stack space={4}>
-          <Stack space={2}>
+        <Stack gap={4}>
+          <Stack gap={2}>
             <Text size={3} weight="bold">
               Variant versions
             </Text>
@@ -464,7 +462,7 @@ export function VariantVersionsView(props: {documentId: string}) {
               </Text>
             )}
           </Stack>
-          <Grid columns={[1, 1, 2]} gap={4}>
+          <Grid gridTemplateColumns={[1, 1, 2]} gap={4}>
             {slots.map((slot) => (
               <VersionSlotCard key={slot.label} {...slot} />
             ))}

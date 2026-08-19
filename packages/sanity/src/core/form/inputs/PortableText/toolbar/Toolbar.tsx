@@ -7,9 +7,11 @@ import {
 import {CollapseIcon} from '@sanity/icons/Collapse'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
-import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
+import {Flex, useElementSize} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
@@ -85,9 +87,9 @@ const InnerToolbar = memo(function InnerToolbar({
   const showActionMenu = actionsLen > 0
   const showInsertMenu = insertMenuItems.length > 0
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-  const rootElementRect = useElementRect(rootElement)
+  const rootElementSize = useElementSize(rootElement)
 
-  const collapsed = collapsible && rootElementRect ? rootElementRect?.width < 400 : false
+  const collapsed = collapsible && rootElementSize ? rootElementSize.border.width < 400 : false
   const showBlockStyleSelect = blockStyles.length > 1
 
   useRovingFocus({
@@ -116,7 +118,7 @@ const InnerToolbar = memo(function InnerToolbar({
       <Flex flex={1}>
         {showActionMenu && (
           <ActionMenuBox
-            flex={collapsed ? undefined : 1}
+            {...(collapsed ? undefined : {flexBasis: '0%', flexGrow: 1})}
             padding={isFullscreen ? 2 : 1}
             $withInsertMenu={showInsertMenu}
           >
@@ -130,7 +132,10 @@ const InnerToolbar = memo(function InnerToolbar({
         )}
 
         {showInsertMenu && (
-          <Box flex={collapsed ? undefined : 1} padding={isFullscreen ? 2 : 1}>
+          <Box
+            {...(collapsed ? undefined : {flexBasis: '0%', flexGrow: 1})}
+            padding={isFullscreen ? 2 : 1}
+          >
             <InsertMenu
               disabled={disabled}
               collapsed={collapsed}
@@ -165,8 +170,10 @@ const InnerToolbar = memo(function InnerToolbar({
 
 export function Toolbar(props: ToolbarProps) {
   const {collapsible, hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const selection = usePortableTextEditorSelection()
   const resolveInitialValueForType = useResolveInitialValueForType()
   const disabled = readOnly || !selection
@@ -216,6 +223,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertBlock = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const path = PortableTextEditor.insertBlock(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)
@@ -227,6 +235,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleInsertInline = useCallback(
     async (type: ObjectSchemaType) => {
       const initialValue = await resolveInitialValue(type)
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const path = PortableTextEditor.insertChild(editor, type, initialValue)
       if (path) {
         onMemberOpen(path)

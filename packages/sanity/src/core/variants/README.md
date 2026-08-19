@@ -159,14 +159,17 @@ Data flow:
 
 To revert to one row per document version, pass the flat `useVariantDocuments()` results directly to the table and switch `rowId` from `groupId` to `document._id`.
 
-## Footer
+## Header and action rail
 
-`VariantDetailFooter.tsx` mirrors the release detail footer pattern.
+The footer pattern was replaced by the shared detail-spine header (matches the release detail
+page): `VariantActionRail.tsx` holds the right-side action rail and overflow `⋯` menu
+(`VariantMenuButton.tsx`); the created status moved into the `DetailPropertiesPanel` alongside the
+other detail metadata.
 
 Covered behavior:
 
-- created status on the left
-- right-side action slot
+- created status in the details properties panel
+- right-side action rail
 - detail-specific menu button
 - delete action navigates back to the overview after success
 
@@ -209,7 +212,7 @@ Covered areas include:
 Useful e2e type check:
 
 ```sh
-pnpm exec tsgo --project e2e/tsconfig.json --noEmit
+pnpm exec tsc --project e2e/tsconfig.json --noEmit
 ```
 
 The focused browser e2e command is:

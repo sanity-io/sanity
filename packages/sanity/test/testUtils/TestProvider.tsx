@@ -1,5 +1,6 @@
 import {type SanityClient} from '@sanity/client'
-import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
+import {ToastProvider} from '@sanity/ui/toast'
 import {createMemoryHistory} from 'history'
 import noop from 'lodash-es/noop.js'
 import {type ComponentType, type PropsWithChildren} from 'react'
@@ -72,7 +73,8 @@ export async function createTestProvider({
     i18n: {bundles: resources},
   })
 
-  const router = route.create('/')
+  // Include intent routes so always-mounted Menu content can resolve IntentLinks.
+  const router = route.create('/', [route.intents('/intent')])
 
   await i18next.init()
 
@@ -89,6 +91,7 @@ export async function createTestProvider({
 
   const TestProvider: ComponentType<PropsWithChildren> = ({children}) => (
     <RouterProvider router={router} state={routerState} onNavigate={noop}>
+      {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
       <ThemeProvider theme={studioTheme}>
         <LocaleProviderBase locales={locales} i18next={i18next} projectId="test" sourceId="test">
           <ResourceCacheProvider>

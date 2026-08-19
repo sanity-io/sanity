@@ -1,7 +1,8 @@
 import {type SanityDocument} from '@sanity/client'
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {useId} from 'react'
+import {Box} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useSchema} from '../../../hooks/useSchema'
@@ -61,8 +62,8 @@ export const UnlinkFromCanvasDialog = ({
         },
       }}
     >
-      <Stack space={3}>
-        <Stack space={3}>
+      <Stack gap={3}>
+        <Stack gap={3}>
           <Box paddingBottom={2}>
             <Text size={1} muted>
               <Translate

@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: pnpm/setup@v1
+      - uses: pnpm/setup@v2
         with:
           install: false
           cache: true

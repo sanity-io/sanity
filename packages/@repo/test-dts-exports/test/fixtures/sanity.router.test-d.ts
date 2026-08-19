@@ -72,7 +72,7 @@ describe('sanity/router', () => {
     expectTypeOf<IntentJsonParams>().not.toBeNever()
   })
   test('IntentLink', () => {
-    expectTypeOf<typeof IntentLink>().not.toBeNever()
+    expectTypeOf<typeof IntentLink>().toBeFunction()
   })
   test('IntentLinkProps', () => {
     expectTypeOf<IntentLinkProps>().toBeObject()
@@ -84,7 +84,7 @@ describe('sanity/router', () => {
     expectTypeOf<InternalSearchParam>().not.toBeNever()
   })
   test('Link', () => {
-    expectTypeOf<typeof Link>().not.toBeNever()
+    expectTypeOf<typeof Link>().toBeFunction()
   })
   test('LinkProps', () => {
     expectTypeOf<LinkProps>().toBeObject()
@@ -164,7 +164,7 @@ describe('sanity/router', () => {
     expectTypeOf<SearchParam>().not.toBeNever()
   })
   test('StateLink', () => {
-    expectTypeOf<typeof StateLink>().not.toBeNever()
+    expectTypeOf<typeof StateLink>().toBeFunction()
   })
   test('StateLinkProps', () => {
     expectTypeOf<StateLinkProps>().toBeObject()

@@ -2,19 +2,20 @@ import {LaunchIcon as OpenInNewTabIcon} from '@sanity/icons/Launch'
 import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Reference} from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
+import {Card, type CardTone, Flex, Stack} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {
   type ComponentProps,
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 import {IntentLink} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -156,28 +157,28 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
 
   const OpenLink = useMemo(
     () =>
-      forwardRef(function OpenLink(
-        restProps: ComponentProps<typeof IntentLink>,
-        _ref: ForwardedRef<HTMLAnchorElement>,
+      function OpenLink(
+        restProps: ComponentProps<typeof IntentLink> & RefAttributes<HTMLAnchorElement>,
       ) {
+        const {ref, ...linkProps} = restProps
         return (
           <IntentLink
-            {...restProps}
+            {...linkProps}
             intent="edit"
             params={{id: value?._ref, type: refType?.name}}
             target="_blank"
             rel="noopener noreferrer"
-            ref={_ref}
+            ref={ref}
           />
         )
-      }),
+      },
     [refType?.name, value?._ref],
   )
 
   const menu = useMemo(
     () =>
       readOnly ? null : (
-        <Box flex="none">
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
           <MenuButton
             button={<ContextMenuButton />}
             id={`${inputId}-menuButton`}
@@ -239,7 +240,7 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
 
   return (
     <WithFocusRingCard border $radius={2} padding={1} tone={tone} ref={setCardRef} tabIndex={-1}>
-      <Stack space={1}>
+      <Stack gap={1}>
         <Flex gap={1} align="center" style={{lineHeight: 0}}>
           <TooltipDelayGroupProvider>
             <ReferenceLinkCard

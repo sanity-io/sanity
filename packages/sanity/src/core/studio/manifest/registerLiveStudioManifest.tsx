@@ -18,6 +18,7 @@ const buildId: string | undefined =
  */
 async function resolveSource(workspace: WorkspaceSummary): Promise<Source | undefined> {
   // At risk of being fired, we need the schema descriptor id for the workspace.
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const sourceEntry = workspace.__internal.sources[0]
   if (!sourceEntry) {
     return undefined
@@ -101,7 +102,7 @@ export async function registerStudioManifest(
   // Post the live manifest via the global api
   await studioClient.request({
     method: 'POST',
-    uri: `/projects/${projectId}/user-applications/${id}/config/live-manifest`,
+    url: `/projects/${projectId}/user-applications/${id}/config/live-manifest`,
     body: {
       value: liveManifest,
     },

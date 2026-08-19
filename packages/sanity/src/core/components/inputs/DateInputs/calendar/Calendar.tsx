@@ -16,8 +16,6 @@ import {setYear} from 'date-fns/setYear'
 import {
   type ComponentProps,
   type FormEvent,
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   useCallback,
   useEffect,
@@ -25,6 +23,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefAttributes,
 } from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -81,11 +80,9 @@ const CALENDAR_ICON_BUTTON_PROPS = {
   padding: 2,
 }
 
-export const Calendar = forwardRef(function Calendar(
-  props: CalendarProps,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
+export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref: forwardedRef,
     selectTime,
     value,
     timeStep = 1,
@@ -121,6 +118,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleFocusedMonthChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (e: FormEvent<HTMLSelectElement>) => setFocusedDateMonth(Number(e.currentTarget.value)),
     [setFocusedDateMonth],
   )
@@ -181,6 +179,7 @@ export const Calendar = forwardRef(function Calendar(
   }, [timeFromDate])
 
   const handleTimeChangeInputChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (event: FormEvent<HTMLInputElement>) => {
       const nextValue = event.currentTarget.value
       if (nextValue) {
@@ -357,7 +356,7 @@ export const Calendar = forwardRef(function Calendar(
       <Box padding={padding}>
         {/* Day presets */}
         {features.dayPresets && (
-          <Grid columns={3} data-ui="CalendaryDayPresets" gap={1}>
+          <Grid gridTemplateColumns={3} data-ui="CalendaryDayPresets" gap={1}>
             <Button text={labels.goToYesterday} mode="bleed" onClick={handleYesterdayClick} />
             <Button text={labels.goToToday} mode="bleed" onClick={handleTodayClick} />
             <Button text={labels.goToTomorrow} mode="bleed" onClick={handleTomorrowClick} />
@@ -444,7 +443,7 @@ export const Calendar = forwardRef(function Calendar(
       </Box>
     </Box>
   )
-})
+}
 
 function CalendarTimePresetButton(props: {
   'hours': number
@@ -463,6 +462,7 @@ function CalendarTimePresetButton(props: {
 }
 
 function CalendarMonthSelect(props: {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onChange: (e: FormEvent<HTMLSelectElement>) => void
   value?: number
   monthNames: MonthNames

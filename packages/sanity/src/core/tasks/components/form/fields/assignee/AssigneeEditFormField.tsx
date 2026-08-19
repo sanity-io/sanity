@@ -1,7 +1,6 @@
 import {type Path} from '@sanity/types'
 import {
   Badge,
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Flex,
@@ -10,6 +9,7 @@ import {
 } from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../../../ui-components/tooltip/Tooltip'
 import {useFormValue} from '../../../../../form/contexts/FormValue'
@@ -85,9 +85,7 @@ export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
               </Flex>
 
               {value && mentionedUser && !mentionedUser.granted && (
-                <Badge fontSize={1} mode="outline">
-                  {t('form.input.assignee.unauthorized.text')}
-                </Badge>
+                <Badge fontSize={1}>{t('form.input.assignee.unauthorized.text')}</Badge>
               )}
             </Flex>
           </Tooltip>

@@ -1,24 +1,19 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, isObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 // oxlint-disable-next-line no-restricted-imports
-import {Badge, Box, Button, Flex, Inline, Menu, MenuItem, Text, useElementSize} from '@sanity/ui'
-import {
-  type ForwardedRef,
-  forwardRef,
-  type PropsWithChildren,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react'
+import {Badge, Button, Flex, Inline, Text, useElementSize} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports
+import {Menu, MenuItem} from '@sanity/ui/menu'
+import {type PropsWithChildren, useCallback, useMemo, useState, type RefAttributes} from 'react'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
-import {pathToString} from '../../../field/paths/helpers'
 import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
 import {useFormValue} from '../../contexts/FormValue'
 import {useBreadcrumbPreview} from '../../hooks/useBreadcrumbPreview'
 import {useBreadcrumbSiblingInfo} from '../../hooks/useBreadcrumbSiblingInfo'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {NavigatedToNestedObjectViaBreadcrumb} from '../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
+import {NestedObjectOpened} from '../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {shouldBeInBreadcrumb} from '../../studio/tree-editing/utils/build-tree-editing-state/utils'
 import {useFormBuilder} from '../../useFormBuilder'
 
@@ -58,11 +53,8 @@ interface BreadcrumbItemData {
 
 type BreadcrumbItem = BreadcrumbItemData | BreadcrumbItemData[]
 
-const SeparatorItem = forwardRef(function SeparatorItem(
-  props: PropsWithChildren,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
-  const {children} = props
+function SeparatorItem(props: PropsWithChildren & RefAttributes<HTMLDivElement>) {
+  const {ref, children} = props
 
   return (
     <Box ref={ref}>
@@ -71,7 +63,7 @@ const SeparatorItem = forwardRef(function SeparatorItem(
       </Text>
     </Box>
   )
-})
+}
 
 /**
  * Individual breadcrumb button that fetches its own preview.
@@ -98,8 +90,8 @@ function BreadcrumbButton({
 
   const handleClick = useCallback(() => {
     onPathSelect(itemPath)
-    telemetry.log(NavigatedToNestedObjectViaBreadcrumb, {
-      path: pathToString(itemPath),
+    telemetry.log(NestedObjectOpened, {
+      path: 'breadcrumb',
     })
   }, [onPathSelect, itemPath, telemetry])
 
@@ -117,7 +109,7 @@ function BreadcrumbButton({
     >
       <Flex align="center" style={{minWidth: 0}}>
         {siblingInfo && (
-          <Box flex="none">
+          <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
             <Badge>#{siblingInfo.index}</Badge>
           </Box>
         )}

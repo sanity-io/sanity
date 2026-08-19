@@ -4,6 +4,8 @@
  * @internal
  */
 const variantsLocaleStrings = {
+  /** Tooltip for the variants tool link in the navbar. */
+  'navbar.tooltip': 'View variants',
   /** Label for the variants navigation row. */
   'navbar.view-as': 'View as',
   /** Label for the version selector in the variants navigation row. */
@@ -20,8 +22,10 @@ const variantsLocaleStrings = {
   'navbar.clear': 'Clear',
   /** Tooltip for clearing the selected variant. */
   'navbar.variant.clear': 'Clear variant selection',
-  /** Label for the Variants overview create action. */
-  'overview.action.create-variant': 'Create variant definition',
+  /** Label for the Variants overview primary create action (mirrors "New release"). */
+  'overview.action.new-variant': 'New variant definition',
+  /** Label for the Variants overview row edit action. */
+  'overview.action.edit-variant': 'Edit variant definition',
   /** Label for the Variants overview delete action. */
   'overview.action.delete-variant': 'Delete variant definition',
   /** Tooltip when delete is disabled because the variant contains one document. */
@@ -44,6 +48,20 @@ const variantsLocaleStrings = {
   'overview.error': 'Unable to load variant definitions',
   /** Placeholder for the Variants overview search field. */
   'overview.search.placeholder': 'Search variant definitions…',
+  /** Clears every active condition filter across all dimensions. */
+  'overview.filter.clear-all': 'Clear filters',
+  /** Accessible label / tooltip for removing a single active filter value chip. */
+  'overview.filter.remove-value': 'Remove filter',
+  /** The button that opens the add-filter menu. */
+  'overview.filter.add': 'Add filter',
+  /** Placeholder for the searchable dimension list in the add-filter menu. */
+  'overview.filter.find-dimension': 'Find a dimension…',
+  /** Shown in the add-filter menu when a search matches no dimension. */
+  'overview.filter.no-dimensions': 'No dimensions',
+  /** Hint in the add-filter menu's value pane before a dimension is chosen. */
+  'overview.filter.pick-dimension-hint': 'Select a dimension to see its values',
+  /** Shown in the table when active condition filters hide every variant definition. */
+  'overview.filter.no-matching-definitions': 'No variant definitions match the active filters',
   /** Column header for the variant title column in the overview table. */
   'overview.table.variant': 'Variant definition',
   /** Column header for the documents count column in the overview table. */
@@ -52,14 +70,22 @@ const variantsLocaleStrings = {
   'overview.table.no-conditions': 'No conditions',
   /** Title for the Variants overview. */
   'overview.title': 'Variant definitions',
-  /** Edit action on the Variant detail page. */
-  'detail.action.edit-variant': 'Edit variant definition',
-  /** Tooltip for pinning a variant to the studio. */
-  'detail.pin-variant': 'Pin variant definition to studio',
-  /** Tooltip for unpinning a variant from the studio. */
-  'detail.unpin-variant': 'Unpin variant definition from studio',
-  /** Back action on the Variant detail page. */
-  'detail.back': 'Back to variant definitions',
+  /** Primary action label on the Variant detail action rail. */
+  'detail.action.edit-definition': 'Edit definition',
+  /** Accessible label / tooltip for the Variant detail overflow menu button. */
+  'detail.menu.label': 'Actions',
+  /** Back action on the Variant detail page (the arrow already conveys "back to"). */
+  'detail.back': 'All variant definitions',
+  /** Title of the "variant definition" properties panel (its targeting conditions). */
+  'detail.metadata.definition': 'Variant definition',
+  /** Title of the "details" properties panel (document counts + when the variant was created). */
+  'detail.metadata.details': 'Details',
+  /** Label for the total document count row in the details properties panel. */
+  'detail.metadata.total-documents': 'Total documents',
+  /** Label for the count of documents with unpublished (draft) changes. */
+  'detail.metadata.unpublished-changes': 'Unpublished changes',
+  /** Label for the variant definition's resolution priority on the detail page. */
+  'detail.metadata.priority': 'Priority',
   /** Created status label in the Variant detail footer. */
   'detail.footer.created': 'Created',
   /** Loading message on the Variant detail page. */
@@ -68,18 +94,32 @@ const variantsLocaleStrings = {
   'detail.no-description': 'No description yet.',
   /** Empty state for variant document table. */
   'detail.documents.no-documents': 'No documents in this variant definition',
-  /** Edited column header for variant document table. */
-  'detail.documents.table.edited': 'Edited',
-  /** Search placeholder for variant document table. */
+  /** "Last edited" (relative time) column header for variant document table. */
+  'detail.documents.table.last-edited': 'Last edited',
+  /** "Edited by" (last editor) column header for variant document table. */
+  'detail.documents.table.edited-by': 'Edited by',
+  /** Document (title/preview) column header for variant document table. */
+  'detail.documents.table.document': 'Document',
+  /** Search placeholder for the variant document table search input in the command lane. */
   'detail.documents.table.search-placeholder': 'Search documents',
   /** Type column header for variant document table. */
   'detail.documents.table.type': 'Type',
-  /** Bundle column header for variant document table. */
-  'detail.documents.table.bundle': 'Bundle',
+  /** "Appears in" column header for variant document table (which bundles each doc is in). */
+  'detail.documents.table.appears-in': 'Appears in',
+  /** Header of the popover listing the bundles a document appears in beyond the first chip. */
+  'detail.documents.appears-in.also-in': 'Also in',
+  /** The "show all documents" segment of the release lane. */
+  'detail.release-lane.all': 'All',
+  /** A single release lane filter tab: a bundle label followed by its document count. */
+  'detail.release-lane.count': '{{label}} ({{count}})',
   /** Validation error tooltip for a single error in the variant document table. */
   'detail.documents.table.validation.error_one': '{{count}} validation error',
   /** Validation error tooltip for multiple errors in the variant document table. */
   'detail.documents.table.validation.error_other': '{{count}} validation errors',
+  /** Validation status tooltip when a document has no validation errors (the "ready" state). */
+  'detail.documents.table.validation.valid': 'No validation errors',
+  /** Validation status tooltip while validation is still in progress. */
+  'detail.documents.table.validation.validating': 'Validating',
   /** Error message when variant documents fail to load. */
   'detail.documents.error': 'Unable to load documents for this variant definition',
   /** Description for the missing Variant detail page. */
@@ -133,7 +173,7 @@ const variantsLocaleStrings = {
   /** Validation message when a condition value is missing. */
   'dialog.create.condition-value.required': 'Condition value is required',
   /** Validation message when a condition value has an invalid format. */
-  'dialog.create.condition-value.invalid': 'Condition values cannot contain colons',
+  'dialog.create.condition-value.invalid': 'Condition values cannot contain commas',
   /** Placeholder for the condition key field in the create variant dialog. */
   'dialog.create.condition-key.placeholder': 'e.g. audience',
   /** Label for the condition value field in the create variant dialog. */

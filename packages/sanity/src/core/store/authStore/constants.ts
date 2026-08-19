@@ -14,6 +14,9 @@ const AUTH_TOKEN_STORAGE_PREFIX = '__studio_auth_token_'
 // Prefix for the BroadcastChannel / localStorage key for cross-tab cookie auth state.
 const COOKIE_AUTH_STATE_PREFIX = '__studio_auth_cookie_state_'
 
+// Prefix for the localStorage key holding the claim record of a minted-but-unclaimed project.
+const UNCLAIMED_PROJECT_STORAGE_PREFIX = '__studio_unclaimed_'
+
 /**
  * @internal
  * Timeout for the post-exchange `/users/me` probe (see
@@ -52,4 +55,9 @@ export function getAuthTokenStorageKey(projectId: string): string {
 /** @internal BroadcastChannel / localStorage key for cross-tab cookie auth state. */
 export function getCookieAuthStateKey(projectId: string): string {
   return `${COOKIE_AUTH_STATE_PREFIX}${projectId}`
+}
+
+/** @internal localStorage key holding the unclaimed-project claim record. Value shape: `UnclaimedProjectRecord`. */
+export function getUnclaimedProjectStorageKey(projectId: string): string {
+  return `${UNCLAIMED_PROJECT_STORAGE_PREFIX}${projectId}`
 }

@@ -1,10 +1,11 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Box, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
+import {Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {FormFieldHeaderText} from '../../../../form/components/formField/FormFieldHeaderText'
@@ -98,22 +99,22 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   const {t} = useTranslation(tasksLocaleNamespace)
   const CardLink = useMemo(
     () =>
-      forwardRef(function LinkComponent(
-        linkProps: React.ComponentPropsWithoutRef<'a'>,
-        ref: ForwardedRef<HTMLAnchorElement>,
+      function LinkComponent(
+        linkProps: React.ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>,
       ) {
+        const {ref, ...rest} = linkProps
         const versionId = getVersionFromId(documentId)
 
         return (
           <StyledIntentLink
-            {...linkProps}
+            {...rest}
             intent="edit"
             params={{id: getPublishedId(documentId), type: documentType}}
             ref={ref}
             searchParams={versionId ? [['perspective', versionId]] : undefined}
           />
         )
-      }),
+      },
     [documentId, documentType],
   )
   if (!schemaType) {
@@ -121,7 +122,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   }
 
   return (
-    <TargetRoot border radius={2}>
+    <TargetRoot border radius={2} data-testid="task-target-field-preview">
       <Flex gap={1} align={'center'} justify={'space-between'}>
         <Card as={CardLink} radius={2} data-as="button">
           <SearchResultItemPreview
@@ -202,7 +203,7 @@ export function TargetField(
         <LayerProvider zOffset={100}>
           <CurrentWorkspaceProvider>
             <SearchProvider>
-              <Stack space={2}>
+              <Stack gap={2}>
                 {mode === 'create' && (
                   <Box data-ui="fieldHeaderContentBox">
                     <FormFieldHeaderText

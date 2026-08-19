@@ -1,9 +1,10 @@
 import {type ObjectSchemaType} from '@sanity/types'
-import {Badge, Box, Inline} from '@sanity/ui'
+import {Badge, Inline} from '@sanity/ui'
 import {useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
-import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator/DocumentStatusIndicator'
+import {DocumentVersionsStatusIndicator} from '../../../components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {type PreviewLayoutKey} from '../../../components/previews/types'
 import {DocumentPreviewPresence} from '../../../presence/DocumentPreviewPresence'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
@@ -38,18 +39,14 @@ export function ReferencePreview(props: {
     () => ({
       children: (
         <Box paddingLeft={3}>
-          <Inline space={3}>
-            {showTypeLabel && <Badge mode="outline">{refType.title}</Badge>}
+          <Inline gap={3}>
+            {showTypeLabel && <Badge>{refType.title}</Badge>}
 
             {documentPresence && documentPresence.length > 0 && (
               <DocumentPreviewPresence presence={documentPresence} />
             )}
 
-            <DocumentStatusIndicator
-              draft={versionsInfo.draft}
-              published={versionsInfo.published}
-              versions={versionsInfo.versions}
-            />
+            <DocumentVersionsStatusIndicator documentVersions={versions} />
           </Inline>
         </Box>
       ),
@@ -70,6 +67,7 @@ export function ReferencePreview(props: {
       previewStub,
       refType,
       showTypeLabel,
+      versions,
       versionsInfo.draft,
       versionsInfo.published,
       versionsInfo.versions,

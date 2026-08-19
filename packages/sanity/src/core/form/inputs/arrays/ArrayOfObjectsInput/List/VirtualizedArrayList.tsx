@@ -44,7 +44,6 @@ interface VirtualizedArrayListProps<Item extends ObjectItem> {
  * Virtualized array list component. This component must be conditionally rendered
  * to avoid virtualizer initialization issues when inside hidden containers.
  */
-// oxlint-disable-next-line react/react-compiler
 export function VirtualizedArrayList<Item extends ObjectItem>(
   props: VirtualizedArrayListProps<Item>,
 ) {
@@ -72,6 +71,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
     tone,
   } = props
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = useTheme().sanity
   const {scrollElement, containerElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)

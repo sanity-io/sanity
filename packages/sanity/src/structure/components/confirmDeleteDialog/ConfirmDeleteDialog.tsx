@@ -50,6 +50,12 @@ export interface ConfirmDeleteDialogProps {
    * the same document deletion confirmation).
    */
   action?: 'delete' | 'unpublish'
+  /**
+   * When `false`, skips loading incoming references and shows a simple
+   * confirmation. Used when unpublishing a published content variant — refs
+   * always target the base published id, not the variant id.
+   */
+  checkIncomingReferences?: boolean
   onCancel: () => void
   onConfirm: (versions: string[], referenceCounts: DeleteReferenceCounts) => void
 }
@@ -65,6 +71,7 @@ export function ConfirmDeleteDialog({
   id,
   type,
   action = 'delete',
+  checkIncomingReferences = true,
   onCancel,
   onConfirm,
 }: ConfirmDeleteDialogProps) {
@@ -78,12 +85,15 @@ export function ConfirmDeleteDialog({
     projectIds,
     datasetNames,
     hasUnknownDatasetNames,
-  } = useReferringDocuments(id)
+  } = useReferringDocuments(id, {enabled: checkIncomingReferences})
   const documentTitle = <DocTitle document={useMemo(() => ({_id: id, _type: type}), [id, type])} />
-  const showConfirmButton = !isLoading
   const {data: documentVersions, loading: versionsLoading} = useDocumentVersions({
     documentId: getPublishedId(id),
   })
+  // Wait for the version count too, so the button copy doesn't flash from
+  // "Delete all versions" to "Delete document" while the count loads. If incoming
+  // references are disabled, show the confirm button immediately.
+  const showConfirmButton = !checkIncomingReferences || (!isLoading && !versionsLoading)
 
   const handleConfirm = useCallback(() => {
     onConfirm(documentVersions, {
@@ -107,8 +117,14 @@ export function ConfirmDeleteDialog({
           ? {
               text:
                 totalCount > 0
-                  ? t('confirm-delete-dialog.confirm-anyway-button.text', {context: action})
-                  : t('confirm-delete-dialog.confirm-button.text', {context: action}),
+                  ? t('confirm-delete-dialog.confirm-anyway-button.text', {
+                      context: action,
+                      count: documentVersions.length,
+                    })
+                  : t('confirm-delete-dialog.confirm-button.text', {
+                      context: action,
+                      count: documentVersions.length,
+                    }),
               onClick: handleConfirm,
             }
           : undefined,

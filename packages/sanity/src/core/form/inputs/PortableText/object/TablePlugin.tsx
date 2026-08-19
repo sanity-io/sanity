@@ -1,4 +1,3 @@
-// oxlint-disable-next-line no-unassigned-import -- imported for its side effects
 import '@portabletext/plugin-table/ui/styles.css'
 
 import {type Container, type ContainerRenderProps} from '@portabletext/editor'
@@ -13,7 +12,8 @@ import {
 } from '@portabletext/plugin-table/ui'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Flex, Menu, MenuDivider, Switch, Text, usePortal} from '@sanity/ui'
+import {Flex, Switch, Text, usePortal} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useId, useMemo} from 'react'
 import {createGlobalStyle, useTheme} from 'styled-components'

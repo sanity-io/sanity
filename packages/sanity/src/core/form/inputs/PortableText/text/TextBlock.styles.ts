@@ -1,7 +1,8 @@
 import {hues} from '@sanity/color'
-import {Box, Flex, type Theme} from '@sanity/ui'
+import {Flex, type Theme} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {DEBUG} from '../../../../changeIndicators/constants'
 import {TEXT_BULLET_MARKERS, TEXT_NUMBER_FORMATS} from './constants'
@@ -11,6 +12,7 @@ interface TextBlockStyleProps {
   $level: number
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
   const {$level} = props
   const {color, font, radius, space} = getTheme_v2(props.theme)
@@ -102,12 +104,8 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
 
 export const TextRoot = styled.div<TextBlockStyleProps>(textBlockStyle)
 
-// Because of a weird bug in Google Chrome regarding the @sanity/ui Flex component and spellchecking,
-// this is set to be a Box with 'display: flex'. Using the Flex component here results in Chrome
-// using 20% CPU when idle when spellchecking is on for some reason.
-export const TextBlockFlexWrapper = styled(Box)`
+export const TextBlockWrapper = styled(Box)`
   position: relative;
-  display: flex;
 `
 
 export const ListPrefixWrapper = styled.div`
@@ -121,7 +119,9 @@ export const BlockActionsOuter = styled(Box)`
   position: relative;
 `
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const BlockActionsInner = styled(Flex)(({theme}: {theme: Theme}) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {fonts, space} = theme.sanity
   const textSize1 = fonts.text.sizes[1]
   const textSize2 = fonts.text.sizes[2]
@@ -153,7 +153,9 @@ export const TextFlex = styled(Flex)<{$level?: number}>`
 `
 
 export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ({theme, $hasChanges}: {theme: Theme; $hasChanges: boolean}) => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {space} = theme.sanity
 
     return css`

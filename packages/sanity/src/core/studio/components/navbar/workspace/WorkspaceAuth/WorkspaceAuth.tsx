@@ -1,9 +1,10 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
-import {Box, Container, Flex, rem, Stack} from '@sanity/ui'
+import {Container, Flex, rem, Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
@@ -59,7 +60,7 @@ export function WorkspaceAuth() {
   if (LoginComponent && selectedWorkspace && !showChooser) {
     return (
       <Container width={0}>
-        <Stack space={2}>
+        <Stack gap={2}>
           {canChooseAnotherWorkspace && (
             <Flex>
               <Button
@@ -124,7 +125,7 @@ export function WorkspaceAuth() {
           </Stack>
         }
       >
-        <Stack space={1} paddingX={1} paddingY={2}>
+        <Stack gap={1} paddingX={1} paddingY={2}>
           {visibleWorkspaces.map((workspace) => (
             <WorkspaceAuthCard
               key={workspace.name}

@@ -34,7 +34,7 @@ function useFetcher(queryKey: QueryKey) {
       client.request<{schedules: Schedule[] | undefined}>({
         query: queryKey.params,
         method: 'GET',
-        uri: queryKey.url,
+        url: queryKey.url,
       }),
     [client, queryKey],
   )

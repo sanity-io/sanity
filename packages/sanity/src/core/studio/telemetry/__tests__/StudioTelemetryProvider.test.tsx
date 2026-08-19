@@ -126,6 +126,7 @@ describe('StudioTelemetryProvider', () => {
 
     // Setup default mocks
     vi.mocked(createSessionId).mockReturnValue('test-session-id' as SessionId)
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     vi.mocked(useClient).mockReturnValue(mockClient as never)
     vi.mocked(useWorkspace).mockReturnValue(mockWorkspace as never)
     vi.mocked(useWorkspaces).mockReturnValue(mockWorkspaces as never)
@@ -173,9 +174,8 @@ describe('StudioTelemetryProvider', () => {
     // Verify client.request was called with enriched batch
     expect(mockClient.request).toHaveBeenCalledWith(
       expect.objectContaining({
-        uri: '/intake/batch',
+        url: '/intake/batch',
         method: 'POST',
-        json: true,
         body: expect.objectContaining({
           projectId: 'test-project',
           batch: expect.arrayContaining([

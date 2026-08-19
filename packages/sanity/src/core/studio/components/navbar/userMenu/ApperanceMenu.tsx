@@ -1,5 +1,5 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {MenuDivider} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui/menu'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -9,6 +9,7 @@ import {useColorSchemeOptions} from '../../../colorScheme'
 export function AppearanceMenu({
   setScheme,
 }: {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   setScheme: (nextScheme: StudioThemeColorSchemeKey) => void
 }) {
   const {t} = useTranslation()

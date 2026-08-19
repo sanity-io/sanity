@@ -34,6 +34,12 @@ const getPerspective = (id: string) => {
   return ['raw']
 }
 
+const INITIAL_PREVIEW_STATE = {
+  snapshot: null,
+  isLoading: true,
+  original: null,
+}
+
 export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
   const {schemaType, value, onLinkToDocument} = props
   const {data: releases} = useActiveReleases()
@@ -48,11 +54,14 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
     )
   }, [props.documentPreviewStore, schemaType, value._id])
 
-  const {snapshot, original, isLoading} = useObservable(previewStateObservable, {
-    snapshot: null,
-    isLoading: true,
-    original: null,
-  })
+  // Deferred: react-rx v5's deferral is identity-coherent, so when this
+  // component is reused for a new document id the live snapshot wins and the
+  // previous document's title/media never renders beside the new document's
+  // version badge.
+  const {snapshot, original, isLoading} = useObservable(
+    previewStateObservable,
+    INITIAL_PREVIEW_STATE,
+  )
 
   const badgeProps = useMemo(():
     | {kind: 'static'; tone: BadgeTone; text: string}

@@ -1,4 +1,3 @@
-// oxlint-disable-next-line no-unassigned-import
 import './index.css'
 
 import {StrictMode} from 'react'

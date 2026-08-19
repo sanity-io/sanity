@@ -10,7 +10,7 @@ export const StyledPopover = styled(Popover)(() => {
       width: 320px;
       display: flex;
       flex-direction: column;
-      border-radius: ${({theme}) => theme.sanity.radius[3]}px;
+      border-radius: ${({theme}) => theme.sanity.radius[3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
       position: relative;
       overflow: hidden;
       overflow: clip;

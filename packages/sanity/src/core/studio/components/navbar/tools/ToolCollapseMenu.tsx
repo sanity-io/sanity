@@ -1,6 +1,6 @@
 import {Flex} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {forwardRef, type Ref, useMemo, useState} from 'react'
+import {useMemo, useState, type RefAttributes} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
@@ -9,6 +9,8 @@ import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
 import {type Tool} from '../../../../config/types'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {ToolLink, type ToolLinkProps} from './ToolLink'
+
+const TOOL_COLLAPSE_MENU_STYLE = {minWidth: 0} as const
 
 interface ToolCollapseMenuProps {
   activeToolName?: string
@@ -41,16 +43,14 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
       tools.map((tool, index) => {
         const title = tool?.title || startCase(tool.name)
 
-        const Link = forwardRef(function Link(
-          linkProps: ToolLinkProps,
-          ref: Ref<HTMLAnchorElement>,
-        ) {
+        function Link(linkProps: ToolLinkProps & RefAttributes<HTMLAnchorElement>) {
+          const {ref, ...rest} = linkProps
           return (
-            <ToolLink {...linkProps} ref={ref} name={tool.name}>
+            <ToolLink {...rest} ref={ref} name={tool.name}>
               {linkProps.children}
             </ToolLink>
           )
-        })
+        }
 
         return (
           <Button
@@ -67,7 +67,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   )
 
   return (
-    <Flex justify="center" marginX={4}>
+    <Flex justify="center" marginX={4} style={TOOL_COLLAPSE_MENU_STYLE}>
       <CollapseTabList
         data-testid="tool-collapse-menu"
         gap={1}

@@ -22,13 +22,13 @@ import {getSanitySubSchema} from '@portabletext/sanity-bridge'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {
   BoundaryElementProvider,
-  Box,
   Portal,
   PortalProvider,
   useBoundaryElement,
   usePortal,
 } from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {EMPTY_ARRAY} from '../../../util/empty'
@@ -66,7 +66,9 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   onToggleFullscreen: () => void
   path: Path
   rangeDecorations?: RangeDecoration[]
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderBlockActions?: RenderBlockActionsCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
 }
 

@@ -26,6 +26,18 @@ on:
         required: false
         type: boolean
         default: false
+      backfill_sha:
+        description: "Backfill: build and measure this main-history commit instead of HEAD (full 40-char sha; requires run_suite, incompatible with self_test and ab_from/ab_to; result is stored under this sha, harness/scenarios come from HEAD)"
+        required: false
+        type: string
+      ab_from:
+        description: "A/B: reference commit to compare against (full 40-char sha; set together with ab_to; incompatible with backfill_sha and self_test; verdicts land in the run summary)"
+        required: false
+        type: string
+      ab_to:
+        description: "A/B: experiment commit to measure (full 40-char sha; set together with ab_from)"
+        required: false
+        type: string
 
 # One run per PR at a time so an older run finishing late can never
 # overwrite the PR comment with stale results; scheduled/dispatched runs get
@@ -49,7 +61,9 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'schedule'
     runs-on: ubuntu-8core
-    timeout-minutes: 20
+    # Headroom for the backfill path, which installs and builds a second
+    # worktree at the historical commit
+    timeout-minutes: 35
     permissions:
       contents: read
       # detect-code-changes (dorny/paths-filter) lists the PR's changed files
@@ -60,10 +74,18 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     outputs:
       has_code_changes: ${{ steps.changes.outputs.has_changes }}
+      # Committer date of the backfilled commit (empty on non-backfill runs) —
+      # resolved by prepare-backfill, consumed as BENCH_GIT_COMMITTED_AT by the
+      # measuring jobs so stored documents land on the commit's date
+      backfill_committed_at: ${{ steps.build.outputs.committed_at }}
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+          # Backfill and A/B builds add a worktree at a historical commit,
+          # which a depth-1 clone doesn't have (the inputs are empty on
+          # non-dispatch events)
+          fetch-depth: ${{ (inputs.backfill_sha != '' || inputs.ab_to != '') && '0' || '1' }}
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -74,9 +96,66 @@ jobs:
       - uses: ./.github/actions/setup
         if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
 
+      # A backfill dispatch only makes sense as "run the full suite against
+      # the historical build": without run_suite nothing consumes the dist
+      # (a green run that backfilled nothing), and self_test would compare
+      # the historical build against HEAD's reference config, reporting
+      # product diffs as harness drift
+      - name: Validate dispatch inputs
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          (inputs.backfill_sha != '' || inputs.ab_from != '' || inputs.ab_to != '')
+        env:
+          RUN_SUITE: ${{ inputs.run_suite }}
+          SELF_TEST: ${{ inputs.self_test }}
+          BACKFILL_SHA: ${{ inputs.backfill_sha }}
+          AB_FROM: ${{ inputs.ab_from }}
+          AB_TO: ${{ inputs.ab_to }}
+        run: |
+          # Explicit grouping: && and || share precedence in sh and associate
+          # left, so the ungrouped form silently passes when only ab_from is set
+          if { [ -n "$AB_FROM" ] && [ -z "$AB_TO" ]; } || { [ -z "$AB_FROM" ] && [ -n "$AB_TO" ]; }; then
+            echo "::error::ab_from and ab_to must be set together"
+            exit 1
+          fi
+          if [ -n "$AB_TO" ] && [ -n "$BACKFILL_SHA" ]; then
+            echo "::error::ab_from/ab_to cannot be combined with backfill_sha"
+            exit 1
+          fi
+          if [ -n "$AB_TO" ] && [ "$SELF_TEST" = "true" ]; then
+            echo "::error::ab_from/ab_to cannot be combined with self_test"
+            exit 1
+          fi
+          if [ -n "$BACKFILL_SHA" ]; then
+            if [ "$RUN_SUITE" != "true" ]; then
+              echo "::error::backfill_sha requires run_suite"
+              exit 1
+            fi
+            if [ "$SELF_TEST" = "true" ]; then
+              echo "::error::backfill_sha cannot be combined with self_test"
+              exit 1
+            fi
+          fi
+
+      # Backfill / A/B: build the experiment dist from the requested
+      # historical commit's packages (HEAD's harness overlaid) instead of
+      # HEAD's — backfill repairs holes in the daily time series, ab_to is
+      # the experiment side of an A/B dispatch. The downstream jobs run
+      # unchanged and, for backfill, store the result under that sha
+      # (BENCH_GIT_SHA below).
       - name: Build packages and experiment studio
+        id: build
         if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
-        run: pnpm build:bench
+        env:
+          BACKFILL_SHA: ${{ inputs.backfill_sha }}
+          AB_TO: ${{ inputs.ab_to }}
+        run: |
+          HISTORICAL_SHA="${BACKFILL_SHA:-$AB_TO}"
+          if [ -n "$HISTORICAL_SHA" ]; then
+            pnpm bench prepare-backfill --sha "$HISTORICAL_SHA"
+          else
+            pnpm build:bench
+          fi
 
       - uses: actions/upload-artifact@v7
         if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
@@ -86,10 +165,13 @@ jobs:
           retention-days: 7
 
   build-reference:
+    # PR path (label-gated, merge-base reference) or A/B dispatch (explicit
+    # reference commit via ab_from)
     if: >-
-      github.event_name == 'pull_request' &&
-      contains(github.event.pull_request.labels.*.name, 'trigger:perf-bench') &&
-      (github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench')
+      (github.event_name == 'pull_request' &&
+       contains(github.event.pull_request.labels.*.name, 'trigger:perf-bench') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench')) ||
+      (github.event_name == 'workflow_dispatch' && inputs.ab_from != '')
     runs-on: ubuntu-8core
     timeout-minutes: 25
     permissions:
@@ -115,14 +197,18 @@ jobs:
       # reference dist, comparing against the wrong baseline.
       - name: Compute merge-base
         id: merge-base
+        if: github.event_name == 'pull_request'
         env:
           BASE_REF: ${{ github.base_ref }}
         run: echo "sha=$(git merge-base HEAD "origin/$BASE_REF")" >> "$GITHUB_OUTPUT"
 
       # Re-pushes to a PR usually share the merge-base: reuse the built
-      # reference outright (keyed on merge-base sha + harness sources)
+      # reference outright (keyed on merge-base sha + harness sources).
+      # PR-only, like the merge-base step: A/B dispatches build an explicit
+      # commit and are rare enough not to warrant a cache.
       - name: Restore reference dist cache
         id: reference-cache
+        if: github.event_name == 'pull_request'
         uses: actions/cache@v6
         with:
           path: perf/bench/.reference/dist
@@ -133,16 +219,24 @@ jobs:
       # merge_base and comparison outputs, and falls back to absolute mode
       # (comparison=skipped) when the merge-base predates perf/bench or the
       # reference build fails
-      - name: Build reference studio at merge-base
+      - name: Build reference studio
         id: reference
         env:
           CACHE_HIT: ${{ steps.reference-cache.outputs.cache-hit }}
           # The reference build is the same harness + scenarios (checked out
-          # from HEAD) against merge-base packages - only product code differs
+          # from HEAD) against the reference commit's packages - only product
+          # code differs. PRs resolve the merge-base; A/B dispatches pass the
+          # explicit ab_from commit via --at (fails loudly, no fallback).
           SANITY_STUDIO_BENCH_API_HOST: https://localhost:4312
           SANITY_STUDIO_BENCH_PROJECT_ID: benchref
           BASE_REF: ${{ github.base_ref }}
-        run: pnpm bench prepare-reference --base-ref "$BASE_REF"
+          AB_FROM: ${{ inputs.ab_from }}
+        run: |
+          if [ -n "$AB_FROM" ]; then
+            pnpm bench prepare-reference --at "$AB_FROM"
+          else
+            pnpm bench prepare-reference --base-ref "$BASE_REF"
+          fi
 
       - uses: actions/upload-artifact@v7
         if: steps.reference.outputs.comparison == 'ab'
@@ -163,12 +257,17 @@ jobs:
     # nothing. The `!cancelled()` status function is required so the job still
     # runs when build-reference is *skipped* (a plain custom if: would itself
     # skip on a skipped need); guard on build succeeding.
+    # The ab_to clause requires build-reference success: on the PR path a
+    # broken reference falls back to absolute mode (comparison=skipped, job
+    # green), but `prepare-reference --at` fails the job instead — benching
+    # on regardless would produce a comparison-less run wearing an A/B label
     if: >-
       !cancelled() && needs.build.result == 'success' &&
+      (inputs.ab_to == '' || needs.build-reference.result == 'success') &&
       ((github.event_name == 'pull_request' &&
         needs.build.outputs.has_code_changes == 'true') ||
        (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
-       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
+       (github.event_name == 'workflow_dispatch' && (inputs.run_suite || inputs.ab_to != '')))
     runs-on: ubuntu-8core
     # Headroom for a/b runs of the heavy scenarios (synthetic sessions cost
     # ~90s each and run on both sides)
@@ -178,6 +277,11 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      # Backfill runs measure a historical commit's build — stamp the run
+      # documents with that sha (empty on non-backfill events; see
+      # report/collect.ts)
+      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
+      BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
     strategy:
       fail-fast: false
       matrix:
@@ -258,12 +362,17 @@ jobs:
     # (build-reference skipped). Gated to the triggers track-main consumes, so
     # the self-test path doesn't launch these shards for nothing. `!cancelled()`
     # lets it run past the skipped build-reference need; guard on build.
+    # The ab_to clause requires build-reference success: on the PR path a
+    # broken reference falls back to absolute mode (comparison=skipped, job
+    # green), but `prepare-reference --at` fails the job instead — benching
+    # on regardless would produce a comparison-less run wearing an A/B label
     if: >-
       !cancelled() && needs.build.result == 'success' &&
+      (inputs.ab_to == '' || needs.build-reference.result == 'success') &&
       ((github.event_name == 'pull_request' &&
         needs.build.outputs.has_code_changes == 'true') ||
        (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
-       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
+       (github.event_name == 'workflow_dispatch' && (inputs.run_suite || inputs.ab_to != '')))
     runs-on: ubuntu-8core
     timeout-minutes: 20
     permissions:
@@ -271,6 +380,9 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      # See bench-interaction: stamps backfill runs with the measured sha
+      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
+      BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
     strategy:
       fail-fast: false
       matrix:
@@ -434,6 +546,70 @@ jobs:
             exit 1
           fi
 
+  # A/B dispatch counterpart of `report`: a dispatched comparison has no PR to
+  # comment on, so the verdict table goes to the run's summary page instead —
+  # the natural landing spot for the "dispatch, then open the run" loop.
+  report-dispatch:
+    needs: [bench-interaction, bench-pageload]
+    if: >-
+      !cancelled() &&
+      github.event_name == 'workflow_dispatch' && inputs.ab_to != '' &&
+      needs.bench-interaction.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Download shard results
+        uses: actions/download-artifact@v8
+        with:
+          pattern: bench-results-*
+          merge-multiple: true
+          path: perf/bench/results
+
+      - name: Write merged report
+        env:
+          # Keep in sync with the report job / shard matrices above
+          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic
+          BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge
+        run: pnpm bench report
+
+      - name: Publish report to the run summary
+        run: cat perf/bench/results/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      # After the summary (so the missing scenarios are already named there)
+      # but BEFORE the store: a dead shard must fail the run, not persist an
+      # incomplete comparison — mirrors store-pr only running after `report`
+      # succeeds on the PR path
+      - name: Fail on missing scenario results
+        run: |
+          if [ -f perf/bench/results/missing-scenarios.json ]; then
+            echo "::error::Benchmark shard(s) delivered no results: $(cat perf/bench/results/missing-scenarios.json | tr -d '\n')"
+            exit 1
+          fi
+
+      # Persist the comparison as its own mode:'ab' document — an
+      # investigation record (git.sha = ab_to, mergeBaseSha = ab_from), not a
+      # time-series point; the trends dashboard only plots absolute-mode docs.
+      # Token here is safe: dispatch runs execute default-branch code, the
+      # same trust level as track-main.
+      - name: Store comparison document
+        env:
+          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+        run: pnpm bench store --ab "$GITHUB_WORKSPACE/perf/bench/results/merged.json"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: bench-report
+          path: perf/bench/results/report.md
+          retention-days: 30
+
   # Store the PR's experiment-side (absolute) result under its branch so the
   # trends dashboard's branch comparison has real data. Separate from `report`
   # so the metrics write token is never present in the write-scoped job that
@@ -479,14 +655,20 @@ jobs:
         run: pnpm bench store "$GITHUB_WORKSPACE/perf/bench/results/merged-absolute.json"
 
   self-test:
-    # Same source on both sides - every metric must gate neutral; anything
-    # else is harness drift and fails this job loudly
+    # Same source on both sides, so no metric may gate as a regression or an
+    # improvement - a decided verdict here is harness drift and fails this job
+    # loudly. Inconclusive is not drift: it means the CI stayed too wide to
+    # decide within the budget, which is the designed response to a noisy run.
     if: >-
       (github.event_name == 'schedule' && github.event.schedule == '0 6 * * 1') ||
       (github.event_name == 'workflow_dispatch' && inputs.self_test)
     needs: [build]
     runs-on: ubuntu-8core
-    timeout-minutes: 45
+    # The five scenarios below take ~42 minutes serially on a typical 8-core
+    # runner, and per-scenario cost tracks host speed (see the run's host
+    # calibration line) — leave headroom for a slow runner rather than losing a
+    # whole run's signal to a cancellation in the last scenario
+    timeout-minutes: 60
     permissions:
       contents: read
     env:
@@ -527,6 +709,14 @@ jobs:
           certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password 2>/dev/null || true
           certutil -d "sql:$HOME/.pki/nssdb" -A -t "CT,," -n sanity-bench -i "$CERT_PATH"
 
+      # Unlike the measuring jobs, this one shells out to the `sanity` CLI
+      # below, whose entrypoint (sanity/lib/cli.js) is build output — the
+      # bench-dist-experiment artifact carries the built studio, not the built
+      # packages. `build:reference-config` calls the package script directly
+      # rather than going through turbo, so nothing else builds `sanity` here.
+      - name: Build packages
+        run: pnpm build --output-logs=full --log-order=grouped
+
       - uses: actions/download-artifact@v8
         with:
           name: bench-dist-experiment
@@ -535,9 +725,23 @@ jobs:
       - name: Build reference-config studio from the same source
         run: pnpm --filter bench build:reference-config
 
+      # Same five scenarios as the bench-interaction matrix, named explicitly:
+      # `bench run` otherwise defaults to every registered scenario, which adds
+      # syntheticLarge. That one needs ~55s per sample just to become editable,
+      # on both sides — and unlike bench-interaction, which shards one scenario
+      # per job, this job runs them serially, so it overran the timeout mid-
+      # syntheticLarge having already produced clean neutral results for the
+      # other five. Calibration cares that the instrument reads zero on
+      # identical builds, which five scenarios establish; the heaviest scenario
+      # is not worth doubling this job's wall-clock for.
       - name: Compare the build against itself
         run: |
           pnpm bench run --mode interaction \
+            --scenario singleString \
+            --scenario arrayI18n \
+            --scenario article \
+            --scenario recipe \
+            --scenario synthetic \
             --reference-dist "$GITHUB_WORKSPACE/perf/bench/.reference/dist" \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__self-test.json" \
             --fail-on-verdict
@@ -561,12 +765,14 @@ jobs:
     #
     # Fixed session counts across the board — comparability over speed, no
     # dynamic-stopping shortcut across days.
+    # ab_to guard: an A/B dispatch measures a historical experiment build —
+    # storing its soak/INP as a daily main point would corrupt the series
     if: >-
       !cancelled() &&
       needs.bench-interaction.result == 'success' &&
       needs.bench-pageload.result == 'success' &&
       ((github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
-       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
+       (github.event_name == 'workflow_dispatch' && inputs.run_suite && inputs.ab_to == ''))
     needs: [build, bench-interaction, bench-pageload]
     runs-on: ubuntu-8core
     timeout-minutes: 45
@@ -575,6 +781,10 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      # See bench-interaction: stamps backfill runs (soak/INP here) with the
+      # measured sha
+      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
+      BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -657,3 +867,26 @@ jobs:
           path: perf/bench/results/
           overwrite: true
           retention-days: 30
+
+  # A failed scheduled run has no PR check to go red on and no human watching —
+  # a silent failure leaves a hole in the main-branch time series. Alert the
+  # CI channel instead of relying on someone opening the Actions tab.
+  # `cancelled` is included because job timeouts conclude as cancelled, not
+  # failure (see the report job's note).
+  alert-scheduled-failure:
+    needs: [build, bench-interaction, bench-pageload, self-test, track-main]
+    if: >-
+      always() && github.event_name == 'schedule' &&
+      (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":alert-dot: Scheduled \"${{ github.workflow }}\" run failed — daily tracking or the weekly self-test is broken (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
+            }

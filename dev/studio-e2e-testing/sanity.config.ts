@@ -40,6 +40,10 @@ const TestReleaseAction: ReleaseActionComponent = (props) => {
 const defaultConfig = defineConfig({
   name: 'default',
   title: 'studio-e2e-testing',
+  // Pin a workspace icon so Chromatic e2e snapshots stay stable. Without this,
+  // createDefaultIcon hashes projectId + dataset into a color, and e2e datasets
+  // change per PR / browser shard.
+  icon: PlayIcon,
 
   projectId: process.env.SANITY_E2E_PROJECT_ID!,
   dataset: process.env.SANITY_E2E_DATASET!,

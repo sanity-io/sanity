@@ -104,7 +104,7 @@ function fetchProjectSubscriptions({
   versionedClient: SanityClient
 }): Observable<ProjectSubscriptionsResponse> {
   return versionedClient.observable.request<ProjectSubscriptionsResponse>({
-    uri: `/subscriptions/project/${versionedClient.config().projectId}`,
+    url: `/subscriptions/project/${versionedClient.config().projectId}`,
     tag: 'project-subscriptions',
   })
 }
@@ -117,6 +117,7 @@ const cachedProjectSubscriptionsRequest = new Map<
 /** @internal */
 export function useProjectSubscriptions(): ProjectSubscriptions {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {projectId} = useSource()
 
   if (!cachedProjectSubscriptionsRequest.get(projectId)) {

@@ -66,23 +66,25 @@ describe('ReleaseTypePicker', () => {
     })
   })
 
+  // The closed popover keeps its tabs mounted, so these assertions scope to the button label to
+  // avoid matching the identically labelled tab inside it.
   describe('renders the label for different release types', () => {
     it('renders the button and displays for ASAP release', async () => {
       await renderComponent()
 
-      expect(screen.getByText('As soon as possible')).toBeInTheDocument()
+      expect(screen.getByTestId('release-type-label')).toHaveTextContent('As soon as possible')
     })
 
     it('renders the button and displays for undecided release', async () => {
       await renderComponent(activeUndecidedRelease)
 
-      expect(screen.getByText('Undecided')).toBeInTheDocument()
+      expect(screen.getByTestId('release-type-label')).toHaveTextContent('Undecided')
     })
 
     it('renders the button and displays the date for scheduled release', async () => {
       await renderComponent(activeScheduledRelease)
 
-      expect(screen.getByText('Oct 10, 2023', {exact: false})).toBeInTheDocument()
+      expect(screen.getByTestId('release-type-label')).toHaveTextContent('Oct 10, 2023')
     })
 
     it('renders the label with a published text when release was asap published', async () => {

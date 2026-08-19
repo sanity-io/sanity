@@ -1,5 +1,6 @@
 /* oxlint-disable i18next/no-literal-string */
-import {Card, type CardTone, Code, Inline, Stack} from '@sanity/ui'
+import {Card, type CardTone, Inline, Stack} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../../../../ui-components/tooltip/Tooltip'
@@ -32,11 +33,11 @@ export function DebugOverlay({data}: DebugScoreProps) {
     <>
       <Tooltip
         content={
-          <Stack space={2}>
+          <Stack gap={2}>
             {matchingStories.length ? (
               <>
                 {matchingStories.map((story) => (
-                  <Inline key={story.path} space={3}>
+                  <Inline key={story.path} gap={3}>
                     <Code size={0} weight="medium">
                       {story.path}
                     </Code>

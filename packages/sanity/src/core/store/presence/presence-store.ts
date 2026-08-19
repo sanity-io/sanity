@@ -160,12 +160,14 @@ export function createPresenceStore(context: {
     map(([, locations]) => locations),
     auditTime(200),
     switchMap((locations) => reportLocations(locations)),
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     mergeMapTo(EMPTY),
     share(),
   )
 
   // This represents my rollcall request to other clients
   // Note: We are requesting a rollcall whenever we (re)connect
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const myRollCall$ = defer(() => requestRollCall()).pipe(mergeMapTo(EMPTY))
 
   const connectionChange$ = connectionStatusStore.connectionStatus$.pipe(
@@ -194,6 +196,7 @@ export function createPresenceStore(context: {
         'Faking other users present in the studio. They will hang out in the document with _type: "presence" and _id: "presence-debug"',
       )
     }),
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     switchMapTo(mock$),
   )
 

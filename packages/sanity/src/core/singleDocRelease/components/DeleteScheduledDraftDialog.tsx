@@ -1,7 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {type PreviewValue} from '@sanity/types'
-import {Box, Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Checkbox, Flex, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {type ChangeEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
@@ -169,7 +171,7 @@ function DeleteScheduledDraftDialogContent({
         },
       }}
     >
-      <Stack space={3} paddingX={3} marginBottom={2}>
+      <Stack gap={3} paddingX={3} marginBottom={2}>
         {children}
       </Stack>
     </Dialog>

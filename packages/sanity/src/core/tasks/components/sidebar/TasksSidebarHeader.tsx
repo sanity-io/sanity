@@ -2,13 +2,13 @@ import {AddIcon} from '@sanity/icons/Add'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {CloseIcon} from '@sanity/icons/Close'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button as UIButton,
   Flex,
   Text,
 } from '@sanity/ui'
 import {useCallback} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -53,7 +53,7 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
           </Box>
         ) : (
           <>
-            <UIButton mode="bleed" space={2} padding={2} onClick={handleGoBack}>
+            <UIButton mode="bleed" gap={2} padding={2} onClick={handleGoBack}>
               <Text size={1}>{t('panel.title')}</Text>
             </UIButton>
             <ChevronRightIcon />

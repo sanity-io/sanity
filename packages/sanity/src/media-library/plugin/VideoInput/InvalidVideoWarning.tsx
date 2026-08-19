@@ -20,7 +20,7 @@ export function InvalidVideoWarning({onClearValue}: Props) {
             <WarningOutlineIcon />
           </Text>
         </Box>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text size={1} weight="medium">
             {t('invalid-video-warning.title')}
           </Text>

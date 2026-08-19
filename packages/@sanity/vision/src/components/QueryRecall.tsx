@@ -9,20 +9,18 @@ import {
   Box,
   Button,
   Card,
-  Code,
   Dialog,
   Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
   Stack,
   Tab,
   TabList,
   Text,
   TextInput,
-  Tooltip,
-  useToast,
 } from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
+import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
+import {Tooltip} from '@sanity/ui/tooltip'
 import isEqual from 'lodash-es/isEqual.js'
 import {type ComponentProps, type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
@@ -368,7 +366,7 @@ export function QueryRecall({
 
   return (
     <ScrollContainer>
-      <FixedHeader space={3}>
+      <FixedHeader gap={3}>
         <Flex padding={3} paddingTop={2} paddingBottom={0} justify="space-between" align="center">
           <StyledLabel muted>{t('label.saved-queries')}</StyledLabel>
           <Button
@@ -388,7 +386,7 @@ export function QueryRecall({
           />
         </Box>
         <Box paddingX={3} paddingBottom={2}>
-          <TabList space={1}>
+          <TabList gap={1}>
             <Tab
               id="query-filter-all"
               aria-controls="vision-query-recall-list"
@@ -454,7 +452,7 @@ export function QueryRecall({
                   cursor: 'pointer',
                 }}
               >
-                <Stack space={compactMode ? 2 : 3}>
+                <Stack gap={compactMode ? 2 : 3}>
                   <Flex justify="space-between" align={'center'} style={{minHeight: '25px'}}>
                     <Flex align="center" gap={2} paddingRight={1} style={{minWidth: 0, flex: 1}}>
                       {editingKey === q._key ? (
@@ -591,7 +589,7 @@ export function QueryRecall({
                   )}
 
                   {compactMode ? (
-                    <Stack space={1} style={{paddingTop: 0, minHeight: '30px'}}>
+                    <Stack gap={1} style={{paddingTop: 0, minHeight: '30px'}}>
                       <Flex align="center" gap={2} style={{minHeight: '18px'}}>
                         <Box
                           style={{
@@ -619,7 +617,6 @@ export function QueryRecall({
                           )}
                         </Box>
                         <Badge
-                          mode="outline"
                           tone={q.shared ? 'primary' : 'default'}
                           style={{
                             whiteSpace: 'nowrap',
@@ -662,7 +659,6 @@ export function QueryRecall({
                         )}
                       </Box>
                       <Badge
-                        mode="outline"
                         tone={q.shared ? 'primary' : 'default'}
                         style={{
                           whiteSpace: 'nowrap',

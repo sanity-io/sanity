@@ -1,6 +1,7 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
+import {Box, Card, Container, Heading, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
@@ -63,7 +64,7 @@ export function StructureError({error}: StructureErrorProps) {
 
         <Card marginTop={4} padding={4} radius={2} overflow="auto" shadow={1} tone="inherit">
           {path.length > 0 && (
-            <Stack space={2}>
+            <Stack gap={2}>
               <Text size={1} weight="medium">
                 {t('structure-error.structure-path.label')}
               </Text>
@@ -77,7 +78,7 @@ export function StructureError({error}: StructureErrorProps) {
             </Stack>
           )}
 
-          <Stack marginTop={4} space={2}>
+          <Stack marginTop={4} gap={2}>
             <Text size={1} weight="medium">
               {t('structure-error.error.label')}
             </Text>

@@ -45,6 +45,11 @@ export type ObserveForPreviewFn = (
   options?: {
     viewOptions?: PrepareViewOptions
     perspective?: StackablePerspective[]
+    /**
+     * The selected editing variant as a bare variant id. When set, preview values are resolved as
+     * seen through that variant, on top of the given perspective.
+     */
+    variant?: string
     apiConfig?: ApiConfig
   },
 ) => Observable<PreparedSnapshot>
@@ -64,11 +69,13 @@ export interface DocumentPreviewStore {
     id: string,
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
   ) => Observable<string | undefined>
   observeDocumentSystemFromId: (
     id: string,
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
   ) => Observable<DocumentSystem | undefined>
 
   /**
@@ -204,8 +211,15 @@ export function createDocumentPreviewStore({
     id: string,
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
   ): Observable<string | undefined> {
-    return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig, perspective).pipe(
+    return observePaths(
+      {_type: 'reference', _ref: id},
+      ['_type'],
+      apiConfig,
+      perspective,
+      variant,
+    ).pipe(
       map((res) => (isRecord(res) && typeof res._type === 'string' ? res._type : undefined)),
       distinctUntilChanged(),
     )
@@ -214,6 +228,7 @@ export function createDocumentPreviewStore({
     id: string,
     apiConfig?: ApiConfig,
     perspective?: StackablePerspective[],
+    variant?: string,
     // TODO: This shouldn't be undefined once the documents are migrated.
   ): Observable<DocumentSystem | undefined> {
     return observePaths(
@@ -221,6 +236,7 @@ export function createDocumentPreviewStore({
       [DOCUMENT_SYSTEM_FIELD],
       apiConfig,
       perspective,
+      variant,
     ).pipe(
       map((res) =>
         isRecord(res) && isRecord(res[DOCUMENT_SYSTEM_FIELD])

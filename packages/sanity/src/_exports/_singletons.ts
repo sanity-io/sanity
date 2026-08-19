@@ -52,6 +52,7 @@ export {
 export {DocumentPaneContext} from '../_singletons/context/DocumentPaneContext'
 export {DocumentPaneInfoContext} from '../_singletons/context/DocumentPaneInfoContext'
 export {EditDialogOuterBoundaryContext} from '../_singletons/context/EditDialogOuterBoundaryContext'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {EnhancedObjectDialogContext} from '../_singletons/context/EnhancedObjectDialogContext'
 export {EventsContext} from '../_singletons/context/EventsContext'
 export {FeedbackContext, type FeedbackContextValue} from '../_singletons/context/FeedbackContext'
@@ -139,6 +140,7 @@ export {
   SchedulePublishUpsellContext,
   type SchedulePublishUpsellContextValue,
 } from '../_singletons/context/SchedulePublishingUpsellContext'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {SchedulesContext} from '../_singletons/context/SchedulesContext'
 export {ScrollContext} from '../_singletons/context/ScrollContext'
 export {SearchContext} from '../_singletons/context/SearchContext'
@@ -170,6 +172,10 @@ export {TasksNavigationContext} from '../_singletons/context/TasksNavigationCont
 export {TasksUpsellContext} from '../_singletons/context/TasksUpsellContext'
 export {UserApplicationCacheContext} from '../_singletons/context/UserApplicationCacheContext'
 export {UserColorManagerContext} from '../_singletons/context/UserColorManagerContext'
+export {
+  UnclaimedProjectContext,
+  type UnclaimedProjectContextValue,
+} from '../_singletons/context/UnclaimedProjectContext'
 export {ValidationContext} from '../_singletons/context/ValidationContext'
 export {VirtualizerScrollInstanceContext} from '../_singletons/context/VirtualizerScrollInstanceContext'
 export {VisibleWorkspacesContext} from '../_singletons/context/VisibleWorkspacesContext'

@@ -1,7 +1,6 @@
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Flex,
@@ -19,14 +18,14 @@ import range from 'lodash-es/range.js'
 import {
   type ComponentProps,
   type FormEvent,
-  type ForwardedRef,
-  forwardRef,
   type KeyboardEvent,
   useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
+  type RefAttributes,
 } from 'react'
+import {Box} from 'ui5'
 
 import {type TimeZoneScope, useTimeZone} from '../../../../../hooks/useTimeZone'
 import {CalendarMonth} from './CalendarMonth'
@@ -61,12 +60,10 @@ const PRESERVE_FOCUS_ELEMENT = (
   />
 )
 
-export const Calendar = forwardRef(function Calendar(
-  props: CalendarProps,
-  forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
+export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
   const {getCurrentZoneDate, zoneDateToUtc} = useTimeZone(props.timeZoneScope)
   const {
+    ref: forwardedRef,
     selectTime,
     onFocusedDateChange,
     selectedDate = getCurrentZoneDate(),
@@ -89,6 +86,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleFocusedMonthChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (e: FormEvent<HTMLSelectElement>) => setFocusedDateMonth(Number(e.currentTarget.value)),
     [setFocusedDateMonth],
   )
@@ -115,6 +113,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleMinutesChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (event: FormEvent<HTMLSelectElement>) => {
       const m = Number(event.currentTarget.value)
       onSelect(zoneDateToUtc(setMinutes(selectedDate, m)))
@@ -123,6 +122,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleHoursChange = useCallback(
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     (event: FormEvent<HTMLSelectElement>) => {
       const m = Number(event.currentTarget.value)
       onSelect(zoneDateToUtc(setHours(selectedDate, m)))
@@ -196,7 +196,7 @@ export const Calendar = forwardRef(function Calendar(
       <Box padding={2}>
         {/* Select month and year */}
         <Flex>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <CalendarMonthSelect
               moveFocusedDate={moveFocusedDate}
               onChange={handleFocusedMonthChange}
@@ -294,7 +294,7 @@ export const Calendar = forwardRef(function Calendar(
       )}
     </Box>
   )
-})
+}
 
 function CalendarTimePresetButton(props: {
   hours: number
@@ -322,6 +322,7 @@ function CalendarTimePresetButton(props: {
 
 function CalendarMonthSelect(props: {
   moveFocusedDate: (by: number) => void
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   onChange: (e: FormEvent<HTMLSelectElement>) => void
   value?: number
 }) {
@@ -341,7 +342,7 @@ function CalendarMonthSelect(props: {
         paddingX={2}
         radius={0}
       />
-      <Box flex={1}>
+      <Box flexBasis="0%" flexGrow={1}>
         <Select radius={0} value={value} onChange={onChange}>
           {MONTH_NAMES.map((m, i) => (
             // oxlint-disable-next-line no-array-index-key

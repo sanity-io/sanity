@@ -1,3 +1,4 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
 import {applyPatch} from 'mendoza'
 

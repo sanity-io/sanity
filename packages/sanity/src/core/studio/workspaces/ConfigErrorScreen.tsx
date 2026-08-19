@@ -1,9 +1,10 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -146,12 +147,12 @@ function WorkspaceChooserScreen(props: {
     >
       <CenteredContainer align="center" justify="center" padding={4}>
         <Container width={1}>
-          <Stack space={2}>
+          <Stack gap={2}>
             <Flex>
               <Button icon={ArrowLeftIcon} mode="bleed" onClick={onBack} text="Back" />
             </Flex>
             <Layout header={t('workspaces.choose-your-workspace-label')}>
-              <Stack space={1} paddingX={1} paddingY={2}>
+              <Stack gap={1} paddingX={1} paddingY={2}>
                 {visibleWorkspaces.map((workspace) => (
                   <WorkspaceAuthCard
                     key={workspace.name}
@@ -197,7 +198,7 @@ function ConfigErrorLayout(props: {
     <Card data-testid="studio-error-screen" data-error={props.errorLabel} height="fill">
       <CenteredContainer align="center" justify="center" padding={4}>
         <ContentWrapper paddingBottom={5}>
-          <Stack space={4}>
+          <Stack gap={4}>
             <ChooseAnotherWorkspaceButton
               onChooseAnotherWorkspace={props.onChooseAnotherWorkspace}
             />
@@ -226,9 +227,9 @@ function ConfigDetails(props: {rows: Array<{label: string; value?: string}>}) {
   if (rows.length === 0) return null
   return (
     <Card border radius={2} padding={3} tone="transparent">
-      <Stack space={3}>
+      <Stack gap={3}>
         {rows.map((row) => (
-          <Stack key={row.label} space={2}>
+          <Stack key={row.label} gap={2}>
             <Text size={0} muted weight="medium">
               {row.label}
             </Text>

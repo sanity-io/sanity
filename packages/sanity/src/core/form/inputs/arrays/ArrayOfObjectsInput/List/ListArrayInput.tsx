@@ -5,7 +5,7 @@ import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
-import {useItemComponent} from '../../../../form-components-hooks/componentHooks'
+import {useItemComponent} from '../../../../form-components-hooks/useItemComponent'
 import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
@@ -93,7 +93,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   return (
     <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
-      <Stack space={2} ref={parentRef}>
+      <Stack gap={2} ref={parentRef}>
         <UploadTargetCard
           {...elementProps}
           $radius={radius}
@@ -103,10 +103,11 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           tabIndex={0}
           types={schemaType.of}
         >
-          <Stack data-ui="ArrayInput__content" space={2}>
+          <Stack data-ui="ArrayInput__content" gap={2}>
             {members.length === 0 ? (
               <Card padding={3} border radius={2} tone={errorTone}>
                 <Text align="center" muted size={1}>
+                  {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
                   {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
                 </Text>
               </Card>

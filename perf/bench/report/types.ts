@@ -14,6 +14,13 @@ export interface BenchRunDocument {
   git: {
     sha: string
     branch: string
+    /**
+     * Committer date (ISO 8601) of `sha` — the time-series x-axis. For
+     * backfill runs this is the historical commit's date, not the run's;
+     * `startedAt` stays the wall-clock run time. Absent on documents stored
+     * before this field existed (consumers fall back to `startedAt`).
+     */
+    committedAt?: string
     mergeBaseSha?: string
     prNumber?: number
   }

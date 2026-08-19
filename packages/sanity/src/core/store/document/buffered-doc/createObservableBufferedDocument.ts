@@ -183,7 +183,9 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
       <T>(bufferedDocument: T): bufferedDocument is NonNullable<T> => bufferedDocument !== null,
     ),
     distinctUntilChanged(),
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     publishReplay(1),
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     refCount(),
   )
 
@@ -211,6 +213,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
       }
     }),
     // We subscribe to this only for the side effects
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     mergeMapTo(EMPTY),
     share(),
   )
@@ -235,6 +238,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
     mutations$.pipe(map(getDocument)),
     rebase$.pipe(map(getDocument)),
     snapshotAfterSync$,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ).pipe(map(toSnapshotEvent), publishReplay(1), refCount())
 
   const remoteSnapshot$: Observable<RemoteSnapshotEvent> = merge(
@@ -243,10 +247,12 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
       map(toSnapshotEvent),
     ),
     remoteMutations,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ).pipe(publishReplay(1), refCount())
 
   return {
     updates$: merge(snapshot$, actionHandler$, mutations$, rebase$),
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     consistency$: consistency$.pipe(distinctUntilChanged(), publishReplay(1), refCount()),
     remoteSnapshot$,
     commitRequest$: commitRequests,

@@ -1,6 +1,7 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
 import {type SanityDocument} from '@sanity/types'
-import {Card, Code, Flex, TabList, TabPanel} from '@sanity/ui'
+import {Card, Flex, TabList, TabPanel} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
 import {Translate, useTranslation} from 'sanity'
 
@@ -14,6 +15,8 @@ import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
 import {JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
+
+const JSON_INSPECTOR_SEARCH_OPTIONS = {debounceTime: 200}
 
 interface InspectDialogProps {
   value: Partial<SanityDocument> | null
@@ -79,7 +82,7 @@ export function InspectDialog(props: InspectDialogProps) {
           shadow={1}
           style={{position: 'sticky', bottom: 0, zIndex: 3}}
         >
-          <TabList space={1}>
+          <TabList gap={1}>
             <Tab
               aria-controls={`${dialogIdPrefix}tabpanel`}
               id={`${dialogIdPrefix}tab-${VIEW_MODE_PARSED.id}`}
@@ -112,6 +115,7 @@ export function InspectDialog(props: InspectDialogProps) {
                 isExpanded={isExpanded}
                 onClick={toggleExpanded}
                 search={Search}
+                searchOptions={JSON_INSPECTOR_SEARCH_OPTIONS}
                 filterOptions={{ignoreCase: true}}
               />
             </JSONInspectorWrapper>

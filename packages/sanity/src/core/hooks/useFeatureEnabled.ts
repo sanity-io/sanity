@@ -37,7 +37,7 @@ export const FEATURES: Record<string, string> = {
  */
 function fetchFeatures({versionedClient}: {versionedClient: SanityClient}): Observable<string[]> {
   return versionedClient.observable.request<string[]>({
-    uri: `/features`,
+    url: `/features`,
     tag: 'features',
   })
 }
@@ -66,6 +66,7 @@ function getFeatures({
 /** @internal */
 export function useFeatureEnabled(featureKey: keyof typeof FEATURES): Features {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {projectId} = useSource()
 
   const req = getFeatures({projectId, versionedClient})

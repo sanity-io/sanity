@@ -2,9 +2,10 @@ import {toPlainText} from '@portabletext/react'
 import {hues} from '@sanity/color'
 import {LinkRemovedIcon} from '@sanity/icons/LinkRemoved'
 import {isPortableTextTextBlock} from '@sanity/types'
-import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -19,6 +20,7 @@ function truncate(str: string, length = 250) {
 
 interface BlockQuoteStackProps {
   $hasReferencedValue: boolean
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: Theme
 }
 

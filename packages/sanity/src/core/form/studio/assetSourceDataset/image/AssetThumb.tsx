@@ -3,8 +3,8 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
-  useToast,
 } from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {styled} from 'styled-components'
@@ -212,6 +212,7 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
         tabIndex={0}
         data-id={_id}
         mode="ghost"
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         onKeyPress={onKeyPress}
         padding={0}
         style={{padding: 2}}

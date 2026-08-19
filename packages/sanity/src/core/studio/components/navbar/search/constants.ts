@@ -17,6 +17,7 @@ export const SEARCH_LIMIT = 1000
 export const GLOBAL_SEARCH_KEY = 'k'
 export const GLOBAL_SEARCH_KEY_MODIFIER = IS_MAC ? 'Cmd' : 'Ctrl'
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const POPOVER_INPUT_PADDING = studioTheme.space[4] // px
 export const POPOVER_MAX_HEIGHT = 735 // px
 export const POPOVER_MAX_WIDTH = 800 // px

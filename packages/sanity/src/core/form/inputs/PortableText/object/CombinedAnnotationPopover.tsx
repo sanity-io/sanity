@@ -1,8 +1,9 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon} from '@sanity/icons/Edit'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Box, Flex, Text, useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import {Flex, Text, useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
@@ -24,7 +25,9 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
   const rangeRef = useRef<Range | null>(null)
   const {sanity} = useTheme()
   const {t} = useTranslation()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
   const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 
@@ -40,6 +43,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
 
   // Close popover and return focus to editor
   const handleClosePopover = useCallback(() => {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
     setPopoverOpen(false)
   }, [editor])
@@ -150,7 +154,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
         <Box padding={1} data-testid="annotation-toolbar-popover">
           {annotations.map((annotation, index) => (
             <Flex key={annotation.key} gap={1} align="center">
-              <Box padding={2} flex={1}>
+              <Box padding={2} flexBasis="0%" flexGrow={1}>
                 <Text weight="medium" size={1}>
                   {annotation.title}
                 </Text>

@@ -1,7 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
-import {Box, Card, Label, Menu, MenuDivider} from '@sanity/ui'
+import {Card, Label} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {memo, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -117,7 +119,7 @@ const DocumentActionsInner = memo(
           <DiscardVersionDialog
             isGoingToUnpublish={isGoingToUnpublish(document.document)}
             onClose={() => setShowDiscardDialog(false)}
-            documentId={document.document._id}
+            versionId={document.document._id}
             documentType={document.document._type}
             fromPerspective={releaseTitle || t('release-placeholder.title')}
           />

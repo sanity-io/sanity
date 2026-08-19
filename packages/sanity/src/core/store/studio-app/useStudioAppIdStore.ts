@@ -22,6 +22,7 @@ export function useStudioAppIdStore(config: {
 }): ResolvedStudioApp {
   const client = useClient({apiVersion: '2024-09-01'})
   const cache = useAppIdCache()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {projectId} = useSource()
 
   const appIdFetcher: AppIdFetcher = useMemo(() => {

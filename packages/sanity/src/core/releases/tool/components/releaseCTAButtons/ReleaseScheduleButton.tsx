@@ -2,7 +2,8 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {format} from 'date-fns/format'
 import {isBefore} from 'date-fns/isBefore'
 import {isValid} from 'date-fns/isValid'
@@ -100,32 +101,29 @@ export const ReleaseScheduleButton = ({
   const handleConfirmSchedule = useCallback(async () => {
     if (!publishAt) return
 
-    // this means that it will linely need to change the releaseType to scheduled
-    if (isMenuItem) {
-      const newRelease = {
-        ...release,
-        metadata: {
-          ...release.metadata,
-          releaseType: 'scheduled' as const,
-
-          intendedPublishAt: publishAt.toISOString(),
-        },
-      }
-
-      if (!isEqual(newRelease, release)) {
-        void updateRelease(newRelease)
-      }
-    }
-
     if (isScheduledDateInPast()) {
       // rerender dialog to recalculate isScheduledDateInPast
       setRerenderDialog((cur) => cur + 1)
       return
     }
 
+    // Keep intendedPublishAt in step with the scheduled date, otherwise a later
+    // unschedule reverts to a previously planned date (getPublishDateFromRelease falls back to it).
+    const newRelease = {
+      ...release,
+      metadata: {
+        ...release.metadata,
+        releaseType: 'scheduled' as const,
+        intendedPublishAt: publishAt.toISOString(),
+      },
+    }
+
     // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
     const run = async () => {
       setStatus('scheduling')
+      if (!isEqual(newRelease, release)) {
+        await updateRelease(newRelease)
+      }
       await schedule(release._id, publishAt)
       telemetry.log(ScheduledRelease)
       toast.push({
@@ -168,7 +166,6 @@ export const ReleaseScheduleButton = ({
     setStatus('idle')
   }, [
     publishAt,
-    isMenuItem,
     isScheduledDateInPast,
     release,
     updateRelease,
@@ -240,13 +237,13 @@ export const ReleaseScheduleButton = ({
           },
         }}
       >
-        <Stack space={3}>
+        <Stack gap={3}>
           {_isScheduledDateInPast && (
             <Card marginBottom={1} padding={2} radius={2} shadow={1} tone="critical">
               <Text size={1}>{tCore('release.schedule-dialog.publish-date-in-past-warning')}</Text>
             </Card>
           )}
-          <Stack space={3}>
+          <Stack gap={3}>
             <Flex align="center" justify="space-between" gap={2}>
               <label>
                 <Text size={1} weight="semibold">

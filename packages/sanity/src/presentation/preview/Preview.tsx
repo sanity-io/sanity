@@ -11,38 +11,30 @@ import {
   urlSearchParamVercelSetBypassCookie,
   type VercelSetBypassCookieValue,
 } from '@sanity/preview-url-secret/constants'
-import {
-  Card,
-  Code,
-  Flex,
-  Label,
-  Spinner,
-  Stack,
-  Text,
-  usePrefersReducedMotion,
-  useToast,
-} from '@sanity/ui'
+import {Card, Flex, Label, Spinner, Stack, Text, usePrefersReducedMotion} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
+import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {AnimatePresence, motion, MotionConfig} from 'motion/react'
 import {
-  forwardRef,
   memo,
   useCallback,
   useEffect,
-  useEffectEvent,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
   useSyncExternalStore,
+  type RefAttributes,
 } from 'react'
 import {flushSync} from 'react-dom'
 import {Translate, useTranslation} from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {ErrorCard} from '../components/ErrorCard'
-import {MAX_TIME_TO_OVERLAYS_CONNECTION} from '../constants'
+import {MAX_TIME_TO_IFRAME_LOAD, MAX_TIME_TO_OVERLAYS_CONNECTION} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
 import {type PresentationMachineRef} from '../machines/presentation-machine'
 import {type PreviewUrlRef} from '../machines/preview-url'
@@ -92,528 +84,573 @@ export interface PreviewProps {
   handlesVariantChange: boolean
 }
 
-export const Preview = memo(
-  forwardRef<HTMLIFrameElement, PreviewProps>(function PreviewComponent(props, forwardedRef) {
-    const {
-      header,
-      initialUrl,
-      loadersConnection,
-      overlaysConnection,
-      perspective,
-      variant,
-      viewport,
-      vercelProtectionBypass,
-      presentationRef,
-      previewUrlRef,
-      handlesPerspectiveChange,
-      handlesVariantChange,
-    } = props
+export const Preview = memo(function PreviewComponent(
+  props: PreviewProps & RefAttributes<HTMLIFrameElement>,
+) {
+  const {
+    ref: forwardedRef,
+    header,
+    initialUrl,
+    loadersConnection,
+    overlaysConnection,
+    perspective,
+    variant,
+    viewport,
+    vercelProtectionBypass,
+    presentationRef,
+    previewUrlRef,
+    handlesPerspectiveChange,
+    handlesVariantChange,
+  } = props
 
-    const [stablePerspective, setStablePerspective] = useState<typeof perspective | null>(null)
-    const urlPerspective = encodeStudioPerspective(
-      stablePerspective === null ? perspective : stablePerspective,
-    )
+  const [stablePerspective, setStablePerspective] = useState<typeof perspective | null>(null)
+  const urlPerspective = encodeStudioPerspective(
+    stablePerspective === null ? perspective : stablePerspective,
+  )
+  /**
+   * `null` means "not frozen yet" — distinct from `undefined`, which is a valid frozen value
+   * meaning "no variant selected"
+   */
+  const [stableVariant, setStableVariant] = useState<string | undefined | null>(null)
+  const urlVariant = stableVariant === null ? variant : stableVariant
+  const previewUrl = useMemo(() => {
+    const url = new URL(initialUrl)
+
+    // Always set the perspective, even if it's provided in the initial URL.
+    // The perspective can change over time, even in the brief time between the iframe starting to load,
+    // and a comlink node connecting to the iframe and reporting whether perspective switching is handled by the preview,
+    // or if perspective switching should reload the iframe.
+    url.searchParams.set(urlSearchParamPreviewPerspective, urlPerspective)
+
+    // Same for the editing variant, except the param is only present while a variant is selected
+    if (urlVariant) {
+      url.searchParams.set(urlSearchParamPreviewVariant, urlVariant)
+    } else {
+      url.searchParams.delete(urlSearchParamPreviewVariant)
+    }
+
+    if (vercelProtectionBypass || url.searchParams.get(urlSearchParamVercelProtectionBypass)) {
+      // samesitenone is required since the request is from an iframe
+      url.searchParams.set(
+        urlSearchParamVercelSetBypassCookie,
+        'samesitenone' satisfies VercelSetBypassCookieValue,
+      )
+    }
+    // If there's a vercel protection bypass secret in the context, set it if none exists already
+    if (vercelProtectionBypass && !url.searchParams.get(urlSearchParamVercelProtectionBypass)) {
+      url.searchParams.set(urlSearchParamVercelProtectionBypass, vercelProtectionBypass)
+    }
+
+    return url
+  }, [initialUrl, urlPerspective, urlVariant, vercelProtectionBypass])
+
+  useEffect(() => {
     /**
-     * `null` means "not frozen yet" — distinct from `undefined`, which is a valid frozen value
-     * meaning "no variant selected"
+     * Once we know the preview can handle perspective changes in-place — either because the iframe reported it
+     * over comlink, or because a loader is connected (legacy fallback) — we capture the perspective that was used
+     * to load the preview, so `src` on `iframe` no longer changes when the perspective changes. Otherwise the
+     * iframe would do a full page reload, which is what we're trying to avoid unless absolutely necessary.
      */
-    const [stableVariant, setStableVariant] = useState<string | undefined | null>(null)
-    const urlVariant = stableVariant === null ? variant : stableVariant
-    const previewUrl = useMemo(() => {
-      const url = new URL(initialUrl)
+    if (handlesPerspectiveChange) {
+      /**
+       * Only set the stable perspective if it hasn't been set yet.
+       */
+      // oxlint-disable-next-line react/react-compiler
+      setStablePerspective((prev) => (prev === null ? perspective : prev))
+    }
+  }, [handlesPerspectiveChange, perspective])
 
-      // Always set the perspective, even if it's provided in the initial URL.
-      // The perspective can change over time, even in the brief time between the iframe starting to load,
-      // and a comlink node connecting to the iframe and reporting whether perspective switching is handled by the preview,
-      // or if perspective switching should reload the iframe.
-      url.searchParams.set(urlSearchParamPreviewPerspective, urlPerspective)
+  useEffect(() => {
+    /**
+     * Same freeze mechanism for the editing variant: once the preview can handle variant changes
+     * in-place — reported over comlink, or implied by a connected loader — we stop reflecting
+     * variant changes in `src` so they no longer cause a full page reload.
+     */
+    if (handlesVariantChange) {
+      // oxlint-disable-next-line react/react-compiler
+      setStableVariant((prev) => (prev === null ? variant : prev))
+    }
+  }, [handlesVariantChange, variant])
 
-      // Same for the editing variant, except the param is only present while a variant is selected
-      if (urlVariant) {
-        url.searchParams.set(urlSearchParamPreviewVariant, urlVariant)
-      } else {
-        url.searchParams.delete(urlSearchParamPreviewVariant)
-      }
+  const {t} = useTranslation(presentationLocaleNamespace)
+  const {devMode} = usePresentationTool()
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const ref = useRef<HTMLIFrameElement | null>(null)
 
-      if (vercelProtectionBypass || url.searchParams.get(urlSearchParamVercelProtectionBypass)) {
-        // samesitenone is required since the request is from an iframe
-        url.searchParams.set(
-          urlSearchParamVercelSetBypassCookie,
-          'samesitenone' satisfies VercelSetBypassCookieValue,
+  const previewHeader = <PreviewHeader {...props} iframeRef={ref} options={header} />
+
+  // Forward the iframe ref to the parent component
+  useImperativeHandle<HTMLIFrameElement | null, HTMLIFrameElement | null>(
+    forwardedRef,
+    () => ref.current,
+  )
+
+  const isLoading = useSelector(
+    presentationRef,
+    (state) => state.matches('loading') || state.matches({loaded: 'reloading'}),
+  )
+
+  const [timedOut, setTimedOut] = useState(false)
+  const isRefreshing = useSelector(presentationRef, (state) =>
+    state.matches({loaded: 'refreshing'}),
+  )
+  const [somethingIsWrong, setSomethingIsWrong] = useState(false)
+  const iframeIsBusy = isLoading || isRefreshing || overlaysConnection === 'connecting'
+
+  /**
+   * If the iframe never fires its `load` event — for example when the preview is stuck in a
+   * reload loop, like Next.js dev servers before 16.3.0 get in Firefox when embedded cross-origin
+   * (vercel/next.js#94128) — the presentation machine stays in `loading` forever. Surface the
+   * connection error UI after a deadline instead of spinning indefinitely.
+   */
+  const [loadTimedOut, setLoadTimedOut] = useState(false)
+
+  const [continueAnyway, setContinueAnyway] = useState(false)
+  /**
+   * Whether the current `continueAnyway` dismissal was for a load timeout, as opposed to an
+   * overlays connection error. The two are cleared at different times.
+   */
+  const dismissedLoadTimeoutRef = useRef(false)
+  const handleContinueAnyway = useCallback(() => {
+    dismissedLoadTimeoutRef.current = loadTimedOut
+    setContinueAnyway(true)
+  }, [loadTimedOut])
+
+  useEffect(() => {
+    /**
+     * Only `loading` waits on the iframe `load` event. `refreshing` waits for a
+     * `visual-editing/refreshed` ack from an already loaded preview, so it must not arm this
+     * deadline — a slow mutation or manual refresh is not a failed load.
+     */
+    if (!isLoading) {
+      // oxlint-disable-next-line react/react-compiler
+      setLoadTimedOut(false)
+      /**
+       * A load-timeout dismissal has to be cleared here, since `continueAnyway` is otherwise only
+       * reset once the overlays reconnect — which never happens in this scenario, leaving the
+       * loading and error UI suppressed for the rest of the session. Only clear our own dismissal:
+       * an overlays-error dismissal must survive reloads until the overlays reconnect.
+       */
+      setContinueAnyway((prev) => (dismissedLoadTimeoutRef.current ? false : prev))
+      dismissedLoadTimeoutRef.current = false
+      return undefined
+    }
+    if (loadTimedOut) {
+      return undefined
+    }
+    const timeout = setTimeout(() => {
+      setLoadTimedOut(true)
+      console.error(
+        `The preview iframe hasn't finished loading after ${MAX_TIME_TO_IFRAME_LOAD}ms. If the preview keeps reloading itself, note that Next.js dev servers older than 16.3.0 enter an infinite reload loop in Firefox when embedded cross-origin (https://github.com/vercel/next.js/pull/94128) — upgrade Next.js, or add \`experimental: {reactDebugChannel: false}\` to your Next.js config as a workaround.`,
+      )
+    }, MAX_TIME_TO_IFRAME_LOAD)
+    return () => clearTimeout(timeout)
+  }, [isLoading, loadTimedOut])
+
+  const handleRetry = useCallback(() => {
+    if (!ref.current) {
+      return
+    }
+
+    setLoadTimedOut(false)
+    ref.current.src = previewUrl.toString()
+
+    presentationRef.send({type: 'iframe reload'})
+  }, [presentationRef, previewUrl])
+
+  const [showOverlaysConnectionStatus, setShowOverlaysConnectionState] = useState(false)
+  useEffect(() => {
+    if (isLoading || isRefreshing) {
+      return undefined
+    }
+
+    if (overlaysConnection === 'connecting' || overlaysConnection === 'reconnecting') {
+      const timeout = setTimeout(() => {
+        setShowOverlaysConnectionState(true)
+      }, 5_000)
+      return () => clearTimeout(timeout)
+    }
+    return undefined
+  }, [overlaysConnection, isLoading, isRefreshing])
+
+  useEffect(() => {
+    if (isLoading || isRefreshing || !showOverlaysConnectionStatus) {
+      return undefined
+    }
+    if (overlaysConnection === 'connected') {
+      // oxlint-disable-next-line react/react-compiler
+      setSomethingIsWrong(false)
+      setShowOverlaysConnectionState(false)
+      setTimedOut(false)
+      setContinueAnyway(false)
+    }
+    if (overlaysConnection === 'connecting') {
+      const timeout = setTimeout(() => {
+        setTimedOut(true)
+        console.error(
+          `Unable to connect to visual editing. Make sure you've setup '@sanity/visual-editing' correctly`,
         )
+      }, MAX_TIME_TO_OVERLAYS_CONNECTION)
+      return () => clearTimeout(timeout)
+    }
+    if (overlaysConnection === 'reconnecting') {
+      const timeout = setTimeout(() => {
+        setTimedOut(true)
+        setSomethingIsWrong(true)
+      }, MAX_TIME_TO_OVERLAYS_CONNECTION)
+      return () => clearTimeout(timeout)
+    }
+    return undefined
+  }, [isLoading, overlaysConnection, isRefreshing, showOverlaysConnectionStatus])
+
+  const onIFrameLoad = useCallback(() => {
+    presentationRef.send({type: 'iframe loaded'})
+  }, [presentationRef])
+
+  const preventIframeInteraction = useMemo(() => {
+    return (isLoading || (overlaysConnection === 'connecting' && !isRefreshing)) && !continueAnyway
+  }, [continueAnyway, isLoading, isRefreshing, overlaysConnection])
+
+  const canUseViewTransition = useSyncExternalStore(
+    useCallback(() => () => {}, []),
+    () => CSS.supports(`(view-transition-name: test)`),
+  )
+  const iframeAnimations = useMemo(() => {
+    return [
+      preventIframeInteraction ? 'background' : 'active',
+      isLoading ? 'reloading' : 'idle',
+      // If CSS View Transitions are supported, then transition iframe viewport dimensions with that instead of Motion
+      canUseViewTransition ? '' : viewport,
+      showOverlaysConnectionStatus && !continueAnyway ? 'timedOut' : '',
+    ]
+  }, [
+    canUseViewTransition,
+    continueAnyway,
+    isLoading,
+    preventIframeInteraction,
+    showOverlaysConnectionStatus,
+    viewport,
+  ])
+
+  const [currentViewport, setCurrentViewport] = useState(viewport)
+  const [iframeStyle, setIframeStyle] = useState(iframeVariants[viewport])
+  useEffect(() => {
+    if (canUseViewTransition && viewport !== currentViewport) {
+      const update = () => {
+        setCurrentViewport(viewport)
+        setIframeStyle(iframeVariants[viewport])
       }
-      // If there's a vercel protection bypass secret in the context, set it if none exists already
-      if (vercelProtectionBypass && !url.searchParams.get(urlSearchParamVercelProtectionBypass)) {
-        url.searchParams.set(urlSearchParamVercelProtectionBypass, vercelProtectionBypass)
+      if (
+        !prefersReducedMotion &&
+        'startViewTransition' in document &&
+        typeof document.startViewTransition === 'function'
+      ) {
+        document.startViewTransition({
+          update: () => flushSync(() => update()),
+          types: ['sanity-iframe-viewport'],
+        })
+      } else {
+        update()
       }
+    }
+  }, [canUseViewTransition, prefersReducedMotion, currentViewport, viewport])
 
-      return url
-    }, [initialUrl, urlPerspective, urlVariant, vercelProtectionBypass])
-
-    useEffect(() => {
-      /**
-       * Once we know the preview can handle perspective changes in-place — either because the iframe reported it
-       * over comlink, or because a loader is connected (legacy fallback) — we capture the perspective that was used
-       * to load the preview, so `src` on `iframe` no longer changes when the perspective changes. Otherwise the
-       * iframe would do a full page reload, which is what we're trying to avoid unless absolutely necessary.
-       */
-      if (handlesPerspectiveChange) {
-        /**
-         * Only set the stable perspective if it hasn't been set yet.
-         */
-        // oxlint-disable-next-line react/react-compiler
-        setStablePerspective((prev) => (prev === null ? perspective : prev))
-      }
-    }, [handlesPerspectiveChange, perspective])
-
-    useEffect(() => {
-      /**
-       * Same freeze mechanism for the editing variant: once the preview can handle variant changes
-       * in-place — reported over comlink, or implied by a connected loader — we stop reflecting
-       * variant changes in `src` so they no longer cause a full page reload.
-       */
-      if (handlesVariantChange) {
-        // oxlint-disable-next-line react/react-compiler
-        setStableVariant((prev) => (prev === null ? variant : prev))
-      }
-    }, [handlesVariantChange, variant])
-
-    const {t} = useTranslation(presentationLocaleNamespace)
-    const {devMode} = usePresentationTool()
-    const prefersReducedMotion = usePrefersReducedMotion()
-    const ref = useRef<HTMLIFrameElement | null>(null)
-
-    const previewHeader = <PreviewHeader {...props} iframeRef={ref} options={header} />
-
-    // Forward the iframe ref to the parent component
-    useImperativeHandle<HTMLIFrameElement | null, HTMLIFrameElement | null>(
-      forwardedRef,
-      () => ref.current,
-    )
-
-    const isLoading = useSelector(
-      presentationRef,
-      (state) => state.matches('loading') || state.matches({loaded: 'reloading'}),
-    )
-
-    const [timedOut, setTimedOut] = useState(false)
-    const isRefreshing = useSelector(presentationRef, (state) =>
-      state.matches({loaded: 'refreshing'}),
-    )
-    const [somethingIsWrong, setSomethingIsWrong] = useState(false)
-    const iframeIsBusy = isLoading || isRefreshing || overlaysConnection === 'connecting'
-
-    const handleRetry = useCallback(() => {
-      if (!ref.current) {
-        return
-      }
-
-      ref.current.src = previewUrl.toString()
-
-      presentationRef.send({type: 'iframe reload'})
-    }, [presentationRef, previewUrl])
-
-    const [continueAnyway, setContinueAnyway] = useState(false)
-    const handleContinueAnyway = useCallback(() => {
-      setContinueAnyway(true)
-    }, [])
-    const [showOverlaysConnectionStatus, setShowOverlaysConnectionState] = useState(false)
-    useEffect(() => {
-      if (isLoading || isRefreshing) {
-        return undefined
-      }
-
-      if (overlaysConnection === 'connecting' || overlaysConnection === 'reconnecting') {
-        const timeout = setTimeout(() => {
-          setShowOverlaysConnectionState(true)
-        }, 5_000)
-        return () => clearTimeout(timeout)
-      }
-      return undefined
-    }, [overlaysConnection, isLoading, isRefreshing])
-
-    useEffect(() => {
-      if (isLoading || isRefreshing || !showOverlaysConnectionStatus) {
-        return undefined
-      }
-      if (overlaysConnection === 'connected') {
-        // oxlint-disable-next-line react/react-compiler
-        setSomethingIsWrong(false)
-        setShowOverlaysConnectionState(false)
-        setTimedOut(false)
-        setContinueAnyway(false)
-      }
-      if (overlaysConnection === 'connecting') {
-        const timeout = setTimeout(() => {
-          setTimedOut(true)
-          console.error(
-            `Unable to connect to visual editing. Make sure you've setup '@sanity/visual-editing' correctly`,
-          )
-        }, MAX_TIME_TO_OVERLAYS_CONNECTION)
-        return () => clearTimeout(timeout)
-      }
-      if (overlaysConnection === 'reconnecting') {
-        const timeout = setTimeout(() => {
-          setTimedOut(true)
-          setSomethingIsWrong(true)
-        }, MAX_TIME_TO_OVERLAYS_CONNECTION)
-        return () => clearTimeout(timeout)
-      }
-      return undefined
-    }, [isLoading, overlaysConnection, isRefreshing, showOverlaysConnectionStatus])
-
-    const onIFrameLoad = useCallback(() => {
-      presentationRef.send({type: 'iframe loaded'})
-    }, [presentationRef])
-
-    const preventIframeInteraction = useMemo(() => {
-      return (
-        (isLoading || (overlaysConnection === 'connecting' && !isRefreshing)) && !continueAnyway
-      )
-    }, [continueAnyway, isLoading, isRefreshing, overlaysConnection])
-
-    const canUseViewTransition = useSyncExternalStore(
-      useCallback(() => () => {}, []),
-      () => CSS.supports(`(view-transition-name: test)`),
-    )
-    const iframeAnimations = useMemo(() => {
-      return [
-        preventIframeInteraction ? 'background' : 'active',
-        isLoading ? 'reloading' : 'idle',
-        // If CSS View Transitions are supported, then transition iframe viewport dimensions with that instead of Motion
-        canUseViewTransition ? '' : viewport,
-        showOverlaysConnectionStatus && !continueAnyway ? 'timedOut' : '',
-      ]
-    }, [
-      canUseViewTransition,
-      continueAnyway,
-      isLoading,
-      preventIframeInteraction,
-      showOverlaysConnectionStatus,
-      viewport,
-    ])
-
-    const [currentViewport, setCurrentViewport] = useState(viewport)
-    const [iframeStyle, setIframeStyle] = useState(iframeVariants[viewport])
-    useEffect(() => {
-      if (canUseViewTransition && viewport !== currentViewport) {
-        const update = () => {
-          setCurrentViewport(viewport)
-          setIframeStyle(iframeVariants[viewport])
-        }
-        if (
-          !prefersReducedMotion &&
-          'startViewTransition' in document &&
-          typeof document.startViewTransition === 'function'
-        ) {
-          document.startViewTransition({
-            update: () => flushSync(() => update()),
-            types: ['sanity-iframe-viewport'],
-          })
-        } else {
-          update()
-        }
-      }
-    }, [canUseViewTransition, prefersReducedMotion, currentViewport, viewport])
-
-    const toast = useToast()
-    const allowOrigins = useAllowPatterns(previewUrlRef)
-    const [checkOrigin, setCheckOrigin] = useState<false | string>(false)
-    const [reportedMismatches] = useState(new Set<string>())
-    const reportMismatchingOrigin = useEffectEvent((reportedOrigin: string) => {
-      if (allowOrigins.some((allow) => allow.test(reportedOrigin))) {
-        setCheckOrigin(reportedOrigin)
-        return
-      }
-      if (reportedMismatches.has(reportedOrigin)) return
-      reportedMismatches.add(reportedOrigin)
-      console.warn('Visual Editing is here but misconfigured', {reportedOrigin})
-      toast.push({
-        closable: true,
-        id: `presentation-iframe-origin-mismatch-${reportedOrigin}`,
-        status: 'error',
-        duration: Infinity,
-        title: t('preview-frame.configuration.error.title'),
-        description: (
-          <Translate
-            t={t}
-            i18nKey="preview-frame.configuration.error.description"
-            components={{Code: 'code'}}
-            values={{
-              targetOrigin: previewUrl.origin,
-              reportedOrigin,
-            }}
-          />
-        ),
-      })
+  const toast = useToast()
+  const allowOrigins = useAllowPatterns(previewUrlRef)
+  const [checkOrigin, setCheckOrigin] = useState<false | string>(false)
+  const [reportedMismatches] = useState(new Set<string>())
+  const reportMismatchingOrigin = useEffectEvent((reportedOrigin: string) => {
+    if (allowOrigins.some((allow) => allow.test(reportedOrigin))) {
+      setCheckOrigin(reportedOrigin)
+      return
+    }
+    if (reportedMismatches.has(reportedOrigin)) return
+    reportedMismatches.add(reportedOrigin)
+    console.warn('Visual Editing is here but misconfigured', {reportedOrigin})
+    toast.push({
+      closable: true,
+      id: `presentation-iframe-origin-mismatch-${reportedOrigin}`,
+      status: 'error',
+      duration: Infinity,
+      title: t('preview-frame.configuration.error.title'),
+      description: (
+        <Translate
+          t={t}
+          i18nKey="preview-frame.configuration.error.description"
+          components={{Code: 'code'}}
+          values={{
+            targetOrigin: previewUrl.origin,
+            reportedOrigin,
+          }}
+        />
+      ),
     })
-    const navigate = usePresentationNavigate()
-    const navigateEvent = useEffectEvent((url: string) => {
-      if (!checkOrigin) return
-      const nextUrl = new URL(url, checkOrigin)
-      navigate(`${checkOrigin}${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`)
+  })
+  const navigate = usePresentationNavigate()
+  const navigateEvent = useEffectEvent((url: string) => {
+    if (!checkOrigin) return
+    const nextUrl = new URL(url, checkOrigin)
+    navigate(`${checkOrigin}${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`)
+  })
+  useEffect(() => {
+    if (!checkOrigin) {
+      return undefined
+    }
+    const target = ref.current?.contentWindow
+    if (!target) {
+      return undefined
+    }
+    const controller = createController({targetOrigin: checkOrigin})
+    controller.addTarget(target)
+    const comlink = controller.createChannel<VisualEditingControllerMsg, VisualEditingNodeMsg>(
+      {
+        name: 'presentation',
+        heartbeat: true,
+        connectTo: 'visual-editing',
+      },
+      createConnectionMachine<VisualEditingControllerMsg, VisualEditingNodeMsg>().provide({
+        actors: createCompatibilityActors<VisualEditingControllerMsg>(),
+      }),
+    )
+
+    comlink.on('visual-editing/navigate', (data) => {
+      navigateEvent(data.url)
     })
-    useEffect(() => {
-      if (!checkOrigin) {
-        return undefined
-      }
-      const target = ref.current?.contentWindow
-      if (!target) {
-        return undefined
-      }
-      const controller = createController({targetOrigin: checkOrigin})
-      controller.addTarget(target)
-      const comlink = controller.createChannel<VisualEditingControllerMsg, VisualEditingNodeMsg>(
-        {
-          name: 'presentation',
-          heartbeat: true,
-          connectTo: 'visual-editing',
+    const stop = comlink.start()
+
+    return () => {
+      stop()
+      controller.destroy()
+    }
+  }, [checkOrigin])
+  useEffect(() => {
+    if (overlaysConnection === 'connecting' || overlaysConnection === 'reconnecting') {
+      const interval = setInterval(() => {
+        ref.current?.contentWindow?.postMessage(
+          {domain: 'sanity/channels', from: 'presentation', type: 'presentation/status'},
+          /**
+           * The targetOrigin is set to '*' intentionally here, as we need to find out if the iframe is misconfigured and has the wrong origin
+           */
+          '*',
+        )
+      }, 1_000)
+
+      const controller = new AbortController()
+      window.addEventListener(
+        'message',
+        ({data}: MessageEvent<unknown>) => {
+          /**
+           * Listen for replies to presentation/status
+           */
+          if (
+            data &&
+            typeof data === 'object' &&
+            'domain' in data &&
+            data.domain === 'sanity/channels' &&
+            'type' in data &&
+            data.type === 'visual-editing/status' &&
+            'data' in data &&
+            typeof data.data === 'object' &&
+            data.data &&
+            'origin' in data.data &&
+            typeof data.data.origin === 'string'
+          ) {
+            reportMismatchingOrigin(data.data.origin)
+          }
         },
-        createConnectionMachine<VisualEditingControllerMsg, VisualEditingNodeMsg>().provide({
-          actors: createCompatibilityActors<VisualEditingControllerMsg>(),
-        }),
+        {signal: controller.signal},
       )
-
-      comlink.on('visual-editing/navigate', (data) => {
-        navigateEvent(data.url)
-      })
-      const stop = comlink.start()
 
       return () => {
-        stop()
-        controller.destroy()
+        controller.abort()
+        clearInterval(interval)
       }
-    }, [checkOrigin])
-    useEffect(() => {
-      if (overlaysConnection === 'connecting' || overlaysConnection === 'reconnecting') {
-        const interval = setInterval(() => {
-          ref.current?.contentWindow?.postMessage(
-            {domain: 'sanity/channels', from: 'presentation', type: 'presentation/status'},
-            /**
-             * The targetOrigin is set to '*' intentionally here, as we need to find out if the iframe is misconfigured and has the wrong origin
-             */
-            '*',
-          )
-        }, 1_000)
+    }
+    return undefined
+  }, [overlaysConnection, timedOut])
 
-        const controller = new AbortController()
-        window.addEventListener(
-          'message',
-          ({data}: MessageEvent<unknown>) => {
-            /**
-             * Listen for replies to presentation/status
-             */
-            if (
-              data &&
-              typeof data === 'object' &&
-              'domain' in data &&
-              data.domain === 'sanity/channels' &&
-              'type' in data &&
-              data.type === 'visual-editing/status' &&
-              'data' in data &&
-              typeof data.data === 'object' &&
-              data.data &&
-              'origin' in data.data &&
-              typeof data.data.origin === 'string'
-            ) {
-              reportMismatchingOrigin(data.data.origin)
-            }
-          },
-          {signal: controller.signal},
-        )
-
-        return () => {
-          controller.abort()
-          clearInterval(interval)
-        }
-      }
-      return undefined
-    }, [overlaysConnection, timedOut])
-
-    return (
-      <MotionConfig transition={prefersReducedMotion ? {duration: 0} : undefined}>
-        <TooltipDelayGroupProvider>
-          {previewHeader}
-          <Card flex={1} tone="transparent">
-            <Flex
-              align="center"
-              height="fill"
-              justify="center"
-              padding={(canUseViewTransition ? currentViewport : viewport) === 'desktop' ? 0 : 2}
-              sizing="border"
-              style={{
-                position: 'relative',
-                cursor: iframeIsBusy ? 'wait' : undefined,
-              }}
-            >
-              <AnimatePresence>
-                {!somethingIsWrong &&
-                !isLoading &&
-                !isRefreshing &&
-                // viewport, // using CSS View Transitions instead of framer motion to drive this
-                showOverlaysConnectionStatus &&
+  return (
+    <MotionConfig transition={prefersReducedMotion ? {duration: 0} : undefined}>
+      <TooltipDelayGroupProvider>
+        {previewHeader}
+        <Card flex={1} tone="transparent">
+          <Flex
+            align="center"
+            height="fill"
+            justify="center"
+            padding={(canUseViewTransition ? currentViewport : viewport) === 'desktop' ? 0 : 2}
+            sizing="border"
+            style={{
+              position: 'relative',
+              cursor: iframeIsBusy ? 'wait' : undefined,
+            }}
+          >
+            <AnimatePresence>
+              {!somethingIsWrong &&
+              !isLoading &&
+              !isRefreshing &&
+              // viewport, // using CSS View Transitions instead of framer motion to drive this
+              showOverlaysConnectionStatus &&
+              !continueAnyway ? (
+                <MotionFlex
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={spinnerVariants}
+                  justify="center"
+                  align="center"
+                  style={{
+                    inset: '0',
+                    position: 'absolute',
+                    backdropFilter: timedOut
+                      ? 'blur(16px) saturate(0.5) grayscale(0.5)'
+                      : 'blur(2px)',
+                    ['transition' as string]: 'backdrop-filter 0.2s ease-in-out',
+                    // @TODO Because of Safari we have to do this
+                    WebkitBackdropFilter: timedOut
+                      ? 'blur(16px) saturate(0.5) grayscale(0.5)'
+                      : 'blur(2px)',
+                    WebkitTransition: '-webkit-backdrop-filter 0.2s ease-in-out',
+                    zIndex: 1,
+                  }}
+                >
+                  <Flex
+                    style={{...sizes[viewport]}}
+                    justify="center"
+                    align="center"
+                    direction="column"
+                    gap={4}
+                  >
+                    {timedOut && (
+                      <Button
+                        disabled
+                        mode="ghost"
+                        text={t('preview-frame.continue-button.text')}
+                        style={{opacity: 0}}
+                      />
+                    )}
+                    <Card radius={2} tone={timedOut ? 'caution' : 'inherit'} padding={4} shadow={1}>
+                      <Flex justify="center" align="center" direction="column" gap={4}>
+                        <Spinner muted />
+                        <Text muted size={1}>
+                          {timedOut
+                            ? t('preview-frame.status', {context: 'timeout'})
+                            : t('preview-frame.status', {context: 'connecting'})}
+                        </Text>
+                      </Flex>
+                    </Card>
+                    {timedOut && (
+                      <Button
+                        // mode="ghost"
+                        tone="critical"
+                        onClick={handleContinueAnyway}
+                        text={t('preview-frame.continue-button.text')}
+                      />
+                    )}
+                  </Flex>
+                </MotionFlex>
+              ) : (isLoading || (overlaysConnection === 'connecting' && !isRefreshing)) &&
+                !loadTimedOut &&
                 !continueAnyway ? (
-                  <MotionFlex
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    variants={spinnerVariants}
+                <MotionFlex
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={spinnerVariants}
+                  justify="center"
+                  align="center"
+                  style={{
+                    inset: '0',
+                    position: 'absolute',
+                    // boxShadow: '0 0 0 1px var(--card-shadow-outline-color)',
+                  }}
+                >
+                  <Flex
+                    style={{...sizes[viewport]}}
                     justify="center"
                     align="center"
-                    style={{
-                      inset: '0',
-                      position: 'absolute',
-                      backdropFilter: timedOut
-                        ? 'blur(16px) saturate(0.5) grayscale(0.5)'
-                        : 'blur(2px)',
-                      ['transition' as string]: 'backdrop-filter 0.2s ease-in-out',
-                      // @TODO Because of Safari we have to do this
-                      WebkitBackdropFilter: timedOut
-                        ? 'blur(16px) saturate(0.5) grayscale(0.5)'
-                        : 'blur(2px)',
-                      WebkitTransition: '-webkit-backdrop-filter 0.2s ease-in-out',
-                      zIndex: 1,
-                    }}
+                    direction="column"
+                    gap={4}
                   >
-                    <Flex
-                      style={{...sizes[viewport]}}
-                      justify="center"
-                      align="center"
-                      direction="column"
-                      gap={4}
-                    >
-                      {timedOut && (
-                        <Button
-                          disabled
-                          mode="ghost"
-                          text={t('preview-frame.continue-button.text')}
-                          style={{opacity: 0}}
-                        />
-                      )}
-                      <Card
-                        radius={2}
-                        tone={timedOut ? 'caution' : 'inherit'}
-                        padding={4}
-                        shadow={1}
-                      >
-                        <Flex justify="center" align="center" direction="column" gap={4}>
-                          <Spinner muted />
-                          <Text muted size={1}>
-                            {timedOut
-                              ? t('preview-frame.status', {context: 'timeout'})
-                              : t('preview-frame.status', {context: 'connecting'})}
-                          </Text>
-                        </Flex>
-                      </Card>
-                      {timedOut && (
-                        <Button
-                          // mode="ghost"
-                          tone="critical"
-                          onClick={handleContinueAnyway}
-                          text={t('preview-frame.continue-button.text')}
-                        />
-                      )}
-                    </Flex>
-                  </MotionFlex>
-                ) : (isLoading || (overlaysConnection === 'connecting' && !isRefreshing)) &&
-                  !continueAnyway ? (
-                  <MotionFlex
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    variants={spinnerVariants}
-                    justify="center"
-                    align="center"
-                    style={{
-                      inset: '0',
-                      position: 'absolute',
-                      // boxShadow: '0 0 0 1px var(--card-shadow-outline-color)',
-                    }}
+                    <Spinner muted />
+                    <Text muted size={1}>
+                      {t('preview-frame.status', {context: 'loading'})}
+                    </Text>
+                  </Flex>
+                </MotionFlex>
+              ) : (somethingIsWrong || (loadTimedOut && isLoading)) && !continueAnyway ? (
+                <MotionFlex
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={errorVariants}
+                  justify="center"
+                  align="center"
+                  style={{
+                    background: 'var(--card-bg-color)',
+                    inset: '0',
+                    position: 'absolute',
+                    // Stay above the click-prevention overlay so "Retry" stays clickable while
+                    // the iframe is still considered busy (e.g. a load that never finishes)
+                    zIndex: 1,
+                  }}
+                >
+                  <ErrorCard
+                    flex={1}
+                    message={t('preview-frame.connection.error.text')}
+                    onRetry={handleRetry}
+                    onContinueAnyway={handleContinueAnyway}
                   >
-                    <Flex
-                      style={{...sizes[viewport]}}
-                      justify="center"
-                      align="center"
-                      direction="column"
-                      gap={4}
-                    >
-                      <Spinner muted />
-                      <Text muted size={1}>
-                        {t('preview-frame.status', {context: 'loading'})}
-                      </Text>
-                    </Flex>
-                  </MotionFlex>
-                ) : somethingIsWrong && !continueAnyway ? (
-                  <MotionFlex
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    variants={errorVariants}
-                    justify="center"
-                    align="center"
-                    style={{
-                      background: 'var(--card-bg-color)',
-                      inset: '0',
-                      position: 'absolute',
-                    }}
-                  >
-                    <ErrorCard
-                      flex={1}
-                      message={t('preview-frame.connection.error.text')}
-                      onRetry={handleRetry}
-                      onContinueAnyway={handleContinueAnyway}
-                    >
-                      {devMode && (
-                        <>
-                          {overlaysConnection !== 'connected' && (
-                            <Card padding={3} radius={2} tone="critical">
-                              <Stack space={3}>
-                                <Label muted size={0}>
-                                  {t('preview-frame.overlay.connection-status.label')}
-                                </Label>
-                                <Code size={1}>
-                                  {t('channel.status', {context: overlaysConnection})}
-                                </Code>
-                              </Stack>
-                            </Card>
-                          )}
+                    {devMode && (
+                      <>
+                        {overlaysConnection !== 'connected' && (
+                          <Card padding={3} radius={2} tone="critical">
+                            <Stack gap={3}>
+                              <Label muted size={0}>
+                                {t('preview-frame.overlay.connection-status.label')}
+                              </Label>
+                              <Code size={1}>
+                                {t('channel.status', {context: overlaysConnection})}
+                              </Code>
+                            </Stack>
+                          </Card>
+                        )}
 
-                          {loadersConnection !== 'connected' && (
-                            <Card padding={3} radius={2} tone="critical">
-                              <Stack space={3}>
-                                <Label muted size={0}>
-                                  {t('preview-frame.loader.connection-status.label')}
-                                </Label>
-                                <Code size={1}>
-                                  {t('channel.status', {context: loadersConnection})}
-                                </Code>
-                              </Stack>
-                            </Card>
-                          )}
-                        </>
-                      )}
-                    </ErrorCard>
-                  </MotionFlex>
-                ) : null}
-              </AnimatePresence>
-              <IFrame
-                animate={iframeAnimations}
-                initial={['background']}
-                onLoad={onIFrameLoad}
-                preventClick={preventIframeInteraction}
-                ref={ref}
-                src={previewUrl.toString()}
-                style={iframeStyle}
-                variants={iframeVariants}
-              />
-            </Flex>
-          </Card>
-        </TooltipDelayGroupProvider>
-      </MotionConfig>
-    )
-  }),
-)
-Preview.displayName = 'Memo(ForwardRef(Preview))'
+                        {loadersConnection !== 'connected' && (
+                          <Card padding={3} radius={2} tone="critical">
+                            <Stack gap={3}>
+                              <Label muted size={0}>
+                                {t('preview-frame.loader.connection-status.label')}
+                              </Label>
+                              <Code size={1}>
+                                {t('channel.status', {context: loadersConnection})}
+                              </Code>
+                            </Stack>
+                          </Card>
+                        )}
+                      </>
+                    )}
+                  </ErrorCard>
+                </MotionFlex>
+              ) : null}
+            </AnimatePresence>
+            <IFrame
+              animate={iframeAnimations}
+              initial={['background']}
+              onLoad={onIFrameLoad}
+              preventClick={preventIframeInteraction}
+              ref={ref}
+              src={previewUrl.toString()}
+              style={iframeStyle}
+              variants={iframeVariants}
+            />
+          </Flex>
+        </Card>
+      </TooltipDelayGroupProvider>
+    </MotionConfig>
+  )
+})
+Preview.displayName = 'Memo(Preview)'
 
 const sizes = {
   desktop: {

@@ -1,4 +1,5 @@
-import {Card, Code, Stack} from '@sanity/ui'
+import {Card, Stack} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 
@@ -15,7 +16,7 @@ export function DebugFilterQuery() {
 
   return (
     <Card padding={4} tone="transparent">
-      <Stack space={3}>
+      <Stack gap={3}>
         <Code size={1} weight="medium">
           Filter
         </Code>

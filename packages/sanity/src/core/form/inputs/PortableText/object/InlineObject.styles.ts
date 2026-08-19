@@ -1,6 +1,7 @@
 import {hues} from '@sanity/color'
-import {Box, Card, type Theme} from '@sanity/ui'
+import {Card, type Theme} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 export const Root = styled(Card)(rootStyle)
 
@@ -14,7 +15,9 @@ export const TooltipBox = styled(Box)`
   max-width: 250px;
 `
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function rootStyle({theme}: {theme: Theme}) {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {color, radius} = theme.sanity
 
   return css`

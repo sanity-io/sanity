@@ -182,8 +182,8 @@ export const operationEvents = memoize(
                 )
               }),
               map((): IntermediarySuccess => ({type: 'success', args})),
-              catchError(
-                (err): Observable<IntermediaryError> => of({type: 'error', args, error: err}),
+              catchError((err): Observable<IntermediaryError> =>
+                of({type: 'error', args, error: err}),
               ),
             ),
           ),
@@ -205,6 +205,7 @@ export const operationEvents = memoize(
       }),
     )
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     return merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY)))
   },
   (ctx) => {

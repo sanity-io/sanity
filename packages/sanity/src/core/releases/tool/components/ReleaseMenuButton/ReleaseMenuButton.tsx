@@ -1,7 +1,9 @@
 import {type ReleaseDocument, type SingleActionResult} from '@sanity/client'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, MenuDivider, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Spinner, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {useToast} from '@sanity/ui/toast'
 import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {RouterContext, useRouter} from 'sanity/router'
 
@@ -254,7 +256,7 @@ export const ReleaseMenuButton = ({
           },
         }}
       >
-        <Stack space={4} paddingX={4} paddingBottom={4}>
+        <Stack gap={4} paddingX={4} paddingBottom={4}>
           <ReleasePreviewCard release={release} />
           {!!documentsCount && (
             <Text muted size={1}>
@@ -320,6 +322,7 @@ export const ReleaseMenuButton = ({
         key={`custom-action-${index}`}
         icon={action.icon}
         text={action.label}
+        tone={action.tone}
         disabled={action.disabled || isPerformingOperation}
         onClick={handleOnActionClick(action)}
         tooltipProps={action.title ? {content: action.title} : undefined}

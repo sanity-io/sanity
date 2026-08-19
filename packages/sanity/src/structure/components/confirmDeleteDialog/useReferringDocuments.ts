@@ -95,7 +95,7 @@ function getDocumentExistence(
   const draftId = getDraftId(documentId)
   const publishedId = getPublishedId(documentId)
   const requestOptions = {
-    uri: versionedClient.getDataUrl('doc', `${draftId},${publishedId}`),
+    url: versionedClient.getDataUrl('doc', `${draftId},${publishedId}`),
     json: true,
     query: {excludeContent: 'true'},
     tag: 'use-referring-documents.document-existence',
@@ -244,30 +244,59 @@ const INITIAL_STATE: ReferringDocuments = {
   crossDatasetReferences: undefined,
 }
 
-export function useReferringDocuments(documentId: string): ReferringDocuments {
-  const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const documentStore = useDocumentStore()
-
-  const referringDocuments$ = useMemo(
-    () => referringDocuments({documentId, versionedClient, documentStore}),
-    [documentId, versionedClient, documentStore],
-  )
-
-  return useObservable(referringDocuments$, INITIAL_STATE)
+const EMPTY_READY_STATE: ReferringDocuments = {
+  isLoading: false,
+  totalCount: 0,
+  projectIds: [],
+  datasetNames: [],
+  hasUnknownDatasetNames: false,
+  internalReferences: {totalCount: 0, references: []},
+  crossDatasetReferences: {totalCount: 0, references: []},
 }
 
 /**
-+ * Fetches the documents within the same dataset that reference the subject
-+ * document using the document store's `listenQuery`
-+ */
+ * @internal
+ */
+export interface UseReferringDocumentsOptions {
+  /**
+   * When `false`, skips fetching incoming references and returns an empty ready
+   * state
+   */
+  enabled?: boolean
+}
+
+export function useReferringDocuments(
+  documentId: string,
+  options?: UseReferringDocumentsOptions,
+): ReferringDocuments {
+  const enabled = options?.enabled ?? true
+  const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const documentStore = useDocumentStore()
+
+  const referringDocuments$ = useMemo(() => {
+    if (!enabled) {
+      return of(EMPTY_READY_STATE)
+    }
+    return referringDocuments({documentId, versionedClient, documentStore})
+  }, [documentId, documentStore, enabled, versionedClient])
+
+  return useObservable(referringDocuments$, enabled ? INITIAL_STATE : EMPTY_READY_STATE)
+}
+
+/**
+ * Fetches the documents within the same dataset that reference the subject
+ * document using the document store's `listenQuery`
+ */
 function fetchInternalReferences(
   documentId: string,
   documentStore: DocumentStore,
 ): Observable<ReferringDocuments['internalReferences']> {
-  const referencesClause = '*[references($documentId)][0...100]{_id,_type}'
-  const totalClause = 'count(*[references($documentId)])'
+  // Documents now self reference themselves, within the _system.group field. We need to exclude them from the references query.
+  const referencesQuery = `*[references($documentId) && _system.group._ref != $documentId]`
+  const referencesClause = `${referencesQuery}[0...100]{_id,_type}`
+  const totalClause = `count(${referencesQuery})`
   const fetchQuery = `{"references":${referencesClause},"totalCount":${totalClause}}`
-  const listenQuery = '*[references($documentId)]'
+  const listenQuery = referencesQuery
 
   return documentStore.listenQuery(
     {fetch: fetchQuery, listen: listenQuery},

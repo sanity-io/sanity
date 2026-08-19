@@ -1,6 +1,6 @@
 import {type StackablePerspective} from '@sanity/client'
 import {Card, Flex} from '@sanity/ui'
-import {type MouseEvent, useCallback} from 'react'
+import {type MouseEvent, useCallback, useDeferredValue} from 'react'
 import {styled} from 'styled-components'
 
 import {CommandList} from '../../../../../../components/commandList/CommandList'
@@ -32,6 +32,10 @@ interface SearchResultsProps {
   inputElement: HTMLInputElement | null
   onItemSelect?: ItemSelectHandler
   previewPerspective?: StackablePerspective[]
+  /**
+   * The variant the result previews are resolved in, as a bare variant id.
+   */
+  previewVariant?: string
 }
 
 export function SearchResults({
@@ -39,6 +43,7 @@ export function SearchResults({
   inputElement,
   onItemSelect,
   previewPerspective,
+  previewVariant,
 }: SearchResultsProps) {
   const {
     dispatch,
@@ -49,8 +54,13 @@ export function SearchResults({
   const {t} = useTranslation()
   const recentSearchesStore = useRecentSearchesStore()
 
-  const hasSearchResults = !!result.hits.length
-  const hasNoSearchResults = !result.hits.length && result.loaded
+  // deferral only pays off because CommandList is memo()'d, so the urgent render skips the heavy row subtree
+  const deferredHits = useDeferredValue(result.hits)
+  const isPending = deferredHits !== result.hits
+
+  // requiring result.hits too hides the stale list the instant an empty result settles
+  const hasSearchResults = deferredHits.length > 0 && result.hits.length > 0
+  const hasNoSearchResults = result.hits.length === 0 && result.loaded
   const hasError = result.error
 
   /**
@@ -84,13 +94,21 @@ export function SearchResults({
             onClick={handleSearchResultClick}
             onItemSelect={onItemSelect}
             previewPerspective={previewPerspective}
+            previewVariant={previewVariant}
             paddingY={1}
           />
           {debug && <DebugOverlay data={item} />}
         </>
       )
     },
-    [debug, disableIntentLink, handleSearchResultClick, onItemSelect, previewPerspective],
+    [
+      debug,
+      disableIntentLink,
+      handleSearchResultClick,
+      onItemSelect,
+      previewPerspective,
+      previewVariant,
+    ],
   )
 
   return (
@@ -106,7 +124,7 @@ export function SearchResults({
           {/* Results */}
           <SearchResultsInnerFlex
             $loadingFirstPage={result.loading && cursor === null}
-            aria-busy={result.loading}
+            aria-busy={result.loading || isPending}
             flex={1}
           >
             {hasError ? (
@@ -122,7 +140,7 @@ export function SearchResults({
                     initialIndex={lastActiveIndex}
                     inputElement={inputElement}
                     itemHeight={VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT}
-                    items={result.hits}
+                    items={deferredHits}
                     overscan={VIRTUAL_LIST_OVERSCAN}
                     onEndReached={handleEndReached}
                     paddingX={2}

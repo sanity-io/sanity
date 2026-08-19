@@ -1,4 +1,5 @@
-import {Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
 import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
@@ -330,8 +331,8 @@ export function ReferenceInput(props: ReferenceInputProps) {
   return (
     <div style={props.elementProps.style}>
       <ReferenceInputPreview {...props}>
-        <Stack space={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
-          <Stack space={2}>
+        <Stack gap={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
+          <Stack gap={2}>
             {isWeakRefToNonexistent ? (
               <Alert
                 data-testid="alert-nonexistent-document"

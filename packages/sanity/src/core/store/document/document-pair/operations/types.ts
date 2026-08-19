@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type SanityDocumentLike, type Schema} from '@sanity/types'
 
 import {type DocumentRevision, type HistoryStore} from '../../../history/createHistoryStore'
-import {type IdPair} from '../../types'
+import {type DocumentPairTarget, type IdPair} from '../../types'
 import {type DocumentVersionSnapshots} from '../snapshotPair'
 
 /** @public */
@@ -47,7 +47,10 @@ export interface OperationsAPI {
     | Operation<[], 'NO_CHANGES' | 'NOT_PUBLISHED' | 'TARGET_NOT_FOUND'>
     | GuardedOperation
   unpublish:
-    | Operation<[], 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED' | 'TARGET_NOT_FOUND'>
+    | Operation<
+        [],
+        'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED' | 'ALREADY_UNPUBLISHED' | 'TARGET_NOT_FOUND'
+      >
     | GuardedOperation
   duplicate:
     | Operation<
@@ -98,6 +101,12 @@ export interface OperationArgs {
   draft: DocumentVersionSnapshots
   published: DocumentVersionSnapshots
   version?: DocumentVersionSnapshots
+  /**
+   * The pair target as declared by the caller (see {@link DocumentPairTarget}). Only present when
+   * the caller passed a structured target; bare version-name strings and base-pair checkouts leave
+   * it unset. The self-derived missing-version guard reads `allowCreate` from it.
+   */
+  target?: DocumentPairTarget
   /**
    * @deprecated it's always true. Preserved to avoid breaking changes
    * Will be removed in the next major version.

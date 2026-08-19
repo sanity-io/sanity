@@ -41,6 +41,7 @@ beforeEach(() => {
   capturedMedia = undefined
   capturedMediaDimensions = undefined
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   vi.mocked(useClient).mockReturnValue({} as ReturnType<typeof useClient>)
   vi.mocked(createImageUrlBuilder).mockReturnValue({} as ReturnType<typeof createImageUrlBuilder>)
   vi.mocked(useImageUrl).mockReturnValue({

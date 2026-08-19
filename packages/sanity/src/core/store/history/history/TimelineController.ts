@@ -1,3 +1,4 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type SanityClient} from '@sanity/client'
 import {type Diff, type ObjectDiff} from '@sanity/diff'
 
@@ -11,6 +12,7 @@ import {type ParsedTimeRef, type Timeline} from './Timeline'
 const TRANSLOG_ENTRY_LIMIT = 50
 
 /**
+ * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
  * @hidden
  * @beta */
 export type TimelineControllerOptions = {
@@ -22,6 +24,7 @@ export type TimelineControllerOptions = {
 }
 
 /**
+ * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
  * @hidden
  * @beta */
 export type SelectionState = 'inactive' | 'rev' | 'range' | 'loading' | 'invalid'
@@ -31,6 +34,7 @@ export type SelectionState = 'inactive' | 'rev' | 'range' | 'loading' | 'invalid
  * about a document and maintaining a Timeline.
  *
  *
+ * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
  * @hidden
  * @beta
  */

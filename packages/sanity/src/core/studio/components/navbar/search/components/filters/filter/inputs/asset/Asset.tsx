@@ -3,10 +3,12 @@ import {ImageIcon} from '@sanity/icons/Image'
 import {SearchIcon} from '@sanity/icons/Search'
 import {UndoIcon} from '@sanity/icons/Undo'
 import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sanity/types'
-import {Box, Flex, Menu, Portal, Stack} from '@sanity/ui'
+import {Flex, Portal, Stack} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import get from 'lodash-es/get.js'
 import {useCallback, useEffect, useId, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../../../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../../../../../../../ui-components/menuButton/MenuButton'
@@ -48,6 +50,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
       state: {fullscreen},
     } = useSearchState()
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {file, image} = useSource().form
     const {t} = useTranslation()
 
@@ -118,7 +121,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
 
     return (
       <ContainerBox>
-        <Stack space={3}>
+        <Stack gap={3}>
           {/* Asset source component */}
           {selectedAssetSource && AssetSourceComponent && (
             <Portal>

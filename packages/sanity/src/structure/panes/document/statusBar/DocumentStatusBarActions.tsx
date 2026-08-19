@@ -49,6 +49,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   props: DocumentStatusBarActionsInnerProps,
 ) {
   const {disabled, states} = props
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {__internal_tasks, beta} = useSource()
 
   const {
@@ -198,8 +199,6 @@ function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
   const states = props.states.filter((state) =>
     state.action ? state.action !== useHistoryRestoreAction.action : true,
   )
-
-  if (states.length === 0) return null
 
   return (
     <DocumentStatusBarActionsInner

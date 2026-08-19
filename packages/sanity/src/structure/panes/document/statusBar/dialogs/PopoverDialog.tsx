@@ -1,9 +1,6 @@
-import {
-  Popover, // oxlint-disable-line no-restricted-imports
-  useClickOutsideEvent,
-  useGlobalKeyDown,
-  useLayer,
-} from '@sanity/ui'
+import {useClickOutsideEvent, useGlobalKeyDown, useLayer} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports
+import {Popover} from '@sanity/ui/popover'
 import {useCallback, useRef} from 'react'
 import {type DocumentActionPopoverDialogProps} from 'sanity'
 

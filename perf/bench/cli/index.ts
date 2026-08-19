@@ -15,6 +15,7 @@ import {run} from '@optique/run'
 import {resolveFromInvocation} from './benchRoot'
 import {certPathCommand, writeCertificateFile} from './commands/certPath'
 import {devCommand} from './commands/dev'
+import {prepareBackfill, prepareBackfillCommand} from './commands/prepareBackfill'
 import {prepareReference, prepareReferenceCommand} from './commands/prepareReference'
 import {reportCommand} from './commands/report'
 import {runCommand} from './commands/run'
@@ -29,6 +30,7 @@ const result = run(
     devCommand,
     scenariosCommand,
     prepareReferenceCommand,
+    prepareBackfillCommand,
     certPathCommand,
   ),
   {
@@ -59,7 +61,7 @@ switch (result.action) {
   case 'store':
     await (
       await import('../report/storeToSanity')
-    ).storeRun(result.file ? resolveFromInvocation(result.file) : undefined)
+    ).storeRun(result.file ? resolveFromInvocation(result.file) : undefined, {ab: result.ab})
     break
   case 'dev':
     await (await import('../runner/devServer')).startBenchDev()
@@ -69,6 +71,9 @@ switch (result.action) {
     break
   case 'prepare-reference':
     prepareReference(result)
+    break
+  case 'prepare-backfill':
+    prepareBackfill(result)
     break
   case 'cert-path':
     console.log(await writeCertificateFile())

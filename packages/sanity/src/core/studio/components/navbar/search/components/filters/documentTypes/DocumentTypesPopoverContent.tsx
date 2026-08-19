@@ -1,8 +1,10 @@
 import {type Schema, type SchemaType} from '@sanity/types'
-import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui/menu'
 import partition from 'lodash-es/partition.js'
 import {type ChangeEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {CommandList} from '../../../../../../../components/commandList/CommandList'
@@ -20,7 +22,8 @@ import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
 
 const ClearButtonBox = styled(Box)`
-  border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};
+  border-top: 1px solid
+    ${({theme}) => theme.sanity.color.base.border /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
   flex-shrink: 0;
 `
 

@@ -10,12 +10,14 @@ import {
   type ButtonProps,
   type ButtonTone,
   Flex,
-  Menu,
-  // oxlint-disable-next-line no-restricted-imports -- the `VersionModeHeader` component needs more control over how the `MenuItem` component is rendered
-  MenuItem,
   Stack,
   Text,
 } from '@sanity/ui'
+import {
+  Menu,
+  // oxlint-disable-next-line no-restricted-imports -- the `VersionModeHeader` component needs more control over how the `MenuItem` component is rendered
+  MenuItem,
+} from '@sanity/ui/menu'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {type ComponentType, useMemo} from 'react'
@@ -315,7 +317,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} release={release} />
-        <Stack flex={1} paddingY={2} paddingRight={2} space={2} style={{minWidth: 0}}>
+        <Stack flex={1} paddingY={2} paddingRight={2} gap={2} style={{minWidth: 0}}>
           <ReleaseTitle
             title={release.metadata.title}
             fallback={tCore('release.placeholder-untitled-release')}

@@ -2,8 +2,7 @@ import find from 'lodash-es/find.js'
 import {isRecord} from 'sanity'
 
 import {type ChildResolver, type ChildResolverOptions} from './ChildResolver'
-import {DividerBuilder} from './Divider'
-import {isDocumentListItem} from './DocumentListItem'
+import {type DividerBuilder} from './Divider'
 import {
   type BuildableGenericList,
   type GenericList,
@@ -12,10 +11,17 @@ import {
   shallowIntentChecker,
 } from './GenericList'
 import {type IntentChecker} from './Intent'
-import {type ListItem, ListItemBuilder} from './ListItem'
+import {type ListItem, type ListItemBuilder} from './ListItem'
 import {HELP_URL, SerializeError} from './SerializeError'
-import {type Divider, type SerializeOptions, type SerializePath} from './StructureNodes'
+import {
+  type Divider,
+  type Serializable,
+  type SerializeOptions,
+  type SerializePath,
+} from './StructureNodes'
 import {type StructureContext} from './types'
+import {isDocumentListItem} from './util/isDocumentListItem'
+import {isSerializable} from './util/isSerializable'
 
 const getArgType = (thing: ListItem) => {
   if (thing instanceof ListBuilder) {
@@ -61,12 +67,11 @@ function maybeSerializeListItem(
   index: number,
   path: SerializePath,
 ): ListItem | Divider {
-  if (item instanceof ListItemBuilder) {
-    return item.serialize({path, index})
-  }
-
-  if (item instanceof DividerBuilder) {
-    return item.serialize()
+  if (isSerializable<ListItem | Divider>(item)) {
+    // `DividerBuilder.serialize` takes no arguments, so the narrowed union cannot be called with
+    // options directly; the `Serializable` interface accepts them for every builder.
+    const serializable: Serializable<ListItem | Divider> = item
+    return serializable.serialize({path, index})
   }
 
   const listItem = item as ListItem
@@ -84,7 +89,7 @@ function maybeSerializeListItem(
     ).withHelpUrl(HELP_URL.INVALID_LIST_ITEM)
   }
 
-  return item
+  return listItem
 }
 
 function isPromise<T>(thing: unknown): thing is PromiseLike<T> {

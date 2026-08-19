@@ -1,7 +1,8 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Box, Button, Card, Flex, MenuButton, Menu, MenuItem, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {MenuButton, Menu, MenuItem} from '@sanity/ui/menu'
 import {useState} from 'react'
 
 import {idSlug, SNOOZE_DAYS} from './acks'
@@ -32,11 +33,7 @@ function DriftRow(props: {
   const worst = worstOf(entry)
   return (
     <Flex align="center" gap={2} wrap="wrap">
-      <Badge
-        tone={entry.direction === 'regression' ? 'critical' : 'positive'}
-        fontSize={0}
-        mode="outline"
-      >
+      <Badge tone={entry.direction === 'regression' ? 'critical' : 'positive'} fontSize={0}>
         {entry.direction === 'regression' ? '↑ regression' : '↓ improvement'}
       </Badge>
       {/* The metric name navigates to its chart (one pushed history entry, so
@@ -62,7 +59,7 @@ function DriftRow(props: {
           rel="noreferrer"
           aria-label={`${link.label} (opens in a new tab)`}
         >
-          <Badge fontSize={0} mode="outline" tone="primary">
+          <Badge fontSize={0} tone="primary">
             <Flex align="center" gap={1}>
               <LaunchIcon />
               {link.label}
@@ -132,7 +129,7 @@ export function DriftFeed(props: {
       padding={3}
       radius={2}
     >
-      <Stack space={expanded ? 3 : 0}>
+      <Stack gap={expanded ? 3 : 0}>
         {/* The whole header row is the expander */}
         <Button
           mode="bleed"
@@ -150,7 +147,7 @@ export function DriftFeed(props: {
         </Button>
 
         {expanded && active.length > 0 && (
-          <Stack space={2}>
+          <Stack gap={2}>
             {active.map((entry) => (
               <DriftRow
                 key={`${entry.seriesKey}:${entry.branch}`}
@@ -165,7 +162,7 @@ export function DriftFeed(props: {
           </Stack>
         )}
         {expanded && silenced.length > 0 && (
-          <Stack space={2}>
+          <Stack gap={2}>
             <Button
               mode="bleed"
               fontSize={1}

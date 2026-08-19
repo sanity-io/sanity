@@ -1,21 +1,24 @@
 import {CloseIcon} from '@sanity/icons/Close'
+import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {
   Badge,
   Box,
   Button,
   Flex,
-  Popover,
   Stack,
   Text,
   useClickOutsideEvent,
   useGlobalKeyDown,
 } from '@sanity/ui'
+import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
 
 import {formatValue, type TrendPoint, type TrendSeries} from './data'
-import {backlinksFor, sourceFileUrl} from './links'
+import {abDispatchCommand, backlinksFor, sourceFileUrl} from './links'
+
+const FULL_SHA = /^[0-9a-f]{40}$/i
 
 /**
  * Details for one run, shown in a popover anchored at the clicked point.
@@ -28,11 +31,21 @@ import {backlinksFor, sourceFileUrl} from './links'
 export function RunDetailPopover(props: {
   series: TrendSeries
   point: TrendPoint
+  /** Sha of the nearest earlier distinct commit on the same line, if any. */
+  previousSha?: string
   referenceElement: HTMLElement | null
   onClose: () => void
 }) {
-  const {series, point, referenceElement, onClose} = props
+  const {series, point, previousSha, referenceElement, onClose} = props
   const [contentEl, setContentEl] = useState<HTMLDivElement | null>(null)
+  const [abCopyState, setAbCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
+  // The bench workflow's ab_from/ab_to inputs require full shas, and GitHub
+  // has no URL that prefills a workflow_dispatch form — so the affordance is
+  // a copyable command, previous point as reference, this point as experiment
+  const abCommand =
+    previousSha && FULL_SHA.test(previousSha) && FULL_SHA.test(point.sha)
+      ? abDispatchCommand(previousSha, point.sha)
+      : undefined
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const documentLink = useIntentLink({
     intent: 'edit',
@@ -77,7 +90,7 @@ export function RunDetailPopover(props: {
       referenceElement={referenceElement}
       content={
         <Box ref={setContentEl} padding={4} style={{width: 288, maxWidth: '92vw'}}>
-          <Stack space={4}>
+          <Stack gap={4}>
             {/* Header: series title as a quiet eyebrow, close button aligned */}
             <Flex align="flex-start" gap={3}>
               <Box flex={1} paddingTop={1}>
@@ -98,8 +111,8 @@ export function RunDetailPopover(props: {
 
             {/* The value is the headline; the when-line sits beneath it, and
                 the percentiles read as a labelled stat row rather than a run-on */}
-            <Stack space={3}>
-              <Stack space={2}>
+            <Stack gap={3}>
+              <Stack gap={2}>
                 <Text size={4} weight="semibold">
                   {formatValue(point.value, series.unit)}
                 </Text>
@@ -109,13 +122,13 @@ export function RunDetailPopover(props: {
               </Stack>
               {(point.p75 !== undefined || point.p90 !== undefined) && (
                 <Flex gap={4}>
-                  <Stack space={2}>
+                  <Stack gap={2}>
                     <Text size={0} muted>
                       p75
                     </Text>
                     <Text size={1}>{formatValue(point.p75 ?? point.value, series.unit)}</Text>
                   </Stack>
-                  <Stack space={2}>
+                  <Stack gap={2}>
                     <Text size={0} muted>
                       p90
                     </Text>
@@ -126,7 +139,7 @@ export function RunDetailPopover(props: {
             </Stack>
 
             {(backlinks.length > 0 || scenarioHref) && (
-              <Stack space={2}>
+              <Stack gap={2}>
                 <Text size={0} muted weight="medium">
                   Links
                 </Text>
@@ -162,10 +175,41 @@ export function RunDetailPopover(props: {
               </Stack>
             )}
 
+            {abCommand && (
+              <Stack gap={2}>
+                <Text size={0} muted weight="medium">
+                  Suspect a change at this point?
+                </Text>
+                <Button
+                  mode="ghost"
+                  fontSize={1}
+                  icon={CopyIcon}
+                  text={
+                    abCopyState === 'copied'
+                      ? 'Copied — paste in a terminal'
+                      : abCopyState === 'failed'
+                        ? 'Copy failed — command in tooltip'
+                        : 'Copy A/B vs previous run'
+                  }
+                  title={abCommand}
+                  aria-label="Copy the gh command dispatching an A/B bench comparison of this commit against the previous point's commit"
+                  onClick={() => {
+                    // Only claim success on success: clipboard access can be
+                    // denied (permissions, non-secure context) and the title
+                    // attribute is the manual fallback either way
+                    navigator.clipboard.writeText(abCommand).then(
+                      () => setAbCopyState('copied'),
+                      () => setAbCopyState('failed'),
+                    )
+                  }}
+                />
+              </Stack>
+            )}
+
             {/* Divider before the footer action so it reads as a distinct row */}
             <Box style={{borderTop: '1px solid var(--card-border-color)'}} paddingTop={3}>
               <Flex align="center" justify="space-between" gap={2}>
-                <Badge tone="default" fontSize={0} mode="outline">
+                <Badge tone="default" fontSize={0}>
                   benchRun
                 </Badge>
                 <Button

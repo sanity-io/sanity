@@ -15,7 +15,7 @@ function createMockDocumentPreviewStore() {
   const calls: Array<{
     document: {_id: string}
     schemaType: SchemaType
-    options: {perspective?: unknown; viewOptions?: PrepareViewOptions}
+    options: {perspective?: unknown; variant?: string; viewOptions?: PrepareViewOptions}
   }> = []
 
   return {
@@ -24,7 +24,7 @@ function createMockDocumentPreviewStore() {
       (
         document: {_id: string},
         schemaType: SchemaType,
-        options: {perspective?: unknown; viewOptions?: PrepareViewOptions},
+        options: {perspective?: unknown; variant?: string; viewOptions?: PrepareViewOptions},
       ) => {
         calls.push({document, schemaType, options})
         // Return a minimal observable that emits once
@@ -141,6 +141,40 @@ describe('getPreviewStateObservable', () => {
       expect(passedOrdering?.by).toHaveLength(2)
       expect(passedOrdering?.by[0]).toEqual({field: 'category', direction: 'asc'})
       expect(passedOrdering?.by[1]).toEqual({field: '_createdAt', direction: 'desc'})
+    })
+  })
+
+  describe('variant threading', () => {
+    it('passes the variant to both the perspective and the fallback snapshot', () => {
+      const store = createMockDocumentPreviewStore()
+
+      getPreviewStateObservable(
+        store as any,
+        mockSchemaType,
+        'article-123',
+        ['drafts'],
+        undefined,
+        'alpha-audience',
+      )
+
+      expect(store.calls[0].options).toMatchObject({
+        perspective: ['drafts'],
+        variant: 'alpha-audience',
+      })
+      // The fallback snapshot pins its own perspective, but must stay within the variant
+      expect(store.calls[1].options).toMatchObject({
+        perspective: ['drafts'],
+        variant: 'alpha-audience',
+      })
+    })
+
+    it('does not pass a variant when none is given', () => {
+      const store = createMockDocumentPreviewStore()
+
+      getPreviewStateObservable(store as any, mockSchemaType, 'article-123', ['drafts'])
+
+      expect(store.calls[0].options.variant).toBeUndefined()
+      expect(store.calls[1].options.variant).toBeUndefined()
     })
   })
 })

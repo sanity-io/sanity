@@ -1,36 +1,20 @@
+import {getProviderTitle} from '@sanity/access-ui'
 /* oxlint-disable i18next/no-literal-string */
-import {type CurrentUser} from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback} from 'react'
+import {useObservable} from 'react-rx'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
-import {getProviderTitle} from '../../store/authStore/providerTitle'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 
 export function NotAuthenticatedScreen() {
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
-  const [error, handleError] = useState<unknown>(null)
-
-  if (error) throw error
-
   const {activeWorkspace} = useActiveWorkspace()
 
   const handleLogout = useCallback(() => {
     void activeWorkspace.auth.logout?.()
   }, [activeWorkspace])
 
-  useEffect(() => {
-    const subscription = activeWorkspace.auth.state.subscribe({
-      next: ({currentUser: user}) => {
-        setCurrentUser(user)
-      },
-      error: handleError,
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [activeWorkspace])
+  const currentUser = useObservable(activeWorkspace.auth.state, null)?.currentUser
 
   const providerTitle = getProviderTitle(currentUser?.provider)
   const providerHelp = providerTitle ? ` through ${providerTitle}` : ''
@@ -49,7 +33,7 @@ export function NotAuthenticatedScreen() {
           },
         }}
       >
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text>
             You are not authorized to access this studio. Please contact someone with access to
             invite you to this project.

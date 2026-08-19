@@ -1,8 +1,10 @@
 import {type StackablePerspective} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
-import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
-import {type MouseEvent, useCallback, useEffect, useMemo, useState} from 'react'
+import {type MouseEvent, useCallback, useMemo} from 'react'
+import {useSyncObservable} from 'react-rx'
+import {of} from 'rxjs'
 import {useIntentLink} from 'sanity/router'
+import {Box, type MarginProps, type PaddingProps} from 'ui5'
 
 import {Tooltip} from '../../../../../../../../ui-components/tooltip/Tooltip'
 import {PreviewCard} from '../../../../../../../components/previewCard/PreviewCard'
@@ -11,7 +13,6 @@ import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useValuePreview} from '../../../../../../../preview/useValuePreview'
 import {useGrantsStore} from '../../../../../../../store/datastores'
-import {type PermissionCheckResult} from '../../../../../../../store/grants/types'
 import {useDocumentPresence} from '../../../../../../../store/presence/useDocumentPresence'
 import {getPublishedId} from '../../../../../../../util/draftUtils'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -19,7 +20,7 @@ import {SearchResultItemPreview} from './SearchResultItemPreview'
 
 export type ItemSelectHandler = (item: Pick<SanityDocumentLike, '_id' | '_type' | 'title'>) => void
 
-interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
+interface SearchResultItemProps extends MarginProps, PaddingProps {
   disableIntentLink?: boolean
   documentId: string
   documentType: string
@@ -27,6 +28,10 @@ interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePadding
   onClick?: (e: MouseEvent<HTMLElement>) => void
   onItemSelect?: ItemSelectHandler
   previewPerspective?: StackablePerspective[]
+  /**
+   * The variant the result previews are resolved in, as a bare variant id.
+   */
+  previewVariant?: string
 }
 
 export function SearchResultItem({
@@ -37,6 +42,7 @@ export function SearchResultItem({
   onClick,
   onItemSelect,
   previewPerspective,
+  previewVariant,
   ...rest
 }: SearchResultItemProps) {
   const schema = useSchema()
@@ -54,18 +60,20 @@ export function SearchResultItem({
   const {state} = useSearchState()
   const {t} = useTranslation()
   const grantsStore = useGrantsStore()
-  const [createPermission, setCreatePermission] = useState<PermissionCheckResult | null>(null)
-  const hasCreatePermission = createPermission?.granted
 
-  useEffect(() => {
-    if (state.canDisableAction) {
-      const subscription = grantsStore
-        .checkDocumentPermission('create', {_id: documentId, _type: documentType})
-        .subscribe(setCreatePermission)
-      return () => subscription.unsubscribe()
-    }
-    return undefined
-  }, [documentId, documentType, grantsStore, state.canDisableAction])
+  const createPermission$ = useMemo(
+    () =>
+      state.canDisableAction
+        ? grantsStore.checkDocumentPermission('create', {_id: documentId, _type: documentType})
+        : of(null),
+    [documentId, documentType, grantsStore, state.canDisableAction],
+  )
+  // Kept synchronous: this gates `disabledAction` together with the live
+  // `documentId` release-membership check, so a deferred snapshot on a
+  // recycled row could leave the new document actionable with the previous
+  // row's granted permission.
+  const createPermission = useSyncObservable(createPermission$, null)
+  const hasCreatePermission = createPermission?.granted
 
   // the current search result exists in the release provided by the search provider
   const existsInRelease = state.disabledDocumentIds?.some((id) =>
@@ -82,6 +90,8 @@ export function SearchResultItem({
     enabled: true,
     schemaType: type,
     value: documentStub,
+    perspectiveStack: previewPerspective,
+    variant: previewVariant,
   })
 
   const handleClick = useCallback(
@@ -117,6 +127,7 @@ export function SearchResultItem({
           documentType={documentType}
           layout={layout}
           perspective={previewPerspective}
+          variant={previewVariant}
           presence={documentPresence}
           schemaType={type}
         />

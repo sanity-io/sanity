@@ -1,5 +1,5 @@
 import {FeedbackIcon} from '@sanity/icons/Feedback'
-import {MenuDivider} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui/menu'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'

@@ -4,7 +4,7 @@ import {
   type Path,
   type SchemaType,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import noop from 'lodash-es/noop.js'
 import {
   type FocusEvent,
@@ -348,7 +348,9 @@ export function ArrayOfObjectsField(props: {
 
   const formBuilder = useFormBuilder()
 
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const supportsImageUploads = formBuilder.__internal.image.directUploads
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const supportsFileUploads = formBuilder.__internal.file.directUploads
 
   const resolveUploader = useCallback(

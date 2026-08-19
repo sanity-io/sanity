@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "6.7.0",
+  "version": "6.10.1",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "cms",
@@ -60,6 +60,7 @@
     "@vitejs/plugin-react": "catalog:",
     "react": "catalog:",
     "tsdown": "catalog:",
+    "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
@@ -69,5 +70,8 @@
   "browserslist": [
     "node >=22.12",
     "baseline 2024"
-  ]
+  ],
+  "engines": {
+    "node": ">=22.12"
+  }
 }

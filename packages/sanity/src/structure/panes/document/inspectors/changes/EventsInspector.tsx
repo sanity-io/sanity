@@ -2,7 +2,7 @@ import {diffInput, wrap} from '@sanity/diff'
 import {BoundaryElementProvider, Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type ReactElement, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {
   ChangeFieldWrapper,
   ChangeList,
@@ -98,9 +98,9 @@ const CompareWithPublishedView = () => {
     return null
   }
   return (
-    <Stack space={2} marginBottom={3}>
+    <Stack gap={2} marginBottom={3}>
       <Card borderBottom paddingBottom={3}>
-        <Stack space={3} paddingTop={1}>
+        <Stack gap={3} paddingTop={1}>
           <Text size={1} weight="medium">
             {t('events.compare-with-published.title')}
           </Text>
@@ -143,11 +143,15 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
 
   const isComparingCurrent = !revision?.revisionId
   const changesList$ = useMemo(() => getChangesList(), [getChangesList])
+  // Kept synchronous: the diff must stay coherent with the synchronous
+  // `events` / `revision` / `sinceRevision` values it is derived from, and it
+  // feeds `undoChange` revert patches — a stale deferred diff could build
+  // revert writes against outdated document state.
   const {
     diff,
     loading: diffLoading,
     error: diffError,
-  } = useObservable(changesList$, DIFF_INITIAL_VALUE)
+  } = useSyncObservable(changesList$, DIFF_INITIAL_VALUE)
 
   const {t} = useTranslation('studio')
 
@@ -189,7 +193,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   if (!events.length) {
     return (
       <Box paddingX={2}>
-        <Stack padding={3} space={3}>
+        <Stack padding={3} gap={3}>
           <Text size={1} weight="medium">
             {t('timeline.error.no-document-history-title')}
           </Text>
@@ -321,7 +325,7 @@ function SameRevisionSelected() {
       initial={{opacity: 0}}
       transition={{delay: 0.2, duration: 0.2}}
     >
-      <Stack space={3} paddingTop={2}>
+      <Stack gap={3} paddingTop={2}>
         <Text size={1} weight="medium" as="h3">
           {t('changes.same-revision-selected-title')}
         </Text>

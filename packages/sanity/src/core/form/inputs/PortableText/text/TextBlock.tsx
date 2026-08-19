@@ -1,8 +1,9 @@
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
+import {Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
+import {Box, type PaddingProps} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
@@ -41,7 +42,7 @@ import {
   BlockActionsOuter,
   ChangeIndicatorWrapper,
   ListPrefixWrapper,
-  TextBlockFlexWrapper,
+  TextBlockWrapper,
   TextFlex,
   TextRoot,
   TooltipBox,
@@ -62,7 +63,9 @@ export interface TextBlockProps {
   referenceBoundary: HTMLElement | null
   renderAnnotation?: RenderAnnotationCallback
   renderBlock?: RenderBlockCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderBlockActions?: RenderBlockActionsCallback
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   renderCustomMarkers?: RenderCustomMarkers
   renderField: RenderFieldCallback
   renderInlineBlock?: RenderBlockCallback
@@ -109,10 +112,12 @@ export function TextBlock(props: TextBlockProps) {
   } = props
   // A path deeper than the root array means the block is nested in a container.
   const nested = relativePath.length > 1
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {Markers} = useFormBuilder().__internal.components
   const markers = usePortableTextMarkers(path)
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const {onChange} = useFormCallbacks()
@@ -169,7 +174,9 @@ export function TextBlock(props: TextBlockProps) {
       focus: point,
       anchor: point,
     }
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     PortableTextEditor.focus(editor)
   }, [path, editor])
 
@@ -215,7 +222,7 @@ export function TextBlock(props: TextBlockProps) {
     return {paddingX: 3}
   }, [isFullscreen, renderBlockActions, nested])
 
-  const outerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+  const outerPaddingProps: PaddingProps = useMemo(() => {
     if (value.listItem) {
       return {paddingY: 2}
     }
@@ -326,10 +333,10 @@ export function TextBlock(props: TextBlockProps) {
       ref={setRef}
       style={debugRender()}
     >
-      <TextBlockFlexWrapper data-testid="text-block__wrapper">
+      <TextBlockWrapper data-testid="text-block__wrapper">
         <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
           <Flex flex={1} {...innerPaddingProps}>
-            <Box flex={1} style={{anchorName: anchorIdent}}>
+            <Box flexBasis="0%" flexGrow={1} style={{anchorName: anchorIdent}}>
               <Tooltip
                 content={toolTipContent}
                 disabled={!tooltipEnabled}
@@ -384,7 +391,7 @@ export function TextBlock(props: TextBlockProps) {
             )}
           </Flex>
         </FormNodeDivergenceDetail>
-      </TextBlockFlexWrapper>
+      </TextBlockWrapper>
     </Box>
   )
 }

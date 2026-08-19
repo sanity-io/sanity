@@ -8,6 +8,7 @@ const CURRENT_USER: CurrentUser = {
   email: '',
   id: '',
   name: '',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   role: '',
   roles: [],
   profileImage: '',

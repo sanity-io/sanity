@@ -1,7 +1,7 @@
 import {RevertIcon} from '@sanity/icons/Revert'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
 
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
@@ -96,6 +96,9 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
             documentVersionId={version._id}
             documentType={type}
             onClose={() => setDialogOpen(false)}
+            // In the document pane `DocumentOperationResults` already toasts the unpublish
+            // operation events this dialog would report.
+            showCompletionToasts={false}
           />
         ),
       },

@@ -1,16 +1,16 @@
 import {ResetIcon} from '@sanity/icons/Reset'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import capitalize from 'lodash-es/capitalize.js'
 import {
   type ChangeEvent,
   type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
   useCallback,
   useId,
   useMemo,
+  type RefAttributes,
 } from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
@@ -132,7 +132,7 @@ export function SelectInput(props: StringInputProps) {
   )
 }
 
-const RadioSelect = forwardRef(function RadioSelect(
+function RadioSelect(
   props: {
     items: TitledListValue<string | number>[]
     value?: TitledListValue<string | number>
@@ -143,11 +143,9 @@ const RadioSelect = forwardRef(function RadioSelect(
     customValidity?: string
     inputId?: string
     tone?: CardTone
-  },
-
-  ref: ForwardedRef<HTMLInputElement>,
+  } & RefAttributes<HTMLInputElement>,
 ) {
-  const {items, value, onChange, onFocus, readOnly, customValidity, direction, inputId, tone} =
+  const {ref, items, value, onChange, onFocus, readOnly, customValidity, direction, inputId, tone} =
     props
   const {t} = useTranslation()
 
@@ -162,7 +160,7 @@ const RadioSelect = forwardRef(function RadioSelect(
   return (
     <Card border paddingY={2} paddingX={3} radius={2} tone={tone}>
       <Flex align={isHorizontal ? 'center' : 'flex-end'} gap={3} justify="space-between">
-        <Layout space={3} role="group" paddingY={1}>
+        <Layout gap={3} role="group" paddingY={1}>
           {items.map((item, index) => (
             <RadioSelectItem
               // oxlint-disable-next-line no-array-index-key
@@ -189,9 +187,9 @@ const RadioSelect = forwardRef(function RadioSelect(
       </Flex>
     </Card>
   )
-})
+}
 
-const RadioSelectItem = forwardRef(function RadioSelectItem(
+function RadioSelectItem(
   props: {
     customValidity?: string
     inputId?: string
@@ -200,11 +198,9 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
     onFocus: (event: FocusEvent<HTMLElement>) => void
     readOnly?: boolean
     value?: TitledListValue<string | number>
-  },
-
-  ref: ForwardedRef<HTMLInputElement>,
+  } & RefAttributes<HTMLInputElement>,
 ) {
-  const {customValidity, inputId, item, onChange, onFocus, readOnly, value} = props
+  const {ref, customValidity, inputId, item, onChange, onFocus, readOnly, value} = props
 
   const handleChange = useCallback(() => {
     onChange(item)
@@ -229,4 +225,4 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
       </Box>
     </Flex>
   )
-})
+}

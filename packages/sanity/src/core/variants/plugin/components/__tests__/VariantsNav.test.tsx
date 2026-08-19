@@ -1,6 +1,6 @@
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {forwardRef, type HTMLProps} from 'react'
+import {type HTMLProps} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
@@ -16,6 +16,7 @@ const mockNavigate = vi.fn()
 
 const routerMock = vi.hoisted(() => ({
   stickyParams: {} as Record<string, string | undefined>,
+  tool: undefined as string | undefined,
 }))
 
 const variantsMock = vi.hoisted(() => ({
@@ -37,18 +38,32 @@ vi.mock('sanity/router', async (importOriginal) => ({
       return '/'
     }),
   })),
-  IntentLink: forwardRef(function MockIntentLink(
-    {
-      intent,
-      params,
-      ...rest
-    }: {intent?: string; params?: {id?: string}} & HTMLProps<HTMLAnchorElement>,
-    ref,
-  ) {
-    const href = intent === VARIANTS_INTENT && params?.id ? `/variants/${params.id}` : '/'
-    // @ts-expect-error -- pre-existing, fix later
-    return <a {...rest} ref={ref} href={href} />
+  useRouterState: vi.fn((selector?: (state: {tool?: string}) => unknown) => {
+    const state = {tool: routerMock.tool}
+    return selector ? selector(state) : state
   }),
+  IntentLink: function MockIntentLink({
+    ref,
+    intent,
+    params,
+    ...rest
+  }: {intent?: string; params?: {id?: string}} & HTMLProps<HTMLAnchorElement>) {
+    const href = intent === VARIANTS_INTENT && params?.id ? `/variants/${params.id}` : '/'
+    return <a {...rest} ref={ref} href={href} />
+  },
+  StateLink: function MockStateLink({
+    ref,
+    state,
+    children,
+    ...rest
+  }: {state?: {tool?: string}} & HTMLProps<HTMLAnchorElement>) {
+    const href = state?.tool === 'variants' ? '/variants' : '/'
+    return (
+      <a {...rest} ref={ref} href={href}>
+        {children}
+      </a>
+    )
+  },
 }))
 
 vi.mock('../../../store/useAllVariants', () => ({
@@ -64,6 +79,7 @@ describe('VariantsNav', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     routerMock.stickyParams = {}
+    routerMock.tool = undefined
     variantsMock.data = [variantAlphaAudience, variantNorwegianMarket]
     variantsMock.byId = new Map([
       [variantAlphaAudience._id, variantAlphaAudience],
@@ -96,6 +112,23 @@ describe('VariantsNav', () => {
 
     expect(screen.getByTestId('variants-nav-label')).toHaveTextContent('All users (Default)')
     expect(screen.queryByTestId('variants-nav-label-link')).not.toBeInTheDocument()
+  })
+
+  it('links to the variants tool and is not selected outside that tool', async () => {
+    await renderNav()
+
+    const toolLink = screen.getByTestId('variants-tool-link')
+    expect(toolLink).toHaveAttribute('href', '/variants')
+    expect(toolLink).not.toHaveAttribute('data-selected')
+    expect(toolLink.querySelector('[data-sanity-icon="rhombus-outlined"]')).toBeInTheDocument()
+  })
+
+  it('shows the variants tool link as selected when that tool is active', async () => {
+    routerMock.tool = 'variants'
+
+    await renderNav()
+
+    expect(screen.getByTestId('variants-tool-link')).toHaveAttribute('data-selected')
   })
 
   it('shows default label until the selected variant is resolved', async () => {
@@ -140,6 +173,9 @@ describe('VariantsNav', () => {
     const user = await openMenu()
 
     expect(screen.getByTestId('variants-nav-label-link')).toHaveTextContent('Alpha audience')
+    expect(
+      screen.getByTestId('variants-tool-link').querySelector('[data-sanity-icon="rhombus"]'),
+    ).toBeInTheDocument()
 
     const defaultItem = screen.getByTestId('variant-default')
     expect(defaultItem).not.toHaveAttribute('data-selected')

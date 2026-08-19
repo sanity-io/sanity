@@ -1,7 +1,8 @@
 import {type ArraySchemaType, isKeyedObject} from '@sanity/types'
-import {Box, Card, Checkbox, Flex, Grid} from '@sanity/ui'
+import {Card, Checkbox, Flex, Grid} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {useCallback, useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {IncompatibleItemType} from '../../../members/array/IncompatibleItemType'
@@ -109,7 +110,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
       <Grid
         gap={2}
-        columns={isGrid ? Math.min(options.length, 4) : 1}
+        gridTemplateColumns={isGrid ? Math.min(options.length, 4) : 1}
         tabIndex={0}
         {...elementProps}
       >
@@ -128,7 +129,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
                 onFocus={() => handleItemFocus(index)}
                 readOnly={readOnly}
               />
-              <Box flex={1} marginLeft={2}>
+              <Box flexBasis="0%" flexGrow={1} marginLeft={2}>
                 {optionType ? (
                   renderPreview({
                     layout: 'default',

@@ -52,6 +52,7 @@ import {
 import {createBroadcastState} from './createBroadcastState'
 import {createBroadcastStorage} from './createBroadcastStorage'
 import {createLoginComponent} from './createLoginComponent'
+import {consumeHashClaim} from './hashClaim'
 import {consumeHashToken as defaultConsumeHashToken} from './hashToken'
 import {clearHashSessionId, getHashSessionId as defaultGetSessionId} from './sessionId'
 import {
@@ -60,6 +61,7 @@ import {
   type AuthStore,
   type HandleCallbackResult,
 } from './types'
+import {recordHashClaimUrl} from './unclaimedProjectStorage'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
 import {
   observeWorkbenchToken as defaultObserveWorkbenchToken,
@@ -147,6 +149,12 @@ export interface RequestFailureDiagnostics {
   ) => void
 }
 
+function withoutRequestHandler(client: SanityClient): SanityClient {
+  return typeof client.withConfig === 'function'
+    ? client.withConfig({requestHandler: undefined})
+    : client
+}
+
 const getCurrentUser = async (
   client: SanityClient,
   tag: string,
@@ -163,14 +171,11 @@ const getCurrentUser = async (
   //
   // Guarded for custom `unstable_clientFactory` clients that may not implement
   // `withConfig` — those don't carry the middleware anyway.
-  const probeClient =
-    typeof client.withConfig === 'function'
-      ? client.withConfig({_requestHandler: undefined})
-      : client
+  const probeClient = withoutRequestHandler(client)
   const fetchUser = () =>
     probeClient
       .request({
-        uri: '/users/me',
+        url: '/users/me',
         tag: `users.get-current${tag ? `.${tag}` : ''}`,
       })
       .catch(async (err) => {
@@ -236,21 +241,18 @@ const getCurrentUser = async (
  * Probe whether a given auth method works by calling /auth/id.
  */
 const probeCurrentUser = (client: SanityClient): Promise<AuthProbeResult> => {
-  // Strip the studio's request handler: it parks any 401 (returns a
-  // never-settling observable) so the studio can show the login screen. But
+  // Strip the studio's request handler: it parks any invalid-session 401 so
+  // the studio can show the login screen. But
   // this probe IS an auth-state check and handles its own 401 below — if the
   // middleware parked it, the probe would never settle, and the post-login
   // callback (`processCallback`) that awaits it would hang, leaving the studio
   // stuck instead of transitioning to authenticated. The 401 must reach the
   // `.catch` here. Guarded for custom clients that may not implement
   // `withConfig` (those don't carry the middleware anyway).
-  const probeClient =
-    typeof client.withConfig === 'function'
-      ? client.withConfig({_requestHandler: undefined})
-      : client
+  const probeClient = withoutRequestHandler(client)
   return probeClient
     .request<{id: string; expiry: number}>({
-      uri: '/auth/id',
+      url: '/auth/id',
       tag: 'auth.check-id',
     })
     .then(
@@ -282,7 +284,7 @@ const probeCurrentUser = (client: SanityClient): Promise<AuthProbeResult> => {
 async function exchangeSessionForToken(client: SanityClient, sessionId: string): Promise<string> {
   const {token} = await client.request<{token: string}>({
     method: 'GET',
-    uri: `/auth/fetch`,
+    url: `/auth/fetch`,
     query: {sid: sessionId},
     tag: 'auth.fetch-token',
   })
@@ -320,6 +322,13 @@ export function _createAuthStore({
   // * if loginMethod == "cookie"
   //    1. HTTP cookie
 
+  // A `#claim=` fragment rides beside `#token=` (see hashClaim.ts) and is consumed at the same
+  // two lifecycle points, claim first, so both always land on the same project.
+  const consumeHashClaimUrl = () => {
+    const claimUrl = consumeHashClaim()
+    if (claimUrl) recordHashClaimUrl(projectId, claimUrl)
+  }
+
   const tokenStorage = createBroadcastStorage<{token?: string}>(
     getAuthTokenStorageKey(projectId),
     // sets the initial value
@@ -330,6 +339,7 @@ export function _createAuthStore({
         // store will log you out. Need to find a better way to deal with this
         // return undefined
       }
+      consumeHashClaimUrl()
       const hashToken = consumeHashToken()
       // use hash token if it exists, assume authenticated
       return hashToken ? {token: hashToken, authenticated: true} : currentTokenValue
@@ -464,6 +474,7 @@ export function _createAuthStore({
       ? EMPTY
       : fromEvent(window, 'hashchange').pipe(
           tap(() => {
+            consumeHashClaimUrl()
             const hashToken = consumeHashToken()
             if (hashToken) {
               tokenStorage.update({token: hashToken})
@@ -628,13 +639,11 @@ export function _createAuthStore({
                 getRequestFailureDiagnostics?.(),
               ),
             ).pipe(
-              map(
-                (currentUser): AuthState => ({
-                  client,
-                  authenticated: Boolean(currentUser?.id),
-                  currentUser: currentUser || null,
-                }),
-              ),
+              map((currentUser): AuthState => ({
+                client,
+                authenticated: Boolean(currentUser?.id),
+                currentUser: currentUser || null,
+              })),
             )
           }),
         )
@@ -950,8 +959,8 @@ export function _createAuthStore({
     // to this request succeeding would leave the studio frozen on a failed
     // logout instead of landing on the login screen.
     //
-    // The parking middleware must be stripped: it catches any 401 and returns
-    // a never-settling observable, so a forced logout reacting to a 401 (the
+    // The parking request handler must be stripped: it catches an
+    // invalid-session 401, so a forced logout reacting to a 401 (the
     // session is already gone) would hit an `/auth/logout` that also 401s, and
     // `Promise.allSettled` would never resolve — the exact freeze this branch
     // fixes for the `/users/me` probe. Guarded for custom clients that may not
@@ -959,11 +968,9 @@ export function _createAuthStore({
     //
     // Both clients are hit: even with loginMethod=token an auth cookie may
     // be set on the project api domain, so both must be destroyed.
-    const stripMiddleware = (c: SanityClient) =>
-      typeof c.withConfig === 'function' ? c.withConfig({_requestHandler: undefined}) : c
     await Promise.allSettled([
-      stripMiddleware(tokenClient).request({uri: '/auth/logout', method: 'POST'}),
-      stripMiddleware(cookieClient).request({uri: '/auth/logout', method: 'POST'}),
+      withoutRequestHandler(tokenClient).request({url: '/auth/logout', method: 'POST'}),
+      withoutRequestHandler(cookieClient).request({url: '/auth/logout', method: 'POST'}),
     ])
 
     // Clear local auth state regardless of the server call's outcome. This

@@ -1,6 +1,6 @@
 import {type CurrentUser} from '@sanity/types'
 import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
-import {forwardRef, memo, useMemo, useState} from 'react'
+import {memo, useMemo, useState, type RefAttributes} from 'react'
 
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {type CommentsSelectedPath} from '../../context/selected-path/types'
@@ -75,11 +75,9 @@ export interface CommentsListHandle {
   scrollToComment: (id: string) => void
 }
 
-const CommentsListInner = forwardRef(function CommentsListInner(
-  props: CommentsListProps,
-  ref: React.Ref<HTMLUListElement>,
-) {
+function CommentsListInner(props: CommentsListProps & RefAttributes<HTMLUListElement>) {
   const {
+    ref,
     beforeListNode,
     comments,
     currentUser,
@@ -134,7 +132,7 @@ const CommentsListInner = forwardRef(function CommentsListInner(
           paddingTop={1}
           paddingBottom={6}
           sizing="border"
-          space={1}
+          gap={1}
           ref={ref}
         >
           {beforeListNode}
@@ -225,7 +223,7 @@ const CommentsListInner = forwardRef(function CommentsListInner(
       )}
     </Flex>
   )
-})
+}
 
 /**
  * @beta

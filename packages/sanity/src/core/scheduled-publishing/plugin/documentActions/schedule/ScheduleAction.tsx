@@ -1,7 +1,8 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {ClockIcon} from '@sanity/icons/Clock'
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {Box} from 'ui5'
 
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
 import {
@@ -50,6 +51,7 @@ const debug = debugWithName('ScheduleAction')
  * @beta
  */
 export const useScheduleAction: DocumentActionComponent = (props: DocumentActionProps) => {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {draft, id, liveEdit, onComplete, published, type} = props
   const timeZoneScope = SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE
 
@@ -148,6 +150,7 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
         {hasExistingSchedules ? (
           <Schedules schedules={schedules} />
         ) : (
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           <EditScheduleForm onChange={onFormChange} value={formData}>
             <NewScheduleInfo id={id} schemaType={type} />
           </EditScheduleForm>
@@ -184,5 +187,7 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
   }
 }
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 useScheduleAction.action = 'schedule'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 useScheduleAction.displayName = 'ScheduleAction'

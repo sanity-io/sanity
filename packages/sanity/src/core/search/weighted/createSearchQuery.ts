@@ -108,8 +108,18 @@ export function createSearchQuery(
   searchTerms: SearchTerms<SchemaType | CrossDatasetType>,
   searchOpts: SearchOptions & SearchFactoryOptions = {},
 ): SearchQuery {
-  const {filter, params, tag, maxDepth, isCrossDataset, perspective, sort, limit, comments} =
-    searchOpts
+  const {
+    filter,
+    params,
+    tag,
+    maxDepth,
+    isCrossDataset,
+    perspective,
+    variant,
+    sort,
+    limit,
+    comments,
+  } = searchOpts
 
   const specs = searchTerms.types
     .map((schemaType) =>
@@ -190,6 +200,7 @@ export function createSearchQuery(
     options: {
       tag,
       perspective,
+      variant,
     },
     searchSpec: specs,
     terms,

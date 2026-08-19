@@ -161,6 +161,7 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
           title: item.title || template.title,
           i18n: item.i18n || template.i18n,
           icon: item.icon as InitialValueTemplateItem['icon'],
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
           description: template.description,
           parameters: templateParams,
           schemaType: template.schemaType,

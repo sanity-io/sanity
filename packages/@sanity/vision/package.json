@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "6.7.0",
+  "version": "6.10.1",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "admin",
@@ -28,6 +28,7 @@
     "lib"
   ],
   "type": "module",
+  "sideEffects": true,
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
@@ -70,7 +71,7 @@
     "@codemirror/language": "^6.12.4",
     "@codemirror/search": "^6.7.1",
     "@codemirror/state": "^6.7.1",
-    "@codemirror/view": "^6.43.6",
+    "@codemirror/view": "^6.43.7",
     "@lezer/highlight": "^1.2.3",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
@@ -87,8 +88,9 @@
     "json5": "^2.2.3",
     "lodash-es": "^4.18.1",
     "quick-lru": "^7.3.0",
-    "react-rx": "^4.2.3",
-    "rxjs": "^7.8.2"
+    "react-rx": "catalog:",
+    "rxjs": "^7.8.2",
+    "use-effect-event": "^2.0.3"
   },
   "devDependencies": {
     "@repo/package.bundle": "workspace:*",
@@ -109,6 +111,7 @@
     "sanity": "workspace:*",
     "styled-components": "catalog:",
     "tsdown": "catalog:",
+    "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
@@ -119,5 +122,8 @@
   "browserslist": [
     "node >=22.12",
     "baseline 2024"
-  ]
+  ],
+  "engines": {
+    "node": ">=22.12"
+  }
 }

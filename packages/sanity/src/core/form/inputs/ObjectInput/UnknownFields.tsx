@@ -5,8 +5,10 @@ import {
   isReference,
   isReferenceSchemaType,
 } from '@sanity/types'
-import {Box, Card, Code, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
@@ -82,7 +84,7 @@ export function UnknownFields(props: Props) {
           </Text>
         </Box>
 
-        <Stack as="ul" space={3}>
+        <Stack as="ul" gap={3}>
           {fieldNames.map((fieldName) => {
             return (
               <UnknownField

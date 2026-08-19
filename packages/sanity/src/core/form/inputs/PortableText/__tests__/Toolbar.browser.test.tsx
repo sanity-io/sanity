@@ -29,12 +29,18 @@ describe('Portable Text Input', () => {
 
         await $contextMenuButton.click()
 
-        // Assertion: Overflowing block link should appear in the "Add" menu button
+        // Assertion: Overflowing block link should appear in the "Add" menu button.
+        // Menus keep their items mounted while closed, so read the one that is open.
         await expect
-          .poll(
-            () =>
-              document.querySelector('[data-ui="MenuButton__popover"] [data-ui="Menu"]')
-                ?.textContent ?? '',
+          .poll(() =>
+            Array.from(
+              document.querySelectorAll<HTMLElement>(
+                '[data-ui="MenuButton__popover"] [data-ui="Menu"]',
+              ),
+            )
+              .filter((menu) => menu.checkVisibility())
+              .map((menu) => menu.textContent)
+              .join(''),
           )
           .toContain('Inline Object')
       })
@@ -144,7 +150,10 @@ describe('Portable Text Input', () => {
         expect(menuPopover).not.toBeNull()
       })
 
-      it('on a full screen multi nested PTE', async () => {
+      // Takes ~25s against the default 30s timeout on a healthy CI runner
+      // (firefox), so any runner slowdown pushed it over the limit. Give it
+      // explicit headroom instead.
+      it('on a full screen multi nested PTE', {timeout: 90_000}, async () => {
         const {getFocusedPortableTextInput} = testHelpers()
         void render(<ToolbarStory />)
         const $portableTextInput = await getFocusedPortableTextInput('field-body')

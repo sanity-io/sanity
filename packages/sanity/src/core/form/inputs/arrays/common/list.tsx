@@ -19,19 +19,19 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
-import {Box, type CardProps, Grid} from '@sanity/ui'
+import {Grid} from '@sanity/ui'
 import {
   type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
   memo,
   type ReactNode,
   useCallback,
   useMemo,
   useRef,
+  type RefAttributes,
 } from 'react'
 import {ArrayItemRootElementContext, SortableItemIdContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
+import {Box, type BoxProps} from 'ui5'
 
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
 
@@ -112,52 +112,50 @@ const SortableList = memo(function SortableList(props: ListProps) {
   )
 })
 
-const SortableListItem = forwardRef<HTMLDivElement, ItemProps>(
-  function SortableListItem(props, ref) {
-    const {id, children, disableTransition} = props
-    const {setNodeRef, transform, transition, active} = useSortable({
-      id,
-      transition: disableTransition ? null : TRANSITION,
-    })
+function SortableListItem(props: ItemProps & RefAttributes<HTMLDivElement>) {
+  const {ref, id, children, disableTransition} = props
+  const {setNodeRef, transform, transition, active} = useSortable({
+    id,
+    transition: disableTransition ? null : TRANSITION,
+  })
 
-    const isActive = id === active?.id
+  const isActive = id === active?.id
 
-    const style = useMemo(
-      () =>
-        ({
-          transform: CSS.Translate.toString(transform),
-          transition,
-          pointerEvents: active ? 'none' : undefined,
-        }) as const,
-      [transform, transition, active],
-    )
+  const style = useMemo(
+    () =>
+      ({
+        transform: CSS.Translate.toString(transform),
+        transition,
+        pointerEvents: active ? 'none' : undefined,
+      }) as const,
+    [transform, transition, active],
+  )
 
-    // This sets the ref on the component for both sorting and for virtualizer
-    const setRef = useCallback(
-      (node: HTMLDivElement | null) => {
-        setNodeRef(node)
-        if (typeof ref === 'function') {
-          ref(node)
-        } else if (ref) {
-          ref.current = node
-        }
-      },
-      [ref, setNodeRef],
-    )
+  // This sets the ref on the component for both sorting and for virtualizer
+  const setRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      setNodeRef(node)
+      if (typeof ref === 'function') {
+        ref(node)
+      } else if (ref) {
+        ref.current = node
+      }
+    },
+    [ref, setNodeRef],
+  )
 
-    return (
-      <ListItem
-        ref={setRef}
-        style={style}
-        $moving={isActive}
-        className={isActive ? MOVING_ITEM_CLASS_NAME : ''}
-        data-index={props['data-index']}
-      >
-        {children}
-      </ListItem>
-    )
-  },
-)
+  return (
+    <ListItem
+      ref={setRef}
+      style={style}
+      $moving={isActive}
+      className={isActive ? MOVING_ITEM_CLASS_NAME : ''}
+      data-index={props['data-index']}
+    >
+      {children}
+    </ListItem>
+  )
+}
 
 interface ListProps extends ComponentProps<typeof Grid> {
   sortable?: boolean
@@ -202,11 +200,8 @@ interface ItemProps {
   'data-index'?: number
 }
 
-export const Item = forwardRef(function Item(
-  props: ItemProps & CardProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
-  const {sortable, disableTransition, ...rest} = props
+export function Item(props: ItemProps & BoxProps & RefAttributes<HTMLDivElement>) {
+  const {ref, sortable, disableTransition, ...rest} = props
 
   // Tracks the item's root element so descendant inputs (e.g. reference inputs)
   // can treat clicks anywhere within the item as "inside" when handling outside
@@ -236,4 +231,4 @@ export const Item = forwardRef(function Item(
       </ArrayItemRootElementContext.Provider>
     </SortableItemIdContext.Provider>
   )
-})
+}

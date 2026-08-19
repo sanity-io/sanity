@@ -223,6 +223,7 @@ describe('Preview URL machine', () => {
           const url = new URL('https://example.com')
           url.searchParams.set('sanity-preview-perspective', studioPreviewPerspective)
           return url.toString()
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         }) as DeprecatedPreviewUrlResolver,
         'https://example.com/?sanity-preview-perspective=drafts',
       ],
@@ -265,6 +266,7 @@ describe('Preview URL machine', () => {
                   url.searchParams.set('sanity-preview-variant', studioPreviewVariant)
                 }
                 return url.toString()
+                // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
               }) as DeprecatedPreviewUrlResolver,
               perspective: 'drafts',
               variant: 'Ab12cd34',
@@ -714,7 +716,9 @@ describe('Preview URL machine', () => {
               previewUrlOption: {
                 initial: 'http://localhost:3000',
                 draftMode: {
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   enable: '/api/draft-mode/enable',
+                  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
                   shareAccess: false,
                 },
               },

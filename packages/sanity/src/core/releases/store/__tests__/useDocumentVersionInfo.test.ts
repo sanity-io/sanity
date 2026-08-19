@@ -72,6 +72,7 @@ describe('useDocumentVersionInfo', () => {
       loading: true,
     })
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {result} = renderHook(() => useDocumentVersionInfo(publishedId))
 
     expect(result.current).toEqual({
@@ -91,6 +92,7 @@ describe('useDocumentVersionInfo', () => {
       loading: false,
     })
 
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     const {result} = renderHook(() => useDocumentVersionInfo(`drafts.${publishedId}`))
 
     expect(result.current).toEqual({

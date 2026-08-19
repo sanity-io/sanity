@@ -2,12 +2,12 @@ import {Flex} from '@sanity/ui'
 import {
   Children,
   cloneElement,
-  type ForwardedRef,
-  forwardRef,
+  type CSSProperties,
   type ReactNode,
   useCallback,
   useMemo,
   useState,
+  type RefAttributes,
 } from 'react'
 import {styled} from 'styled-components'
 
@@ -44,23 +44,23 @@ interface CollapseTabListProps {
   onMenuClose?: () => void
   collapsed?: boolean
   disableRestoreFocusOnClose?: boolean
+  style?: CSSProperties
 }
 
 /**
  * Similar to `<CollapseMenu />` but instead of collapsing the inner items by removing the text
  * it shows the items that fit, and the rest are rendered in a menu.
  * @internal */
-export const CollapseTabList = forwardRef(function CollapseTabList(
-  props: CollapseTabListProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
+export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTMLDivElement>) {
   const {
+    ref,
     children: childrenProp,
     gap,
     menuButtonProps,
     disableRestoreFocusOnClose,
     onMenuClose,
     collapsed,
+    style,
     ...rest
   } = props
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
@@ -117,7 +117,13 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
   )
 
   return (
-    <Flex direction="column" ref={ref} sizing="border" style={{position: 'relative'}} {...rest}>
+    <Flex
+      direction="column"
+      ref={ref}
+      sizing="border"
+      {...rest}
+      style={{position: 'relative', minWidth: 0, ...style}}
+    >
       <Flex justify="center" gap={gap} flex={1}>
         {displayChildren}
         {(hiddenElements.length > 0 || collapsed) && (
@@ -153,4 +159,4 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
       </HiddenRow>
     </Flex>
   )
-})
+}

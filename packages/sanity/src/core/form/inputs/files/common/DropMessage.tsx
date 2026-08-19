@@ -1,8 +1,9 @@
 import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {UploadIcon} from '@sanity/icons/Upload'
 import {type SchemaType} from '@sanity/types'
-import {Box, Inline, Text} from '@sanity/ui'
+import {Inline, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {resolveUploadAssetSources} from '../../../studio/uploads/resolveUploadAssetSources'
@@ -34,7 +35,7 @@ export function DropMessage(props: Props) {
     <Sticky data-testid="upload-target-drop-message" paddingBottom={3} paddingTop={3}>
       {acceptedFiles.length > 0 ? (
         <>
-          <Inline space={2}>
+          <Inline gap={2}>
             <Text>
               <UploadIcon />
             </Text>
@@ -47,7 +48,7 @@ export function DropMessage(props: Props) {
           </Inline>
           {rejectedFilesCount > 0 && (
             <Box marginTop={4}>
-              <Inline space={2}>
+              <Inline gap={2}>
                 <Text muted size={1}>
                   <AccessDeniedIcon />
                 </Text>
@@ -61,7 +62,7 @@ export function DropMessage(props: Props) {
           )}
         </>
       ) : (
-        <Inline data-testid="upload-target-drop-message-not-allowed" space={2}>
+        <Inline data-testid="upload-target-drop-message-not-allowed" gap={2}>
           <Text>
             <AccessDeniedIcon />
           </Text>

@@ -1,8 +1,9 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {type SanityDocument} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {type SanityDocument, type SchemaType} from '@sanity/types'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
+import {Suspense, use, useCallback, useEffect, useMemo, useState} from 'react'
+import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {
   CommandList,
   type CommandListRenderItemCallback,
@@ -24,7 +25,7 @@ import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {AddIncomingReference} from './AddIncomingReference'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
-import {getIncomingReferences, INITIAL_STATE} from './getIncomingReferences'
+import {getIncomingReferences} from './getIncomingReferences'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
 import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from './shared'
 import {type IncomingReferencesOptions, type IncomingReferenceType} from './types'
@@ -52,6 +53,7 @@ export function IncomingReferencesType({
 }) {
   const documentPreviewStore = useDocumentPreviewStore()
   const {displayed} = useDocumentPane()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {getClient} = useSource()
   const displayedId = displayed?._id as string
   /**
@@ -81,11 +83,56 @@ export function IncomingReferencesType({
     [documentPreviewStore, type.type, memoizedFilter, memoizedFilterParams, displayedId, getClient],
   )
 
-  const {documents, loading} = useObservable(references$, INITIAL_STATE)
+  const referencesPromise = useObservablePromise(references$)
 
   const schema = useSchema()
   const {t} = useTranslation(structureLocaleNamespace)
   const schemaType = schema.get(type.type)
+
+  if (!schemaType) return null
+  return (
+    <Suspense
+      fallback={<LoadingBlock showText title={t('incoming-references-input.types-loading')} />}
+    >
+      <IncomingReferencesTypeList
+        actions={actions}
+        creationAllowed={creationAllowed}
+        fieldName={fieldName}
+        onLinkDocument={onLinkDocument}
+        referenced={referenced}
+        referencesPromise={referencesPromise}
+        schemaType={schemaType}
+        shouldRenderTitle={shouldRenderTitle}
+        type={type}
+      />
+    </Suspense>
+  )
+}
+
+function IncomingReferencesTypeList({
+  type,
+  referenced,
+  onLinkDocument,
+  actions,
+  shouldRenderTitle,
+  fieldName,
+  creationAllowed,
+  referencesPromise,
+  schemaType,
+}: {
+  shouldRenderTitle: boolean
+  referenced: {id: string; type: string}
+  fieldName: string
+  type: IncomingReferenceType
+  onLinkDocument: IncomingReferencesOptions['onLinkDocument']
+  actions: IncomingReferencesOptions['actions']
+  creationAllowed: IncomingReferencesOptions['creationAllowed']
+  referencesPromise: ObservablePromise<SanityDocument[]>
+  schemaType: SchemaType
+}) {
+  const documents = use(referencesPromise)
+
+  const {t} = useTranslation(structureLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const [isAdding, setIsAdding] = useState(false)
   const [newReferenceId, setNewReferenceId] = useState<string | null>(null)
@@ -172,12 +219,8 @@ export function IncomingReferencesType({
     [referenced.id, actions],
   )
 
-  if (!schemaType) return null
-  if (loading) {
-    return <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
-  }
   return (
-    <Stack space={2} marginBottom={2}>
+    <Stack gap={2} marginBottom={2}>
       {shouldRenderTitle && (
         <Box paddingY={2} paddingX={0}>
           <Text size={1} weight="medium">

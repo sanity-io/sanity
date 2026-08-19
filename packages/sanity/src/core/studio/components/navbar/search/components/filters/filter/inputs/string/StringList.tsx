@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {isTitledListValue, type StringOptions, type TitledListValue} from '@sanity/types'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import capitalize from 'lodash-es/capitalize.js'
 import uniq from 'lodash-es/uniq.js'
 import {useCallback, useId, useMemo} from 'react'
