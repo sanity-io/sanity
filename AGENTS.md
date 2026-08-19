@@ -381,6 +381,16 @@ Two traps when unit testing a component or hook that suspends on a promise with 
   catch as an unhandled error and fail the run. Once a load has started, keep calling `use()` on
   the same cached promise on every render instead of re-checking the environment.
 
+#### Custom matchers shipped in node_modules (e.g. `get-it/vitest`)
+
+TypeScript 7 (the root `tsc` and oxlint's `typeCheck`) currently mis-scopes `declare module`
+augmentations shipped in node_modules `.d.ts` files: the file that directly contains the
+side-effect import (e.g. `import 'get-it/vitest'`) does not see the augmented types and gets
+TS2339 on every matcher, while every other file in the same program sees them fine.
+TypeScript 6 applies the augmentation in both cases. Workaround: put the side-effect import in
+a vitest setup file (registered via `test.setupFiles`) instead of the test file that uses the
+matchers — see `packages/@sanity/schema/test/setup.ts` and its `vitest.config.mts`.
+
 #### Vanilla-extract in jsdom tests
 
 The `sanity` and `@sanity/vision` jsdom suites import

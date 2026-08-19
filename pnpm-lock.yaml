@@ -1464,8 +1464,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       get-it:
-        specifier: ^8.8.3
-        version: 8.8.3
+        specifier: ^9.4.1
+        version: 9.5.0(vitest@4.1.10)
       groq-js:
         specifier: ^2.0.0
         version: 2.0.0
