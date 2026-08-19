@@ -38,6 +38,7 @@ export function GlobalPerspectiveMenu({
   trigger?: React.ReactElement
 }): React.JSX.Element {
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
+  const [filterQuery, setFilterQuery] = useState('')
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
     useReleasesUpsell()
   const handleOpenBundleDialog = useCallback(() => {
@@ -51,6 +52,11 @@ export function GlobalPerspectiveMenu({
   const handleClose = useCallback(() => {
     setCreateBundleDialogOpen(false)
   }, [])
+
+  // The popover's content is kept mounted while closed (Sanity UI wraps it in
+  // React's state-preserving `Activity`), so the query has to be cleared by hand
+  // or it reappears on the next open.
+  const handleMenuClose = useCallback(() => setFilterQuery(''), [])
 
   return (
     <>
@@ -67,12 +73,15 @@ export function GlobalPerspectiveMenu({
           )
         }
         id="releases-menu"
+        onClose={handleMenuClose}
         menu={
           <StyledMenu data-testid="release-menu" padding={0}>
             <ReleasesList
               areReleasesEnabled={areReleasesEnabled}
               handleOpenBundleDialog={handleOpenBundleDialog}
               menuItemProps={menuItemProps}
+              filterQuery={filterQuery}
+              onFilterQueryChange={setFilterQuery}
             />
           </StyledMenu>
         }

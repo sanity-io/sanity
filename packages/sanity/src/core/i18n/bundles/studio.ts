@@ -1690,10 +1690,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.dialog.tooltip.title': 'Approximate time of release',
   /** The placeholder text when the release doesn't have a description */
   'release.form.placeholder-describe-release': 'Describe the release…',
-  /** Tooltip for button to hide release visibility */
-  'release.layer.hide': 'Hide release',
+  /** Placeholder for the release filter input in the perspective menu */
+  'release.menu.filter-placeholder': 'Filter releases…',
   /** Label for the release menu */
   'release.menu.label': 'Release menu',
+  /** Section heading for releases the selected document has no version in */
+  'release.menu.other-releases': 'Other releases',
+  /** Section heading listing the releases the selected document has a version in */
+  'release.menu.part-of-releases_one': 'Part of {{count}} release',
+  'release.menu.part-of-releases_other': 'Part of {{count}} releases',
   /** Menu item label for scheduled drafts */
   'release.menu.scheduled-drafts': 'View Scheduled Drafts',
   /** Tooltip for the release menu */

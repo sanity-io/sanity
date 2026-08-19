@@ -2,6 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {Menu} from '@sanity/ui/menu'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {type ComponentProps, useState} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../test/testUtils/flushMicrotasks'
@@ -23,6 +24,17 @@ import {
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
 import {ReleasesList} from '../ReleasesList'
+
+/**
+ * `ReleasesList` takes its filter query from `GlobalPerspectiveMenu`, which owns
+ * it so it can be cleared when the popover closes. This stands in for that.
+ */
+function TestReleasesList(
+  props: Omit<ComponentProps<typeof ReleasesList>, 'filterQuery' | 'onFilterQueryChange'>,
+) {
+  const [filterQuery, setFilterQuery] = useState('')
+  return <ReleasesList {...props} filterQuery={filterQuery} onFilterQueryChange={setFilterQuery} />
+}
 
 vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
   useReleasesUpsell: vi.fn(() => useReleasesUpsellMockReturn),
@@ -60,7 +72,7 @@ describe('ReleasesList', () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
-          <ReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
         </Menu>,
         {wrapper},
       )
@@ -71,11 +83,34 @@ describe('ReleasesList', () => {
       expect(screen.getByText('undecided Release')).toBeInTheDocument()
     })
 
+    it('narrows the release list by the filter query, leaving the system stack alone', async () => {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      await userEvent.type(screen.getByTestId('release-menu-filter'), 'undecided')
+
+      await waitFor(() => {
+        expect(screen.queryByText('active asap Release')).not.toBeInTheDocument()
+      })
+      expect(screen.queryByText('active Release')).not.toBeInTheDocument()
+      expect(screen.getByText('undecided Release')).toBeInTheDocument()
+
+      // Published and Drafts are not releases and are never filtered out.
+      expect(screen.getByTestId('release-published')).toBeInTheDocument()
+      expect(screen.getByTestId('release-drafts')).toBeInTheDocument()
+    })
+
     it('calls handleOpenBundleDialog when create new release button is clicked', async () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
-          <ReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
         </Menu>,
         {wrapper},
       )
@@ -119,7 +154,7 @@ describe('ReleasesList', () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
-          <ReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
         </Menu>,
         {wrapper},
       )
@@ -145,7 +180,7 @@ describe('ReleasesList', () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
-          <ReleasesList
+          <TestReleasesList
             handleOpenBundleDialog={handleOpenBundleDialog}
             areReleasesEnabled={false}
           />
@@ -167,7 +202,7 @@ describe('ReleasesList', () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
-          <ReleasesList
+          <TestReleasesList
             handleOpenBundleDialog={handleOpenBundleDialog}
             areReleasesEnabled={false}
           />
@@ -193,7 +228,7 @@ describe('ReleasesList', () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
-          <ReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
         </Menu>,
         {wrapper},
       )

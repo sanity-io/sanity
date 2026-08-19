@@ -1,12 +1,11 @@
-import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
+import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 
 import {getVersionFromId} from '../../util/draftUtils'
 import {useActiveReleases} from '../store/useActiveReleases'
+import {ORDERED_RELEASE_TYPES} from '../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {useDocumentVersions} from './useDocumentVersions'
-
-const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
 export interface useDocumentVersionTypeSortedListState {
   sortedDocumentList: ReleaseDocument[]
@@ -36,7 +35,7 @@ export const useDocumentVersionTypeSortedList = ({
     })
     /**  sort the document lists that exist for a specific document Id based on the order of the release types
      * it will first put the "asap" releases then "scheduled" and finally "undecided"
-     * orderedReleaseTypes is the order of the release types
+     * ORDERED_RELEASE_TYPES is the order of the release types
      * */
     .sort((releasesList, compareReleasesList) => {
       // reverse order of published at / intended to publish at
@@ -57,8 +56,8 @@ export const useDocumentVersionTypeSortedList = ({
       }
 
       return (
-        orderedReleaseTypes.indexOf(releasesList.metadata.releaseType) -
-        orderedReleaseTypes.indexOf(compareReleasesList.metadata.releaseType)
+        ORDERED_RELEASE_TYPES.indexOf(releasesList.metadata.releaseType) -
+        ORDERED_RELEASE_TYPES.indexOf(compareReleasesList.metadata.releaseType)
       )
     })
 
