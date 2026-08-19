@@ -1,3 +1,4 @@
+import {of} from 'rxjs'
 import {type SchemaPluginOptions} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -23,7 +24,7 @@ const mockSchema: SchemaPluginOptions = {
   ],
 }
 
-const CANONICAL_COUNT = {filter: '_type == $type', params: {type: 'author'}}
+const CANONICAL_COUNT = {type: 'author'}
 
 function getWithheldWarnings(): string[] {
   const warn = vi.mocked(console.warn)
@@ -54,6 +55,13 @@ describe('ListItemBuilder count descriptor', () => {
 
   it('emits the canonical descriptor for a plain document type list item', () => {
     const serialized = S.documentTypeListItem('author').showCount().serialize()
+
+    expect(serialized.count).toEqual(CANONICAL_COUNT)
+    expect(getWithheldWarnings()).toEqual([])
+  })
+
+  it('emits the canonical descriptor for an item with no child at all', () => {
+    const serialized = S.listItem().title('Authors').schemaType('author').showCount().serialize()
 
     expect(serialized.count).toEqual(CANONICAL_COUNT)
     expect(getWithheldWarnings()).toEqual([])
@@ -130,6 +138,48 @@ describe('ListItemBuilder count descriptor', () => {
     ])
   })
 
+  it('withholds the descriptor when the child is a custom function', () => {
+    const serialized = S.documentTypeListItem('author')
+      .showCount()
+      .child((id) => S.documentTypeList(id).filter('featured == true'))
+      .serialize()
+
+    expect(serialized.count).toBeUndefined()
+    expect(getWithheldWarnings()).toEqual([
+      expect.stringContaining(
+        'list item "author": its child cannot be inspected at serialize time',
+      ),
+    ])
+  })
+
+  it('withholds the descriptor when the child is an observable', () => {
+    const serialized = S.documentTypeListItem('author')
+      .showCount()
+      .child(of(S.documentTypeList('author')))
+      .serialize()
+
+    expect(serialized.count).toBeUndefined()
+    expect(getWithheldWarnings()).toEqual([
+      expect.stringContaining(
+        'list item "author": its child cannot be inspected at serialize time',
+      ),
+    ])
+  })
+
+  it('withholds the descriptor when the child is an already-serialized collection', () => {
+    const serialized = S.documentTypeListItem('author')
+      .showCount()
+      .child(S.documentTypeList('author').filter('featured == true').serialize())
+      .serialize()
+
+    expect(serialized.count).toBeUndefined()
+    expect(getWithheldWarnings()).toEqual([
+      expect.stringContaining(
+        'list item "author": its child cannot be inspected at serialize time',
+      ),
+    ])
+  })
+
   it('withholds the descriptor when the item resolves no document type', () => {
     const serialized = S.listItem()
       .title('Featured')
@@ -160,12 +210,12 @@ describe('ListItemBuilder count descriptor', () => {
     ])
   })
 
-  it('derives the filter from the item schema type, never from the child', () => {
+  it('names the item schema type, never anything taken from the child', () => {
     const serialized = S.documentTypeListItem('book')
       .showCount()
       .child(S.documentTypeList('book'))
       .serialize()
 
-    expect(serialized.count).toEqual({filter: '_type == $type', params: {type: 'book'}})
+    expect(serialized.count).toEqual({type: 'book'})
   })
 })

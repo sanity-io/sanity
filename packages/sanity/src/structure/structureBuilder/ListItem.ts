@@ -11,6 +11,7 @@ import {
   type SerializeOptions,
 } from './StructureNodes'
 import {type StructureContext} from './types'
+import {isDefaultDocumentTypeChild} from './util/defaultDocumentTypeChild'
 import {getStructureNodeId} from './util/getStructureNodeId'
 import {isSerializable, serializableMarker} from './util/isSerializable'
 import {validateId} from './util/validateId'
@@ -75,13 +76,13 @@ export interface ListItemInput {
 }
 
 /**
- * Query descriptor used to fetch a live document count. Always a query, never a resolved number,
- * and always authored by the Studio: it counts every document of one schema type.
+ * Names the document schema type a live count covers. The count query itself is authored by the
+ * Studio, so an item can only ever ask for the number of documents of one schema type.
  *
  * @public */
 export interface ListItemCount {
-  filter: string
-  params: {type: string}
+  /** Name of the document schema type to count */
+  type: string
 }
 
 /**
@@ -108,7 +109,7 @@ export interface ListItem {
   displayOptions?: ListItemDisplayOptions
   /** List item schema type. See {@link SchemaType} */
   schemaType?: SchemaType
-  /** Query descriptor used to fetch a live document count. See {@link ListItemCount} */
+  /** Document schema type to show a live count for. See {@link ListItemCount} */
   count?: ListItemCount
 }
 
@@ -243,8 +244,9 @@ export class ListItemBuilder implements Serializable<ListItem> {
    * Set if list item should show a live document count.
    *
    * The badge counts every document of the item's schema type. It is withheld, with a development
-   * warning, on an item with no document schema type and on an item whose child document list
-   * carries a custom filter or params.
+   * warning, unless the item resolves a document schema type and its child is proven to list every
+   * document of that type: no child, the built-in document type child, or a document list carrying
+   * the default whole-type query.
    *
    * @returns list item builder based on showCount provided. See {@link ListItemBuilder}
    */
@@ -367,7 +369,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
       child: listChild,
       title,
       type: 'listItem',
-      ...(count ? {count} : {}),
+      count,
     }
   }
 
@@ -383,6 +385,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
 }
 
 const DEFAULT_DOCUMENT_TYPE_FILTER = '_type == $type'
+const COUNT_COVERS_WHOLE_TYPE = 'a count only ever covers a whole document type'
 
 function warnCountWithheld(id: string, reason: string): void {
   if (process.env.NODE_ENV !== 'production') {
@@ -390,7 +393,21 @@ function warnCountWithheld(id: string, reason: string): void {
   }
 }
 
-function hasDefaultDocumentTypeQuery(child: DocumentListBuilder, typeName: string): boolean {
+interface DocumentListShapedChild {
+  getFilter(): string | undefined
+  getParams(): Record<string, unknown> | undefined
+}
+
+function isDocumentListShapedChild(child: unknown): child is DocumentListShapedChild {
+  if (isSerializable(child)) {
+    const candidate = child as Partial<DocumentListShapedChild>
+    return typeof candidate.getFilter === 'function' && typeof candidate.getParams === 'function'
+  }
+
+  return false
+}
+
+function hasDefaultDocumentTypeQuery(child: DocumentListShapedChild, typeName: string): boolean {
   const params = child.getParams() ?? {}
 
   return (
@@ -401,11 +418,9 @@ function hasDefaultDocumentTypeQuery(child: DocumentListBuilder, typeName: strin
 }
 
 /**
- * A child document list can only veto the count, never contribute a filter to it: a dereference or
- * a per-document subquery defeats the term aggregation `count()` relies on.
- *
- * Known gap: a child resolved by a function cannot be inspected at serialize time, so a dynamically
- * filtered child keeps a whole-type count. The query stays core-authored either way.
+ * Emits a count descriptor only for a child proven to list every document of the item's schema type:
+ * no child, the built-in document type child, or a document list carrying the default whole-type
+ * query. Any other child withholds the count, so a badge never contradicts the list it sits on.
  */
 function resolveListItemCount(
   child: PartialListItem['child'],
@@ -417,22 +432,24 @@ function resolveListItemCount(
     return undefined
   }
 
-  const count: ListItemCount = {
-    filter: DEFAULT_DOCUMENT_TYPE_FILTER,
-    params: {type: schemaType.name},
+  const count: ListItemCount = {type: schemaType.name}
+
+  if (child === undefined || isDefaultDocumentTypeChild(child)) {
+    return count
   }
 
-  if (child instanceof DocumentListBuilder) {
+  if (isDocumentListShapedChild(child)) {
     if (hasDefaultDocumentTypeQuery(child, schemaType.name)) {
       return count
     }
 
-    warnCountWithheld(
-      id,
-      'its child document list is filtered, and a count only ever covers a whole document type',
-    )
+    warnCountWithheld(id, `its child document list is filtered, and ${COUNT_COVERS_WHOLE_TYPE}`)
     return undefined
   }
 
-  return count
+  warnCountWithheld(
+    id,
+    `its child cannot be inspected at serialize time, and ${COUNT_COVERS_WHOLE_TYPE}`,
+  )
+  return undefined
 }
