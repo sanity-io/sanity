@@ -84,7 +84,7 @@ export function usePresenceCursorDecorations(
       }
     }) as RangeDecoration[]
 
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setPresenceCursorDecorations(decorations.filter(Boolean))
   }, [currentPresence, handleRangeDecorationMoved])
 

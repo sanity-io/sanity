@@ -21,6 +21,7 @@ const Root = styled.span(({theme}: {theme: Theme}) => {
   `
 })
 
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function Decorator(props: BlockDecoratorRenderProps) {
   const {value, focused, selected, children, schemaType} = props
   const schemaTypes = usePortableTextMemberSchemaTypes()
@@ -53,7 +54,7 @@ export function Decorator(props: BlockDecoratorRenderProps) {
     return CustomComponent ? (
       <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
-      // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
+      // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
   }, [CustomComponent, DefaultComponent, children, focused, sanitySchemaType, selected, value])

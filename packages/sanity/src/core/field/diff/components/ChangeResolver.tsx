@@ -193,7 +193,6 @@ export function GroupChange(
                 <RevertChangesButton
                   changeCount={changes.length}
                   onClick={handleRevertChangesConfirm}
-                  // oxlint-disable-next-line react/react-compiler
                   ref={setRevertButtonElement}
                   selected={confirmRevertOpen}
                   disabled={readOnly || !isTargetReady}
@@ -212,6 +211,7 @@ export function GroupChange(
           />
         </>
       ),
+    // oxlint-disable-next-line react/memo-dependencies -- pre-existing violation, to be fixed in a follow-up
     [
       changes,
       confirmRevertOpen,

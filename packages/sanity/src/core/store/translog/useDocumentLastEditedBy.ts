@@ -106,7 +106,7 @@ export function useDocumentLastEditedBy(
 
   useEffect(() => {
     cancelledRef.current = false
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     void fetchLastEditor()
     return () => {
       cancelledRef.current = true

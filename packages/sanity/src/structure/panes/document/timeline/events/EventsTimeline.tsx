@@ -216,7 +216,7 @@ export const EventsTimeline = ({
     ],
   )
 
-  // oxlint-disable-next-line react/react-compiler
+  // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => setMounted(true), [])
   const selectedIndex = events.findIndex((event) => event.id === selectedEventId)
 

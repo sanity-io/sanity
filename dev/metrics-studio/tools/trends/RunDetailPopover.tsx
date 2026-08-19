@@ -1,5 +1,4 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {
   Badge,
@@ -15,8 +14,8 @@ import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
 
-import {formatValue, type TrendPoint, type TrendSeries} from './data'
-import {abDispatchCommand, backlinksFor, sourceFileUrl} from './links'
+import {formatValue, INP_MIN_INTERACTIONS, type TrendPoint, type TrendSeries} from './data'
+import {backlinksFor, compareUrl, sourceFileUrl} from './links'
 
 const FULL_SHA = /^[0-9a-f]{40}$/i
 
@@ -38,13 +37,12 @@ export function RunDetailPopover(props: {
 }) {
   const {series, point, previousSha, referenceElement, onClose} = props
   const [contentEl, setContentEl] = useState<HTMLDivElement | null>(null)
-  const [abCopyState, setAbCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
-  // The bench workflow's ab_from/ab_to inputs require full shas, and GitHub
-  // has no URL that prefills a workflow_dispatch form — so the affordance is
-  // a copyable command, previous point as reference, this point as experiment
-  const abCommand =
+  // "What landed between this point and the previous one?" — the GitHub
+  // compare view answers it directly. Guarded by the full-sha shape so a
+  // 'unknown' or malformed sha never builds a dead link.
+  const compareHref =
     previousSha && FULL_SHA.test(previousSha) && FULL_SHA.test(point.sha)
-      ? abDispatchCommand(previousSha, point.sha)
+      ? compareUrl(previousSha, point.sha)
       : undefined
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const documentLink = useIntentLink({
@@ -88,6 +86,11 @@ export function RunDetailPopover(props: {
       placement="top"
       fallbackPlacements={['bottom', 'right', 'left']}
       referenceElement={referenceElement}
+      // A drifted chart tints its card caution/positive, and the popover would
+      // otherwise inherit that tone through the theme context — making run
+      // details look like a warning about themselves. The run detail is neutral
+      // information; the flag belongs to the card, not to this panel.
+      tone="default"
       content={
         <Box ref={setContentEl} padding={4} style={{width: 288, maxWidth: '92vw'}}>
           <Stack gap={4}>
@@ -134,7 +137,23 @@ export function RunDetailPopover(props: {
                     </Text>
                     <Text size={1}>{formatValue(point.p90 ?? point.value, series.unit)}</Text>
                   </Stack>
+                  {point.interactions !== undefined && (
+                    <Stack gap={2}>
+                      <Text size={0} muted>
+                        interactions
+                      </Text>
+                      <Text size={1}>{point.interactions}</Text>
+                    </Stack>
+                  )}
                 </Flex>
+              )}
+              {/* An INP from too few interactions is a weak estimate — say so
+                  where the number is read, not in a separate chart */}
+              {point.interactions !== undefined && point.interactions < INP_MIN_INTERACTIONS && (
+                <Badge tone="caution" fontSize={0}>
+                  Low confidence: only {point.interactions} interactions (a reliable INP needs{' '}
+                  {INP_MIN_INTERACTIONS})
+                </Badge>
               )}
             </Stack>
 
@@ -175,33 +194,21 @@ export function RunDetailPopover(props: {
               </Stack>
             )}
 
-            {abCommand && (
+            {compareHref && (
               <Stack gap={2}>
                 <Text size={0} muted weight="medium">
-                  Suspect a change at this point?
+                  Suspect a regression?
                 </Text>
                 <Button
+                  as="a"
+                  href={compareHref}
+                  target="_blank"
+                  rel="noreferrer"
                   mode="ghost"
                   fontSize={1}
-                  icon={CopyIcon}
-                  text={
-                    abCopyState === 'copied'
-                      ? 'Copied — paste in a terminal'
-                      : abCopyState === 'failed'
-                        ? 'Copy failed — command in tooltip'
-                        : 'Copy A/B vs previous run'
-                  }
-                  title={abCommand}
-                  aria-label="Copy the gh command dispatching an A/B bench comparison of this commit against the previous point's commit"
-                  onClick={() => {
-                    // Only claim success on success: clipboard access can be
-                    // denied (permissions, non-secure context) and the title
-                    // attribute is the manual fallback either way
-                    navigator.clipboard.writeText(abCommand).then(
-                      () => setAbCopyState('copied'),
-                      () => setAbCopyState('failed'),
-                    )
-                  }}
+                  icon={LaunchIcon}
+                  text="Compare diff with previous run"
+                  aria-label="GitHub compare view of the commits between the previous run's commit and this one (opens in a new tab)"
                 />
               </Stack>
             )}

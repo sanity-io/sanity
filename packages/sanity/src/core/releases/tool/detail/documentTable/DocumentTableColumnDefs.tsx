@@ -124,6 +124,7 @@ export function DocumentType({type}: {type: string}) {
   // A title change rewrites the text without resizing the box, so re-measure on title change.
   useEffect(() => {
     checkTruncation()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [title, checkTruncation])
 
   const textElement = (

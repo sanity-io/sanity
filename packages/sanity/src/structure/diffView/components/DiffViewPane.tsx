@@ -131,7 +131,7 @@ export function DiffViewPane({
                 <PortalProvider element={portalElement}>
                   <DialogProvider position="absolute">
                     <Container ref={containerElement} padding={4} width={1}>
-                      {/* oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work */}
+                      {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
                       <DocumentLayout documentId={documentId} documentType={documentType} />
                     </Container>
                   </DialogProvider>
@@ -204,6 +204,7 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
       onProgrammaticFocus(path)
     })
     return () => subscription.unsubscribe()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [onPathOpenFromForm, onProgrammaticFocus, pathSyncChannel.path, role])
 
   return isLoading ? (

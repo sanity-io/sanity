@@ -73,6 +73,7 @@ export function FormCreate(props: ObjectInputProps) {
     if (creating && savedTask?.createdByUser) {
       handleCreatingSuccess()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [creating, savedTask?.createdByUser])
 
   const handleCreatingTimeout = useEffectEvent(() => {
@@ -93,6 +94,7 @@ export function FormCreate(props: ObjectInputProps) {
     return () => {
       if (timeoutId) clearTimeout(timeoutId)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [creating])
 
   const handleCreate = useCallback(async () => {
