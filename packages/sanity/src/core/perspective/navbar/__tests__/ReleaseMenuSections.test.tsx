@@ -2,6 +2,7 @@ import {Menu} from '@sanity/ui/menu'
 import {render, screen, within} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {flushMicrotasksThisIsACodeSmell} from '../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {
   activeASAPRelease,
@@ -21,7 +22,11 @@ const allReleases = [activeASAPRelease, activeScheduledRelease, activeUndecidedR
 
 async function renderSections(node: React.JSX.Element) {
   const wrapper = await createTestProvider()
-  return render(<Menu>{node}</Menu>, {wrapper})
+  const view = render(<Menu>{node}</Menu>, {wrapper})
+  // The locale bundle resolves asynchronously; without this the first test in
+  // the file asserts against raw i18n keys.
+  await flushMicrotasksThisIsACodeSmell()
+  return view
 }
 
 describe('ReleaseTypeSections', () => {

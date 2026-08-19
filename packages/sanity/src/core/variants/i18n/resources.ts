@@ -18,6 +18,13 @@ const variantsLocaleStrings = {
   'navbar.variant.filter-placeholder': 'Filter variants…',
   /** Section header for non-default variants in the dropdown. */
   'navbar.variant.other': 'Other variants',
+  /** Section header listing the variants the selected document already has. */
+  'navbar.variant.has_one': 'Has {{count}} variant',
+  'navbar.variant.has_other': 'Has {{count}} variants',
+  /** Menu item that opens the variants overview. */
+  'navbar.variant.view-all': 'View variants',
+  /** Menu item that creates a new variant definition. */
+  'navbar.variant.add': 'Add variant',
   /** Tooltip for clearing the selected variant. */
   'navbar.variant.clear': 'Clear variant selection',
   /** Tooltip for the button that clears the selected version */
