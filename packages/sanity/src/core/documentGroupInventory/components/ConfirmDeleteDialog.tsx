@@ -38,6 +38,10 @@ import {type DocumentGroupInventoryProps} from './DocumentGroupInventory'
 const EMPTY_INTERNAL_REFERENCES: InternalReferences = {totalCount: 0, references: []}
 const EMPTY_CROSS_DATASET_REFERENCES: CrossDatasetReferences = {totalCount: 0, references: []}
 
+function DocumentTitle({documentTitle}: {children?: ReactNode; documentTitle?: ReactNode}) {
+  return documentTitle
+}
+
 interface Props {
   documentId: string
   documentType: string
@@ -141,7 +145,8 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
                   <Text size={1}>
                     <Translate
                       i18nKey="document-group.delete.referring-document-count.text"
-                      components={{DocumentTitle: () => documentTitle}}
+                      components={{DocumentTitle}}
+                      componentProps={{documentTitle}}
                       t={t}
                       values={{count: totalCount}}
                     />
@@ -238,7 +243,8 @@ const References: ComponentType<ReferencesProps> = ({
           <Translate
             i18nKey="document-group.delete.referring-documents-descriptor.text"
             t={t}
-            components={{DocumentTitle: () => documentTitle}}
+            components={{DocumentTitle}}
+            componentProps={{documentTitle}}
           />
         </Text>
       </Box>

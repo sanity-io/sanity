@@ -1,9 +1,10 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
-import {type ComponentType, useCallback} from 'react'
+import {type ComponentType, type ReactNode, useCallback} from 'react'
 import {
-  getVersionInlineBadge,
+  getReleaseTone,
   isPerspectiveWriteable,
   isReleaseDocument,
   type PerspectiveNotWriteableReason,
@@ -14,6 +15,7 @@ import {
   Translate,
   useTranslation,
   useWorkspace,
+  VersionInlineBadge,
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -23,6 +25,23 @@ interface Props {
   schemaType: ObjectSchemaType
   selectedPerspective: TargetPerspective
   reason: PerspectiveNotWriteableReason
+}
+
+function ReleaseInactiveVersionBadge({
+  children,
+  fallbackTitle,
+  releaseDoc,
+}: {
+  children?: ReactNode
+  fallbackTitle?: string
+  releaseDoc?: ReleaseDocument
+}) {
+  if (!releaseDoc) return null
+  return (
+    <ReleaseTitle title={releaseDoc.metadata.title} fallback={fallbackTitle ?? ''}>
+      {() => <VersionInlineBadge $tone={getReleaseTone(releaseDoc)}>{children}</VersionInlineBadge>}
+    </ReleaseTitle>
+  )
 }
 
 /**
@@ -80,18 +99,10 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
                 values={{
                   title: releaseTitle,
                 }}
-                components={{
-                  VersionBadge: ({children}) => {
-                    const BadgeWithTone = getVersionInlineBadge(releaseDoc)
-                    return (
-                      <ReleaseTitle
-                        title={releaseDoc.metadata.title}
-                        fallback={tCore('release.placeholder-untitled-release')}
-                      >
-                        {() => <BadgeWithTone>{children}</BadgeWithTone>}
-                      </ReleaseTitle>
-                    )
-                  },
+                components={{VersionBadge: ReleaseInactiveVersionBadge}}
+                componentProps={{
+                  fallbackTitle: tCore('release.placeholder-untitled-release'),
+                  releaseDoc,
                 }}
               />
             )}

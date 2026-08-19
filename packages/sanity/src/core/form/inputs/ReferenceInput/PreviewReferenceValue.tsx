@@ -204,9 +204,8 @@ function InvalidType({
                   t={t}
                   i18nKey="inputs.reference.error.invalid-type-description"
                   values={{documentId, actualType}}
-                  components={{
-                    AllowedTypes: () => <HumanizedList values={declaredTypes} />,
-                  }}
+                  components={{AllowedTypes}}
+                  componentProps={{declaredTypes}}
                 />
               </Text>
             </Stack>
@@ -221,6 +220,10 @@ function InvalidType({
       </Box>
     </Flex>
   )
+}
+
+function AllowedTypes({declaredTypes}: {children?: ReactNode; declaredTypes?: string[]}) {
+  return <HumanizedList values={declaredTypes || []} />
 }
 
 function HumanizedList(props: {values: string[]}) {

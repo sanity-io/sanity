@@ -34,6 +34,18 @@ export interface ImageToolInputProps extends Omit<
   imageUrl: string
 }
 
+function ImageUrlDocumentationLink({children}: {children?: ReactNode}) {
+  return <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">{children}</a>
+}
+
+function ImageUrlPackageDocumentationLink({children}: {children?: ReactNode}) {
+  return (
+    <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">
+      <code>{children}</code>
+    </a>
+  )
+}
+
 const HOTSPOT_PATH = ['hotspot']
 
 const DEFAULT_PREVIEWS: HotspotPreview[] = [
@@ -154,18 +166,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                   <Translate
                     t={t}
                     i18nKey="inputs.imagetool.vector-warning.developer-info"
-                    components={{
-                      ImageUrlDocumentationLink: ({children}) => (
-                        <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">
-                          {children}
-                        </a>
-                      ),
-                      ImageUrlPackageDocumentationLink: ({children}) => (
-                        <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">
-                          <code>{children}</code>
-                        </a>
-                      ),
-                    }}
+                    components={{ImageUrlDocumentationLink, ImageUrlPackageDocumentationLink}}
                   />
                 </Text>
               </Details>

@@ -20,6 +20,15 @@ interface InspectDialogProps {
   value: Partial<SanityDocument> | null
 }
 
+function DocumentTitle({document}: {children?: React.ReactNode; document?: unknown}) {
+  if (!isDocumentLike(document)) return null
+  return (
+    <em>
+      <DocTitle document={document} />
+    </em>
+  )
+}
+
 export function InspectDialog(props: InspectDialogProps) {
   const {value} = props
   const {onInspectClose, paneKey} = useDocumentPane()
@@ -56,13 +65,8 @@ export function InspectDialog(props: InspectDialogProps) {
           <Translate
             t={t}
             i18nKey="document-inspector.dialog.title"
-            components={{
-              DocumentTitle: () => (
-                <em>
-                  <DocTitle document={value} />
-                </em>
-              ),
-            }}
+            components={{DocumentTitle}}
+            componentProps={{document: value}}
           />
         ) : (
           <em>{t('document-inspector.dialog.title-no-value')}</em>

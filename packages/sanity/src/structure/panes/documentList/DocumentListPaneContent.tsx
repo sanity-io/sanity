@@ -229,7 +229,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
                     t={t}
                     i18nKey="panes.document-list-pane.error.text.dev"
                     values={{error: error.message}}
-                    components={{Code: ({children}) => <code>{children}</code>}}
+                    components={{Code: 'code'}}
                   />
                 ) : isOnline ? (
                   t('panes.document-list-pane.error.text')

@@ -45,6 +45,15 @@ export function OpenReleaseToEditBanner({
   return <OpenReleaseToEditBannerInner documentId={documentId} />
 }
 
+function VersionBadge({
+  displayTitle,
+}: {
+  children?: React.ReactNode
+  displayTitle?: React.ReactNode
+}) {
+  return <VersionInlineBadge>{displayTitle}</VersionInlineBadge>
+}
+
 function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
   const {data: activeReleases} = useActiveReleases()
   const setPerspective = useSetPerspective()
@@ -95,18 +104,16 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
                   <Translate
                     t={t}
                     i18nKey="banners.release.navigate-to-edit-description-multiple"
-                    components={{
-                      VersionBadge: () => <VersionInlineBadge>{displayTitle}</VersionInlineBadge>,
-                    }}
+                    components={{VersionBadge}}
+                    componentProps={{displayTitle}}
                     values={{count: documentVersionReleases.length - 1}}
                   />
                 ) : (
                   <Translate
                     t={t}
                     i18nKey="banners.release.navigate-to-edit-description-single"
-                    components={{
-                      VersionBadge: () => <VersionInlineBadge>{displayTitle}</VersionInlineBadge>,
-                    }}
+                    components={{VersionBadge}}
+                    componentProps={{displayTitle}}
                   />
                 )
               }
