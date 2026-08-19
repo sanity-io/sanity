@@ -88,8 +88,12 @@ export function GlobalPerspectiveMenu({
         popover={{
           __unstable_margins: [0, 0, 32, 0],
           constrainSize: true,
+          // Left-aligned with the trigger: the panel's left edge meets the
+          // button's, so the menu items line up under the button's own icon.
+          // `bottom-end` stays as the fallback so a panel that would overflow the
+          // viewport flips horizontally rather than vertically.
           fallbackPlacements: ['bottom-end'],
-          placement: 'bottom-end',
+          placement: 'bottom-start',
           portal: true,
           // @ts-expect-error PopoverProps doesn't include `style`, but the Popover implementation accepts it via React.HTMLProps<HTMLDivElement>
           style: {overflow: 'hidden'} as React.CSSProperties,
