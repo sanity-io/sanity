@@ -323,6 +323,46 @@ describe('Presentation machine', () => {
       expect(actor.getSnapshot().hasTag('show loading overlay')).toBe(true)
     })
 
+    test('a refresh does not postpone an already surfaced connection timeout', () => {
+      const {actor, clock} = createTestActor()
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('handshaking'))
+      clock.increment(TIME_TO_SHOW_OVERLAYS_CONNECTION_STATUS)
+      clock.increment(MAX_TIME_TO_OVERLAYS_CONNECTION)
+      expect(actor.getSnapshot().hasTag('overlays connection timed out')).toBe(true)
+
+      actor.send({type: 'iframe refresh'})
+      expect(actor.getSnapshot().matches({loaded: 'refreshing'})).toBe(true)
+
+      // The timeout UI comes right back once the refresh settles, instead of restarting the
+      // escalation timers from scratch
+      actor.send({type: 'iframe loaded'})
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.hasTag('show overlays connection status')).toBe(true)
+      expect(snapshot.hasTag('overlays connection timed out')).toBe(true)
+    })
+
+    test('a refresh does not postpone an already surfaced reconnect error card', () => {
+      const {actor, clock} = createTestActor()
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('handshaking'))
+      actor.send(overlaysStatus('connected'))
+      actor.send(overlaysStatus('handshaking'))
+      clock.increment(TIME_TO_SHOW_OVERLAYS_CONNECTION_STATUS)
+      clock.increment(MAX_TIME_TO_OVERLAYS_CONNECTION)
+      expect(actor.getSnapshot().hasTag('show error card')).toBe(true)
+
+      actor.send({type: 'iframe refresh'})
+      actor.send({type: 'iframe loaded'})
+      expect(actor.getSnapshot().hasTag('show error card')).toBe(true)
+
+      // A connection established while the refresh is in flight resolves the error as usual
+      actor.send({type: 'iframe refresh'})
+      actor.send(overlaysStatus('connected'))
+      actor.send({type: 'iframe loaded'})
+      expect(actor.getSnapshot().hasTag('show error card')).toBe(false)
+    })
+
     test('aggregates the status of multiple connections', () => {
       const {actor} = createTestActor()
       actor.send({type: 'iframe loaded'})

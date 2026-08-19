@@ -188,6 +188,12 @@ export const presentationMachine = setup({
           },
           initial: 'checking',
           states: {
+            history: {
+              type: 'history',
+              history: 'deep',
+              description:
+                'Restores the escalation state from before a refresh, so an already surfaced connection status or error card is not reset to another full round of escalation timers',
+            },
             checking: {
               always: [
                 {guard: 'overlays connected', target: 'ok'},
@@ -272,9 +278,14 @@ export const presentationMachine = setup({
           description:
             'Waiting for an already loaded preview to ack a refresh request — a slow refresh is not a failed load, so no load timeout is armed',
           on: {
-            'iframe loaded': {
-              target: 'idle',
-            },
+            'iframe loaded': [
+              // If the overlays connected while the refresh was in flight, re-evaluate from
+              // scratch instead of restoring a stale escalation state
+              {guard: 'overlays connected', target: 'idle'},
+              // Otherwise resume where the escalation left off: a refresh must not postpone an
+              // already surfaced connection status or error card
+              {target: 'idle.history'},
+            ],
           },
           tags: ['busy'],
         },
