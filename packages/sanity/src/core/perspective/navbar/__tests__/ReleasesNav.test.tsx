@@ -3,7 +3,6 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {useExcludedPerspectiveMockReturn} from '../../../perspective/__mocks__/useExcludedPerspective.mock'
 import {usePerspectiveMockReturn} from '../../../perspective/__mocks__/usePerspective.mock'
 import {
   activeASAPErrorRelease,
@@ -30,10 +29,6 @@ vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
 
 vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
-}))
-
-vi.mock('../../../perspective/useExcludedPerspective', () => ({
-  useExcludedPerspective: vi.fn(() => useExcludedPerspectiveMockReturn),
 }))
 
 const mockedSetPerspective = vi.fn()
@@ -207,11 +202,10 @@ describe('ReleasesNav', () => {
       })
     })
 
-    describe('release layering', () => {
+    describe('release selection', () => {
       beforeEach(() => {
-        // since usePerspective is mocked, and the layering exclude toggle is
-        // controlled by currentGlobalBundleId, we need to manually set it
-        // to the release that will be selected in below tests
+        // usePerspective is mocked, so the selected perspective has to be set by
+        // hand to the release the tests below click on.
         usePerspectiveMockReturn.selectedPerspectiveName = 'rScheduled2'
         // add an undecided release to expand testing
         useActiveReleasesMockReturn.data = [
@@ -242,83 +236,7 @@ describe('ReleasesNav', () => {
           expect(mockedSetPerspective).toHaveBeenCalledWith('rScheduled2')
         })
 
-        it('should allow for hiding of any deeper layered releases', async () => {
-          await prerenderTest()
-
-          const deepLayerRelease = within(screen.getByTestId('release-menu'))
-            .getByText('active Release')
-            .closest('button')!
-
-          // toggle to hide
-          await userEvent.click(within(deepLayerRelease).getByTestId('release-toggle-visibility'))
-          expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
-            'rActive',
-          )
-
-          // toggle to include
-          await userEvent.click(within(deepLayerRelease).getByTestId('release-toggle-visibility'))
-          expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
-            'rActive',
-          )
-        })
-
-        it('should not allow for hiding of published perspective', async () => {
-          await prerenderTest()
-
-          const publishedRelease = within(screen.getByTestId('release-menu'))
-            .getByText('Published')
-            .closest('button')!
-
-          expect(
-            within(publishedRelease).queryByTestId('release-toggle-visibility'),
-          ).not.toBeInTheDocument()
-        })
-
-        it('should allow for hiding of draft perspective', async () => {
-          await prerenderTest()
-
-          const drafts = within(screen.getByTestId('release-menu'))
-            .getByText('Drafts')
-            .closest('button')!
-
-          expect(within(drafts).getByTestId('release-toggle-visibility')).toBeInTheDocument()
-          // toggle to hide
-          await userEvent.click(within(drafts).getByTestId('release-toggle-visibility'))
-          expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
-            'drafts',
-          )
-          // toggle to include
-          await userEvent.click(within(drafts).getByTestId('release-toggle-visibility'))
-          expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
-            'drafts',
-          )
-        })
-
-        it('should not allow hiding of the current perspective', async () => {
-          await prerenderTest()
-
-          const currentRelease = within(screen.getByTestId('release-menu'))
-            .getByText('active Scheduled 2')
-            .closest('button')!
-
-          expect(
-            within(currentRelease).queryByTestId('release-toggle-visibility'),
-          ).not.toBeInTheDocument()
-        })
-
-        it('should not allow hiding of un-nested releases', async () => {
-          await prerenderTest()
-
-          const unNestedRelease = within(screen.getByTestId('release-menu'))
-            .getByText('undecided Release')
-            .closest('button')!
-
-          expect(
-            within(unNestedRelease).queryByTestId('release-toggle-visibility'),
-          ).not.toBeInTheDocument()
-        })
-
-        it('should not allow hiding of locked in scheduled releases', async () => {
+        it('should show a lock icon on scheduled releases', async () => {
           await prerenderTest()
 
           const scheduledReleaseMenuItem = within(screen.getByTestId('release-menu'))
@@ -326,24 +244,9 @@ describe('ReleasesNav', () => {
             .closest('button')!
 
           expect(
-            within(scheduledReleaseMenuItem).queryByTestId('release-toggle-visibility'),
-          ).not.toBeInTheDocument()
+            within(scheduledReleaseMenuItem).getByTestId('release-lock-icon'),
+          ).toBeInTheDocument()
         })
-      })
-
-      it('applies existing layering when opened', async () => {
-        useExcludedPerspectiveMockReturn.isPerspectiveExcluded.mockImplementation((id) => {
-          return id === 'rActive'
-        })
-
-        await renderAndWaitForStableMenu()
-
-        const activeReleaseMenuItem = within(screen.getByTestId('release-menu'))
-          .getByText('active Release')
-          .closest('button')!
-
-        const indicatorIcon = within(activeReleaseMenuItem).getByTestId('release-indicator-icon')
-        expect(indicatorIcon).toHaveStyle({opacity: 0})
       })
 
       describe('when releases are disabled', () => {

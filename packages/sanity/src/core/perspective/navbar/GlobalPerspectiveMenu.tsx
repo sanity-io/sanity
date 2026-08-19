@@ -2,7 +2,7 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 // oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
 import {Button} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {useCallback, useRef, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
@@ -11,7 +11,6 @@ import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsel
 import {oversizedButtonStyle} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {ReleasesList} from './ReleasesList'
-import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
@@ -26,12 +25,10 @@ const OversizedButton = styled(Button)`
 `
 
 export function GlobalPerspectiveMenu({
-  selectedPerspectiveName,
   areReleasesEnabled = true,
   menuItemProps,
   trigger,
 }: {
-  selectedPerspectiveName: string | undefined
   areReleasesEnabled: boolean
   menuItemProps?: ReleasesNavMenuItemPropsGetter
   /**
@@ -43,10 +40,6 @@ export function GlobalPerspectiveMenu({
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
     useReleasesUpsell()
-  const styledMenuRef = useRef<HTMLDivElement>(null)
-
-  const {isRangeVisible, resetRangeVisibility, setScrollContainer, scrollElementRef} =
-    useScrollIndicatorVisibility()
   const handleOpenBundleDialog = useCallback(() => {
     if (releasesUpsellMode === 'upsell') {
       handleOpenReleasesUpsellDialog()
@@ -74,15 +67,10 @@ export function GlobalPerspectiveMenu({
           )
         }
         id="releases-menu"
-        onClose={resetRangeVisibility}
         menu={
-          <StyledMenu data-testid="release-menu" ref={styledMenuRef} padding={0}>
+          <StyledMenu data-testid="release-menu" padding={0}>
             <ReleasesList
               areReleasesEnabled={areReleasesEnabled}
-              setScrollContainer={setScrollContainer}
-              isRangeVisible={isRangeVisible}
-              scrollElementRef={scrollElementRef}
-              selectedPerspectiveName={selectedPerspectiveName}
               handleOpenBundleDialog={handleOpenBundleDialog}
               menuItemProps={menuItemProps}
             />

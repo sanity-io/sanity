@@ -60,14 +60,7 @@ describe('ReleasesList', () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
-          <ReleasesList
-            setScrollContainer={vi.fn()}
-            isRangeVisible={false}
-            selectedPerspectiveName={undefined}
-            handleOpenBundleDialog={handleOpenBundleDialog}
-            scrollElementRef={{current: null}}
-            areReleasesEnabled
-          />
+          <ReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
         </Menu>,
         {wrapper},
       )
@@ -82,14 +75,7 @@ describe('ReleasesList', () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
-          <ReleasesList
-            setScrollContainer={vi.fn()}
-            isRangeVisible={false}
-            selectedPerspectiveName={undefined}
-            handleOpenBundleDialog={handleOpenBundleDialog}
-            scrollElementRef={{current: null}}
-            areReleasesEnabled
-          />
+          <ReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
         </Menu>,
         {wrapper},
       )
@@ -133,14 +119,7 @@ describe('ReleasesList', () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
-          <ReleasesList
-            setScrollContainer={vi.fn()}
-            isRangeVisible={false}
-            selectedPerspectiveName={undefined}
-            handleOpenBundleDialog={handleOpenBundleDialog}
-            scrollElementRef={{current: null}}
-            areReleasesEnabled
-          />
+          <ReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
         </Menu>,
         {wrapper},
       )
@@ -167,11 +146,7 @@ describe('ReleasesList', () => {
       render(
         <Menu>
           <ReleasesList
-            setScrollContainer={vi.fn()}
-            isRangeVisible={false}
-            selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
-            scrollElementRef={{current: null}}
             areReleasesEnabled={false}
           />
         </Menu>,
@@ -193,11 +168,7 @@ describe('ReleasesList', () => {
       render(
         <Menu>
           <ReleasesList
-            setScrollContainer={vi.fn()}
-            isRangeVisible={false}
-            selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
-            scrollElementRef={{current: null}}
             areReleasesEnabled={false}
           />
         </Menu>,
@@ -222,14 +193,7 @@ describe('ReleasesList', () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
-          <ReleasesList
-            setScrollContainer={vi.fn()}
-            isRangeVisible={false}
-            selectedPerspectiveName={undefined}
-            handleOpenBundleDialog={handleOpenBundleDialog}
-            scrollElementRef={{current: null}}
-            areReleasesEnabled
-          />
+          <ReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
         </Menu>,
         {wrapper},
       )
