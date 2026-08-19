@@ -28,6 +28,7 @@ import {
   useDocumentPresence,
   useDocumentPreviewStore,
   useEditState,
+  useNumberFormat,
   useSchema,
 } from 'sanity'
 
@@ -67,10 +68,6 @@ function getIconWithFallback(
   return icon || (schemaType && schemaType.icon) || defaultIcon || false
 }
 
-function formatCount(value: number): string {
-  return new Intl.NumberFormat().format(value)
-}
-
 export function PaneItem(props: PaneItemProps) {
   const {
     count,
@@ -89,6 +86,7 @@ export function PaneItem(props: PaneItemProps) {
   } = props
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
+  const numberFormat = useNumberFormat()
   const {ChildLink} = usePaneRouter()
   const documentPresence = useDocumentPresence(id)
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
@@ -119,8 +117,8 @@ export function PaneItem(props: PaneItemProps) {
         status={
           <Flex align="center" gap={2}>
             {typeof count === 'number' && (
-              <Badge tone="default" mode="outline" data-testid="pane-item-count">
-                {formatCount(count)}
+              <Badge mode="outline" data-testid="pane-item-count">
+                {numberFormat.format(count)}
               </Badge>
             )}
             <Box style={{opacity: 0.5}}>
@@ -141,6 +139,7 @@ export function PaneItem(props: PaneItemProps) {
     hasSchemaType,
     icon,
     layout,
+    numberFormat,
     schemaType,
     sortOrder,
     title,

@@ -78,13 +78,13 @@ export interface ListItemInput {
 }
 
 /**
- * Query descriptor used to fetch a live document count. Always a query, never a resolved number.
+ * Query descriptor used to fetch a live document count. Always a query, never a resolved number,
+ * and always authored by the Studio: it counts every document of one schema type.
  *
  * @public */
 export interface ListItemCount {
   filter: string
-  params: Record<string, unknown>
-  apiVersion?: string
+  params: {type: string}
 }
 
 /**
@@ -241,7 +241,12 @@ export class ListItemBuilder implements Serializable<ListItem> {
   }
 
   /**
-   * Set if list item should show a live document count
+   * Set if list item should show a live document count.
+   *
+   * The badge counts every document of the item's schema type. It is withheld, with a development
+   * warning, on an item with no document schema type and on an item whose child document list
+   * carries a custom filter or params.
+   *
    * @returns list item builder based on showCount provided. See {@link ListItemBuilder}
    */
   showCount(enabled = true): ListItemBuilder {
@@ -384,32 +389,57 @@ export class ListItemBuilder implements Serializable<ListItem> {
   }
 }
 
+const DEFAULT_DOCUMENT_TYPE_FILTER = '_type == $type'
+
+function warnCountWithheld(id: string, reason: string): void {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(`[structure] showCount() ignored for list item "${id}": ${reason}`)
+  }
+}
+
+function hasDefaultDocumentTypeQuery(child: DocumentListBuilder, typeName: string): boolean {
+  const params = child.getParams() ?? {}
+
+  return (
+    child.getFilter() === DEFAULT_DOCUMENT_TYPE_FILTER &&
+    Object.keys(params).length === 1 &&
+    params.type === typeName
+  )
+}
+
+/**
+ * A child document list can only veto the count, never contribute a filter to it: a dereference or
+ * a per-document subquery defeats the term aggregation `count()` relies on.
+ *
+ * Known gap: a child resolved by a function cannot be inspected at serialize time, so a dynamically
+ * filtered child keeps a whole-type count. The query stays core-authored either way.
+ */
 function resolveListItemCount(
   child: PartialListItem['child'],
   schemaType: SchemaType | undefined,
   id: string,
 ): ListItemCount | undefined {
+  if (schemaType === undefined) {
+    warnCountWithheld(id, 'it resolves no document type to count')
+    return undefined
+  }
+
+  const count: ListItemCount = {
+    filter: DEFAULT_DOCUMENT_TYPE_FILTER,
+    params: {type: schemaType.name},
+  }
+
   if (child instanceof DocumentListBuilder) {
-    const filter = child.getFilter()
-    if (filter) {
-      const apiVersion = child.getApiVersion()
-      return {
-        filter,
-        params: child.getParams() ?? {},
-        ...(apiVersion ? {apiVersion} : {}),
-      }
+    if (hasDefaultDocumentTypeQuery(child, schemaType.name)) {
+      return count
     }
-  }
 
-  if (schemaType) {
-    return {filter: '_type == $type', params: {type: schemaType.name}}
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
-    console.warn(
-      `[structure] showCount() ignored for list item "${id}": no document type or serializable document-list child to count`,
+    warnCountWithheld(
+      id,
+      'its child document list is filtered, and a count only ever covers a whole document type',
     )
+    return undefined
   }
 
-  return undefined
+  return count
 }

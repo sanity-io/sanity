@@ -142,10 +142,6 @@ export interface DocumentPreviewStore {
   /**
    * Observes the number of documents matching a groq filter under a given perspective.
    *
-   * Driven by the shared global listener rather than a dedicated listener, this batches every
-   * count requested within the same tick into a single combined query (grouped by perspective).
-   * Identical descriptors under the same perspective are deduplicated and share one query slice.
-   *
    * @hidden
    * @beta
    */
