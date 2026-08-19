@@ -164,8 +164,8 @@ export function GlobalPerspectiveMenuItem(
             paddingX={3}
             paddingY={2}
           >
-            <Text size={1}>
-              <ReleaseAvatarIcon release={release} />
+            <Text size={2}>
+              <ReleaseAvatarIcon size="small" release={release} />
             </Text>
           </IconWrapperBox>
           <Stack
