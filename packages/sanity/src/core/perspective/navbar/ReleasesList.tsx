@@ -1,5 +1,5 @@
 import {Card, Flex, Spinner, Stack, TextInput} from '@sanity/ui'
-import {type ChangeEvent, type JSX, useCallback, useMemo} from 'react'
+import {type ChangeEvent, type JSX, useCallback, useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
@@ -12,6 +12,7 @@ import {useAgentBundles} from '../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../studio/workspace'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {usePerspectiveActiveDocument} from '../activeDocument/usePerspectiveActiveDocument'
+import {MENU_PINNED_BLOCK_HEIGHT_VAR} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {AgentBundleMenuItem} from './AgentBundleMenuItem'
 import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
@@ -47,6 +48,8 @@ export function ReleasesList({
   onFilterQueryChange: (query: string) => void
 }): JSX.Element {
   const {t} = useTranslation()
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const pinnedRef = useRef<HTMLDivElement | null>(null)
   const {loading, data: allReleases} = useActiveReleases()
   const {bundles: agentBundles} = useAgentBundles()
   const {activeDocument} = usePerspectiveActiveDocument()
@@ -74,6 +77,26 @@ export function ReleasesList({
     [onFilterQueryChange],
   )
 
+  // Publish the pinned block's height so the section headings can pin directly
+  // below it — `MENU_PINNED_BLOCK_HEIGHT_VAR` explains why an offset is needed at
+  // all. Re-runs on `loading` because neither node exists while the spinner is up.
+  useEffect(() => {
+    const root = rootRef.current
+    const pinned = pinnedRef.current
+    if (!root || !pinned) return undefined
+
+    const publish = () =>
+      root.style.setProperty(MENU_PINNED_BLOCK_HEIGHT_VAR, `${pinned.offsetHeight}px`)
+
+    publish()
+
+    // The block changes height in use: the Drafts row is conditional on the
+    // workspace, and the filter input can wrap.
+    const observer = new ResizeObserver(publish)
+    observer.observe(pinned)
+    return () => observer.disconnect()
+  }, [loading])
+
   if (loading) {
     return (
       <Flex padding={4} justify="center" data-testid="spinner">
@@ -83,8 +106,8 @@ export function ReleasesList({
   }
 
   return (
-    <Card radius={3}>
-      <StickyTopCard borderBottom>
+    <Card radius={3} ref={rootRef}>
+      <StickyTopCard borderBottom ref={pinnedRef}>
         <Card padding={2} borderBottom>
           <TextInput
             data-testid="release-menu-filter"

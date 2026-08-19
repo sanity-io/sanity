@@ -7,6 +7,7 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {stickyMenuHeadingStyle} from '../../../perspective/styles'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
 import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantId, getVariantTitle} from '../../tool/util'
@@ -18,19 +19,28 @@ const SectionHeader = styled(Text)`
   letter-spacing: 0.04em;
 `
 
+// This menu pins nothing above its headings, so the shared offset resolves to its
+// `0px` fallback. Sharing the helper with the release menu keeps the two in step
+// if a pinned filter is ever added here.
+const StickyHeading = styled.div`
+  ${stickyMenuHeadingStyle}
+`
+
 function VariantSectionHeader({children}: {children: string}): React.JSX.Element {
   return (
-    <Box paddingX={2}>
-      <Flex paddingTop={3} paddingBottom={2} gap={2} paddingLeft={3}>
-        {/* Spacer for icon alignment */}
-        <Box className={menuIconSpacer} />
-        <Box>
-          <SectionHeader muted size={0} weight="medium">
-            {children}
-          </SectionHeader>
-        </Box>
-      </Flex>
-    </Box>
+    <StickyHeading>
+      <Box paddingX={2}>
+        <Flex paddingTop={3} paddingBottom={2} gap={2} paddingLeft={3}>
+          {/* Spacer for icon alignment */}
+          <Box className={menuIconSpacer} />
+          <Box>
+            <SectionHeader muted size={0} weight="medium">
+              {children}
+            </SectionHeader>
+          </Box>
+        </Flex>
+      </Box>
+    </StickyHeading>
   )
 }
 

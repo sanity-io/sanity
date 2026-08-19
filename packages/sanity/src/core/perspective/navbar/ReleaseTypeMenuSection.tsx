@@ -1,9 +1,15 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Card, Flex, Label, Stack} from '@sanity/ui'
+import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
+import {stickyMenuHeadingStyle} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
+
+const StickyHeading = styled.div`
+  ${stickyMenuHeadingStyle}
+`
 
 /**
  * One divider-separated group of releases in the perspective menu, with an
@@ -28,13 +34,20 @@ export function ReleaseTypeMenuSection({
 
   return (
     <Card padding={1} borderBottom data-testid={dataTestId}>
-      <Stack gap={1}>
+      {/*
+        The stack sets no gap and the heading carries the whole space below it as
+        padding instead. A gap would leave a transparent strip that rows flicker
+        through as they scroll under the pinned heading.
+      */}
+      <Stack gap={0}>
         {heading && (
-          <Box paddingLeft={2} paddingTop={3} paddingBottom={1}>
-            <Label muted style={{textTransform: 'uppercase'}} size={1}>
-              {heading}
-            </Label>
-          </Box>
+          <StickyHeading>
+            <Box paddingLeft={2} paddingTop={3} paddingBottom={2}>
+              <Label muted style={{textTransform: 'uppercase'}} size={1}>
+                {heading}
+              </Label>
+            </Box>
+          </StickyHeading>
         )}
         <Flex direction="column" gap={1}>
           {releases.map((release) => (
