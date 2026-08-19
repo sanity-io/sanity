@@ -1,10 +1,11 @@
 import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
 import {UnknownIcon} from '@sanity/icons/Unknown'
-import {Box, Card, Flex, Stack, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Flex, Stack, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -111,7 +112,7 @@ export function IncompatibleItemType(props: Props) {
             </Text>
           </Box>
 
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <Text size={1} textOverflow="ellipsis">
               <Translate
                 t={t}
