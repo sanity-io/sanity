@@ -24,6 +24,7 @@
     {"name": "tsdoc", "specifier": "eslint-plugin-tsdoc"},
     {"name": "i18next", "specifier": "eslint-plugin-i18next"},
     {"name": "@sanity/i18n", "specifier": "@sanity/eslint-plugin-i18n"},
+    {"name": "@repo/i18n", "specifier": "./lint/oxlint-plugin-repo-i18n.mjs"},
     {"name": "boundaries", "specifier": "eslint-plugin-boundaries"},
     {"name": "testing-library", "specifier": "eslint-plugin-testing-library"}
   ],
@@ -480,7 +481,8 @@
           }
         ],
         "@sanity/i18n/no-attribute-template-literals": "error",
-        "@sanity/i18n/no-i18next-import": "error"
+        "@sanity/i18n/no-i18next-import": "error",
+        "@repo/i18n/no-inline-translate-components": "error"
       }
     },
     {
