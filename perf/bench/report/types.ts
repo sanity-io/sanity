@@ -100,6 +100,12 @@ export interface ScenarioReport {
   }
   /** Top blocking-script attributions (experiment side). */
   loafAttribution: {sourceUrl: string; functionName: string; totalMs: number}[]
+  /**
+   * Which elements shifted during load, with summed CLS contribution across
+   * experiment samples (pageload mode only) — names the culprit behind a CLS
+   * number instead of leaving it a bare score.
+   */
+  clsAttribution?: {source: string; totalValue: number}[]
   /** Resources bucket — report-only, never gated (per-session medians). */
   resources?: {
     experiment: ResourceSide
@@ -142,7 +148,7 @@ export interface MetricReport {
   /** e.g. "title", "body", "boot-cold · time to editable" */
   label: string
   /** 'cls' is the unitless layout-shift score (~0–0.25), shown to 3 decimals. */
-  unit: 'ms' | 'count' | 'cls'
+  unit: 'ms' | 'count' | 'cls' | 'bytes'
   /** Present the median as eFPS (1000/ms) in reports. */
   presentAsEfps: boolean
   experiment: SideMetric
