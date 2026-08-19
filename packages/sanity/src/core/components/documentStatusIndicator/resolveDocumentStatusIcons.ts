@@ -3,7 +3,7 @@ import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {isSystemBundle} from '../../util/draftUtils'
 import {getTargetDocument, getVariantPublishedSibling} from '../../util/getTargetDocument'
 
-type DocumentStatusIconKind = 'variant' | 'release' | 'draft' | 'published'
+export type DocumentStatusIconKind = 'variant' | 'release' | 'draft' | 'published'
 
 type DocumentStatusIconsOutcome =
   | 'variantPublishedWithDraft'
