@@ -207,7 +207,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
       ...super.serialize(options),
       type: 'list',
       canHandleIntent: this.spec.canHandleIntent || defaultCanHandleIntent,
-      child: this.spec.child === undefined ? resolveChildForItem : this.spec.child,
+      child: this.spec.child || resolveChildForItem,
       items: serializedItems,
     }
   }

@@ -90,8 +90,7 @@ export class DocumentListItemBuilder extends ListItemBuilder {
       ).withHelpUrl(HELP_URL.SCHEMA_TYPE_REQUIRED)
     }
 
-    const child =
-      spec.child === undefined ? createDefaultChildResolver(this._context, spec) : spec.child
+    const child = spec.child || createDefaultChildResolver(this._context, spec)
     return {...spec, child, schemaType: spec.schemaType, _id: spec.id}
   }
 

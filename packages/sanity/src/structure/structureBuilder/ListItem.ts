@@ -26,14 +26,13 @@ export type UnserializedListItemChild =
   | CollectionBuilder
   | ChildResolver
   | Observable<ItemChild>
-  | null
 
 /**
  * Child of List Item
  * See {@link Collection}, {@link ChildResolver}, {@link ItemChild}
  * @public
  */
-export type ListItemChild = Collection | ChildResolver | Observable<ItemChild> | undefined | null
+export type ListItemChild = Collection | ChildResolver | Observable<ItemChild> | undefined
 
 /**
  * Interface for serialize list item options

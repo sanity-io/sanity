@@ -30,7 +30,7 @@ export interface ChildResolverOptions {
  *
  * @public
  */
-export type ItemChild = CollectionBuilder | Collection | undefined | null
+export type ItemChild = CollectionBuilder | Collection | undefined
 
 /**
  * Interface for child observable
@@ -51,5 +51,5 @@ export interface ChildResolver {
   (
     itemId: string,
     options: ChildResolverOptions,
-  ): ItemChild | Promise<ItemChild> | ChildObservable | Observable<ItemChild> | undefined | null
+  ): ItemChild | Promise<ItemChild> | ChildObservable | Observable<ItemChild> | undefined
 }

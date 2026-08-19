@@ -314,7 +314,7 @@ export abstract class GenericListBuilder<
       i18n: this.spec.i18n,
       type: 'genericList',
       defaultLayout,
-      child: this.spec.child === undefined ? noChildResolver : this.spec.child,
+      child: this.spec.child || noChildResolver,
       canHandleIntent: this.spec.canHandleIntent || shallowIntentChecker,
       displayOptions: this.spec.displayOptions,
       initialValueTemplates,

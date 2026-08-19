@@ -294,7 +294,7 @@ export interface BaseResolvedPaneNode<T extends PaneNode['type']> {
     params: Record<string, string | undefined>,
     options: {pane: PaneNode; index: number},
   ) => boolean
-  child?: UnresolvedPaneNode | null
+  child?: UnresolvedPaneNode
 }
 
 /** @internal */
@@ -391,10 +391,7 @@ export type SerializablePaneNode = {
 }
 
 /** @internal */
-export type PaneNodeResolver = (
-  id: string,
-  context: RouterPaneSiblingContext,
-) => UnresolvedPaneNode | null | undefined
+export type PaneNodeResolver = (id: string, context: RouterPaneSiblingContext) => UnresolvedPaneNode
 
 // TODO: these types need to be unified with the buidlers `ListBuilder
 /** @internal */
