@@ -19,6 +19,16 @@ export const CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0
  */
 export const OBSERVABILITY_FLOOR_MS = 16
 
+/**
+ * Pad `observed` up to `driven` entries with the observability floor, the
+ * same accounting `toLatencies` does — reused for per-label attribution so a
+ * label's below-floor interactions aren't just dropped from its latency list.
+ */
+export function padToFloor(observed: number[], driven: number): number[] {
+  const missing = driven - observed.length
+  return missing > 0 ? observed.concat(Array(missing).fill(OBSERVABILITY_FLOOR_MS)) : observed
+}
+
 export interface SessionConfig {
   warmupKeystrokes: number
   measuredKeystrokes: number

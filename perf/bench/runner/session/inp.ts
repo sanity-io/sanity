@@ -11,11 +11,17 @@ import {
   focusField,
   HERMETICITY_HINT,
   interactionMaxDurations,
+  padToFloor,
   type ReadOnlyInterruptions,
   type SessionConfig,
   SessionError,
   typeBurst,
 } from './interaction'
+
+export interface LabelledLatencies {
+  label: string
+  latencies: number[]
+}
 
 export interface InpSessionResult extends InpResult {
   /**
@@ -24,6 +30,8 @@ export interface InpSessionResult extends InpResult {
    * Timing observability floor produce no entry.
    */
   latencies: number[]
+  /** Per-field breakdown of the same latencies, floor-padded (see padToFloor). */
+  perLabel: LabelledLatencies[]
   readOnlyInterruptions: ReadOnlyInterruptions
 }
 
@@ -105,6 +113,7 @@ export async function runInpSession(options: {
     let driven = 0
     const keystrokesPerField = 4
     let offset = 0
+    const byLabel = new Map<string, {observed: number[]; driven: number}>()
 
     // Cycle through the scenario's fields, one click + short burst per field,
     // draining after each so a single field's rendering can't be double-counted.
@@ -137,9 +146,16 @@ export async function runInpSession(options: {
           interruptions,
         )
         offset += keystrokesPerField
-        driven += clicks + keystrokesPerField
+        const fieldDriven = clicks + keystrokesPerField
+        driven += fieldDriven
         const entries: BenchEntries = await drainEntries(page)
-        latencies.push(...interactionMaxDurations(entries))
+        const fieldLatencies = interactionMaxDurations(entries)
+        latencies.push(...fieldLatencies)
+        const label = target.label ?? target.fieldPath
+        const labelEntry = byLabel.get(label) ?? {observed: [], driven: 0}
+        labelEntry.observed.push(...fieldLatencies)
+        labelEntry.driven += fieldDriven
+        byLabel.set(label, labelEntry)
         round += 1
         if (driven >= config.targetInteractions || round >= config.maxRounds) break
       }
@@ -176,7 +192,17 @@ export async function runInpSession(options: {
       )
     }
 
-    return {...computeInp(latencies, driven), latencies, readOnlyInterruptions: interruptions}
+    const perLabel: LabelledLatencies[] = [...byLabel.entries()].map(([label, entry]) => ({
+      label,
+      latencies: padToFloor(entry.observed, entry.driven),
+    }))
+
+    return {
+      ...computeInp(latencies, driven),
+      latencies,
+      perLabel,
+      readOnlyInterruptions: interruptions,
+    }
   } finally {
     await context.close()
   }
