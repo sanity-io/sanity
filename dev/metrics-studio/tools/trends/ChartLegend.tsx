@@ -193,7 +193,7 @@ export function ChartLegend(props: {
           swatch={
             <>
               {/* Two stacked strokes, dashed over solid — the before/after pair.
-                  An explicit step glyph was tried and is illegible at 16×10px. */}
+                  An explicit step glyph is illegible at 16×10px. */}
               <line
                 x1={0}
                 y1={3}

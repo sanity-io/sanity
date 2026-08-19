@@ -52,11 +52,11 @@ secondary: leads scanning health weekly.
 
    `buildSeries` merges runs of the same commit into one point (their median), so
    both the charts and drift see one point per commit. CI re-runs the suite on a
-   commit fairly often — 4 shas in the stored history have 2–3 runs each — and a
-   run document can contribute several points to one series (the pageload
-   scenario stores the INP metric twice). Unmerged, that stacked several dots on
-   one x-position, gave the commit several votes in every median, and made a
-   "21 runs" window cover fewer than 21 commits of history.
+   commit fairly often — 4 shas in the stored history have 2–3 runs each.
+   Unmerged, that stacked several dots on one x-position, gave the commit
+   several votes in every median, and made a "21 runs" window cover fewer than
+   21 commits of history. (The merge also collapses duplicates of one metric
+   within a single document, defensively — none are known to exist.)
 
    Median rather than mean, matching the p50 language used throughout: one
    throttled or failed re-run can't drag the point. The merged point keeps a real
@@ -67,20 +67,20 @@ secondary: leads scanning health weekly.
    merged point averages across hosts. The **calibration strip is deliberately
    not merged** — showing per-run and cross-shard host spread is its whole job.
 
-   There was a second, faster **step** baseline (latest run vs a median of
-   recent runs), meant to catch a jump the day it landed. It was removed:
-   measured against the stored history it fired on 74–92% of runs at every
-   window size tried, because run-to-run noise (~12% median) is well over the
-   5% threshold. Two baselines were also impossible to tell apart in the UI
-   while one of them fired constantly. Catching a single-run jump needs a more
-   precise measurement (more sessions per run), not different arithmetic.
+   A second, faster **step** baseline (latest run vs a median of recent runs,
+   to catch a jump the day it lands) was considered and rejected: measured
+   against the stored history it would fire on 74–92% of runs at every window
+   size, because run-to-run noise (~12% median) is well over the 5% threshold.
+   Two baselines would also be impossible to tell apart in the UI while one of
+   them fired constantly. Catching a single-run jump needs a more precise
+   measurement (more sessions per run), not different arithmetic.
 
-   An earlier version of step compared against the last 4 runs on the _same
-   weekday_, to control for day-of-week CI runner load. The stored history does
-   not support that either: weekday and weekend `calibrationMs` medians are
-   identical (7.60 vs 7.60) and only ~14% of calibration variance sits between
-   weekdays. Host speed is handled by the per-run `runner.calibrationMs`
-   measurement instead.
+   A weekday-matched variant (compare against the last 4 runs on the _same
+   weekday_, to control for day-of-week CI runner load) was rejected too: the
+   stored history does not support it — weekday and weekend `calibrationMs`
+   medians are identical (7.60 vs 7.60) and only ~14% of calibration variance
+   sits between weekdays. Host speed is handled by the per-run
+   `runner.calibrationMs` measurement instead.
 
    **Every** chart with enough history draws its baseline as an overlay — not
    only the flagged ones. "Recent level vs prior level" is a useful reference

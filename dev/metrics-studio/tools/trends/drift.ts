@@ -11,12 +11,12 @@
  * point (see `mergeRunsPerCommit`), so a window of 21 is 21 commits — and the
  * spans the chart overlay draws line up with the plotted points exactly.
  *
- * There used to be a second, faster "step" baseline (latest run vs a median of
- * recent runs) meant to catch a jump the day it landed. It was removed: measured
- * against the stored history it fired on 74–92% of runs at every window size
- * tried, because run-to-run noise on these metrics (~12% median) is well over
- * the 5% threshold. A detector that fires four runs out of five is not a signal,
- * and no windowing fixed it. Detecting a single-run jump needs a more precise
+ * A second, faster "step" baseline (latest run vs a median of recent runs, to
+ * catch a jump the day it lands) was considered and rejected: measured against
+ * the stored history it would fire on 74–92% of runs at every window size,
+ * because run-to-run noise on these metrics (~12% median) is well over the 5%
+ * threshold. A detector that fires four runs out of five is not a signal, and
+ * no windowing fixes it. Detecting a single-run jump needs a more precise
  * measurement (more sessions per run), not different arithmetic.
  *
  * "Enough to care" reuses the bench gate's thresholds (perf/bench/stats/

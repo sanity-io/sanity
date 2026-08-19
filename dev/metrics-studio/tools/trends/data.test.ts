@@ -81,7 +81,9 @@ test('an outlier re-run does not drag the merged value', () => {
   expect(points[0].value).toBe(104)
 })
 
-// The pageload scenario stores the INP metric twice per run document.
+// Defensive: no run document is known to carry the same metric twice, but if
+// one ever does, it must collapse to one point rather than double-voting its
+// commit.
 test('repeated metrics within one run collapse to one point', () => {
   const points = pointsOf([run({id: 'a', sha: 'sha-1', day: 0, value: 100, repeats: 2})])
   expect(points).toHaveLength(1)
@@ -213,8 +215,8 @@ test('vitals group into per-vital sections', () => {
   ])
 })
 
-// TTFB is no longer collected (a constant of the local mock, not a studio
-// signal), but stored history still carries it — it must not chart
+// Older documents carry a TTFB metric (a constant of the local mock, not a
+// studio signal) — it must not chart
 test('TTFB metrics in stored documents are skipped', () => {
   const base = run({id: 'a', sha: 'sha-1', day: 0, value: 100})
   const withTtfb: TrendRun = {

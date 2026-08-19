@@ -505,11 +505,11 @@ function medianOf(values: number[]): number {
  * median.
  *
  * CI re-runs the suite on a commit fairly often (4 shas in the stored history
- * have 2–3 runs each), and a run document can also contribute more than one
- * point to a series — the pageload scenario stores the INP metric twice. Left
- * unmerged, both cases put several dots on one x-position, weight that commit
- * several times in every median, and make a "7 runs" window cover fewer than 7
- * commits' worth of history.
+ * have 2–3 runs each). Left unmerged, that puts several dots on one
+ * x-position, weights that commit several times in every median, and makes a
+ * "7 runs" window cover fewer than 7 commits' worth of history. Within-document
+ * duplicates of one metric are also collapsed — none are known to exist, but
+ * the merge guards against them all the same.
  *
  * Median rather than mean, matching the p50/median language used throughout the
  * dashboard: a single throttled or failed re-run can't drag the point.
@@ -592,9 +592,9 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
       )?.experiment?.summary?.median
       for (const metric of scenario.metrics ?? []) {
         if (metric.label === 'INP interactions') continue
-        // TTFB is no longer collected (against the local mock it was a 2–10ms
-        // constant of the bench setup, not a studio signal) — but documents
-        // stored before its removal still carry it, so skip it here too
+        // Older documents carry a TTFB metric; skip it. Against the local
+        // mock it is a 2–10ms constant of the bench setup, not a studio
+        // signal, and the bench does not store it anymore.
         if (metric.label.endsWith('TTFB')) continue
         const summary = metric.experiment?.summary
         if (!summary) continue

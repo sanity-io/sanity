@@ -43,14 +43,13 @@ function previousShaFor(lines: TrendLine[], selected: TrendPoint): string | unde
 export const COLOR = {
   line: 'var(--card-accent-fg-color, #556bfc)',
   /**
-   * The p75–p90 band. This used to be `--card-badge-primary-bg-color` — a badge
-   * *background* token pressed into service as a data fill, which in dark mode
-   * resolves to a desaturated navy barely separable from the card behind it.
-   *
-   * Instead the band is now the series' own color at low alpha, applied via
-   * `fill`/`stroke` + opacity rather than baked into the value: it ties the band
+   * The p75–p90 band: the series' own color at low alpha, applied via
+   * `fill`/`stroke` + opacity rather than baked into the value. It ties the band
    * to the line it describes (a percentile spread belongs to its median), and it
    * inherits whatever contrast that color already has in both schemes.
+   * Deliberately not a badge *background* token like
+   * `--card-badge-primary-bg-color`, which in dark mode resolves to a
+   * desaturated navy barely separable from the card behind it.
    */
   band: 'var(--card-accent-fg-color, #556bfc)',
   axis: 'var(--card-muted-fg-color, #727892)',
@@ -242,7 +241,7 @@ function BaselineOverlay(props: {
   //
   // So both rules get a floor, laid out as one step anchored at the right edge:
   // the recent level takes the rightmost slice and the baseline level extends
-  // leftward from there. Padding them independently (tried both ways) either
+  // leftward from there. Padding them independently either
   // inverted the dashed rule or pushed the solid one over runs it never
   // measured. Spans become approximate only when a window falls under its floor
   // — the exact runs stay in the tooltip and the drift feed — but the shape (two
