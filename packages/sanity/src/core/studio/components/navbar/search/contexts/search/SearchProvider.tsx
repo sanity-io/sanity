@@ -253,6 +253,7 @@ export function SearchProvider({
     previousTermsRef.current = terms
   }, [
     completeFilters.length,
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     currentFilters,
     documentTypes,
     handleSearch,
@@ -276,6 +277,7 @@ export function SearchProvider({
     }
 
     isMountedRef.current = true
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [dispatch, hasValidTerms, result.hits, terms.query, terms.types])
 
   const value = useMemo(

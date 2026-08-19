@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
+import {Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -14,6 +14,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, type CSSObject, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -248,6 +249,7 @@ export function TagInput(
       inputElement.style.width = '0'
       inputElement.style.width = `calc(${inputElement.scrollWidth}px + 1rem)`
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [inputValue])
 
   return (
@@ -321,7 +323,13 @@ function Tag(props: {
   return (
     <Card data-ui="Tag" radius={2} tone="transparent">
       <Flex align="center" gap={1}>
-        <Box flex={1} paddingY={2} paddingLeft={2} paddingRight={enabled ? undefined : 2}>
+        <Box
+          flexBasis="0%"
+          flexGrow={1}
+          paddingY={2}
+          paddingLeft={2}
+          paddingRight={enabled ? undefined : 2}
+        >
           <Text muted={muted} textOverflow="ellipsis">
             {tag.value}
           </Text>

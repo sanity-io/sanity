@@ -64,7 +64,7 @@ vi.mock('@sanity/ui/autocomplete', async (importOriginal) => {
     useLayoutEffect(() => {
       if (typeof renderPopover !== 'function') {
         // TODO(oxlint): remove this suppression in a follow-up when this test setup is refactored
-        // oxlint-disable-next-line react/react-compiler
+        // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
         setPopover(null)
         return
       }

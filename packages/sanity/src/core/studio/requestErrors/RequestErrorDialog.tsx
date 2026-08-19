@@ -178,7 +178,7 @@ export function RequestErrorDialog(props: {
 }
 
 function RateLimitedDialog(props: {
-  claim: {type: 'rateLimited'; error: Error; retryAfterSeconds?: number; retryable: boolean}
+  claim: Extract<RequestErrorClaim, {type: 'rateLimited'}>
   onRetry: () => void
 }) {
   const {claim, onRetry} = props
@@ -194,6 +194,7 @@ function RateLimitedDialog(props: {
     // disabled state. Intentional sync to the external claim, not a cascade —
     // deferred via startTransition so React can schedule the re-render lazily.
     startTransition(() => setRetrying(false))
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [claim])
   const handleRetry = useCallback(() => {
     setRetrying(true)

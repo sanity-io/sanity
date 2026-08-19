@@ -6,6 +6,7 @@ import {useAllVariants} from '../../store/useAllVariants'
 import {decodeVariantIdFromRoute} from '../../tool/util'
 import {CurrentVariantLabel} from './CurrentVariantLabel'
 import {VariantsMenu} from './VariantsMenu'
+import {VariantsToolLink} from './VariantsToolLink'
 
 const VariantsNavContainer = styled(Card)`
   position: relative;
@@ -42,6 +43,7 @@ export function VariantsNav(): React.JSX.Element {
 
   return (
     <VariantsNavContainer flex="none" tone="inherit" radius="full" data-ui="VariantsNav">
+      <VariantsToolLink selectedVariant={selectedVariant} />
       <CurrentVariantLabel selectedVariant={selectedVariant} />
       <VariantsMenu />
     </VariantsNavContainer>
