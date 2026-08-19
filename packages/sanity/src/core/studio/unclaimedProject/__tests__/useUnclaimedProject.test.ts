@@ -157,7 +157,7 @@ describe('useUnclaimedProject', () => {
     await waitFor(() =>
       expect(mockRequest).toHaveBeenCalledExactlyOnceWith({
         tag: 'unclaimed-project',
-        uri: `/projects/${PROJECT_ID}`,
+        url: `/projects/${PROJECT_ID}`,
       }),
     )
     expect(result.current).toBeUndefined()

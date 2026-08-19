@@ -1,7 +1,13 @@
 import {describe, expect, it} from 'vitest'
 
 import {bootstrapDiffOfMedians, type DiffInterval} from '../bootstrap'
-import {gate, INTERACTION_THRESHOLDS, PAGELOAD_THRESHOLDS, shouldStop} from '../gate'
+import {
+  gate,
+  INTERACTION_THRESHOLDS,
+  isDecidedVerdict,
+  PAGELOAD_THRESHOLDS,
+  shouldStop,
+} from '../gate'
 import {median, quantile, summarize} from '../quantiles'
 import {mulberry32, type Rng} from '../rng'
 
@@ -159,7 +165,7 @@ const interval = (diff: number, lo: number, hi: number): DiffInterval => ({
 describe('gate', () => {
   it('flags a regression only when the CI excludes zero AND the effect clears the floors', () => {
     expect(
-      gate({diff: 8, lo: 5, hi: 11, level: 0.95, iterations: 2000}, 32, INTERACTION_THRESHOLDS),
+      gate({diff: 24, lo: 16, hi: 32, level: 0.95, iterations: 2000}, 32, INTERACTION_THRESHOLDS),
     ).toBe('regression')
     // CI excludes zero but effect below the absolute floor
     expect(
@@ -169,7 +175,11 @@ describe('gate', () => {
 
   it('flags improvements symmetrically', () => {
     expect(
-      gate({diff: -8, lo: -11, hi: -5, level: 0.95, iterations: 2000}, 32, INTERACTION_THRESHOLDS),
+      gate(
+        {diff: -24, lo: -32, hi: -16, level: 0.95, iterations: 2000},
+        32,
+        INTERACTION_THRESHOLDS,
+      ),
     ).toBe('improvement')
   })
 
@@ -187,9 +197,10 @@ describe('gate', () => {
         INTERACTION_THRESHOLDS,
       ),
     ).toBe(true)
+    // Half-width 24 > bound max(8, 16) = 16 at ref 32
     expect(
       shouldStop(
-        {diff: 0, lo: -10, hi: 10, level: 0.95, iterations: 2000},
+        {diff: 0, lo: -24, hi: 24, level: 0.95, iterations: 2000},
         32,
         INTERACTION_THRESHOLDS,
       ),
@@ -197,12 +208,26 @@ describe('gate', () => {
   })
 
   it('a diff exactly at the minimum effect IS a verdict (inclusive >= boundary)', () => {
-    // INTERACTION at referenceMedian 32: minimumEffect = max(3, 0.05·32) = 3
-    expect(gate(interval(3, 0.5, 5.5), 32, INTERACTION_THRESHOLDS)).toBe('regression')
-    expect(gate(interval(-3, -5.5, -0.5), 32, INTERACTION_THRESHOLDS)).toBe('improvement')
+    // INTERACTION at referenceMedian 32: minimumEffect = max(16, 0.05·32) = 16
+    expect(gate(interval(16, 8, 24), 32, INTERACTION_THRESHOLDS)).toBe('regression')
+    expect(gate(interval(-16, -24, -8), 32, INTERACTION_THRESHOLDS)).toBe('improvement')
     // A hair under the floor is not a verdict — with a tight CI it's neutral
-    expect(gate(interval(2.999, 0.5, 5.5), 32, INTERACTION_THRESHOLDS)).toBe('neutral')
-    expect(gate(interval(-2.999, -5.5, -0.5), 32, INTERACTION_THRESHOLDS)).toBe('neutral')
+    expect(gate(interval(15.999, 8, 24), 32, INTERACTION_THRESHOLDS)).toBe('neutral')
+    expect(gate(interval(-15.999, -24, -8), 32, INTERACTION_THRESHOLDS)).toBe('neutral')
+  })
+
+  it('one Event Timing granularity step is never a verdict, two always are', () => {
+    // The regression this pins: with absMs=3, a single 8ms quantisation step
+    // gated as a regression on any metric under 160ms, so two identical builds
+    // could disagree (self-test `article/body`, median 56ms: Δ+8 [+4, +8] 🔴).
+    // 8ms is the smallest non-zero difference the browser can report, so it
+    // must fall below the floor; 16ms (two steps) must clear it.
+    for (const median of [32, 56, 80, 120, 160]) {
+      expect(gate(interval(8, 4, 8), median, INTERACTION_THRESHOLDS)).toBe('neutral')
+      expect(gate(interval(-8, -8, -4), median, INTERACTION_THRESHOLDS)).toBe('neutral')
+      expect(gate(interval(16, 8, 24), median, INTERACTION_THRESHOLDS)).toBe('regression')
+      expect(gate(interval(-16, -24, -8), median, INTERACTION_THRESHOLDS)).toBe('improvement')
+    }
   })
 
   it('an improvement below the effect floor is neutral, not an improvement', () => {
@@ -211,20 +236,20 @@ describe('gate', () => {
   })
 
   it('uses the relative floor when it dominates the absolute one', () => {
-    // referenceMedian 100: minimumEffect = max(3, 0.05·100) = 5, not absMs=3
-    expect(gate(interval(4, 1, 7), 100, INTERACTION_THRESHOLDS)).toBe('neutral')
-    expect(gate(interval(5, 1, 9), 100, INTERACTION_THRESHOLDS)).toBe('regression')
+    // referenceMedian 400: minimumEffect = max(16, 0.05·400) = 20, not absMs=16
+    expect(gate(interval(19, 8, 30), 400, INTERACTION_THRESHOLDS)).toBe('neutral')
+    expect(gate(interval(20, 8, 32), 400, INTERACTION_THRESHOLDS)).toBe('regression')
     // Same for improvements
-    expect(gate(interval(-4, -7, -1), 100, INTERACTION_THRESHOLDS)).toBe('neutral')
-    expect(gate(interval(-5, -9, -1), 100, INTERACTION_THRESHOLDS)).toBe('improvement')
+    expect(gate(interval(-19, -30, -8), 400, INTERACTION_THRESHOLDS)).toBe('neutral')
+    expect(gate(interval(-20, -32, -8), 400, INTERACTION_THRESHOLDS)).toBe('improvement')
   })
 
   it('a half-width exactly at the stop bound is decidable (neutral), just past it is not', () => {
-    // Bound = max(targetHalfWidthMs, minimumEffect) = max(4, 3) = 4 at ref 32
-    expect(gate(interval(0, -4, 4), 32, INTERACTION_THRESHOLDS)).toBe('neutral')
-    expect(shouldStop(interval(0, -4, 4), 32, INTERACTION_THRESHOLDS)).toBe(true)
-    expect(gate(interval(0, -4.1, 4.1), 32, INTERACTION_THRESHOLDS)).toBe('inconclusive')
-    expect(shouldStop(interval(0, -4.1, 4.1), 32, INTERACTION_THRESHOLDS)).toBe(false)
+    // Bound = max(targetHalfWidthMs, minimumEffect) = max(8, 16) = 16 at ref 32
+    expect(gate(interval(0, -16, 16), 32, INTERACTION_THRESHOLDS)).toBe('neutral')
+    expect(shouldStop(interval(0, -16, 16), 32, INTERACTION_THRESHOLDS)).toBe(true)
+    expect(gate(interval(0, -16.1, 16.1), 32, INTERACTION_THRESHOLDS)).toBe('inconclusive')
+    expect(shouldStop(interval(0, -16.1, 16.1), 32, INTERACTION_THRESHOLDS)).toBe(false)
   })
 
   it('property: shouldStop is the exact complement of gate() === inconclusive for zero-spanning intervals', () => {
@@ -247,6 +272,26 @@ describe('gate', () => {
         }
       }
     }
+  })
+})
+
+describe('isDecidedVerdict (the --fail-on-verdict predicate)', () => {
+  it('only regression and improvement count as decided', () => {
+    expect(isDecidedVerdict('regression')).toBe(true)
+    expect(isDecidedVerdict('improvement')).toBe(true)
+    expect(isDecidedVerdict('neutral')).toBe(false)
+  })
+
+  it('inconclusive is NOT decided — a noisy run must not fail the self-test', () => {
+    // gate() treats inconclusive as neutral and the PR report counts it under
+    // "no regressions"; failing on it would turn budget exhaustion (flake
+    // resistance §2) into a red self-test. Regression guard: the predicate was
+    // once `verdict !== 'neutral'`, which failed on inconclusive.
+    expect(isDecidedVerdict('inconclusive')).toBe(false)
+  })
+
+  it('a metric with no comparison (absolute mode) is not decided', () => {
+    expect(isDecidedVerdict(undefined)).toBe(false)
   })
 })
 

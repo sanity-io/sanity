@@ -271,8 +271,7 @@ export function prepareConfig(
   config: Config | MissingConfigFile,
   options?: {
     basePath?: string
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    requestHandler?: RequestHandler
+    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -368,7 +367,7 @@ export function prepareConfig(
       }
 
       const auth = getAuthStore(source, {
-        requestHandler: options?.requestHandler,
+        createStudioRequestHandler: options?.createStudioRequestHandler,
         requestErrorChannel: options?.requestErrorChannel,
         requestFailureDiagnostics: options?.requestFailureDiagnostics,
       })
@@ -435,12 +434,11 @@ export function prepareConfig(
 function getAuthStore(
   source: SourceOptions,
   {
-    requestHandler,
+    createStudioRequestHandler,
     requestErrorChannel,
     requestFailureDiagnostics,
   }: {
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    requestHandler?: RequestHandler
+    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -449,15 +447,21 @@ function getAuthStore(
     return source.auth
   }
 
-  const _clientFactory = source.unstable_clientFactory || createClient
+  const clientFactory = source.unstable_clientFactory ?? createClient
 
   const {projectId, dataset, apiHost} = source
   return createAuthStore({
     apiHost,
     ...source.auth,
     clientFactory: (config) => {
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      return _clientFactory({...config, _requestHandler: requestHandler})
+      let client: SanityClient
+      client = clientFactory({
+        ...config,
+        ...(createStudioRequestHandler
+          ? {requestHandler: createStudioRequestHandler(() => client)}
+          : {}),
+      })
+      return client
     },
     // Passed as getters so this unhashable runtime wiring stays out of the
     // auth-store memo key.
