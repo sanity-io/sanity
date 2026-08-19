@@ -76,6 +76,12 @@ export interface FormFieldSetProps {
 
   path: Path
   readOnly?: boolean
+  /**
+   * Whether the value differs from its value in the document's base variant. Optional because this
+   * component also wraps rows that are not document fields — notably schema fieldsets, which are
+   * presentational groupings with no form node of their own. Defaults to `false`.
+   */
+  changedFromBaseVariant?: boolean
 }
 
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
@@ -156,6 +162,7 @@ export function FormFieldSet(
     __internal_slot: slot = null,
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
+    changedFromBaseVariant = false,
     children,
     collapsed,
     collapsible,
@@ -212,7 +219,11 @@ export function FormFieldSet(
   }, [children, collapsed, columns])
 
   return (
-    <FormRow gutterStartCell={<FormFieldGutter path={path} />}>
+    <FormRow
+      gutterStartCell={
+        <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
+      }
+    >
       <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
         <Root
           data-level={level}

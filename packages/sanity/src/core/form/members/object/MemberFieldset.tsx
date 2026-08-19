@@ -72,6 +72,10 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
       data-testid={`fieldset-${member.fieldSet.name}`}
       inputId={member.fieldSet.name}
       path={member.path}
+      // No `changedFromBaseVariant`: a schema fieldset is a presentational grouping with no form
+      // node, so there is no value to compare. Showing divergence here would mean aggregating over
+      // `member.fieldSet.members`, the way object nodes do in `formState`. Left undecided until the
+      // base variant indicator exists.
     >
       {fieldsetMembers.map((fieldsetMember) => {
         if (fieldsetMember.kind === 'error') {

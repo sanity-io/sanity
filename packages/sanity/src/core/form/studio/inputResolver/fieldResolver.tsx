@@ -35,7 +35,14 @@ function BooleanField(field: FieldProps) {
   // rendered here.
   return (
     <FormNodeDivergenceDetail path={field.path} readOnly={field.inputProps.readOnly}>
-      <FormRow gutterStartCell={<FormFieldGutter path={field.path} />}>
+      <FormRow
+        gutterStartCell={
+          <FormFieldGutter
+            path={field.path}
+            changedFromBaseVariant={field.changedFromBaseVariant}
+          />
+        }
+      >
         {documentId && field.actions && field.actions.length > 0 && (
           <FieldActionsResolver
             actions={field.actions}
@@ -82,7 +89,14 @@ function DateTimeField(field: FieldProps) {
   // rendered here.
   return (
     <FormNodeDivergenceDetail path={field.path} readOnly={field.inputProps.readOnly}>
-      <FormRow gutterStartCell={<FormFieldGutter path={field.path} />}>
+      <FormRow
+        gutterStartCell={
+          <FormFieldGutter
+            path={field.path}
+            changedFromBaseVariant={field.changedFromBaseVariant}
+          />
+        }
+      >
         {documentId && field.actions && field.actions.length > 0 && (
           <FieldActionsResolver
             actions={field.actions}
@@ -151,6 +165,7 @@ function PrimitiveField(field: FieldProps) {
             validation={field.validation}
             deprecated={field.schemaType.deprecated}
             path={field.path}
+            changedFromBaseVariant={field.changedFromBaseVariant}
             readOnly={field.inputProps.readOnly}
           >
             <ChangeIndicator
@@ -227,6 +242,7 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
           path={field.path}
+          changedFromBaseVariant={field.changedFromBaseVariant}
           readOnly={field.inputProps.readOnly}
         >
           {field.children}
@@ -281,6 +297,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
           path={field.path}
+          changedFromBaseVariant={field.changedFromBaseVariant}
           schemaType={field.schemaType}
           readOnly={field.inputProps.readOnly}
         >
