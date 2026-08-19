@@ -35,6 +35,14 @@ export function toStorableRun(document: BenchRunDocument) {
         ...entry,
         _key: `loaf-${index}`,
       })),
+      ...(scenario.clsAttribution
+        ? {
+            clsAttribution: scenario.clsAttribution.map((entry, index) => ({
+              ...entry,
+              _key: `shift-${index}`,
+            })),
+          }
+        : {}),
       ...(scenario.resources ? {resources: toStorableResources(scenario.resources)} : {}),
       ...(scenario.soak
         ? {

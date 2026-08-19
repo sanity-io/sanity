@@ -283,12 +283,37 @@ export function collectInp(
   }
 }
 
-/** pageLoad samples (both sides) → scenario report. */
+/** Exact gzip sum of the chunks a sample fetched; null when none matched. */
+function bootJsBytes(paths: string[], sizes: ReadonlyMap<string, number>): number | null {
+  let total = 0
+  let matched = 0
+  for (const path of paths) {
+    const size = sizes.get(path)
+    if (size !== undefined) {
+      total += size
+      matched += 1
+    }
+  }
+  return matched > 0 ? total : null
+}
+
+/**
+ * pageLoad samples (both sides) → scenario report. `chunkGzipSizes` (dist
+ * path → exact gzip bytes per side, from measureBundleSize) enables the
+ * "boot JS" row: what booting actually downloads, as opposed to the entry
+ * chunk the bundle report counts. Per side because chunk names are
+ * content-hashed: valuing reference-side fetches against the experiment
+ * build's sizes would produce a partial sum that reads as a fake A/B diff.
+ */
 export function collectPageLoad(
   scenario: string,
   samplesBySide: Map<string, PageLoadSample[]>,
   comparisons: Map<LoadCondition, {interval: DiffInterval; verdict: Verdict}>,
   sourceFile?: string,
+  chunkGzipSizes?: {
+    experiment: ReadonlyMap<string, number>
+    reference?: ReadonlyMap<string, number>
+  },
 ): ScenarioReport {
   const experiment = samplesBySide.get('experiment') ?? []
   const reference = samplesBySide.get('reference')
@@ -298,17 +323,17 @@ export function collectPageLoad(
     condition: LoadCondition,
     label: string,
     unit: MetricReport['unit'],
-    value: (sample: PageLoadSample) => number | null,
+    value: (sample: PageLoadSample, side: 'experiment' | 'reference') => number | null,
   ): MetricReport[] => {
-    const values = (samples: PageLoadSample[] | undefined) =>
+    const values = (samples: PageLoadSample[] | undefined, side: 'experiment' | 'reference') =>
       (samples ?? [])
         .filter((sample) => sample.condition === condition)
-        .map(value)
+        .map((sample) => value(sample, side))
         .filter((sampleValue): sampleValue is number => sampleValue !== null)
         .map((sampleValue) => [sampleValue])
-    const experimentValues = values(experiment)
+    const experimentValues = values(experiment, 'experiment')
     if (experimentValues.length === 0) return []
-    const referenceValues = values(reference)
+    const referenceValues = values(reference, 'reference')
     return [
       {
         label: `${condition} · ${label}`,
@@ -362,8 +387,8 @@ export function collectPageLoad(
         },
         // Core Web Vitals (report-only) — captured per sample but previously
         // only logged; surface them so the dashboard tracks load quality, not
-        // just time-to-editable
-        ...reportOnly(condition, 'TTFB', 'ms', (sample) => sample.ttfbMs),
+        // just time-to-editable. No TTFB: against the local mock it's a
+        // constant of the bench setup, not a studio signal.
         ...reportOnly(condition, 'FCP', 'ms', (sample) => sample.fcpMs),
         ...reportOnly(condition, 'LCP', 'ms', (sample) => sample.lcpMs),
         ...reportOnly(condition, 'CLS', 'cls', (sample) => sample.cls),
@@ -383,6 +408,20 @@ export function collectPageLoad(
           (sample) => sample.auth.firstRequestMs,
         ),
         ...reportOnly(condition, 'auth in flight', 'ms', (sample) => sample.auth.inFlightMs),
+        // What booting actually downloads: exact gzip sum of the chunks this
+        // sample fetched before editable. boot-cold only — the warm page
+        // replays the same set from cache. (The bundle report's entry-chunk
+        // number is only what index.html references.)
+        ...(condition === 'boot-cold' && chunkGzipSizes
+          ? reportOnly(condition, 'boot JS', 'bytes', (sample, side) => {
+              // Each side's fetches valued against its own build's chunk
+              // sizes; a side without a size map gets no value at all rather
+              // than a misleading partial sum
+              const sizes =
+                side === 'reference' ? chunkGzipSizes.reference : chunkGzipSizes.experiment
+              return sizes ? bootJsBytes(sample.jsPaths, sizes) : null
+            })
+          : []),
       ]
     },
   )
@@ -400,6 +439,17 @@ export function collectPageLoad(
     }
   }
 
+  // Which elements shifted, summed across experiment samples — the CLS
+  // number's culprit list, same idea as the script blockers above
+  const byShiftSource = new Map<string, {source: string; totalValue: number}>()
+  for (const sample of experiment) {
+    for (const shift of sample.clsAttribution) {
+      const existing = byShiftSource.get(shift.source) ?? {source: shift.source, totalValue: 0}
+      existing.totalValue += shift.totalValue
+      byShiftSource.set(shift.source, existing)
+    }
+  }
+
   return {
     scenario,
     ...(sourceFile ? {sourceFile} : {}),
@@ -408,5 +458,8 @@ export function collectPageLoad(
     failures: [],
     interruptions: {experiment: {count: 0, totalMs: 0}},
     loafAttribution: [...byScript.values()].sort((a, b) => b.totalMs - a.totalMs).slice(0, 5),
+    clsAttribution: [...byShiftSource.values()]
+      .sort((a, b) => b.totalValue - a.totalValue)
+      .slice(0, 5),
   }
 }
