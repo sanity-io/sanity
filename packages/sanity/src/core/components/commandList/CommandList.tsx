@@ -156,6 +156,7 @@ function CommandListComponent({
   )
 
   // This will trigger a re-render whenever its internal state changes
+  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
   const virtualizer = useVirtualizer({
     count: items.length,
     getItemKey,

@@ -35,6 +35,6 @@ export function StudioLayout() {
   // The default component is `StudioLayoutComponent`.
   const Layout = useLayoutComponent()
 
-  // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
+  // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
   return <Layout />
 }

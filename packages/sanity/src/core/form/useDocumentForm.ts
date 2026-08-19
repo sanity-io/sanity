@@ -754,6 +754,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     if (!ready || initialFocusPathAppliedRef.current) return
     initialFocusPathAppliedRef.current = true
     applyInitialFocusPath()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [ready])
 
   return {

@@ -81,7 +81,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
           actors: createCompatibilityActors<LoaderControllerMsg>(),
         }),
       )
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setComlink(nextComlink)
 
       nextComlink.onStatus(onLoadersConnection)
@@ -260,6 +260,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
       handleQueryChange(comlink, perspective, variant, query, params, result, resultSourceMap, tags)
     }
     return undefined
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [comlink, params, perspective, query, result, resultSourceMap, tags, variant])
 
   return null
