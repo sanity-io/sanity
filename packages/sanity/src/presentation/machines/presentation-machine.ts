@@ -7,7 +7,12 @@ import {
   TIME_TO_SHOW_OVERLAYS_CONNECTION_STATUS,
 } from '../constants'
 import {type ConnectionStatus} from '../types'
-import {aggregateConnectionStatus, type ChannelStatusMap, reduceStatusMap} from '../useStatus'
+import {
+  aggregateConnectionStatus,
+  type ChannelConnectionStatus,
+  type ChannelStatusMap,
+  reduceStatusMap,
+} from '../useStatus'
 
 interface Context {
   visualEditingOverlaysEnabled: boolean
@@ -97,7 +102,7 @@ export const presentationMachine = setup({
   id: 'Presentation Tool',
   context: () => ({
     visualEditingOverlaysEnabled: false,
-    overlaysStatusMap: new Map(),
+    overlaysStatusMap: new Map<string, ChannelConnectionStatus>(),
     overlaysConnection: 'idle',
     overlaysDismissed: false,
   }),

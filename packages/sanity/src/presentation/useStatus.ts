@@ -72,7 +72,9 @@ export function aggregateConnectionStatus(statusMap: ChannelStatusMap): Connecti
  */
 export function useStatus(): [ConnectionStatus, (event: StatusEvent) => void] {
   // State to keep track of the status of each channel
-  const [statusMap, setStatusMap] = useState<ChannelStatusMap>(() => new Map())
+  const [statusMap, setStatusMap] = useState<ChannelStatusMap>(
+    () => new Map<string, ChannelConnectionStatus>(),
+  )
 
   // Memoized computation of the overall status based on the status of individual channels
   const memoStatus = useMemo(() => aggregateConnectionStatus(statusMap), [statusMap])
