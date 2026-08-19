@@ -1,8 +1,11 @@
 import {isHotkey} from 'is-hotkey-esm'
 import {type ElementType, type HTMLProps, memo, type Ref, useCallback, useState} from 'react'
-import {type DocumentActionDescription, LegacyLayerProvider} from 'sanity'
+import {
+  type DocumentActionDescription,
+  LegacyLayerProvider,
+  RenderActionCollectionState,
+} from 'sanity'
 
-import {RenderActionCollectionState} from '../../../components/RenderActionCollectionState'
 import {ActionStateDialog} from '../statusBar/ActionStateDialog'
 
 export interface KeyboardShortcutResponderProps {

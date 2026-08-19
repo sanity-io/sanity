@@ -92,6 +92,7 @@ export {
   type PackageVersionInfoContextValue,
 } from '../_singletons/context/PackageVersionInfoContext'
 export {PaneContext} from '../_singletons/context/PaneContext'
+export {PaneFeaturesContext} from '../_singletons/context/PaneFeaturesContext'
 export {PaneLayoutContext} from '../_singletons/context/PaneLayoutContext'
 export {PaneRouterContext} from '../_singletons/context/PaneRouterContext'
 export {ParseErrorsContext, type SetParseError} from '../_singletons/context/ParseErrorsContext'

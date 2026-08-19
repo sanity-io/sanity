@@ -8,6 +8,8 @@ import {
   Hotkeys,
   isGoingToUnpublish,
   isSanityDefinedAction,
+  RenderActionCollectionState,
+  type ResolvedAction,
   toLowerCaseNoSpaces,
   useClient,
   useDocumentStore,
@@ -23,10 +25,6 @@ import {ReferencePreviewLink} from '../../../components/confirmDeleteDialog/Refe
 import {referringDocuments} from '../../../components/confirmDeleteDialog/useReferringDocuments'
 import {VersionsPreviewList} from '../../../components/confirmDeleteDialog/VersionsPreviewList'
 import {DocTitle} from '../../../components/DocTitle'
-import {
-  RenderActionCollectionState,
-  type ResolvedAction,
-} from '../../../components/RenderActionCollectionState'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {useHistoryRestoreAction} from '../../../documentActions/HistoryRestoreAction'
 import {useDocumentPerspectiveList} from '../../../hooks/useDocumentPerspectiveList'

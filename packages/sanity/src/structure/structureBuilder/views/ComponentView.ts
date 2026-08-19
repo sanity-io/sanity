@@ -1,21 +1,10 @@
-import {isRecord} from 'sanity'
+import {type ComponentView, isRecord, type UserViewComponent} from 'sanity'
 
 import {HELP_URL, SerializeError} from '../SerializeError'
 import {type SerializeOptions} from '../StructureNodes'
-import {type UserViewComponent} from '../types'
-import {type BaseView, GenericViewBuilder} from './View'
+import {GenericViewBuilder} from './View'
 
-/**
- * Interface for component views.
- *
- * @public */
-export interface ComponentView<TOptions = Record<string, any>> extends BaseView {
-  type: 'component'
-  /** Component view components. See {@link UserViewComponent} */
-  component: UserViewComponent
-  /** Component view options */
-  options: TOptions
-}
+export {type ComponentView}
 
 const isComponentSpec = (spec: unknown): spec is ComponentView =>
   isRecord(spec) && spec.type === 'component'

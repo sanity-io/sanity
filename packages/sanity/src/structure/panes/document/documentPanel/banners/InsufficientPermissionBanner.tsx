@@ -2,11 +2,17 @@ import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
-import {Translate, useCurrentUser, useListFormat, useTranslation, useWorkspace} from 'sanity'
+import {
+  AskToEditDialogOpened,
+  RequestPermissionDialog,
+  Translate,
+  useCurrentUser,
+  useListFormat,
+  useRoleRequestsStatus,
+  useTranslation,
+  useWorkspace,
+} from 'sanity'
 
-import {AskToEditDialogOpened} from '../../../../components/requestPermissionDialog/__telemetry__/RequestPermissionDialog.telemetry'
-import {RequestPermissionDialog} from '../../../../components/requestPermissionDialog/RequestPermissionDialog'
-import {useRoleRequestsStatus} from '../../../../components/requestPermissionDialog/useRoleRequestsStatus'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'

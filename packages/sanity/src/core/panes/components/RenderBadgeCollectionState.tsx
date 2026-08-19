@@ -1,10 +1,8 @@
 import {memo, type ReactNode} from 'react'
-import {
-  type DocumentBadgeDescription,
-  type DocumentBadgeProps,
-  type EditStateFor,
-  GetHookCollectionState,
-} from 'sanity'
+
+import {GetHookCollectionState} from '../../components/hookCollection/GetHookCollectionState'
+import {type DocumentBadgeDescription, type DocumentBadgeProps} from '../../config/document/badges'
+import {type EditStateFor} from '../../store/document/document-pair/editState'
 
 /** @internal */
 export interface Badge<Args, Description> {

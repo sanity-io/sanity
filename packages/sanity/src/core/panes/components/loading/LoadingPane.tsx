@@ -3,10 +3,14 @@ import {memo, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {isObservable, type Observable, of} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {Delay, LoadingBlock, Pane, PaneContent, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {structureLocaleNamespace} from '../../i18n'
+import {Delay} from '../../../components/Delay'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {structureLocaleNamespace} from '../../../i18n/localeNamespaces'
+import {Pane} from '../pane/Pane'
+import {PaneContent} from '../pane/PaneContent'
 import {getWaitMessages, type WaitMessage} from './getWaitMessages'
 
 interface LoadingPaneProps {

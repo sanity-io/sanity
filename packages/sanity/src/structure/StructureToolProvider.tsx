@@ -1,5 +1,11 @@
 import {type ReactNode, useMemo, useState} from 'react'
-import {useConfigContextFromSource, useDocumentStore, usePerspective, useSource} from 'sanity'
+import {
+  PaneFeaturesProvider,
+  useConfigContextFromSource,
+  useDocumentStore,
+  usePerspective,
+  useSource,
+} from 'sanity'
 import {StructureToolContext} from 'sanity/_singletons'
 
 import {createStructureBuilder} from './structureBuilder/createStructureBuilder'
@@ -75,6 +81,8 @@ export function StructureToolProvider({
   }, [features, layoutCollapsed, rootPaneNode, S.context])
 
   return (
-    <StructureToolContext.Provider value={structureTool}>{children}</StructureToolContext.Provider>
+    <StructureToolContext.Provider value={structureTool}>
+      <PaneFeaturesProvider features={features}>{children}</PaneFeaturesProvider>
+    </StructureToolContext.Provider>
   )
 }

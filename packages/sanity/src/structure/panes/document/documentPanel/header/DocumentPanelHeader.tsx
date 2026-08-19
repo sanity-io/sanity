@@ -19,13 +19,20 @@ import {
   type _PaneMenuNode,
   type DocumentActionDescription,
   FieldPresenceInner,
+  isMenuNodeButton,
+  isNotMenuNodeButton,
   PaneContextMenuButton,
   PaneHeader,
   PaneHeaderActionButton,
+  RenderActionCollectionState,
+  type ResolvedAction,
+  resolveMenuNodes,
   useDocumentPresence,
   useFieldActions,
   usePane,
+  usePaneFeatures,
   usePaneRouter,
+  useResolvedPanesList,
   useTranslation,
   useWorkspace,
   useZIndex,
@@ -34,16 +41,9 @@ import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
-import {
-  RenderActionCollectionState,
-  type ResolvedAction,
-} from '../../../../components/RenderActionCollectionState'
 import {useHistoryRestoreAction} from '../../../../documentActions/HistoryRestoreAction'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
-import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
-import {type PaneMenuItem} from '../../../../types'
-import {useStructureTool} from '../../../../useStructureTool'
+import {type DocumentPaneNode, type PaneMenuItem} from '../../../../types'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focus.telemetry'
@@ -110,7 +110,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
     unstable_languageFilter,
     documentId,
   } = useDocumentPane()
-  const {features} = useStructureTool()
+  const features = usePaneFeatures()
   const {beta} = useWorkspace()
   const {index, BackLink, hasGroupSiblings} = usePaneRouter()
   const {maximizedPane} = useResolvedPanesList()
@@ -170,11 +170,12 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
   )
 
   const isMaximizedPane = useMemo(() => {
+    const maximizedPaneNode = maximizedPane?.pane
     return (
-      maximizedPane?.pane &&
-      typeof maximizedPane.pane === 'object' &&
-      maximizedPane.pane.type === 'document' &&
-      maximizedPane.pane.options.id === documentId
+      maximizedPaneNode &&
+      typeof maximizedPaneNode === 'object' &&
+      maximizedPaneNode.type === 'document' &&
+      (maximizedPaneNode as DocumentPaneNode).options.id === documentId
     )
   }, [maximizedPane, documentId])
 

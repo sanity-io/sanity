@@ -1,8 +1,7 @@
 import {useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {useResolvedPanesList, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
-import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {DocumentHeaderBreadcrumb} from './DocumentHeaderBreadcrumb'

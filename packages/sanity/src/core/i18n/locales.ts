@@ -1,5 +1,6 @@
 import {copyPasteLocaleResources} from './bundles/copy-paste'
 import {feedbackLocaleResources} from './bundles/feedback'
+import {structureDefaultLocaleResources} from './bundles/structure'
 import {studioDefaultLocaleResources} from './bundles/studio'
 import {validationLocaleResources} from './bundles/validation'
 import {defineLocale} from './helpers'
@@ -15,6 +16,7 @@ export const usEnglishLocale = defineLocale({
   title: 'English (US)',
   bundles: [
     studioDefaultLocaleResources,
+    structureDefaultLocaleResources,
     validationLocaleResources,
     copyPasteLocaleResources,
     feedbackLocaleResources,

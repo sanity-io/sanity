@@ -20,6 +20,7 @@ import {
   type DocumentActionsContext,
   type DocumentActionsVersionType,
   type DocumentFieldAction,
+  DocumentTitle,
   type EditStateFor,
   EMPTY_ARRAY,
   getCreatableVariantTarget,
@@ -38,6 +39,7 @@ import {
   useActiveReleases,
   useCopyPaste,
   useCreatableVariantInitialValue,
+  useDeletedDocumentLastRevision,
   useDocumentDivergences,
   useDocumentForm,
   useDocumentIdStack,
@@ -53,9 +55,7 @@ import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 import {useEffectEvent} from 'use-effect-event'
 
-import {DocumentTitle} from '../../components/structureTool/StructureTitle'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
-import {useDeletedDocumentLastRevision} from '../../hooks/useDeletedDocumentLastRevision'
 import {type PaneMenuItem} from '../../types'
 import {
   InlineChangesSwitchedOff,

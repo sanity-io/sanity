@@ -1,9 +1,9 @@
 import isEqual from 'lodash-es/isEqual.js'
 import {lazy, memo, Suspense} from 'react'
+import {LoadingPane} from 'sanity'
 
 import {PaneRouterProvider} from '../components/paneRouter/PaneRouterProvider'
 import {type PaneNode} from '../types'
-import {LoadingPane} from './loading'
 import {UnknownPane} from './unknown/UnknownPaneType'
 
 interface StructureToolPaneProps {

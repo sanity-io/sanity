@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {defineConfig, type PerspectiveContextValue} from 'sanity'
+import {defineConfig, type PerspectiveContextValue, useStructureToolSetting} from 'sanity'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -10,17 +10,12 @@ import {
   type PaneMenuItem,
   type StructureToolContextValue,
 } from '../../../types'
-import {useStructureToolSetting} from '../../../useStructureToolSetting'
 import {DEFAULT_ORDERING} from '../constants'
 import {
   addSelectedStateToMenuItems,
   appendRestoreDefaultItems,
   PaneContainer,
 } from '../PaneContainer'
-
-vi.mock('../../../useStructureToolSetting', () => ({
-  useStructureToolSetting: vi.fn(),
-}))
 
 vi.mock('../../../useStructureTool', () => ({
   useStructureTool: vi.fn().mockReturnValue({features: {}} as StructureToolContextValue),
@@ -43,6 +38,7 @@ vi.mock('../../../../core/panes/components/pane/usePaneLayout', () => ({
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
+  useStructureToolSetting: vi.fn(),
   useSearchState: vi.fn(),
   useActiveReleases: vi.fn(() => ({})),
   usePerspective: vi.fn((): PerspectiveContextValue => ({

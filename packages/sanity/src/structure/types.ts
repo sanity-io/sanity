@@ -1,21 +1,21 @@
 import {type SchemaType} from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {
-  type _PaneMenuItem,
   type ConfigContext,
-  type DocumentFieldActionNode,
+  type DocumentFieldMenuActionNode,
   type DocumentStore,
   type GeneralPreviewLayoutKey,
   type I18nTextRecord,
   type InitialValueTemplateItem,
   type LocaleSource,
+  type PaneMenuItem,
+  type PaneMenuItemGroup,
   type PerspectiveStack,
   type RouterPaneGroup,
   type RouterPanes,
   type RouterPaneSibling,
 } from 'sanity'
 
-import {type Intent} from './structureBuilder/Intent'
 import {type MenuItem as StructureToolMenuItem} from './structureBuilder/MenuItem'
 import {
   type DefaultDocumentNodeResolver,
@@ -201,28 +201,7 @@ export interface RouterPaneSiblingContext {
 /** @internal */
 export {type StructureToolMenuItem}
 
-/**
- * Represents what can be passed into `menuItems` inside of structure-tool panes
- *
- * @see BaseResolvedPaneNode
- *
- * @internal
- */
-export interface PaneMenuItem extends StructureToolMenuItem {
-  // TODO: these would be great options in the `MenuItemBuilder`
-  // currently, they are only used in the `DocumentPaneProvider`
-  disabled?: _PaneMenuItem['disabled']
-  shortcut?: string
-  selected?: boolean
-  tone?: 'primary' | 'positive' | 'caution' | 'critical'
-}
-
-/** @internal */
-export interface PaneMenuItemGroup {
-  id: string
-  title?: string
-  i18n?: I18nTextRecord<'title'>
-}
+export {type PaneMenuItem, type PaneMenuItemGroup}
 
 /** @internal */
 export interface BaseResolvedPaneNode<T extends PaneNode['type']> {
@@ -345,12 +324,7 @@ export type UnresolvedPaneNode =
   | PromiseLike<UnresolvedPaneNode>
   | PaneNode
 
-/**
- * @hidden
- * @beta */
-export type DocumentFieldMenuActionNode = DocumentFieldActionNode & {
-  intent?: Intent
-}
+export {type DocumentFieldMenuActionNode}
 
 /**
  * @internal

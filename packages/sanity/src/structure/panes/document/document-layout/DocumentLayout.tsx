@@ -13,6 +13,7 @@ import {
   type Path,
   useDocumentIdStack,
   useGlobalCopyPasteElementHandler,
+  usePaneFeatures,
   usePaneLayout,
   usePaneRouter,
   useTranslation,
@@ -22,7 +23,6 @@ import {useRouter} from 'sanity/router'
 
 import {DocumentActionsProvider} from '../../../DocumentActionsProvider'
 import {structureLocaleNamespace} from '../../../i18n'
-import {useStructureTool} from '../../../useStructureTool'
 import {
   DOCUMENT_INSPECTOR_MIN_WIDTH,
   DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
@@ -80,7 +80,7 @@ export function DocumentLayout() {
   } = useDocumentPane()
   const {stickyParams} = useRouter()
   const {params: paneParams} = usePaneRouter()
-  const {features} = useStructureTool()
+  const features = usePaneFeatures()
   const {t} = useTranslation(structureLocaleNamespace)
   const {collapsed: layoutCollapsed} = usePaneLayout()
 

@@ -1,8 +1,7 @@
 import {Box} from '@sanity/ui'
 import {Suspense, useCallback} from 'react'
-import {Resizable, usePane} from 'sanity'
+import {Resizable, usePane, usePaneFeatures} from 'sanity'
 
-import {useStructureTool} from '../../../useStructureTool'
 import {DOCUMENT_INSPECTOR_MAX_WIDTH, DOCUMENT_INSPECTOR_MIN_WIDTH} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentInspectorErrorBoundary} from './DocumentInspectorErrorBoundary'
@@ -19,7 +18,7 @@ export function DocumentInspectorPanel(
   const {documentId, documentType, flex} = props
   const {collapsed} = usePane()
   const {closeInspector, inspector} = useDocumentPane()
-  const {features} = useStructureTool()
+  const features = usePaneFeatures()
 
   const handleClose = useCallback(() => {
     if (inspector) closeInspector(inspector.name)

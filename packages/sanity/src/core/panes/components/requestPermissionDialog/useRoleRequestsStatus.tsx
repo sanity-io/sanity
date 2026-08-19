@@ -1,3 +1,4 @@
+import {type SanityClient} from '@sanity/client'
 import {addWeeks} from 'date-fns/addWeeks'
 import {isAfter} from 'date-fns/isAfter'
 import {isBefore} from 'date-fns/isBefore'
@@ -5,7 +6,9 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {catchError, map, startWith} from 'rxjs/operators'
-import {type SanityClient, useClient, useProjectId} from 'sanity'
+
+import {useClient} from '../../../hooks/useClient'
+import {useProjectId} from '../../../hooks/useProjectId'
 
 /** @internal */
 export interface AccessRequest {

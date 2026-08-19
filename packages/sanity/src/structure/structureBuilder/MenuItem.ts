@@ -1,12 +1,19 @@
 import {SortIcon} from '@sanity/icons/Sort'
 import {type SchemaType, type SortOrdering, type SortOrderingItem} from '@sanity/types'
-import {type I18nTextRecord} from 'sanity'
+import {
+  type I18nTextRecord,
+  type KnownMenuItemParams,
+  type MenuItemActionType,
+  type MenuItemParamsType,
+} from 'sanity'
 
 import {type Intent} from './Intent'
 import {HELP_URL, SerializeError} from './SerializeError'
 import {DEFAULT_ORDERING_OPTIONS} from './Sort'
 import {type Serializable, type SerializeOptions, type SerializePath} from './StructureNodes'
 import {type StructureContext} from './types'
+
+export {type KnownMenuItemParams, type MenuItemActionType, type MenuItemParamsType}
 
 /** @internal */
 export function maybeSerializeMenuItem(
@@ -16,56 +23,6 @@ export function maybeSerializeMenuItem(
 ): MenuItem {
   return item instanceof MenuItemBuilder ? item.serialize({path, index}) : item
 }
-
-/**
- * Menu item action type
- * @public */
-export type MenuItemActionType =
-  | string
-  | ((params: Record<string, unknown> | undefined, scope?: unknown) => void)
-
-/**
- * Known menu item parameters that control built-in behavior.
- * These properties have specific meanings in the structure builder.
- *
- * @public */
-export interface KnownMenuItemParams {
-  /**
-   * When true, hides all visual indicators showing this menu item is selected.
-   * This includes both the checkmark icon and the pressed/selected styling.
-   * The item can still be selected - this only affects the visual feedback.
-   * Useful when you want the menu item to perform an action without showing a selection state.
-   */
-  hideSelectionIndicator?: boolean
-
-  /**
-   * The value to associate with this menu item for tracking selected state.
-   * Used with the 'setMenuItemState' action for custom toggle behavior.
-   * When a menu item is clicked, this value is stored against the menu item's `id`.
-   * Defaults to `true` if not specified.
-   */
-  value?: unknown
-
-  /**
-   * Layout key for layout switching menu items.
-   * Used with the 'setLayout' action.
-   */
-  layout?: string
-
-  /**
-   * Sort ordering configuration for sort menu items.
-   * Used with the 'setSortOrder' action.
-   */
-  by?: SortOrderingItem[]
-}
-
-/**
- * Menu items parameters.
- * Includes known parameters that control built-in behavior,
- * plus allows additional custom parameters.
- *
- * @public */
-export type MenuItemParamsType = KnownMenuItemParams & Record<string, unknown>
 
 /**
  * Interface for menu items

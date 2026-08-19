@@ -5,6 +5,7 @@ import {
   getVersionFromId,
   isDraftId,
   isGoingToUnpublish,
+  isLiveEditEnabled,
   isPublishedId,
   isPublishedPerspective,
   isVersionId,
@@ -22,7 +23,6 @@ import {
   type VersionInfoDocumentStub,
 } from 'sanity'
 
-import {isLiveEditEnabled} from '../components/paneItem/helpers'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {useDocumentPaneInfo} from '../panes/document/useDocumentPaneInfo'
 import {usePerspectiveNavigator} from './usePerspectiveNavigator'

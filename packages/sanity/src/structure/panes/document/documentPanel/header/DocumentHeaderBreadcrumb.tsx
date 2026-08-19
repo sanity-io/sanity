@@ -1,16 +1,16 @@
 import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 import {Box, Flex, Text} from '@sanity/ui'
 import {Fragment} from 'react'
+import {type ResolvedPanes} from 'sanity'
 
 import {LOADING_PANE} from '../../../../constants'
-import {type Panes} from '../../../../structureResolvers/useResolvedPanes'
 import {DocumentHeaderBreadcrumbItem} from './DocumentHeaderBreadcrumbItem'
 
 export function DocumentHeaderBreadcrumb({
   paneDataItems,
   currentPaneIndex,
 }: {
-  paneDataItems: Panes['paneDataItems']
+  paneDataItems: ResolvedPanes['paneDataItems']
   currentPaneIndex: number
 }): React.JSX.Element {
   return (

@@ -1,9 +1,13 @@
-import {type SanityDocument, type SchemaType, type SortOrdering} from '@sanity/types'
+import {type SortOrdering} from '@sanity/types'
 import {
+  type ComponentView,
   type ConfigContext,
+  type FormView,
   type InitialValueTemplateItem,
   type PerspectiveStack,
   type Source,
+  type UserViewComponent,
+  type View,
 } from 'sanity'
 
 import {type ComponentBuilder, type ComponentInput} from './Component'
@@ -18,31 +22,10 @@ import {type ListItemBuilder, type ListItemInput} from './ListItem'
 import {type MenuItem, type MenuItemBuilder} from './MenuItem'
 import {type MenuItemGroup, type MenuItemGroupBuilder} from './MenuItemGroup'
 import {type Divider, type EditorNode} from './StructureNodes'
-import {type ComponentView, type ComponentViewBuilder} from './views/ComponentView'
-import {type FormView, type FormViewBuilder} from './views/FormView'
+import {type ComponentViewBuilder} from './views/ComponentView'
+import {type FormViewBuilder} from './views/FormView'
 
-/**
- * View. See {@link FormView} and {@link ComponentView}
- *
- * @public
- */
-export type View = FormView | ComponentView
-
-/**
- * User view component
- *
- * @public */
-export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentType<{
-  document: {
-    draft: SanityDocument | null
-    displayed: Partial<SanityDocument>
-    historical: Partial<SanityDocument> | null
-    published: SanityDocument | null
-  }
-  documentId: string
-  options: TOptions
-  schemaType: SchemaType
-}>
+export {type UserViewComponent, type View}
 
 /**
  * User defined component
