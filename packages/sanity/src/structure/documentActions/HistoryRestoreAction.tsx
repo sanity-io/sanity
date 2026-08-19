@@ -30,7 +30,7 @@ function restoreTooltipKey(isRevisionInitial: boolean, isDocumentReadOnly: boole
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
 export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revision}) => {
-  const {revisionNotFound, targetDocumentState, schemaType, displayed} = useDocumentPane()
+  const {revisionNotFound, targetDocumentState, schemaType, value} = useDocumentPane()
   // The scope of the document targeted by the selected perspective (undefined when the target is
   // still resolving or the draft/published pair applies). While resolving, the action is disabled
   // below instead of silently operating on the base pair.
@@ -45,9 +45,9 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
 
   const isSchemaReadOnly = resolveConditionalProperty(schemaType.readOnly, {
     currentUser,
-    document: displayed ?? undefined,
+    document: value,
     parent: undefined,
-    value: displayed,
+    value,
     path: EMPTY_ARRAY,
   })
   const isDocumentReadOnly = isSchemaReadOnly || !isActionEnabled(schemaType, 'update')
