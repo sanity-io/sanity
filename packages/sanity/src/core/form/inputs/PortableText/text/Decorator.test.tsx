@@ -1,7 +1,7 @@
-import {type BlockDecoratorRenderProps} from '@portabletext/editor'
 import {type Path} from '@sanity/types'
 import {toString as pathToString} from '@sanity/util/paths'
 import {render} from '@testing-library/react'
+import {type ComponentProps} from 'react'
 import {expect, it, vi} from 'vitest'
 
 import {Decorator} from './Decorator'
@@ -26,15 +26,17 @@ const SHARED_DECORATOR_PATH: Path = [
   {_key: 'sharedWarningSpan'},
 ]
 
+type DecoratorRenderProps = Omit<ComponentProps<typeof Decorator>, 'portableTextPath'>
+
 const DECORATOR_PROPS = {
   children: <span>schema-less decorator</span>,
   editorElementRef: {current: null},
   focused: false,
   path: SHARED_DECORATOR_PATH,
-  schemaType: {name: 'regressionDecorator'} as BlockDecoratorRenderProps['schemaType'],
+  schemaType: {name: 'regressionDecorator'} as DecoratorRenderProps['schemaType'],
   selected: false,
   value: 'regressionDecorator',
-} satisfies BlockDecoratorRenderProps
+} satisfies DecoratorRenderProps
 
 it('warns once for identical decorator locations in separate form fields', () => {
   const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
