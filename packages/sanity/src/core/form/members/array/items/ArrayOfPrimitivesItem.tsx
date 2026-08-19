@@ -153,6 +153,9 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       compareValue: member.item.compareValue,
       __unstable_computeDiff: member.item.__unstable_computeDiff,
       hasUpstreamVersion: member.item.hasUpstreamVersion,
+      changedFromBaseVariant: member.item.changedFromBaseVariant,
+      baseVariantValue: member.item.baseVariantValue,
+      hasBaseVariant: member.item.hasBaseVariant,
       readOnly: member.item.readOnly,
       schemaType: member.item.schemaType as FIXME,
       id: member.item.id,
@@ -171,6 +174,9 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     member.item.value,
     member.item.compareValue,
     member.item.hasUpstreamVersion,
+    member.item.changedFromBaseVariant,
+    member.item.baseVariantValue,
+    member.item.hasBaseVariant,
     member.item.readOnly,
     member.item.schemaType,
     member.item.id,
@@ -214,6 +220,9 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       changed={member.item.changed}
       __unstable_computeDiff={member.item.__unstable_computeDiff}
       hasUpstreamVersion={member.item.hasUpstreamVersion}
+      changedFromBaseVariant={member.item.changedFromBaseVariant}
+      baseVariantValue={member.item.baseVariantValue}
+      hasBaseVariant={member.item.hasBaseVariant}
       title={member.item.schemaType.title}
       description={member.item.schemaType.description}
       schemaType={member.item.schemaType as FIXME}

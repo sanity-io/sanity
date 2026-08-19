@@ -449,6 +449,8 @@ const defaultOptions: RootFormStateOptions = {
   collapsedPaths: {},
   documentValue,
   comparisonValue: documentValue,
+  baseVariantValue: undefined,
+  hasBaseVariant: false,
   fieldGroupState: {},
   hidden: undefined,
   readOnly: undefined,

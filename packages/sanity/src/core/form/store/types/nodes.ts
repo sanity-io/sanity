@@ -32,6 +32,20 @@ export interface NodeChronologyProps {
    * Whether the document has an upstream version.
    */
   hasUpstreamVersion: boolean
+  /**
+   * Whether the document has a base variant: the variant belonging to the same bundle (published,
+   * drafts, or a content release) that itself belongs to no variant definition. A document has at
+   * most one base variant.
+   *
+   * This is `false` unless the displayed document is a variant-scoped document whose base variant
+   * exists. It is also `false` while a historical revision is displayed: the base variant is only
+   * ever read at its current value, so comparing it to a past revision would report the passage of
+   * time rather than divergence between variants.
+   *
+   * When this is `false`, `changedFromBaseVariant` is always `false` and `baseVariantValue` is
+   * `undefined`.
+   */
+  hasBaseVariant: boolean
 }
 
 /**
@@ -62,6 +76,27 @@ export interface NodeDiffProps<Annotation, Value = unknown> extends NodeChronolo
    * version.
    */
   compareValue?: Value
+  /**
+   * Whether the current value is different to the node's value in the document's base variant.
+   *
+   * This is always `false` when the document has no base variant. Use the `hasBaseVariant` prop to
+   * distinguish "unchanged from the base variant" from "there is no base variant to compare to".
+   *
+   * Object nodes derive this by aggregating over their members rather than by comparing whole
+   * values: a variant and its base variant always differ in document metadata (`_id`, `_rev`,
+   * `_updatedAt`, `_system`), which would otherwise make every object node report a change. Hidden
+   * fields, and fields nested deeper than the maximum field depth, produce no member and so do not
+   * contribute to the aggregate. Array nodes combine a direct comparison — which catches reordering
+   * and removals that per-item aggregation misses — with the same aggregation over their items.
+   */
+  changedFromBaseVariant: boolean
+  /**
+   * The node's value in the document's base variant.
+   *
+   * You can use the `hasBaseVariant` prop to determine whether the document has a base variant.
+   * This is `undefined` when it does not.
+   */
+  baseVariantValue?: Value
 }
 
 /**

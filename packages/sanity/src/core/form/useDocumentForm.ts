@@ -53,6 +53,7 @@ import {usePresenceStore} from '../store/datastores'
 import {type EditStateFor} from '../store/document/document-pair/editState'
 import {type InitialValueState} from '../store/document/initialValue/types'
 import {isNewDocument} from '../store/document/isNewDocument'
+import {selectBaseVariant} from '../store/document/selectBaseVariant'
 import {selectUpstreamVersion} from '../store/document/selectUpstreamVersion'
 import {useDocumentValuePermissions} from '../store/grants/documentValuePermissions'
 import {type PermissionCheckResult} from '../store/grants/types'
@@ -64,6 +65,7 @@ import {
   isSystemBundle,
 } from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
+import {getTargetDocument} from '../util/getTargetDocument'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {type PatchEvent} from './patch/PatchEvent'
@@ -108,7 +110,7 @@ interface DocumentFormOptions {
    */
   isOlderRevision?: boolean
 }
-interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
+interface DocumentFormValue extends NodeChronologyProps {
   /**
    * `EditStateFor` for the displayed document.
    * */
@@ -172,7 +174,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
-  const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
+  const {
+    data: documentVersions,
+    versions: documentVersionStubs,
+    loading: documentVersionsLoading,
+  } = useDocumentVersions({
     documentId,
   })
   const {selectedVariantName, bundle} = usePerspective()
@@ -335,12 +341,43 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     getVersionFromId(upstreamId ?? ''),
   )
 
+  // A base variant is only meaningful for a variant-scoped target: for every other document the
+  // target *is* the base variant, so there is nothing to compare against. Historical revisions are
+  // excluded too — the base variant is only ever read at its current value, so comparing it to a
+  // past revision would report the passage of time rather than divergence between variants.
+  const comparesToBaseVariant = isVariantTarget && !isOlderRevision
+
+  // Resolved with the machinery that resolves the target itself rather than a second bundle
+  // mapping: `variant: undefined` matches the version carrying no `_system.variant`, which is
+  // exactly the definition of the base variant.
+  const baseVariantStub = useMemo(
+    () =>
+      comparesToBaseVariant
+        ? getTargetDocument({bundle, variant: undefined, documentVersions: documentVersionStubs})
+        : undefined,
+    [bundle, comparesToBaseVariant, documentVersionStubs],
+  )
+
+  // `scopeId` is absent for the base draft/published pair and set to the release id for a release
+  // version — precisely the bundle segment `useEditState` expects. When there is no base variant to
+  // compare against, check out the pair the form is already using: `editState` memoizes on
+  // (published id, type, bundle segment), so passing `targetScopeId` shares that subscription
+  // instead of checking out a second pair for every document in the studio.
+  const baseVariantEditState = useEditState(
+    documentId,
+    documentType,
+    'default',
+    comparesToBaseVariant ? baseVariantStub?._system.scopeId : targetScopeId,
+  )
+
   const comparisonValue = useMemo(() => {
     if (typeof comparisonValueRaw === 'function') {
       return comparisonValueRaw(upstreamEditState)
     }
     return comparisonValueRaw
   }, [comparisonValueRaw, upstreamEditState])
+
+  const baseVariantValue = selectBaseVariant(baseVariantEditState, baseVariantStub?._id)
 
   const presence$ = useMemo(
     () =>
@@ -612,12 +649,18 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   }, [getFormDocumentValue, value])
 
   const hasUpstreamVersion = selectUpstreamVersion(upstreamEditState) !== null
+  const hasBaseVariant = baseVariantValue !== null
 
   const formState = useFormState({
     schemaType,
     documentValue: formDocumentValue,
     readOnly,
     comparisonValue: comparisonValue || value,
+    // No `|| value` fallback here, unlike `comparisonValue`: a node's `changedFromBaseVariant` is
+    // gated on `hasBaseVariant` rather than on comparing the value to itself.
+    // TODO(Phase 3): `useFormState` does not accept these yet.
+    baseVariantValue: baseVariantValue ?? undefined,
+    hasBaseVariant,
     focusPath,
     openPath,
     perspective: selectedPerspective,
@@ -776,6 +819,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     isPermissionsLoading,
     formStateRef,
     hasUpstreamVersion,
+    hasBaseVariant,
 
     collapsedFieldSets,
     collapsedPaths,

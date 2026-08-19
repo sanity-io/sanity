@@ -270,6 +270,9 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
                 openPath={openPath}
                 perspective={selectedPerspective}
                 hasUpstreamVersion={hasUpstreamVersion}
+                changedFromBaseVariant={formState.changedFromBaseVariant}
+                baseVariantValue={formState.baseVariantValue}
+                hasBaseVariant={formState.hasBaseVariant}
                 presence={presence}
                 readOnly={isReadOnly}
                 schemaType={formState.schemaType}

@@ -28,6 +28,15 @@ export interface UseFormStateOptions extends Pick<NodeChronologyProps, 'hasUpstr
   schemaType: ObjectSchemaType
   documentValue: unknown
   comparisonValue: unknown
+  /**
+   * The document's value in its base variant. Optional: omit it (along with `hasBaseVariant`) and
+   * every node reports `changedFromBaseVariant: false`.
+   */
+  baseVariantValue?: unknown
+  /**
+   * Whether the document has a base variant to compare against. Defaults to `false`.
+   */
+  hasBaseVariant?: boolean
   openPath: Path
   focusPath: Path
   perspective: TargetPerspective
@@ -61,6 +70,8 @@ export function useFormState<
   perspective,
   hasUpstreamVersion,
   displayInlineChanges,
+  baseVariantValue,
+  hasBaseVariant = false,
 }: UseFormStateOptions): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
@@ -144,6 +155,8 @@ export function useFormState<
       collapsedPaths: reconciledCollapsedPaths,
       documentValue,
       comparisonValue,
+      baseVariantValue,
+      hasBaseVariant,
       focusPath,
       openPath,
       readOnly,
@@ -164,6 +177,8 @@ export function useFormState<
     reconciledCollapsedPaths,
     documentValue,
     comparisonValue,
+    baseVariantValue,
+    hasBaseVariant,
     focusPath,
     openPath,
     perspective,
