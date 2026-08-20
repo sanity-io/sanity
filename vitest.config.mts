@@ -57,6 +57,8 @@ export default defineConfig({
       'packages/@repo/bundle-manager',
       'packages/@repo/package.bundle',
       'packages/@repo/utils',
+      // Reporter unit tests only (`reporters/**/*.test.ts`); Playwright specs stay out.
+      'e2e',
     ],
     coverage: {
       provider: 'v8',

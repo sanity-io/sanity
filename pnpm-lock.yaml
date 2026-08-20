@@ -930,6 +930,9 @@ importers:
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.62.1
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../packages/@repo/test-config
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../packages/@repo/tsconfig
@@ -948,6 +951,9 @@ importers:
       tsx:
         specifier: ^4.23.12
         version: 4.23.12
+      vitest:
+        specifier: ^4.1.10
+        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.10)(jsdom@29.1.1)(vite@8.2.2)
 
   packages/@repo/ailf:
     devDependencies:
