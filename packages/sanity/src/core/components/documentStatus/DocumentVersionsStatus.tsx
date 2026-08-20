@@ -4,6 +4,7 @@ import {useMemo} from 'react'
 
 import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
 import {useRelativeTime} from '../../hooks/useRelativeTime'
+import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TargetPerspective} from '../../perspective/types'
 import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
@@ -20,6 +21,7 @@ import {
   variantIconCard,
   versionStatusItem,
 } from './DocumentVersionsStatus.css'
+import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
 import {
   type DocumentVersionStatusItem,
   groupDocumentVersionsForStatus,
@@ -71,7 +73,9 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
 
 function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
   const {t} = useTranslation()
+  const schema = useSchema()
   const {bundles} = useAgentBundles()
+  const liveEdit = Boolean(version._type && schema.get(version._type)?.liveEdit)
 
   const variantTitle = variant
     ? variant.metadata?.title || variant.name
@@ -88,6 +92,9 @@ function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
     minimal: true,
     useTemporalPhrase: true,
   })
+  const timestampLabel = t(getDocumentVersionStatusTimestampKey(version, liveEdit), {
+    date: updatedAt,
+  })
 
   return (
     <Box className={versionStatusItem}>
@@ -100,12 +107,12 @@ function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
           </Box>
           <Box>
             <Text className={updatedAtText} muted size={1}>
-              {updatedAt}
+              {timestampLabel}
             </Text>
           </Box>
         </Stack>
         <Box flex={1} />
-        <Flex align="center" flex="none" gap={2}>
+        <Flex align="center" flex="none" gap={1} paddingRight={2}>
           {variant ? (
             <Card className={variantIconCard} tone="suggest">
               <Text size={2}>

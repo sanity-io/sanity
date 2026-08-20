@@ -1,7 +1,11 @@
 import {style} from '@vanilla-extract/css'
 
 export const variantIconCard = style({
-  backgroundColor: 'transparent',
+  selectors: {
+    '&&': {
+      backgroundColor: 'transparent',
+    },
+  },
 })
 
 export const titleStack = style({
