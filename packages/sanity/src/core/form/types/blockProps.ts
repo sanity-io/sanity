@@ -465,7 +465,7 @@ export interface PortableTextPluginsProps {
            */
           enabled?: boolean
         }
-      | (MarkdownShortcutsPluginProps & {
+      | (_WithLegacyMarkdownArgs<MarkdownShortcutsPluginProps> & {
           config?: undefined
           /**
            * @defaultValue true
@@ -516,20 +516,81 @@ export interface PortableTextPluginsProps {
   }
 }
 
+type MarkdownCallbackArg<TField> =
+  NonNullable<TField> extends (arg: infer TArg) => unknown ? TArg : never
+
+/**
+ * The markdown shortcuts plugin's own `context.schema` type, read off one of
+ * its callback fields rather than imported from `@portabletext/editor`
+ * directly, so this stays in sync with whichever plugin version is
+ * installed without reaching into editor internals.
+ */
+type MarkdownCallbackSchema =
+  MarkdownCallbackArg<MarkdownShortcutsPluginProps['boldDecorator']> extends {
+    context: {schema: infer TSchema}
+  }
+    ? TSchema
+    : never
+
+/**
+ * The markdown shortcuts plugin passes a deprecated top-level `schema` to
+ * every callback except `horizontalRuleObject` and `linkObject` (which never
+ * had one), and additionally passes a deprecated top-level `level` to
+ * `headingStyle` only. Adding these fields here, rather than relying on the
+ * plugin's own (possibly future) types to still declare them, keeps
+ * `boldDecorator: ({schema}) => ...`-style configs typechecking even after
+ * the plugin drops the deprecated params.
+ */
+type LegacyMarkdownSchemaArg = {
+  /**
+   * @deprecated Use `context.schema` instead
+   */
+  schema: MarkdownCallbackSchema
+}
+
+type LegacyMarkdownHeadingArgs = LegacyMarkdownSchemaArg & {
+  /**
+   * @deprecated Use `props.level` instead
+   */
+  level: number
+}
+
+type WithLegacyMarkdownArg<TField, TLegacy = LegacyMarkdownSchemaArg> = TField extends (
+  arg: infer TArg,
+) => infer TResult
+  ? (arg: TArg & TLegacy) => TResult
+  : TField
+
+/**
+ * Rewrites each markdown shortcuts callback field so its argument also
+ * accepts the deprecated top-level fields the plugin used to pass:
+ * `schema` on every callback except `horizontalRuleObject` and `linkObject`,
+ * plus `level` on `headingStyle`.
+ */
+export type _WithLegacyMarkdownArgs<T> = {
+  [K in keyof T]: K extends 'headingStyle'
+    ? WithLegacyMarkdownArg<T[K], LegacyMarkdownHeadingArgs>
+    : K extends 'horizontalRuleObject' | 'linkObject'
+      ? T[K]
+      : WithLegacyMarkdownArg<T[K]>
+}
+
 /**
  * @beta
  */
-export type MarkdownConfig = Omit<MarkdownShortcutsPluginProps, 'unorderedList' | 'orderedList'> &
+export type MarkdownConfig = _WithLegacyMarkdownArgs<
+  Omit<MarkdownShortcutsPluginProps, 'unorderedList' | 'orderedList'>
+> &
   (
     | {
         orderedList?: undefined
         /**
          * @deprecated - use `orderedList` instead
          */
-        orderedListStyle?: MarkdownShortcutsPluginProps['orderedList']
+        orderedListStyle?: WithLegacyMarkdownArg<MarkdownShortcutsPluginProps['orderedList']>
       }
     | {
-        orderedList?: MarkdownShortcutsPluginProps['orderedList']
+        orderedList?: WithLegacyMarkdownArg<MarkdownShortcutsPluginProps['orderedList']>
         /**
          * @deprecated - use `orderedList` instead
          */
@@ -542,10 +603,10 @@ export type MarkdownConfig = Omit<MarkdownShortcutsPluginProps, 'unorderedList' 
         /**
          * @deprecated - use `unorderedList` instead
          */
-        unorderedListStyle?: MarkdownShortcutsPluginProps['unorderedList']
+        unorderedListStyle?: WithLegacyMarkdownArg<MarkdownShortcutsPluginProps['unorderedList']>
       }
     | {
-        unorderedList?: MarkdownShortcutsPluginProps['unorderedList']
+        unorderedList?: WithLegacyMarkdownArg<MarkdownShortcutsPluginProps['unorderedList']>
         /**
          * @deprecated - use `unorderedList` instead
          */

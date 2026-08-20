@@ -1,7 +1,10 @@
 import {defineBehavior, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
 import {htmlToPortableText} from '@portabletext/html'
-import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
+import {
+  MarkdownShortcutsPlugin,
+  type MarkdownShortcutsPluginProps,
+} from '@portabletext/plugin-markdown-shortcuts'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {PasteLinkPlugin} from '@portabletext/plugin-paste-link'
 import {createDecoratorGuard, TypographyPlugin} from '@portabletext/plugin-typography'
@@ -12,6 +15,7 @@ import {useMiddlewareComponents} from '../../../../config/components/useMiddlewa
 import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
 import {type MarkdownConfig, type PortableTextPluginsProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {_withLegacyMarkdownArgs} from './helpers'
 import {PortableTextTablePlugin} from './TablePlugin'
 
 const markdownConfig: MarkdownConfig = {
@@ -161,7 +165,11 @@ function DefaultMarkdownShortcutsPlugin(
   if (!props.config) {
     const {enabled: _enabled, config: _config, ...markdownShortcutsPluginProps} = props
 
-    return <MarkdownShortcutsPlugin {...markdownShortcutsPluginProps} />
+    return (
+      <MarkdownShortcutsPlugin
+        {..._withLegacyMarkdownArgs<MarkdownShortcutsPluginProps>(markdownShortcutsPluginProps)}
+      />
+    )
   }
 
   // oxlint-disable-next-line no-deprecated -- backwards-compat bridge for plugin authors still using the old field names
@@ -171,9 +179,11 @@ function DefaultMarkdownShortcutsPlugin(
 
   return (
     <MarkdownShortcutsPlugin
-      orderedList={orderedList ?? orderedListStyle}
-      unorderedList={unorderedList ?? unorderedListStyle}
-      {...restMarkdownConfig}
+      {..._withLegacyMarkdownArgs<MarkdownShortcutsPluginProps>({
+        orderedList: orderedList ?? orderedListStyle,
+        unorderedList: unorderedList ?? unorderedListStyle,
+        ...restMarkdownConfig,
+      })}
     />
   )
 }
