@@ -493,7 +493,7 @@ import type {
   DocumentRevision,
   DocumentRule,
   DocumentStackAvailability,
-  DocumentVersionsStatus,
+  DocumentStatus,
   DocumentStatusIndicator,
   DocumentStore,
   DocumentStoreExtraOptions,
@@ -3292,8 +3292,8 @@ describe('sanity', () => {
   test('DocumentStackAvailability', () => {
     expectTypeOf<DocumentStackAvailability>().toBeObject()
   })
-  test('DocumentVersionsStatus', () => {
-    expectTypeOf<typeof DocumentVersionsStatus>().toBeFunction()
+  test('DocumentStatus', () => {
+    expectTypeOf<typeof DocumentStatus>().toBeFunction()
   })
   test('DocumentStatusIndicator', () => {
     expectTypeOf<typeof DocumentStatusIndicator>().toBeFunction()
