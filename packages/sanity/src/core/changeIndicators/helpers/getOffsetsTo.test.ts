@@ -1,10 +1,9 @@
-import {afterEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, describe, expect, it} from 'vitest'
 
 import {getOffsetsTo} from './getOffsetsTo'
 
 function mockOffsetParent(tree: HTMLElement[]) {
-  for (let index = 0; index < tree.length; index += 1) {
-    const current = tree[index]
+  for (const [index, current] of tree.entries()) {
     const parent = tree[index + 1] ?? null
     Object.defineProperty(current, 'offsetParent', {
       configurable: true,
@@ -23,9 +22,14 @@ function mockBox(
   Object.defineProperty(element, 'offsetWidth', {configurable: true, value: box.offsetWidth})
 }
 
+const mounted: HTMLElement[] = []
+
 describe('getOffsetsTo', () => {
   afterEach(() => {
-    vi.restoreAllMocks()
+    for (const node of mounted) {
+      node.remove()
+    }
+    mounted.length = 0
   })
 
   it('subtracts scrollTop from a positioned overflow scroller on the offsetParent walk', () => {
@@ -35,22 +39,18 @@ describe('getOffsetsTo', () => {
     root.append(scroller)
     scroller.append(field)
     document.body.append(root)
+    mounted.push(root)
 
     mockBox(root, {offsetTop: 0, offsetLeft: 0, offsetHeight: 600, offsetWidth: 800})
     mockBox(scroller, {offsetTop: 40, offsetLeft: 10, offsetHeight: 200, offsetWidth: 300})
     mockBox(field, {offsetTop: 180, offsetLeft: 8, offsetHeight: 20, offsetWidth: 100})
+    scroller.style.overflow = 'auto'
     scroller.scrollTop = 160
     mockOffsetParent([field, scroller, root])
-
-    vi.spyOn(window, 'getComputedStyle').mockImplementation((element) => {
-      const overflow = element === scroller ? 'auto' : 'visible'
-      return {overflow} as CSSStyleDeclaration
-    })
 
     const {rect} = getOffsetsTo(field, root)
 
     expect(rect.top).toBe(60)
-    root.remove()
   })
 
   it('does not subtract scrollTop from an unpositioned overflow wrapper skipped by offsetParent', () => {
@@ -60,21 +60,18 @@ describe('getOffsetsTo', () => {
     root.append(wrapper)
     wrapper.append(field)
     document.body.append(root)
+    mounted.push(root)
 
     mockBox(root, {offsetTop: 0, offsetLeft: 0, offsetHeight: 600, offsetWidth: 800})
     mockBox(wrapper, {offsetTop: 40, offsetLeft: 10, offsetHeight: 200, offsetWidth: 300})
     mockBox(field, {offsetTop: 180, offsetLeft: 8, offsetHeight: 20, offsetWidth: 100})
+    wrapper.style.overflow = 'auto'
     wrapper.scrollTop = 160
+    // Deliberate contract: offsetParent skips unpositioned overflow nodes, so scrollTop is not subtracted.
     mockOffsetParent([field, root])
-
-    vi.spyOn(window, 'getComputedStyle').mockImplementation((element) => {
-      const overflow = element === wrapper ? 'auto' : 'visible'
-      return {overflow} as CSSStyleDeclaration
-    })
 
     const {rect} = getOffsetsTo(field, root)
 
     expect(rect.top).toBe(180)
-    root.remove()
   })
 })
