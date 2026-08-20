@@ -10221,15 +10221,6 @@ packages:
     resolution: {integrity: sha512-IfkbWqOGO2kd2Ccgiz/NIzk3bcwjtVqBm3RNa3j/veHg2q7c1DgS3EXrCrvIWH0jbNTbhkdblnxBP7Dm8CiH+A==}
     engines: {node: '>=14.0.0'}
 
-  get-it@9.5.0:
-    resolution: {integrity: sha512-99lU0uwyslDOTwYkmiPk9VSpd6Nw/iYQ0hFJU1Vz8MO+b11dxAiuK7Wzpzo2+KyQ+3jeq79BNetfEdaXBWd7CQ==}
-    engines: {node: '>=22.12.0'}
-    peerDependencies:
-      vitest: ^4.1.10
-    peerDependenciesMeta:
-      vitest:
-        optional: true
-
   get-it@9.5.1:
     resolution: {integrity: sha512-XCVgepH7ROA/VEW4iaorxII3ZqQt7bqNhRNdeOklqwWsl7iGuJCGL7jxkUzcWVpK5zsYr0WaMqeXrIfeL02Uig==}
     engines: {node: '>=22.12.0'}
@@ -18526,7 +18517,7 @@ snapshots:
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/workbench-cli': 2.0.1(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.10)(yaml@2.9.0)
-      '@vitejs/plugin-react': 6.0.5(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.2.2)
+      '@vitejs/plugin-react': 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.2.2)
       chokidar: 5.0.0
       cjs-module-lexer: 2.2.0
       empathic: 2.0.1
@@ -18555,6 +18546,7 @@ snapshots:
       - esbuild
       - jiti
       - less
+      - oxc-transform-react
       - react-native-b4a
       - rolldown
       - sass
@@ -18615,7 +18607,7 @@ snapshots:
       '@sanity/client': 8.2.0(vitest@4.1.10)
       boxen: 8.0.1
       empathic: 2.0.1
-      get-it: 9.5.0(vitest@4.1.10)
+      get-it: 9.5.1(vitest@4.1.10)
       get-tsconfig: 4.14.1
       import-meta-resolve: 4.2.0
       jiti: 2.7.0
@@ -18732,6 +18724,7 @@ snapshots:
       - esbuild
       - jiti
       - less
+      - oxc-transform-react
       - oxfmt
       - react-native-b4a
       - rolldown
@@ -18757,7 +18750,7 @@ snapshots:
   '@sanity/client@8.2.0(vitest@4.1.10)':
     dependencies:
       eventsource: 5.1.0
-      get-it: 9.5.0(vitest@4.1.10)
+      get-it: 9.5.1(vitest@4.1.10)
       nanoid: 6.0.1
       obug: 2.1.4
       rxjs: 7.8.2
@@ -19087,6 +19080,7 @@ snapshots:
       - canvas
       - esbuild
       - less
+      - oxc-transform-react
       - react-native-b4a
       - rolldown
       - sass
@@ -19329,7 +19323,7 @@ snapshots:
       '@module-federation/vite': 1.20.7(typescript@7.0.2)(vite@8.2.2)
       '@sanity/cli-core': 3.1.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(vitest@4.1.10)(yaml@2.9.0)
       '@sanity/types': link:packages/@sanity/types
-      '@vitejs/plugin-react': 6.0.5(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.2.2)
+      '@vitejs/plugin-react': 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(vite@8.2.2)
       form-data: 4.0.6
       tar-fs: 3.1.3
       vite: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
@@ -19347,6 +19341,7 @@ snapshots:
       - esbuild
       - jiti
       - less
+      - oxc-transform-react
       - react-native-b4a
       - sass
       - sass-embedded
@@ -22859,12 +22854,6 @@ snapshots:
       is-retry-allowed: 2.2.0
       through2: 4.0.2
       tunnel-agent: 0.6.0
-
-  get-it@9.5.0(vitest@4.1.10):
-    dependencies:
-      undici: 7.29.0
-    optionalDependencies:
-      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.10)(jsdom@29.1.1)(vite@8.2.2)
 
   get-it@9.5.1(vitest@4.1.10):
     dependencies:
