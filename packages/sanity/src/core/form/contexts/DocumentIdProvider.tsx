@@ -4,9 +4,7 @@ import {DocumentIdContext} from 'sanity/_singletons'
 import {getPublishedId} from '../../util/draftUtils'
 
 export function DocumentIdProvider(props: {id: string; children: ReactNode}) {
-  const override = useContext(DocumentIdContext)
-  const id = override?.id ?? props.id
-  const value = useMemo(() => ({id}), [id])
+  const value = useMemo(() => ({id: props.id}), [props.id])
   return <DocumentIdContext.Provider value={value}>{props.children}</DocumentIdContext.Provider>
 }
 

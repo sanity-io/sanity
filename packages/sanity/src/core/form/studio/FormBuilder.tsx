@@ -11,7 +11,6 @@ import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence/types'
 import {PreviewLoader} from '../../preview/components/PreviewLoader'
 import {EMPTY_ARRAY} from '../../util/empty'
-import {DocumentIdOverrideProvider} from '../contexts/DocumentIdOverrideProvider'
 import {FormValueProvider} from '../contexts/FormValue'
 import {GetFormValueProvider} from '../contexts/GetFormValue'
 import {useAnnotationComponent} from '../form-components-hooks/useAnnotationComponent'
@@ -294,52 +293,51 @@ export function FormBuilder(props: FormBuilderProps) {
   ])
 
   return (
-    <DocumentIdOverrideProvider id={value?._id}>
-      <FormProvider
-        __internal_fieldActions={fieldActions}
-        __internal_patchChannel={patchChannel}
-        __internal_inspectOpen={inspectOpen}
-        autoFocus={autoFocus}
-        changesOpen={changesOpen}
-        collapsedFieldSets={collapsedFieldSets}
-        collapsedPaths={collapsedPaths}
-        focusPath={focusPath}
-        focused={focused}
-        groups={groups}
-        id={id}
-        onChange={onChange}
-        onPathBlur={onPathBlur}
-        onPathFocus={onPathFocus}
-        onPathOpen={onPathOpen}
-        onFieldGroupSelect={onFieldGroupSelect}
-        onSetPathCollapsed={onSetPathCollapsed}
-        onSetFieldSetCollapsed={onSetFieldSetCollapsed}
-        presence={presence}
-        validation={validation}
-        readOnly={readOnly}
-        schemaType={schemaType}
-      >
-        <GetFormValueProvider value={value}>
-          <FormValueProvider value={value}>
-            <DocumentFieldActionsProvider actions={fieldActions}>
-              <FullscreenPTEProvider>
-                <DialogStackProvider>
-                  {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
-                  <EnhancedObjectDialogProvider>
-                    <RootInput
-                      rootInputProps={rootInputProps}
-                      onPathOpen={onPathOpen}
-                      openPath={openPath}
-                      renderInput={renderInput}
-                    />
-                  </EnhancedObjectDialogProvider>
-                </DialogStackProvider>
-              </FullscreenPTEProvider>
-            </DocumentFieldActionsProvider>
-          </FormValueProvider>
-        </GetFormValueProvider>
-      </FormProvider>
-    </DocumentIdOverrideProvider>
+    <FormProvider
+      __internal_fieldActions={fieldActions}
+      __internal_patchChannel={patchChannel}
+      __internal_inspectOpen={inspectOpen}
+      autoFocus={autoFocus}
+      changesOpen={changesOpen}
+      collapsedFieldSets={collapsedFieldSets}
+      collapsedPaths={collapsedPaths}
+      documentId={value?._id}
+      focusPath={focusPath}
+      focused={focused}
+      groups={groups}
+      id={id}
+      onChange={onChange}
+      onPathBlur={onPathBlur}
+      onPathFocus={onPathFocus}
+      onPathOpen={onPathOpen}
+      onFieldGroupSelect={onFieldGroupSelect}
+      onSetPathCollapsed={onSetPathCollapsed}
+      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+      presence={presence}
+      validation={validation}
+      readOnly={readOnly}
+      schemaType={schemaType}
+    >
+      <GetFormValueProvider value={value}>
+        <FormValueProvider value={value}>
+          <DocumentFieldActionsProvider actions={fieldActions}>
+            <FullscreenPTEProvider>
+              <DialogStackProvider>
+                {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
+                <EnhancedObjectDialogProvider>
+                  <RootInput
+                    rootInputProps={rootInputProps}
+                    onPathOpen={onPathOpen}
+                    openPath={openPath}
+                    renderInput={renderInput}
+                  />
+                </EnhancedObjectDialogProvider>
+              </DialogStackProvider>
+            </FullscreenPTEProvider>
+          </DocumentFieldActionsProvider>
+        </FormValueProvider>
+      </GetFormValueProvider>
+    </FormProvider>
   )
 }
 
