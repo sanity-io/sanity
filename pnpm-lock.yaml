@@ -1467,8 +1467,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       get-it:
-        specifier: ^9.5.0
-        version: 9.5.0(vitest@4.1.10)
+        specifier: ^9.5.1
+        version: 9.5.1(vitest@4.1.10)
       groq-js:
         specifier: ^2.0.0
         version: 2.0.0
@@ -10223,6 +10223,15 @@ packages:
 
   get-it@9.5.0:
     resolution: {integrity: sha512-99lU0uwyslDOTwYkmiPk9VSpd6Nw/iYQ0hFJU1Vz8MO+b11dxAiuK7Wzpzo2+KyQ+3jeq79BNetfEdaXBWd7CQ==}
+    engines: {node: '>=22.12.0'}
+    peerDependencies:
+      vitest: ^4.1.10
+    peerDependenciesMeta:
+      vitest:
+        optional: true
+
+  get-it@9.5.1:
+    resolution: {integrity: sha512-XCVgepH7ROA/VEW4iaorxII3ZqQt7bqNhRNdeOklqwWsl7iGuJCGL7jxkUzcWVpK5zsYr0WaMqeXrIfeL02Uig==}
     engines: {node: '>=22.12.0'}
     peerDependencies:
       vitest: ^4.1.10
@@ -22852,6 +22861,12 @@ snapshots:
       tunnel-agent: 0.6.0
 
   get-it@9.5.0(vitest@4.1.10):
+    dependencies:
+      undici: 7.29.0
+    optionalDependencies:
+      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.10)(jsdom@29.1.1)(vite@8.2.2)
+
+  get-it@9.5.1(vitest@4.1.10):
     dependencies:
       undici: 7.29.0
     optionalDependencies:
