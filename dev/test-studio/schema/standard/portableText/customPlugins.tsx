@@ -6,6 +6,7 @@ import {
   defineArrayMember,
   defineField,
   defineType,
+  type PortableTextBlock,
   type PortableTextPluginsProps,
   useFormValue,
 } from 'sanity'
@@ -115,6 +116,19 @@ function RichTableAdoptionPlugins(props: PortableTextPluginsProps) {
   })
 }
 
+// Keyed per table, so toggling one table's header row clears only that
+// table's warning.
+function tablesMustHaveHeaderRow(blocks: PortableTextBlock[] | undefined) {
+  const tables = (blocks?.filter((block) => block._type === 'table') ??
+    []) as (PortableTextBlock & {
+    headerRows?: number
+  })[]
+  const warnings = tables
+    .filter((table) => !table.headerRows)
+    .map((table) => ({message: 'Table has no header row', path: [{_key: table._key}]}))
+  return warnings.length > 0 ? warnings : true
+}
+
 export const customPlugins = defineType({
   name: 'customPlugins',
   title: 'Custom Plugins',
@@ -134,6 +148,7 @@ export const customPlugins = defineType({
       title: 'Container Table',
       description:
         'A defineContainer table (table > row > cell). Images and text blocks live at the root and inside cells. Cell blocks are deliberately narrower than root blocks (styles: normal/quote; decorators: strong/underline; lists: bullet; no annotations), so the toolbar disables the difference while the caret is inside a cell.',
+      validation: (Rule) => Rule.custom(tablesMustHaveHeaderRow).warning(),
       of: [
         defineArrayMember({
           type: 'block',

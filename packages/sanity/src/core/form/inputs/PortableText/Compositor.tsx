@@ -38,6 +38,7 @@ import {type ArrayOfObjectsInputProps, type OnPasteFn} from '../../types/inputPr
 import {pathToAnchorIdent} from '../../utils/pathToAnchorIdent'
 import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
 import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
+import {PortableTextInputPathProvider} from './contexts/PortableTextInputPath'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 import {SelectedAnnotationsProvider} from './contexts/SelectedAnnotationsContext'
@@ -576,43 +577,45 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorFocused = focused || hasFocusWithin
 
   return (
-    <SelectedAnnotationsProvider>
-      <DndProvider>
-        <ListIndexProvider>
-          <NodePlugin nodes={catchAllNodes} />
-          <PortalProvider __unstable_elements={portalElements} element={portal.element}>
-            <BoundaryElementProvider element={floatingBoundary}>
-              <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
-                <ChangeIndicator
-                  disabled={isFullscreen}
-                  hasFocus={Boolean(focused)}
-                  isChanged={changed}
-                  path={path}
-                >
-                  <Root
-                    data-focused={editorFocused ? '' : undefined}
-                    data-read-only={readOnly ? '' : undefined}
+    <PortableTextInputPathProvider path={path}>
+      <SelectedAnnotationsProvider>
+        <DndProvider>
+          <ListIndexProvider>
+            <NodePlugin nodes={catchAllNodes} />
+            <PortalProvider __unstable_elements={portalElements} element={portal.element}>
+              <BoundaryElementProvider element={floatingBoundary}>
+                <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
+                  <ChangeIndicator
+                    disabled={isFullscreen}
+                    hasFocus={Boolean(focused)}
+                    isChanged={changed}
+                    path={path}
                   >
-                    <Box data-wrapper="" ref={setWrapperElement}>
-                      <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                        {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
-                        <AnnotationObjectEditModal
-                          focused={focused}
-                          onItemClose={onItemClose}
-                          referenceBoundary={scrollElement}
-                        />
-                        <CombinedAnnotationPopover referenceBoundary={scrollElement} />
-                      </Portal>
-                    </Box>
-                    <div data-border="" />
-                  </Root>
-                </ChangeIndicator>
-              </ActivateOnFocus>
-            </BoundaryElementProvider>
-          </PortalProvider>
-        </ListIndexProvider>
-      </DndProvider>
-    </SelectedAnnotationsProvider>
+                    <Root
+                      data-focused={editorFocused ? '' : undefined}
+                      data-read-only={readOnly ? '' : undefined}
+                    >
+                      <Box data-wrapper="" ref={setWrapperElement}>
+                        <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                          {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                          <AnnotationObjectEditModal
+                            focused={focused}
+                            onItemClose={onItemClose}
+                            referenceBoundary={scrollElement}
+                          />
+                          <CombinedAnnotationPopover referenceBoundary={scrollElement} />
+                        </Portal>
+                      </Box>
+                      <div data-border="" />
+                    </Root>
+                  </ChangeIndicator>
+                </ActivateOnFocus>
+              </BoundaryElementProvider>
+            </PortalProvider>
+          </ListIndexProvider>
+        </DndProvider>
+      </SelectedAnnotationsProvider>
+    </PortableTextInputPathProvider>
   )
 }
 

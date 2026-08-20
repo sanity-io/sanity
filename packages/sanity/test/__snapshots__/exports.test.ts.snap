@@ -800,6 +800,7 @@ exports[`exports snapshot 1`] = `
     "PaneRouterContext": "object",
     "ParseErrorsContext": "object",
     "PerspectiveContext": "object",
+    "PortableTextInputPathContext": "object",
     "PortableTextMarkersContext": "object",
     "PortableTextMemberItemElementRefsContext": "object",
     "PortableTextMemberItemsContext": "object",
