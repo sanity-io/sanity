@@ -1,21 +1,15 @@
-import {type CSSProperties} from 'react'
+import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
+import {StarIcon} from '@sanity/icons/Star'
+import {Text} from '@sanity/ui'
 import {expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {Button} from '../../../../ui-components/button/Button'
 import {PaneHeader} from '../PaneHeader'
 
-// PaneHeader Root sets line-height: 0, which collapses native buttons to a
-// zero-height box. Size them like a bleed Button (~25px) so the title row is
-// taller, matching FavoriteToggle in the document pane.
-const bleedButtonStyle: CSSProperties = {
-  boxSizing: 'border-box',
-  display: 'inline-flex',
-  alignItems: 'center',
-  height: 25,
-  lineHeight: '25px',
-  padding: 0,
-}
+// Alignment is computed CSS (TitleCard padding vs bleed Button height). jsdom
+// disables vanilla-extract runtime styles, so this cannot live in the unit suite.
 
 function PaneHeaderBackButtonStory() {
   return (
@@ -23,19 +17,27 @@ function PaneHeaderBackButtonStory() {
       <PaneHeader
         title="Metronomy"
         backButton={
-          <button type="button" data-testid="pane-back" aria-label="Back" style={bleedButtonStyle}>
-            Back
-          </button>
+          <Button
+            data-testid="pane-back"
+            icon={ArrowLeftIcon}
+            mode="bleed"
+            tooltipProps={{content: 'Back'}}
+          />
         }
         appendTitle={
-          <button
-            type="button"
+          <Button
             data-testid="pane-star"
+            mode="bleed"
             aria-label="Add to favorites"
-            style={bleedButtonStyle}
+            tooltipProps={{
+              content: <Text size={1}>Add to favorites</Text>,
+              placement: 'right',
+            }}
           >
-            Star
-          </button>
+            <Text size={1}>
+              <StarIcon />
+            </Text>
+          </Button>
         }
       />
     </TestWrapper>
@@ -46,40 +48,22 @@ function verticalCentre(rect: DOMRect): number {
   return rect.top + rect.height / 2
 }
 
-function titleTextRect(): DOMRect {
-  // Measure the glyph box, not the TitleText element: line-height: 0 on Root
-  // collapses that element's border box and overflows the glyphs.
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
-  while (walker.nextNode()) {
-    if (walker.currentNode.textContent === 'Metronomy') {
-      const range = document.createRange()
-      range.selectNodeContents(walker.currentNode)
-      return range.getBoundingClientRect()
-    }
+test('vertically centres the back button with appendTitle when both are bleed Buttons', async () => {
+  const {container} = await render(<PaneHeaderBackButtonStory />)
+
+  await expect.poll(() => container.querySelector('[data-testid="pane-back"]')).not.toBeNull()
+  await expect.poll(() => container.querySelector('[data-testid="pane-star"]')).not.toBeNull()
+
+  const backButton = container.querySelector('[data-testid="pane-back"]')
+  const starButton = container.querySelector('[data-testid="pane-star"]')
+  if (!backButton || !starButton) {
+    throw new Error('Expected to find the pane back button and favourite toggle')
   }
-  throw new Error('Expected to find the pane title text')
-}
 
-test(
-  'vertically centres the back button with the title when appendTitle is present',
-  {timeout: 30_000},
-  async () => {
-    // TestWrapper suspends on the mock workspace via use(); wait for the
-    // header to land rather than wrapping render in act (unsupported here).
-    void render(<PaneHeaderBackButtonStory />)
-
-    await expect.poll(() => document.querySelector('[data-testid="pane-back"]')).not.toBeNull()
-    await expect.poll(() => document.body.textContent?.includes('Metronomy')).toBe(true)
-
-    const backButton = document.querySelector('[data-testid="pane-back"]')
-    if (!backButton) {
-      throw new Error('Expected to find the pane back button')
-    }
-
-    expect(
-      Math.abs(
-        verticalCentre(backButton.getBoundingClientRect()) - verticalCentre(titleTextRect()),
-      ),
-    ).toBeLessThan(4)
-  },
-)
+  expect(
+    Math.abs(
+      verticalCentre(backButton.getBoundingClientRect()) -
+        verticalCentre(starButton.getBoundingClientRect()),
+    ),
+  ).toBeLessThan(2)
+})
