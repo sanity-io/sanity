@@ -48,7 +48,7 @@ export function useClient(clientOptions?: SourceClientOptions): SanityClient {
   const source = useSource()
   if (!clientOptions) {
     console.warn(
-      'Calling `useClient()` without specifying an API version is deprecated and will stop working in the next major version - please specify a date, e.g. `useClient({apiVersion: "2025-02-10"})`.',
+      'Calling `useClient()` without specifying an API version is deprecated and will stop working in the next major version - please specify a date, e.g. `useClient({apiVersion: "2025-02-07"})`.',
     )
     return source.getClient({apiVersion: 'v2025-02-07'})
   }
