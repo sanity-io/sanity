@@ -177,7 +177,7 @@ export function StudioAnnouncementsDialog({
       onClose={onClose}
       onClickOutside={onClose}
       width={1}
-      bodyHeight="fill"
+      bodyHeight="100%"
       padding={false}
       __unstable_hideCloseButton
       __unstable_autoFocus={false}

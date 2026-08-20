@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
 import {useRelativeTime} from '../../hooks/useRelativeTime'
