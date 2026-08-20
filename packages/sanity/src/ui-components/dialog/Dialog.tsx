@@ -14,7 +14,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {useTranslation} from 'react-i18next'
-import {Box} from 'ui5'
+import {Box, type BoxProps} from 'ui5'
 
 /** @internal */
 export type DialogProps = Pick<
@@ -38,7 +38,7 @@ export type DialogProps = Pick<
    * Set this to '100%' if you want overflow body content to be contained
    * and not trigger dynamic border visibility.
    */
-  bodyHeight?: string
+  bodyHeight?: BoxProps['height']
   children?: ReactNode
   zOffset?: number
   footer?: {
