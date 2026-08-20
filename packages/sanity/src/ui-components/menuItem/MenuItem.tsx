@@ -1,5 +1,5 @@
 /* oxlint-disable no-restricted-imports */
-import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Flex, Stack, Text} from '@sanity/ui'
 import {MenuItem as UIMenuItem, type MenuItemProps as UIMenuItemProps} from '@sanity/ui/menu'
 import {
   type ElementType,
@@ -12,6 +12,7 @@ import {
 } from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
 import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
