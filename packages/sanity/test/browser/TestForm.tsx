@@ -341,6 +341,7 @@ async function validateStaticDocument(
   workspace: Workspace,
   setCallback: (result: ValidationMarker[]) => void,
 ) {
+  // oxlint-disable-next-line typescript/no-deprecated -- exercises the compatibility API
   const result = await validateDocument({
     document,
     workspace,

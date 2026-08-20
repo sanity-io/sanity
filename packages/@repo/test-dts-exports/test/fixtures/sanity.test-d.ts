@@ -7098,6 +7098,7 @@ describe('sanity', () => {
   })
   test('validateDocument', () => {
     expectTypeOf<typeof validateDocument>().toBeFunction()
+    expectTypeOf<Parameters<typeof validateDocument>[0]>().toEqualTypeOf<ValidateDocumentOptions>()
   })
   test('ValidateDocumentOptions', () => {
     expectTypeOf<ValidateDocumentOptions>().toBeObject()
