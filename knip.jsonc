@@ -45,8 +45,8 @@
     // workspace's pre-existing unused files/exports (out of scope for this work)
     // aren't reported, while dependency usage still is.
     "e2e": {
-      "entry": ["**/*.{ts,tsx}"],
-      "project": ["**/*.{ts,tsx}"],
+      "entry": ["**/*.{ts,tsx}", "vitest.config.mts"],
+      "project": ["**/*.{ts,tsx}", "vitest.config.mts"],
       "playwright": false,
       "ignoreDependencies": [
         // CLI invoked as `pnpm --filter e2e exec chromatic --playwright` in

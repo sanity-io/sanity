@@ -278,7 +278,7 @@ jobs:
           fi
 
   merge-reports:
-    needs: [playwright-test]
+    needs: [playwright-test, deploy-preview]
     if: "!cancelled() && needs.playwright-test.result != 'skipped'"
     runs-on: ubuntu-latest
     outputs:
@@ -301,6 +301,14 @@ jobs:
           path: all-blob-reports
 
       - name: Merge into HTML Report
+        env:
+          # Used by e2e/reporters/summary.ts to embed the exact local repro command
+          # in the agent-friendly failure report (agent-report.md).
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_BASE_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+          SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
+          SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
+          SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
         run: pnpm exec playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports/blob-report
 
       - name: Extract test summary
@@ -326,6 +334,14 @@ jobs:
               process.stdout.write('ENDOFFILES\n');
             }
           " >> $GITHUB_OUTPUT
+
+      - name: Append failure digest to job summary
+        if: ${{ !cancelled() && steps.summary.outputs.failed != '0' && steps.summary.outputs.failed != '' }}
+        run: |
+          if [ -f playwright-report/agent-report.md ]; then
+            # GITHUB_STEP_SUMMARY is limited to 1MB; keep a safety margin.
+            head -c 900000 playwright-report/agent-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Upload HTML report
         id: upload-playwright-report
@@ -394,6 +410,16 @@ jobs:
             if (s.flaky) parts.push('[🟡 ' + s.flaky + ' flaky](' + u + '#?q=s%3Aflaky)');
             if (s.skipped) parts.push('([⚪ ' + s.skipped + ' skipped](' + u + '#?q=s%3Askipped))');
             console.log('text=' + parts.join(' • ') + ' • [view full report](' + u + ')');
+            if (u && s.failed) {
+              const block = [
+                '🤖 **Share with an AI agent:**',
+                '',
+                '> Fix the failing e2e tests. The failure report with error messages and page snapshots is at ' + u + '/agent-report.md',
+              ].join('\n');
+              process.stdout.write('agent_block<<ENDOFAGENTBLOCK\n' + block + '\nENDOFAGENTBLOCK\n');
+            } else {
+              console.log('agent_block=');
+            }
           " >> $GITHUB_OUTPUT
 
       - name: Update PR Comment (tests passed)
@@ -417,6 +443,8 @@ jobs:
             ### ❌ E2E Tests
 
             ${{ steps.linked-summary.outputs.text }} • [view run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            ${{ steps.linked-summary.outputs.agent_block }}
 
             <details>
             <summary>Debug failing tests locally</summary>
