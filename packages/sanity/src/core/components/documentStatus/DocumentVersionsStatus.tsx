@@ -13,6 +13,7 @@ import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {useAgentBundles} from '../../store/agent/useAgentBundles'
+import {useWorkspace} from '../../studio/workspace'
 import {readVersionType} from '../../util/versionsUtils'
 import {getVersionFilterLabel} from '../../variants/plugin/components/getVersionFilterLabel'
 import {useAllVariants} from '../../variants/store/useAllVariants'
@@ -24,6 +25,7 @@ import {
   versionStatusItem,
 } from './DocumentVersionsStatus.css'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
+import {getDocumentVersionStatusTitle} from './getDocumentVersionStatusTitle'
 import {
   type DocumentVersionStatusItem,
   groupDocumentVersionsForStatus,
@@ -77,6 +79,7 @@ function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
   const {t} = useTranslation()
   const schema = useSchema()
   const {bundles} = useAgentBundles()
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const liveEdit = Boolean(version._type && schema.get(version._type)?.liveEdit)
 
   const variantTitle = variant ? getVariantTitle(variant) : t('document-group.base-variant')
@@ -87,6 +90,11 @@ function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
     fullTitle,
     isTruncated,
   } = getVersionFilterLabel(releasePerspective, t, bundles)
+  const title = getDocumentVersionStatusTitle({
+    variantsEnabled,
+    variantTitle,
+    releaseTitle,
+  })
 
   const updatedAt = useRelativeTime(version._updatedAt, {
     minimal: true,
@@ -101,14 +109,14 @@ function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
       <Flex gap={2} justify="space-between" paddingY={2}>
         <Stack className={titleStack} gap={2}>
           <Text size={1} title={isTruncated ? fullTitle : undefined} weight="medium">
-            {variantTitle} · {releaseTitle}
+            {title}
           </Text>
           <Text className={updatedAtText} muted size={1}>
             {timestampLabel}
           </Text>
         </Stack>
         <Flex align="center" flex="none" gap={1} paddingRight={2}>
-          {variant ? (
+          {variantsEnabled && variant ? (
             <Card className={variantIconCard} tone="suggest">
               <Text size={2}>
                 <RhombusIcon />
