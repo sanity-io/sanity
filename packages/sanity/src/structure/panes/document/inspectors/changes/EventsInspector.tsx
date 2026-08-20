@@ -9,6 +9,8 @@ import {
   ChangesError,
   type DocumentChangeContextInstance,
   type DocumentGroupEvent,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
   isReleaseDocument,
   LoadingBlock,
   NoChanges,
@@ -171,9 +173,18 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
 
   const [sinceEvent, toEvent] = useMemo(() => {
     if (!events) return [null, null]
+    const [lastEvent] = events
+    const revisionEvent = events.find((e) => e.id === revision?.revisionId)
+    // Discard is not selectable. Do not use it as the live to-event when the
+    // current revision did not resolve (e.g. an unpublished draft was discarded).
+    const fallbackToEvent =
+      lastEvent &&
+      (isDeleteDocumentVersionEvent(lastEvent) || isDeleteDocumentGroupEvent(lastEvent))
+        ? null
+        : lastEvent || null
     return [
       events.find((e) => e.id === sinceRevision?.revisionId) || null,
-      events.find((e) => e.id === revision?.revisionId) || events[0],
+      revisionEvent || fallbackToEvent,
     ]
   }, [events, revision?.revisionId, sinceRevision?.revisionId])
 

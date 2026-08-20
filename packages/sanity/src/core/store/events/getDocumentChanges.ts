@@ -18,7 +18,11 @@ import {type ObjectDiff} from '../../field/types'
 import {calculateDiff} from './calculateDiff'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
-import {type EventsStoreRevision, isCreateDocumentVersionEvent} from './types'
+import {
+  type EventsStoreRevision,
+  isCreateDocumentVersionEvent,
+  isNonSelectableTerminalEvent,
+} from './types'
 import {type EventsObservableValue} from './useEventsStore'
 
 const buildDocumentForDiffInput = (document?: Partial<SanityDocument> | null) => {
@@ -107,6 +111,9 @@ export function getDocumentChanges({
           const viewingLatest = !to?._rev
           const getTransactions = (): Observable<TransactionLogEventWithEffects[]> => {
             if (sinceDoc._rev === HISTORY_CLEARED_EVENT_ID) {
+              return of([])
+            }
+            if (viewingLatest && events[0] && isNonSelectableTerminalEvent(events[0])) {
               return of([])
             }
             if (viewingLatest && lastResolvedSince === sinceDoc._rev) {
