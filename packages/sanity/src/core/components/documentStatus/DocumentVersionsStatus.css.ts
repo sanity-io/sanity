@@ -1,13 +1,19 @@
 import {style} from '@vanilla-extract/css'
 
-export const versionStatusTitles = style({
-  flex: '0 1 auto',
-  minWidth: 0,
+export const variantIconCard = style({
+  backgroundColor: 'transparent',
 })
 
-export const variantIconCard = style({
-  vars: {
-    '--card-icon-color': 'var(--card-accent-fg-color)',
-  },
-  backgroundColor: 'transparent',
+export const titleStack = style({
+  minWidth: 0,
+  width: '100%',
+})
+
+export const updatedAtText = style({
+  flex: 'none',
+  whiteSpace: 'nowrap',
+})
+
+export const versionStatusItem = style({
+  padding: '2px 0',
 })

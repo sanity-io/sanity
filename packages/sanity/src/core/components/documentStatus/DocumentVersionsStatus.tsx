@@ -11,12 +11,20 @@ import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
+import {useAgentBundles} from '../../store/agent/useAgentBundles'
+import {getVersionFilterLabel} from '../../variants/plugin/components/getVersionFilterLabel'
 import {useAllVariants} from '../../variants/store/useAllVariants'
-import {variantIconCard, versionStatusTitles} from './DocumentVersionsStatus.css'
+import {
+  titleStack,
+  updatedAtText,
+  variantIconCard,
+  versionStatusItem,
+} from './DocumentVersionsStatus.css'
 import {
   type DocumentVersionStatusItem,
   groupDocumentVersionsForStatus,
 } from './sortDocumentVersionsForStatus'
+
 /**
  * Displays document status for all of the versions of a given document.
  *
@@ -52,13 +60,18 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
 
 function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
   const {t} = useTranslation()
+  const {bundles} = useAgentBundles()
 
   const variantTitle = variant
     ? variant.metadata?.title || variant.name
     : t('document-group.base-variant')
 
-  const releaseTitle = getReleaseTitle({release, t, version})
   const releasePerspective = getReleasePerspective({release, version})
+  const {
+    displayTitle: releaseTitle,
+    fullTitle,
+    isTruncated,
+  } = getVersionFilterLabel(releasePerspective, t, bundles)
 
   const updatedAt = useRelativeTime(version._updatedAt, {
     minimal: true,
@@ -66,16 +79,20 @@ function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
   })
 
   return (
-    <Box paddingX={0}>
-      <Flex align="center" gap={2} padding={2} style={{minWidth: 0, width: '100%'}}>
-        <Box className={versionStatusTitles} paddingY={1}>
-          <Text size={1} textOverflow="ellipsis">
-            {variantTitle} · {releaseTitle}
-          </Text>
-        </Box>
-        <Text muted size={1} style={{flex: 'none', whiteSpace: 'nowrap'}}>
-          · {updatedAt}
-        </Text>
+    <Box className={versionStatusItem}>
+      <Flex paddingX={0} gap={2} padding={2}>
+        <Stack className={titleStack} gap={2}>
+          <Box>
+            <Text size={1} title={isTruncated ? fullTitle : undefined} weight="medium">
+              {variantTitle} · {releaseTitle}
+            </Text>
+          </Box>
+          <Box>
+            <Text className={updatedAtText} muted size={1}>
+              {updatedAt}
+            </Text>
+          </Box>
+        </Stack>
         <Box flex={1} />
         <Flex align="center" flex="none" gap={2}>
           {variant ? (
@@ -92,30 +109,6 @@ function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
   )
 }
 
-function getReleaseTitle({
-  release,
-  t,
-  version,
-}: {
-  release?: ReleaseDocument
-  t: ReturnType<typeof useTranslation>['t']
-  version: VersionInfoDocumentStub
-}): string {
-  if (version._system.release?._ref) {
-    return release?.metadata.title || release?.name || t('release.placeholder-untitled-release')
-  }
-
-  if (version._system.bundleId === 'drafts') {
-    return t('release.chip.draft')
-  }
-
-  if (version._createdAt === version._updatedAt) {
-    return t('timeline.operation.created')
-  }
-
-  return t('release.chip.published')
-}
-
 function getReleasePerspective({
   release,
   version,
@@ -129,6 +122,10 @@ function getReleasePerspective({
 
   if (version._system.bundleId === 'drafts') {
     return LATEST
+  }
+
+  if (version._system.bundleId) {
+    return version._system.bundleId
   }
 
   return PUBLISHED
