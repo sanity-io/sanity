@@ -74,7 +74,6 @@ const ToolPreview = (props: Props) => {
           />
         }
         linkComponent={LinkComponent}
-        previewState={previewState}
         publishedDocumentId={publishedId}
         schedule={schedule}
         schemaType={schemaType}

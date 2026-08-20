@@ -4,5 +4,6 @@ import {apiConfig} from './apiConfig'
 
 export default defineCliConfig({
   api: apiConfig,
-  reactCompiler: {target: '19'},
+  // React Compiler on `oxc-transform-react` (no babel), see dev/test-studio/sanity.cli.ts
+  reactCompiler: {transform: 'oxc', target: '19'},
 })

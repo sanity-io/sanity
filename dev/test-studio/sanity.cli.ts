@@ -8,7 +8,6 @@ const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 // the DevTools dock in a running `sanity dev` server without restarting it.
 // Usage: `pnpm devtools:test-studio` from the repo root (see AGENTS.md).
 const isViteDevToolsEnabled = process.env.ENABLE_VITE_DEVTOOLS === 'true'
-const reactCompilerAllowList = /\/(?:sanity|@sanity\/vision)\/src\/.*\.tsx?$/
 
 export default defineCliConfig({
   api: isStaging
@@ -31,22 +30,17 @@ export default defineCliConfig({
   // {@link https://vite.dev/guide/rolldown#full-bundle-mode}
   unstable_bundledDev: true,
   reactCompiler: {
+    // `transform: 'oxc'` runs React Compiler through `oxc-transform-react` (the native Rust
+    // port): one native pass handles React Compiler, TypeScript/JSX and Fast Refresh — no babel
+    transform: 'oxc',
     target: '19',
-    // By default the compiler is loaded up on all workspace files, even sanity/lib/structure.js which is pre-compiled with `tsdown`,
-    // and so we filter by just studio files
-    sources: (filename) => {
-      // The default behavior is to always skip node_modules: https://github.com/facebook/react/blob/d6cae440e34c6250928e18bed4a16480f83ae18a/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L326
-      if (filename.indexOf('node_modules') !== -1) {
-        return false
-      }
-      // Compile files in the test studio itself
-      if (filename.indexOf('dev/test-studio') !== -1) {
-        return true
-      }
-      // If the file is `.ts` or `.tsx` then we should run the compiler (it's resolved with the `monorepo` condition during `sanity dev`)
-      // otherwise it's likely resolving a built file that had react compiler already applied during its build process
-      return reactCompilerAllowList.test(filename)
-    },
+    // By default the compiler runs on all workspace files, even sanity/lib/structure.js which is
+    // pre-compiled with `tsdown`, and so we filter by just studio files. oxc `sources` are
+    // substring filters (function filters can't cross the native boundary): the studio's own
+    // files, plus workspace sources resolved via the `monorepo` condition during `sanity dev` —
+    // pre-compiled output lives under `lib/`, never `src/`, so it can't match. node_modules is
+    // already excluded by @vitejs/plugin-react's default `exclude` before the compiler runs.
+    sources: ['dev/test-studio', '/sanity/src/', '/@sanity/vision/src/'],
   },
   async vite(viteConfig, {command, mode}) {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'

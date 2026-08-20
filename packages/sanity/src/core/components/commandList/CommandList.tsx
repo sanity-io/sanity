@@ -1,4 +1,4 @@
-import {Box, rem, Stack} from '@sanity/ui'
+import {rem, Stack} from '@sanity/ui'
 import {
   measureElement,
   type ScrollToOptions,
@@ -21,6 +21,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {type FIXME} from '../../FIXME'
 import {focusRingStyle} from '../../form/components/formField/styles'
@@ -126,7 +127,7 @@ function CommandListComponent({
   renderItem,
   testId,
   wrapAround = true,
-  ...responsivePaddingProps
+  ...paddingProps
 }: CommandListProps & RefAttributes<CommandListHandle>) {
   const isMountedRef = useRef(false)
   const [commandListId] = useState(useId())
@@ -574,10 +575,9 @@ function CommandListComponent({
       onMouseEnter={handleVirtualListMouseEnter}
       onMouseLeave={handleVirtualListMouseLeave}
       ref={setVirtualListElement}
-      sizing="border"
       tabIndex={rootTabIndex}
       data-testid={testId}
-      {...responsivePaddingProps}
+      {...paddingProps}
     >
       {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset} />}
       <PointerOverlayDiv aria-hidden="true" data-enabled="false" ref={setPointerOverlayElement} />
@@ -587,7 +587,8 @@ function CommandListComponent({
           $height={virtualizer.getTotalSize()}
           aria-label={ariaLabel}
           aria-multiselectable={ariaMultiselectable}
-          flex={1}
+          flexBasis="0%"
+          flexGrow={1}
           ref={setChildContainerElement}
           role="listbox"
         >

@@ -1,10 +1,11 @@
 import {isGoingToUnpublish} from '../../../../releases/util/isGoingToUnpublish'
 import {getVariantVersionInfo} from '../../../../variants/documents/getVariantVersionInfo'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../../../variants/store/constants'
 import {type OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
 import {assertNotVariantVersion} from '../utils/assertNotVariantVersion'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
-import {variantActionsApiClient} from '../utils/variantActionsApiClient'
+import {variantsApiClient} from '../utils/variantsApiClient'
 
 type DisabledReason = 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED' | 'ALREADY_UNPUBLISHED'
 
@@ -44,7 +45,7 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
       // - a release id: soft unpublish — the backend marks the release-scoped variant with
       //   `_system.delete: true`, completed when the release is published
       // The base published and draft documents are never touched either way.
-      return variantActionsApiClient(client).observable.action(
+      return variantsApiClient(client).observable.action(
         {
           actionType: 'sanity.action.document.variant.unpublish',
           publishedId: idPair.publishedId,
