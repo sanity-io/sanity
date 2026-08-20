@@ -137,7 +137,7 @@
     "tsx": "^4.23.12",
     "turbo": "^2.10.9",
     "typescript": "catalog:",
-    "vercel": "^57.0.0",
+    "vercel": "^58.11.0",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
