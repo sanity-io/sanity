@@ -145,7 +145,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
 
     return {
       id: this.spec.id,
-      templateId: this.spec.id,
+      templateId: this.spec.templateId,
       schemaType: template.schemaType,
       type: 'initialValueTemplateItem',
       description: this.spec.description || template.description,
