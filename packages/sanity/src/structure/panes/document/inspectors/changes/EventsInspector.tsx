@@ -9,6 +9,7 @@ import {
   ChangesError,
   type DocumentChangeContextInstance,
   type DocumentGroupEvent,
+  isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
   isReleaseDocument,
   LoadingBlock,
@@ -177,7 +178,10 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     // Discard is not selectable. Do not use it as the live to-event when the
     // current revision did not resolve (e.g. an unpublished draft was discarded).
     const fallbackToEvent =
-      lastEvent && isDeleteDocumentVersionEvent(lastEvent) ? null : lastEvent || null
+      lastEvent &&
+      (isDeleteDocumentVersionEvent(lastEvent) || isDeleteDocumentGroupEvent(lastEvent))
+        ? null
+        : lastEvent || null
     return [
       events.find((e) => e.id === sinceRevision?.revisionId) || null,
       revisionEvent || fallbackToEvent,

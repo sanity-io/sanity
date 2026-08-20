@@ -2,6 +2,7 @@ import {describe, expect, it} from 'vitest'
 
 import {resolveEventsRevisionId} from './resolveEventsRevisionId'
 import {
+  type DeleteDocumentGroupEvent,
   type DeleteDocumentVersionEvent,
   type EditDocumentVersionEvent,
   type PublishDocumentVersionEvent,
@@ -44,6 +45,15 @@ const discardEvent: DeleteDocumentVersionEvent = {
   versionRevisionId: 'discard-version-revision-id',
 }
 
+const discardGroupEvent: DeleteDocumentGroupEvent = {
+  type: 'deleteDocumentGroup',
+  id: 'deleted-2026-01-03T00:00:00.000Z',
+  timestamp: '2026-01-03T00:00:00.000Z',
+  author: 'author-1',
+  documentVariantType: 'draft',
+  documentId: 'doc-1',
+}
+
 const releasePublishEvent: PublishDocumentVersionEvent = {
   ...publishEvent,
   id: 'release-publish-event-id',
@@ -77,6 +87,16 @@ describe('resolveEventsRevisionId()', () => {
       loadMore: noopLoadMore,
     })
     expect(result).toBeNull()
+  })
+
+  it('returns null when rev is unset and the latest event is a document-group delete', () => {
+    const result = resolveEventsRevisionId({
+      events: [discardGroupEvent, editEvent],
+      loading: false,
+      loadMore: noopLoadMore,
+    })
+    expect(result).toBeNull()
+    expect(result).not.toBe('edit-revision-id')
   })
 
   it('returns the given event id when rev is set', () => {

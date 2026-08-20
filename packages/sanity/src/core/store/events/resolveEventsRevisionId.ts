@@ -1,7 +1,7 @@
 import {
   type DocumentGroupEvent,
-  isDeleteDocumentVersionEvent,
   isEditDocumentVersionEvent,
+  isNonSelectableTerminalEvent,
   isPublishDocumentVersionEvent,
 } from './types'
 
@@ -9,9 +9,9 @@ import {
  * Resolves the revision id used for the Review Changes to-document.
  *
  * When `rev` is unset the pane is on the live/current view. A latest publish is
- * that publish event. A latest discard must not use the discarded draft's last
- * edit (discard events are not selectable); return null so the diff uses the
- * live document, which is the published version after a discard.
+ * that publish event. A latest discard or document-group delete must not use the
+ * discarded draft's last edit (those events are not selectable); return null so
+ * the diff uses the live document.
  */
 export function resolveEventsRevisionId({
   rev,
@@ -48,7 +48,7 @@ export function resolveEventsRevisionId({
       if (isPublishDocumentVersionEvent(lastEvent)) {
         return lastEvent.id
       }
-      if (isDeleteDocumentVersionEvent(lastEvent)) {
+      if (isNonSelectableTerminalEvent(lastEvent)) {
         return null
       }
     }

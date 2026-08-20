@@ -21,7 +21,7 @@ import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
 import {
   type EventsStoreRevision,
   isCreateDocumentVersionEvent,
-  isDeleteDocumentVersionEvent,
+  isNonSelectableTerminalEvent,
 } from './types'
 import {type EventsObservableValue} from './useEventsStore'
 
@@ -113,7 +113,7 @@ export function getDocumentChanges({
             if (sinceDoc._rev === HISTORY_CLEARED_EVENT_ID) {
               return of([])
             }
-            if (viewingLatest && events[0] && isDeleteDocumentVersionEvent(events[0])) {
+            if (viewingLatest && events[0] && isNonSelectableTerminalEvent(events[0])) {
               return of([])
             }
             if (viewingLatest && lastResolvedSince === sinceDoc._rev) {

@@ -15,8 +15,7 @@ import {
   type DocumentGroupEvent,
   type EventsStore,
   isCreateDocumentVersionEvent,
-  isDeleteDocumentGroupEvent,
-  isDeleteDocumentVersionEvent,
+  isNonSelectableTerminalEvent,
   isPublishDocumentVersionEvent,
 } from './types'
 
@@ -203,9 +202,7 @@ export function useEventsStore({
   )
 
   const lastNonDeletedRevId = useMemo(
-    () =>
-      events.find((e) => !isDeleteDocumentGroupEvent(e) && !isDeleteDocumentVersionEvent(e))?.id ||
-      null,
+    () => events.find((e) => !isNonSelectableTerminalEvent(e))?.id || null,
     [events],
   )
   return {
