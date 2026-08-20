@@ -195,6 +195,7 @@ export function useTrackFocusPath(props: Props): void {
     elementRefs,
     focusPath,
     legacyEditor,
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     onItemClose,
     portableTextMemberItems,
     ptInputPath,

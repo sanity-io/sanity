@@ -26,11 +26,11 @@ catalog:
   '@optique/run': ^1.1.1
   '@playwright/test': 1.62.1
   '@rolldown/plugin-babel': ^0.2.3
-  '@sanity/client': ^8.1.0
+  '@sanity/client': ^8.2.0
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.25.0
-  '@sanity/ui': ^4.0.3
+  '@sanity/ui': ^4.0.4
   '@types/node': ^24.13.3
   '@types/react': ^19.2.18
   '@types/react-dom': ^19.2.4
@@ -51,7 +51,7 @@ catalog:
   styled-components: ^6.5.3
   tsdown: ^0.22.14
   typescript: ^7.0.2
-  vite: ^8.2.1
+  vite: ^8.2.2
   vitest: ^4.1.10
   vitest-browser-react: ^2.2.0
 

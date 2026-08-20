@@ -5,7 +5,7 @@ import {getDraftId, getVersionFromId, getVersionId} from '../../../../util/draft
 import {getVariantVersionInfo} from '../../../../variants/documents/getVariantVersionInfo'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {operationsApiClient} from '../utils/operationsApiClient'
-import {variantActionsApiClient} from '../utils/variantActionsApiClient'
+import {variantsApiClient} from '../utils/variantsApiClient'
 import {type MapDocument, type OperationImpl} from './types'
 
 // `_system` is authoritative, server-managed metadata (`group`/`scopeId`/`release`/`variant`
@@ -81,7 +81,7 @@ export const duplicate: OperationImpl<
         _type: source._type,
       })
 
-      return variantActionsApiClient(client).observable.action(
+      return variantsApiClient(client).observable.action(
         {
           actionType: 'sanity.action.document.variant.create',
           publishedId: dupeId,

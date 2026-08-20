@@ -103,7 +103,9 @@ export {
 export {ContextMenuButton} from '../core/components/contextMenuButton/ContextMenuButton'
 export {Delay} from '../core/components/Delay'
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
+// oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
+export {DocumentVersionsStatusIndicator} from '../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 export {ErrorActions, type ErrorActionsProps} from '../core/components/errorActions/ErrorActions'
 export {type ErrorWithId} from '../core/components/errorActions/types'
 export {

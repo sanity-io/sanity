@@ -211,6 +211,22 @@ const benchScenario = defineType({
       ],
     }),
     defineField({
+      name: 'clsAttribution',
+      description: 'Which elements shifted during load, with summed CLS contribution',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'shiftSource',
+          fields: [
+            defineField({name: 'source', type: 'string'}),
+            defineField({name: 'totalValue', type: 'number'}),
+          ],
+          preview: {select: {title: 'source', subtitle: 'totalValue'}},
+        }),
+      ],
+    }),
+    defineField({
       name: 'resources',
       type: 'object',
       fields: [

@@ -56,8 +56,9 @@ export function CommonDateTimeInput(props: Props & RefAttributes<HTMLInputElemen
   const [localValue, setLocalValue] = useState<string | null>(null)
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setLocalValue(null)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [value])
 
   const {zoneDateToUtc} = useTimeZone(timeZoneScope)

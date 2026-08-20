@@ -194,6 +194,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
         localStorage.removeItem(legacyKey)
       }
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [scope.type, keyValueStore, keyStoreId, currentLocale, relativeDate])
 
   const allTimeZones: NormalizedTimeZone[] = useMemo(() => {
@@ -264,7 +265,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   const [timeZone, setTimeZone] = useState<NormalizedTimeZone>(() => getInitialTimeZone())
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler -- @todo fix later
+    // oxlint-disable-next-line react/no-deriving-state-in-effects, react/set-state-in-effect -- @todo fix later
     setTimeZone(getInitialTimeZone())
   }, [getInitialTimeZone])
 
