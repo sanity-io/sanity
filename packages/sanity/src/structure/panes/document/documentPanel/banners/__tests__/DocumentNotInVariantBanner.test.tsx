@@ -108,6 +108,7 @@ const versionStub = (
 ): VersionInfoDocumentStub => ({
   _createdAt: '2024-01-01T00:00:00Z',
   _updatedAt: '2024-01-01T00:00:00Z',
+  _type: 'article',
   ...stub,
 })
 
