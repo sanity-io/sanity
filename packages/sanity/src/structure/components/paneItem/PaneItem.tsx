@@ -8,7 +8,7 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {Box, type CardProps, Text} from '@sanity/ui'
+import {type CardProps, Text} from '@sanity/ui'
 import {
   type ComponentType,
   type MouseEvent,
@@ -30,6 +30,7 @@ import {
   useEditState,
   useSchema,
 } from 'sanity'
+import {Box} from 'ui5'
 
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
