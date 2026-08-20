@@ -8,7 +8,7 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {Box, type CardProps, Text} from '@sanity/ui'
+import {Badge, Box, type CardProps, Flex, Text} from '@sanity/ui'
 import {
   type ComponentType,
   type MouseEvent,
@@ -28,6 +28,7 @@ import {
   useDocumentPresence,
   useDocumentPreviewStore,
   useEditState,
+  useNumberFormat,
   useSchema,
 } from 'sanity'
 
@@ -37,6 +38,7 @@ import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {
   id: string
+  count?: number
   layout?: GeneralPreviewLayoutKey
   icon?: ComponentType<any> | false
   pressed?: boolean
@@ -68,6 +70,7 @@ function getIconWithFallback(
 
 export function PaneItem(props: PaneItemProps) {
   const {
+    count,
     icon,
     id,
     layout = 'default',
@@ -83,6 +86,7 @@ export function PaneItem(props: PaneItemProps) {
   } = props
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
+  const numberFormat = useNumberFormat()
   const {ChildLink} = usePaneRouter()
   const documentPresence = useDocumentPresence(id)
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
@@ -111,11 +115,16 @@ export function PaneItem(props: PaneItemProps) {
     return (
       <SanityDefaultPreview
         status={
-          <Box style={{opacity: 0.5}}>
-            <Text muted size={1}>
-              <ChevronRightIcon />
-            </Text>
-          </Box>
+          <Flex align="center" gap={2}>
+            {typeof count === 'number' && (
+              <Badge data-testid="pane-item-count">{numberFormat.format(count)}</Badge>
+            )}
+            <Box style={{opacity: 0.5}}>
+              <Text muted size={1}>
+                <ChevronRightIcon />
+              </Text>
+            </Box>
+          </Flex>
         }
         icon={getIconWithFallback(icon, schemaType, FolderIcon)}
         layout="compact"
@@ -123,10 +132,12 @@ export function PaneItem(props: PaneItemProps) {
       />
     )
   }, [
+    count,
     documentPreviewStore,
     hasSchemaType,
     icon,
     layout,
+    numberFormat,
     schemaType,
     sortOrder,
     title,

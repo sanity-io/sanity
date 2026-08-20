@@ -13,6 +13,7 @@ import {
 
 import {type _PaneMenuItem} from './components/pane/types'
 import {type Intent} from './structureBuilder/Intent'
+import {type ListItemCount, type ListItemDisplayOptions} from './structureBuilder/ListItem'
 import {type MenuItem as StructureToolMenuItem} from './structureBuilder/MenuItem'
 import {
   type DefaultDocumentNodeResolver,
@@ -350,9 +351,11 @@ export interface PaneListItem<TParams = unknown> {
   title: string
   i18n?: I18nTextRecord<'title'>
   icon?: React.ComponentType | false
-  displayOptions?: {showIcon?: boolean}
+  displayOptions?: ListItemDisplayOptions
   action?: (t: TParams) => unknown
   params?: TParams
+  /** Document schema type to show a live count for. See {@link ListItemCount} */
+  count?: ListItemCount
 }
 
 /** @internal */

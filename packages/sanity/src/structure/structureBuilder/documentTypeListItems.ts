@@ -13,6 +13,7 @@ import {getOrderingMenuItemsForSchemaType, MenuItemBuilder} from './MenuItem'
 import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {type Collection} from './StructureNodes'
 import {type StructureContext} from './types'
+import {markDefaultDocumentTypeChild} from './util/defaultDocumentTypeChild'
 
 const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
 
@@ -60,19 +61,21 @@ export function getDocumentTypeListItem(
     .id(typeName)
     .title(title)
     .schemaType(type)
-    .child((id, childContext) => {
-      const parent = childContext.parent as Collection
-      const parentItem = isList(parent)
-        ? (parent.items.find((item) => item.id === id) as ListItem)
-        : null
+    .child(
+      markDefaultDocumentTypeChild((id, childContext) => {
+        const parent = childContext.parent as Collection
+        const parentItem = isList(parent)
+          ? (parent.items.find((item) => item.id === id) as ListItem)
+          : null
 
-      let list = getDocumentTypeList(context, typeName)
-      if (parentItem && parentItem.title) {
-        list = list.title(parentItem.title)
-      }
+        let list = getDocumentTypeList(context, typeName)
+        if (parentItem && parentItem.title) {
+          list = list.title(parentItem.title)
+        }
 
-      return list
-    })
+        return list
+      }),
+    )
 }
 
 export function getDocumentTypeList(

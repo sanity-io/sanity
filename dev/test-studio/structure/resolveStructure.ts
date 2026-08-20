@@ -41,6 +41,8 @@ import {
 } from './constants'
 import {typesInOptionGroup} from './groupByOption'
 
+const COUNT_DEMO_TYPES = ['author', 'book', 'species']
+
 export const structure: StructureResolver = (
   S,
   {schema, documentStore, i18n, perspectiveStack, selectedVariantName},
@@ -531,11 +533,13 @@ export const structure: StructureResolver = (
           const listItemId = listItem.getId()
           if (!listItemId) return listItem
 
-          return listItem.child(
-            S.documentTypeList(listItemId).menuItems([
-              ...(S.documentTypeList(listItemId).getMenuItems() || []),
-            ]),
-          )
+          return listItem
+            .showCount(COUNT_DEMO_TYPES.includes(listItemId))
+            .child(
+              S.documentTypeList(listItemId).menuItems([
+                ...(S.documentTypeList(listItemId).getMenuItems() || []),
+              ]),
+            )
         }),
       S.divider(),
       S.documentTypeListItem('sanity.imageAsset').icon(ImagesIcon),
