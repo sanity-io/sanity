@@ -19,7 +19,8 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "styled-components": "catalog:"
+    "styled-components": "catalog:",
+    "ui5": "npm:@sanity/ui@alpha"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.3.0",

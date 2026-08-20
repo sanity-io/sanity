@@ -126,6 +126,7 @@ describe('createHookFromObservableFactory', () => {
     })
     const TestComponent = ({value}: {value: string}) => {
       const result = useHook(value)
+      // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
       syncRenders++
       const deferredResult = useDeferredValue(result)
       return <InnerMemoTestComponent tuple={deferredResult} />

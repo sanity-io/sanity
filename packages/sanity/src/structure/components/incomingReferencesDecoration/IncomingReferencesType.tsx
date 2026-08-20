@@ -186,6 +186,7 @@ function IncomingReferencesTypeList({
           description: err instanceof Error ? err.message : undefined,
           status: 'error',
         })
+        // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
       } finally {
         // Always clear the optimistic placeholder. The effect below also clears
         // it once the linked document shows up in `documents`, but that never
@@ -203,7 +204,7 @@ function IncomingReferencesTypeList({
       const isAdded = documents.find(
         (document) => getPublishedId(document._id) === getPublishedId(newReferenceId),
       )
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       if (isAdded) setNewReferenceId(null)
     }
   }, [documents, newReferenceId])

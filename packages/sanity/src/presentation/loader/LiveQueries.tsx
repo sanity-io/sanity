@@ -31,6 +31,7 @@ import {
 } from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
 
+import {variantsApiClient} from '../../core/store/document/document-pair/utils/variantsApiClient'
 import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
 import {type LoaderConnection, type PresentationPerspective} from '../types'
 import {type DocumentOnPage} from '../useDocumentsOnPage'
@@ -81,7 +82,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
           actors: createCompatibilityActors<LoaderControllerMsg>(),
         }),
       )
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setComlink(nextComlink)
 
       nextComlink.onStatus(onLoadersConnection)
@@ -260,6 +261,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
       handleQueryChange(comlink, perspective, variant, query, params, result, resultSourceMap, tags)
     }
     return undefined
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [comlink, params, perspective, query, result, resultSourceMap, tags, variant])
 
   return null
@@ -305,7 +307,7 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     // Parent client follows activeVariant synchronously; per-query variant comes from loader/query-listen and lags.
     // Without this, a client downgrade can run a fetch that still passes variant, which the dated API rejects.
     // Once we have a dated api for variants we can update the default API_VERSION we use for all clients in presentation
-    const client = variant ? _client.withConfig(VARIANTS_STUDIO_CLIENT_OPTIONS) : _client
+    const client = variant ? variantsApiClient(_client) : _client
 
     client
       .fetch(query, params, {

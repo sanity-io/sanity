@@ -4,27 +4,6 @@ import {type SourceClientOptions} from '../config/types'
 import {useSource} from '../studio/source'
 
 /**
- *
- * @deprecated Calling `useClient()` without specifying an API version is deprecated - specify a date to prevent breaking changes, e.g. `useClient({apiVersion: "2025-02-07"})`.
- *
- * React hook that returns a configured Sanity client instance based on the given configuration.
- * Automatically uses the correct project and dataset based on the current active workspace.
- *
- * @public
- * @returns A configured Sanity client instance
- * @remarks The client instance is automatically memoized based on API version
- * @remarks The client will fallback to `v2025-02-07` of the API
- * @example Instantiating a client
- * ```ts
- * function MyComponent() {
- *   const client = useClient({apiVersion: '2021-06-07'})
- *   // ... do something with client instance ...
- * }
- * ```
- */
-export function useClient(): SanityClient
-
-/**
  * React hook that returns a configured Sanity client instance based on the given configuration.
  * Automatically uses the correct project and dataset based on the current active workspace.
  *
@@ -44,12 +23,32 @@ export function useClient(): SanityClient
  * ```
  */
 export function useClient(clientOptions: SourceClientOptions): SanityClient
+/**
+ *
+ * @deprecated Calling `useClient()` without specifying an API version is deprecated - specify a date to prevent breaking changes, e.g. `useClient({apiVersion: "2025-02-07"})`.
+ *
+ * React hook that returns a configured Sanity client instance based on the given configuration.
+ * Automatically uses the correct project and dataset based on the current active workspace.
+ *
+ * @public
+ * @returns A configured Sanity client instance
+ * @remarks The client instance is automatically memoized based on API version
+ * @remarks The client will fallback to `v2025-02-07` of the API
+ * @example Instantiating a client
+ * ```ts
+ * function MyComponent() {
+ *   const client = useClient({apiVersion: '2021-06-07'})
+ *   // ... do something with client instance ...
+ * }
+ * ```
+ */
+export function useClient(): SanityClient
 export function useClient(clientOptions?: SourceClientOptions): SanityClient {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   if (!clientOptions) {
     console.warn(
-      'Calling `useClient()` without specifying an API version is deprecated and will stop working in the next major version - please specify a date, e.g. `useClient({apiVersion: "2025-02-10"})`.',
+      'Calling `useClient()` without specifying an API version is deprecated and will stop working in the next major version - please specify a date, e.g. `useClient({apiVersion: "2025-02-07"})`.',
     )
     return source.getClient({apiVersion: 'v2025-02-07'})
   }

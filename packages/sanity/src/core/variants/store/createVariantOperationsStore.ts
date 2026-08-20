@@ -1,13 +1,13 @@
-import {type SanityClient} from '@sanity/client'
+import {type SingleActionResult, type SanityClient} from '@sanity/client'
 
+import {variantsApiClient} from '../../store/document/document-pair/utils/variantsApiClient'
 import {getVariantId} from '../tool/util'
 import {type EditableSystemVariant} from '../types'
-import {variantsClient, type VariantDefinitionActionResult} from './variantsClient'
 
 export interface VariantOperationsStore {
-  createVariant: (variant: EditableSystemVariant) => Promise<VariantDefinitionActionResult>
-  updateVariant: (variant: EditableSystemVariant) => Promise<VariantDefinitionActionResult>
-  deleteVariant: (variantId: string) => Promise<VariantDefinitionActionResult>
+  createVariant: (variant: EditableSystemVariant) => Promise<SingleActionResult>
+  updateVariant: (variant: EditableSystemVariant) => Promise<SingleActionResult>
+  deleteVariant: (variantId: string) => Promise<SingleActionResult>
 }
 
 /**
@@ -16,7 +16,7 @@ export interface VariantOperationsStore {
 export function createVariantOperationsStore(options: {
   client: SanityClient
 }): VariantOperationsStore {
-  const client = variantsClient(options.client)
+  const client = variantsApiClient(options.client)
 
   const handleCreateVariant = async (variant: EditableSystemVariant) => {
     const variantId = getVariantId(variant._id)

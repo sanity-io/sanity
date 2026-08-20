@@ -1,6 +1,7 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
+import {MetricsStudioIcon} from './MetricsStudioIcon'
 import {schemaTypes} from './schemaTypes'
 import {comparisonsTool} from './tools/comparisons'
 import {trendsTool} from './tools/trends'
@@ -8,6 +9,7 @@ import {trendsTool} from './tools/trends'
 export default defineConfig({
   name: 'default',
   title: 'Metrics Studio',
+  icon: MetricsStudioIcon,
   projectId: 'mhfozd0z',
   dataset: 'bench',
   // Trends first: it's the dashboard and the studio's default view
