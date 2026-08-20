@@ -1,5 +1,5 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
-import {Box, Card, Flex, LayerProvider, Text, useClickOutsideEvent, useLayer} from '@sanity/ui'
+import {Card, Flex, LayerProvider, Text, useClickOutsideEvent, useLayer} from '@sanity/ui'
 import {isPast} from 'date-fns/isPast'
 import {
   type FocusEvent,
@@ -14,6 +14,7 @@ import {
   type RefAttributes,
 } from 'react'
 import FocusLock from 'react-focus-lock'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -39,7 +40,7 @@ export interface DateTimeInputProps {
   calendarLabels: CalendarLabels
   constrainSize?: boolean
   monthPickerVariant?: CalendarProps['monthPickerVariant']
-  padding?: number
+  padding?: CalendarProps['padding']
   disableInput?: boolean
   isPastDisabled?: boolean
   showTimeZone?: boolean
