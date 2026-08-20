@@ -112,17 +112,24 @@ function compareDocumentVersionsForStatus(
  * published → drafts → releases → agent bundles. Releases follow `sortReleases()`: undecided, then
  * scheduled, then ASAP (each by date descending). Releases missing from that list fall back to title.
  *
+ * When `variantsEnabled` is false, versions that belong to a variant are omitted so the tooltip
+ * only lists default-lane perspectives.
+ *
  * @internal
  */
 export function groupDocumentVersionsForStatus(
   versions: VersionInfoDocumentStub[],
   releases: ReleaseDocument[],
   variantsById: Map<string, SystemVariant>,
+  variantsEnabled = true,
 ): DocumentVersionStatusGroup[] {
   const sortedReleases = sortReleases(releases)
   const releasesById = new Map(sortedReleases.map((release) => [release._id, release]))
+  const visibleVersions = variantsEnabled
+    ? versions
+    : versions.filter((version) => !version._system.variant?._ref)
 
-  const sortedVersions = versions.toSorted((left, right) =>
+  const sortedVersions = visibleVersions.toSorted((left, right) =>
     compareDocumentVersionsForStatus(left, right, releasesById, sortedReleases),
   )
 
