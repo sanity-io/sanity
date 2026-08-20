@@ -13,8 +13,10 @@ import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {useAgentBundles} from '../../store/agent/useAgentBundles'
+import {readVersionType} from '../../util/versionsUtils'
 import {getVersionFilterLabel} from '../../variants/plugin/components/getVersionFilterLabel'
 import {useAllVariants} from '../../variants/store/useAllVariants'
+import {getVariantTitle} from '../../variants/tool/util'
 import {
   titleStack,
   updatedAtText,
@@ -77,9 +79,7 @@ function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
   const {bundles} = useAgentBundles()
   const liveEdit = Boolean(version._type && schema.get(version._type)?.liveEdit)
 
-  const variantTitle = variant
-    ? variant.metadata?.title || variant.name
-    : t('document-group.base-variant')
+  const variantTitle = variant ? getVariantTitle(variant) : t('document-group.base-variant')
 
   const releasePerspective = getReleasePerspective({release, version})
   const {
@@ -98,20 +98,15 @@ function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
 
   return (
     <Box className={versionStatusItem}>
-      <Flex paddingX={0} gap={2} padding={2}>
+      <Flex gap={2} justify="space-between" paddingY={2}>
         <Stack className={titleStack} gap={2}>
-          <Box>
-            <Text size={1} title={isTruncated ? fullTitle : undefined} weight="medium">
-              {variantTitle} · {releaseTitle}
-            </Text>
-          </Box>
-          <Box>
-            <Text className={updatedAtText} muted size={1}>
-              {timestampLabel}
-            </Text>
-          </Box>
+          <Text size={1} title={isTruncated ? fullTitle : undefined} weight="medium">
+            {variantTitle} · {releaseTitle}
+          </Text>
+          <Text className={updatedAtText} muted size={1}>
+            {timestampLabel}
+          </Text>
         </Stack>
-        <Box flex={1} />
         <Flex align="center" flex="none" gap={1} paddingRight={2}>
           {variant ? (
             <Card className={variantIconCard} tone="suggest">
@@ -134,17 +129,15 @@ function getReleasePerspective({
   release?: ReleaseDocument
   version: VersionInfoDocumentStub
 }): TargetPerspective {
-  if (release) {
-    return release
+  switch (readVersionType(version)) {
+    case 'draft':
+      return LATEST
+    case 'release':
+      return release ?? version._system.bundleId ?? PUBLISHED
+    case 'agent':
+      return version._system.bundleId ?? PUBLISHED
+    case 'published':
+    default:
+      return PUBLISHED
   }
-
-  if (version._system.bundleId === 'drafts') {
-    return LATEST
-  }
-
-  if (version._system.bundleId) {
-    return version._system.bundleId
-  }
-
-  return PUBLISHED
 }

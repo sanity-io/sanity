@@ -23,6 +23,7 @@ function createVersion({
 }): VersionInfoDocumentStub {
   return {
     _id: id,
+    _type: 'version',
     _rev: `${id}-rev`,
     _createdAt: createdAt,
     _updatedAt: updatedAt,
@@ -192,6 +193,46 @@ describe('groupDocumentVersionsForStatus', () => {
       'drafts.returning.article-1',
       'versions.rHalloween.scope.article-1',
       'versions.rASAP.scope.article-1',
+    ])
+  })
+
+  it('sorts agent versions after published, drafts, and releases', () => {
+    const groups = groupDocumentVersionsForStatus(
+      [
+        createVersion({
+          id: 'versions.agent-abc.article-1',
+          bundleId: 'agent-abc',
+          createdAt: '2025-06-01T00:00:00Z',
+          updatedAt: '2025-06-01T00:00:00Z',
+        }),
+        createVersion({
+          id: 'drafts.article-1',
+          bundleId: 'drafts',
+          createdAt: '2025-06-01T00:00:00Z',
+          updatedAt: '2025-06-01T00:00:00Z',
+        }),
+        createVersion({
+          id: 'article-1',
+          createdAt: '2025-06-02T00:00:00Z',
+          updatedAt: '2025-06-02T00:00:00Z',
+        }),
+        createVersion({
+          id: 'versions.rSummer.article-1',
+          bundleId: 'rSummer',
+          createdAt: '2025-06-02T00:00:00Z',
+          updatedAt: '2025-06-02T00:00:00Z',
+          releaseRef: releaseSummer._id,
+        }),
+      ],
+      [releaseSummer],
+      new Map(),
+    )
+
+    expect(groups[0]?.items.map((item) => item.version._id)).toEqual([
+      'article-1',
+      'drafts.article-1',
+      'versions.rSummer.article-1',
+      'versions.agent-abc.article-1',
     ])
   })
 })

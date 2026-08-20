@@ -2,9 +2,17 @@ import {type ReleaseDocument} from '@sanity/client'
 
 import {sortReleases} from '../../releases/hooks/utils'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
+import {readVersionType} from '../../util/versionsUtils'
 import {type SystemVariant} from '../../variants/types'
 
-type ReleaseLaneKind = 'published' | 'drafts' | 'release'
+type ReleaseLaneKind = 'published' | 'drafts' | 'release' | 'agent'
+
+const KIND_ORDER: Record<ReleaseLaneKind, number> = {
+  published: 0,
+  drafts: 1,
+  release: 2,
+  agent: 3,
+}
 
 interface ResolvedVersionBundle {
   id: string
@@ -29,12 +37,6 @@ export interface DocumentVersionStatusGroup {
   items: DocumentVersionStatusItem[]
 }
 
-function getKindOrder(kind: ReleaseLaneKind): number {
-  if (kind === 'published') return 0
-  if (kind === 'drafts') return 1
-  return 2
-}
-
 function bundleSortLabel(bundle: ResolvedVersionBundle): string {
   return bundle.release?.metadata?.title ?? bundle.id
 }
@@ -44,7 +46,7 @@ function compareResolvedBundles(
   right: ResolvedVersionBundle,
   sortedReleases: ReleaseDocument[],
 ): number {
-  const kindDelta = getKindOrder(left.kind) - getKindOrder(right.kind)
+  const kindDelta = KIND_ORDER[left.kind] - KIND_ORDER[right.kind]
   if (kindDelta !== 0) {
     return kindDelta
   }
@@ -67,17 +69,20 @@ function resolveVersionBundle(
   version: VersionInfoDocumentStub,
   releasesById: Map<string, ReleaseDocument>,
 ): ResolvedVersionBundle {
-  if (version._system.release?._ref) {
-    const releaseRef = version._system.release._ref
-    const release = releasesById.get(releaseRef)
-    return {id: release?._id ?? releaseRef, kind: 'release', release}
+  switch (readVersionType(version)) {
+    case 'release': {
+      const releaseRef = version._system.release?._ref
+      const release = releaseRef ? releasesById.get(releaseRef) : undefined
+      return {id: release?._id ?? releaseRef ?? version._id, kind: 'release', release}
+    }
+    case 'draft':
+      return {id: 'drafts', kind: 'drafts'}
+    case 'agent':
+      return {id: version._system.bundleId ?? version._id, kind: 'agent'}
+    case 'published':
+    default:
+      return {id: 'published', kind: 'published'}
   }
-
-  if (version._system.bundleId === 'drafts') {
-    return {id: 'drafts', kind: 'drafts'}
-  }
-
-  return {id: 'published', kind: 'published'}
 }
 
 function compareDocumentVersionsForStatus(
@@ -104,8 +109,8 @@ function compareDocumentVersionsForStatus(
 
 /**
  * Groups document versions by variant (default first, then by variant id) and sorts each group
- * published → drafts → releases. Releases follow `sortReleases()`: undecided, then scheduled,
- * then ASAP (each by date descending). Releases missing from that list fall back to title.
+ * published → drafts → releases → agent bundles. Releases follow `sortReleases()`: undecided, then
+ * scheduled, then ASAP (each by date descending). Releases missing from that list fall back to title.
  *
  * @internal
  */

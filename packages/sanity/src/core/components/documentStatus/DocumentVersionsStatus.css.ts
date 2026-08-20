@@ -19,5 +19,9 @@ export const updatedAtText = style({
 })
 
 export const versionStatusItem = style({
-  padding: '2px 0',
+  selectors: {
+    '&&': {
+      padding: '2px 0',
+    },
+  },
 })
