@@ -23,7 +23,7 @@ import {
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
@@ -34,15 +34,6 @@ const Scroller = styled(ScrollContainer)`
   overflow: auto;
   position: relative;
   scroll-behavior: smooth;
-`
-
-const Grid = styled(Box)`
-  &:not([hidden]) {
-    display: grid;
-  }
-  grid-template-columns: 48px 1fr;
-  align-items: center;
-  gap: 0.25em;
 `
 
 const SpinnerContainer = styled(Flex)`
@@ -208,7 +199,12 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
   return (
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
       <Box padding={3} style={{position: 'relative'}}>
-        <Grid paddingX={2} paddingBottom={2}>
+        <Grid
+          paddingX={2}
+          paddingBottom={2}
+          gridTemplateColumns="48px 1fr"
+          style={{alignItems: 'center', gap: '0.25em'}}
+        >
           <Text size={1} muted>
             {t('changes.inspector.from-label')}
           </Text>

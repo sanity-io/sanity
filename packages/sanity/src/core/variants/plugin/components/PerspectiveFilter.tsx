@@ -1,6 +1,7 @@
 import {RemoveIcon} from '@sanity/icons/Remove'
-import {Box, Card, Flex, Text, type CardTone} from '@sanity/ui'
+import {Card, Flex, Text, type CardTone} from '@sanity/ui'
 import {type ReactNode} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {AnimatedTextWidth} from '../../../perspective/navbar/AnimatedTextWidth'

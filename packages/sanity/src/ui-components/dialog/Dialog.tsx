@@ -1,7 +1,5 @@
 /* oxlint-disable no-restricted-imports */
 import {
-  Box,
-  type BoxHeight,
   Button as UIButton,
   Dialog as UIDialog,
   type DialogProps as UIDialogProps,
@@ -16,6 +14,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {useTranslation} from 'react-i18next'
+import {Box} from 'ui5'
 
 /** @internal */
 export type DialogProps = Pick<
@@ -36,10 +35,10 @@ export type DialogProps = Pick<
 > & {
   /**
    * Dialog body height.
-   * Set this to 'fill' (i.e. 100%) if you want overflow body content to be contained
+   * Set this to '100%' if you want overflow body content to be contained
    * and not trigger dynamic border visibility.
    */
-  bodyHeight?: BoxHeight
+  bodyHeight?: string
   children?: ReactNode
   zOffset?: number
   footer?: {
@@ -85,7 +84,7 @@ export function Dialog({
         (footer?.confirmButton || footer?.cancelButton) && (
           <Flex gap={3} justify="flex-end" padding={3} align="center">
             {footer?.description && (
-              <Box flex={1} paddingLeft={1}>
+              <Box flexBasis="0%" flexGrow={1} paddingLeft={1}>
                 <Text size={1} muted>
                   {footer.description}
                 </Text>
