@@ -3,13 +3,34 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {ValidationContext} from '@sanity/types'
-import type {ValidateDocumentOptions, validateDocument} from '@sanity/validation'
+import type {
+  validateDocument,
+  ValidateDocumentOptions,
+  validateDocumentWithWorkspace,
+  ValidateDocumentWorkspaceOptions,
+  ValidationSource,
+} from '@sanity/validation'
+import type {Workspace} from 'sanity'
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/validation', () => {
   test('validateDocument', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof validateDocument>().toBeFunction()
     expectTypeOf<Parameters<typeof validateDocument>[0]>().toEqualTypeOf<ValidateDocumentOptions>()
     expectTypeOf<ValidationContext['i18n']>().toBeObject()
+  })
+  test('ValidateDocumentOptions', () => {
+    expectTypeOf<ValidateDocumentOptions>().toBeObject()
+  })
+  test('validateDocumentWithWorkspace', () => {
+    expectTypeOf<typeof validateDocumentWithWorkspace>().toBeFunction()
+  })
+  test('ValidateDocumentWorkspaceOptions', () => {
+    expectTypeOf<ValidateDocumentWorkspaceOptions>().toBeObject()
+  })
+  test('ValidationSource', () => {
+    expectTypeOf<ValidationSource>().toBeObject()
+    expectTypeOf<Workspace>().toMatchTypeOf<ValidationSource>()
   })
 })
