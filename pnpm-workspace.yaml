@@ -64,6 +64,7 @@ minimumReleaseAgeExclude:
   - '@oxfmt/*'
   - '@oxlint/*'
   - '@oxlint-tsgolint/*'
+  - '@oxc-project/types'
   - '@oclif/core'
   - '@vitest/*'
   - '@vite/*'
