@@ -215,7 +215,7 @@ pnpm bench:unit                                    # mock-contract + stats unit 
 pnpm bench dev                                     # mock + `sanity dev` for interactive debugging
 ```
 
-See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. `dev/efps` is the legacy perf suite, kept for reference while perf/bench burns in.
+See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. (The legacy `dev/efps` suite has been decommissioned; perf/bench replaces it.)
 
 ### E2E Tests (Token Required)
 

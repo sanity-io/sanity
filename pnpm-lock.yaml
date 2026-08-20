@@ -305,70 +305,6 @@ importers:
         specifier: 'catalog:'
         version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
 
-  dev/efps:
-    dependencies:
-      sanity-plugin-internationalized-array:
-        specifier: ^5.1.27
-        version: 5.2.0(@sanity/assist@6.1.19)(@sanity/language-filter@5.0.16)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
-      tsx:
-        specifier: ^4.23.12
-        version: 4.23.12
-    devDependencies:
-      '@optique/core':
-        specifier: 'catalog:'
-        version: 1.2.0
-      '@optique/run':
-        specifier: 'catalog:'
-        version: 1.2.0
-      '@repo/utils':
-        specifier: workspace:*
-        version: link:../../packages/@repo/utils
-      '@sanity/client':
-        specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.10)
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.2.18
-      '@types/react-dom':
-        specifier: 'catalog:'
-        version: 19.2.4(@types/react@19.2.18)
-      chalk:
-        specifier: ^6.0.0
-        version: 6.0.0
-      cli-table3:
-        specifier: ^0.6.5
-        version: 0.6.5
-      dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
-      ora:
-        specifier: ^9.4.1
-        version: 9.4.1
-      oxc-transform-react:
-        specifier: 'catalog:'
-        version: 0.145.0
-      playwright:
-        specifier: 'catalog:'
-        version: 1.62.1
-      react:
-        specifier: 'catalog:'
-        version: 19.2.8
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.2.8(react@19.2.8)
-      sanity:
-        specifier: workspace:*
-        version: link:../../packages/sanity
-      source-map:
-        specifier: ^0.8.0
-        version: 0.8.0
-      tinyglobby:
-        specifier: ^0.2.17
-        version: 0.2.17
-
   dev/embedded-studio:
     dependencies:
       '@sanity/ui':
@@ -13163,10 +13099,6 @@ packages:
   source-map@0.6.1:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
-
-  source-map@0.8.0:
-    resolution: {integrity: sha512-d8EqvL+k/SOXCreS/SUzg2ciyHqBBLcN/yuRjFsbvVhHTE2pgei7oAhmPM7kWFbkX6OSMQfUq4KbkF3au9lhYQ==}
-    engines: {node: '>= 12'}
 
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
@@ -26368,8 +26300,6 @@ snapshots:
   source-map@0.5.7: {}
 
   source-map@0.6.1: {}
-
-  source-map@0.8.0: {}
 
   space-separated-tokens@2.0.2: {}
 
