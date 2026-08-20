@@ -32,14 +32,25 @@ import {
  * @internal
  */
 export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: string}) {
+  const {t} = useTranslation()
   const {data: releases} = useActiveReleases()
   const {byId: variantsById} = useAllVariants()
-  const {versions} = useDocumentVersions({documentId: documentGroupId})
+  const {loading, versions} = useDocumentVersions({documentId: documentGroupId})
 
   const versionGroups = useMemo(
     () => groupDocumentVersionsForStatus(versions, releases ?? [], variantsById),
     [releases, variantsById, versions],
   )
+
+  if (loading) {
+    return (
+      <Box padding={2}>
+        <Text muted size={1}>
+          {t('common.loading')}
+        </Text>
+      </Box>
+    )
+  }
 
   return (
     <Stack gap={1}>

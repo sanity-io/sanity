@@ -104,7 +104,8 @@ function compareDocumentVersionsForStatus(
 
 /**
  * Groups document versions by variant (default first, then by variant id) and sorts each group
- * published → drafts → releases (by release title).
+ * published → drafts → releases. Releases follow `sortReleases()`: undecided, then scheduled,
+ * then ASAP (each by date descending). Releases missing from that list fall back to title.
  *
  * @internal
  */
