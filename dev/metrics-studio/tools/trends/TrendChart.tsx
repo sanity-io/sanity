@@ -29,12 +29,12 @@ const MARGIN = {top: 8, right: 8, bottom: 22}
  * a commit can't be compared against itself. Undefined when there is no
  * earlier distinct commit (first point, soak minutes, local runs).
  */
-function previousShaFor(lines: TrendLine[], selected: TrendPoint): string | undefined {
+function previousPointFor(lines: TrendLine[], selected: TrendPoint): TrendPoint | undefined {
   const line = lines.find((candidate) => candidate.points.includes(selected))
   if (!line) return undefined
   for (let i = line.points.indexOf(selected) - 1; i >= 0; i--) {
-    const {sha} = line.points[i]
-    if (sha !== selected.sha && sha !== 'unknown') return sha
+    const candidate = line.points[i]
+    if (candidate.sha !== selected.sha && candidate.sha !== 'unknown') return candidate
   }
   return undefined
 }
@@ -751,7 +751,7 @@ export function TrendChart(props: {
             key={selected.runId}
             series={series}
             point={selected}
-            previousSha={previousShaFor(lines, selected)}
+            previousPoint={previousPointFor(lines, selected)}
             referenceElement={anchorEl}
             onClose={() => {
               setSelected(null)

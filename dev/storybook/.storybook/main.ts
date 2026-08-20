@@ -24,7 +24,7 @@ const config: StorybookConfig = {
       plugins: [vanillaExtractPlugin(), viteReact({compiler: {target: '19'}})],
       resolve: {
         conditions: ['monorepo', ...defaultClientConditions],
-        dedupe: ['react', 'react-dom', 'sanity', 'styled-components'],
+        dedupe: ['react', 'react-dom', 'sanity', 'styled-components', 'ui5'],
       },
     })
   },
