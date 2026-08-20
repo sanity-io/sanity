@@ -181,4 +181,17 @@ describe('DocumentVersionsStatus', () => {
     expect(screen.queryByText(/All users/)).not.toBeInTheDocument()
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).toBeInTheDocument()
   })
+
+  it('does not render variant documents when variants are disabled', async () => {
+    await renderStatus({
+      versions: [publishedDefault, draftDefault, publishedVariant, draftVariant],
+      variantsById: new Map([[variantAlphaAudience._id, variantAlphaAudience]]),
+    })
+
+    expect(screen.getByText('Published')).toBeInTheDocument()
+    expect(screen.getByText('Draft')).toBeInTheDocument()
+    expect(screen.queryByText(/Alpha audience/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/All users/)).not.toBeInTheDocument()
+    expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
+  })
 })

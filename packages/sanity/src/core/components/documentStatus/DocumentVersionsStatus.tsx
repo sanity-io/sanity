@@ -42,10 +42,11 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   const {data: releases} = useActiveReleases()
   const {byId: variantsById} = useAllVariants()
   const {loading, versions} = useDocumentVersions({documentId: documentGroupId})
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
 
   const versionGroups = useMemo(
-    () => groupDocumentVersionsForStatus(versions, releases ?? [], variantsById),
-    [releases, variantsById, versions],
+    () => groupDocumentVersionsForStatus(versions, releases ?? [], variantsById, variantsEnabled),
+    [releases, variantsById, variantsEnabled, versions],
   )
 
   if (loading) {
@@ -67,7 +68,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
           paddingBottom={groupIndex < allGroups.length - 1 ? 1 : 0}
         >
           {group.items.map((item) => (
-            <VersionStatus key={item.version._id} {...item} />
+            <VersionStatus key={item.version._id} variantsEnabled={variantsEnabled} {...item} />
           ))}
         </Card>
       ))}
@@ -75,11 +76,15 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   )
 }
 
-function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
+function VersionStatus({
+  release,
+  version,
+  variant,
+  variantsEnabled,
+}: DocumentVersionStatusItem & {variantsEnabled: boolean}) {
   const {t} = useTranslation()
   const schema = useSchema()
   const {bundles} = useAgentBundles()
-  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const liveEdit = Boolean(version._type && schema.get(version._type)?.liveEdit)
 
   const variantTitle = variant ? getVariantTitle(variant) : t('document-group.base-variant')
