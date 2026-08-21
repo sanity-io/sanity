@@ -1,6 +1,7 @@
 import {Card, Stack, Text} from '@sanity/ui'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {type PaneMenuItem} from '../../../types'
 import {
   DocumentListPaneSearchOrdering,
@@ -29,7 +30,7 @@ const ORDERINGS: PaneMenuItem[] = [
  */
 export function DocumentListPaneSearchOrderingStory() {
   return (
-    <TestWrapper schemaTypes={[]}>
+    <TestWrapper i18nBundles={[structureUsEnglishLocaleBundle]} schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 360}}>
         <Stack gap={5}>
           <Stack gap={2}>
