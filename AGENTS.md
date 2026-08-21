@@ -385,6 +385,19 @@ this for object literals in the JSX attribute; maps built during render via `use
 functions are equally wrong even though the rule cannot see them. See the `sanity-i18n-translate`
 skill (`.agents/skills/sanity-i18n-translate/SKILL.md`) for the full conversion patterns.
 
+### Observable identity must be render-stable (react-rx v5)
+
+Observables handed to react-rx (`useObservable`, `useSyncObservable`, `useObservablePromise`,
+`useLoadable`, hooks from `createHookFromObservableFactory`) are cached **by reference** — a new
+observable identity per render becomes a self-sustaining render loop (real incident: ~60 update
+passes/sec studio-wide, fixed in e089afde26). Never build `.pipe(...)` / `of(...)` /
+`new Subject()` in a render body outside `useMemo`, and key observable memos on **contents**, not
+on caller-provided array/object references — use `useShallowUnique` on such hook params (callers
+pass inline literals; the React Compiler does not compile external callers and bails out
+silently, so explicit memoization is the only real defense). Full rubric, factory cache
+inventory, and regression-test recipe: the `sanity-observable-identity` skill
+(`.agents/skills/sanity-observable-identity/SKILL.md`).
+
 ### Refs: use `props.ref`, not `forwardRef`
 
 React 19 passes `ref` as a regular prop. Do not use `forwardRef` — destructure `ref` from props
