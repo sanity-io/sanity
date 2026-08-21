@@ -223,7 +223,6 @@ describe('VersionContextMenu', () => {
     const wrapper = await createTestProvider({
       config: {
         document: {
-          // Axios-style filter: keep only duplicate so publish is gone by omission
           actions: (prev) => prev.filter((action) => action.action === 'duplicate'),
         },
       },
