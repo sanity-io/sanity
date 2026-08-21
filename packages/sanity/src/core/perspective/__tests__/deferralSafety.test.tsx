@@ -203,8 +203,8 @@ function SyncReleasesProbe() {
 }
 
 beforeEach(() => {
-  releasesState$.next({releases: new Map(), state: 'initialising'})
-  variantsState$.next({variants: new Map(), state: 'initialising'})
+  releasesState$.next(initialReleasesState)
+  variantsState$.next(initialVariantsState)
   selectedReleaseName$.next(undefined)
   selectedVariantName$.next(undefined)
   releaseFrames.length = 0
