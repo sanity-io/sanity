@@ -157,7 +157,6 @@ describe('VersionContextMenu', () => {
     const wrapper = await createTestProvider({
       config: {
         document: {
-          // Axios-style filter: keep only publish so discardVersion is gone by omission
           actions: (prev) => prev.filter((action) => action.action === 'publish'),
         },
       },
