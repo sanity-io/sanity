@@ -27,7 +27,7 @@ import {PerspectiveFilter} from './PerspectiveFilter'
 import {VariantsMenu} from './VariantsMenu'
 
 /**
- * The variant pill's diamond, filled or outlined.
+ * The variant pill's rhombus, filled or outlined.
  *
  * Filled means "the document you are looking at exists in this variant". Outlined means it does
  * not, so the perspective is selected but the document has no content written against it and the
@@ -37,7 +37,7 @@ import {VariantsMenu} from './VariantsMenu'
  * Split into its own component because `useDocumentVariantIds` needs a document id, and there is
  * nothing to ask about when no document is open.
  */
-function DocumentVariantDiamond({
+function DocumentVariantRhombus({
   documentId,
   selectedVariantId,
 }: {
@@ -132,7 +132,7 @@ export function VariantsStudioNavbar(props: NavbarProps) {
                   data-testid="variants-nav-menu-button"
                   icon={
                     activeDocument ? (
-                      <DocumentVariantDiamond
+                      <DocumentVariantRhombus
                         documentId={activeDocument.documentId}
                         selectedVariantId={selectedVariant?._id}
                       />

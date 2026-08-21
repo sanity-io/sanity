@@ -141,7 +141,7 @@ describe('VariantsMenuSections', () => {
     expect(screen.queryByText('Other variants')).not.toBeInTheDocument()
   })
 
-  it('marks the document’s variants with the filled diamond and the rest hollow', async () => {
+  it('marks the document’s variants with the filled rhombus and the rest hollow', async () => {
     setVersions([versionInVariant(variantAlphaAudience._id)])
 
     await renderSections(
@@ -156,7 +156,7 @@ describe('VariantsMenuSections', () => {
     const alpha = screen.getByTestId('variant-alpha-audience')
     const norwegian = screen.getByTestId('variant-norwegian-market')
 
-    // The two diamonds are distinguished by `data-sanity-icon`, which is what
+    // The two rhombuses are distinguished by `data-sanity-icon`, which is what
     // the icon components set.
     expect(alpha.querySelector('[data-sanity-icon="rhombus"]')).not.toBeNull()
     expect(alpha.querySelector('[data-sanity-icon="rhombus-outlined"]')).toBeNull()

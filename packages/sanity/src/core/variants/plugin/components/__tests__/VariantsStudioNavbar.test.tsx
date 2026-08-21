@@ -43,7 +43,7 @@ vi.mock('../../../../perspective/navbar/GlobalPerspectiveMenu', () => ({
   GlobalPerspectiveMenu: () => <div data-testid="global-perspective-menu" />,
 }))
 
-// Renders `trigger` rather than swallowing it. The variant pill's diamond lives IN the trigger, so
+// Renders `trigger` rather than swallowing it. The variant pill's rhombus lives IN the trigger, so
 // a stub that drops it hides exactly the thing these tests assert on.
 vi.mock('../VariantsMenu', () => ({
   VariantsMenu: ({trigger}: {trigger?: React.ReactNode}) => (
@@ -161,8 +161,8 @@ describe('VariantsStudioNavbar', () => {
     })
   })
 
-  describe("the variant pill's diamond", () => {
-    const diamond = () => {
+  describe("the variant pill's rhombus", () => {
+    const rhombus = () => {
       const button = screen.getByTestId('variants-nav-menu-button')
       const svg = button.querySelector('[data-sanity-icon]')
       if (!svg) throw new Error('no icon rendered in the variant trigger')
@@ -171,14 +171,14 @@ describe('VariantsStudioNavbar', () => {
 
     it('outlines when no document is open', async () => {
       await renderNavbar()
-      expect(diamond()).toBe('rhombus-outlined')
+      expect(rhombus()).toBe('rhombus-outlined')
     })
 
     it('fills on the default perspective when a document is open', async () => {
       activeDocumentMock.value = {activeDocument: {documentId: 'book-1'}}
       await renderNavbar()
       // A document always exists outside every variant, so the default is presence, not absence.
-      expect(diamond()).toBe('rhombus')
+      expect(rhombus()).toBe('rhombus')
     })
 
     it('fills when the open document has a version in the selected variant', async () => {
@@ -186,7 +186,7 @@ describe('VariantsStudioNavbar', () => {
       usePerspectiveMockReturn.selectedVariant = variantAlphaAudience
       documentVariantIdsMock.value = new Set([variantAlphaAudience._id])
       await renderNavbar()
-      expect(diamond()).toBe('rhombus')
+      expect(rhombus()).toBe('rhombus')
     })
 
     it('outlines when the open document has no version in the selected variant', async () => {
@@ -194,7 +194,7 @@ describe('VariantsStudioNavbar', () => {
       usePerspectiveMockReturn.selectedVariant = variantAlphaAudience
       documentVariantIdsMock.value = new Set([variantNorwegianMarket._id])
       await renderNavbar()
-      expect(diamond()).toBe('rhombus-outlined')
+      expect(rhombus()).toBe('rhombus-outlined')
     })
   })
 })

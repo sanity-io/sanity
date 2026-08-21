@@ -48,7 +48,7 @@ interface VariantListProps {
   variants: SystemVariant[]
   selectedVariantId: string | undefined
   onSelect: (variant: SystemVariant) => void
-  /** Filled diamond means the selected document already has this variant. */
+  /** Filled rhombus means the selected document already has this variant. */
   filled: boolean
 }
 

@@ -132,7 +132,7 @@ export const Disabled: Story = {
     <Card padding={4}>
       <Flex align="center" gap={4}>
         <PerspectiveFilter prefix="Variant" tone="default">
-          {/* The variant pill's diamond is already drawn at dot scale, so it has
+          {/* The variant pill's rhombus is already drawn at dot scale, so it has
               no `size="small"` counterpart. */}
           <TriggerButton text="All users (Default)" icon={<RhombusIcon />} disabled />
         </PerspectiveFilter>
