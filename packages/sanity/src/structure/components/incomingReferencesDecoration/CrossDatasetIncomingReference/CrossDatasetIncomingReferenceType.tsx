@@ -10,6 +10,7 @@ import {
   useClient,
   useDocumentPreviewStore,
   useSchema,
+  useShallowUnique,
   useTranslation,
 } from 'sanity'
 import {Box} from 'ui5'
@@ -24,7 +25,7 @@ import {
 } from './getCrossDatasetIncomingReferences'
 
 export function CrossDatasetIncomingReferenceType({
-  type,
+  type: unstableType,
   referenced,
   shouldRenderTitle,
 }: {
@@ -34,6 +35,11 @@ export function CrossDatasetIncomingReferenceType({
 }) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentPreviewStore = useDocumentPreviewStore()
+
+  // Keyed on contents: a rebuilt-but-equal type config would otherwise mint a
+  // new observable identity below and hand `useObservablePromise` a fresh
+  // pending promise.
+  const type = useShallowUnique(unstableType)
 
   const references$ = useMemo(
     () =>
