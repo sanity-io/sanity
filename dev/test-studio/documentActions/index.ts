@@ -39,6 +39,14 @@ export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaTyp
   if (schemaType === 'removeRestoreActionTest') {
     return prev.filter(({action}) => action !== 'restore')
   }
+
+  // Mirrors customer configs that strip discard/delete-schedule from the document
+  // action menu (SAPP-4330). The version chip / inventory context menu must honour
+  // the same filter — keep only publish so discardVersion and schedule are absent.
+  if (schemaType === 'restrictedVersionActionsTest') {
+    return prev.filter(({action}) => action === 'publish')
+  }
+
   if (schemaType === 'book') {
     return prev.concat(useCreateAnonymousVersion)
   }

@@ -1,6 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {memo, useEffect, useRef, useState} from 'react'
+import {memo, useEffect, useMemo, useRef, useState} from 'react'
 
+import {
+  getDiscardDocumentActionId,
+  getVersionContextMenuActionsContext,
+  useConfiguredDocumentActionIds,
+} from '../../../../config/document/useConfiguredDocumentActionIds'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
 import {getVersionFromId, isPublishedId} from '../../../../util/draftUtils'
@@ -58,6 +63,24 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
   const isPublished = isPublishedId(versionId)
   const versionName = getVersionFromId(versionId)
 
+  const documentActionsContext = useMemo(
+    () =>
+      getVersionContextMenuActionsContext({
+        schemaType: type,
+        documentGroupId,
+        fromRelease,
+        isScheduledDraft,
+      }),
+    [type, documentGroupId, fromRelease, isScheduledDraft],
+  )
+  const configuredActionIds = useConfiguredDocumentActionIds(documentActionsContext)
+
+  const discardActionId = getDiscardDocumentActionId({fromRelease, isScheduledDraft})
+  const isDiscardActionConfigured = discardActionId
+    ? configuredActionIds.has(discardActionId)
+    : false
+  const canDiscardVersion = isDiscardable && isDiscardActionConfigured
+
   const {checkWithPermissionGuard} = useReleasePermissions()
   const {createRelease} = useReleaseOperations()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
@@ -103,6 +126,9 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
         hasCreatePermission={hasCreatePermission}
         scheduledDraftMenuActions={scheduledDraftMenuActions}
         documentType={type}
+        showPublishNow={configuredActionIds.has('publish')}
+        showEditSchedule={configuredActionIds.has('schedule')}
+        showDeleteSchedule={configuredActionIds.has('discardVersion')}
       />
     )
   }
@@ -123,7 +149,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
       hasCreatePermission={hasCreatePermission}
       hasDiscardPermission={hasDiscardPermission || false}
       isPublished={isPublished}
-      isDiscardable={isDiscardable}
+      isDiscardable={canDiscardVersion}
       documentType={type}
     />
   )
