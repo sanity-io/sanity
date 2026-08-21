@@ -38,7 +38,7 @@ catalog:
   '@vanilla-extract/css': ^1.21.2
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.0
-  '@vitest/browser-playwright': ^4.1.10
+  '@vitest/browser-playwright': ^4.1.11
   jsdom: ^29.1.1
   oxc-transform-react: ^0.145.0
   playwright: 1.62.1
@@ -51,7 +51,7 @@ catalog:
   tsdown: ^0.22.14
   typescript: ^7.0.2
   vite: ^8.2.2
-  vitest: ^4.1.10
+  vitest: ^4.1.11
   vitest-browser-react: ^2.2.0
 
 dedupePeers: true

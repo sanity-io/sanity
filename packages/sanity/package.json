@@ -268,7 +268,7 @@
     "@vanilla-extract/css": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/browser-playwright": "catalog:",
-    "@vitest/expect": "^4.1.10",
+    "@vitest/expect": "^4.1.11",
     "blob-polyfill": "^9.0.20240710",
     "chromatic": "^18.2.0",
     "jsdom": "catalog:",
