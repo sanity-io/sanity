@@ -298,6 +298,17 @@ returns first-render values when the calling component is wrapped in `forwardRef
 wraps the native hook, so check the implementation before trusting one — `react-rx` is safe on both
 v4 and v5 because `useObservableEvent` builds on the same `use-effect-event` ponyfill.
 
+### Translate: never define `components` inline
+
+Components passed to `<Translate>`'s `components` map must be stable, module-scope components —
+defining them inline during render creates a new component identity every render and remounts
+the subtree. Pass render-scoped data through the `componentProps` prop instead, and map plain
+HTML wrappers as strings (eg `{Code: 'code'}`). The in-repo oxlint rule
+`@repo/i18n/no-inline-translate-components` (see `packages/@repo/oxlint-plugin-i18n`) enforces
+this for object literals in the JSX attribute; maps built during render via `useMemo` or factory
+functions are equally wrong even though the rule cannot see them. See the `sanity-i18n-translate`
+skill (`.agents/skills/sanity-i18n-translate/SKILL.md`) for the full conversion patterns.
+
 ### Refs: use `props.ref`, not `forwardRef`
 
 React 19 passes `ref` as a regular prop. Do not use `forwardRef` — destructure `ref` from props

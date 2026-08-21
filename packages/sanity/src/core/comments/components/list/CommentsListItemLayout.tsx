@@ -44,6 +44,21 @@ import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
 
+function CommentIntentLink({
+  children,
+  intent,
+}: {
+  children?: React.ReactNode
+  intent?: CommentContext['intent']
+}) {
+  if (!intent) return null
+  return (
+    <IntentLink params={intent.params} intent={intent.name}>
+      {children}
+    </IntentLink>
+  )
+}
+
 const ContextMenuBox = styled(Box)``
 
 const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
@@ -387,14 +402,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                     t={t}
                     i18nKey="list-item.layout-context"
                     values={{title: intent.title, intent: 'edit'}}
-                    components={{
-                      IntentLink: ({children}) =>
-                        intent ? (
-                          <IntentLink params={intent.params} intent={intent.name}>
-                            {children}
-                          </IntentLink>
-                        ) : undefined,
-                    }}
+                    components={{IntentLink: CommentIntentLink}}
+                    componentProps={{intent}}
                   />
                 </IntentText>
               </Box>

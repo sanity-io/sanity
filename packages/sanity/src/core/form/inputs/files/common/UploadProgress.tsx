@@ -16,6 +16,10 @@ type Props = {
 }
 const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
 
+function FileName({filename}: {children?: React.ReactNode; filename?: string}) {
+  return <CodeWrapper size={1}>{filename ? filename : '…'}</CodeWrapper>
+}
+
 export function UploadProgress({uploadState, onCancel, onStale}: Props) {
   const filename = uploadState.file.name
 
@@ -43,9 +47,8 @@ export function UploadProgress({uploadState, onCancel, onStale}: Props) {
                 <Translate
                   t={t}
                   i18nKey="input.files.common.upload-progress"
-                  components={{
-                    FileName: () => <CodeWrapper size={1}>{filename ? filename : '…'}</CodeWrapper>,
-                  }}
+                  components={{FileName}}
+                  componentProps={{filename}}
                 />
               </Inline>
             </Text>

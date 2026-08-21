@@ -32,6 +32,32 @@ interface ReleasePublishAllButtonProps {
 
 type RevertReleaseStatus = 'idle' | 'confirm' | 'reverting'
 
+function RevertStageSuccessLink({
+  linkText,
+  onLinkClick,
+}: {
+  children?: React.ReactNode
+  linkText?: string
+  onLinkClick?: () => void
+}) {
+  return (
+    <Text
+      size={1}
+      weight="medium"
+      data-as="a"
+      onClick={onLinkClick}
+      style={{
+        cursor: 'pointer',
+        marginBottom: '0.5rem',
+        display: 'flex',
+      }}
+      data-testid="revert-stage-success-link"
+    >
+      {linkText}
+    </Text>
+  )
+}
+
 const ConfirmReleaseDialog = ({
   revertReleaseStatus,
   documents,
@@ -96,23 +122,10 @@ const ConfirmReleaseDialog = ({
           title: (
             <Text muted size={1}>
               <Translate
-                components={{
-                  Link: () => (
-                    <Text
-                      size={1}
-                      weight="medium"
-                      data-as="a"
-                      onClick={navigateToRevertRelease(revertReleaseId)}
-                      style={{
-                        cursor: 'pointer',
-                        marginBottom: '0.5rem',
-                        display: 'flex',
-                      }}
-                      data-testid="revert-stage-success-link"
-                    >
-                      {t('toast.revert-stage.success-link')}
-                    </Text>
-                  ),
+                components={{Link: RevertStageSuccessLink}}
+                componentProps={{
+                  linkText: t('toast.revert-stage.success-link'),
+                  onLinkClick: navigateToRevertRelease(revertReleaseId),
                 }}
                 t={t}
                 i18nKey="toast.revert-stage.success"
