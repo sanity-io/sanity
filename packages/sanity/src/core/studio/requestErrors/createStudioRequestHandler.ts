@@ -1,7 +1,11 @@
 import {type RequestHandler, type RequestHandlerOptions, type SanityClient} from '@sanity/client'
 
 import {type RequestFailureDiagnostics} from '../../store/authStore/createAuthStore'
-import {getRequestBucket, type RequestPerformanceTracker} from '../diagnostics/requestPerformance'
+import {
+  getRequestBucket,
+  studioRequestPerformance,
+  type RequestPerformanceTracker,
+} from '../diagnostics/requestPerformance'
 import {isInvalidSessionError} from './classify'
 import {type RequestErrorChannel} from './types'
 
@@ -24,7 +28,7 @@ export function createStudioRequestHandler({
   channel,
   diagnostics,
   getClient,
-  requestPerformance,
+  requestPerformance = studioRequestPerformance,
   waitForCorsRetry,
 }: StudioRequestHandlerOptions): RequestHandler {
   return (request, next) => {

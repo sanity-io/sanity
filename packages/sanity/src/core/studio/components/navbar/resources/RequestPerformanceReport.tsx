@@ -1,9 +1,9 @@
+/* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals, @sanity/i18n/no-attribute-template-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
 import {Card, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {memo, type PointerEvent as ReactPointerEvent, useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type RequestPerformanceEntry, type RequestPerformanceSnapshot} from '../../../diagnostics'
 
 const CHART_WIDTH = 800
@@ -166,7 +166,6 @@ export function RequestPerformanceReport({
   history,
   useUtc = true,
 }: RequestPerformanceReportProps) {
-  const {t} = useTranslation()
   const [selectedBucket, setSelectedBucket] = useState<string>()
   const [timeRange, setTimeRange] = useState<TimeRange>()
   const reportEntries = useMemo(
@@ -237,29 +236,25 @@ export function RequestPerformanceReport({
     <Stack gap={2}>
       <Flex align="center" gap={3} justify="space-between" wrap="wrap">
         <Heading as="h2" size={1}>
-          {t('diagnostics.request-history.title')}
+          Recent request timings
         </Heading>
         <Text muted size={1}>
-          {t('diagnostics.request-history.sample-count', {
-            total: reportTotalRequests,
-            visible: visibleEntries.length,
-          })}
+          {visibleEntries.length.toLocaleString()} recent samples ·{' '}
+          {reportTotalRequests.toLocaleString()} session requests
         </Text>
       </Flex>
 
       <Card border data-testid="diagnostics-request-history" padding={4} radius={2}>
         {reportEntries.length === 0 ? (
           <Text muted size={1}>
-            {t(
-              excludedEntryCount > 0
-                ? 'diagnostics.request-history.empty-after-exclusion'
-                : 'diagnostics.request-history.empty',
-            )}
+            {excludedEntryCount > 0
+              ? 'No session requests outside this diagnostics run are available to plot.'
+              : 'No data API requests have been observed for this workspace target in this browser session.'}
           </Text>
         ) : (
           <Stack gap={4}>
             <InteractiveChart
-              ariaLabel={t('diagnostics.request-history.chart-label', {count: chartPointCount})}
+              ariaLabel={`Scatter plot of ${chartPointCount} session request timings`}
               chart={chart}
               key={`${chart.startMs}-${chart.endMs}`}
               onTimeRangeSelect={handleTimeRangeSelect}
@@ -270,55 +265,46 @@ export function RequestPerformanceReport({
             <Flex align="center" gap={3} justify="space-between" wrap="wrap">
               <Text muted size={1}>
                 {timeRange
-                  ? t('diagnostics.request-history.selected-time-range', {
-                      end: formatTime(timeRange.end, useUtc),
-                      start: formatTime(timeRange.start, useUtc),
-                    })
-                  : t('diagnostics.request-history.drag-hint')}
+                  ? `${formatTime(timeRange.start, useUtc)} to ${formatTime(timeRange.end, useUtc)}`
+                  : 'Drag across the chart to focus on a time range.'}
               </Text>
               {timeRange ? (
-                <Button
-                  mode="ghost"
-                  onClick={handleTimeRangeReset}
-                  text={t('diagnostics.request-history.reset-time-range')}
-                />
+                <Button mode="ghost" onClick={handleTimeRangeReset} text="Reset time range" />
               ) : null}
             </Flex>
 
             <Stack gap={2}>
               <Text muted size={1} weight="semibold">
-                {t(
-                  timeRange
-                    ? 'diagnostics.request-history.selected-summary'
-                    : 'diagnostics.request-history.session-summary',
-                )}
+                {timeRange
+                  ? 'Selected range summary'
+                  : 'Full session summary (estimated percentiles)'}
               </Text>
               <SummaryTable>
                 <thead>
                   <tr>
                     <th scope="col">
                       <Text muted size={1} weight="semibold">
-                        {t('diagnostics.request-history.series')}
+                        Series
                       </Text>
                     </th>
                     <th scope="col">
                       <Text muted size={1} weight="semibold">
-                        {t('diagnostics.request-history.count')}
+                        n
                       </Text>
                     </th>
                     <th scope="col">
                       <Text muted size={1} weight="semibold">
-                        {t('diagnostics.request-history.median')}
+                        Median
                       </Text>
                     </th>
                     <th scope="col">
                       <Text muted size={1} weight="semibold">
-                        {t('diagnostics.request-history.p95')}
+                        p95
                       </Text>
                     </th>
                     <th scope="col">
                       <Text muted size={1} weight="semibold">
-                        {t('diagnostics.request-history.max')}
+                        Max
                       </Text>
                     </th>
                   </tr>
@@ -365,13 +351,15 @@ export function RequestPerformanceReport({
 
             {abortedCount > 0 ? (
               <Text muted size={1}>
-                {t('diagnostics.request-history.aborted', {count: abortedCount})}
+                {abortedCount.toLocaleString()} aborted{' '}
+                {abortedCount === 1 ? 'sample is' : 'samples are'} included in copied output but
+                excluded from summary statistics.
               </Text>
             ) : null}
 
             {history.truncated ? (
               <Text muted size={1}>
-                {t('diagnostics.request-history.truncated')}
+                Older samples have been omitted because the session limit was reached.
               </Text>
             ) : null}
           </Stack>
@@ -495,6 +483,7 @@ function InteractiveChart({
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- can't be an img (svg)
         role="img"
         style={{
           cursor: dragSelection ? 'grabbing' : 'crosshair',
@@ -540,14 +529,9 @@ function InteractiveChart({
 }
 
 function PointTooltip({point, useUtc}: {point: ChartPoint; useUtc: boolean}) {
-  const {t} = useTranslation()
   const {entry, style, x, y} = point
   const status =
-    entry.status === 'success'
-      ? t('diagnostics.status.success')
-      : entry.status === 'error'
-        ? t('diagnostics.status.error')
-        : t('diagnostics.status.aborted')
+    entry.status === 'success' ? 'Success' : entry.status === 'error' ? 'Error' : 'Aborted'
 
   return (
     <PointTooltipPositioner $x={x} $y={y} role="tooltip">
@@ -563,19 +547,10 @@ function PointTooltip({point, useUtc}: {point: ChartPoint; useUtc: boolean}) {
               {entry.bucket}
             </Text>
           </Flex>
-          <TooltipDetail
-            label={t('diagnostics.request-history.tooltip.duration')}
-            value={formatMilliseconds(entry.durationMs)}
-          />
-          <TooltipDetail
-            label={t('diagnostics.request-history.tooltip.started')}
-            value={formatTime(entry.startedAt, useUtc)}
-          />
-          <TooltipDetail
-            label={t('diagnostics.request-history.tooltip.api-version')}
-            value={entry.apiVersion}
-          />
-          <TooltipDetail label={t('diagnostics.request-history.tooltip.status')} value={status} />
+          <TooltipDetail label="Duration" value={formatMilliseconds(entry.durationMs)} />
+          <TooltipDetail label="Started" value={formatTime(entry.startedAt, useUtc)} />
+          <TooltipDetail label="API version" value={entry.apiVersion} />
+          <TooltipDetail label="Status" value={status} />
         </Stack>
       </Card>
     </PointTooltipPositioner>

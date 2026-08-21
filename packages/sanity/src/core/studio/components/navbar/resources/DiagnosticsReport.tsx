@@ -1,3 +1,4 @@
+/* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
 import {
   Badge,
   type BadgeTone,
@@ -15,11 +16,17 @@ import {type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type StudioDiagnostics} from '../../../diagnostics'
 import {RequestPerformanceReport} from './RequestPerformanceReport'
 
 type DiagnosticStatus = StudioDiagnostics['network']['protocol']['status']
+
+const DIAGNOSTIC_STATUS_LABELS: Record<DiagnosticStatus, string> = {
+  error: 'Error',
+  success: 'Success',
+  timeout: 'Timed out',
+  unsupported: 'Unsupported',
+}
 
 const CodeValue = styled.span`
   font-family: var(--card-code-family, monospace);
@@ -33,35 +40,26 @@ interface DiagnosticsReportProps {
 
 /** @internal */
 export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportProps) {
-  const {t} = useTranslation()
   const [useUtc, setUseUtc] = useState(true)
   const {browser, network, schema, studio, user} = diagnostics
 
   const roles = user.roles.map((role) => role.title || role.name).join(', ')
   const localStorageResult = browser.localStorage
-    ? formatStorageResult(browser.localStorage, {
-        error: t('diagnostics.status.blocked'),
-        success: t('diagnostics.status.enabled'),
-        unsupported: t('diagnostics.status.unsupported'),
-      })
+    ? formatStorageResult(browser.localStorage)
     : undefined
   const connection = browser.connection
     ? [
         browser.connection.effectiveType,
         formatOptional(browser.connection.downlinkMbps, (value) => `${value} Mbps`),
         formatOptional(browser.connection.roundtripTimeMs, (value) => `${value} ms RTT`),
-        browser.connection.saveData ? t('diagnostics.value.save-data') : undefined,
+        browser.connection.saveData ? 'Save data enabled' : undefined,
       ]
         .filter(Boolean)
         .join(' · ')
     : undefined
   const hardware = [
-    formatOptional(browser.hardwareConcurrency, (value) =>
-      t('diagnostics.value.logical-processors', {count: value}),
-    ),
-    formatOptional(browser.deviceMemoryGb, (value) =>
-      t('diagnostics.value.memory', {memory: value}),
-    ),
+    formatOptional(browser.hardwareConcurrency, (value) => `${value} logical processors`),
+    formatOptional(browser.deviceMemoryGb, (value) => `${value} GB memory`),
   ].filter(Boolean)
 
   return (
@@ -72,15 +70,15 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
             <MetricGrid
               metrics={[
                 {
-                  label: t('diagnostics.field.started-at'),
+                  label: 'Started',
                   value: formatHeaderTime(diagnostics.startedAt, useUtc),
                 },
                 {
-                  label: t('diagnostics.field.generated-at'),
+                  label: 'Completed',
                   value: formatHeaderTime(diagnostics.generatedAt, useUtc),
                 },
                 {
-                  label: t('diagnostics.field.diagnostic-duration'),
+                  label: 'Diagnostics duration',
                   value: formatMilliseconds(diagnostics.durationMs),
                 },
               ]}
@@ -89,102 +87,65 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
           <Flex align="stretch" direction={['column', 'row']} gap={4}>
             <Stack gap={2}>
               <Text muted size={1}>
-                {t('diagnostics.time-zone.toggle')}
+                UTC time
               </Text>
               <Switch
-                aria-label={t('diagnostics.time-zone.toggle')}
+                aria-label="UTC time"
                 checked={useUtc}
                 onChange={() => setUseUtc((current) => !current)}
               />
             </Stack>
             <Stack gap={2}>
               <Text aria-hidden="true" muted size={1} style={{visibility: 'hidden'}}>
-                {t('diagnostics.run-again')}
+                Run again
               </Text>
-              <Button mode="default" onClick={onRunAgain} text={t('diagnostics.run-again')} />
+              <Button mode="default" onClick={onRunAgain} text="Run again" />
             </Stack>
           </Flex>
         </Flex>
       </Card>
 
       <Grid gap={3} gridTemplateColumns={[1, 1, 2]}>
-        <ReportSection testId="diagnostics-studio" title={t('diagnostics.section.studio')}>
-          <DetailRow
-            label={t('diagnostics.field.studio-version')}
-            monospace
-            value={studio.version}
-          />
-          <DetailRow
-            label={t('diagnostics.field.react-version')}
-            monospace
-            value={studio.reactVersion}
-          />
-          <DetailRow label={t('diagnostics.field.workspace-count')} value={studio.workspaceCount} />
-          <DetailRow
-            label={t('diagnostics.field.unique-targets')}
-            value={studio.uniqueTargetCount}
-          />
+        <ReportSection testId="diagnostics-studio" title="Studio">
+          <DetailRow label="Studio version" monospace value={studio.version} />
+          <DetailRow label="React version" monospace value={studio.reactVersion} />
+          <DetailRow label="Workspaces" value={studio.workspaceCount} />
+          <DetailRow label="Unique targets" value={studio.uniqueTargetCount} />
         </ReportSection>
 
-        <ReportSection testId="diagnostics-workspace" title={t('diagnostics.section.workspace')}>
-          <DetailRow
-            label={t('diagnostics.field.name')}
-            value={studio.workspaceTitle || studio.workspaceName}
-          />
-          <DetailRow label={t('diagnostics.field.project-id')} monospace value={studio.projectId} />
-          <DetailRow label={t('diagnostics.field.dataset')} monospace value={studio.dataset} />
-          <DetailRow label={t('diagnostics.field.api-host')} monospace value={studio.apiHost} />
+        <ReportSection testId="diagnostics-workspace" title="Workspace">
+          <DetailRow label="Name" value={studio.workspaceTitle || studio.workspaceName} />
+          <DetailRow label="Project ID" monospace value={studio.projectId} />
+          <DetailRow label="Dataset" monospace value={studio.dataset} />
+          <DetailRow label="API host" monospace value={studio.apiHost} />
         </ReportSection>
 
-        <ReportSection testId="diagnostics-schema" title={t('diagnostics.section.schema')}>
-          <DetailRow label={t('diagnostics.field.document-types')} value={schema.documentTypes} />
-          <DetailRow label={t('diagnostics.field.object-types')} value={schema.objectTypes} />
-          <DetailRow label={t('diagnostics.field.primitive-types')} value={schema.primitiveTypes} />
+        <ReportSection testId="diagnostics-schema" title="Schema">
+          <DetailRow label="Document types" value={schema.documentTypes} />
+          <DetailRow label="Object types" value={schema.objectTypes} />
+          <DetailRow label="Primitive types" value={schema.primitiveTypes} />
         </ReportSection>
 
-        <ReportSection testId="diagnostics-user" title={t('diagnostics.section.user')}>
-          <DetailRow label={t('diagnostics.field.user-id')} monospace value={user.id} />
-          <DetailRow label={t('diagnostics.field.provider')} value={user.provider} />
-          <DetailRow label={t('diagnostics.field.roles')} value={roles || undefined} />
+        <ReportSection testId="diagnostics-user" title="User">
+          <DetailRow label="User ID" monospace value={user.id} />
+          <DetailRow label="Provider" value={user.provider} />
+          <DetailRow label="Roles" value={roles || undefined} />
         </ReportSection>
 
-        <ReportSection testId="diagnostics-browser" title={t('diagnostics.section.browser')}>
+        <ReportSection testId="diagnostics-browser" title="Browser">
+          <DetailRow label="User agent" monospace truncate value={browser.userAgent} />
+          <DetailRow label="Language" value={browser.language} />
+          <DetailRow label="Timezone" value={browser.timezone} />
+          <DetailRow label="Online" value={formatBoolean(browser.online)} />
+          <DetailRow label="Viewport" value={formatDimensions(browser.viewport)} />
+          <DetailRow label="Screen" value={formatDimensions(browser.screen)} />
+          {connection ? <DetailRow label="Connection estimate" value={connection} /> : null}
+          <DetailRow label="Local storage" value={localStorageResult} />
           <DetailRow
-            label={t('diagnostics.field.user-agent')}
-            monospace
-            truncate
-            value={browser.userAgent}
-          />
-          <DetailRow label={t('diagnostics.field.language')} value={browser.language} />
-          <DetailRow label={t('diagnostics.field.timezone')} value={browser.timezone} />
-          <DetailRow
-            label={t('diagnostics.field.online')}
-            value={formatBoolean(
-              browser.online,
-              t('diagnostics.value.yes'),
-              t('diagnostics.value.no'),
-            )}
-          />
-          <DetailRow
-            label={t('diagnostics.field.viewport')}
-            value={formatDimensions(browser.viewport)}
-          />
-          <DetailRow
-            label={t('diagnostics.field.screen')}
-            value={formatDimensions(browser.screen)}
-          />
-          {connection ? (
-            <DetailRow label={t('diagnostics.field.connection-estimate')} value={connection} />
-          ) : null}
-          <DetailRow label={t('diagnostics.field.local-storage')} value={localStorageResult} />
-          <DetailRow
-            label={t('diagnostics.field.hardware')}
+            label="Hardware"
             value={hardware.length > 0 ? hardware.join(' · ') : undefined}
           />
-          <DetailRow
-            label={t('diagnostics.field.max-touch-points')}
-            value={browser.maxTouchPoints}
-          />
+          <DetailRow label="Max touch points" value={browser.maxTouchPoints} />
         </ReportSection>
 
         <NetworkReport diagnostics={diagnostics} useUtc={useUtc} />
@@ -200,7 +161,7 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
 
         <Stack gap={2}>
           <Heading as="h2" size={1}>
-            {t('diagnostics.network.listeners')}
+            Listen connection tests
           </Heading>
           <Grid
             data-testid="diagnostics-listen-connections"
@@ -208,15 +169,12 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
             gridTemplateColumns={[1, 1, 2]}
           >
             <Card border data-testid="diagnostics-listen-connection" padding={4} radius={2}>
-              <ListenReport
-                result={network.listen.first}
-                title={t('diagnostics.network.listener-first')}
-              />
+              <ListenReport result={network.listen.first} title="First connection" />
             </Card>
             <Card border data-testid="diagnostics-listen-connection" padding={4} radius={2}>
               <ListenReport
                 result={network.listen.secondWhileFirstOpen}
-                title={t('diagnostics.network.listener-second')}
+                title="Second connection while first is open"
               />
             </Card>
           </Grid>
@@ -224,7 +182,7 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
 
         <Stack gap={2}>
           <Heading as="h2" size={1}>
-            {t('diagnostics.network.api-requests')}
+            API request tests
           </Heading>
           <Stack gap={2}>
             {network.requests.map((request) => (
@@ -293,8 +251,7 @@ function DetailRow({
   truncate?: boolean
   value?: ReactNode
 }) {
-  const {t} = useTranslation()
-  const displayValue = value === undefined || value === '' ? t('diagnostics.value.unknown') : value
+  const displayValue = value === undefined || value === '' ? 'Unknown' : value
 
   return (
     <Flex align="flex-start" gap={3} justify="space-between">
@@ -320,53 +277,34 @@ function NetworkReport({
   diagnostics,
   useUtc,
 }: Pick<DiagnosticsReportProps, 'diagnostics'> & {useUtc: boolean}) {
-  const {t} = useTranslation()
   const {protocol, requestHistory, shard} = diagnostics.network
   const timing = protocol.resourceTiming
   const trackingStartedAt = requestHistory.sessionSummary.startedAt
-  const protocolStatusLabels: Record<DiagnosticStatus, string> = {
-    error: t('diagnostics.status.error'),
-    success: t('diagnostics.status.success'),
-    timeout: t('diagnostics.status.timeout'),
-    unsupported: t('diagnostics.status.unsupported'),
-  }
   const protocolValue =
-    protocol.protocol === 'unknown' ? protocolStatusLabels[protocol.status] : protocol.protocol
+    protocol.protocol === 'unknown' ? DIAGNOSTIC_STATUS_LABELS[protocol.status] : protocol.protocol
 
   return (
-    <ReportSection testId="diagnostics-network" title={t('diagnostics.section.network')}>
-      <DetailRow label={t('diagnostics.network.protocol')} monospace value={protocolValue} />
+    <ReportSection testId="diagnostics-network" title="Network">
+      <DetailRow label="Protocol" monospace value={protocolValue} />
       <DetailRow
-        label={t('diagnostics.network.session-requests')}
+        label="Session requests"
         value={requestHistory.sessionSummary.totalRequests.toLocaleString()}
       />
+      <DetailRow label="Ping TTFB" value={formatMilliseconds(timing?.requestToFirstByteMs)} />
+      <DetailRow label="Shard" monospace value={shard} />
+      <DetailRow label="Tracking started" value={formatHeaderTime(trackingStartedAt, useUtc)} />
       <DetailRow
-        label={t('diagnostics.network.ping-ttfb')}
-        value={formatMilliseconds(timing?.requestToFirstByteMs)}
-      />
-      <DetailRow label={t('diagnostics.network.shard')} monospace value={shard} />
-      <DetailRow
-        label={t('diagnostics.network.tracking-started')}
-        value={formatHeaderTime(trackingStartedAt, useUtc)}
-      />
-      <DetailRow
-        label={t('diagnostics.network.tab-open')}
+        label="Tab open"
         value={formatElapsedDuration(trackingStartedAt, diagnostics.generatedAt)}
       />
       {timing && timing.dnsMs > 0 ? (
-        <DetailRow label={t('diagnostics.network.dns')} value={formatMilliseconds(timing.dnsMs)} />
+        <DetailRow label="DNS" value={formatMilliseconds(timing.dnsMs)} />
       ) : null}
       {timing && timing.connectionMs > 0 ? (
-        <DetailRow
-          label={t('diagnostics.network.connection')}
-          value={formatMilliseconds(timing.connectionMs)}
-        />
+        <DetailRow label="Connection" value={formatMilliseconds(timing.connectionMs)} />
       ) : null}
       {timing && timing.secureConnectionMs > 0 ? (
-        <DetailRow
-          label={t('diagnostics.network.tls')}
-          value={formatMilliseconds(timing.secureConnectionMs)}
-        />
+        <DetailRow label="TLS" value={formatMilliseconds(timing.secureConnectionMs)} />
       ) : null}
       {protocol.error ? (
         <Text muted size={1}>
@@ -384,8 +322,6 @@ function ListenReport({
   result: StudioDiagnostics['network']['listen']['first']
   title: string
 }) {
-  const {t} = useTranslation()
-
   return (
     <Stack gap={4}>
       <Flex align="center" gap={2} wrap="wrap">
@@ -398,15 +334,15 @@ function ListenReport({
         gap={3}
         metrics={[
           {
-            label: t('diagnostics.network.open-event'),
+            label: 'Open event',
             value: formatMilliseconds(result.openMs),
           },
           {
-            label: t('diagnostics.network.welcome-event'),
+            label: 'Welcome event',
             value: formatMilliseconds(result.welcomeMs),
           },
           {
-            label: t('diagnostics.network.total'),
+            label: 'Total',
             value: formatMilliseconds(result.durationMs),
           },
         ]}
@@ -443,32 +379,22 @@ function getMetricAlignment(index: number): TextAlign {
 }
 
 function Metric({align, label, value}: MetricProps & {align: TextAlign[]}) {
-  const {t} = useTranslation()
-
   return (
     <Stack gap={2}>
       <Text align={align} muted size={1}>
         {label}
       </Text>
       <Text align={align} size={1} weight="semibold">
-        {value ?? t('diagnostics.value.unknown')}
+        {value ?? 'Unknown'}
       </Text>
     </Stack>
   )
 }
 
 function StatusBadge({status}: {status: DiagnosticStatus}) {
-  const {t} = useTranslation()
-  const labels: Record<DiagnosticStatus, string> = {
-    error: t('diagnostics.status.error'),
-    success: t('diagnostics.status.success'),
-    timeout: t('diagnostics.status.timeout'),
-    unsupported: t('diagnostics.status.unsupported'),
-  }
-
   return (
     <Badge fontSize={0} tone={getStatusTone(status)}>
-      {labels[status]}
+      {DIAGNOSTIC_STATUS_LABELS[status]}
     </Badge>
   )
 }
@@ -522,14 +448,18 @@ function formatDimensions(value?: {height: number; width: number}): string | und
   return value ? `${value.width} × ${value.height}` : undefined
 }
 
-function formatBoolean(value: boolean | undefined, yes: string, no: string): string | undefined {
-  return value === undefined ? undefined : value ? yes : no
+function formatBoolean(value: boolean | undefined): string | undefined {
+  return value === undefined ? undefined : value ? 'Yes' : 'No'
 }
 
 function formatStorageResult(
   result: NonNullable<StudioDiagnostics['browser']['localStorage']>,
-  labels: Record<(typeof result)['status'], string>,
 ): string {
+  const labels: Record<(typeof result)['status'], string> = {
+    error: 'Blocked',
+    success: 'Enabled',
+    unsupported: 'Unsupported',
+  }
   const label = labels[result.status]
   return result.error ? `${label}: ${result.error}` : label
 }

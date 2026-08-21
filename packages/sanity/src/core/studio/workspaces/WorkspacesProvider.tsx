@@ -17,14 +17,12 @@ import {
   ConfigErrorContext,
   type ConfigErrorValue,
   LoggedOutReasonContext,
-  RequestPerformanceContext,
   StudioErrorHandlerContext,
   WorkspacesContext,
 } from 'sanity/_singletons'
 
 import {prepareConfig} from '../../config/prepareConfig'
 import {type Config} from '../../config/types'
-import {createRequestPerformanceTracker} from '../diagnostics/requestPerformance'
 import {getApiErrorCode} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {createStudioRequestHandler as createStudioRequestHandlerFactory} from '../requestErrors/createStudioRequestHandler'
@@ -116,7 +114,6 @@ export function WorkspacesProvider({
   // tear down.
   const workspacesRef = useRef<WorkspacesContextValue | null>(null)
   const [requestErrorChannel] = useState(() => createRequestErrorChannel())
-  const [requestPerformance] = useState(() => createRequestPerformanceTracker())
 
   // Apply a diagnosed config/CORS failure to the screen-takeover state. Shared
   // by the request handler and the auth store's `/users/me` probe (via
@@ -191,13 +188,12 @@ export function WorkspacesProvider({
         channel: requestErrorChannel,
         diagnostics: requestFailureDiagnostics,
         getClient,
-        requestPerformance,
         waitForCorsRetry: async () => {
           await firstValueFrom(corsRetry.pipe(take(1)))
           setCorsError(undefined)
         },
       }),
-    [corsRetry, requestErrorChannel, requestFailureDiagnostics, requestPerformance],
+    [corsRetry, requestErrorChannel, requestFailureDiagnostics],
   )
 
   const workspaces = useDeferredValue(
@@ -303,25 +299,23 @@ export function WorkspacesProvider({
   }
 
   return (
-    <RequestPerformanceContext.Provider value={requestPerformance}>
-      <WorkspacesContext.Provider value={workspaces}>
-        <ConfigErrorContext.Provider value={configError ?? null}>
-          <StudioErrorHandlerContext.Provider value={requestErrorChannel}>
-            <LoggedOutReasonContext.Provider value={loggedOutReason}>
-              {/* A config error (missing project/dataset) and a request-error
+    <WorkspacesContext.Provider value={workspaces}>
+      <ConfigErrorContext.Provider value={configError ?? null}>
+        <StudioErrorHandlerContext.Provider value={requestErrorChannel}>
+          <LoggedOutReasonContext.Provider value={loggedOutReason}>
+            {/* A config error (missing project/dataset) and a request-error
                 claim can fire from the same boot failure — the data request
                 network-errors (claimed here) while the `/check/cors` probe
                 separately resolves it to project-not-found. The config-error
                 takeover wins, so suppress the dialog while one is active. */}
-              {!configError && claim && claim.type !== 'unauthorized' && (
-                <RequestErrorDialog claim={claim} onRetry={requestErrorChannel.retry} />
-              )}
-              {children}
-            </LoggedOutReasonContext.Provider>
-          </StudioErrorHandlerContext.Provider>
-        </ConfigErrorContext.Provider>
-      </WorkspacesContext.Provider>
-    </RequestPerformanceContext.Provider>
+            {!configError && claim && claim.type !== 'unauthorized' && (
+              <RequestErrorDialog claim={claim} onRetry={requestErrorChannel.retry} />
+            )}
+            {children}
+          </LoggedOutReasonContext.Provider>
+        </StudioErrorHandlerContext.Provider>
+      </ConfigErrorContext.Provider>
+    </WorkspacesContext.Provider>
   )
 }
 

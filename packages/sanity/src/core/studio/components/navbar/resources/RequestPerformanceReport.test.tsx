@@ -10,10 +10,6 @@ import {
 } from '../../../diagnostics'
 import {RequestPerformanceReport} from './RequestPerformanceReport'
 
-vi.mock('../../../../i18n/hooks/useTranslation', () => ({
-  useTranslation: () => ({t: (key: string) => key}),
-}))
-
 describe('RequestPerformanceReport', () => {
   it('renders an empty state for a target without observed requests', () => {
     render(
@@ -36,7 +32,11 @@ describe('RequestPerformanceReport', () => {
       </ThemeProvider>,
     )
 
-    expect(screen.getByText('diagnostics.request-history.empty')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'No data API requests have been observed for this workspace target in this browser session.',
+      ),
+    ).toBeInTheDocument()
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
   })
 
@@ -84,7 +84,11 @@ describe('RequestPerformanceReport', () => {
     expect(points[1]).toHaveAttribute('stroke', 'none')
     expect(screen.getByText('query')).toBeInTheDocument()
     expect(screen.queryByText('doc')).not.toBeInTheDocument()
-    expect(screen.getByText('diagnostics.request-history.aborted')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        '1 aborted sample is included in copied output but excluded from summary statistics.',
+      ),
+    ).toBeInTheDocument()
   })
 
   it('uses a linear scale with a muted query series and distinct markers', () => {
@@ -114,7 +118,7 @@ describe('RequestPerformanceReport', () => {
       },
     })
 
-    expect(screen.getByText('diagnostics.request-history.session-summary')).toBeInTheDocument()
+    expect(screen.getByText('Full session summary (estimated percentiles)')).toBeInTheDocument()
     expect(screen.getByText('2,000')).toBeInTheDocument()
     expect(screen.getByText('120 ms')).toBeInTheDocument()
     expect(screen.getByText('480 ms')).toBeInTheDocument()
@@ -153,7 +157,7 @@ describe('RequestPerformanceReport', () => {
     expect(tooltip).toHaveTextContent('query')
     expect(tooltip).toHaveTextContent('283 ms')
     expect(tooltip).toHaveTextContent('v2025-02-19')
-    expect(tooltip).toHaveTextContent('diagnostics.status.success')
+    expect(tooltip).toHaveTextContent('Success')
     expect(tooltip).toHaveTextContent(formatUtcTime(entry.startedAt))
     expect(tooltip).not.toHaveTextContent(new Date(entry.startedAt).toLocaleDateString())
 
@@ -189,9 +193,7 @@ describe('RequestPerformanceReport', () => {
     ])
 
     expect(screen.getAllByTestId('diagnostics-request-history-point')).toHaveLength(1)
-    await user.click(
-      screen.getByRole('button', {name: 'diagnostics.request-history.reset-time-range'}),
-    )
+    await user.click(screen.getByRole('button', {name: 'Reset time range'}))
     expect(screen.getAllByTestId('diagnostics-request-history-point')).toHaveLength(3)
   })
 
@@ -233,7 +235,7 @@ describe('RequestPerformanceReport', () => {
     })
 
     expect(
-      screen.getByText('diagnostics.request-history.empty-after-exclusion'),
+      screen.getByText('No session requests outside this diagnostics run are available to plot.'),
     ).toBeInTheDocument()
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
   })

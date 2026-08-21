@@ -429,9 +429,10 @@ async function requestConstantQuery(
   })
   if (!response.ok) throw new Error(`Query probe returned HTTP ${response.status}`)
 
-  const body = (await response.json()) as {result?: unknown}
+  const body = await response.json()
+  const result = typeof body === 'object' && 'result' in body ? body.result : undefined
   return {
-    detail: `result: ${String(body.result)}`,
+    detail: `result: ${String(result)}`,
     shard: response.headers.get('x-sanity-shard') || undefined,
   }
 }

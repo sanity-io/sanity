@@ -1,3 +1,4 @@
+/* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
 import {Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {
@@ -13,7 +14,6 @@ import {
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {useClient} from '../../../../hooks/useClient'
-import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {SANITY_VERSION} from '../../../../version'
 import {
   formatStudioDiagnostics,
@@ -25,7 +25,7 @@ import {
   getSchemaDiagnostics,
   getUniqueTargetCount,
 } from '../../../diagnostics/getStudioConfigurationDiagnostics'
-import {useRequestPerformanceTracker} from '../../../diagnostics/RequestPerformanceContext'
+import {studioRequestPerformance} from '../../../diagnostics/requestPerformance'
 import {useCopyToClipboard} from '../../../hooks/useCopyToClipboard'
 import {useWorkspace} from '../../../workspace'
 import {useWorkspaces} from '../../../workspaces/useWorkspaces'
@@ -37,12 +37,10 @@ interface DiagnosticsDialogProps {
 
 /** @internal */
 export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
-  const {t} = useTranslation()
   const toast = useToast()
   const dialogId = useId()
   const workspace = useWorkspace()
   const workspaces = useWorkspaces()
-  const requestPerformance = useRequestPerformanceTracker()
   const client = useClient({apiVersion: '2025-02-19'})
   const [diagnostics, setDiagnostics] = useState<StudioDiagnostics>()
   const [error, setError] = useState<string>()
@@ -53,7 +51,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
   const diagnosticsOptions = useMemo<StudioDiagnosticsOptions>(
     () => ({
       client,
-      getRequestHistory: requestPerformance?.getSnapshot,
+      getRequestHistory: studioRequestPerformance.getSnapshot,
       schema: getSchemaDiagnostics(workspace.schema),
       studio: {
         basePath: workspace.basePath,
@@ -70,7 +68,6 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
     }),
     [
       client,
-      requestPerformance,
       workspace.basePath,
       workspace.currentUser,
       workspace.dataset,
@@ -114,9 +111,9 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
     const copied = await copy(output)
     toast.push({
       status: copied ? 'success' : 'error',
-      title: copied ? t('diagnostics.copy-success') : t('diagnostics.copy-error'),
+      title: copied ? 'Diagnostics copied to clipboard' : 'Could not copy diagnostics',
     })
-  }, [copy, output, t, toast])
+  }, [copy, output, toast])
 
   const handleRunAgain = useCallback(() => {
     const requestId = ++requestIdRef.current
@@ -131,15 +128,15 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
     <Dialog
       bodyHeight="70vh"
       footer={{
-        cancelButton: {text: t('diagnostics.close')},
+        cancelButton: {text: 'Close'},
         confirmButton: {
           disabled: !output,
           onClick: handleCopy,
-          text: isCopied ? t('diagnostics.copied') : t('diagnostics.copy-output'),
+          text: isCopied ? 'Copied' : 'Copy output',
           tone: 'primary',
         },
       }}
-      header={t('diagnostics.dialog-title')}
+      header="Studio diagnostics"
       id={dialogId}
       onClickOutside={onClose}
       onClose={onClose}
@@ -150,7 +147,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
           <Flex align="center" direction="column" flex={1} gap={3} justify="center">
             <Spinner />
             <Text muted size={1}>
-              {t('diagnostics.gathering')}
+              Gathering diagnostics…
             </Text>
           </Flex>
         ) : null}
@@ -158,9 +155,9 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
         {error ? (
           <Card padding={4} radius={2} tone="critical">
             <Stack gap={4}>
-              <Text size={1}>{t('diagnostics.gather-error', {error})}</Text>
+              <Text size={1}>Could not gather diagnostics: {error}</Text>
               <Flex>
-                <Button mode="ghost" onClick={handleRunAgain} text={t('diagnostics.run-again')} />
+                <Button mode="ghost" onClick={handleRunAgain} text="Run again" />
               </Flex>
             </Stack>
           </Card>

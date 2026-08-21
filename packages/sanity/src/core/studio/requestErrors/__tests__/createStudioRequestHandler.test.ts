@@ -2,7 +2,10 @@ import {ClientError, createClient, ServerError} from '@sanity/client'
 import {filter, firstValueFrom, take} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
-import {createRequestPerformanceTracker} from '../../diagnostics/requestPerformance'
+import {
+  createRequestPerformanceTracker,
+  studioRequestPerformance,
+} from '../../diagnostics/requestPerformance'
 import {createRequestErrorChannel} from '../createRequestErrorChannel'
 import {createStudioRequestHandler} from '../createStudioRequestHandler'
 
@@ -23,6 +26,24 @@ function responseShape(statusCode: number, body: unknown) {
 }
 
 describe('createStudioRequestHandler', () => {
+  it('records to the shared Studio session tracker by default', async () => {
+    const channel = createRequestErrorChannel()
+    const target = {dataset: 'shared-tracker-test', projectId: 'shared-tracker-test'}
+    const client = createClient({
+      apiVersion: '2025-02-19',
+      ...target,
+      useCdn: false,
+    })
+    const handler = createStudioRequestHandler({channel, getClient: () => client})
+
+    await handler(request, vi.fn().mockResolvedValue({result: 'ok'}))
+
+    expect(studioRequestPerformance.getSnapshot(target)).toMatchObject({
+      entries: [expect.objectContaining({bucket: 'query', status: 'success'})],
+      totalRequests: 1,
+    })
+  })
+
   it('records data request timings without retaining the URL', async () => {
     const channel = createRequestErrorChannel()
     const client = createClient({

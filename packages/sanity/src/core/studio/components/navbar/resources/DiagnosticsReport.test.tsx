@@ -7,10 +7,6 @@ import {describe, expect, it, vi} from 'vitest'
 import {type StudioDiagnostics} from '../../../diagnostics'
 import {DiagnosticsReport} from './DiagnosticsReport'
 
-vi.mock('../../../../i18n/hooks/useTranslation', () => ({
-  useTranslation: () => ({t: (key: string) => key}),
-}))
-
 const diagnostics: StudioDiagnostics = {
   browser: {
     connection: {downlinkMbps: 12.5, effectiveType: '4g', roundtripTimeMs: 40},
@@ -178,78 +174,78 @@ describe('DiagnosticsReport', () => {
       </ThemeProvider>,
     )
 
-    expect(screen.getByText('diagnostics.section.studio')).toBeInTheDocument()
-    expect(screen.getByText('diagnostics.section.workspace')).toBeInTheDocument()
-    expect(screen.getByText('diagnostics.section.schema')).toBeInTheDocument()
-    expect(screen.getByText('diagnostics.section.user')).toBeInTheDocument()
-    expect(screen.getByText('diagnostics.section.browser')).toBeInTheDocument()
-    expect(screen.getByText('diagnostics.section.network')).toBeInTheDocument()
+    expect(screen.getByText('Studio')).toBeInTheDocument()
+    expect(screen.getByText('Workspace')).toBeInTheDocument()
+    expect(screen.getByText('Schema')).toBeInTheDocument()
+    expect(screen.getByText('User')).toBeInTheDocument()
+    expect(screen.getByText('Browser')).toBeInTheDocument()
+    expect(screen.getByText('Network')).toBeInTheDocument()
     expect(screen.getByText('Test workspace')).toBeInTheDocument()
     expect(screen.getByText('10,420 ms')).toBeInTheDocument()
     expect(screen.getByText('h2')).toBeInTheDocument()
     expect(screen.getByText('65 ms')).toBeInTheDocument()
     expect(screen.getByText('/ping')).toBeInTheDocument()
     expect(screen.getByText('/query?query=*[0]._id')).toBeInTheDocument()
-    expect(screen.getByText('diagnostics.request-history.title')).toBeInTheDocument()
+    expect(screen.getByText('Recent request timings')).toBeInTheDocument()
     expect(screen.getAllByTestId('diagnostics-request-history-point')).toHaveLength(3)
-    expect(screen.getAllByText('diagnostics.status.timeout')).toHaveLength(2)
+    expect(screen.getAllByText('Timed out')).toHaveLength(2)
 
     const studio = within(screen.getByTestId('diagnostics-studio'))
     expect(studio.getByText('4.0.0')).toBeInTheDocument()
     expect(studio.getByText('19.2.0')).toBeInTheDocument()
     expect(studio.getByText('3')).toBeInTheDocument()
-    expect(studio.getByText('diagnostics.field.unique-targets')).toBeInTheDocument()
+    expect(studio.getByText('Unique targets')).toBeInTheDocument()
     expect(studio.getByText('2')).toBeInTheDocument()
     expect(studio.queryByText('test-project')).not.toBeInTheDocument()
 
     const workspace = within(screen.getByTestId('diagnostics-workspace'))
-    expect(workspace.getByText('diagnostics.field.name')).toBeInTheDocument()
+    expect(workspace.getByText('Name')).toBeInTheDocument()
     expect(workspace.getByText('test-project')).toBeInTheDocument()
     expect(workspace.getByText('production')).toBeInTheDocument()
     expect(workspace.getByText('https://test.api.sanity.io')).toBeInTheDocument()
-    expect(screen.queryByText('diagnostics.field.api-version')).not.toBeInTheDocument()
+    expect(workspace.queryByText('API version')).not.toBeInTheDocument()
 
     const schema = within(screen.getByTestId('diagnostics-schema'))
-    expect(schema.getByText('diagnostics.field.document-types')).toBeInTheDocument()
-    expect(schema.getByText('diagnostics.field.object-types')).toBeInTheDocument()
-    expect(schema.getByText('diagnostics.field.primitive-types')).toBeInTheDocument()
+    expect(schema.getByText('Document types')).toBeInTheDocument()
+    expect(schema.getByText('Object types')).toBeInTheDocument()
+    expect(schema.getByText('Primitive types')).toBeInTheDocument()
     expect(schema.getByText('4')).toBeInTheDocument()
     expect(schema.getByText('6')).toBeInTheDocument()
     expect(schema.getByText('2')).toBeInTheDocument()
 
     const browser = within(screen.getByTestId('diagnostics-browser'))
-    expect(browser.getByText('diagnostics.field.max-touch-points')).toBeInTheDocument()
+    expect(browser.getByText('Max touch points')).toBeInTheDocument()
     expect(browser.getByText('5')).toBeInTheDocument()
-    expect(browser.getByText('diagnostics.status.enabled')).toBeInTheDocument()
-    expect(browser.queryByText('diagnostics.status.success')).not.toBeInTheDocument()
+    expect(browser.getByText('Enabled')).toBeInTheDocument()
+    expect(browser.queryByText('Success')).not.toBeInTheDocument()
     expect(browser.getByTitle('Test browser')).toBeInTheDocument()
 
     const network = within(screen.getByTestId('diagnostics-network'))
     expect(network.getByText('h2')).toBeInTheDocument()
     expect(network.getByText('gcp-eu-west1-01')).toBeInTheDocument()
-    expect(network.getByText('diagnostics.network.session-requests')).toBeInTheDocument()
-    expect(network.getByText('diagnostics.network.ping-ttfb')).toBeInTheDocument()
-    expect(network.getByText('diagnostics.network.tracking-started')).toBeInTheDocument()
-    expect(network.getByText('diagnostics.network.tab-open')).toBeInTheDocument()
-    expect(network.getByText('diagnostics.network.dns')).toBeInTheDocument()
-    expect(network.getByText('diagnostics.network.connection')).toBeInTheDocument()
-    expect(network.getByText('diagnostics.network.tls')).toBeInTheDocument()
+    expect(network.getByText('Session requests')).toBeInTheDocument()
+    expect(network.getByText('Ping TTFB')).toBeInTheDocument()
+    expect(network.getByText('Tracking started')).toBeInTheDocument()
+    expect(network.getByText('Tab open')).toBeInTheDocument()
+    expect(network.getByText('DNS')).toBeInTheDocument()
+    expect(network.getByText('Connection')).toBeInTheDocument()
+    expect(network.getByText('TLS')).toBeInTheDocument()
 
     const user = within(screen.getByTestId('diagnostics-user'))
-    expect(user.queryByText('diagnostics.field.email')).not.toBeInTheDocument()
-    expect(user.queryByText('diagnostics.field.name')).not.toBeInTheDocument()
+    expect(user.queryByText('Email')).not.toBeInTheDocument()
+    expect(user.queryByText('Name')).not.toBeInTheDocument()
     expect(user.getByText('user-id')).toBeInTheDocument()
 
     const listenConnections = within(screen.getByTestId('diagnostics-listen-connections'))
     expect(listenConnections.getAllByTestId('diagnostics-listen-connection')).toHaveLength(2)
-    expect(listenConnections.getByText('diagnostics.network.listener-first')).toBeInTheDocument()
-    expect(listenConnections.getByText('diagnostics.network.listener-second')).toBeInTheDocument()
+    expect(listenConnections.getByText('First connection')).toBeInTheDocument()
+    expect(listenConnections.getByText('Second connection while first is open')).toBeInTheDocument()
 
     const timeZoneToggle = screen.getByRole('checkbox', {
-      name: 'diagnostics.time-zone.toggle',
+      name: 'UTC time',
     })
     expect(timeZoneToggle).toBeChecked()
-    expect(screen.getByText('diagnostics.time-zone.toggle')).toBeInTheDocument()
+    expect(screen.getByText('UTC time')).toBeInTheDocument()
     expect(screen.getByText(formatUtcTime(diagnostics.startedAt))).toBeInTheDocument()
 
     await userInteraction.click(timeZoneToggle)
@@ -258,7 +254,7 @@ describe('DiagnosticsReport', () => {
       screen.getByText(new Date(diagnostics.startedAt).toLocaleTimeString()),
     ).toBeInTheDocument()
 
-    await userInteraction.click(screen.getByRole('button', {name: 'diagnostics.run-again'}))
+    await userInteraction.click(screen.getByRole('button', {name: 'Run again'}))
     expect(onRunAgain).toHaveBeenCalledOnce()
   })
 
@@ -287,13 +283,13 @@ describe('DiagnosticsReport', () => {
     )
 
     const network = within(screen.getByTestId('diagnostics-network'))
-    expect(network.queryByText('diagnostics.network.dns')).not.toBeInTheDocument()
-    expect(network.queryByText('diagnostics.network.connection')).not.toBeInTheDocument()
-    expect(network.queryByText('diagnostics.network.tls')).not.toBeInTheDocument()
-    expect(network.queryByText('diagnostics.network.total')).not.toBeInTheDocument()
-    expect(network.queryByText('diagnostics.network.response-status')).not.toBeInTheDocument()
-    expect(network.queryByText('diagnostics.network.response-transfer')).not.toBeInTheDocument()
-    expect(network.queryByText('diagnostics.network.transferred')).not.toBeInTheDocument()
+    expect(network.queryByText('DNS')).not.toBeInTheDocument()
+    expect(network.queryByText('Connection')).not.toBeInTheDocument()
+    expect(network.queryByText('TLS')).not.toBeInTheDocument()
+    expect(network.queryByText('Total')).not.toBeInTheDocument()
+    expect(network.queryByText('Response status')).not.toBeInTheDocument()
+    expect(network.queryByText('Response')).not.toBeInTheDocument()
+    expect(network.queryByText('Transferred')).not.toBeInTheDocument()
   })
 
   it('hides the connection estimate when it is unknown', () => {
@@ -310,7 +306,7 @@ describe('DiagnosticsReport', () => {
     )
 
     const browser = within(screen.getByTestId('diagnostics-browser'))
-    expect(browser.queryByText('diagnostics.field.connection-estimate')).not.toBeInTheDocument()
+    expect(browser.queryByText('Connection estimate')).not.toBeInTheDocument()
   })
 })
 

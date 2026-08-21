@@ -120,6 +120,9 @@ export function createRequestPerformanceTracker(
   }
 }
 
+/** Browser-session request performance shared by the Studio request handler and diagnostics. */
+export const studioRequestPerformance = createRequestPerformanceTracker()
+
 function getTargetKey({dataset, projectId}: RequestPerformanceTarget): string {
   return JSON.stringify([projectId, dataset])
 }
