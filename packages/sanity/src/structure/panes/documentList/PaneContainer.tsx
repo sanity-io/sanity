@@ -30,7 +30,6 @@ import {
 } from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder, type StaticSortOrder} from './types'
-import {useShallowUnique} from './useShallowUnique'
 
 /**
  * Type for custom menu item state storage.
@@ -187,7 +186,7 @@ export const PaneContainer = memo(function PaneContainer(
     suppressRestoreDefaultMenuItems,
   } = pane
   const {defaultOrdering = EMPTY_ARRAY, filter} = options
-  const params = useShallowUnique(options.params || EMPTY_RECORD)
+  const params = options.params || EMPTY_RECORD
   const sourceName = pane.source
   const typeName = useMemo(() => {
     const staticTypes = findStaticTypesInFilter(filter, params)
