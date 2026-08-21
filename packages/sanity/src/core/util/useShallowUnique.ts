@@ -2,6 +2,12 @@ import {useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
 function isShallowEqual(a: unknown, b: unknown): boolean {
+  // `Object.is` treats NaN as equal to itself, unlike `===`/`shallow-equals`.
+  // Without this, a bare NaN value would call `setPrevious` with a fresh box
+  // object on every render — an update React cannot bail out of — looping
+  // forever. (The pre-boxing implementation relied on React's own `Object.is`
+  // state bailout for this.)
+  if (Object.is(a, b)) return true
   // `shallow-equals` compares two functions by their own enumerable keys,
   // which reports two DIFFERENT plain functions as equal — retaining a stale
   // first function forever. Functions only count as equal when identical.

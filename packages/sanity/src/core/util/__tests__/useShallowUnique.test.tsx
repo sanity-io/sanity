@@ -54,6 +54,19 @@ describe('useShallowUnique', () => {
     expect(result.current).toBe(second)
   })
 
+  it('treats NaN as equal to itself instead of re-rendering forever', () => {
+    // `===`/`shallow-equals` report NaN as unequal to itself. Since the stored
+    // state is a fresh box object on every update, React cannot bail out of
+    // the `setPrevious` call, so without an `Object.is` check a bare NaN value
+    // would self-schedule renders forever.
+    const {result, rerender} = renderHook(({value}) => useShallowUnique<number>(value), {
+      initialProps: {value: NaN},
+    })
+    expect(result.current).toBeNaN()
+    rerender({value: NaN})
+    expect(result.current).toBeNaN()
+  })
+
   it('passes primitives through', () => {
     const {result, rerender} = renderHook(
       ({value}) => useShallowUnique<string | undefined>(value),
