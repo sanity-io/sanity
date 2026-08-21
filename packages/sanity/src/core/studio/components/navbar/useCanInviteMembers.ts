@@ -35,5 +35,6 @@ export function useCanInviteProjectMembers(opts?: UseCanInviteProjectMembersOpti
     )
   }, [projectStore])
 
-  return useObservable(canInvite$, false, {disabled: !enabled})
+  const value = useObservable(canInvite$, false, {disabled: !enabled})
+  return enabled ? value : false
 }

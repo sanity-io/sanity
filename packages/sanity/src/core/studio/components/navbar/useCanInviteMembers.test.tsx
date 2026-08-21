@@ -79,9 +79,10 @@ describe('useCanInviteProjectMembers', () => {
     await waitFor(() => expect(screen.getByTestId('can-invite')).toHaveTextContent('true'))
     expect(subscribes.count).toBe(1)
 
-    // `disabled` unsubscribes without replacing the observable, so a
-    // disabled re-render must not add another grants request.
+    // `disabled` keeps the last emission, but the hook's contract is: if we
+    // are not checking grants, assume no access.
     rerender(<CanInvite enabled={false} />)
+    expect(screen.getByTestId('can-invite')).toHaveTextContent('false')
     expect(subscribes.count).toBe(1)
   })
 })
