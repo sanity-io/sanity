@@ -196,7 +196,29 @@ describe('groupDocumentVersionsForStatus', () => {
     ])
   })
 
-  it('sorts agent versions after published, drafts, and releases', () => {
+  it('omits agent versions by default', () => {
+    const groups = groupDocumentVersionsForStatus(
+      [
+        createVersion({
+          id: 'versions.agent-abc.article-1',
+          bundleId: 'agent-abc',
+          createdAt: '2025-06-01T00:00:00Z',
+          updatedAt: '2025-06-01T00:00:00Z',
+        }),
+        createVersion({
+          id: 'article-1',
+          createdAt: '2025-06-02T00:00:00Z',
+          updatedAt: '2025-06-02T00:00:00Z',
+        }),
+      ],
+      [],
+      new Map(),
+    )
+
+    expect(groups[0]?.items.map((item) => item.version._id)).toEqual(['article-1'])
+  })
+
+  it('sorts agent versions after published, drafts, and releases when shown', () => {
     const groups = groupDocumentVersionsForStatus(
       [
         createVersion({
@@ -226,6 +248,7 @@ describe('groupDocumentVersionsForStatus', () => {
       ],
       [releaseSummer],
       new Map(),
+      {showAgentVersions: true},
     )
 
     expect(groups[0]?.items.map((item) => item.version._id)).toEqual([
@@ -268,7 +291,7 @@ describe('groupDocumentVersionsForStatus', () => {
       ],
       [releaseSummer],
       new Map([[variantReturning._id, variantReturning]]),
-      false,
+      {variantsEnabled: false},
     )
 
     expect(groups).toHaveLength(1)

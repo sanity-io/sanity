@@ -7,6 +7,19 @@ import {type SystemVariant} from '../../variants/types'
 
 type ReleaseLaneKind = 'published' | 'drafts' | 'release' | 'agent'
 
+/**
+ * Temporary switch for whether agent bundle versions (Proposed changes / Agent changes) appear in
+ * the document versions tooltip. Flip to `true` to show them again.
+ *
+ * @internal
+ */
+export const SHOW_AGENT_VERSIONS_IN_STATUS = false
+
+interface GroupDocumentVersionsForStatusOptions {
+  variantsEnabled?: boolean
+  showAgentVersions?: boolean
+}
+
 const KIND_ORDER: Record<ReleaseLaneKind, number> = {
   published: 0,
   drafts: 1,
@@ -113,7 +126,8 @@ function compareDocumentVersionsForStatus(
  * scheduled, then ASAP (each by date descending). Releases missing from that list fall back to title.
  *
  * When `variantsEnabled` is false, versions that belong to a variant are omitted so the tooltip
- * only lists default-lane perspectives.
+ * only lists default-lane perspectives. Agent bundle versions are omitted unless
+ * `showAgentVersions` is true (see `SHOW_AGENT_VERSIONS_IN_STATUS`).
  *
  * @internal
  */
@@ -121,13 +135,22 @@ export function groupDocumentVersionsForStatus(
   versions: VersionInfoDocumentStub[],
   releases: ReleaseDocument[],
   variantsById: Map<string, SystemVariant>,
-  variantsEnabled = true,
+  {
+    variantsEnabled = true,
+    showAgentVersions = SHOW_AGENT_VERSIONS_IN_STATUS,
+  }: GroupDocumentVersionsForStatusOptions = {},
 ): DocumentVersionStatusGroup[] {
   const sortedReleases = sortReleases(releases)
   const releasesById = new Map(sortedReleases.map((release) => [release._id, release]))
-  const visibleVersions = variantsEnabled
-    ? versions
-    : versions.filter((version) => !version._system.variant?._ref)
+  const visibleVersions = versions.filter((version) => {
+    if (!variantsEnabled && version._system.variant?._ref) {
+      return false
+    }
+    if (!showAgentVersions && readVersionType(version) === 'agent') {
+      return false
+    }
+    return true
+  })
 
   const sortedVersions = visibleVersions.toSorted((left, right) =>
     compareDocumentVersionsForStatus(left, right, releasesById, sortedReleases),
