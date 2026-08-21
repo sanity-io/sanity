@@ -15,11 +15,17 @@ import {
 
 import {type ApiNetworkDiagnostic, getApiNetworkDiagnostic} from '../../network/isUsingLegacyHttp'
 import {type SchemaDiagnostics} from './getStudioConfigurationDiagnostics'
+import {
+  DEFAULT_REQUEST_PERFORMANCE_CAPACITY,
+  type RequestPerformanceSnapshot,
+  type RequestPerformanceTracker,
+} from './requestPerformance'
 
 const DEFAULT_REQUEST_TIMEOUT = 10_000
 /** @internal */
 export interface StudioDiagnosticsOptions {
   client: SanityClient
+  getRequestHistory?: RequestPerformanceTracker['getSnapshot']
   requestTimeout?: number
   schema: SchemaDiagnostics
   studio: {
@@ -93,6 +99,7 @@ export interface StudioDiagnostics {
       secondWhileFirstOpen: ListenDiagnostic
     }
     protocol: ApiNetworkDiagnostic
+    requestHistory: RequestPerformanceSnapshot
     requests: RequestDiagnostic[]
   }
   schema: SchemaDiagnostics
@@ -151,6 +158,7 @@ export function formatStudioDiagnostics(diagnostics: StudioDiagnostics): string 
 
 async function runStudioDiagnostics({
   client,
+  getRequestHistory,
   requestTimeout = DEFAULT_REQUEST_TIMEOUT,
   schema,
   studio,
@@ -165,13 +173,24 @@ async function runStudioDiagnostics({
   const clientConfig = diagnosticClient.config()
   const browser = getBrowserDiagnostics()
   const generatedAt = new Date()
+  const requestHistory = getRequestHistory?.({
+    dataset: studio.dataset,
+    projectId: studio.projectId,
+  }) ?? {
+    dataset: studio.dataset,
+    entries: [],
+    maxEntries: DEFAULT_REQUEST_PERFORMANCE_CAPACITY,
+    projectId: studio.projectId,
+    totalRequests: 0,
+    truncated: false,
+  }
 
   return {
     browser,
     diagnosticVersion: 1,
     durationMs: elapsedSince(startedAtMeasurement),
     generatedAt: generatedAt.toISOString(),
-    network: {listen, protocol, requests},
+    network: {listen, protocol, requestHistory, requests},
     schema,
     startedAt: startedAt.toISOString(),
     studio: {

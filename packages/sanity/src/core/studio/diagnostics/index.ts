@@ -11,3 +11,9 @@ export {
   getUniqueTargetCount,
   type SchemaDiagnostics,
 } from './getStudioConfigurationDiagnostics'
+export {
+  DEFAULT_REQUEST_PERFORMANCE_CAPACITY,
+  type RequestPerformanceEntry,
+  type RequestPerformanceSnapshot,
+  type RequestPerformanceTarget,
+} from './requestPerformance'

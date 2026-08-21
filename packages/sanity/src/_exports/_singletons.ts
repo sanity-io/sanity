@@ -128,6 +128,7 @@ export {
   ResolvedPanesContext,
   ResolvedPanesProvider,
 } from '../_singletons/context/ResolvedPanesContext'
+export {RequestPerformanceContext} from '../_singletons/context/RequestPerformanceContext'
 export {ResourceCacheContext} from '../_singletons/context/ResourceCacheContext'
 export {ReviewChangesContext} from '../_singletons/context/ReviewChangesContext'
 export {RouterContext} from '../_singletons/context/RouterContext'

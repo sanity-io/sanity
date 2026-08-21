@@ -25,6 +25,7 @@ import {
   getSchemaDiagnostics,
   getUniqueTargetCount,
 } from '../../../diagnostics/getStudioConfigurationDiagnostics'
+import {useRequestPerformanceTracker} from '../../../diagnostics/RequestPerformanceContext'
 import {useCopyToClipboard} from '../../../hooks/useCopyToClipboard'
 import {useWorkspace} from '../../../workspace'
 import {useWorkspaces} from '../../../workspaces/useWorkspaces'
@@ -41,6 +42,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
   const dialogId = useId()
   const workspace = useWorkspace()
   const workspaces = useWorkspaces()
+  const requestPerformance = useRequestPerformanceTracker()
   const client = useClient({apiVersion: '2025-02-19'})
   const [diagnostics, setDiagnostics] = useState<StudioDiagnostics>()
   const [error, setError] = useState<string>()
@@ -51,6 +53,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
   const diagnosticsOptions = useMemo<StudioDiagnosticsOptions>(
     () => ({
       client,
+      getRequestHistory: requestPerformance?.getSnapshot,
       schema: getSchemaDiagnostics(workspace.schema),
       studio: {
         basePath: workspace.basePath,
@@ -67,6 +70,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
     }),
     [
       client,
+      requestPerformance,
       workspace.basePath,
       workspace.currentUser,
       workspace.dataset,

@@ -71,6 +71,24 @@ describe('gatherStudioDiagnostics', () => {
         timedOut: false,
       }),
     ])
+    expect(diagnostics.network.requestHistory).toEqual({
+      dataset: 'production',
+      entries: [
+        {
+          apiVersion: 'v2025-02-19',
+          bucket: 'query',
+          dataset: 'production',
+          durationMs: 42,
+          projectId: 'project-id',
+          startedAt: '2026-08-21T12:00:00.000Z',
+          status: 'success',
+        },
+      ],
+      maxEntries: 500,
+      projectId: 'project-id',
+      totalRequests: 1,
+      truncated: false,
+    })
     expect(diagnostics.browser.localStorage).toEqual({status: 'success'})
     expect(diagnostics.browser.maxTouchPoints).toBe(navigator.maxTouchPoints)
     expect(diagnostics.durationMs).toBeGreaterThanOrEqual(0)
@@ -198,6 +216,24 @@ describe('gatherStudioDiagnostics', () => {
 function createOptions(client: SanityClient): StudioDiagnosticsOptions {
   return {
     client,
+    getRequestHistory: ({dataset, projectId}) => ({
+      dataset,
+      entries: [
+        {
+          apiVersion: 'v2025-02-19',
+          bucket: 'query',
+          dataset,
+          durationMs: 42,
+          projectId,
+          startedAt: '2026-08-21T12:00:00.000Z',
+          status: 'success',
+        },
+      ],
+      maxEntries: 500,
+      projectId,
+      totalRequests: 1,
+      truncated: false,
+    }),
     schema: {documentTypes: 2, objectTypes: 3, primitiveTypes: 4},
     studio: {
       basePath: '/',

@@ -68,6 +68,51 @@ const diagnostics: StudioDiagnostics = {
       status: 'success',
       timedOut: false,
     },
+    requestHistory: {
+      dataset: 'production',
+      entries: [
+        {
+          apiVersion: 'v2025-02-19',
+          bucket: 'query',
+          dataset: 'production',
+          durationMs: 42,
+          projectId: 'test-project',
+          startedAt: '2026-08-21T11:59:30.000Z',
+          status: 'success',
+        },
+        {
+          apiVersion: 'v2025-02-19',
+          bucket: 'query',
+          dataset: 'production',
+          durationMs: 120,
+          projectId: 'test-project',
+          startedAt: '2026-08-21T11:59:32.000Z',
+          status: 'success',
+        },
+        {
+          apiVersion: 'v2025-02-19',
+          bucket: 'doc',
+          dataset: 'production',
+          durationMs: 85,
+          projectId: 'test-project',
+          startedAt: '2026-08-21T11:59:34.000Z',
+          status: 'error',
+        },
+        {
+          apiVersion: 'v2025-02-19',
+          bucket: 'query',
+          dataset: 'production',
+          durationMs: 65,
+          projectId: 'test-project',
+          startedAt: '2026-08-21T11:59:55.000Z',
+          status: 'success',
+        },
+      ],
+      maxEntries: 500,
+      projectId: 'test-project',
+      totalRequests: 4,
+      truncated: false,
+    },
     requests: [
       {
         detail: 'pong',
@@ -136,6 +181,8 @@ describe('DiagnosticsReport', () => {
     expect(screen.getByText('65 ms')).toBeInTheDocument()
     expect(screen.getByText('/ping')).toBeInTheDocument()
     expect(screen.getByText('/query?query=*[0]._id')).toBeInTheDocument()
+    expect(screen.getByText('diagnostics.request-history.title')).toBeInTheDocument()
+    expect(screen.getAllByTestId('diagnostics-request-history-point')).toHaveLength(3)
     expect(screen.getAllByText('diagnostics.status.timeout')).toHaveLength(2)
 
     const studio = within(screen.getByTestId('diagnostics-studio'))
@@ -174,10 +221,34 @@ describe('DiagnosticsReport', () => {
     expect(user.getByText('user-id')).toBeInTheDocument()
 
     const listenConnections = within(screen.getByTestId('diagnostics-listen-connections'))
+    expect(listenConnections.getAllByTestId('diagnostics-listen-connection')).toHaveLength(2)
     expect(listenConnections.getByText('diagnostics.network.listener-first')).toBeInTheDocument()
     expect(listenConnections.getByText('diagnostics.network.listener-second')).toBeInTheDocument()
+
+    const timeZoneToggle = screen.getByRole('checkbox', {
+      name: 'diagnostics.time-zone.toggle',
+    })
+    expect(timeZoneToggle).toBeChecked()
+    expect(screen.getByText('diagnostics.time-zone.toggle')).toBeInTheDocument()
+    expect(screen.getByText(formatUtcTime(diagnostics.startedAt))).toBeInTheDocument()
+
+    await userInteraction.click(timeZoneToggle)
+    expect(timeZoneToggle).not.toBeChecked()
+    expect(
+      screen.getByText(new Date(diagnostics.startedAt).toLocaleTimeString()),
+    ).toBeInTheDocument()
 
     await userInteraction.click(screen.getByRole('button', {name: 'diagnostics.run-again'}))
     expect(onRunAgain).toHaveBeenCalledOnce()
   })
 })
+
+function formatUtcTime(value: string): string {
+  return new Date(value).toLocaleTimeString([], {
+    hour: '2-digit',
+    hourCycle: 'h23',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZone: 'UTC',
+  })
+}

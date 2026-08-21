@@ -101,6 +101,7 @@ import type {
   ReleasesUpsellContext,
   ResolvedPanesContext,
   ResolvedPanesProvider,
+  RequestPerformanceContext,
   ResourceCacheContext,
   ReviewChangesContext,
   RouterContext,
@@ -439,6 +440,9 @@ describe('sanity/_singletons', () => {
   })
   test('ResolvedPanesProvider', () => {
     expectTypeOf<typeof ResolvedPanesProvider>().toBeFunction()
+  })
+  test('RequestPerformanceContext', () => {
+    expectTypeOf<typeof RequestPerformanceContext>().not.toBeNever()
   })
   test('ResourceCacheContext', () => {
     expectTypeOf<typeof ResourceCacheContext>().not.toBeNever()

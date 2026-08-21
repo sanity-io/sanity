@@ -7,15 +7,17 @@ import {
   Grid,
   Heading,
   Stack,
+  Switch,
   Text,
   type TextAlign,
 } from '@sanity/ui'
-import {type ReactNode} from 'react'
+import {type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type StudioDiagnostics} from '../../../diagnostics'
+import {RequestPerformanceReport} from './RequestPerformanceReport'
 
 type DiagnosticStatus = StudioDiagnostics['network']['protocol']['status']
 
@@ -32,6 +34,7 @@ interface DiagnosticsReportProps {
 /** @internal */
 export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportProps) {
   const {t} = useTranslation()
+  const [useUtc, setUseUtc] = useState(true)
   const {browser, network, schema, studio, user} = diagnostics
 
   const roles = user.roles.map((role) => role.title || role.name).join(', ')
@@ -64,17 +67,17 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
   return (
     <Stack gap={5}>
       <Card padding={3} radius={2} tone="transparent">
-        <Flex align={['stretch', 'center']} direction={['column', 'row']} gap={4}>
+        <Flex align="stretch" direction={['column', 'row']} gap={5}>
           <Box flex={1}>
             <MetricGrid
               metrics={[
                 {
                   label: t('diagnostics.field.started-at'),
-                  value: formatDate(diagnostics.startedAt),
+                  value: formatHeaderTime(diagnostics.startedAt, useUtc),
                 },
                 {
                   label: t('diagnostics.field.generated-at'),
-                  value: formatDate(diagnostics.generatedAt),
+                  value: formatHeaderTime(diagnostics.generatedAt, useUtc),
                 },
                 {
                   label: t('diagnostics.field.diagnostic-duration'),
@@ -83,8 +86,23 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
               ]}
             />
           </Box>
-          <Flex justify="flex-end">
-            <Button mode="default" onClick={onRunAgain} text={t('diagnostics.run-again')} />
+          <Flex align="stretch" direction={['column', 'row']} gap={4}>
+            <Stack gap={2}>
+              <Text muted size={1}>
+                {t('diagnostics.time-zone.toggle')}
+              </Text>
+              <Switch
+                aria-label={t('diagnostics.time-zone.toggle')}
+                checked={useUtc}
+                onChange={() => setUseUtc((current) => !current)}
+              />
+            </Stack>
+            <Stack gap={2}>
+              <Text aria-hidden="true" muted size={1} style={{visibility: 'hidden'}}>
+                {t('diagnostics.run-again')}
+              </Text>
+              <Button mode="default" onClick={onRunAgain} text={t('diagnostics.run-again')} />
+            </Stack>
           </Flex>
         </Flex>
       </Card>
@@ -175,22 +193,35 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
 
         <ProtocolReport diagnostics={diagnostics} />
 
+        <RequestPerformanceReport
+          diagnosticsCompletedAt={diagnostics.generatedAt}
+          diagnosticsStartedAt={diagnostics.startedAt}
+          history={network.requestHistory}
+          useUtc={useUtc}
+        />
+
         <Stack gap={2}>
           <Heading as="h3" size={0}>
             {t('diagnostics.network.listeners')}
           </Heading>
-          <Card border data-testid="diagnostics-listen-connections" padding={4} radius={2}>
-            <Grid gap={5} gridTemplateColumns={[1, 1, 2]}>
+          <Grid
+            data-testid="diagnostics-listen-connections"
+            gap={3}
+            gridTemplateColumns={[1, 1, 2]}
+          >
+            <Card border data-testid="diagnostics-listen-connection" padding={4} radius={2}>
               <ListenReport
                 result={network.listen.first}
                 title={t('diagnostics.network.listener-first')}
               />
+            </Card>
+            <Card border data-testid="diagnostics-listen-connection" padding={4} radius={2}>
               <ListenReport
                 result={network.listen.secondWhileFirstOpen}
                 title={t('diagnostics.network.listener-second')}
               />
-            </Grid>
-          </Card>
+            </Card>
+          </Grid>
         </Stack>
 
         <Stack gap={2}>
@@ -465,9 +496,18 @@ function getStatusTone(status: DiagnosticStatus): BadgeTone {
   return 'default'
 }
 
-function formatDate(value: string): string {
+function formatHeaderTime(value: string, useUtc: boolean): string {
   const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString()
+  if (Number.isNaN(date.getTime())) return value
+  if (!useUtc) return date.toLocaleTimeString()
+
+  return date.toLocaleTimeString([], {
+    hour: '2-digit',
+    hourCycle: 'h23',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZone: 'UTC',
+  })
 }
 
 function formatMilliseconds(value?: number): string | undefined {

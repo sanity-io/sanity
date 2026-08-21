@@ -602,6 +602,48 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'diagnostics.network.transferred': 'Transferred',
   /** Listen welcome event timing label in the Studio diagnostics dialog */
   'diagnostics.network.welcome-event': 'Welcome event',
+  /** Aborted request timing count in the Studio diagnostics dialog */
+  'diagnostics.request-history.aborted':
+    '{{count}} aborted samples are included in copied output but excluded from summary statistics.',
+  /** Accessible request timing scatter plot label in the Studio diagnostics dialog */
+  'diagnostics.request-history.chart-label': 'Scatter plot of {{count}} session request timings',
+  /** Request timing count column heading in the Studio diagnostics dialog */
+  'diagnostics.request-history.count': 'n',
+  /** Request timing chart interaction hint in the Studio diagnostics dialog */
+  'diagnostics.request-history.drag-hint': 'Drag across the chart to focus on a time range.',
+  /** Empty request timing history after diagnostics requests are hidden */
+  'diagnostics.request-history.empty-after-exclusion':
+    'No session requests outside this diagnostics run are available to plot.',
+  /** Empty request timing history in the Studio diagnostics dialog */
+  'diagnostics.request-history.empty':
+    'No data API requests have been observed for this workspace target in this browser session.',
+  /** Request timing maximum column heading in the Studio diagnostics dialog */
+  'diagnostics.request-history.max': 'Max',
+  /** Request timing median column heading in the Studio diagnostics dialog */
+  'diagnostics.request-history.median': 'Median',
+  /** Request timing 95th percentile column heading in the Studio diagnostics dialog */
+  'diagnostics.request-history.p95': 'p95',
+  /** Button that clears a selected request timing range */
+  'diagnostics.request-history.reset-time-range': 'Reset time range',
+  /** Request timing sample count in the Studio diagnostics dialog */
+  'diagnostics.request-history.sample-count': '{{visible}} of {{total}} samples',
+  /** Selected request timing range in the Studio diagnostics dialog */
+  'diagnostics.request-history.selected-time-range': '{{start}} to {{end}}',
+  /** Request timing series column heading in the Studio diagnostics dialog */
+  'diagnostics.request-history.series': 'Series',
+  /** Request timing section title in the Studio diagnostics dialog */
+  'diagnostics.request-history.title': 'Session request timings',
+  /** API version label in a request timing point tooltip */
+  'diagnostics.request-history.tooltip.api-version': 'API version',
+  /** Duration label in a request timing point tooltip */
+  'diagnostics.request-history.tooltip.duration': 'Duration',
+  /** Start time label in a request timing point tooltip */
+  'diagnostics.request-history.tooltip.started': 'Started',
+  /** Status label in a request timing point tooltip */
+  'diagnostics.request-history.tooltip.status': 'Status',
+  /** Notice shown when older request timing samples were discarded */
+  'diagnostics.request-history.truncated':
+    'Older samples have been omitted because the session limit was reached.',
   /** Button that repeats Studio diagnostics */
   'diagnostics.run-again': 'Run again',
   /** Browser section title in the Studio diagnostics dialog */
@@ -616,6 +658,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'diagnostics.section.user': 'User',
   /** Workspace section title in the Studio diagnostics dialog */
   'diagnostics.section.workspace': 'Workspace',
+  /** Aborted status in the Studio diagnostics dialog */
+  'diagnostics.status.aborted': 'Aborted',
   /** Blocked status in the Studio diagnostics dialog */
   'diagnostics.status.blocked': 'Blocked',
   /** Enabled status in the Studio diagnostics dialog */
@@ -628,6 +672,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'diagnostics.status.timeout': 'Timed out',
   /** Unsupported status in the Studio diagnostics dialog */
   'diagnostics.status.unsupported': 'Unsupported',
+  /** Label for the time zone toggle in the Studio diagnostics dialog */
+  'diagnostics.time-zone.toggle': 'UTC time',
   /** Logical processor value in the Studio diagnostics dialog */
   'diagnostics.value.logical-processors': '{{count}} logical processors',
   /** Browser memory value in the Studio diagnostics dialog */
