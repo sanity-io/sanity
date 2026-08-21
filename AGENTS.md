@@ -496,6 +496,28 @@ Catalog versions live in `pnpm-workspace.yaml`. After changing a catalog specifi
 
 The workspace sets `minimumReleaseAge: 4320` (3 days) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally.
 
+### Testing an Unreleased Dependency Fix (pnpm patch)
+
+To validate an upstream PR of a dependency before it is released (example: [sanity#14234](https://github.com/sanity-io/sanity/pull/14234) vendoring react-rx#506):
+
+```bash
+# 1. Build the dependency's dist from its PR branch (in a separate clone)
+git clone <repo> /tmp/dep && cd /tmp/dep && git fetch origin pull/<n>/head && git checkout FETCH_HEAD
+pnpm install && pnpm --filter <pkg> build
+
+# 2. Patch the locked version in this repo
+pnpm patch <pkg>@<version> --edit-dir /tmp/patch-edit
+cp /tmp/dep/packages/<pkg>/dist/* /tmp/patch-edit/dist/
+pnpm patch-commit /tmp/patch-edit
+```
+
+Notes:
+
+- `pnpm patch-commit` writes `patches/<pkg>@<version>.patch` and a `patchedDependencies` entry in `pnpm-workspace.yaml` — commit both plus `pnpm-lock.yaml`
+- Key the patch by exact version (`<pkg>@<version>`) so other locked versions of the same package stay untouched
+- Record the upstream commit sha in the commit/PR so the patch is reproducible
+- The patch is an experiment vehicle: before merging, land + release the upstream fix, bump the catalog, drop the patch
+
 ### Creating a New Test
 
 1. Create test file next to source: `MyComponent.test.tsx`
