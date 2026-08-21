@@ -88,6 +88,55 @@ describe('Portable Text Input', () => {
     })
 
     it(
+      'Does not flash the annotation toolbar popover or show it while the edit popover is opening',
+      {timeout: 30_000},
+      async () => {
+        const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+        void render(<AnnotationsStory />)
+        const $pte = await getFocusedPortableTextEditor('field-body')
+
+        await insertPortableText('Now we should insert a link.', $pte)
+
+        // Backtrack and select the word "link"
+        await userEvent.keyboard('{ArrowLeft}')
+        await userEvent.keyboard('{Shift>}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{/Shift}')
+
+        // Watch the DOM continuously between clicking the toolbar button and
+        // the edit popover opening: the annotation toolbar popover must never
+        // become visible in that window (SAPP-2645).
+        let toolbarPopoverAppeared = false
+        const observer = new MutationObserver(() => {
+          const popover = document.querySelector<HTMLElement>(
+            '[data-testid="annotation-toolbar-popover"]',
+          )
+          if (popover?.checkVisibility()) {
+            toolbarPopoverAppeared = true
+          }
+        })
+        observer.observe(document.body, {
+          attributes: true,
+          childList: true,
+          subtree: true,
+        })
+
+        try {
+          await page.getByRole('button', {name: 'Link'}).click()
+
+          // Wait for the annotation to be rendered and the edit popover to open.
+          const $link = page.elementLocator($pte.element().querySelector('span[data-link]')!)
+          await expect.element($link).toBeVisible()
+          const $linkInput = page.getByTestId('popover-edit-dialog').getByLabelText('Link')
+          await expect.element($linkInput).toBeVisible()
+        } finally {
+          observer.disconnect()
+        }
+
+        // Assertion: the toolbar popover never appeared while the edit popover was opening
+        expect(toolbarPopoverAppeared).toBe(false)
+      },
+    )
+
+    it(
       'Can create, and then open the existing annotation again for editing',
       {timeout: 30_000},
       async () => {
