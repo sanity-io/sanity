@@ -1713,6 +1713,7 @@ import type {
   useSearchState,
   useSetPerspective,
   useSetVariant,
+  useShallowUnique,
   useSingleDocRelease,
   useSource,
   useStudioErrorHandler,
@@ -6974,6 +6975,9 @@ describe('sanity', () => {
   })
   test('useSetVariant', () => {
     expectTypeOf<typeof useSetVariant>().toBeFunction()
+  })
+  test('useShallowUnique', () => {
+    expectTypeOf<typeof useShallowUnique>().toBeFunction()
   })
   test('useSingleDocRelease', () => {
     expectTypeOf<typeof useSingleDocRelease>().toBeFunction()
