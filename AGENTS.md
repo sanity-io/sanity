@@ -277,6 +277,38 @@ All packages use **ESM** (`"type": "module"`). TypeScript strict mode is enabled
 
 Rules that the linter already enforces (restricted imports, type-aware rules, React Compiler rules, i18n rules, module boundaries) are not repeated in this guide — run `pnpm lint` and follow the reported messages, which explain the expected pattern.
 
+### LAW: Dynamic imports of named exports use dedicated entrypoints
+
+Any dynamically imported named export must be exposed through a dedicated entrypoint that exports it
+as `default`. This includes `React.lazy`, equivalent dynamic component loaders, and non-component
+utility imports. Never use `import(...).then(...)` to select or convert a named export: that pattern
+can prevent the bundler from excluding the module's other exports from the async chunk.
+
+Add a sibling `*.lazy.ts` entrypoint that re-exports only the desired symbol as `default`, then
+import that entrypoint directly:
+
+```ts
+// MyComponent.lazy.ts
+export {MyComponent as default} from './MyComponent'
+```
+
+```tsx
+const MyComponent = lazy(() => import('./MyComponent.lazy'))
+```
+
+Do not write:
+
+```tsx
+const MyComponent = lazy(() =>
+  import('./MyComponent').then((module) => ({default: module.MyComponent})),
+)
+```
+
+The sole exception is `ViteDevServerStopped`: its detector and error screen must continue selecting
+named exports from the same dynamically imported module with `import(...).then(...)`. Loading the
+detector must cache the module containing the error screen before the Vite dev server can disconnect;
+separate lazy entrypoints would require a new request to a server that is already unavailable.
+
 ### Do Not Weaken the Linter
 
 Fix the reported problem instead of silencing it. In order of preference:

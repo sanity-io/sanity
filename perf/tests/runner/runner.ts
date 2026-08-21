@@ -116,9 +116,10 @@ export async function run({
   token: string
 }) {
   const testModules = await Promise.all(
-    testFiles.map((testModule) =>
-      import(testModule).then((module) => module.default as PerformanceTestProps),
-    ),
+    testFiles.map(async (testModule) => {
+      const module = await import(testModule)
+      return module.default as PerformanceTestProps
+    }),
   )
 
   const givenIds = [...(testIds || []), ...(excludeTestIds || [])]
