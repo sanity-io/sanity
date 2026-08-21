@@ -179,16 +179,32 @@ export function RequestPerformanceReport({
     [diagnosticsCompletedAt, diagnosticsStartedAt, history.entries],
   )
   const excludedEntryCount = history.entries.length - reportEntries.length
-  const reportTotalRequests = Math.max(0, history.totalRequests - excludedEntryCount)
-  const seriesStyles = useMemo(() => createSeriesStyles(reportEntries), [reportEntries])
+  const reportTotalRequests = history.sessionSummary.totalRequests
+  const seriesStyles = useMemo(
+    () =>
+      createSeriesStyles(
+        reportEntries,
+        history.sessionSummary.buckets.map(({bucket}) => bucket),
+      ),
+    [history.sessionSummary.buckets, reportEntries],
+  )
   const visibleEntries = useMemo(
     () => filterEntriesByTime(reportEntries, timeRange),
     [reportEntries, timeRange],
   )
-  const summaries = useMemo(
+  const visibleSummaries = useMemo(
     () => summarizeBuckets(visibleEntries, seriesStyles),
     [seriesStyles, visibleEntries],
   )
+  const sessionSummaries = useMemo(
+    () =>
+      history.sessionSummary.buckets.map((summary) => ({
+        ...summary,
+        style: seriesStyles.get(summary.bucket) ?? QUERY_STYLE,
+      })),
+    [history.sessionSummary.buckets, seriesStyles],
+  )
+  const summaries = timeRange ? visibleSummaries : sessionSummaries
   const chart = useMemo(
     () => createChartData(visibleEntries, seriesStyles, timeRange, useUtc),
     [seriesStyles, timeRange, useUtc, visibleEntries],
@@ -220,7 +236,7 @@ export function RequestPerformanceReport({
   return (
     <Stack gap={2}>
       <Flex align="center" gap={3} justify="space-between" wrap="wrap">
-        <Heading as="h3" size={0}>
+        <Heading as="h2" size={1}>
           {t('diagnostics.request-history.title')}
         </Heading>
         <Text muted size={1}>
@@ -269,74 +285,83 @@ export function RequestPerformanceReport({
               ) : null}
             </Flex>
 
-            <SummaryTable>
-              <thead>
-                <tr>
-                  <th scope="col">
-                    <Text muted size={1} weight="semibold">
-                      {t('diagnostics.request-history.series')}
-                    </Text>
-                  </th>
-                  <th scope="col">
-                    <Text muted size={1} weight="semibold">
-                      {t('diagnostics.request-history.count')}
-                    </Text>
-                  </th>
-                  <th scope="col">
-                    <Text muted size={1} weight="semibold">
-                      {t('diagnostics.request-history.median')}
-                    </Text>
-                  </th>
-                  <th scope="col">
-                    <Text muted size={1} weight="semibold">
-                      {t('diagnostics.request-history.p95')}
-                    </Text>
-                  </th>
-                  <th scope="col">
-                    <Text muted size={1} weight="semibold">
-                      {t('diagnostics.request-history.max')}
-                    </Text>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {summaries.map((summary) => {
-                  const muted = Boolean(selectedBucket && selectedBucket !== summary.bucket)
-                  return (
-                    <tr data-muted={muted} key={summary.bucket}>
-                      <td>
-                        <SeriesButton
-                          aria-pressed={selectedBucket === summary.bucket}
-                          onClick={() => handleBucketClick(summary.bucket)}
-                          type="button"
-                        >
-                          <SeriesMarker aria-hidden="true" viewBox="-6 -6 12 12">
-                            <g fill={summary.style.color} stroke="none">
-                              <PointMarker shape={summary.style.marker} />
-                            </g>
-                          </SeriesMarker>
-                          <Text as="span" size={1} weight="semibold">
-                            {summary.bucket}
-                          </Text>
-                        </SeriesButton>
-                      </td>
-                      <td>
-                        <Text size={1}>{summary.count}</Text>
-                      </td>
-                      <td>
-                        <Text size={1}>{formatMilliseconds(summary.medianMs)}</Text>
-                      </td>
-                      <td>
-                        <Text size={1}>{formatMilliseconds(summary.p95Ms)}</Text>
-                      </td>
-                      <td>
-                        <Text size={1}>{formatMilliseconds(summary.maxMs)}</Text>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </SummaryTable>
+            <Stack gap={2}>
+              <Text muted size={1} weight="semibold">
+                {t(
+                  timeRange
+                    ? 'diagnostics.request-history.selected-summary'
+                    : 'diagnostics.request-history.session-summary',
+                )}
+              </Text>
+              <SummaryTable>
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      <Text muted size={1} weight="semibold">
+                        {t('diagnostics.request-history.series')}
+                      </Text>
+                    </th>
+                    <th scope="col">
+                      <Text muted size={1} weight="semibold">
+                        {t('diagnostics.request-history.count')}
+                      </Text>
+                    </th>
+                    <th scope="col">
+                      <Text muted size={1} weight="semibold">
+                        {t('diagnostics.request-history.median')}
+                      </Text>
+                    </th>
+                    <th scope="col">
+                      <Text muted size={1} weight="semibold">
+                        {t('diagnostics.request-history.p95')}
+                      </Text>
+                    </th>
+                    <th scope="col">
+                      <Text muted size={1} weight="semibold">
+                        {t('diagnostics.request-history.max')}
+                      </Text>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {summaries.map((summary) => {
+                    const muted = Boolean(selectedBucket && selectedBucket !== summary.bucket)
+                    return (
+                      <tr data-muted={muted} key={summary.bucket}>
+                        <td>
+                          <SeriesButton
+                            aria-pressed={selectedBucket === summary.bucket}
+                            onClick={() => handleBucketClick(summary.bucket)}
+                            type="button"
+                          >
+                            <SeriesMarker aria-hidden="true" viewBox="-6 -6 12 12">
+                              <g fill={summary.style.color} stroke="none">
+                                <PointMarker shape={summary.style.marker} />
+                              </g>
+                            </SeriesMarker>
+                            <Text as="span" size={1} weight="semibold">
+                              {summary.bucket}
+                            </Text>
+                          </SeriesButton>
+                        </td>
+                        <td>
+                          <Text size={1}>{summary.count.toLocaleString()}</Text>
+                        </td>
+                        <td>
+                          <Text size={1}>{formatMilliseconds(summary.medianMs)}</Text>
+                        </td>
+                        <td>
+                          <Text size={1}>{formatMilliseconds(summary.p95Ms)}</Text>
+                        </td>
+                        <td>
+                          <Text size={1}>{formatMilliseconds(summary.maxMs)}</Text>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </SummaryTable>
+            </Stack>
 
             {abortedCount > 0 ? (
               <Text muted size={1}>
@@ -640,8 +665,11 @@ function PointMarker({shape}: {shape: MarkerShape}) {
   }
 }
 
-function createSeriesStyles(entries: RequestPerformanceEntry[]): Map<string, SeriesStyle> {
-  const buckets = [...new Set(entries.map(({bucket}) => bucket))].sort()
+function createSeriesStyles(
+  entries: RequestPerformanceEntry[],
+  additionalBuckets: string[] = [],
+): Map<string, SeriesStyle> {
+  const buckets = [...new Set([...entries.map(({bucket}) => bucket), ...additionalBuckets])].sort()
 
   return new Map(
     buckets.map((bucket, index) => [

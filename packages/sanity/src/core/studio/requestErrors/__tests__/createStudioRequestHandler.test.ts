@@ -88,6 +88,32 @@ describe('createStudioRequestHandler', () => {
     expect(diagnostics.onRequestFailure).not.toHaveBeenCalled()
   })
 
+  it('does not include diagnostics probes in session request performance', async () => {
+    const channel = createRequestErrorChannel()
+    const client = createClient({
+      apiVersion: '2025-02-19',
+      dataset: 'test',
+      projectId: 'abc123',
+      useCdn: false,
+    })
+    const requestPerformance = createRequestPerformanceTracker()
+    const handler = createStudioRequestHandler({
+      channel,
+      getClient: () => client,
+      requestPerformance,
+    })
+
+    await handler(
+      {...request, query: {tag: 'sanity.studio.diagnostics.query-document'}},
+      vi.fn().mockResolvedValue({result: 'ok'}),
+    )
+
+    expect(requestPerformance.getSnapshot({dataset: 'test', projectId: 'abc123'})).toMatchObject({
+      entries: [],
+      totalRequests: 0,
+    })
+  })
+
   it('claims a tagged invalid-session error', async () => {
     const channel = createRequestErrorChannel()
     const error = new ClientError(responseShape(401, {errorCode: 'SIO-401-ANF'}))

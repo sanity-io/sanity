@@ -38,6 +38,11 @@ describe('createRequestPerformanceTracker', () => {
       entries: [createEntry({durationMs: 20}), createEntry({durationMs: 40})],
       maxEntries: 3,
       projectId: 'project-a',
+      sessionSummary: {
+        buckets: [{bucket: 'query', count: 3, maxMs: 40, medianMs: 20, p95Ms: 40}],
+        startedAt: expect.any(String),
+        totalRequests: 3,
+      },
       totalRequests: 3,
       truncated: true,
     })
@@ -46,6 +51,11 @@ describe('createRequestPerformanceTracker', () => {
       entries: [createEntry({dataset: 'staging', durationMs: 30})],
       maxEntries: 3,
       projectId: 'project-a',
+      sessionSummary: {
+        buckets: [{bucket: 'query', count: 1, maxMs: 30, medianMs: 30, p95Ms: 30}],
+        startedAt: expect.any(String),
+        totalRequests: 1,
+      },
       totalRequests: 1,
       truncated: false,
     })
@@ -54,9 +64,32 @@ describe('createRequestPerformanceTracker', () => {
       entries: [],
       maxEntries: 3,
       projectId: 'project-b',
+      sessionSummary: {buckets: [], startedAt: expect.any(String), totalRequests: 0},
       totalRequests: 0,
       truncated: false,
     })
+  })
+
+  it('keeps uncapped session summaries without retaining every request', () => {
+    const tracker = createRequestPerformanceTracker(2)
+
+    for (let durationMs = 1; durationMs <= 100; durationMs += 1) {
+      tracker.record(createEntry({durationMs}))
+    }
+    tracker.record(createEntry({durationMs: 1_000, status: 'aborted'}))
+
+    const snapshot = tracker.getSnapshot({dataset: 'production', projectId: 'project-a'})
+    expect(snapshot.entries).toHaveLength(2)
+    expect(snapshot.sessionSummary.totalRequests).toBe(101)
+    expect(snapshot.sessionSummary.buckets).toEqual([
+      {
+        bucket: 'query',
+        count: 100,
+        maxMs: 100,
+        medianMs: expect.closeTo(50, 0),
+        p95Ms: expect.closeTo(95, 0),
+      },
+    ])
   })
 })
 

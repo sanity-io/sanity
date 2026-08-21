@@ -59,6 +59,7 @@ export interface RequestDiagnostic {
   durationMs: number
   error?: string
   path: string
+  shard?: string
   status: 'success' | 'timeout' | 'error'
   timedOut: boolean
 }
@@ -101,6 +102,7 @@ export interface StudioDiagnostics {
     protocol: ApiNetworkDiagnostic
     requestHistory: RequestPerformanceSnapshot
     requests: RequestDiagnostic[]
+    shard?: string
   }
   schema: SchemaDiagnostics
   startedAt: string
@@ -118,6 +120,11 @@ export interface StudioDiagnostics {
 interface ActiveListenDiagnostic {
   close: () => void
   result: Promise<ListenDiagnostic>
+}
+
+interface RequestDiagnosticSuccess {
+  detail: string
+  shard?: string
 }
 
 interface NavigatorConnection {
@@ -167,30 +174,29 @@ async function runStudioDiagnostics({
   const startedAt = new Date()
   const startedAtMeasurement = performance.now()
   const diagnosticClient = client.withConfig({maxRetries: 0, useCdn: false})
+  const requestTarget = {dataset: studio.dataset, projectId: studio.projectId}
+  const requestHistoryBeforeDiagnostics =
+    getRequestHistory?.(requestTarget) ?? createEmptyRequestHistory(requestTarget, startedAt)
   const protocol = await firstValueFrom(getApiNetworkDiagnostic(diagnosticClient))
   const listen = await runListenDiagnostics(diagnosticClient, requestTimeout)
   const requests = await runRequestDiagnostics(diagnosticClient, requestTimeout)
   const clientConfig = diagnosticClient.config()
   const browser = getBrowserDiagnostics()
   const generatedAt = new Date()
-  const requestHistory = getRequestHistory?.({
-    dataset: studio.dataset,
-    projectId: studio.projectId,
-  }) ?? {
-    dataset: studio.dataset,
-    entries: [],
-    maxEntries: DEFAULT_REQUEST_PERFORMANCE_CAPACITY,
-    projectId: studio.projectId,
-    totalRequests: 0,
-    truncated: false,
+  const latestRequestHistory =
+    getRequestHistory?.(requestTarget) ?? createEmptyRequestHistory(requestTarget, startedAt)
+  const requestHistory = {
+    ...latestRequestHistory,
+    sessionSummary: requestHistoryBeforeDiagnostics.sessionSummary,
   }
+  const shard = requests.find((request) => request.shard)?.shard
 
   return {
     browser,
     diagnosticVersion: 1,
     durationMs: elapsedSince(startedAtMeasurement),
     generatedAt: generatedAt.toISOString(),
-    network: {listen, protocol, requestHistory, requests},
+    network: {listen, protocol, requestHistory, requests, shard},
     schema,
     startedAt: startedAt.toISOString(),
     studio: {
@@ -203,6 +209,20 @@ async function runStudioDiagnostics({
       provider: user?.provider,
       roles: user?.roles.map(({name, title}) => ({name, title})) ?? [],
     },
+  }
+}
+
+function createEmptyRequestHistory(
+  target: {dataset: string; projectId: string},
+  startedAt: Date,
+): RequestPerformanceSnapshot {
+  return {
+    ...target,
+    entries: [],
+    maxEntries: DEFAULT_REQUEST_PERFORMANCE_CAPACITY,
+    sessionSummary: {buckets: [], startedAt: startedAt.toISOString(), totalRequests: 0},
+    totalRequests: 0,
+    truncated: false,
   }
 }
 
@@ -303,25 +323,14 @@ async function runRequestDiagnostics(
         timeout: timeoutMs,
         url: '/ping',
       })
-      return 'API reached'
+      return {detail: 'API reached'}
     }),
   )
 
   requests.push(
-    await measureRequest('/query?query=1', timeoutMs, async (signal) => {
-      const result = await client.fetch(
-        '1',
-        {},
-        {
-          signal,
-          stega: false,
-          tag: 'diagnostics.query-constant',
-          timeout: timeoutMs,
-          useCdn: false,
-        },
-      )
-      return `result: ${String(result)}`
-    }),
+    await measureRequest('/query?query=1', timeoutMs, (signal) =>
+      requestConstantQuery(client, signal),
+    ),
   )
 
   requests.push(
@@ -337,7 +346,7 @@ async function runRequestDiagnostics(
           useCdn: false,
         },
       )
-      return result ? 'document ID received' : 'dataset contains no documents'
+      return {detail: result ? 'document ID received' : 'dataset contains no documents'}
     }),
   )
 
@@ -347,7 +356,9 @@ async function runRequestDiagnostics(
         signal,
         tag: 'diagnostics.document',
       })
-      return result ? 'unexpected document returned' : 'document not found as expected'
+      return {
+        detail: result ? 'unexpected document returned' : 'document not found (as expected)',
+      }
     }),
   )
 
@@ -357,7 +368,7 @@ async function runRequestDiagnostics(
 async function measureRequest(
   path: string,
   timeoutMs: number,
-  perform: (signal: AbortSignal) => Promise<string>,
+  perform: (signal: AbortSignal) => Promise<RequestDiagnosticSuccess>,
 ): Promise<RequestDiagnostic> {
   const startedAt = performance.now()
   const abortController = new AbortController()
@@ -371,9 +382,9 @@ async function measureRequest(
   })
 
   try {
-    const detail = await Promise.race([perform(abortController.signal), timeoutPromise])
+    const result = await Promise.race([perform(abortController.signal), timeoutPromise])
     return {
-      detail,
+      ...result,
       durationMs: elapsedSince(startedAt),
       path,
       status: 'success',
@@ -390,6 +401,38 @@ async function measureRequest(
     }
   } finally {
     if (timer) clearTimeout(timer)
+  }
+}
+
+// Manual requesting in order to pick out `x-sanity-shard` header
+async function requestConstantQuery(
+  client: SanityClient,
+  signal: AbortSignal,
+): Promise<RequestDiagnosticSuccess> {
+  const config = client.config()
+  const url = new URL(client.getUrl(client.getDataUrl('query')))
+  const tag = [config.requestTagPrefix, 'diagnostics.query-constant'].filter(Boolean).join('.')
+  url.searchParams.set('query', '1')
+  url.searchParams.set('returnQuery', 'false')
+  url.searchParams.set('tag', tag)
+
+  const headers = new Headers(config.headers)
+  if (config.token) headers.set('Authorization', `Bearer ${config.token}`)
+  if (!config.useProjectHostname && config.projectId) {
+    headers.set('X-Sanity-Project-ID', config.projectId)
+  }
+
+  const response = await fetch(url, {
+    credentials: config.withCredentials ? 'include' : undefined,
+    headers,
+    signal,
+  })
+  if (!response.ok) throw new Error(`Query probe returned HTTP ${response.status}`)
+
+  const body = (await response.json()) as {result?: unknown}
+  return {
+    detail: `result: ${String(body.result)}`,
+    shard: response.headers.get('x-sanity-shard') || undefined,
   }
 }
 

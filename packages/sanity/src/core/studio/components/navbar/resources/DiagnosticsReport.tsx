@@ -173,26 +173,24 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
             label={t('diagnostics.field.screen')}
             value={formatDimensions(browser.screen)}
           />
-          <DetailRow label={t('diagnostics.field.connection-estimate')} value={connection} />
+          {connection ? (
+            <DetailRow label={t('diagnostics.field.connection-estimate')} value={connection} />
+          ) : null}
           <DetailRow label={t('diagnostics.field.local-storage')} value={localStorageResult} />
-          <DetailRow
-            label={t('diagnostics.field.max-touch-points')}
-            value={browser.maxTouchPoints}
-          />
           <DetailRow
             label={t('diagnostics.field.hardware')}
             value={hardware.length > 0 ? hardware.join(' · ') : undefined}
           />
+          <DetailRow
+            label={t('diagnostics.field.max-touch-points')}
+            value={browser.maxTouchPoints}
+          />
         </ReportSection>
+
+        <NetworkReport diagnostics={diagnostics} useUtc={useUtc} />
       </Grid>
 
       <Stack gap={3}>
-        <Heading as="h2" size={1}>
-          {t('diagnostics.section.network')}
-        </Heading>
-
-        <ProtocolReport diagnostics={diagnostics} />
-
         <RequestPerformanceReport
           diagnosticsCompletedAt={diagnostics.generatedAt}
           diagnosticsStartedAt={diagnostics.startedAt}
@@ -201,7 +199,7 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
         />
 
         <Stack gap={2}>
-          <Heading as="h3" size={0}>
+          <Heading as="h2" size={1}>
             {t('diagnostics.network.listeners')}
           </Heading>
           <Grid
@@ -225,7 +223,7 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
         </Stack>
 
         <Stack gap={2}>
-          <Heading as="h3" size={0}>
+          <Heading as="h2" size={1}>
             {t('diagnostics.network.api-requests')}
           </Heading>
           <Stack gap={2}>
@@ -318,78 +316,64 @@ function DetailRow({
   )
 }
 
-function ProtocolReport({diagnostics}: Pick<DiagnosticsReportProps, 'diagnostics'>) {
+function NetworkReport({
+  diagnostics,
+  useUtc,
+}: Pick<DiagnosticsReportProps, 'diagnostics'> & {useUtc: boolean}) {
   const {t} = useTranslation()
-  const {protocol} = diagnostics.network
+  const {protocol, requestHistory, shard} = diagnostics.network
   const timing = protocol.resourceTiming
+  const trackingStartedAt = requestHistory.sessionSummary.startedAt
+  const protocolStatusLabels: Record<DiagnosticStatus, string> = {
+    error: t('diagnostics.status.error'),
+    success: t('diagnostics.status.success'),
+    timeout: t('diagnostics.status.timeout'),
+    unsupported: t('diagnostics.status.unsupported'),
+  }
+  const protocolValue =
+    protocol.protocol === 'unknown' ? protocolStatusLabels[protocol.status] : protocol.protocol
 
   return (
-    <Card border padding={4} radius={2}>
-      <Stack gap={4}>
-        <Flex align="center" gap={2} wrap="wrap">
-          <Heading as="h3" size={0}>
-            {t('diagnostics.network.protocol-check')}
-          </Heading>
-          <StatusBadge status={protocol.status} />
-        </Flex>
-        <MetricGrid
-          metrics={[
-            {label: t('diagnostics.network.protocol'), value: protocol.protocol},
-            {
-              label: t('diagnostics.network.total'),
-              value: formatMilliseconds(protocol.durationMs),
-            },
-            {
-              label: t('diagnostics.network.response-status'),
-              value: protocol.responseStatus?.toString(),
-            },
-          ]}
+    <ReportSection testId="diagnostics-network" title={t('diagnostics.section.network')}>
+      <DetailRow label={t('diagnostics.network.protocol')} monospace value={protocolValue} />
+      <DetailRow
+        label={t('diagnostics.network.session-requests')}
+        value={requestHistory.sessionSummary.totalRequests.toLocaleString()}
+      />
+      <DetailRow
+        label={t('diagnostics.network.ping-ttfb')}
+        value={formatMilliseconds(timing?.requestToFirstByteMs)}
+      />
+      <DetailRow label={t('diagnostics.network.shard')} monospace value={shard} />
+      <DetailRow
+        label={t('diagnostics.network.tracking-started')}
+        value={formatHeaderTime(trackingStartedAt, useUtc)}
+      />
+      <DetailRow
+        label={t('diagnostics.network.tab-open')}
+        value={formatElapsedDuration(trackingStartedAt, diagnostics.generatedAt)}
+      />
+      {timing && timing.dnsMs > 0 ? (
+        <DetailRow label={t('diagnostics.network.dns')} value={formatMilliseconds(timing.dnsMs)} />
+      ) : null}
+      {timing && timing.connectionMs > 0 ? (
+        <DetailRow
+          label={t('diagnostics.network.connection')}
+          value={formatMilliseconds(timing.connectionMs)}
         />
-
-        {timing ? (
-          <Stack gap={3}>
-            <Text muted size={1} weight="semibold">
-              {t('diagnostics.network.resource-timing')}
-            </Text>
-            <MetricGrid
-              gap={3}
-              metrics={[
-                {
-                  label: t('diagnostics.network.dns'),
-                  value: formatMilliseconds(timing.dnsMs),
-                },
-                {
-                  label: t('diagnostics.network.connection'),
-                  value: formatMilliseconds(timing.connectionMs),
-                },
-                {
-                  label: t('diagnostics.network.tls'),
-                  value: formatMilliseconds(timing.secureConnectionMs),
-                },
-                {
-                  label: t('diagnostics.network.first-byte'),
-                  value: formatMilliseconds(timing.requestToFirstByteMs),
-                },
-                {
-                  label: t('diagnostics.network.response-transfer'),
-                  value: formatMilliseconds(timing.responseTransferMs),
-                },
-                {
-                  label: t('diagnostics.network.transferred'),
-                  value: formatBytes(timing.transferSizeBytes),
-                },
-              ]}
-            />
-          </Stack>
-        ) : null}
-
-        {protocol.error ? (
-          <Text muted size={1}>
-            {protocol.error}
-          </Text>
-        ) : null}
-      </Stack>
-    </Card>
+      ) : null}
+      {timing && timing.secureConnectionMs > 0 ? (
+        <DetailRow
+          label={t('diagnostics.network.tls')}
+          value={formatMilliseconds(timing.secureConnectionMs)}
+        />
+      ) : null}
+      {protocol.error ? (
+        <Text muted size={1}>
+          {protocol.error}
+        </Text>
+      ) : null}
+    </ReportSection>
   )
 }
 
@@ -514,10 +498,24 @@ function formatMilliseconds(value?: number): string | undefined {
   return formatOptional(value, (milliseconds) => `${Math.round(milliseconds).toLocaleString()} ms`)
 }
 
-function formatBytes(value: number): string {
-  if (value < 1_000) return `${value} B`
-  if (value < 1_000_000) return `${(value / 1_000).toFixed(1)} kB`
-  return `${(value / 1_000_000).toFixed(1)} MB`
+function formatElapsedDuration(start: string, end: string): string | undefined {
+  const durationMs = new Date(end).getTime() - new Date(start).getTime()
+  if (!Number.isFinite(durationMs) || durationMs < 0) return undefined
+
+  const totalSeconds = Math.floor(durationMs / 1_000)
+  const days = Math.floor(totalSeconds / 86_400)
+  const hours = Math.floor((totalSeconds % 86_400) / 3_600)
+  const minutes = Math.floor((totalSeconds % 3_600) / 60)
+  const seconds = totalSeconds % 60
+
+  return [
+    days > 0 ? `${days}d` : undefined,
+    hours > 0 ? `${hours}h` : undefined,
+    minutes > 0 ? `${minutes}m` : undefined,
+    days === 0 && hours === 0 ? `${seconds}s` : undefined,
+  ]
+    .filter(Boolean)
+    .join(' ')
 }
 
 function formatDimensions(value?: {height: number; width: number}): string | undefined {

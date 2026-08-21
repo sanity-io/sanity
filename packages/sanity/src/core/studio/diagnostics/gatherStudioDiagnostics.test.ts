@@ -1,7 +1,7 @@
 import {type ListenEvent, type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 import {Observable, of} from 'rxjs'
-import {afterEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type ApiNetworkDiagnostic} from '../../network/isUsingLegacyHttp'
 import {
@@ -33,9 +33,22 @@ const currentUser: CurrentUser = {
   roles: [{description: 'Can edit', name: 'editor', title: 'Editor'}],
 } as CurrentUser
 
+beforeEach(() => {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({result: 1}), {
+        headers: {'content-type': 'application/json', 'x-sanity-shard': 'gcp-eu-west1-01'},
+        status: 200,
+      }),
+    ),
+  )
+})
+
 afterEach(() => {
   mocks.getApiNetworkDiagnostic.mockReset()
   vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
 describe('gatherStudioDiagnostics', () => {
@@ -46,6 +59,7 @@ describe('gatherStudioDiagnostics', () => {
     const diagnostics = await gatherStudioDiagnostics(createOptions(client))
 
     expect(diagnostics.network.protocol).toEqual(protocolDiagnostic)
+    expect(diagnostics.network.shard).toBe('gcp-eu-west1-01')
     expect(diagnostics.network.listen.first).toMatchObject({
       path: '/listen?query=*',
       status: 'success',
@@ -86,6 +100,11 @@ describe('gatherStudioDiagnostics', () => {
       ],
       maxEntries: 500,
       projectId: 'project-id',
+      sessionSummary: {
+        buckets: [{bucket: 'query', count: 1, maxMs: 42, medianMs: 42, p95Ms: 42}],
+        startedAt: '2026-08-21T11:00:00.000Z',
+        totalRequests: 1,
+      },
       totalRequests: 1,
       truncated: false,
     })
@@ -140,6 +159,41 @@ describe('gatherStudioDiagnostics', () => {
     await second
   })
 
+  it('captures the session summary before diagnostics probes run', async () => {
+    mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
+    const {client} = createClient()
+    const initialHistory = {
+      dataset: 'production',
+      entries: [],
+      maxEntries: 500,
+      projectId: 'project-id',
+      sessionSummary: {
+        buckets: [{bucket: 'query', count: 10, maxMs: 90, medianMs: 40, p95Ms: 80}],
+        startedAt: '2026-08-21T10:00:00.000Z',
+        totalRequests: 10,
+      },
+      totalRequests: 10,
+      truncated: false,
+    }
+    const getRequestHistory = vi
+      .fn()
+      .mockReturnValueOnce(initialHistory)
+      .mockReturnValueOnce({
+        ...initialHistory,
+        sessionSummary: {...initialHistory.sessionSummary, totalRequests: 13},
+        totalRequests: 13,
+      })
+
+    const diagnostics = await gatherStudioDiagnostics({
+      ...createOptions(client),
+      getRequestHistory,
+    })
+
+    expect(getRequestHistory).toHaveBeenCalledTimes(2)
+    expect(diagnostics.network.requestHistory.totalRequests).toBe(13)
+    expect(diagnostics.network.requestHistory.sessionSummary).toEqual(initialHistory.sessionSummary)
+  })
+
   it('uses diagnostic tags relative to the client request tag prefix', async () => {
     mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
     const {client} = createClient()
@@ -152,11 +206,10 @@ describe('gatherStudioDiagnostics', () => {
       expect.objectContaining({tag: 'diagnostics.listen'}),
     )
     expect(client.request).toHaveBeenCalledWith(expect.objectContaining({tag: 'diagnostics.ping'}))
-    expect(client.fetch).toHaveBeenCalledWith(
-      '1',
-      {},
-      expect.objectContaining({tag: 'diagnostics.query-constant'}),
-    )
+    const queryProbeUrl = new URL(String(vi.mocked(fetch).mock.calls[0]?.[0]))
+    expect(queryProbeUrl.pathname).toBe('/v2025-02-19/data/query/production')
+    expect(queryProbeUrl.searchParams.get('query')).toBe('1')
+    expect(queryProbeUrl.searchParams.get('tag')).toBe('sanity.studio.diagnostics.query-constant')
     expect(client.fetch).toHaveBeenCalledWith(
       '*[0]._id',
       {},
@@ -231,6 +284,11 @@ function createOptions(client: SanityClient): StudioDiagnosticsOptions {
       ],
       maxEntries: 500,
       projectId,
+      sessionSummary: {
+        buckets: [{bucket: 'query', count: 1, maxMs: 42, medianMs: 42, p95Ms: 42}],
+        startedAt: '2026-08-21T11:00:00.000Z',
+        totalRequests: 1,
+      },
       totalRequests: 1,
       truncated: false,
     }),
@@ -262,9 +320,14 @@ function createClient(options: {emitListenEvents?: boolean; resolvePing?: boolea
     config: () => ({
       apiHost: 'https://api.sanity.test',
       apiVersion: '2025-02-19',
+      dataset: 'production',
+      projectId: 'project-id',
+      requestTagPrefix: 'sanity.studio',
     }),
     fetch: vi.fn(async (query: string) => (query === '1' ? 1 : 'document-id')),
+    getDataUrl: vi.fn((operation: string) => `/data/${operation}/production`),
     getDocument: vi.fn(async () => undefined),
+    getUrl: vi.fn((path: string) => `https://api.sanity.test/v2025-02-19${path}`),
     listen: vi.fn(
       () =>
         new Observable<ListenEvent>((subscriber) => {

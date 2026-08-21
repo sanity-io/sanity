@@ -4,7 +4,10 @@ import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
-import {type RequestPerformanceEntry} from '../../../diagnostics'
+import {
+  type RequestPerformanceEntry,
+  type RequestPerformanceSessionSummary,
+} from '../../../diagnostics'
 import {RequestPerformanceReport} from './RequestPerformanceReport'
 
 vi.mock('../../../../i18n/hooks/useTranslation', () => ({
@@ -21,6 +24,11 @@ describe('RequestPerformanceReport', () => {
             entries: [],
             maxEntries: 500,
             projectId: 'test-project',
+            sessionSummary: {
+              buckets: [],
+              startedAt: '2026-08-21T11:00:00.000Z',
+              totalRequests: 0,
+            },
             totalRequests: 0,
             truncated: false,
           }}
@@ -60,6 +68,11 @@ describe('RequestPerformanceReport', () => {
             ],
             maxEntries: 500,
             projectId: 'test-project',
+            sessionSummary: {
+              buckets: [{bucket: 'query', count: 1, maxMs: 20, medianMs: 20, p95Ms: 20}],
+              startedAt: '2026-08-21T11:00:00.000Z',
+              totalRequests: 2,
+            },
             totalRequests: 2,
             truncated: false,
           }}
@@ -90,6 +103,22 @@ describe('RequestPerformanceReport', () => {
     ])
     expect(points[0]).toHaveAttribute('fill', 'var(--card-muted-fg-color)')
     expect(screen.getAllByRole('columnheader')).toHaveLength(5)
+  })
+
+  it('shows the uncapped session summary instead of recomputing it from recent points', () => {
+    renderReport([createEntry({durationMs: 20})], {
+      sessionSummary: {
+        buckets: [{bucket: 'query', count: 2_000, maxMs: 900, medianMs: 120, p95Ms: 480}],
+        startedAt: '2026-08-21T08:00:00.000Z',
+        totalRequests: 2_001,
+      },
+    })
+
+    expect(screen.getByText('diagnostics.request-history.session-summary')).toBeInTheDocument()
+    expect(screen.getByText('2,000')).toBeInTheDocument()
+    expect(screen.getByText('120 ms')).toBeInTheDocument()
+    expect(screen.getByText('480 ms')).toBeInTheDocument()
+    expect(screen.getByText('900 ms')).toBeInTheDocument()
   })
 
   it('isolates a bucket when its series label is selected', async () => {
@@ -215,9 +244,20 @@ function renderReport(
   options: {
     diagnosticsCompletedAt?: string
     diagnosticsStartedAt?: string
+    sessionSummary?: RequestPerformanceSessionSummary
     useUtc?: boolean
   } = {},
 ) {
+  const sessionEntries = entries.filter((entry) => {
+    if (!options.diagnosticsStartedAt || !options.diagnosticsCompletedAt) return true
+    const startedAt = new Date(entry.startedAt).getTime()
+    return (
+      startedAt < new Date(options.diagnosticsStartedAt).getTime() ||
+      startedAt > new Date(options.diagnosticsCompletedAt).getTime()
+    )
+  })
+  const sessionSummary = options.sessionSummary ?? summarizeSession(sessionEntries)
+
   return render(
     <ThemeProvider theme={buildTheme()}>
       <RequestPerformanceReport
@@ -228,6 +268,7 @@ function renderReport(
           entries,
           maxEntries: 500,
           projectId: 'test-project',
+          sessionSummary,
           totalRequests: entries.length,
           truncated: false,
         }}
@@ -235,6 +276,31 @@ function renderReport(
       />
     </ThemeProvider>,
   )
+}
+
+function summarizeSession(entries: RequestPerformanceEntry[]): RequestPerformanceSessionSummary {
+  const buckets = new Map<string, number[]>()
+  for (const entry of entries) {
+    if (entry.status === 'aborted') continue
+    const durations = buckets.get(entry.bucket) ?? []
+    durations.push(entry.durationMs)
+    buckets.set(entry.bucket, durations)
+  }
+
+  return {
+    buckets: [...buckets.entries()].map(([bucket, durations]) => {
+      const sorted = durations.toSorted((left, right) => left - right)
+      return {
+        bucket,
+        count: sorted.length,
+        maxMs: sorted.at(-1) ?? 0,
+        medianMs: sorted[Math.ceil(sorted.length * 0.5) - 1] ?? 0,
+        p95Ms: sorted[Math.ceil(sorted.length * 0.95) - 1] ?? 0,
+      }
+    }),
+    startedAt: '2026-08-21T11:00:00.000Z',
+    totalRequests: entries.length,
+  }
 }
 
 function formatUtcTime(value: string): string {

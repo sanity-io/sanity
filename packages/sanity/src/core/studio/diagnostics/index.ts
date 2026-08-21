@@ -13,7 +13,9 @@ export {
 } from './getStudioConfigurationDiagnostics'
 export {
   DEFAULT_REQUEST_PERFORMANCE_CAPACITY,
+  type RequestPerformanceBucketSummary,
   type RequestPerformanceEntry,
+  type RequestPerformanceSessionSummary,
   type RequestPerformanceSnapshot,
   type RequestPerformanceTarget,
 } from './requestPerformance'

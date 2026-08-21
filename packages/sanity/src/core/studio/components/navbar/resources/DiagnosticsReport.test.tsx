@@ -110,6 +110,14 @@ const diagnostics: StudioDiagnostics = {
       ],
       maxEntries: 500,
       projectId: 'test-project',
+      sessionSummary: {
+        buckets: [
+          {bucket: 'doc', count: 1, maxMs: 85, medianMs: 85, p95Ms: 85},
+          {bucket: 'query', count: 2, maxMs: 120, medianMs: 42, p95Ms: 120},
+        ],
+        startedAt: '2026-08-21T11:00:00.000Z',
+        totalRequests: 3,
+      },
       totalRequests: 4,
       truncated: false,
     },
@@ -135,6 +143,7 @@ const diagnostics: StudioDiagnostics = {
         timedOut: false,
       },
     ],
+    shard: 'gcp-eu-west1-01',
   },
   schema: {documentTypes: 4, objectTypes: 6, primitiveTypes: 2},
   startedAt: '2026-08-21T11:59:49.580Z',
@@ -215,6 +224,17 @@ describe('DiagnosticsReport', () => {
     expect(browser.queryByText('diagnostics.status.success')).not.toBeInTheDocument()
     expect(browser.getByTitle('Test browser')).toBeInTheDocument()
 
+    const network = within(screen.getByTestId('diagnostics-network'))
+    expect(network.getByText('h2')).toBeInTheDocument()
+    expect(network.getByText('gcp-eu-west1-01')).toBeInTheDocument()
+    expect(network.getByText('diagnostics.network.session-requests')).toBeInTheDocument()
+    expect(network.getByText('diagnostics.network.ping-ttfb')).toBeInTheDocument()
+    expect(network.getByText('diagnostics.network.tracking-started')).toBeInTheDocument()
+    expect(network.getByText('diagnostics.network.tab-open')).toBeInTheDocument()
+    expect(network.getByText('diagnostics.network.dns')).toBeInTheDocument()
+    expect(network.getByText('diagnostics.network.connection')).toBeInTheDocument()
+    expect(network.getByText('diagnostics.network.tls')).toBeInTheDocument()
+
     const user = within(screen.getByTestId('diagnostics-user'))
     expect(user.queryByText('diagnostics.field.email')).not.toBeInTheDocument()
     expect(user.queryByText('diagnostics.field.name')).not.toBeInTheDocument()
@@ -240,6 +260,57 @@ describe('DiagnosticsReport', () => {
 
     await userInteraction.click(screen.getByRole('button', {name: 'diagnostics.run-again'}))
     expect(onRunAgain).toHaveBeenCalledOnce()
+  })
+
+  it('hides connection setup timings when the browser reports zero', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport
+          diagnostics={{
+            ...diagnostics,
+            network: {
+              ...diagnostics.network,
+              protocol: {
+                ...diagnostics.network.protocol,
+                resourceTiming: {
+                  ...diagnostics.network.protocol.resourceTiming!,
+                  connectionMs: 0,
+                  dnsMs: 0,
+                  secureConnectionMs: 0,
+                },
+              },
+            },
+          }}
+          onRunAgain={vi.fn()}
+        />
+      </ThemeProvider>,
+    )
+
+    const network = within(screen.getByTestId('diagnostics-network'))
+    expect(network.queryByText('diagnostics.network.dns')).not.toBeInTheDocument()
+    expect(network.queryByText('diagnostics.network.connection')).not.toBeInTheDocument()
+    expect(network.queryByText('diagnostics.network.tls')).not.toBeInTheDocument()
+    expect(network.queryByText('diagnostics.network.total')).not.toBeInTheDocument()
+    expect(network.queryByText('diagnostics.network.response-status')).not.toBeInTheDocument()
+    expect(network.queryByText('diagnostics.network.response-transfer')).not.toBeInTheDocument()
+    expect(network.queryByText('diagnostics.network.transferred')).not.toBeInTheDocument()
+  })
+
+  it('hides the connection estimate when it is unknown', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport
+          diagnostics={{
+            ...diagnostics,
+            browser: {...diagnostics.browser, connection: undefined},
+          }}
+          onRunAgain={vi.fn()}
+        />
+      </ThemeProvider>,
+    )
+
+    const browser = within(screen.getByTestId('diagnostics-browser'))
+    expect(browser.queryByText('diagnostics.field.connection-estimate')).not.toBeInTheDocument()
   })
 })
 

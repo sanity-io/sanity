@@ -74,6 +74,7 @@ function startRequestMeasurement(
   getClient: (() => SanityClient) | undefined,
 ): {complete: (status: 'success' | 'error' | 'aborted') => void} | undefined {
   if (!tracker || !getClient) return undefined
+  if (isDiagnosticsRequest(request)) return undefined
 
   const classification = getRequestBucket(request.url)
   if (!classification) return undefined
@@ -95,6 +96,25 @@ function startRequestMeasurement(
         status,
       })
     },
+  }
+}
+
+function isDiagnosticsRequest(request: RequestHandlerOptions): boolean {
+  const query = request.query as unknown
+  const queryTag =
+    query instanceof URLSearchParams
+      ? query.get('tag')
+      : typeof query === 'object' && query !== null && 'tag' in query
+        ? (query as {tag?: unknown}).tag
+        : undefined
+
+  if (typeof queryTag === 'string') return /(^|\.)diagnostics(\.|$)/.test(queryTag)
+
+  try {
+    const tag = new URL(request.url).searchParams.get('tag')
+    return Boolean(tag && /(^|\.)diagnostics(\.|$)/.test(tag))
+  } catch {
+    return false
   }
 }
 

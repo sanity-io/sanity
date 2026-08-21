@@ -568,38 +568,36 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'diagnostics.gathering': 'Gathering diagnostics…',
   /** Menu item that opens Studio diagnostics */
   'diagnostics.menu-item': 'Diagnostics',
-  /** API request section title in the Studio diagnostics dialog */
-  'diagnostics.network.api-requests': 'API requests',
+  /** API request test section title in the Studio diagnostics dialog */
+  'diagnostics.network.api-requests': 'API request tests',
   /** Connection timing label in the Studio diagnostics dialog */
   'diagnostics.network.connection': 'Connection',
   /** DNS timing label in the Studio diagnostics dialog */
   'diagnostics.network.dns': 'DNS',
-  /** Time to first byte label in the Studio diagnostics dialog */
-  'diagnostics.network.first-byte': 'First byte',
   /** First listener title in the Studio diagnostics dialog */
   'diagnostics.network.listener-first': 'First connection',
   /** Second listener title in the Studio diagnostics dialog */
   'diagnostics.network.listener-second': 'Second connection while first is open',
-  /** Listener section title in the Studio diagnostics dialog */
-  'diagnostics.network.listeners': 'Listen connections',
+  /** Listener test section title in the Studio diagnostics dialog */
+  'diagnostics.network.listeners': 'Listen connection tests',
   /** Listen open event timing label in the Studio diagnostics dialog */
   'diagnostics.network.open-event': 'Open event',
   /** Protocol label in the Studio diagnostics dialog */
   'diagnostics.network.protocol': 'Protocol',
-  /** Protocol check title in the Studio diagnostics dialog */
-  'diagnostics.network.protocol-check': 'Protocol check',
-  /** Resource timing title in the Studio diagnostics dialog */
-  'diagnostics.network.resource-timing': 'Browser resource timing',
-  /** Response status label in the Studio diagnostics dialog */
-  'diagnostics.network.response-status': 'Response status',
-  /** Response transfer timing label in the Studio diagnostics dialog */
-  'diagnostics.network.response-transfer': 'Response',
+  /** Ping time to first byte label in the Studio diagnostics dialog */
+  'diagnostics.network.ping-ttfb': 'Ping TTFB',
+  /** Total tracked session requests label in the Studio diagnostics dialog */
+  'diagnostics.network.session-requests': 'Session requests',
+  /** Content Lake shard label in the Studio diagnostics dialog */
+  'diagnostics.network.shard': 'Shard',
+  /** Elapsed browser tab session label in the Studio diagnostics dialog */
+  'diagnostics.network.tab-open': 'Tab open',
   /** TLS timing label in the Studio diagnostics dialog */
   'diagnostics.network.tls': 'TLS',
   /** Total duration label in the Studio diagnostics dialog */
   'diagnostics.network.total': 'Total',
-  /** Transfer size label in the Studio diagnostics dialog */
-  'diagnostics.network.transferred': 'Transferred',
+  /** Request tracking start time label in the Studio diagnostics dialog */
+  'diagnostics.network.tracking-started': 'Tracking started',
   /** Listen welcome event timing label in the Studio diagnostics dialog */
   'diagnostics.network.welcome-event': 'Welcome event',
   /** Aborted request timing count in the Studio diagnostics dialog */
@@ -625,14 +623,19 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'diagnostics.request-history.p95': 'p95',
   /** Button that clears a selected request timing range */
   'diagnostics.request-history.reset-time-range': 'Reset time range',
-  /** Request timing sample count in the Studio diagnostics dialog */
-  'diagnostics.request-history.sample-count': '{{visible}} of {{total}} samples',
+  /** Recent and total request counts in the Studio diagnostics dialog */
+  'diagnostics.request-history.sample-count':
+    '{{visible}} recent samples · {{total}} session requests',
   /** Selected request timing range in the Studio diagnostics dialog */
   'diagnostics.request-history.selected-time-range': '{{start}} to {{end}}',
+  /** Selected request timing summary label in the Studio diagnostics dialog */
+  'diagnostics.request-history.selected-summary': 'Selected range summary',
   /** Request timing series column heading in the Studio diagnostics dialog */
   'diagnostics.request-history.series': 'Series',
-  /** Request timing section title in the Studio diagnostics dialog */
-  'diagnostics.request-history.title': 'Session request timings',
+  /** Full browser-session request timing summary label in the Studio diagnostics dialog */
+  'diagnostics.request-history.session-summary': 'Full session summary (estimated percentiles)',
+  /** Recent request timing section title in the Studio diagnostics dialog */
+  'diagnostics.request-history.title': 'Recent request timings',
   /** API version label in a request timing point tooltip */
   'diagnostics.request-history.tooltip.api-version': 'API version',
   /** Duration label in a request timing point tooltip */
