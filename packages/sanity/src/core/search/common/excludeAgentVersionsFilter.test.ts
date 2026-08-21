@@ -28,6 +28,8 @@ describe('getExcludeAgentVersionsFilter', () => {
   })
 
   it('guards the bundleId check so missing _system does not null the filter', () => {
-    expect(EXCLUDE_AGENT_VERSIONS_GROQ).toContain('defined(_system.bundleId)')
+    expect(EXCLUDE_AGENT_VERSIONS_GROQ).toContain(
+      '(defined(_system.bundleId) && string::startsWith(_system.bundleId, "agent-"))',
+    )
   })
 })

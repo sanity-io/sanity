@@ -1,6 +1,6 @@
 import {type ClientPerspective} from '@sanity/client'
 
-import {AGENT_BUNDLE_PREFIX} from '../../store/agent/createAgentBundlesStore'
+import {AGENT_BUNDLE_PREFIX} from '../../store/agent/constants'
 import {VERSION_FOLDER} from '../../util/draftUtils'
 
 const AGENT_VERSION_ID_PREFIX = `${VERSION_FOLDER}.${AGENT_BUNDLE_PREFIX}`
@@ -14,7 +14,7 @@ const AGENT_VERSION_ID_PREFIX = `${VERSION_FOLDER}.${AGENT_BUNDLE_PREFIX}`
  * `null`, and `false || null` stays `null`. GROQ filters only keep `true`,
  * so a bare `startsWith` on that field would drop those documents from search.
  */
-const IS_AGENT_VERSION_GROQ = `(string::startsWith(_id, "${AGENT_VERSION_ID_PREFIX}") || defined(_system.bundleId) && string::startsWith(_system.bundleId, "${AGENT_BUNDLE_PREFIX}"))`
+const IS_AGENT_VERSION_GROQ = `(string::startsWith(_id, "${AGENT_VERSION_ID_PREFIX}") || (defined(_system.bundleId) && string::startsWith(_system.bundleId, "${AGENT_BUNDLE_PREFIX}")))`
 
 /**
  * Filter used when searching with `perspective: 'raw'` so agent versions do not
