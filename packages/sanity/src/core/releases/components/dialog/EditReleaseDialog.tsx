@@ -57,11 +57,9 @@ export function EditReleaseDialog({
         status: 'error',
         title: t('release.toast.edit-release-error.title'),
       })
-      // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
-    } finally {
-      isSavingRef.current = false
-      setIsSaving(false)
     }
+    isSavingRef.current = false
+    setIsSaving(false)
   }, [description, onClose, release, t, title, toast, updateRelease])
 
   // Ignore click-outside / Escape / close while a save is in flight: dismissing mid-mutation would

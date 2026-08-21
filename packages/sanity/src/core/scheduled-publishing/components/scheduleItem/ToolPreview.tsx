@@ -34,8 +34,8 @@ const ToolPreview = (props: Props) => {
 
   const publishedId = usePublishedId(visibleDocument?._id)
 
-  const LinkComponent = useMemo(() => {
-    function Component(linkProps: {children?: ReactNode; ref?: Ref<HTMLAnchorElement>}) {
+  const Link = useMemo(() => {
+    function LinkComponent(linkProps: {children?: ReactNode; ref?: Ref<HTMLAnchorElement>}) {
       const {ref, ...rest} = linkProps
       const publishedDocId = visibleDocument ? getPublishedId(visibleDocument._id) : undefined
       return (
@@ -50,9 +50,7 @@ const ToolPreview = (props: Props) => {
         />
       )
     }
-    // oxlint-disable-next-line react/immutability -- displayName assignment on render-local component
-    Component.displayName = 'LinkComponent'
-    return Component
+    return LinkComponent
   }, [schemaType, visibleDocument])
 
   return (
@@ -73,7 +71,7 @@ const ToolPreview = (props: Props) => {
             schemaType={schemaType}
           />
         }
-        linkComponent={LinkComponent}
+        linkComponent={Link}
         publishedDocumentId={publishedId}
         schedule={schedule}
         schemaType={schemaType}
