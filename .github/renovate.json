@@ -2,7 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>sanity-io/renovate-config",
-    "github>sanity-io/renovate-config:studio-v3",
+    "github>sanity-io/renovate-config:min-age-3days",
     ":dependencyDashboardApproval"
   ],
   "ignorePresets": [
@@ -12,19 +12,7 @@
   ],
   "branchConcurrentLimit": 3,
   "prConcurrentLimit": 5,
-  "minimumReleaseAge": "3 days",
   "packageRules": [
-    {
-      "description": "Exclude @sanity/* packages from minimumReleaseAge (no delay for internal packages)",
-      "matchPackageNames": [
-        "/^@sanity\\//",
-        "/^@portabletext\\//",
-        "/^react-rx$/",
-        "/^groq-js$/",
-        "/^oxfmt$/"
-      ],
-      "minimumReleaseAge": "0 days"
-    },
     {
       "description": "Enable automerge with GitHub merge queues (note that this doesn't bypass required checks and code reviews)",
       "matchUpdateTypes": ["minor", "patch"],
