@@ -170,11 +170,12 @@ export function RenderLoopRepro() {
               useDocumentValues render loop → stalled document open
             </Text>
             <Text size={1} muted>
-              The preview rows pass an inline paths array to useDocumentValues and re-render in a
-              tight loop. The simulated document open below starts mounting immediately, but every
-              loop iteration restarts it — it stays stuck at "mounting…" until the rows remove
-              themselves after {LOOP_DURATION_MS / 1000} seconds, then lands instantly. The stall
-              lasts exactly as long as the loop.
+              The preview rows pass an inline paths array to useDocumentValues. On studio versions
+              where the hook memoizes on the array reference, the rows re-render in a tight loop and
+              the simulated document open below stays stuck at "mounting…" until the rows remove
+              themselves after {LOOP_DURATION_MS / 1000} seconds — the stall lasts exactly as long
+              as the loop. With the hardened hook (memo keyed on path contents) the rows settle
+              immediately and the mount lands right away.
             </Text>
           </Stack>
         </Card>
