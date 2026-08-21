@@ -93,7 +93,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const getClient = source.getClient
 
   // Plain function: ReferenceInput reads onSearch via useObservableEvent (latest each call).
-  // useEffectEvent cannot be passed as a prop under react-hooks/rules-of-hooks.
+  // oxlint's react-hooks/rules-of-hooks flags passing a useEffectEvent result as a prop.
   const handleSearch = (searchString: string) =>
     from(
       resolveUserDefinedFilter({
