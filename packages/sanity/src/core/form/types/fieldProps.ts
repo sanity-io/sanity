@@ -60,6 +60,14 @@ export interface BaseFieldProps {
   name: string
   index: number
   changed: boolean
+  /**
+   * Whether the field's value differs from its value in the document's base variant.
+   *
+   * This is already `false` when the document has no base variant, so it can be used directly. Read
+   * `hasBaseVariant` from the field's `inputProps` to tell "unchanged from the base variant" apart
+   * from "there is no base variant to compare against".
+   */
+  changedFromBaseVariant: boolean
   children: ReactNode
   version?: string
   renderDefault: (props: FieldProps) => React.JSX.Element

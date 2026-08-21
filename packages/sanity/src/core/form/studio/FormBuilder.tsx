@@ -52,7 +52,18 @@ export interface FormBuilderProps extends Omit<
   | '_allMembers'
   | '__unstable_computeDiff'
   | 'displayInlineChanges'
+  | 'changedFromBaseVariant'
+  | 'hasBaseVariant'
 > {
+  /**
+   * Whether the value has changed from the document's base variant. Optional, unlike on a form
+   * node: callers that do not resolve a base variant can leave this (and `hasBaseVariant`) out.
+   */
+  changedFromBaseVariant?: boolean
+  /**
+   * Whether the document has a base variant to compare against. Defaults to `false`.
+   */
+  hasBaseVariant?: boolean
   /** @internal */
   __internal_fieldActions?: DocumentFieldAction[]
   /** @internal Considered internal – do not use. */
@@ -117,6 +128,9 @@ export function FormBuilder(props: FormBuilderProps) {
     validation,
     value,
     compareValue,
+    changedFromBaseVariant = false,
+    hasBaseVariant = false,
+    baseVariantValue,
   } = props
 
   const handleCollapseField = useCallback(
@@ -210,6 +224,8 @@ export function FormBuilder(props: FormBuilderProps) {
     const diffProps = prepareDiffProps({
       comparisonValue: compareValue,
       hasUpstreamVersion,
+      baseVariantValue,
+      hasBaseVariant,
       value,
       schemaType,
       perspective,
@@ -259,6 +275,11 @@ export function FormBuilder(props: FormBuilderProps) {
       changed: members.some((m) => m.kind === 'field' && m.field.changed),
       displayInlineChanges: false,
       hasUpstreamVersion: diffProps.hasUpstreamVersion,
+      // Taken from the prop rather than re-derived from `members`: the root form node already
+      // aggregated it, including fieldset members, which the `changed` rollup above misses.
+      changedFromBaseVariant,
+      baseVariantValue: diffProps.baseVariantValue,
+      hasBaseVariant: diffProps.hasBaseVariant,
     }
   }, [
     compareValue,
@@ -276,6 +297,9 @@ export function FormBuilder(props: FormBuilderProps) {
     handleOpenField,
     handleSelectFieldGroup,
     hasUpstreamVersion,
+    changedFromBaseVariant,
+    baseVariantValue,
+    hasBaseVariant,
     id,
     members,
     onPathFocus,
