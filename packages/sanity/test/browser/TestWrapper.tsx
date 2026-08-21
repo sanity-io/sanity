@@ -12,6 +12,7 @@ import {
   CopyPasteProvider,
   defineConfig,
   EMPTY_ARRAY,
+  type LocaleResourceBundle,
   ResourceCacheProvider,
   type SchemaTypeDefinition,
   type SingleWorkspace,
@@ -36,6 +37,7 @@ interface TestWrapperProps {
   children?: ReactNode
   betaFeatures?: WorkspaceOptions['beta']
   schemaTypes: SchemaTypeDefinition[]
+  i18nBundles?: LocaleResourceBundle[]
 }
 const studioThemeConfig: RootTheme = buildTheme()
 
@@ -54,6 +56,7 @@ const getCachedMockWorkspace = memoize(
     client: SanityClient,
     schemaTypes: SchemaTypeDefinition[],
     betaFeatures: WorkspaceOptions['beta'] | undefined,
+    i18nBundles: LocaleResourceBundle[] | undefined,
   ) => {
     const config = defineConfig({
       name: 'default',
@@ -63,6 +66,7 @@ const getCachedMockWorkspace = memoize(
         types: schemaTypes,
       },
       ...(betaFeatures ? {beta: betaFeatures} : {}),
+      ...(i18nBundles && i18nBundles.length > 0 ? {i18n: {bundles: i18nBundles}} : {}),
     }) as SingleWorkspace
 
     return getMockWorkspace({client, config})
@@ -74,12 +78,17 @@ const getCachedMockWorkspace = memoize(
  * Sanity client and a mock workspace.
  */
 export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
-  const {children, schemaTypes, betaFeatures} = props
+  const {children, schemaTypes, betaFeatures, i18nBundles} = props
   const [client] = useState(() => createMockSanityClient() as unknown as SanityClient)
 
   return (
     <Suspense fallback={null}>
-      <TestWrapperContents client={client} schemaTypes={schemaTypes} betaFeatures={betaFeatures}>
+      <TestWrapperContents
+        client={client}
+        schemaTypes={schemaTypes}
+        betaFeatures={betaFeatures}
+        i18nBundles={i18nBundles}
+      >
         {children}
       </TestWrapperContents>
     </Suspense>
@@ -91,8 +100,8 @@ const TestWrapperContents = (
     client: SanityClient
   },
 ): React.JSX.Element | null => {
-  const {children, schemaTypes, betaFeatures, client} = props
-  const mockWorkspace = use(getCachedMockWorkspace(client, schemaTypes, betaFeatures))
+  const {children, schemaTypes, betaFeatures, i18nBundles, client} = props
+  const mockWorkspace = use(getCachedMockWorkspace(client, schemaTypes, betaFeatures, i18nBundles))
 
   if (!mockWorkspace) {
     return null
