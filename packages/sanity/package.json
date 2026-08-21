@@ -230,7 +230,7 @@
     "shallow-equals": "^1.0.0",
     "speakingurl": "^14.0.1",
     "swr": "^2.5.1",
-    "ui5": "npm:@sanity/ui@alpha",
+    "ui5": "catalog:",
     "urlpattern-polyfill": "10.1.0",
     "use-device-pixel-ratio": "^1.1.2",
     "use-effect-event": "^2.0.3",

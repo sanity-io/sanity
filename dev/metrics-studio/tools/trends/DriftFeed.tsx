@@ -1,9 +1,10 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {MenuButton, Menu, MenuItem} from '@sanity/ui/menu'
 import {useState} from 'react'
+import {Box} from 'ui5'
 
 import {idSlug, SNOOZE_DAYS} from './acks'
 import {formatValue} from './data'
@@ -62,7 +63,7 @@ function DriftRow(props: {
           </Badge>
         </Box>
       ))}
-      <Box flex={1} />
+      <Box flexBasis="0%" flexGrow={1} />
       {acked ? (
         <Button mode="bleed" fontSize={0} padding={2} text="Reopen" onClick={onClear} />
       ) : (

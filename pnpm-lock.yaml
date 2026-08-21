@@ -91,6 +91,9 @@ catalogs:
     typescript:
       specifier: ^7.0.2
       version: 7.0.2
+    ui5:
+      specifier: npm:@sanity/ui@alpha
+      version: 5.0.0-alpha.4
     vite:
       specifier: ^8.2.2
       version: 8.2.2
@@ -386,6 +389,9 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
       vite:
         specifier: 'catalog:'
         version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
@@ -475,6 +481,9 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -656,6 +665,9 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -811,6 +823,9 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
@@ -1255,6 +1270,9 @@ importers:
       '@sanity/ui':
         specifier: 'catalog:'
         version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -1606,6 +1624,9 @@ importers:
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
       use-effect-event:
         specifier: ^2.0.3
         version: 2.0.3(react@19.2.8)
@@ -1973,7 +1994,7 @@ importers:
         specifier: ^2.5.1
         version: 2.5.1(react@19.2.8)
       ui5:
-        specifier: npm:@sanity/ui@alpha
+        specifier: 'catalog:'
         version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
       urlpattern-polyfill:
         specifier: 10.1.0

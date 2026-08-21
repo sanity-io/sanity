@@ -48,7 +48,8 @@
   "dependencies": {
     "@sanity/client": "catalog:",
     "@sanity/icons": "^5.2.1",
-    "@sanity/ui": "catalog:"
+    "@sanity/ui": "catalog:",
+    "ui5": "catalog:"
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",
