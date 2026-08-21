@@ -20,10 +20,13 @@ function isShallowEqual(a: unknown, b: unknown): boolean {
  * @internal
  */
 export function useShallowUnique<ValueType>(value: ValueType): ValueType {
-  const [previous, setPrevious] = useState<ValueType>(value)
-  if (!isShallowEqual(previous, value)) {
-    setPrevious(value)
+  // Boxed: `useState(value)` would call a function value as a lazy
+  // initializer and `setPrevious(value)` would apply it as a functional
+  // update, so bare function values could never be stored.
+  const [previous, setPrevious] = useState<{value: ValueType}>(() => ({value}))
+  if (!isShallowEqual(previous.value, value)) {
+    setPrevious({value})
     return value
   }
-  return previous
+  return previous.value
 }
