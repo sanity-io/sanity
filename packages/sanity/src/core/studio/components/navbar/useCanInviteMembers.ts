@@ -27,12 +27,10 @@ export function useCanInviteProjectMembers(opts?: UseCanInviteProjectMembersOpti
 
   // Keep the observable identity stable across renders.
   //
-  // Why it matters: react-rx skips its render-phase warm-up subscription
-  // only for the observable it saw on the hook's first render. A new
-  // identity on a later render gets subscribed during render again — and
-  // this hook renders inside a closed menu (mounted but hidden via
-  // `<Activity>`), so identity churn would fire the grants request from
-  // a hidden render.
+  // Why it matters: once this hook has received an emission, react-rx
+  // re-subscribes *replacement* observables during render (that is what
+  // lets rebuild-every-render consumers converge instead of looping).
+  // Stable identity = exactly one subscription for the hook's lifetime.
   //
   // The React Compiler usually memoizes this expression already. The
   // explicit `useMemo` keeps the guarantee even where the compiler bails.

@@ -103,7 +103,7 @@ overrides:
   tsdown>rolldown: ~1.2.4
 
 patchedDependencies:
-  react-rx@5.1.1: d6bb14881d51fa22277366d96763874c5543900f7e0f0a25cbda6f3728436034
+  react-rx@5.1.1: 097c6a9c938730e3ef5175fd0ac637b064f557811cad0e3e6c9ac36e8db5ccd6
 
 importers:
 
@@ -443,7 +443,7 @@ importers:
         version: 19.2.8(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
-        version: 5.1.1(patch_hash=d6bb14881d51fa22277366d96763874c5543900f7e0f0a25cbda6f3728436034)(react@19.2.8)(rxjs@7.8.2)
+        version: 5.1.1(patch_hash=097c6a9c938730e3ef5175fd0ac637b064f557811cad0e3e6c9ac36e8db5ccd6)(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -856,7 +856,7 @@ importers:
         version: 4.0.0(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
-        version: 5.1.1(patch_hash=d6bb14881d51fa22277366d96763874c5543900f7e0f0a25cbda6f3728436034)(react@19.2.8)(rxjs@7.8.2)
+        version: 5.1.1(patch_hash=097c6a9c938730e3ef5175fd0ac637b064f557811cad0e3e6c9ac36e8db5ccd6)(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1669,7 +1669,7 @@ importers:
         version: 7.3.0
       react-rx:
         specifier: 'catalog:'
-        version: 5.1.1(patch_hash=d6bb14881d51fa22277366d96763874c5543900f7e0f0a25cbda6f3728436034)(react@19.2.8)(rxjs@7.8.2)
+        version: 5.1.1(patch_hash=097c6a9c938730e3ef5175fd0ac637b064f557811cad0e3e6c9ac36e8db5ccd6)(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -2008,7 +2008,7 @@ importers:
         version: 4.0.0(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
-        version: 5.1.1(patch_hash=d6bb14881d51fa22277366d96763874c5543900f7e0f0a25cbda6f3728436034)(react@19.2.8)(rxjs@7.8.2)
+        version: 5.1.1(patch_hash=097c6a9c938730e3ef5175fd0ac637b064f557811cad0e3e6c9ac36e8db5ccd6)(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -25663,7 +25663,7 @@ snapshots:
       rxjs: 7.8.2
       use-effect-event: 2.0.3(react@19.2.8)
 
-  react-rx@5.1.1(patch_hash=d6bb14881d51fa22277366d96763874c5543900f7e0f0a25cbda6f3728436034)(react@19.2.8)(rxjs@7.8.2):
+  react-rx@5.1.1(patch_hash=097c6a9c938730e3ef5175fd0ac637b064f557811cad0e3e6c9ac36e8db5ccd6)(react@19.2.8)(rxjs@7.8.2):
     dependencies:
       react: 19.2.8
       rxjs: 7.8.2
