@@ -20,6 +20,7 @@ export const createCustomPublishAction = memoize(
       }
     }
 
+    useCustomPublishAction.displayName = 'CustomPublishAction'
     return useCustomPublishAction
   },
 )
@@ -40,6 +41,7 @@ export const createNoopPatchPublishAction = memoize(
       }
     }
 
+    useNoopPatchPublishAction.displayName = 'NoopPatchPublishAction'
     return useNoopPatchPublishAction
   },
 )

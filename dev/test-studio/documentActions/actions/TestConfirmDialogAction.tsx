@@ -45,3 +45,5 @@ export const useTestConfirmDialogAction: DocumentActionComponent = () => {
     shortcut: 'mod+p',
   } satisfies DocumentActionDescription
 }
+
+useTestConfirmDialogAction.displayName = 'TestConfirmDialogAction'

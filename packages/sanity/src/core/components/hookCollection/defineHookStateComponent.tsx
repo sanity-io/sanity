@@ -9,13 +9,13 @@ export function defineHookStateComponent<Args, State>({
   hook: HookCollectionActionHook<Args, State>
   id: string
 }) {
-  function HookStateComponent({
+  const HookStateComponent = ({
     args,
     handleNext,
   }: {
     args: Args
     handleNext: (id: string, hookState: State | null) => void
-  }) {
+  }) => {
     const hookState = useHook(args)
 
     useEffect(() => {
@@ -28,6 +28,8 @@ export function defineHookStateComponent<Args, State>({
 
     return null
   }
-
+  // Massively helps debugging and profiling by setting the display name
+  const {displayName = id.replace(/-[0-9]+$/, '')} = useHook
+  HookStateComponent.displayName = displayName
   return HookStateComponent
 }

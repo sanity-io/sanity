@@ -30,6 +30,7 @@ const useScheduledBadge: DocumentBadgeComponent = (props) => {
     } on ${formattedDateTime} (local time)`,
   }
 }
+useScheduledBadge.displayName = 'ScheduledBadge'
 
 /**
  * @deprecated we will be dropping support for scheduled publishing on a future major version

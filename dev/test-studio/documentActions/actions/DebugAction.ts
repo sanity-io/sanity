@@ -30,3 +30,5 @@ export const useDebugAction: DocumentActionComponent = ({onComplete}) => {
       } satisfies DocumentActionDescription['dialog']),
   } satisfies DocumentActionDescription
 }
+
+useDebugAction.displayName = 'DebugAction'

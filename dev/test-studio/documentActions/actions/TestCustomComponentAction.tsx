@@ -33,3 +33,5 @@ export const useTestCustomComponentAction: DocumentActionComponent = () => {
     },
   } satisfies DocumentActionDescription
 }
+
+useTestCustomComponentAction.displayName = 'TestCustomComponentAction'

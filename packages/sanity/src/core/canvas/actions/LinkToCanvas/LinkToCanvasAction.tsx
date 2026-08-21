@@ -108,3 +108,4 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
 }
 
 useLinkToCanvasAction.action = 'linkToCanvas'
+useLinkToCanvasAction.displayName = 'LinkToCanvasAction'

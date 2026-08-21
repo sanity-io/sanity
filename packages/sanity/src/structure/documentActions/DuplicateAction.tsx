@@ -103,3 +103,4 @@ export const useDuplicateAction: DuplicateDocumentActionComponent = ({id, type, 
 }
 
 useDuplicateAction.action = 'duplicate'
+useDuplicateAction.displayName = 'DuplicateAction'

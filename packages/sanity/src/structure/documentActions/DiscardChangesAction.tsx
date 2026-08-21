@@ -131,3 +131,4 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
 }
 
 useDiscardChangesAction.action = 'discardChanges'
+useDiscardChangesAction.displayName = 'DiscardChangesAction'

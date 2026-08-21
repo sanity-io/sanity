@@ -93,3 +93,4 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
 }
 
 useHistoryRestoreAction.action = 'restore'
+useHistoryRestoreAction.displayName = 'HistoryRestoreAction'

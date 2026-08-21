@@ -189,3 +189,5 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 useScheduleAction.action = 'schedule'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+useScheduleAction.displayName = 'ScheduleAction'

@@ -43,3 +43,5 @@ export const useTestModalDialogAction: DocumentActionComponent = () => {
     onHandle: handleOpen,
   } satisfies DocumentActionDescription
 }
+
+useTestModalDialogAction.displayName = 'TestModalDialogAction'

@@ -7,3 +7,4 @@ export const useTestVersionAction: DocumentActionComponent = () => {
       'This action shows only on versions and it should be the first one on books and the last one on authors',
   } satisfies DocumentActionDescription
 }
+useTestVersionAction.displayName = 'TestVersionAction'

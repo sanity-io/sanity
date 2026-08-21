@@ -26,3 +26,4 @@ export const useEditInCanvasAction: DocumentActionComponent = (props: DocumentAc
 }
 
 useEditInCanvasAction.action = 'editInCanvas'
+useEditInCanvasAction.displayName = 'EditInCanvasAction'
