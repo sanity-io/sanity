@@ -1,3 +1,4 @@
+import {SDKStudioContext} from '@sanity/sdk-react'
 import {useContext} from 'react'
 import {WorkspaceContext} from 'sanity/_singletons'
 
@@ -14,7 +15,18 @@ export function WorkspaceProvider({
   children,
   workspace,
 }: WorkspaceProviderProps): React.JSX.Element {
-  return <WorkspaceContext.Provider value={workspace}>{children}</WorkspaceContext.Provider>
+  return (
+    <WorkspaceContext.Provider value={workspace}>
+      {/*
+       * Expose the workspace to the App SDK via SDKStudioContext so SDK hooks can
+       * resolve the current project, dataset, and auth token. This is provided by
+       * every WorkspaceProvider (including nested ones, e.g. the Tasks addon
+       * workspace), but the single SDK instance is created once, for the primary
+       * workspace, by the ResourceProvider mounted in WorkspaceLoader.
+       */}
+      <SDKStudioContext.Provider value={workspace}>{children}</SDKStudioContext.Provider>
+    </WorkspaceContext.Provider>
+  )
 }
 
 /**

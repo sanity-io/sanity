@@ -1,8 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Badge, Box, Card, type CardTone, Flex, Inline, Label, Stack, Text} from '@sanity/ui'
+import {Badge, Card, type CardTone, Flex, Inline, Label, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {isWeekend} from 'date-fns/isWeekend'
 import {useCallback, useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTimeZone} from '../../../hooks/useTimeZone'

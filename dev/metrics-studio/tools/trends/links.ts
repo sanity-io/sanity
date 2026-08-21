@@ -25,6 +25,16 @@ export function ciRunUrl(runId: string, attempt?: number): string {
   return attempt && attempt > 1 ? `${base}/attempts/${attempt}` : base
 }
 
+/**
+ * GitHub compare view listing every commit between two runs' commits — the
+ * question a suspicious step in a chart raises is "what landed between these
+ * two points". Three dots deliberately: the commit *range* reachable from
+ * `toSha` but not `fromSha`, not a two-endpoint diff.
+ */
+export function compareUrl(fromSha: string, toSha: string): string {
+  return `https://github.com/${REPO}/compare/${fromSha}...${toSha}`
+}
+
 /** Link a scenario's source file on the branch it was measured on (or main). */
 export function sourceFileUrl(path: string, branch = 'main'): string {
   return `https://github.com/${REPO}/blob/${branch}/${path}`
@@ -40,29 +50,11 @@ const WEB_VITAL_DOCS: Record<string, string> = {
   INP: 'https://web.dev/articles/inp',
   CLS: 'https://web.dev/articles/cls',
   FCP: 'https://web.dev/articles/fcp',
-  TTFB: 'https://web.dev/articles/ttfb',
 }
 
 export function webVitalDocUrl(label: string): string | undefined {
   const key = Object.keys(WEB_VITAL_DOCS).find((vital) => label.endsWith(vital))
   return key ? WEB_VITAL_DOCS[key] : undefined
-}
-
-/**
- * Bench scenarios were ported from the legacy eFPS suite (dev/efps), which
- * keeps running in CI while this suite burns in. The two are named 1:1 —
- * `perf/bench/scenarios/<name>.ts` mirrors `dev/efps/tests/<name>/<name>.ts` —
- * so a scenario can cross-reference its eFPS ancestor. Derived from the bench
- * source file's basename (syntheticLarge shares synthetic.ts, which correctly
- * points at the one synthetic eFPS test). Returns undefined for bench-only
- * scenarios with no eFPS counterpart, so no dead link is rendered.
- */
-const EFPS_SCENARIOS = new Set(['singleString', 'arrayI18n', 'article', 'recipe', 'synthetic'])
-
-export function efpsSourceUrl(benchSourceFile: string, branch = 'main'): string | undefined {
-  const name = benchSourceFile.split('/').at(-1)?.replace(/\.ts$/, '')
-  if (!name || !EFPS_SCENARIOS.has(name)) return undefined
-  return `https://github.com/${REPO}/blob/${branch}/dev/efps/tests/${name}/${name}.ts`
 }
 
 /** All backlinks that a point actually has data for, in usefulness order. */

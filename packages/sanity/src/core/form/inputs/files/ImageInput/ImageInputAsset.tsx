@@ -1,7 +1,7 @@
 import {getImageDimensions} from '@sanity/asset-utils'
 import {type AssetSource, type UploadState} from '@sanity/types'
-import {Box} from '@sanity/ui'
 import {type CSSProperties, type FocusEvent, memo, useCallback, useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {type InputOnSelectFileFunctionProps, type InputProps} from '../../../types/inputProps'

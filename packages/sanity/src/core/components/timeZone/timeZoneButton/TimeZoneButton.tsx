@@ -1,7 +1,8 @@
 import {EarthAmericasIcon} from '@sanity/icons/EarthAmericas'
-import {Box, Inline, Text} from '@sanity/ui'
+import {Inline, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -27,7 +28,7 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
 
       <Tooltip
         content={
-          <Box flex={1} padding={1}>
+          <Box flexBasis="0%" flexGrow={1} padding={1}>
             <Text size={1}>{tooltipContent}</Text>
           </Box>
         }

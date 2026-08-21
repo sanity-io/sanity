@@ -9,7 +9,7 @@ import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
 import {themerTool} from '@sanity/themer/tool'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
+import {defineConfig, definePlugin, type AuthProvider, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {media} from 'sanity-plugin-media'
@@ -79,6 +79,22 @@ function getDebugProxyApiHost(): string | undefined {
 }
 
 const debugProxyApiHost = getDebugProxyApiHost()
+
+// Sanity Sandbox org SAML SSO (`ppsg7ml5`). `/auth/providers` reports `sso.saml: true`
+// but does not include the login URL, so Studio will not offer SSO unless we add it.
+// Same configuration ID as `dev/auth-test-studio`.
+const sanitySandboxSsoProvider: AuthProvider = {
+  name: 'saml',
+  title: 'SSO',
+  url: 'https://api.sanity.io/v2021-10-01/auth/saml/login/91cadf2a',
+}
+
+const sanitySandboxAuth = {
+  providers: (prev: AuthProvider[]) =>
+    prev.some((provider) => provider.name === sanitySandboxSsoProvider.name)
+      ? prev
+      : [...prev, sanitySandboxSsoProvider],
+}
 
 const envConfig = {
   // use this for production workspaces
@@ -279,6 +295,7 @@ const defaultWorkspace = defineConfig({
   dataset: 'test',
   ...envConfig.production,
   plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
+  auth: sanitySandboxAuth,
 
   onUncaughtError: (error, errorInfo) => {
     console.log(error)
@@ -303,9 +320,6 @@ const defaultWorkspace = defineConfig({
       }
       if (ctx.schemaType === 'author' && ctx.releaseId) {
         return [...prev, useTestVersionAction]
-      }
-      if (ctx.schemaType === 'playlist') {
-        return prev.filter(({action}) => action === 'delete')
       }
 
       return prev
@@ -407,6 +421,8 @@ export default defineConfig([
     projectId: 'q5caobza',
     dataset: 'production',
     basePath: '/secondary',
+    // Different project/org than Sanity Sandbox — keep the default providers.
+    auth: undefined,
   },
   {
     ...defaultWorkspace,
@@ -429,6 +445,7 @@ export default defineConfig([
     dataset: 'partial-indexing-2',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/partial-indexing',
+    auth: sanitySandboxAuth,
     ...envConfig.production,
     search: {
       unstable_partialIndexing: {
@@ -454,6 +471,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/playground',
+    auth: sanitySandboxAuth,
     beta: {
       eventsAPI: {
         releases: true,
@@ -478,6 +496,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/listener-events',
+    auth: sanitySandboxAuth,
     mediaLibrary: {
       enabled: true,
     },
@@ -491,6 +510,7 @@ export default defineConfig([
     dataset: 'playground-partial-indexing',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/playground-partial-indexing',
+    auth: sanitySandboxAuth,
     mediaLibrary: {
       enabled: true,
     },
@@ -599,6 +619,7 @@ export default defineConfig([
       formComponentsPlugin(),
     ],
     basePath: '/custom-components',
+    auth: sanitySandboxAuth,
     onUncaughtError: (error, errorInfo) => {
       console.log(error)
       console.log(errorInfo)
@@ -634,6 +655,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'}), assist()],
     basePath: '/ai-assist',
+    auth: sanitySandboxAuth,
     mediaLibrary: {
       enabled: true,
     },
@@ -646,6 +668,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/stega',
+    auth: sanitySandboxAuth,
     form: {
       components: {
         input: StegaDebugger,

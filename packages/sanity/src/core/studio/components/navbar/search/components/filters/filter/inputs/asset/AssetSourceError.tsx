@@ -1,10 +1,11 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Flex, type ResponsivePaddingProps, Stack} from '@sanity/ui'
+import {Flex, Stack} from '@sanity/ui'
+import {Box, type PaddingProps} from 'ui5'
 
 import {TextWithTone} from '../../../../../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 
-export function AssetSourceError(props: ResponsivePaddingProps) {
+export function AssetSourceError(props: PaddingProps) {
   const {t} = useTranslation()
 
   return (

@@ -4,6 +4,8 @@
  * @internal
  */
 const variantsLocaleStrings = {
+  /** Tooltip for the variants tool link in the navbar. */
+  'navbar.tooltip': 'View variants',
   /** Label for the variants navigation row. */
   'navbar.view-as': 'View as',
   /** Label for the version selector in the variants navigation row. */
@@ -16,10 +18,10 @@ const variantsLocaleStrings = {
   'navbar.variant.filter-placeholder': 'Filter variants…',
   /** Section header for non-default variants in the dropdown. */
   'navbar.variant.other': 'Other variants',
-  /** Label for clearing version and variant selections. */
-  'navbar.clear': 'Clear',
   /** Tooltip for clearing the selected variant. */
   'navbar.variant.clear': 'Clear variant selection',
+  /** Tooltip for the button that clears the selected version */
+  'navbar.version.clear': 'Clear version selection',
   /** Label for the Variants overview primary create action (mirrors "New release"). */
   'overview.action.new-variant': 'New variant definition',
   /** Label for the Variants overview row edit action. */
@@ -171,7 +173,7 @@ const variantsLocaleStrings = {
   /** Validation message when a condition value is missing. */
   'dialog.create.condition-value.required': 'Condition value is required',
   /** Validation message when a condition value has an invalid format. */
-  'dialog.create.condition-value.invalid': 'Condition values cannot contain colons',
+  'dialog.create.condition-value.invalid': 'Condition values cannot contain commas',
   /** Placeholder for the condition key field in the create variant dialog. */
   'dialog.create.condition-key.placeholder': 'e.g. audience',
   /** Label for the condition value field in the create variant dialog. */

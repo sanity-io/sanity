@@ -1,6 +1,6 @@
 {
   "name": "sanity-page-building-studio",
-  "version": "6.9.1",
+  "version": "6.9.2",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "catalog:",
+    "oxc-transform-react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-icons": "^5.7.0",

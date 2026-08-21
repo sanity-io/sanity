@@ -1,23 +1,22 @@
-import {startTransition, useEffect, useMemo, useReducer} from 'react'
-import {useObservable} from 'react-rx'
-import {of} from 'rxjs'
+import {useMemo} from 'react'
+import {useSyncObservable} from 'react-rx'
 
 import {usePresenceStore} from '../datastores'
 import {type DocumentPresence} from './types'
 
 const initial: DocumentPresence[] = []
-const fallback = of(initial)
 
 /** @internal */
 export function useDocumentPresence(documentId: string): DocumentPresence[] {
-  const [mounted, mount] = useReducer(() => true, false)
-  // Using `startTransition` here ensures that rapid re-renders that affect the deps used by `usePresenceStore` delay the transition to `mounted=true`, thus avoiding creating websocket connections that will be closed immediately.
-  useEffect(() => startTransition(mount), [])
-
   const presenceStore = usePresenceStore()
   const presence$ = useMemo(
-    () => (mounted ? presenceStore.documentPresence(documentId) : fallback),
-    [mounted, presenceStore, documentId],
+    () => presenceStore.documentPresence(documentId),
+    [presenceStore, documentId],
   )
-  return useObservable(presence$, initial)
+  // Kept synchronous: presence emits per collaborator report with no incoming
+  // rate limit, and deferred delivery lets a sustained burst restart the
+  // in-flight render pass indefinitely — the pane never settles while the
+  // burst lasts. Synchronous delivery commits every update, so rendering
+  // always makes progress.
+  return useSyncObservable(presence$, initial)
 }

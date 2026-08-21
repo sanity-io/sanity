@@ -1,6 +1,6 @@
 {
   "name": "@sanity/diff",
-  "version": "6.9.1",
+  "version": "6.10.1",
   "description": "Generates diffs between documents and primitive types",
   "keywords": [
     "cms",

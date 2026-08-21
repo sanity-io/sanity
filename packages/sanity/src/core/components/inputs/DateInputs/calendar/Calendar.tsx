@@ -2,7 +2,7 @@ import {TZDate} from '@date-fns/tz'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
+import {Flex, Grid, Select, Text} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
@@ -25,6 +25,7 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
+import {Box, type PaddingProps} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -53,7 +54,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   onSelect: (date: Date) => void
   labels: CalendarLabels
   monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
-  padding?: number
+  padding?: PaddingProps['padding']
   showTimeZone?: boolean
   isPastDisabled?: boolean
   timeZoneScope: TimeZoneScope
@@ -174,7 +175,7 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
 
   useEffect(() => {
     // The change is coming from another source, so we need to update the timeValue to the new value.
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/no-deriving-state-in-effects, react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setTimeValue(timeFromDate)
   }, [timeFromDate])
 
@@ -251,6 +252,7 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
     ) {
       focusCurrentWeekDay()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [ref, focusCurrentWeekDay, focusedDate])
 
   const handleYesterdayClick = useCallback(
@@ -311,7 +313,7 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
 
     return (
       <Flex>
-        <Box flex={1}>
+        <Box flexBasis="0%" flexGrow={1}>
           <CalendarMonthSelect
             onChange={handleFocusedMonthChange}
             monthNames={labels.monthNames}
@@ -471,7 +473,7 @@ function CalendarMonthSelect(props: {
 
   return (
     <Flex flex={1} gap={1}>
-      <Box flex={1}>
+      <Box flexBasis="0%" flexGrow={1}>
         <Select fontSize={1} radius={2} value={value} onChange={onChange} padding={2}>
           {monthNames.map((monthName, i) => (
             // oxlint-disable-next-line no-array-index-key

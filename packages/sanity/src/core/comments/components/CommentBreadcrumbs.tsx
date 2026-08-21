@@ -1,6 +1,7 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {Fragment, useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 

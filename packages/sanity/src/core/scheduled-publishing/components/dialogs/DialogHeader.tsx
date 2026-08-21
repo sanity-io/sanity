@@ -1,4 +1,5 @@
-import {Box, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
+import {Box} from 'ui5'
 
 import {TimeZoneButton} from '../../../components/timeZone/timeZoneButton/TimeZoneButton'
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'

@@ -1,7 +1,6 @@
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Flex,
@@ -26,6 +25,7 @@ import {
   useRef,
   type RefAttributes,
 } from 'react'
+import {Box} from 'ui5'
 
 import {type TimeZoneScope, useTimeZone} from '../../../../../hooks/useTimeZone'
 import {CalendarMonth} from './CalendarMonth'
@@ -186,6 +186,7 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
     ) {
       focusCurrentWeekDay()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [ref, focusCurrentWeekDay, focusedDate])
 
   const handleNowClick = useCallback(() => onSelect(new Date()), [onSelect])
@@ -196,7 +197,7 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
       <Box padding={2}>
         {/* Select month and year */}
         <Flex>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <CalendarMonthSelect
               moveFocusedDate={moveFocusedDate}
               onChange={handleFocusedMonthChange}
@@ -342,7 +343,7 @@ function CalendarMonthSelect(props: {
         paddingX={2}
         radius={0}
       />
-      <Box flex={1}>
+      <Box flexBasis="0%" flexGrow={1}>
         <Select radius={0} value={value} onChange={onChange}>
           {MONTH_NAMES.map((m, i) => (
             // oxlint-disable-next-line no-array-index-key

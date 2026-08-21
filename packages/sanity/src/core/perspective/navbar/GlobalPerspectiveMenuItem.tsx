@@ -4,11 +4,12 @@ import {EyeClosedIcon} from '@sanity/icons/EyeClosed'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LockIcon} from '@sanity/icons/Lock'
 // oxlint-disable-next-line no-restricted-imports -- custom use for Button not supported by ui-components
-import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
+import {Button, Flex, Stack, Text} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
 import {MenuItem} from '@sanity/ui/menu'
 import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -156,13 +157,15 @@ export function GlobalPerspectiveMenuItem(
         <Flex align="flex-start" gap={1}>
           <IconWrapperBox
             $isExcluded={isReleasePerspectiveExcluded}
-            flex="none"
+            flexBasis="auto"
+            flexGrow={0}
+            flexShrink={0}
             data-testid="release-indicator-icon"
             paddingX={3}
             paddingY={2}
           >
-            <Text size={1}>
-              <ReleaseAvatarIcon release={release} />
+            <Text size={2}>
+              <ReleaseAvatarIcon size="small" release={release} />
             </Text>
           </IconWrapperBox>
           <Stack
@@ -206,7 +209,7 @@ export function GlobalPerspectiveMenuItem(
                 </Text>
               )}
           </Stack>
-          <Box flex="none">
+          <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
             {canReleaseBeExcluded && (
               <Tooltip portal content={t('release.layer.hide')} placement="bottom">
                 <ToggleLayerButton

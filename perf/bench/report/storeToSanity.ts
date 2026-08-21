@@ -3,13 +3,16 @@
  * `bench store` — write a merged BenchRunDocument to the metrics-studio
  * Sanity project as a `benchRun` document for the trends dashboard.
  *
- * Two writers:
+ * Three writers:
  * - the daily `track-main` cron stores main HEAD, one doc per run (sha id),
  *   building the absolute time series;
  * - a labeled PR stores its experiment-side build under the PR branch, one
- *   doc per PR (overwritten each push) so branch comparison has real data.
- *   Only absolute-mode runs are stored — an A/B verdict isn't comparable to
- *   the absolute series (see the id logic below).
+ *   doc per PR (overwritten each push) so branch comparison has real data —
+ *   absolute-mode only, since an A/B verdict isn't comparable to the series;
+ * - an `ab_from`/`ab_to` dispatch stores its full comparison with `--ab` as a
+ *   `mode: 'ab'` document (git.sha = experiment, mergeBaseSha = reference) —
+ *   an investigation record for the Comparisons tool, which the trends
+ *   dashboard deliberately does not plot.
  *
  * Requires BENCH_METRICS_WRITE_TOKEN — the only real secret in the suite.
  */
@@ -40,7 +43,7 @@ export function documentIdForRun(run: BenchRunDocument): string {
     : `benchRun-${run.git.sha}-${run.runner.runId ?? 'local'}`
 }
 
-export async function storeRun(inputPathArg?: string): Promise<void> {
+export async function storeRun(inputPathArg?: string, options: {ab?: boolean} = {}): Promise<void> {
   const inputPath = path.resolve(
     inputPathArg ??
       path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'results', 'merged.json'),
@@ -61,10 +64,17 @@ export async function storeRun(inputPathArg?: string): Promise<void> {
     useCdn: false,
   })
 
-  if (run.mode !== 'absolute') {
+  // The mode must match the caller's stated intent: absolute runs are
+  // time-series points, ab runs are standalone comparison documents (the
+  // trend query filters on mode, so a mixup would silently mis-shelve the
+  // document rather than break loudly here).
+  const expectedMode = options.ab ? 'ab' : 'absolute'
+  if (run.mode !== expectedMode) {
     console.error(
-      `Refusing to store a ${run.mode}-mode run: only absolute-mode runs are comparable to the ` +
-        `dashboard's time series. (A labeled PR must run absolute mode to be stored.)`,
+      options.ab
+        ? `--ab expects an A/B comparison document, got a ${run.mode}-mode run`
+        : `Refusing to store a ${run.mode}-mode run as a time-series point: only absolute-mode ` +
+            `runs are comparable to the dashboard's series. (Pass --ab to store a comparison.)`,
     )
     process.exit(1)
   }

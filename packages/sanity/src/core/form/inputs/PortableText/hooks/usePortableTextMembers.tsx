@@ -128,7 +128,7 @@ export function usePortableTextMemberItemsFromProps(
       }
     }
 
-    // oxlint-disable-next-line react/react-compiler -- @todo this should be fixed but it's difficult and needs research
+    // oxlint-disable-next-line react/refs -- @todo this should be fixed but it's difficult and needs research
     const items: PortableTextMemberItem[] = result.map((item) => {
       const key = pathToString(item.node.path)
       const existingItem = portableTextMemberItemsRef.current.find((refItem) => refItem.key === key)
@@ -217,10 +217,11 @@ export function usePortableTextMemberItemsFromProps(
       }
     })
 
-    // oxlint-disable-next-line react/react-compiler -- @todo this should be fixed but it's difficult and needs research
+    // oxlint-disable-next-line react/refs -- @todo this should be fixed but it's difficult and needs research
     portableTextMemberItemsRef.current = items
 
     return items
+    // oxlint-disable-next-line react/memo-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [
     members,
     onPathFocus,

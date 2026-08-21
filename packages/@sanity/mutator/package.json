@@ -1,6 +1,6 @@
 {
   "name": "@sanity/mutator",
-  "version": "6.9.1",
+  "version": "6.10.1",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
   "keywords": [
     "cms",
@@ -69,5 +69,8 @@
   "browserslist": [
     "node >=22.12",
     "baseline 2024"
-  ]
+  ],
+  "engines": {
+    "node": ">=22.12"
+  }
 }

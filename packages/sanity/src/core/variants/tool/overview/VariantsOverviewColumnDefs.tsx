@@ -1,6 +1,7 @@
-import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 import {type HTMLProps, useMemo, type RefAttributes} from 'react'
 import {StateLink} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {useTranslation, type UseTranslationResponse} from '../../../i18n/hooks/useTranslation'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
@@ -59,7 +60,7 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
 
   if (variant.isLoading) {
     return (
-      <Box {...cellProps} flex={1} paddingLeft={3} paddingRight={2} paddingY={2} sizing="border">
+      <Box {...cellProps} flexBasis="0%" flexGrow={1} paddingLeft={3} paddingRight={2} paddingY={2}>
         <Stack gap={2}>
           <Text size={1} weight="medium">
             <Skeleton animated radius={1} style={{width: '16ch'}} />
@@ -75,7 +76,7 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
   const conditionsText = getVariantConditionsText(variant.conditions)
 
   return (
-    <Box {...cellProps} flex={1} paddingLeft={3} paddingRight={2} paddingY={1} sizing="border">
+    <Box {...cellProps} flexBasis="0%" flexGrow={1} paddingLeft={3} paddingRight={2} paddingY={1}>
       <Flex align="center" gap={3}>
         <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
           <Flex align="center" gap={3}>

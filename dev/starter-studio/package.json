@@ -1,6 +1,6 @@
 {
   "name": "sanity-starter-studio",
-  "version": "6.9.1",
+  "version": "6.9.2",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -11,7 +11,7 @@
     "start": "sanity preview --port 3337"
   },
   "dependencies": {
-    "babel-plugin-react-compiler": "catalog:",
+    "oxc-transform-react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",

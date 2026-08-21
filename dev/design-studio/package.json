@@ -1,6 +1,6 @@
 {
   "name": "design-studio",
-  "version": "6.9.1",
+  "version": "6.9.2",
   "private": true,
   "description": "Sanity Design Studio",
   "keywords": [
@@ -41,6 +41,7 @@
   "devDependencies": {
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/react": "catalog:",
+    "oxc-transform-react": "catalog:",
     "rimraf": "catalog:"
   }
 }

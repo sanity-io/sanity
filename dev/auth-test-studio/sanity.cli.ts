@@ -2,8 +2,6 @@ import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
-const reactCompilerAllowList = /\/(?:sanity|@sanity\/vision)\/src\/.*\.tsx?$/
-
 export default defineCliConfig({
   api: {
     projectId: 'ppsg7ml5',
@@ -18,22 +16,13 @@ export default defineCliConfig({
   // {@link https://vite.dev/guide/rolldown#full-bundle-mode}
   unstable_bundledDev: true,
   reactCompiler: {
+    // React Compiler on `oxc-transform-react` (no babel), see dev/test-studio/sanity.cli.ts
+    transform: 'oxc',
     target: '19',
-    // By default the compiler is loaded up on all workspace files, even sanity/lib/structure.js which is pre-compiled with `tsdown`,
-    // and so we filter by just studio files
-    sources: (filename) => {
-      // The default behavior is to always skip node_modules: https://github.com/facebook/react/blob/d6cae440e34c6250928e18bed4a16480f83ae18a/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L326
-      if (filename.indexOf('node_modules') !== -1) {
-        return false
-      }
-      // Compile files in the test studio itself
-      if (filename.indexOf('dev/starter-studio') !== -1) {
-        return true
-      }
-      // If the file is `.ts` or `.tsx` then we should run the compiler (it's resolved with the `monorepo` condition during `sanity dev`)
-      // otherwise it's likely resolving a built file that had react compiler already applied during its build process
-      return reactCompilerAllowList.test(filename)
-    },
+    // By default the compiler runs on all workspace files, even sanity/lib/structure.js which is
+    // pre-compiled with `tsdown`, and so we filter by just studio files (substring filters; the
+    // `monorepo` condition resolves workspace sources under `src/` during `sanity dev`)
+    sources: ['dev/auth-test-studio', '/sanity/src/', '/@sanity/vision/src/'],
   },
   vite(viteConfig: UserConfig, {command, mode}): UserConfig {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'

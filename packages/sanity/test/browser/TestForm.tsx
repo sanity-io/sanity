@@ -107,7 +107,7 @@ export function TestForm(props: TestFormProps) {
 
   useEffect(() => {
     if (documentFromProps) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setDocument(documentFromProps)
       windowWithDocumentState.documentState = documentFromProps
     }
@@ -115,7 +115,7 @@ export function TestForm(props: TestFormProps) {
 
   useEffect(() => {
     if (focusPathFromProps) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setFocusPath(focusPathFromProps)
 
       const lastSegment = focusPathFromProps[focusPathFromProps.length - 1]

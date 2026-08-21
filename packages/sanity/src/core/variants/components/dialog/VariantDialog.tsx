@@ -1,8 +1,9 @@
 import {at, set} from '@sanity/mutate'
 import {applyPatches} from '@sanity/mutate/_unstable_apply'
-import {Box, Card, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type FormEvent, useCallback, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'

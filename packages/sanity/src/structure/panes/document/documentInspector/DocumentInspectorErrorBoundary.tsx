@@ -1,8 +1,9 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ErrorBoundary} from '../../../../ui-components/errorBoundary/ErrorBoundary'

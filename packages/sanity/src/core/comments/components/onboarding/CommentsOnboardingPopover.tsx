@@ -1,5 +1,6 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {keyframes, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../../ui-components/popover/Popover'

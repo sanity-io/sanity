@@ -17,7 +17,7 @@ const HOTSPOT = {x: 0.467, y: 0.493, height: 0.984, width: 0.617}
 
 const PREVIEW_ASPECT_RATIOS = [3 / 4, 1, 16 / 9, 4]
 
-// The studio applies a global reset (via `@sanity-labs/ui-poc/styles.css`) that
+// The studio applies a global reset (via `ui5/styles.css`) that
 // clamps every image to the width of its container. `HotspotImage` scales the
 // image past its crop viewport, so it has to survive that reset.
 beforeAll(() => {

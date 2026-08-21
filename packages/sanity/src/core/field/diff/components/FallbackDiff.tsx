@@ -1,5 +1,5 @@
-import {Box} from '@sanity/ui'
 import {type ReactNode} from 'react'
+import {Box} from 'ui5'
 
 import {Preview} from '../../../preview/components/Preview'
 import {type FieldPreviewComponent} from '../../preview/types'

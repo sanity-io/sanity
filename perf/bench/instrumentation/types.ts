@@ -33,6 +33,12 @@ export interface LayoutShiftSample {
   startTime: number
   value: number
   hadRecentInput: boolean
+  /**
+   * Compact descriptors of the shifted elements (from LayoutShiftAttribution),
+   * e.g. '[data-testid="pane-content"]' or 'div.someClass' — so a CLS number
+   * can name its culprit instead of just existing.
+   */
+  sources: string[]
 }
 
 export interface NavigationSample {

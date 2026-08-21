@@ -112,7 +112,6 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
           // open-doc-warm (cached) — so demo both. Warm is faster (cache hits).
           metrics: [
             metric(rng, 'boot-cold · time to editable', day < 70 ? 4200 : 4600),
-            metric(rng, 'boot-cold · TTFB', 90 + (rng() - 0.5) * 20),
             metric(rng, 'boot-cold · FCP', 1200 + (rng() - 0.5) * 200),
             metric(rng, 'boot-cold · LCP', 1800 + (rng() - 0.5) * 300),
             metric(rng, 'boot-cold · CLS', 0.04 + rng() * 0.03, 'cls'),
@@ -121,7 +120,6 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
             metric(rng, 'boot-cold · auth round trips', day < 50 ? 2 : 1, 'count'),
             metric(rng, 'boot-cold · auth in flight', day < 50 ? 84 : 42),
             metric(rng, 'open-doc-warm · time to editable', day < 70 ? 1900 : 2100),
-            metric(rng, 'open-doc-warm · TTFB', 40 + (rng() - 0.5) * 12),
             metric(rng, 'open-doc-warm · FCP', 520 + (rng() - 0.5) * 90),
             metric(rng, 'open-doc-warm · LCP', 780 + (rng() - 0.5) * 140),
             metric(rng, 'open-doc-warm · CLS', 0.01 + rng() * 0.015, 'cls'),

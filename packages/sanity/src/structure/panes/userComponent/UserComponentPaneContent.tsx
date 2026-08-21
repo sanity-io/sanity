@@ -1,6 +1,6 @@
-import {Box} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {usePane} from '../../components/pane/usePane'
 
@@ -17,7 +17,7 @@ export function UserComponentPaneContent(props: UserComponentPaneContentProps) {
   const {collapsed} = usePane()
 
   return (
-    <Root hidden={collapsed} height="fill" overflow="auto">
+    <Root hidden={collapsed} height="100%" overflow="auto">
       {children}
     </Root>
   )

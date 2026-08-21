@@ -27,7 +27,7 @@ interface DocumentStatusProps {
  *
  * Example: `**Published Oct 16 2023** Edited 8m ago`
  *
- * @internal
+ * @deprecated use DocumentVersionsStatus instead
  */
 export function DocumentStatus({draft, published, versions, singleLine}: DocumentStatusProps) {
   const {data: releases} = useActiveReleases()

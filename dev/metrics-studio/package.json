@@ -1,6 +1,6 @@
 {
   "name": "metrics-studio",
-  "version": "6.9.1",
+  "version": "6.9.2",
   "private": true,
   "description": "Studio presenting repo health metrics (perf benchmark runs from perf/bench, and friends)",
   "license": "MIT",
@@ -19,7 +19,7 @@
     "@visx/responsive": "^4.0.0",
     "@visx/scale": "^4.0.0",
     "@visx/shape": "^4.0.0",
-    "babel-plugin-react-compiler": "catalog:",
+    "oxc-transform-react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-rx": "catalog:",

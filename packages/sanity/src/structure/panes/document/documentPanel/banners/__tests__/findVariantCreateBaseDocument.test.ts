@@ -16,6 +16,7 @@ const versionStub = (
 ): VersionInfoDocumentStub => ({
   _createdAt: '',
   _updatedAt: '',
+  _type: 'article',
   ...stub,
 })
 

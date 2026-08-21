@@ -1,4 +1,4 @@
-import '@sanity-labs/ui-poc/styles.css'
+import 'ui5/styles.css'
 import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
@@ -102,8 +102,12 @@ export {
 } from '../core/components/commandList/types'
 export {ContextMenuButton} from '../core/components/contextMenuButton/ContextMenuButton'
 export {Delay} from '../core/components/Delay'
+// oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
+export {DocumentVersionsStatus} from '../core/components/documentStatus/DocumentVersionsStatus'
+// oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
+export {DocumentVersionsStatusIndicator} from '../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 export {ErrorActions, type ErrorActionsProps} from '../core/components/errorActions/ErrorActions'
 export {type ErrorWithId} from '../core/components/errorActions/types'
 export {
@@ -1156,7 +1160,7 @@ export {
   createMockAuthStore,
   type MockAuthStoreOptions,
 } from '../core/store/authStore/createMockAuthStore'
-export {getProviderTitle} from '../core/store/authStore/providerTitle'
+export {getProviderTitle} from '@sanity/access-ui'
 export {
   type AuthProbeResult,
   type AuthState,
@@ -1749,6 +1753,11 @@ export {
   type WelcomeEvent,
 } from '@sanity/client'
 export {type ImageUrlBuilder} from '@sanity/image-url'
-export {DEFAULT_ANNOTATIONS, DEFAULT_DECORATORS} from '@sanity/schema'
+export {
+  DEFAULT_ANNOTATIONS,
+  DEFAULT_BLOCK_STYLES,
+  DEFAULT_DECORATORS,
+  DEFAULT_LIST_TYPES,
+} from '@sanity/schema'
 export * from '@sanity/types'
 export {type TFunction} from 'i18next'

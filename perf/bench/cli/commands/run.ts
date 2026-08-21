@@ -93,7 +93,7 @@ export const runCommand = command(
       }),
     ),
     failOnVerdict: option('--fail-on-verdict', {
-      description: message`Exit non-zero unless every comparison gates neutral (used by the self-test)`,
+      description: message`Exit non-zero if any comparison gates as a regression or improvement; inconclusive is not a failure (used by the self-test)`,
     }),
     throttle: withDefault(
       option('--throttle', integer({min: 1}), {

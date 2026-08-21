@@ -1,6 +1,6 @@
-import babel from '@rolldown/plugin-babel'
+import {chromaticPlugin} from '@chromatic-com/vitest/plugin'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
-import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
+import viteReact from '@vitejs/plugin-react'
 import {playwright} from '@vitest/browser-playwright'
 import {defaultClientConditions, defineConfig} from 'vite'
 
@@ -8,10 +8,21 @@ import {readFileAsBase64} from './test/browser/commands'
 
 const ALL_BROWSERS = ['chromium', 'firefox', 'webkit'] as const
 
+// Chromatic visual regression capture (early access). When CHROMATIC=1 the
+// @chromatic-com/vitest plugin archives each test's end state while the suite
+// runs, for upload to Chromatic via `chromatic --vitest` (see
+// .github/workflows/chromatic.yml). Normal runs (flag unset) are unaffected.
+// Chromatic re-renders archives in its own standardized cloud browser, so
+// capture runs are chromium-only — capturing from firefox/webkit would only
+// multiply identical archives.
+const chromaticEnabled = Boolean(process.env.CHROMATIC)
+
 // CI shards by browser (one runner each) to avoid contention. Set
 // SANITY_VITEST_BROWSER to a single browser name to run only that instance;
-// unset runs all three (the default for local runs).
-const selectedBrowser = process.env.SANITY_VITEST_BROWSER
+// unset runs all three (the default for local runs) — except for Chromatic
+// capture runs, which default to chromium.
+const selectedBrowser =
+  process.env.SANITY_VITEST_BROWSER ?? (chromaticEnabled ? 'chromium' : undefined)
 const browsers = selectedBrowser
   ? ALL_BROWSERS.filter((name) => name === selectedBrowser)
   : ALL_BROWSERS
@@ -22,11 +33,19 @@ if (selectedBrowser && browsers.length === 0) {
   )
 }
 
+if (chromaticEnabled && selectedBrowser !== 'chromium') {
+  throw new Error(
+    `CHROMATIC=1 captures archives from chromium only; unset SANITY_VITEST_BROWSER or set it to "chromium" (got "${selectedBrowser}").`,
+  )
+}
+
 export default defineConfig({
   plugins: [
     vanillaExtractPlugin(),
-    viteReact(),
-    babel({presets: [reactCompilerPreset({target: '19'})]}),
+    // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
+    // as the TypeScript/JSX transform (no babel in the pipeline)
+    viteReact({compiler: {target: '19'}}),
+    ...(chromaticEnabled ? [chromaticPlugin()] : []),
   ],
   resolve: {
     conditions: ['monorepo', ...defaultClientConditions],

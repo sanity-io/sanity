@@ -1,6 +1,7 @@
-import {Box, Card, Text, useMediaIndex} from '@sanity/ui'
+import {Card, Text, useMediaIndex} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../../../ui-components/button/Button'
 import {CommandList} from '../../../../../../components/commandList/CommandList'

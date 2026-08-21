@@ -1,6 +1,7 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 /** @internal */
 export interface MetaInfoProps {

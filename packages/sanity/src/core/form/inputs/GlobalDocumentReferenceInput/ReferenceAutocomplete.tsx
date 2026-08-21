@@ -1,4 +1,4 @@
-import {Box, Flex, type Placement, Text} from '@sanity/ui'
+import {Flex, type Placement, Text} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
 import {
   type ComponentProps,
@@ -9,6 +9,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'

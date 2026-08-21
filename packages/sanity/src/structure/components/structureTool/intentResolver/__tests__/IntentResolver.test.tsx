@@ -57,9 +57,9 @@ class Boundary extends Component<{children: ReactNode}, {error: unknown}> {
   }
 }
 
-function socketTimeoutError() {
-  return Object.assign(new Error('Socket timed out on request to https://x.api.sanity.io/…'), {
-    code: 'ESOCKETTIMEDOUT',
+function timeoutError() {
+  return Object.assign(new Error('The operation was aborted due to timeout'), {
+    name: 'TimeoutError',
   })
 }
 
@@ -87,7 +87,7 @@ describe('IntentResolver', () => {
   }
 
   it('delegates infrastructure failures to the request-error channel instead of crashing', async () => {
-    mockResolveTypeForDocument.mockReturnValue(throwError(socketTimeoutError))
+    mockResolveTypeForDocument.mockReturnValue(throwError(timeoutError))
 
     const {channel, boundary} = renderResolver()
 
@@ -99,7 +99,7 @@ describe('IntentResolver', () => {
 
   it('re-runs intent resolution when the claimed error is retried', async () => {
     mockResolveTypeForDocument
-      .mockReturnValueOnce(throwError(socketTimeoutError))
+      .mockReturnValueOnce(throwError(timeoutError))
       .mockReturnValueOnce(of('author'))
 
     const {channel} = renderResolver()
@@ -114,7 +114,7 @@ describe('IntentResolver', () => {
   })
 
   it('does not re-fetch when the claimed error is retried after unmount', async () => {
-    mockResolveTypeForDocument.mockReturnValue(throwError(socketTimeoutError))
+    mockResolveTypeForDocument.mockReturnValue(throwError(timeoutError))
 
     const {channel, unmount} = renderResolver()
 

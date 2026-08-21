@@ -1,5 +1,5 @@
-import {Box} from '@sanity/ui'
 import {useCallback} from 'react'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {InvalidValueInput} from '../../inputs/InvalidValueInput/InvalidValueInput'
