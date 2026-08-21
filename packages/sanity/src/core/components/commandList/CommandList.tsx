@@ -129,6 +129,9 @@ function CommandListComponent({
   wrapAround = true,
   ...paddingProps
 }: CommandListProps & RefAttributes<CommandListHandle>) {
+  // TanStack Virtual returns functions that cannot be memoized safely.
+  'use no memo'
+
   const isMountedRef = useRef(false)
   const [commandListId] = useState(useId())
   const activeIndexRef = useRef(initialIndex ?? 0)
@@ -157,7 +160,7 @@ function CommandListComponent({
   )
 
   // This will trigger a re-render whenever its internal state changes
-  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
+  // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual; function is opted out with 'use no memo'
   const virtualizer = useVirtualizer({
     count: items.length,
     getItemKey,

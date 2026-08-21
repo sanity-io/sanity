@@ -60,6 +60,9 @@ const TableInner = <TableData, AdditionalRowTableData>({
   scrollContainerRef,
   hideTableInlinePadding = false,
 }: TableProps<TableData, AdditionalRowTableData>) => {
+  // TanStack Virtual returns functions that cannot be memoized safely.
+  'use no memo'
+
   const {searchTerm, sort} = useTableContext()
 
   const filteredData = useMemo(() => {
@@ -101,7 +104,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
     })
   }, [columnDefs, data, searchFilter, searchTerm, sort])
 
-  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
+  // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual; function is opted out with 'use no memo'
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,
     getScrollElement: () => scrollContainerRef,

@@ -68,6 +68,9 @@ const VirtualList = () => {
 export default VirtualList
 
 function useVirtualizedSchedules(activeSchedules: Schedule[], sortBy?: ScheduleSort) {
+  // TanStack Virtual returns functions that cannot be memoized safely.
+  'use no memo'
+
   const containerRef = useRef<HTMLDivElement>(null)
 
   const listSourceItems = useMemo(() => {
@@ -94,7 +97,7 @@ function useVirtualizedSchedules(activeSchedules: Schedule[], sortBy?: ScheduleS
     return items
   }, [activeSchedules, sortBy])
 
-  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
+  // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual; function is opted out with 'use no memo'
   const virtualizer = useVirtualizer({
     count: listSourceItems.length,
     getScrollElement: () => containerRef.current,
