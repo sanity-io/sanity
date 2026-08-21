@@ -15,14 +15,29 @@ export interface TrendRun {
     prNumber?: number
     mergeBaseSha?: string
   } | null
-  runner: {calibrationMs: number; runId?: string; runAttempt?: number} | null
+  runner: {
+    calibrationMs: number
+    runId?: string
+    runAttempt?: number
+    os?: string
+    arch?: string
+    cpus?: number
+    memGb?: number
+    nodeVersion?: string
+    /** Hardware generation discriminator — collected from Aug 2026 on. */
+    cpuModel?: string
+    imageOs?: string
+    imageVersion?: string
+    /** Chromium the sessions ran in — collected from Aug 2026 on. */
+    browserVersion?: string
+  } | null
   bundle: {experiment: {initialJsBytes: number; totalJsBytes?: number | null} | null} | null
   scenarios:
     | {
         scenario: string
         sourceFile?: string
         /** Per-scenario shard runner calibration (multi-shard CI runs only). */
-        runner?: {calibrationMs: number | null} | null
+        runner?: {calibrationMs: number | null; cpuModel?: string | null} | null
         kind: 'interaction' | 'pageload'
         metrics:
           | {
@@ -58,12 +73,12 @@ export const TREND_QUERY = `*[_type == "benchRun" && mode == "absolute"] | order
   startedAt,
   mode,
   git{sha, branch, committedAt, prNumber, mergeBaseSha},
-  runner{calibrationMs, runId, runAttempt},
+  runner{calibrationMs, runId, runAttempt, os, arch, cpus, memGb, nodeVersion, cpuModel, imageOs, imageVersion, browserVersion},
   bundle{experiment{initialJsBytes, totalJsBytes}},
   scenarios[]{
     scenario,
     sourceFile,
-    runner{calibrationMs},
+    runner{calibrationMs, cpuModel},
     kind,
     metrics[]{label, unit, experiment{summary{median, p75, p90}}},
     soak{minutes, samples[]{minute, heapMb, domNodes, listeners, latencyP50Ms, cpuTaskMs, connections, requests}}
@@ -93,6 +108,32 @@ export interface TrendPoint {
    * percentile rule wants at least INP_MIN_INTERACTIONS.
    */
   interactions?: number
+  /**
+   * Host-speed score of the machine that measured this point (higher = slower
+   * host) — the scenario's own shard calibration on multi-shard CI runs,
+   * falling back to the run-level score. Drawn as a per-chart context line so
+   * a metric spike can be eyeballed against the host that produced it without
+   * leaving the chart (the Calibration tab keeps the full per-shard spread).
+   */
+  calibrationMs?: number
+  /**
+   * The machine that produced this point, for the run popover's Host section.
+   * Run-level metadata, except `cpuModel`, which the scenario's own shard
+   * overrides where stamped (multi-shard runs land on different machines).
+   * Older documents carry only the always-collected fields; cpuModel /
+   * image / browser exist from Aug 2026 on.
+   */
+  host?: {
+    os?: string
+    arch?: string
+    cpus?: number
+    memGb?: number
+    nodeVersion?: string
+    cpuModel?: string
+    imageOs?: string
+    imageVersion?: string
+    browserVersion?: string
+  }
   sha: string
   /** benchRun document id — opens the run in the studio. */
   runId: string
@@ -242,6 +283,21 @@ export const SOAK_METRICS: {
   },
 ]
 
+/**
+ * What the host-calibration score actually is — one string shared by every
+ * surface that mentions it (the Calibration tab, the chart ⓘ, the legend
+ * entry, the tooltip line, the run popover's Host section), so the dashboard
+ * can't describe its own honesty measure in two different ways. Mirrors
+ * calibrateHost in perf/bench/runner/browser.ts. Declared above TREND_GROUPS,
+ * which folds it into the Calibration tab's description.
+ */
+export const CALIBRATION_EXPLAINER =
+  'Host calibration is a fixed CPU workload (an integer-hashing loop, median of 5 runs) executed ' +
+  'unthrottled in the browser on the CI machine before it benchmarks anything. Higher = slower ' +
+  'host. It is an absolute score of its own, with no particular relationship to any metric’s ' +
+  'value — only its movement between runs is meaningful — and it measures CPU speed only, not ' +
+  'memory, disk or network.'
+
 export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[] = [
   {
     id: 'vitals',
@@ -276,8 +332,7 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
   {
     id: 'environment',
     title: 'Calibration',
-    description:
-      'CI host speed per run. Every number in the other tabs depends on how fast the host was, so check here before trusting a spike.',
+    description: `${CALIBRATION_EXPLAINER} Every number in the other tabs depends on how fast the host was, so check here before trusting a spike.`,
   },
 ]
 
@@ -409,7 +464,13 @@ export function formatValue(value: number, unit: TrendUnit): string {
     // the extra digit is noise and costs width again
     return `${Math.abs(seconds) < 100 ? seconds.toFixed(1) : seconds.toFixed(0)}s`
   }
-  return `${value.toFixed(0)}ms`
+  // Sub-10ms fractional values keep one decimal: host calibration lives at
+  // 5–9ms, where whole-ms rounding collapses its entire dynamic range into
+  // four buckets ("8ms" hiding 7.6→8.4). One decimal matches the 0.1ms
+  // granularity Chromium's coarsened performance.now() actually measures at —
+  // more would be false precision. Exact integers stay whole so axis zero
+  // ticks and round latencies don't grow a pointless ".0".
+  return `${Math.abs(value) < 10 && !Number.isInteger(value) ? value.toFixed(1) : value.toFixed(0)}ms`
 }
 
 /**
@@ -473,16 +534,61 @@ export function filterByRange(runs: TrendRun[], days: number | null): TrendRun[]
  * series holds one line per git branch present in the runs — a single branch
  * renders as one line, several overlay for comparison.
  */
+/** The run-level machine description (see TrendPoint.host), or undefined. */
+function hostOf(run: TrendRun): TrendPoint['host'] {
+  const runner = run.runner
+  if (!runner) return undefined
+  return {
+    os: runner.os,
+    arch: runner.arch,
+    cpus: runner.cpus,
+    memGb: runner.memGb,
+    nodeVersion: runner.nodeVersion,
+    cpuModel: runner.cpuModel,
+    imageOs: runner.imageOs,
+    imageVersion: runner.imageVersion,
+    browserVersion: runner.browserVersion,
+  }
+}
+
+/**
+ * Per-shard attribution for a point produced by one scenario: the shard's own
+ * calibration score (falling back to the run level), and — where mergeShards
+ * stamped one — the shard's CPU model layered over the run-level host, since
+ * multi-shard CI runs land each scenario on a different machine and the
+ * run-level runner block describes only the first shard's. Shared by the
+ * metric, soak and calibration series builders so none of them can
+ * misattribute a shard's host.
+ */
+function shardMeta(
+  run: TrendRun,
+  runner: NonNullable<TrendRun['scenarios']>[number]['runner'],
+): Pick<TrendPoint, 'calibrationMs' | 'host'> {
+  const calibrationMs =
+    typeof runner?.calibrationMs === 'number'
+      ? runner.calibrationMs
+      : (run.runner?.calibrationMs ?? undefined)
+  const shardCpuModel = typeof runner?.cpuModel === 'string' ? runner.cpuModel : undefined
+  return {
+    ...(calibrationMs !== undefined ? {calibrationMs} : {}),
+    ...(shardCpuModel ? {host: {...hostOf(run), cpuModel: shardCpuModel}} : {}),
+  }
+}
+
 /** Backlink + identity fields every TrendPoint carries, derived from a run. */
 function pointMeta(
   run: TrendRun,
-): Pick<TrendPoint, 'sha' | 'runId' | 'prNumber' | 'ciRunId' | 'ciRunAttempt'> {
+): Pick<TrendPoint, 'sha' | 'runId' | 'prNumber' | 'ciRunId' | 'ciRunAttempt' | 'host'> {
+  const host = hostOf(run)
   return {
     sha: run.git?.sha ?? 'unknown',
     runId: run._id,
     prNumber: run.git?.prNumber,
     ciRunId: run.runner?.runId,
     ciRunAttempt: run.runner?.runAttempt,
+    // Only when the run recorded any host detail — an empty Host section
+    // would be noise on documents that predate the metadata
+    ...(host && Object.values(host).some((value) => value != null) ? {host} : {}),
   }
 }
 
@@ -545,12 +651,26 @@ function mergeRunsPerCommit(points: TrendPoint[]): TrendPoint[] {
     const interactionCounts = group
       .map((point) => point.interactions)
       .filter((v): v is number => v !== undefined)
+    const calibrations = group
+      .map((point) => point.calibrationMs)
+      .filter((v): v is number => v !== undefined)
+    // Host identity survives the merge only when every merged run agrees on
+    // it: same-commit re-runs land on different machines exactly when host
+    // context matters, and pairing the median score below with the *last*
+    // re-run's CPU model/browser would attribute a synthetic point to one
+    // specific machine it does not describe.
+    const hostKeys = new Set(group.map((point) => JSON.stringify(point.host ?? null)))
     merged.push({
       ...last,
       value: medianOf(group.map((point) => point.value)),
       p75: p75s.length > 0 ? medianOf(p75s) : undefined,
       p90: p90s.length > 0 ? medianOf(p90s) : undefined,
       interactions: interactionCounts.length > 0 ? medianOf(interactionCounts) : undefined,
+      // Median host speed across the merged runs — consistent with the value
+      // merge, so the context line describes the same synthetic point. The
+      // unmerged per-run spread stays visible in the Calibration tab.
+      calibrationMs: calibrations.length > 0 ? medianOf(calibrations) : undefined,
+      host: hostKeys.size === 1 ? last.host : undefined,
     })
   }
   return merged.sort((a, b) => a.date.getTime() - b.date.getTime())
@@ -567,7 +687,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
       'description' | 'goal' | 'group' | 'sourceFile' | 'lineLabel' | 'goodThreshold'
     >,
     run: TrendRun,
-    point: Pick<TrendPoint, 'value' | 'p75' | 'p90' | 'interactions'>,
+    point: Pick<TrendPoint, 'value' | 'p75' | 'p90' | 'interactions' | 'calibrationMs' | 'host'>,
   ) => {
     const existing = series.get(key) ?? {key, title, unit, ...meta, lines: []}
     const branch = run.git?.branch ?? 'unknown'
@@ -590,6 +710,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
       const inpInteractions = scenario.metrics?.find(
         (metric) => metric.label === 'INP interactions',
       )?.experiment?.summary?.median
+      const scenarioMeta = shardMeta(run, scenario.runner)
       for (const metric of scenario.metrics ?? []) {
         if (metric.label === 'INP interactions') continue
         // Older documents carry a TTFB metric; skip it. Against the local
@@ -608,6 +729,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
             value: summary.median,
             p75: summary.p75,
             p90: summary.p90,
+            ...scenarioMeta,
             ...(metric.label === 'INP' && inpInteractions !== undefined
               ? {interactions: inpInteractions}
               : {}),
@@ -716,26 +838,33 @@ export function calibrationSeries(runs: TrendRun[]): TrendSeries {
     // by mergeShards). Plot each distinct shard calibration as its own point —
     // the vertical spread at one date IS the cross-shard host variance. Older
     // documents (no per-scenario runner) fall back to the run-level score.
-    const shardScores = new Set<number>()
+    // Each point keeps its own shard's identity (via shardMeta): the run-level
+    // runner block is the first shard's, and naming that machine on every
+    // shard's point would misattribute the host in the tooltip and popover.
+    const shards = new Map<string, NonNullable<TrendRun['scenarios']>[number]['runner']>()
     for (const scenario of run.scenarios ?? []) {
       if (typeof scenario.runner?.calibrationMs === 'number') {
-        shardScores.add(scenario.runner.calibrationMs)
+        shards.set(
+          `${scenario.runner.calibrationMs}:${scenario.runner.cpuModel ?? ''}`,
+          scenario.runner,
+        )
       }
     }
-    const values =
-      shardScores.size > 0 ? [...shardScores] : run.runner ? [run.runner.calibrationMs] : []
-    if (values.length === 0) continue
+    const runners = shards.size > 0 ? [...shards.values()] : run.runner ? [null] : []
+    if (runners.length === 0) continue
     const branch = run.git?.branch ?? 'unknown'
     let line = byBranch.get(branch)
     if (!line) {
       line = {branch, points: []}
       byBranch.set(branch, line)
     }
-    for (const value of values) {
+    for (const runner of runners) {
+      const meta = shardMeta(run, runner)
       line.points.push({
         date: runDate(run),
-        value,
+        value: meta.calibrationMs!,
         ...pointMeta(run),
+        ...(meta.host ? {host: meta.host} : {}),
       })
     }
   }
@@ -743,8 +872,7 @@ export function calibrationSeries(runs: TrendRun[]): TrendSeries {
     key: 'runner:calibration',
     title: 'host calibration (higher = slower host)',
     unit: 'ms',
-    description:
-      'A fixed CPU workload run on the CI machine before each benchmark. All numbers above are relative to host speed. When this line spikes where a metric spikes, suspect the runner, not the studio.',
+    description: `${CALIBRATION_EXPLAINER} All numbers in the other tabs are relative to host speed — when this line spikes where a metric spikes, suspect the runner, not the studio.`,
     goal: 'context',
     group: 'environment',
     lines: [...byBranch.values()],
@@ -755,13 +883,19 @@ type SoakScenario = NonNullable<NonNullable<TrendRun['scenarios']>[number]['soak
 type SoakSample = NonNullable<SoakScenario['samples']>[number]
 
 /** Find each run's soak scenario (there's at most one), newest run first. */
-function runsWithSoak(
-  runs: TrendRun[],
-): {run: TrendRun; soak: SoakScenario; sourceFile?: string}[] {
+function runsWithSoak(runs: TrendRun[]): {
+  run: TrendRun
+  soak: SoakScenario
+  sourceFile?: string
+  /** The soak scenario's own shard runner — see shardMeta. */
+  runner: NonNullable<TrendRun['scenarios']>[number]['runner']
+}[] {
   return runs
     .map((run) => {
       const scenario = run.scenarios?.find((s) => s.soak?.samples?.length)
-      return scenario?.soak ? {run, soak: scenario.soak, sourceFile: scenario.sourceFile} : null
+      return scenario?.soak
+        ? {run, soak: scenario.soak, sourceFile: scenario.sourceFile, runner: scenario.runner}
+        : null
     })
     .filter((entry) => entry !== null)
 }
@@ -787,6 +921,7 @@ export function latestSoakCharts(runs: TrendRun[]): {run: TrendRun; charts: Tren
         date: new Date(sample.minute * 60_000),
         value,
         ...pointMeta(latest.run),
+        ...shardMeta(latest.run, latest.runner),
       }))
     return {
       key: `soak:latest:${metric.key}`,
@@ -848,13 +983,13 @@ function soakHistory(
   const byMetric = SOAK_METRICS.map((metric): TrendSeries => {
     const lineByBranch = new Map<string, TrendLine>()
     let sourceFile: string | undefined
-    for (const {run, soak, sourceFile: file} of withSoak) {
+    for (const {run, soak, sourceFile: file, runner} of withSoak) {
       const value = reduce(soak.samples ?? [], metric.key)
       if (value === null) continue
       sourceFile ??= file
       const branch = run.git?.branch ?? 'unknown'
       const line = lineByBranch.get(branch) ?? {branch, points: []}
-      line.points.push({date: runDate(run), value, ...pointMeta(run)})
+      line.points.push({date: runDate(run), value, ...pointMeta(run), ...shardMeta(run, runner)})
       lineByBranch.set(branch, line)
     }
     return {
