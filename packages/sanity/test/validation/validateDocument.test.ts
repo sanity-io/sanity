@@ -356,6 +356,74 @@ describe('validateItem', () => {
       },
     ])
   })
+
+  it('skips required url validation when the field is hidden (SAPP-3960)', async () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'validationRepro',
+          type: 'document',
+          fields: [
+            {name: 'hideFields', type: 'boolean'},
+            {
+              name: 'url',
+              type: 'url',
+              hidden: ({parent}: {parent?: {hideFields?: boolean}}) => parent?.hideFields === true,
+              validation: (rule: RuleWithSkip, context?: ValidationContext) =>
+                context?.hidden ? rule.skip() : rule.required(),
+            },
+            {
+              name: 'string',
+              type: 'string',
+              hidden: ({parent}: {parent?: {hideFields?: boolean}}) => parent?.hideFields === true,
+              validation: (rule: RuleWithSkip, context?: ValidationContext) =>
+                context?.hidden ? rule.skip() : rule.required(),
+            },
+          ],
+        },
+      ],
+    })
+
+    const baseDocument: SanityDocument = {
+      _id: 'validation-repro-id',
+      _type: 'validationRepro',
+      _createdAt: '2024-01-01T00:00:00.000Z',
+      _updatedAt: '2024-01-01T00:00:00.000Z',
+      _rev: 'validation-repro-rev',
+    }
+
+    const validate = (document: SanityDocument) =>
+      validateItem({
+        getClient,
+        schema,
+        value: document,
+        document,
+        parent: undefined,
+        path: [],
+        type: schema.get('validationRepro'),
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+        getDocumentExists: undefined,
+      })
+
+    await expect(validate({...baseDocument, hideFields: true})).resolves.toEqual([])
+
+    await expect(validate({...baseDocument, hideFields: false})).resolves.toMatchObject([
+      {path: ['url'], level: 'error', item: {message: 'Required'}},
+      {path: ['string'], level: 'error', item: {message: 'Required'}},
+    ])
+
+    await expect(
+      validate({
+        ...baseDocument,
+        hideFields: false,
+        url: 'https://example.com',
+        string: 'ok',
+      }),
+    ).resolves.toEqual([])
+  })
+
   it("runs nested validation on an undefined value for object types if it's required", async () => {
     const validation = (rule: Rule) => [
       rule.required().error('This is required!'),
