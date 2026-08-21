@@ -52,6 +52,7 @@ import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'
 import {useDiffViewState} from '../../hooks/useDiffViewState'
 import {findRelease} from '../../utils/findRelease'
+import {DocumentGroupPickerMenu} from './DocumentGroupPickerMenu'
 
 const VersionModeHeaderLayout = styled.header`
   display: grid;
@@ -64,6 +65,7 @@ const VersionModeHeaderLayoutSection = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden;
 `
 
 /**
@@ -83,6 +85,8 @@ export const VersionModeHeader: ComponentType<
   const {documents} = useDiffViewState()
   const activeReleases = useActiveReleases()
   const releasesIds = documentVersions.flatMap((id) => getVersionFromId(id) ?? [])
+  const {beta} = useWorkspace()
+  const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
 
   const releases = useMemo(() => {
     return activeReleases.data.filter((release) => {
@@ -123,17 +127,25 @@ export const VersionModeHeader: ComponentType<
             {t('compare-versions.title')}
           </Text>
         </Box>
-        {typeof documents?.previous !== 'undefined' && (
-          <VersionMenu
-            releases={releases}
-            releasesState={releasesState}
-            onSelectRelease={onSelectPreviousRelease}
-            role="previous"
-            documentId={documentId}
-            state={state}
-            document={documents.previous}
-          />
-        )}
+        {typeof documents?.previous !== 'undefined' &&
+          (hasDocumentGroupInventory ? (
+            <DocumentGroupPickerMenu
+              role="previous"
+              document={documents.previous}
+              onSelectDocument={onSelectPreviousRelease}
+            />
+          ) : (
+            // oxlint-disable-next-line no-deprecated -- Remove once `beta.documentGroupInventory.enabled` is not optional.
+            <VersionMenu
+              releases={releases}
+              releasesState={releasesState}
+              onSelectRelease={onSelectPreviousRelease}
+              role="previous"
+              documentId={documentId}
+              state={state}
+              document={documents.previous}
+            />
+          ))}
       </VersionModeHeaderLayoutSection>
       <Flex align="center" paddingX={3}>
         <Text size={1}>
@@ -141,17 +153,25 @@ export const VersionModeHeader: ComponentType<
         </Text>
       </Flex>
       <VersionModeHeaderLayoutSection>
-        {typeof documents?.next !== 'undefined' && (
-          <VersionMenu
-            releases={releases}
-            releasesState={releasesState}
-            onSelectRelease={onSelectNextRelease}
-            role="next"
-            documentId={documentId}
-            state={state}
-            document={documents.next}
-          />
-        )}
+        {typeof documents?.next !== 'undefined' &&
+          (hasDocumentGroupInventory ? (
+            <DocumentGroupPickerMenu
+              role="next"
+              document={documents.next}
+              onSelectDocument={onSelectNextRelease}
+            />
+          ) : (
+            // oxlint-disable-next-line no-deprecated -- Remove once `beta.documentGroupInventory.enabled` is not optional.
+            <VersionMenu
+              releases={releases}
+              releasesState={releasesState}
+              onSelectRelease={onSelectNextRelease}
+              role="next"
+              documentId={documentId}
+              state={state}
+              document={documents.next}
+            />
+          ))}
         <Box
           padding={3}
           style={{
@@ -178,6 +198,11 @@ interface VersionMenuProps {
   }
 }
 
+/**
+ *
+ * @deprecated Use `DocumentGroupPickerMenu` instead.
+ * Remove once `beta.documentGroupInventory.enabled` is not optional.
+ */
 const VersionMenu: ComponentType<VersionMenuProps> = ({
   releases = [],
   releasesState,
