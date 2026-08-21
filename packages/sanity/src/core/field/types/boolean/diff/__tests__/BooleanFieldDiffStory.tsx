@@ -1,6 +1,6 @@
-import {type BooleanSchemaType} from '@sanity/types'
+import {type BooleanSchemaType, type Path} from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
-import {Fragment} from 'react'
+import {type ReactNode} from 'react'
 import {DocumentChangeContext} from 'sanity/_singletons'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
@@ -38,12 +38,22 @@ const ADDED: BooleanDiff = {
   annotation: null,
 }
 
+function PassthroughFieldWrapper({
+  children,
+}: {
+  path: Path
+  children: ReactNode
+  hasRevertHover: boolean
+}) {
+  return children
+}
+
 const DOCUMENT_CHANGE = {
   documentId: 'doc-boolean-diff',
   schemaType: SWITCH_SCHEMA,
   rootDiff: null,
   isComparingCurrent: true,
-  FieldWrapper: Fragment,
+  FieldWrapper: PassthroughFieldWrapper,
   value: {},
   showFromValue: true,
 }

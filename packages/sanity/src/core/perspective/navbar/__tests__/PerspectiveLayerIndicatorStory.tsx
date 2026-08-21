@@ -1,7 +1,7 @@
 import {Card, Stack, Text} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
+// oxlint-disable-next-line no-restricted-imports -- production GlobalPerspectiveMenuItem uses this MenuItem with padding={1}
+import {Menu, MenuItem} from '@sanity/ui/menu'
 
-import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {
   GlobalPerspectiveMenuItemIndicator,
   GlobalPerspectiveMenuLabelIndicator,
@@ -48,7 +48,9 @@ export function PerspectiveLayerIndicatorStory() {
                 $isDefaultPerspective={false}
                 $last={false}
               >
-                <MenuItem text="Published" />
+                <MenuItem padding={1}>
+                  <Text size={1}>Published</Text>
+                </MenuItem>
               </GlobalPerspectiveMenuItemIndicator>
               <GlobalPerspectiveMenuItemIndicator
                 $first={false}
@@ -56,7 +58,9 @@ export function PerspectiveLayerIndicatorStory() {
                 $isDefaultPerspective={false}
                 $last={false}
               >
-                <MenuItem text="Drafts" />
+                <MenuItem padding={1}>
+                  <Text size={1}>Drafts</Text>
+                </MenuItem>
               </GlobalPerspectiveMenuItemIndicator>
               <GlobalPerspectiveMenuItemIndicator
                 $first={false}
@@ -64,7 +68,9 @@ export function PerspectiveLayerIndicatorStory() {
                 $isDefaultPerspective={false}
                 $last
               >
-                <MenuItem text="Summer launch" />
+                <MenuItem padding={1}>
+                  <Text size={1}>Summer launch</Text>
+                </MenuItem>
               </GlobalPerspectiveMenuItemIndicator>
             </Menu>
           </Card>
