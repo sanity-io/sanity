@@ -58,6 +58,7 @@ describe('gatherStudioDiagnostics', () => {
 
     const diagnostics = await gatherStudioDiagnostics(createOptions(client))
 
+    expect(diagnostics.network.geoIpCountry).toBe('US')
     expect(diagnostics.network.protocol).toEqual(protocolDiagnostic)
     expect(diagnostics.network.shard).toBe('gcp-eu-west1-01')
     expect(diagnostics.network.listen.first).toMatchObject({
@@ -73,6 +74,12 @@ describe('gatherStudioDiagnostics', () => {
     expect(getMaximumActiveListeners()).toBe(2)
     expect(diagnostics.network.requests).toEqual([
       expect.objectContaining({path: '/ping', status: 'success', timedOut: false}),
+      expect.objectContaining({
+        detail: 'US',
+        path: '/geoip/country',
+        status: 'success',
+        timedOut: false,
+      }),
       expect.objectContaining({path: '/query?query=1', status: 'success', timedOut: false}),
       expect.objectContaining({
         path: '/query?query=*[0]._id',
@@ -206,6 +213,9 @@ describe('gatherStudioDiagnostics', () => {
       expect.objectContaining({tag: 'diagnostics.listen'}),
     )
     expect(client.request).toHaveBeenCalledWith(expect.objectContaining({tag: 'diagnostics.ping'}))
+    expect(client.request).toHaveBeenCalledWith(
+      expect.objectContaining({tag: 'diagnostics.geoip-country', url: '/geoip/country'}),
+    )
     const queryProbeUrl = new URL(String(vi.mocked(fetch).mock.calls[0]?.[0]))
     expect(queryProbeUrl.pathname).toBe('/v2025-02-19/data/query/production')
     expect(queryProbeUrl.searchParams.get('query')).toBe('1')
@@ -247,7 +257,22 @@ describe('gatherStudioDiagnostics', () => {
       expect.objectContaining({status: 'success'}),
       expect.objectContaining({status: 'success'}),
       expect.objectContaining({status: 'success'}),
+      expect.objectContaining({status: 'success'}),
     ])
+  })
+
+  it('keeps an unresolved GeoIP country as null', async () => {
+    mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
+    const {client} = createClient({geoIpCountry: null})
+
+    const diagnostics = await gatherStudioDiagnostics(createOptions(client))
+
+    expect(diagnostics.network.geoIpCountry).toBeNull()
+    expect(diagnostics.network.requests[1]).toMatchObject({
+      detail: 'country could not be resolved',
+      path: '/geoip/country',
+      status: 'success',
+    })
   })
 
   it('records a local storage failure without failing the report', async () => {
@@ -308,11 +333,13 @@ function createOptions(client: SanityClient): StudioDiagnosticsOptions {
   }
 }
 
-function createClient(options: {emitListenEvents?: boolean; resolvePing?: boolean} = {}): {
+function createClient(
+  options: {emitListenEvents?: boolean; geoIpCountry?: string | null; resolvePing?: boolean} = {},
+): {
   client: SanityClient
   getMaximumActiveListeners: () => number
 } {
-  const {emitListenEvents = true, resolvePing = true} = options
+  const {emitListenEvents = true, geoIpCountry = 'US', resolvePing = true} = options
   let activeListeners = 0
   let maximumActiveListeners = 0
 
@@ -344,7 +371,10 @@ function createClient(options: {emitListenEvents?: boolean; resolvePing?: boolea
           }
         }),
     ),
-    request: vi.fn(() => (resolvePing ? Promise.resolve('pong') : new Promise(() => undefined))),
+    request: vi.fn(({url}: {url: string}) => {
+      if (url === '/geoip/country') return Promise.resolve({isoCode: geoIpCountry})
+      return resolvePing ? Promise.resolve('pong') : new Promise(() => undefined)
+    }),
     withConfig: vi.fn(() => client),
   } as unknown as SanityClient
 

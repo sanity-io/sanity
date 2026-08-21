@@ -7,7 +7,7 @@ import {describe, expect, it, vi} from 'vitest'
 import {
   type RequestPerformanceEntry,
   type RequestPerformanceSessionSummary,
-} from '../../../diagnostics'
+} from '../../../diagnostics/requestPerformance'
 import {RequestPerformanceReport} from './RequestPerformanceReport'
 
 describe('RequestPerformanceReport', () => {

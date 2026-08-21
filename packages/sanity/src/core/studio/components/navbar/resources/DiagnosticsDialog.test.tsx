@@ -15,7 +15,7 @@ vi.mock('../../../../../ui-components/dialog/Dialog', () => ({
   Dialog: ({children}: {children: ReactNode}) => <div>{children}</div>,
 }))
 vi.mock('../../../../hooks/useClient', () => ({useClient: () => ({})}))
-vi.mock('../../../diagnostics', () => ({
+vi.mock('../../../diagnostics/gatherStudioDiagnostics', () => ({
   formatStudioDiagnostics: vi.fn(),
   gatherStudioDiagnostics: mocks.gatherStudioDiagnostics,
 }))

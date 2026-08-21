@@ -16,7 +16,7 @@ describe('getRequestBucket', () => {
       'history',
     ],
   ])('classifies %s', (url, apiVersion, bucket) => {
-    expect(getRequestBucket(url)).toEqual({apiVersion, bucket})
+    expect(getRequestBucket(url)).toEqual({apiVersion, bucket, dataset: 'production'})
   })
 
   it('ignores requests outside data endpoints', () => {

@@ -16,7 +16,7 @@ import {type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import {type StudioDiagnostics} from '../../../diagnostics'
+import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
 import {RequestPerformanceReport} from './RequestPerformanceReport'
 
 type DiagnosticStatus = StudioDiagnostics['network']['protocol']['status']
@@ -277,7 +277,7 @@ function NetworkReport({
   diagnostics,
   useUtc,
 }: Pick<DiagnosticsReportProps, 'diagnostics'> & {useUtc: boolean}) {
-  const {protocol, requestHistory, shard} = diagnostics.network
+  const {geoIpCountry, protocol, requestHistory, shard} = diagnostics.network
   const timing = protocol.resourceTiming
   const trackingStartedAt = requestHistory.sessionSummary.startedAt
   const protocolValue =
@@ -292,6 +292,7 @@ function NetworkReport({
       />
       <DetailRow label="Ping TTFB" value={formatMilliseconds(timing?.requestToFirstByteMs)} />
       <DetailRow label="Shard" monospace value={shard} />
+      <DetailRow label="GeoIP country" monospace value={geoIpCountry ?? undefined} />
       <DetailRow label="Tracking started" value={formatHeaderTime(trackingStartedAt, useUtc)} />
       <DetailRow
         label="Tab open"

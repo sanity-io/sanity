@@ -20,7 +20,7 @@ import {
   gatherStudioDiagnostics,
   type StudioDiagnostics,
   type StudioDiagnosticsOptions,
-} from '../../../diagnostics'
+} from '../../../diagnostics/gatherStudioDiagnostics'
 import {
   getSchemaDiagnostics,
   getUniqueTargetCount,

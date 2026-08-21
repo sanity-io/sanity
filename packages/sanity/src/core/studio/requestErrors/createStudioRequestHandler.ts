@@ -28,12 +28,15 @@ export function createStudioRequestHandler({
   channel,
   diagnostics,
   getClient,
-  requestPerformance = studioRequestPerformance,
+  requestPerformance,
   waitForCorsRetry,
 }: StudioRequestHandlerOptions): RequestHandler {
+  const performanceTracker =
+    requestPerformance ?? (getClient ? studioRequestPerformance : undefined)
+
   return (request, next) => {
     const execute = async (): Promise<unknown> => {
-      const requestMeasurement = startRequestMeasurement(request, requestPerformance, getClient)
+      const requestMeasurement = startRequestMeasurement(request, performanceTracker)
 
       try {
         const result = await next(request)
@@ -75,16 +78,15 @@ export function createStudioRequestHandler({
 function startRequestMeasurement(
   request: RequestHandlerOptions,
   tracker: RequestPerformanceTracker | undefined,
-  getClient: (() => SanityClient) | undefined,
 ): {complete: (status: 'success' | 'error' | 'aborted') => void} | undefined {
-  if (!tracker || !getClient) return undefined
+  if (!tracker) return undefined
   if (isDiagnosticsRequest(request)) return undefined
 
   const classification = getRequestBucket(request.url)
   if (!classification) return undefined
 
-  const {dataset, projectId} = getClient().config()
-  if (!dataset || !projectId) return undefined
+  const projectId = getRequestProjectId(request)
+  if (!projectId) return undefined
 
   const startedAt = new Date()
   const startedAtMeasurement = performance.now()
@@ -93,13 +95,23 @@ function startRequestMeasurement(
     complete: (status) => {
       tracker.record({
         ...classification,
-        dataset,
         durationMs: Math.round((performance.now() - startedAtMeasurement) * 100) / 100,
         projectId,
         startedAt: startedAt.toISOString(),
         status,
       })
     },
+  }
+}
+
+function getRequestProjectId(request: RequestHandlerOptions): string | undefined {
+  const projectIdHeader = new Headers(request.headers).get('x-sanity-project-id')
+  if (projectIdHeader) return projectIdHeader
+
+  try {
+    return new URL(request.url).hostname.split('.')[0] || undefined
+  } catch {
+    return undefined
   }
 }
 

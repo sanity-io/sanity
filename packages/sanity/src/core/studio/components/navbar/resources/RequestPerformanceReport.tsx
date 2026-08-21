@@ -4,7 +4,10 @@ import {memo, type PointerEvent as ReactPointerEvent, useCallback, useMemo, useS
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import {type RequestPerformanceEntry, type RequestPerformanceSnapshot} from '../../../diagnostics'
+import {
+  type RequestPerformanceEntry,
+  type RequestPerformanceSnapshot,
+} from '../../../diagnostics/requestPerformance'
 
 const CHART_WIDTH = 800
 const CHART_HEIGHT = 240

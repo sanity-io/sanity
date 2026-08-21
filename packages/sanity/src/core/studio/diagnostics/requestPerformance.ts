@@ -1,4 +1,4 @@
-const DATA_URL_MATCHER = /\/(v\d+|vX|v\d{4}-\d{2}-\d{2})\/data\/([a-z]+)\//
+const DATA_URL_MATCHER = /\/(v\d+|vX|v\d{4}-\d{2}-\d{2})\/data\/([a-z]+)\/([^/?]+)/
 
 /** @internal */
 export const DEFAULT_REQUEST_PERFORMANCE_CAPACITY = 500
@@ -50,11 +50,14 @@ export interface RequestPerformanceTracker {
 }
 
 /** @internal */
-export function getRequestBucket(url: string): {apiVersion: string; bucket: string} | undefined {
+export function getRequestBucket(
+  url: string,
+): {apiVersion: string; bucket: string; dataset: string} | undefined {
   const match = url.match(DATA_URL_MATCHER)
   const apiVersion = match?.[1]
   const bucket = match?.[2]
-  return apiVersion && bucket ? {apiVersion, bucket} : undefined
+  const dataset = match?.[3]
+  return apiVersion && bucket && dataset ? {apiVersion, bucket, dataset} : undefined
 }
 
 /** @internal */

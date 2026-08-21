@@ -4,7 +4,7 @@ import {render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
-import {type StudioDiagnostics} from '../../../diagnostics'
+import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
 import {DiagnosticsReport} from './DiagnosticsReport'
 
 const diagnostics: StudioDiagnostics = {
@@ -24,6 +24,7 @@ const diagnostics: StudioDiagnostics = {
   durationMs: 10_420,
   generatedAt: '2026-08-21T12:00:00.000Z',
   network: {
+    geoIpCountry: 'US',
     listen: {
       first: {
         durationMs: 120,
@@ -126,6 +127,13 @@ const diagnostics: StudioDiagnostics = {
         timedOut: false,
       },
       {
+        detail: 'US',
+        durationMs: 38,
+        path: '/geoip/country',
+        status: 'success',
+        timedOut: false,
+      },
+      {
         durationMs: 10_000,
         path: '/query?query=1',
         status: 'timeout',
@@ -185,6 +193,7 @@ describe('DiagnosticsReport', () => {
     expect(screen.getByText('h2')).toBeInTheDocument()
     expect(screen.getByText('65 ms')).toBeInTheDocument()
     expect(screen.getByText('/ping')).toBeInTheDocument()
+    expect(screen.getByText('/geoip/country')).toBeInTheDocument()
     expect(screen.getByText('/query?query=*[0]._id')).toBeInTheDocument()
     expect(screen.getByText('Recent request timings')).toBeInTheDocument()
     expect(screen.getAllByTestId('diagnostics-request-history-point')).toHaveLength(3)
@@ -223,6 +232,8 @@ describe('DiagnosticsReport', () => {
     const network = within(screen.getByTestId('diagnostics-network'))
     expect(network.getByText('h2')).toBeInTheDocument()
     expect(network.getByText('gcp-eu-west1-01')).toBeInTheDocument()
+    expect(network.getByText('GeoIP country')).toBeInTheDocument()
+    expect(network.getByText('US')).toBeInTheDocument()
     expect(network.getByText('Session requests')).toBeInTheDocument()
     expect(network.getByText('Ping TTFB')).toBeInTheDocument()
     expect(network.getByText('Tracking started')).toBeInTheDocument()
@@ -307,6 +318,24 @@ describe('DiagnosticsReport', () => {
 
     const browser = within(screen.getByTestId('diagnostics-browser'))
     expect(browser.queryByText('Connection estimate')).not.toBeInTheDocument()
+  })
+
+  it('shows an unknown GeoIP country when it could not be resolved', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport
+          diagnostics={{
+            ...diagnostics,
+            network: {...diagnostics.network, geoIpCountry: null},
+          }}
+          onRunAgain={vi.fn()}
+        />
+      </ThemeProvider>,
+    )
+
+    const network = within(screen.getByTestId('diagnostics-network'))
+    expect(network.getByText('GeoIP country')).toBeInTheDocument()
+    expect(network.getByText('Unknown')).toBeInTheDocument()
   })
 })
 

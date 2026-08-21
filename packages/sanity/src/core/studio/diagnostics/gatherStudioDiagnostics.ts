@@ -95,6 +95,7 @@ export interface StudioDiagnostics {
   durationMs: number
   generatedAt: string
   network: {
+    geoIpCountry?: string | null
     listen: {
       first: ListenDiagnostic
       secondWhileFirstOpen: ListenDiagnostic
@@ -179,7 +180,7 @@ async function runStudioDiagnostics({
     getRequestHistory?.(requestTarget) ?? createEmptyRequestHistory(requestTarget, startedAt)
   const protocol = await firstValueFrom(getApiNetworkDiagnostic(diagnosticClient))
   const listen = await runListenDiagnostics(diagnosticClient, requestTimeout)
-  const requests = await runRequestDiagnostics(diagnosticClient, requestTimeout)
+  const {geoIpCountry, requests} = await runRequestDiagnostics(diagnosticClient, requestTimeout)
   const clientConfig = diagnosticClient.config()
   const browser = getBrowserDiagnostics()
   const generatedAt = new Date()
@@ -196,7 +197,7 @@ async function runStudioDiagnostics({
     diagnosticVersion: 1,
     durationMs: elapsedSince(startedAtMeasurement),
     generatedAt: generatedAt.toISOString(),
-    network: {listen, protocol, requestHistory, requests, shard},
+    network: {geoIpCountry, listen, protocol, requestHistory, requests, shard},
     schema,
     startedAt: startedAt.toISOString(),
     studio: {
@@ -311,8 +312,9 @@ function startListenDiagnostic(client: SanityClient, timeoutMs: number): ActiveL
 async function runRequestDiagnostics(
   client: SanityClient,
   timeoutMs: number,
-): Promise<RequestDiagnostic[]> {
+): Promise<{geoIpCountry?: string | null; requests: RequestDiagnostic[]}> {
   const requests: RequestDiagnostic[] = []
+  let geoIpCountry: string | null | undefined
 
   requests.push(
     await measureRequest('/ping', timeoutMs, async (signal) => {
@@ -324,6 +326,20 @@ async function runRequestDiagnostics(
         url: '/ping',
       })
       return {detail: 'API reached'}
+    }),
+  )
+
+  requests.push(
+    await measureRequest('/geoip/country', timeoutMs, async (signal) => {
+      const result = await client.request<{isoCode: string | null}>({
+        maxRetries: 0,
+        signal,
+        tag: 'diagnostics.geoip-country',
+        timeout: timeoutMs,
+        url: '/geoip/country',
+      })
+      geoIpCountry = typeof result.isoCode === 'string' ? result.isoCode : null
+      return {detail: geoIpCountry ?? 'country could not be resolved'}
     }),
   )
 
@@ -362,7 +378,7 @@ async function runRequestDiagnostics(
     }),
   )
 
-  return requests
+  return {geoIpCountry, requests}
 }
 
 async function measureRequest(
