@@ -299,7 +299,6 @@ describe('VersionContextMenu', () => {
     const wrapper = await createTestProvider({
       config: {
         document: {
-          // Axios-style filter: keep only publish so delete schedule (discardVersion) is gone
           actions: (prev) => prev.filter((action) => action.action === 'publish'),
         },
       },
