@@ -2,22 +2,20 @@
  * Reproduction schema for https://linear.app/sanity/issue/SAPP-4084
  * and the customer report in https://linear.app/sanity/issue/SAPP-3960
  *
- * Issue: `url`, `number`, and `array` fields crash at render when their
- * `validation` is a two-argument function `(rule, context) => ...`:
+ * Used to crash: `url`, `number`, and `array` fields threw at render when
+ * `validation` was a two-argument function `(rule, context) => ...`:
  *
  *   Schema type "url"'s `validation` was not run though `inferFromSchema`
  *
- * The single-argument form `(rule) => ...` works. The docs recommend the
- * two-argument form for conditionally hidden fields, but only `string` (and
- * other inputs that never call `getValidationRule`) survive it today.
+ * Fixed in #13878 (sanity@6.9.1). Keep this type to manually confirm
+ * two-arg validation still renders, and that skip/required + hidden on url
+ * matches string (SAPP-3960).
  *
- * Manual repro:
- * 1. Structure → Inputs → Debug → Two-arg validation repro (SAPP-4084).
- * 2. Create a new document.
- * 3. `url`, `number`, and `array` fields should render (they used to show a
- *    red "An error occurred" box). The `string` control field is the baseline.
- * 4. Toggle "Hide fields" to confirm skip/required two-arg validation on url
- *    still hides and skips the same way as string (SAPP-3960).
+ * Manual check:
+ * 1. Structure → Inputs → Debug → Two-arg validation repro.
+ * 2. Create a new document — url/number/array should render as inputs.
+ * 3. Toggle "Hide fields" — the skip/required url and string fields hide
+ *    and should not fail required validation.
  */
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
