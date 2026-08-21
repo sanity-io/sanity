@@ -11,6 +11,7 @@ import {DocumentVersionIcons} from '../DocumentVersionIcons'
 vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => ({
     data: [],
+    byId: new Map(),
     error: undefined,
     loading: false,
     dispatch: vi.fn(),
@@ -81,6 +82,7 @@ describe('DocumentVersionIcons', () => {
     mockUseAllVariants.mockReset()
     mockUseActiveReleases.mockReturnValue({
       data: [],
+      byId: new Map(),
       error: undefined,
       loading: false,
       dispatch: vi.fn(),
