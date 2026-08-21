@@ -20,11 +20,18 @@ export default defineConfig({
     'structure.js',
     'workbench.js',
   ],
-  reactCompiler: {target: '19'},
+  // `transform: 'oxc'` runs the React Compiler through `oxc-transform-react` (the native Rust
+  // port) in the same pass that strips TypeScript and lowers JSX, instead of a separate
+  // `babel-plugin-react-compiler` pass
+  reactCompiler: {transform: 'oxc', target: '19'},
   styledComponents: true,
   // Extracts the CSS from vanilla-extract `.css.ts` files into `lib/bundle.css` and wires up the
   // conditional `./bundle.css` export pattern (self-referential import + node shim), like the
-  // `rollup: {vanillaExtract: true}` option in `@sanity/pkg-utils` did
+  // `rollup: {vanillaExtract: true}` option in `@sanity/pkg-utils` did.
+  // The `import 'sanity/bundle.css'` this injects into the entry barrels is also why package.json
+  // declares `sideEffects: true`: with `false` or a `*.css` allowlist, bundlers bypass the
+  // side-effect-free barrels and eliminate the bare CSS import together with them, before the
+  // stylesheet's own side-effect status is ever consulted (see #13322 and #13332)
   vanillaExtract: true,
   define: {
     // Injects the version `SANITY_VERSION` reports (see `src/core/version.ts`). An explicit

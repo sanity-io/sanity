@@ -92,6 +92,7 @@ export const ReleaseScheduleButton = ({
     return () => {
       isMounted.current = false
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [checkWithPermissionGuard, release._id, release.metadata.intendedPublishAt, schedule])
 
   const isScheduledDateInPast = useCallback(() => {

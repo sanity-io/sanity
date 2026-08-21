@@ -261,6 +261,7 @@ export function getOrCreateDocumentVersionsObservable(options: {
                   ({
                     _id: id,
                     _rev: versionInfo?._rev ?? '',
+                    _type: versionInfo?._type ?? '',
                     _createdAt: versionInfo?._createdAt ?? '',
                     _updatedAt: versionInfo?._updatedAt ?? '',
                     [DOCUMENT_SYSTEM_FIELD]: versionInfo?.[DOCUMENT_SYSTEM_FIELD] as DocumentSystem,

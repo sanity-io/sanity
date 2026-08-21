@@ -153,7 +153,7 @@ export function DocumentListPane(props: {
   const [structureParams] = useState(() => ({}))
 
   // Reset error state when `refs` value changes
-  // oxlint-disable-next-line react/react-compiler
+  // oxlint-disable-next-line react/exhaustive-effect-dependencies, react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => setErrorParams(null), [refs])
 
   if (errorParams) {

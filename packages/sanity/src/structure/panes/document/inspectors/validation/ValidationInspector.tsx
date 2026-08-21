@@ -9,7 +9,7 @@ import {
   type SchemaType,
   type ValidationMarker,
 } from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
 import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentInspectorProps,
@@ -18,6 +18,7 @@ import {
   useParseErrors,
   useTranslation,
 } from 'sanity'
+import {Box} from 'ui5'
 
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
@@ -149,7 +150,7 @@ function ValidationCard(props: {
           tone={MARKER_TONE[marker.level]}
         >
           <Flex align="flex-start" gap={3}>
-            <Box flex="none">
+            <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
               <Text size={1}>
                 <Icon />
               </Text>

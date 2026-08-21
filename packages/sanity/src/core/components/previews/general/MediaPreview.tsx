@@ -1,5 +1,6 @@
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
+import {Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -72,7 +73,7 @@ export function MediaPreview(props: MediaPreviewProps) {
 
   return (
     <Box padding={2}>
-      <RootBox data-testid="media-preview" flex={1} overflow="hidden">
+      <RootBox data-testid="media-preview" flexBasis="0%" flexGrow={1} overflow="hidden">
         <div style={STYLES_PADDER} />
 
         <Tooltip content={tooltipContent} disabled={!tooltipContent} placement="top" portal>

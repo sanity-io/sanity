@@ -318,6 +318,56 @@ describe('Validation test', () => {
     expect(validationErrors).toHaveLength(0)
   })
 
+  // Regression tests for https://github.com/sanity-io/sanity/issues/13494 —
+  // `i18nTitleKey` is a valid property on decorators, and the built-in
+  // `DEFAULT_BLOCK_STYLES` / `DEFAULT_LIST_TYPES` set it on every entry, so
+  // the validator must accept it on styles and lists as well.
+  test('accepts blocks with i18nTitleKey on styles', () => {
+    const schemaDef = [
+      {
+        name: 'testBlock',
+        type: 'block',
+        styles: [
+          {title: 'Normal', value: 'normal', i18nTitleKey: 'inputs.portable-text.style.normal'},
+          {title: 'Heading 1', value: 'h1', i18nTitleKey: 'inputs.portable-text.style.h1'},
+        ],
+      },
+    ]
+
+    const validation = validateSchema(schemaDef).get('testBlock')
+    const validationErrors = validation._problems.filter(
+      (problem: any) => problem.severity === 'error',
+    )
+    expect(validationErrors).toHaveLength(0)
+  })
+
+  test('accepts blocks with i18nTitleKey on lists', () => {
+    const schemaDef = [
+      {
+        name: 'testBlock',
+        type: 'block',
+        lists: [
+          {
+            title: 'Bulleted list',
+            value: 'bullet',
+            i18nTitleKey: 'inputs.portable-text.list-type.bullet',
+          },
+          {
+            title: 'Numbered list',
+            value: 'number',
+            i18nTitleKey: 'inputs.portable-text.list-type.number',
+          },
+        ],
+      },
+    ]
+
+    const validation = validateSchema(schemaDef).get('testBlock')
+    const validationErrors = validation._problems.filter(
+      (problem: any) => problem.severity === 'error',
+    )
+    expect(validationErrors).toHaveLength(0)
+  })
+
   describe('field type is a document type', () => {
     test('warns when a field type references a document type', () => {
       const schemaDef = [

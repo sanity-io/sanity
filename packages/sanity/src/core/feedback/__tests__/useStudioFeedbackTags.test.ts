@@ -24,7 +24,7 @@ vi.mock('../../store/project/useProjectOrganizationId', () => ({
   useProjectOrganizationId: vi.fn().mockReturnValue({value: 'org-123', loading: false}),
 }))
 vi.mock('../../store/project/useProject', () => ({
-  useProject: vi.fn().mockReturnValue({value: {displayName: 'My Project'}}),
+  useProject: vi.fn().mockReturnValue({displayName: 'My Project'}),
 }))
 vi.mock('../../store/user/hooks', () => ({
   useCurrentUser: vi.fn(),

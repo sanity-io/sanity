@@ -1,8 +1,9 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon} from '@sanity/icons/Edit'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Box, Flex, Text, useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import {Flex, Text, useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
@@ -108,7 +109,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
   // misses the first click because annotations.length is still 0 when
   // selectionchange runs.
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     handleSelectionChange()
   }, [handleSelectionChange])
 
@@ -125,6 +126,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
     if (sel && sel.rangeCount > 0) {
       rangeRef.current = sel.getRangeAt(0)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [popoverOpen])
 
   // Listen for scroll events
@@ -153,7 +155,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
         <Box padding={1} data-testid="annotation-toolbar-popover">
           {annotations.map((annotation, index) => (
             <Flex key={annotation.key} gap={1} align="center">
-              <Box padding={2} flex={1}>
+              <Box padding={2} flexBasis="0%" flexGrow={1}>
                 <Text weight="medium" size={1}>
                   {annotation.title}
                 </Text>

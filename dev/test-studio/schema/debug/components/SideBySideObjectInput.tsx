@@ -1,5 +1,6 @@
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ItemProps, ObjectInputMembers, type ObjectInputProps} from 'sanity'
+import {Box} from 'ui5'
 
 /**
  * Simple custom item component for array of objects
@@ -75,7 +76,7 @@ export function SideBySideObjectInput(props: ObjectInputProps) {
       {/* Render the two target fields side by side */}
       {nameChildMember && internationalizedMember && (
         <Flex gap={3}>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <ObjectInputMembers
               members={[nameChildMember]}
               renderAnnotation={renderAnnotation}
@@ -87,7 +88,7 @@ export function SideBySideObjectInput(props: ObjectInputProps) {
               renderPreview={renderPreview}
             />
           </Box>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <ObjectInputMembers
               members={[internationalizedMember]}
               renderAnnotation={renderAnnotation}

@@ -1,5 +1,10 @@
 import {useCallback, useEffect, useState} from 'react'
 
+function readUrlParam(key: string, fallback: string): string {
+  if (typeof window === 'undefined') return fallback
+  return new URLSearchParams(window.location.search).get(key) ?? fallback
+}
+
 /**
  * A string state value mirrored to a URL query param, so a chosen data
  * source or time range survives reload and can be shared as a link. Reads
@@ -15,18 +20,13 @@ export function useUrlState(
   key: string,
   fallback: string,
 ): [string, (next: string, mode?: 'replace' | 'push') => void] {
-  const read = () => {
-    if (typeof window === 'undefined') return fallback
-    return new URLSearchParams(window.location.search).get(key) ?? fallback
-  }
-  const [value, setValue] = useState(read)
+  const [value, setValue] = useState(() => readUrlParam(key, fallback))
 
   // Reflect Back/Forward navigation (pushState entries) back into state.
   useEffect(() => {
-    const onPopState = () => setValue(read())
+    const onPopState = () => setValue(readUrlParam(key, fallback))
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, fallback])
 
   const set = useCallback(

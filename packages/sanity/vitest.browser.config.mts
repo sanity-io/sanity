@@ -1,7 +1,6 @@
 import {chromaticPlugin} from '@chromatic-com/vitest/plugin'
-import babel from '@rolldown/plugin-babel'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
-import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
+import viteReact from '@vitejs/plugin-react'
 import {playwright} from '@vitest/browser-playwright'
 import {defaultClientConditions, defineConfig} from 'vite'
 
@@ -43,8 +42,9 @@ if (chromaticEnabled && selectedBrowser !== 'chromium') {
 export default defineConfig({
   plugins: [
     vanillaExtractPlugin(),
-    viteReact(),
-    babel({presets: [reactCompilerPreset({target: '19'})]}),
+    // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
+    // as the TypeScript/JSX transform (no babel in the pipeline)
+    viteReact({compiler: {target: '19'}}),
     ...(chromaticEnabled ? [chromaticPlugin()] : []),
   ],
   resolve: {

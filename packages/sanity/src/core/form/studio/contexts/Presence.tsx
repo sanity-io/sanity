@@ -30,13 +30,13 @@ export function useChildPresence(path: Path, inclusive?: boolean): FormNodePrese
   const presence = useFormFieldPresence()
   const prev = useRef(presence)
   const next = immutableReconcile(
-    // oxlint-disable-next-line react/react-compiler -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
+    // oxlint-disable-next-line react/refs -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
     prev.current,
     presence.filter(
       (item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path)),
     ),
   )
-  // oxlint-disable-next-line react/react-compiler -- see above
+  // oxlint-disable-next-line react/refs -- see above
   prev.current = next
   return next
 }

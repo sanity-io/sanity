@@ -19,7 +19,7 @@ import {
   useState,
 } from 'react'
 import deepEquals from 'react-fast-compare'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {distinctUntilChanged} from 'rxjs/operators'
 import {useEffectEvent} from 'use-effect-event'
 
@@ -360,7 +360,12 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         ),
     [presenceStore, value._id],
   )
-  const presence = useObservable(presence$, [])
+  // Kept synchronous: presence emits per collaborator report with no incoming
+  // rate limit, and deferred delivery lets a sustained burst restart the
+  // in-flight render pass indefinitely — the pane never settles while the
+  // burst lasts. Synchronous delivery commits every update, so rendering
+  // always makes progress.
+  const presence = useSyncObservable(presence$, [])
 
   const [openPath, onSetOpenPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
   // Mirrors `openPath` so `handleFocus` sees writes made earlier in the same tick,
@@ -754,6 +759,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     if (!ready || initialFocusPathAppliedRef.current) return
     initialFocusPathAppliedRef.current = true
     applyInitialFocusPath()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [ready])
 
   return {

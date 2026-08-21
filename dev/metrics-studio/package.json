@@ -19,13 +19,14 @@
     "@visx/responsive": "^4.0.0",
     "@visx/scale": "^4.0.0",
     "@visx/shape": "^4.0.0",
-    "babel-plugin-react-compiler": "catalog:",
+    "oxc-transform-react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-rx": "catalog:",
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
     "styled-components": "catalog:",
+    "ui5": "catalog:",
     "vite": "catalog:"
   },
   "devDependencies": {

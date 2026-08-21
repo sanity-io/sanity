@@ -86,4 +86,32 @@ describe('createRequestFailureProbe', () => {
     expect(await probe(clientError(500, {error: 'boom'}))).toEqual({type: 'unknown'})
     expect(await probe(new Error('nope'))).toEqual({type: 'unknown'})
   })
+
+  it('does not probe /check/cors for timeouts, including leftover get-it v8 codes', async () => {
+    const fetchSpy = vi.fn()
+    globalThis.fetch = fetchSpy as never
+    const probe = createRequestFailureProbe(fakeClient(), makeCache())
+
+    expect(
+      await probe(
+        Object.assign(new Error('The operation was aborted due to timeout'), {
+          name: 'TimeoutError',
+        }),
+      ),
+    ).toEqual({type: 'unknown'})
+    expect(
+      await probe(
+        Object.assign(new Error('Socket timed out on request to https://x.api.sanity.io/…'), {
+          code: 'ESOCKETTIMEDOUT',
+        }),
+      ),
+    ).toEqual({type: 'unknown'})
+    expect(await probe(Object.assign(new Error('connect ETIMEDOUT'), {code: 'ETIMEDOUT'}))).toEqual(
+      {
+        type: 'unknown',
+      },
+    )
+
+    expect(fetchSpy).not.toHaveBeenCalled()
+  })
 })

@@ -24,14 +24,14 @@
     "react-dom": "catalog:",
     "react-refractor": "^4.0.0",
     "refractor": "^5.0.0",
-    "styled-components": "catalog:"
+    "styled-components": "catalog:",
+    "ui5": "catalog:"
   },
   "devDependencies": {
-    "@rolldown/plugin-babel": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "babel-plugin-react-compiler": "catalog:",
+    "oxc-transform-react": "catalog:",
     "rimraf": "catalog:",
     "vite": "catalog:"
   }

@@ -633,6 +633,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-status.not-published': 'Not published',
   /** Label to show in the document footer indicating the published date of the document */
   'document-status.published': 'Edited {{date}}',
+  /** Label to show in document versions status for a published (non-live-edit) document */
+  'document-status.published-at': 'Published {{date}}',
   /** Label to show in the document footer indicating the revision from date of the document */
   'document-status.revision-from': 'Revision from <em>{{date}}</em>',
 
@@ -718,6 +720,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'form.error.unhandled-runtime-error.error-message': 'Error: {{message}}',
   /** The title for the error card rendered inside a field in place of a crashing input */
   'form.error.unhandled-runtime-error.title': 'Unhandled Runtime Error',
+  /** Tooltip / accessible label for the field actions overflow menu button */
+  'form.field.actions-menu.title': 'Field actions',
   /** Form field deprecated label */
   'form.field.deprecated-label': 'deprecated',
   /** Fallback title shown above field if it has no defined title */

@@ -4,7 +4,7 @@
   "main": "index.ts",
   "dependencies": {
     "@humanwhocodes/crosspost": "^1.0.4",
-    "@sanity/client": "^7.26.2",
+    "@sanity/client": "^8.2.0",
     "@sanity/functions": "^1.6.8",
     "@sanity/image-url": "^2.1.1"
   },

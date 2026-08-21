@@ -1,8 +1,9 @@
 import {type ArraySchemaType} from '@sanity/types'
-import {Box, Checkbox, Flex, Grid, Text} from '@sanity/ui'
+import {Checkbox, Flex, Grid, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import startCase from 'lodash-es/startCase.js'
 import {useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {set, unset} from '../../../patch/patch'

@@ -325,7 +325,7 @@ function CommentsInspectorInner(
   const [loggedTelemetry, setLoggedTelemetry] = useState(false)
   useEffect(() => {
     if (loggedTelemetry || mode !== 'upsell') return undefined
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setLoggedTelemetry(true)
     if (selectedPath?.origin === 'form') {
       upsellTelemetryLogs.panelViewed('field_action')

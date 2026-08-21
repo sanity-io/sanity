@@ -128,6 +128,7 @@ export function TitleDescriptionForm({
     if (titleRef.current) {
       resizeTextarea(titleRef.current)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [release.metadata.title])
 
   useEffect(() => {
@@ -135,6 +136,7 @@ export function TitleDescriptionForm({
       resizeTextarea(descriptionRef.current)
       setScrollHeight(descriptionRef.current.scrollHeight)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [release.metadata.description])
 
   const handleTitleChange = useCallback(
