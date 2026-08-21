@@ -627,6 +627,7 @@ exports[`exports snapshot 1`] = `
     "useDocumentValuePermissions": "function",
     "useDocumentValues": "function",
     "useDocumentVersionInfo": "function",
+    "useDocumentVersionTitle": "function",
     "useDocumentVersionTypeSortedList": "function",
     "useDocumentVersions": "function",
     "useEditState": "function",
