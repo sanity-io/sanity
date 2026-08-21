@@ -1,10 +1,10 @@
 import {Flex, Text} from '@sanity/ui'
 
-import {formatValue, type TrendSeries} from './data'
+import {CALIBRATION_EXPLAINER, formatValue, type TrendSeries} from './data'
 import {baselineDetail, baselineLabel, type DriftResult} from './drift'
 import {ALL_LAYERS_VISIBLE, type Layer, type LayerState} from './layers'
 import {categoricalColor} from './palette'
-import {baselineToDraw, COLOR, seriesHasBand} from './TrendChart'
+import {baselineToDraw, COLOR, seriesHasBand, seriesHasCalibration} from './TrendChart'
 
 function Swatch(props: {children: React.ReactNode; dimmed?: boolean}) {
   return (
@@ -163,7 +163,8 @@ export function ChartLegend(props: {
               y2={5}
               stroke={color}
               strokeWidth={2}
-              strokeDasharray={series.goal === 'context' ? '3 2' : undefined}
+              strokeDasharray={series.goal === 'context' ? '1 3' : undefined}
+              strokeLinecap={series.goal === 'context' ? 'round' : undefined}
             />
           }
         />
@@ -181,6 +182,27 @@ export function ChartLegend(props: {
               <line x1={0} y1={2} x2={16} y2={2} stroke={color} strokeWidth={1} opacity={0.5} />
               <line x1={0} y1={8} x2={16} y2={8} stroke={color} strokeWidth={1} opacity={0.5} />
             </>
+          }
+        />
+      )}
+      {seriesHasCalibration(series) && (
+        <LegendItem
+          layer="calibration"
+          layers={layers}
+          label="host calibration"
+          hint={`${CALIBRATION_EXPLAINER} Drawn on its own zero-based scale — when it moves where the metric moves, suspect the runner, not the studio`}
+          swatch={
+            <line
+              x1={0}
+              y1={5}
+              x2={16}
+              y2={5}
+              stroke={COLOR.context}
+              strokeWidth={1.5}
+              strokeDasharray="1 3"
+              strokeLinecap="round"
+              opacity={0.6}
+            />
           }
         />
       )}

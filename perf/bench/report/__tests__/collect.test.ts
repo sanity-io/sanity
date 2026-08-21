@@ -1,4 +1,5 @@
 // @vitest-environment node
+import os from 'node:os'
 import process from 'node:process'
 
 import {afterEach, beforeEach, describe, expect, it} from 'vitest'
@@ -15,6 +16,8 @@ const ENV_KEYS = [
   'BENCH_MERGE_BASE',
   'BENCH_GIT_SHA',
   'BENCH_GIT_COMMITTED_AT',
+  'ImageOS',
+  'ImageVersion',
 ] as const
 let savedEnv: Record<string, string | undefined>
 
@@ -42,6 +45,36 @@ function metadata() {
 }
 
 describe('collectRunMetadata', () => {
+  it('records producer metadata: cpu model, runner image, browser version', () => {
+    process.env.ImageOS = 'ubuntu24'
+    process.env.ImageVersion = '20260810.1.0'
+    const runner = collectRunMetadata({
+      mode: 'ab',
+      calibrationMs: 10,
+      cpuThrottleRate: 4,
+      seed: 1,
+      startedAt: '2026-07-10T05:00:00.000Z',
+      browserVersion: '140.0.7339.16',
+    }).runner
+    expect(runner).toMatchObject({
+      imageOs: 'ubuntu24',
+      imageVersion: '20260810.1.0',
+      browserVersion: '140.0.7339.16',
+    })
+    // Machine-dependent — assert against the same source the code reads so
+    // the test is exact everywhere Node reports a model at all
+    const expectedModel = os.cpus()[0]?.model.trim()
+    if (expectedModel) expect(runner.cpuModel).toBe(expectedModel)
+    else expect(runner.cpuModel).toBeUndefined()
+  })
+
+  it('omits runner image and browser fields when not provided', () => {
+    const runner = metadata().runner
+    expect(runner.imageOs).toBeUndefined()
+    expect(runner.imageVersion).toBeUndefined()
+    expect(runner.browserVersion).toBeUndefined()
+  })
+
   it('extracts the PR number from GITHUB_REF', () => {
     process.env.GITHUB_SHA = 'abc'
     process.env.GITHUB_REF = 'refs/pull/13442/merge'

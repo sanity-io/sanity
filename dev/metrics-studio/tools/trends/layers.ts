@@ -6,7 +6,7 @@
  */
 import {useCallback, useMemo} from 'react'
 
-export const LAYERS = ['median', 'band', 'baseline'] as const
+export const LAYERS = ['median', 'band', 'calibration', 'baseline'] as const
 export type Layer = (typeof LAYERS)[number]
 
 export interface LayerState {

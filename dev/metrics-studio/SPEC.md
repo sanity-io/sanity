@@ -22,7 +22,17 @@ secondary: leads scanning health weekly.
   view carries a calibration overlay (`runner.calibrationMs`, higher =
   slower host) so a "regression" that is really a slower runner pool is
   visible as such. This is the dashboard's version of the suite's fail-loud
-  principle.
+  principle. What the score is (a fixed unthrottled CPU workload in the
+  browser) is spelled out once (`CALIBRATION_EXPLAINER`) and reused by every
+  surface that mentions it: chart ⓘ, legend entry, tooltip, run popover.
+- Runs also record **host metadata** (`runner.os/arch/cpus/memGb/nodeVersion`,
+  and from Aug 2026 `cpuModel`, `imageOs`/`imageVersion`, `browserVersion`;
+  `cpuModel` also per-scenario shard). The run popover shows it as a Host
+  section. `cpuModel` is the field that discriminates hosted-runner hardware
+  generations (GitHub rotates CPU models under the same vCPU shape — cpus and
+  memGb stayed identical across the Aug 2026 host-speed step), and
+  `browserVersion` records the measuring instrument, since a Playwright bump
+  moves INP/vitals with no studio change.
 - PR A/B runs are _not_ stored (by design). The dashboard is main-branch
   health; PR verdicts live in PR comments.
 
@@ -35,7 +45,15 @@ secondary: leads scanning health weekly.
    nearest run's document (the run under the crosshair is marked on hover /
    keyboard focus — there are no resting dots, which at 30–90 runs in a small
    multiple were mostly ink).
-   Calibration strip at the top. Time range picker (30/90/all).
+   Time range picker (30/90/all). Every ms-based chart also draws **host
+   calibration as an in-chart context line** (dotted, muted, its own
+   zero-based scale so relative moves compare at the same visual proportion —
+   dots always mean host calibration, dashes always mean a baseline level),
+   using the shard score of the host that measured _that_ scenario — so "did
+   the host spike where the metric spiked?" is answerable without switching
+   tabs. The full unmerged per-shard strip lives in the Calibration tab.
+   Suppressed on non-time metrics (counts/bytes/CLS don't move with a slow
+   host) and when comparing branches.
 2. **Run detail** (P2) — click-through from a dot: the PR-comment tables
    (absolute variant), soak slope chart, flake telemetry, run metadata.
 3. **Drift feed** (P2) — computed client-side, flagging a metric when it
@@ -105,10 +123,10 @@ secondary: leads scanning health weekly.
    slice would make the verdict a function of the range picker.
 
 4. **Layer toggles** — the chart legend doubles as a switchboard: clicking an
-   entry shows/hides that layer (median, p75–p90 band, baseline overlay) across
-   the whole grid, persisted as `?layers=-band` so a stripped-back view is
-   shareable. Global rather than per-card because the grid is 40+ small
-   multiples.
+   entry shows/hides that layer (median, p75–p90 band, host calibration,
+   baseline overlay) across the whole grid, persisted as `?layers=-band` so a
+   stripped-back view is shareable. Global rather than per-card because the
+   grid is 40+ small multiples.
 
 ## Architecture
 

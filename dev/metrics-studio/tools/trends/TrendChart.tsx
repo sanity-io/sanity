@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {AxisBottom, AxisLeft} from '@visx/axis'
 import {Group} from '@visx/group'
 import {scaleLinear, scaleTime} from '@visx/scale'
@@ -6,6 +6,7 @@ import {Area, LinePath} from '@visx/shape'
 import {useRef, useState} from 'react'
 
 import {
+  CALIBRATION_EXPLAINER,
   formatTick,
   formatValue,
   INP_MIN_INTERACTIONS,
@@ -39,6 +40,38 @@ function previousPointFor(lines: TrendLine[], selected: TrendPoint): TrendPoint 
   return undefined
 }
 
+/**
+ * One-line machine identity for the hover tooltip: CPU model when the run
+ * recorded one (Aug 2026 on), os/arch as the stand-in before that, plus the
+ * always-collected core count and memory. Empty string when the point carries
+ * no host at all, so callers can filter on truthiness.
+ */
+function hostSummary(host: TrendPoint['host']): string {
+  if (!host) return ''
+  return [
+    host.cpuModel ?? (host.os ? (host.arch ? `${host.os}/${host.arch}` : host.os) : undefined),
+    host.cpus !== undefined ? `${host.cpus} cores` : undefined,
+    host.memGb !== undefined ? `${host.memGb} GB` : undefined,
+  ]
+    .filter(Boolean)
+    .join(' · ')
+}
+
+/**
+ * Toolchain + measuring-instrument line for the hover tooltip (Chromium is
+ * what the sessions actually run in). Empty when the run recorded neither —
+ * documents before Aug 2026 have Node only.
+ */
+function hostVersions(host: TrendPoint['host']): string {
+  if (!host) return ''
+  return [
+    host.browserVersion ? `Chromium ${host.browserVersion}` : undefined,
+    host.nodeVersion ? `Node ${host.nodeVersion}` : undefined,
+  ]
+    .filter(Boolean)
+    .join(' · ')
+}
+
 /** Theme-aware colors via the studio's CSS custom properties. */
 export const COLOR = {
   line: 'var(--card-accent-fg-color, #556bfc)',
@@ -58,7 +91,9 @@ export const COLOR = {
    * must still separate from the axes, which are also muted gray. Use the
    * darker primary foreground so it's a distinct neutral (no hue, so it never
    * collides with a data-series color the way an accent/categorical would);
-   * the dashes keep it reading as reference rather than a measured line.
+   * the dotting keeps it reading as reference rather than a measured line, and
+   * separates it from the baseline overlay's dashed rules — dots always mean
+   * host calibration, dashes always mean a baseline level.
    */
   context: 'var(--card-fg-color, #101112)',
   /**
@@ -104,6 +139,25 @@ export function seriesHasBand(series: TrendSeries): boolean {
     // Relative, so it scales across ms / bytes / CLS without a per-unit table
     return Math.abs(point.p90 - point.p75) > Math.abs(point.value) * 0.02
   })
+}
+
+/**
+ * Whether this chart can draw the host-calibration context line.
+ *
+ * Only where host speed can actually skew the number: time-based (ms) metrics
+ * over run history. Counts, bytes and CLS don't move with a slow host, so a
+ * calibration line there would invite correlations that can't exist. Suppressed
+ * when comparing branches (each branch ran on its own hosts — overlapping
+ * dashed trails are mud, and the Calibration tab already draws them per
+ * branch), on the calibration charts themselves, and on soak minute charts
+ * (calibration is a single per-run score, flat by construction).
+ */
+export function seriesHasCalibration(series: TrendSeries): boolean {
+  if (series.lines.length !== 1) return false
+  if (series.goal === 'context') return false
+  if (series.xKind === 'minute') return false
+  if (series.unit !== 'ms') return false
+  return series.lines[0].points.filter((point) => point.calibrationMs !== undefined).length > 1
 }
 
 /** Per-line color: the studio accent for a lone line, categorical when comparing. */
@@ -372,6 +426,22 @@ export function TrendChart(props: {
   // The band belongs to the line it describes, so it takes that line's color
   const bandColor = lineColorFor(series, 0)
 
+  // Host calibration as an in-chart context line, so "did the host spike where
+  // the metric spiked?" is answerable without switching to the Calibration tab.
+  const calibrationPoints =
+    layers.visible('calibration') && seriesHasCalibration(series)
+      ? lines[0].points.filter((point) => point.calibrationMs !== undefined)
+      : []
+  // Its own scale, but zero-based like the metric's: both lines then show
+  // *relative* movement at the same visual proportion (a 20% slower host dips
+  // as much of its height as a 20% slower metric does), which is exactly the
+  // comparison eyeballing skew needs. A min–max domain would instead stretch
+  // ±2% host jitter to full chart height and manufacture correlations.
+  const calibrationScale = scaleLinear({
+    domain: [0, Math.max(1, ...calibrationPoints.map((point) => point.calibrationMs!)) * 1.1],
+    range: [innerHeight, 0],
+  })
+
   const handleMove = (event: React.PointerEvent<SVGRectElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
     setHoverMs(xScale.invert(event.clientX - rect.left).getTime())
@@ -508,6 +578,24 @@ export function TrendChart(props: {
               />
             </>
           )}
+          {/* Host calibration context line — under the metric line (it's
+              reference, never the measurement), dotted and muted like the
+              Calibration tab's own charts so it reads as the same thing.
+              Dotted, not dashed: the baseline overlay's "before" rule owns
+              the dash, and two reference marks sharing one pattern in a
+              ~120px small multiple would be indistinguishable. */}
+          {calibrationPoints.length > 1 && (
+            <LinePath<TrendPoint>
+              data={calibrationPoints}
+              x={x}
+              y={(point) => calibrationScale(point.calibrationMs!)}
+              stroke={COLOR.context}
+              strokeWidth={1}
+              strokeDasharray="1 3"
+              strokeLinecap="round"
+              opacity={0.45}
+            />
+          )}
           {lines.map((line, index) => {
             const color = lineColorFor(series, index)
             return (
@@ -519,11 +607,13 @@ export function TrendChart(props: {
                     y={(point) => yScale(point.value)}
                     stroke={color}
                     strokeWidth={1.5}
-                    // Context lines (host calibration) are dashed so they read
-                    // as reference, not as a measured metric line. The darker
+                    // Context lines (host calibration) are dotted so they read
+                    // as reference, not as a measured metric line — the same
+                    // dotting the in-chart calibration overlay uses. The darker
                     // context color separates them from the muted-gray axes;
                     // reduced opacity keeps them recessive despite being darker.
-                    strokeDasharray={series.goal === 'context' ? '4 3' : undefined}
+                    strokeDasharray={series.goal === 'context' ? '1 3' : undefined}
+                    strokeLinecap={series.goal === 'context' ? 'round' : undefined}
                     opacity={series.goal === 'context' ? 0.55 : 1}
                   />
                 )}
@@ -685,48 +775,77 @@ export function TrendChart(props: {
                       : series.xKind === 'minute'
                         ? `minute ${Math.round(entry.point.date.getTime() / 60_000)}`
                         : entry.point.date.toISOString().slice(0, 10)}
-                    {/* Provenance as text — the dot itself is the click target
-                        (opens the run); GitHub backlinks live in the drift feed */}
-                    {series.xKind !== 'minute' &&
-                      (entry.point.prNumber
-                        ? ` · PR #${entry.point.prNumber}`
-                        : entry.point.sha !== 'unknown'
-                          ? ` · ${entry.point.sha.slice(0, 7)}`
-                          : '')}
+                    {/* Provenance as text — PR number only; a truncated sha is
+                        noise at hover speed, and the run popover (click) has
+                        the full commit link */}
+                    {series.xKind !== 'minute' && entry.point.prNumber
+                      ? ` · PR #${entry.point.prNumber}`
+                      : ''}
                   </Text>
                 </Flex>
               ))}
-              {/* What the overlay rules are. Unlabelled in the plot they invite a
-                  fair "that isn't the middle of the data" — a median ignores how
-                  far outliers fall, so it sits with the cluster rather than
-                  between the extremes. Naming the statistic and its window size
-                  makes that readable instead of surprising. */}
-              {overlayBaseline && (
-                <>
-                  <Box
-                    aria-hidden="true"
-                    style={{height: 1, background: 'var(--card-border-color)'}}
-                  />
-                  <Stack gap={1}>
-                    <Flex align="center" gap={2}>
-                      <Text size={0} muted>
-                        baseline (median of {overlayBaseline.baselinePointsMs.length} runs)
+              {/* The hovered run's host-speed score (higher = slower), on its
+                  own labelled line so it never reads as part of the metric
+                  value. Shown whenever the point knows its host — with the
+                  dotted layer hidden, on comparisons, and on charts that don't
+                  qualify for the context line alike. Per branch when
+                  comparing, since each branch ran on its own hosts.
+
+                  Gated on score OR host identity: Calibration-tab points carry
+                  no calibrationMs (their value IS the score — a labelled row
+                  would just repeat it), but their machine identity must still
+                  show on the one chart whose job is host spread. */}
+              {hovered.some(
+                (entry) => entry.point.calibrationMs !== undefined || entry.point.host,
+              ) && (
+                <Stack gap={1}>
+                  {hovered
+                    .filter((entry) => entry.point.calibrationMs !== undefined)
+                    .map((entry) => (
+                      // title spells out what the score is — the tooltip is the
+                      // first place a viewer meets the number, and "calibration
+                      // of what?" is a fair question there
+                      <Flex
+                        key={`calibration-${entry.branch}`}
+                        align="center"
+                        gap={2}
+                        title={CALIBRATION_EXPLAINER}
+                      >
+                        <Text size={0} muted>
+                          host calibration{lines.length > 1 ? ` · ${entry.branch}` : ''}
+                        </Text>
+                        <Text size={0} weight="semibold">
+                          {formatValue(entry.point.calibrationMs!, 'ms')}
+                        </Text>
+                      </Flex>
+                    ))}
+                  {/* Machine identity under the score: the CPU model is what
+                      distinguishes runner hardware generations (os/arch stands
+                      in on documents that predate it), and the versions line
+                      names the toolchain and the measuring instrument — a
+                      Chromium bump moves vitals with no studio change. The
+                      full detail (image version) stays in the run popover. */}
+                  {hovered
+                    .filter((entry) => hostSummary(entry.point.host))
+                    .map((entry) => (
+                      <Text key={`host-${entry.branch}`} size={0} muted>
+                        {lines.length > 1 ? `${entry.branch}: ` : ''}
+                        {hostSummary(entry.point.host)}
                       </Text>
-                      <Text size={0} weight="semibold">
-                        {formatValue(overlayBaseline.baseline, unit)}
+                    ))}
+                  {hovered
+                    .filter((entry) => hostVersions(entry.point.host))
+                    .map((entry) => (
+                      <Text key={`versions-${entry.branch}`} size={0} muted>
+                        {lines.length > 1 ? `${entry.branch}: ` : ''}
+                        {hostVersions(entry.point.host)}
                       </Text>
-                    </Flex>
-                    <Flex align="center" gap={2}>
-                      <Text size={0} muted>
-                        recent (median of {overlayBaseline.recentPointsMs.length} runs)
-                      </Text>
-                      <Text size={0} weight="semibold">
-                        {formatValue(overlayBaseline.recent, unit)}
-                      </Text>
-                    </Flex>
-                  </Stack>
-                </>
+                    ))}
+                </Stack>
               )}
+              {/* No baseline medians here: the legend names the baseline and
+                  its window, the overlay draws the levels, and repeating the
+                  same two labelled rows in every chart's tooltip was noise. */}
             </Stack>
           </Card>
         </div>

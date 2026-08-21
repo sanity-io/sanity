@@ -42,6 +42,7 @@ import {ChartLegend} from './ChartLegend'
 import {
   availableBranches,
   buildSeries,
+  CALIBRATION_EXPLAINER,
   latestSoakCharts,
   soakSlopeSeries,
   soakLatestValueSeries,
@@ -61,7 +62,7 @@ import {DriftFeed} from './DriftFeed'
 import {type LayerState, useLayerState} from './layers'
 import {sourceFileUrl, webVitalDocUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
-import {TrendChart} from './TrendChart'
+import {seriesHasCalibration, TrendChart} from './TrendChart'
 import {type DriftState, useDriftState} from './useDriftState'
 import {useUrlState} from './useUrlState'
 
@@ -109,7 +110,14 @@ interface LiveState {
   error: string | null
 }
 
-function InfoButton(props: {text: string; label: string; sourceFile?: string; vitalDoc?: string}) {
+function InfoButton(props: {
+  text: string
+  label: string
+  sourceFile?: string
+  vitalDoc?: string
+  /** Shown as a second paragraph on charts that draw the calibration line. */
+  calibrationNote?: string
+}) {
   const [open, setOpen] = useState(false)
   // Popover has no onClickOutside prop (passing it logs an "unknown event
   // handler" error and never closes); useClickOutsideEvent is the @sanity/ui
@@ -131,6 +139,11 @@ function InfoButton(props: {text: string; label: string; sourceFile?: string; vi
             <Text size={1} muted>
               {props.text}
             </Text>
+            {props.calibrationNote && (
+              <Text size={1} muted>
+                {props.calibrationNote}
+              </Text>
+            )}
             {(props.vitalDoc || props.sourceFile) && (
               <Stack gap={2}>
                 {/* Reference doc for the Web Vital itself (web.dev) */}
@@ -355,11 +368,13 @@ function SeriesCard(props: {
       className={focused ? 'chart-focus-pulse' : undefined}
     >
       <Stack gap={3}>
-        {/* Center-aligned: the title + badge co-center with the value/menu/info
-            cluster on the common single-line case, and the title wraps (no
-            ellipsis) within its flex-1 box when it's too long to fit */}
+        {/* Two header rows: the title owns the first (with the menu/info
+            controls right-aligned), and the stat row beneath pairs the drift
+            badge with the latest value — the number sits next to the
+            percentage it contextualizes instead of floating top-right while
+            the badge wraps under a long title. */}
         <Flex align="center" justify="space-between" gap={3}>
-          <Flex align="center" gap={2} flex={1} style={{minWidth: 0, flexWrap: 'wrap'}}>
+          <Box flex={1} style={{minWidth: 0}}>
             {/* Clicking the title deep-links to this chart (shareable focus) */}
             {onFocus ? (
               <Box
@@ -386,27 +401,8 @@ function SeriesCard(props: {
                 {series.title}
               </Text>
             )}
-            {badge && (
-              <Badge tone={badge.tone} fontSize={0} style={{flexShrink: 0}}>
-                {badge.label}
-              </Badge>
-            )}
-            {!badge && silenced && (
-              <Badge tone="default" fontSize={0} style={{flexShrink: 0}}>
-                acknowledged
-              </Badge>
-            )}
-          </Flex>
+          </Box>
           <Flex align="center" gap={2} style={{flexShrink: 0}}>
-            {latest && (
-              <Text
-                size={1}
-                muted
-                aria-label={`Latest run: ${formatValue(latest.value, series.unit)}`}
-              >
-                {formatValue(latest.value, series.unit)}
-              </Text>
-            )}
             {(drift || silenced) && (onAck || onUnack) && (
               <AckMenu
                 seriesKey={(drift ?? silenced)!.seriesKey}
@@ -424,9 +420,37 @@ function SeriesCard(props: {
               label={`About ${series.title}`}
               sourceFile={series.sourceFile}
               vitalDoc={webVitalDocUrl(series.title)}
+              // Explain the dotted context line where the chart is explained —
+              // "calibration of what?" shouldn't require the Calibration tab
+              calibrationNote={seriesHasCalibration(series) ? CALIBRATION_EXPLAINER : undefined}
             />
           </Flex>
         </Flex>
+        {(badge || silenced || latest) && (
+          // Value first, badge after — "64ms ↓ -22%" reads as a statement
+          // qualified by its move, where badge-first read as two stats
+          <Flex align="center" gap={2} style={{flexWrap: 'wrap'}}>
+            {latest && (
+              <Text
+                size={1}
+                muted
+                aria-label={`Latest run: ${formatValue(latest.value, series.unit)}`}
+              >
+                {formatValue(latest.value, series.unit)}
+              </Text>
+            )}
+            {badge && (
+              <Badge tone={badge.tone} fontSize={0} style={{flexShrink: 0}}>
+                {badge.label}
+              </Badge>
+            )}
+            {!badge && silenced && (
+              <Badge tone="default" fontSize={0} style={{flexShrink: 0}}>
+                acknowledged
+              </Badge>
+            )}
+          </Flex>
+        )}
         {/* Explicit height: ParentSize's default height:100% collapses to 0
             inside an auto-height Stack row, and a 0-sized parent means no
             chart gets rendered at all */}
