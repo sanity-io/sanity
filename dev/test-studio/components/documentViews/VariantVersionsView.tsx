@@ -334,10 +334,8 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
       await client.delete(documentId)
     } catch (deleteErr: unknown) {
       setDeleteError(deleteErr instanceof Error ? deleteErr.message : 'Failed to delete document')
-      // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
-    } finally {
-      setDeleting(false)
     }
+    setDeleting(false)
   }, [client, documentId])
 
   return (
