@@ -20,7 +20,10 @@ export default defineConfig({
     'structure.js',
     'workbench.js',
   ],
-  reactCompiler: {target: '19'},
+  // `transform: 'oxc'` runs the React Compiler through `oxc-transform-react` (the native Rust
+  // port) in the same pass that strips TypeScript and lowers JSX, instead of a separate
+  // `babel-plugin-react-compiler` pass
+  reactCompiler: {transform: 'oxc', target: '19'},
   styledComponents: true,
   // Extracts the CSS from vanilla-extract `.css.ts` files into `lib/bundle.css` and wires up the
   // conditional `./bundle.css` export pattern (self-referential import + node shim), like the

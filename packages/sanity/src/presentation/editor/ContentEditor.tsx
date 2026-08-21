@@ -1,5 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {type HTMLProps, useCallback, useMemo} from 'react'
 import {
   getPreviewValueWithFallback,
@@ -10,6 +10,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {StateLink} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {presentationLocaleNamespace} from '../i18n'
 import {
@@ -127,12 +128,12 @@ export function ContentEditor(props: {
           ) : (
             <Card padding={2} radius={2} tone="inherit">
               <Flex gap={3}>
-                <Box flex="none">
+                <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                   <Text size={1}>
                     <WarningOutlineIcon />
                   </Text>
                 </Box>
-                <Box flex={1}>
+                <Box flexBasis="0%" flexGrow={1}>
                   <Text size={1}>
                     <Translate
                       t={t}

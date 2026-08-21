@@ -32,6 +32,7 @@ function versionStub(id: string, system: Omit<DocumentSystem, 'group'>): Version
     _rev: '',
     _createdAt: '',
     _updatedAt: '',
+    _type: 'article',
     _system: {group: groupRef, ...system},
   }
 }

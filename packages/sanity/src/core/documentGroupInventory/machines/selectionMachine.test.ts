@@ -18,6 +18,7 @@ function variant(id: string, name: string): Variant {
       _rev: 'rev',
       _createdAt: '2026-01-01T00:00:00.000Z',
       _updatedAt: '2026-01-01T00:00:00.000Z',
+      _type: 'article',
       _system: isDraftId(id) ? {bundleId: 'drafts', group} : {group},
     },
   }

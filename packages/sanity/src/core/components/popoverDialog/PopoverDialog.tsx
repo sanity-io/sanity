@@ -1,6 +1,5 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {
-  Box,
   Flex,
   Layer,
   type ResponsiveWidthProps,
@@ -12,6 +11,7 @@ import {
 import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'react'
 import TrapFocus, {type ReactFocusLockProps} from 'react-focus-lock'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../ui-components/popover/Popover'
@@ -88,7 +88,7 @@ export function PopoverDialog(props: PopoverDialogProps) {
           <StickyLayer>
             <Box padding={2} paddingLeft={4}>
               <Flex align="center" gap={2}>
-                <Box flex={1}>
+                <Box flexBasis="0%" flexGrow={1}>
                   <Text size={1} textOverflow="ellipsis" weight="medium">
                     {header}
                   </Text>

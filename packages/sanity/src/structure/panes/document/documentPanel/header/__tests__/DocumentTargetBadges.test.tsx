@@ -32,6 +32,7 @@ const versionStub = (
   _rev: '',
   _createdAt: '',
   _updatedAt: '',
+  _type: 'article',
   ...stub,
 })
 

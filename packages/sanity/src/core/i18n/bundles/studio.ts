@@ -633,6 +633,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-status.not-published': 'Not published',
   /** Label to show in the document footer indicating the published date of the document */
   'document-status.published': 'Edited {{date}}',
+  /** Label to show in document versions status for a published (non-live-edit) document */
+  'document-status.published-at': 'Published {{date}}',
   /** Label to show in the document footer indicating the revision from date of the document */
   'document-status.revision-from': 'Revision from <em>{{date}}</em>',
 
