@@ -55,4 +55,33 @@ describe('useCanInviteProjectMembers', () => {
     rerender(view('visible'))
     expect(subscribes.count).toBe(1)
   })
+
+  it('does not subscribe while disabled, then subscribes once when enabled', async () => {
+    const subscribes = {count: 0}
+    const getGrants = vi.fn(() =>
+      defer(() => {
+        subscribes.count += 1
+        return of(grants)
+      }),
+    )
+    vi.mocked(useProjectStore).mockReturnValue({getGrants} as unknown as ProjectStore)
+
+    function CanInvite({enabled}: {enabled: boolean}) {
+      return <span data-testid="can-invite">{String(useCanInviteProjectMembers({enabled}))}</span>
+    }
+
+    const {rerender} = render(<CanInvite enabled={false} />)
+    expect(screen.getByTestId('can-invite')).toHaveTextContent('false')
+    rerender(<CanInvite enabled={false} />)
+    expect(subscribes.count).toBe(0)
+
+    rerender(<CanInvite enabled={true} />)
+    await waitFor(() => expect(screen.getByTestId('can-invite')).toHaveTextContent('true'))
+    expect(subscribes.count).toBe(1)
+
+    // `disabled` unsubscribes without replacing the observable, so a
+    // disabled re-render must not add another grants request.
+    rerender(<CanInvite enabled={false} />)
+    expect(subscribes.count).toBe(1)
+  })
 })

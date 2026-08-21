@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {map, of} from 'rxjs'
+import {map} from 'rxjs'
 
 import {useProjectStore} from '../../../store/datastores'
 
@@ -25,17 +25,7 @@ export function useCanInviteProjectMembers(opts?: UseCanInviteProjectMembersOpti
   const {enabled = true} = opts || {}
   const projectStore = useProjectStore()
 
-  // Keep the observable identity stable across renders.
-  //
-  // Why it matters: once this hook has received an emission, react-rx
-  // re-subscribes *replacement* observables during render (that is what
-  // lets rebuild-every-render consumers converge instead of looping).
-  // Stable identity = exactly one subscription for the hook's lifetime.
-  //
-  // The React Compiler usually memoizes this expression already. The
-  // explicit `useMemo` keeps the guarantee even where the compiler bails.
   const canInvite$ = useMemo(() => {
-    if (!enabled) return of(false)
     return projectStore.getGrants().pipe(
       map((grants) => {
         const permission = grants[PERMISSION_NAME]
@@ -43,7 +33,7 @@ export function useCanInviteProjectMembers(opts?: UseCanInviteProjectMembersOpti
         return !!permission?.some((p) => p.grants.some((g) => g.name === GRANT_NAME))
       }),
     )
-  }, [enabled, projectStore])
+  }, [projectStore])
 
-  return useObservable(canInvite$, false)
+  return useObservable(canInvite$, false, {disabled: !enabled})
 }
