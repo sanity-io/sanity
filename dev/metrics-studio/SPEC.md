@@ -40,14 +40,14 @@ secondary: leads scanning health weekly.
   v5.0.0.
 
   Commit documents are metadata only: sha, first-parent sha (the exact
-  mainline chain — `committedAt` ordering has tie/rebase hazards), author,
-  dates, subject, and a best-effort conventional-commit parse plus PR
-  number. Tag documents carry the dereferenced sha, a weak reference to
-  their commit, and parsed semver so interleaved release lines group by
-  major. Tags also carry npm data (`publishedAt`, `distTags`,
-  `weeklyDownloads`), collected on releases, the daily cron, and dispatches
-  — the cron is the floor because dist-tags re-point and download counts
-  roll without commits.
+  mainline chain link the Bisect tool walks — `committedAt` ordering has
+  tie/rebase hazards), author, dates, subject, and a best-effort
+  conventional-commit parse plus PR number. Tag documents carry the
+  dereferenced sha, a weak reference to their commit, and parsed semver so
+  interleaved release lines group by major. Tags also carry npm data
+  (`publishedAt`, `distTags`, `weeklyDownloads`), collected on releases, the
+  daily cron, and dispatches — the cron is the floor because dist-tags
+  re-point and download counts roll without commits.
 
   Sync (scripts/syncGitHistory.ts via sync-git-metrics.yml): every push to
   main re-upserts the last 50 commits — deterministic ids + createOrReplace
@@ -235,6 +235,24 @@ secondary: leads scanning health weekly.
    ack props, so maximizing is never a downgrade. Fixed width rather than
    full-viewport — stretching 90 days across a 2500px monitor reads as a flat
    line no matter what the metric did.
+
+5. **Bisect** — guided binary search over mainline history: pick a good and a
+   bad commit (or a release tag as shortcut), and the tool proposes which
+   commit's test-studio preview build (`gitCommit.testStudioUrl`) to test
+   next, halving the range per good/bad verdict until the first bad commit is
+   named. The chain is the exact first-parent walk (`gitCommit.parentSha`),
+   not a date sort. Each run is a `bisectSession` document (studio-written,
+   liveEdit, like `driftAck`): endpoints, an append-only marks log (last mark
+   per sha wins; undo removes the tail), and — denormalized at convergence
+   only, for the session list — the result. Commits without a testable build
+   (skipped builds, one-sync URL lag) are never proposed and end up as
+   explicit "suspects" in the verdict rather than silently blamed.
+   Conflicting marks (a good newer than a bad) surface as an error state that
+   undo resolves. A timeline "map" below the stepper shows where you are:
+   endpoints, current bounds, every visited commit and the one under test,
+   with the runs in between collapsed into gap rows labelled by what the
+   bisect has already deduced (broken / untested / working), each linking to
+   the GitHub compare of the span.
 
 ## Architecture
 

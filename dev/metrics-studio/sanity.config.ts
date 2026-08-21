@@ -3,6 +3,7 @@ import {structureTool} from 'sanity/structure'
 
 import {MetricsStudioIcon} from './MetricsStudioIcon'
 import {schemaTypes} from './schemaTypes'
+import {bisectTool} from './tools/bisect'
 import {comparisonsTool} from './tools/comparisons'
 import {trendsTool} from './tools/trends'
 
@@ -12,8 +13,13 @@ export default defineConfig({
   icon: MetricsStudioIcon,
   projectId: 'mhfozd0z',
   dataset: 'bench',
-  // Trends first: it's the dashboard and the studio's default view
-  tools: (prev) => [trendsTool, comparisonsTool, ...prev],
+  // Trends first (the dashboard and default view), then the investigation
+  // tools — comparisons last, it's the least visited
+  tools: (prev) => {
+    const structure = prev.filter((tool) => tool.name === 'structure')
+    const rest = prev.filter((tool) => tool.name !== 'structure')
+    return [trendsTool, bisectTool, ...structure, ...rest, comparisonsTool]
+  },
   plugins: [
     structureTool({
       structure: (S) =>
@@ -40,6 +46,13 @@ export default defineConfig({
                 S.documentTypeList('gitTag')
                   .title('Releases')
                   .defaultOrdering([{field: 'taggedAt', direction: 'desc'}]),
+              ),
+            S.listItem()
+              .title('Bisect sessions')
+              .child(
+                S.documentTypeList('bisectSession')
+                  .title('Bisect sessions')
+                  .defaultOrdering([{field: 'createdAt', direction: 'desc'}]),
               ),
           ]),
     }),
