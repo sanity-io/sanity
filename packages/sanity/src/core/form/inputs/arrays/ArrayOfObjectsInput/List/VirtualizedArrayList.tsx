@@ -47,6 +47,9 @@ interface VirtualizedArrayListProps<Item extends ObjectItem> {
 export function VirtualizedArrayList<Item extends ObjectItem>(
   props: VirtualizedArrayListProps<Item>,
 ) {
+  // TanStack Virtual returns functions that cannot be memoized safely.
+  'use no memo'
+
   const {
     members,
     memberKeys,
@@ -192,7 +195,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
   // custom components can have different dimensions and the library recalculate the size of the element
   const estimateSize = useCallback(() => 53, [])
 
-  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
+  // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual; function is opted out with 'use no memo'
   const virtualizer = useVirtualizer({
     count: members.length,
     estimateSize,

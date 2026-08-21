@@ -44,6 +44,9 @@ export const ReleaseActivityList = ({
   loadMore,
   isLoading,
 }: ReleaseActivityListProps) => {
+  // TanStack Virtual returns functions that cannot be memoized safely.
+  'use no memo'
+
   const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
 
   const listEvents: ReleaseEvent[] = useMemo(() => {
@@ -77,7 +80,7 @@ export const ReleaseActivityList = ({
     })
   }, [events, hasMore, isLoading])
 
-  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
+  // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual; function is opted out with 'use no memo'
   const virtualizer = useVirtualizer({
     // If we have more events, or the events are loading, we add a loader row at the end
     count: hasMore || isLoading ? listEvents.length + 1 : listEvents.length,
