@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.11.0](https://github.com/sanity-io/sanity/compare/v6.10.1...v6.11.0) (2026-08-21)
+
+### Bug Fixes
+
+* **@sanity/schema:** allow i18nTitleKey on portable-text styles/lists and export defaults ([#13494](https://github.com/sanity-io/sanity/issues/13494)) ([#13831](https://github.com/sanity-io/sanity/issues/13831)) ([8bbe6c7](https://github.com/sanity-io/sanity/commit/8bbe6c795422b650974cbab0df5f6a5b411406c3))
+* **deps:** update dependency get-it to ^9.5.0 ([#13482](https://github.com/sanity-io/sanity/issues/13482)) ([66cf5ff](https://github.com/sanity-io/sanity/commit/66cf5ff4328e4f4aec2289176d435da90edd4bf8))
+* **deps:** update dependency get-it to ^9.5.1 ([#14204](https://github.com/sanity-io/sanity/issues/14204)) ([35df047](https://github.com/sanity-io/sanity/commit/35df047e6098c596633b52f93f9e8bf6673f8acd))
+* **deps:** update dependency get-it to v9 ([#14079](https://github.com/sanity-io/sanity/issues/14079)) ([d9ca364](https://github.com/sanity-io/sanity/commit/d9ca364750af32e301ed62caa33dd46bd562a18b))
+* **pkg:** add missing engines.node fields ([#14126](https://github.com/sanity-io/sanity/issues/14126)) ([7009966](https://github.com/sanity-io/sanity/commit/7009966be9aa012efbb1da24926bd4e102f275dc))
 ## [6.9.1](https://github.com/sanity-io/sanity/compare/v6.9.0...v6.9.1) (2026-08-06)
 
 ### Bug Fixes
