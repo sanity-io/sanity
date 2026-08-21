@@ -18,6 +18,7 @@ import {type Observable, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {type DocumentStore, type SanityDocument, type Schema} from 'sanity'
 import {
+  getReleaseOrVariantMembership,
   type ItemChild,
   type StructureBuilder,
   structureLocaleNamespace,
@@ -46,10 +47,27 @@ export const structure: StructureResolver = (
   {schema, documentStore, i18n, perspectiveStack, selectedVariantName},
 ) => {
   const {t} = i18n
+  const currentReleaseOrVariant = getReleaseOrVariantMembership({
+    perspectiveStack,
+    selectedVariantName,
+  })
   return S.list()
     .title(t('testStudio:structure.root.title' as const) || 'Content')
     .items([
       S.documentListItem().id('validation').schemaType('allTypes'),
+      S.listItem()
+        .id('current-release-or-variant')
+        .title(currentReleaseOrVariant.title)
+        .icon(FilterIcon)
+        .child(
+          S.documentList()
+            .id('current-release-or-variant-list')
+            .title(currentReleaseOrVariant.title)
+            .filter(currentReleaseOrVariant.filter)
+            .params(currentReleaseOrVariant.params)
+            .apiVersion('X')
+            .perspective('raw'),
+        ),
       S.listItem()
         .title('Sections by perspective')
         .id('sections-by-perspective')

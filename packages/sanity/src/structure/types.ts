@@ -1,3 +1,4 @@
+import {type ClientPerspective} from '@sanity/client'
 import {type SchemaType} from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {
@@ -331,6 +332,11 @@ export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList
     defaultOrdering?: Array<{field: string; direction: 'asc' | 'desc'}>
     params?: Record<string, unknown>
     apiVersion?: string
+    /**
+     * When set, the list queries with this perspective instead of the navbar stack
+     * and does not apply the selected navbar variant.
+     */
+    perspective?: ClientPerspective
   }
   /** Suppresses auto-injected restore-default sort/layout menu items for panes with a fixed ordering choice. */
   suppressRestoreDefaultMenuItems?: boolean
