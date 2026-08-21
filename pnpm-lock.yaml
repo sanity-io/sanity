@@ -1334,6 +1334,9 @@ importers:
       '@sanity/ui':
         specifier: 'catalog:'
         version: 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -1685,6 +1688,9 @@ importers:
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
       use-effect-event:
         specifier: ^2.0.3
         version: 2.0.3(react@19.2.8)
