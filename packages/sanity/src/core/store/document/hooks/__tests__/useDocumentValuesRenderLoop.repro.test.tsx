@@ -1,25 +1,22 @@
 /**
- * Reproduces the render loop behind a customer-reported studio-wide slowdown
- * (traced from a Firefox profile: ~60 update passes/second, sustained).
+ * Regression guard for a render loop reported from the field (customer
+ * profile showed ~60 update passes/second, sustained, studio-wide slowdown).
  *
- * `useDocumentValues(documentId, paths)` memoizes its observable on the
- * `paths` ARRAY REFERENCE. A caller passing an inline literal — the natural
- * call shape, e.g. `useDocumentValues(id, ['title'])` — busts the memo every
- * render: each render builds a new observable (the preview store's
- * observePaths returns a fresh pipeline per call), react-rx treats it as a
+ * `useDocumentValues(documentId, paths)` used to memoize its observable on
+ * the `paths` ARRAY REFERENCE. A caller passing an inline literal — the
+ * natural call shape, e.g. `useDocumentValues(id, ['title'])` — busted the
+ * memo every render: each render built a new observable (the preview store's
+ * observePaths returns a fresh pipeline per call), react-rx treated it as a
  * brand-new external store whose warm-up replays the cached value
- * synchronously, the snapshot is a fresh object (asLoadable maps per
- * emission), useSyncExternalStore sees "changed" and re-renders — around
- * again forever. One looping preview component per visible list item.
+ * synchronously, and the fresh snapshot forced another render — around again
+ * forever (~22k renders in 500ms before the fix; the hook now keys the memo
+ * on path CONTENTS via useShallowUnique).
  *
- * The control (module-constant paths array) renders a handful of times and
- * settles.
- *
- * Version-linked: under react-rx v4 (studio < 6.9.0) the same inline-literal
- * case renders exactly twice and settles — the footgun was latent. Under v5
- * (adopted in 6.9.0 via #13799 + #13814) each new identity schedules a
- * deferred second pass that recreates the identity, closing the loop
- * (verified by swapping the react-rx resolution to 4.2.5 and re-running).
+ * Version-linked: under react-rx v4 (studio before 6.9.0) the unfixed inline case
+ * rendered exactly twice and settled — the footgun was latent. Under v5
+ * (adopted in 6.9.0 via #13799 + #13814) each new identity's deferred pass
+ * re-rendered and minted another identity, closing the loop (verified by
+ * swapping the react-rx resolution to 4.2.5 and re-running).
  *
  * Mounted via a raw createRoot with IS_REACT_ACT_ENVIRONMENT disabled: act
  * would flush and mask the loop's scheduling.
@@ -40,11 +37,8 @@ declare global {
 // returns a NEW observable identity (createPathObserver builds a fresh
 // pipeline per call)
 const cachedValue$ = new BehaviorSubject<Record<string, unknown>>({title: 'hello'})
-// The store instance itself is stable (as the real one is) — only the
-// observable returned per observePaths() call has a fresh identity
-const mockPreviewStore = {
-  observePaths: () => cachedValue$.pipe(map((value) => value)),
-}
+const observePaths = vi.fn(() => cachedValue$.pipe(map((value) => value)))
+const mockPreviewStore = {observePaths}
 vi.mock('../../../datastores', () => ({
   useDocumentPreviewStore: () => mockPreviewStore,
 }))
@@ -52,19 +46,24 @@ vi.mock('../../../datastores', () => ({
 const counters = {inline: 0, stable: 0}
 
 function InlineProbe() {
-  // oxlint-disable-next-line react/immutability -- deliberate render counter: this repro exists to make the loop measurable
+  // oxlint-disable-next-line react/immutability -- deliberate render counter: this guard exists to make a loop measurable
   counters.inline++
-  // The footgun: fresh array literal every render
-  useDocumentValues('doc-inline', ['title'])
-  return null
+  // The footgun call shape: fresh array literal every render
+  const {value} = useDocumentValues<{title?: string}>('doc-inline', ['title'])
+  return <div data-testid="inline">{value?.title}</div>
 }
 
 const STABLE_PATHS = ['title']
 
 function StableProbe() {
-  // oxlint-disable-next-line react/immutability -- deliberate render counter: this repro exists to make the loop measurable
+  // oxlint-disable-next-line react/immutability -- deliberate render counter: this guard exists to make a loop measurable
   counters.stable++
   useDocumentValues('doc-stable', STABLE_PATHS)
+  return null
+}
+
+function PathsProbe(props: {paths: string[]}) {
+  useDocumentValues('doc-paths', props.paths)
   return null
 }
 
@@ -74,7 +73,7 @@ function sleep(ms: number) {
   })
 }
 
-describe('useDocumentValues render loop (repro)', () => {
+describe('useDocumentValues render stability', () => {
   let container: HTMLElement
   let root: Root
   let previousActEnvironment: boolean | undefined
@@ -82,6 +81,8 @@ describe('useDocumentValues render loop (repro)', () => {
   beforeEach(() => {
     counters.inline = 0
     counters.stable = 0
+    observePaths.mockClear()
+    cachedValue$.next({title: 'hello'})
     previousActEnvironment = globalThis.IS_REACT_ACT_ENVIRONMENT
     globalThis.IS_REACT_ACT_ENVIRONMENT = false
     container = document.createElement('div')
@@ -95,16 +96,41 @@ describe('useDocumentValues render loop (repro)', () => {
     globalThis.IS_REACT_ACT_ENVIRONMENT = previousActEnvironment
   })
 
-  it('a stable paths array settles after a handful of renders', async () => {
+  it('settles despite an inline paths array (regression: render loop)', async () => {
+    root.render(<InlineProbe />)
+    await sleep(500)
+    expect(counters.inline).toBeLessThan(10)
+    // One observable for the one logical (id, paths) pair — not one per render
+    expect(observePaths).toHaveBeenCalledTimes(1)
+  })
+
+  it('settles with a stable paths array', async () => {
     root.render(<StableProbe />)
     await sleep(500)
     expect(counters.stable).toBeLessThan(10)
   })
 
-  it('an inline paths array re-renders unboundedly', async () => {
+  it('still propagates value updates from the store', async () => {
     root.render(<InlineProbe />)
-    await sleep(500)
-    // The loop: hundreds of renders in half a second with no external input
-    expect(counters.inline).toBeGreaterThan(50)
+    await sleep(100)
+    expect(container.textContent).toBe('hello')
+    cachedValue$.next({title: 'updated'})
+    await sleep(100)
+    expect(container.textContent).toBe('updated')
+  })
+
+  it('rebuilds the observable when the path contents actually change', async () => {
+    root.render(<PathsProbe paths={['title']} />)
+    await sleep(100)
+    expect(observePaths).toHaveBeenCalledTimes(1)
+    // Same contents, new array identity: no rebuild
+    root.render(<PathsProbe paths={['title']} />)
+    await sleep(100)
+    expect(observePaths).toHaveBeenCalledTimes(1)
+    // Different contents: rebuild
+    root.render(<PathsProbe paths={['name']} />)
+    await sleep(100)
+    expect(observePaths).toHaveBeenCalledTimes(2)
+    expect(observePaths).toHaveBeenLastCalledWith({_type: 'reference', _ref: 'doc-paths'}, ['name'])
   })
 })
