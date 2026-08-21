@@ -43,7 +43,15 @@ export const ReferenceChangedBanner = memo(() => {
   const parentSibling = parentGroup?.[0]
   const parentId = parentSibling?.id
   const hasHistoryOpen = Boolean(parentSibling?.params?.rev)
-  const parentRefPath = (params?.parentRefPath && pathFromString(params.parentRefPath)) || null
+  const parentRefPathString = params?.parentRefPath
+  // Memoized on the string param: `pathFromString` returns a fresh array, and
+  // using that as a dep of the observable memo below would mint a new
+  // observable identity every render — which `useSyncObservable`'s fresh
+  // `{loading: true}` warm-up snapshot turns into a render loop.
+  const parentRefPath = useMemo(
+    () => (parentRefPathString ? pathFromString(parentRefPathString) : null),
+    [parentRefPathString],
+  )
   const {t} = useTranslation(structureLocaleNamespace)
 
   /**

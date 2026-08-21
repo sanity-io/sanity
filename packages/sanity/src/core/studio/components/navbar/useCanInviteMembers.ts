@@ -1,3 +1,4 @@
+import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 
@@ -5,6 +6,11 @@ import {useProjectStore} from '../../../store/datastores'
 
 const PERMISSION_NAME = 'sanity.project.members'
 const GRANT_NAME = 'invite'
+
+// Module-level so the disabled branch keeps a stable observable identity —
+// react-rx keys its store on identity, and a fresh `of(false)` per render
+// turns `useObservable`'s deferred pass into a self-sustaining render loop.
+const DISABLED$ = of(false)
 
 interface UseCanInviteProjectMembersOptions {
   /**
@@ -24,16 +30,20 @@ export function useCanInviteProjectMembers(opts?: UseCanInviteProjectMembersOpti
   const {enabled = true} = opts || {}
   const projectStore = useProjectStore()
 
-  const result$ = projectStore.getGrants().pipe(
-    map((grants) => {
-      const permission = grants[PERMISSION_NAME]
+  const result$ = useMemo(
+    () =>
+      projectStore.getGrants().pipe(
+        map((grants) => {
+          const permission = grants[PERMISSION_NAME]
 
-      return !!permission?.some((p) => p.grants.some((g) => g.name === GRANT_NAME))
-    }),
+          return !!permission?.some((p) => p.grants.some((g) => g.name === GRANT_NAME))
+        }),
+      ),
+    [projectStore],
   )
 
   // If the hook is disabled, don't subscribe to the observable
-  const canInvite$ = enabled ? result$ : of(false)
+  const canInvite$ = enabled ? result$ : DISABLED$
 
   return useObservable(canInvite$, false)
 }
