@@ -371,6 +371,7 @@ export {
   type DocumentGroupInventoryProps,
 } from '../core/documentGroupInventory/components/DocumentGroupInventory'
 export {DocumentGroupInventoryAction} from '../core/documentGroupInventory/components/DocumentGroupInventoryAction'
+export {DocumentGroupPicker} from '../core/documentGroupInventory/components/DocumentGroupPicker'
 export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
 export {
   type DocumentGroupInventoryPerspectiveList,

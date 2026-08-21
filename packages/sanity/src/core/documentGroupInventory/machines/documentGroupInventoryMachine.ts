@@ -170,7 +170,7 @@ export const documentGroupInventoryMachine = setup({
   },
 })
 
-function metaHasError(meta: Meta | undefined): boolean {
+export function metaHasError(meta: Meta | undefined): boolean {
   if (!meta) {
     return false
   }
@@ -178,7 +178,7 @@ function metaHasError(meta: Meta | undefined): boolean {
   return Boolean(meta.versionState.error) || meta.releases.state === 'error'
 }
 
-function metaIsSettled(meta: Meta | undefined): boolean {
+export function metaIsSettled(meta: Meta | undefined): boolean {
   if (!meta) {
     return false
   }
