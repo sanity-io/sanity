@@ -1,5 +1,6 @@
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {isRecord, Translate, useTranslation} from 'sanity'
+import {Box} from 'ui5'
 
 import {Pane} from '../../components/pane/Pane'
 import {PaneContent} from '../../components/pane/PaneContent'

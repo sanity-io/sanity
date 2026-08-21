@@ -7,14 +7,9 @@ import {useState} from 'react'
 
 import {idSlug, SNOOZE_DAYS} from './acks'
 import {formatValue} from './data'
-import {type DriftBaseline, type DriftResult, worstOf} from './drift'
+import {baselineDetail, type DriftResult} from './drift'
 import {backlinksFor} from './links'
 import {type DriftState} from './useDriftState'
-
-const BASELINE_LABEL: Record<DriftBaseline['kind'], string> = {
-  trailing: 'vs prior 3 weeks',
-  step: 'vs same weekday',
-}
 
 function pct(fraction: number): string {
   const sign = fraction > 0 ? '+' : ''
@@ -30,7 +25,7 @@ function DriftRow(props: {
   onFocus: () => void
 }) {
   const {entry, showBranch, acked, onAck, onClear, onFocus} = props
-  const worst = worstOf(entry)
+  const worst = entry.baseline
   return (
     <Flex align="center" gap={2} wrap="wrap">
       <Badge tone={entry.direction === 'regression' ? 'critical' : 'positive'} fontSize={0}>
@@ -48,7 +43,7 @@ function DriftRow(props: {
       <Text size={0} muted>
         {formatValue(worst.baseline, entry.unit)} → {formatValue(worst.recent, entry.unit)}
         {' · '}
-        {entry.fired.map((f) => BASELINE_LABEL[f.kind]).join(', ')}
+        {baselineDetail(worst)}
       </Text>
       {backlinksFor(entry.latest).map((link) => (
         <Box
@@ -69,7 +64,7 @@ function DriftRow(props: {
       ))}
       <Box flex={1} />
       {acked ? (
-        <Button mode="bleed" fontSize={0} padding={2} text="Un-ack" onClick={onClear} />
+        <Button mode="bleed" fontSize={0} padding={2} text="Reopen" onClick={onClear} />
       ) : (
         <MenuButton
           // Slugged: series keys contain spaces/`·`, which are invalid in DOM
@@ -79,7 +74,7 @@ function DriftRow(props: {
           menu={
             <Menu>
               <MenuItem text="Silence" onClick={() => onAck('silenced')} />
-              <MenuItem text={`Snooze ${SNOOZE_DAYS}d`} onClick={() => onAck('snoozed')} />
+              <MenuItem text={`Snooze ${SNOOZE_DAYS} days`} onClick={() => onAck('snoozed')} />
               {/* "Mark fixed" only for regressions — an improvement has nothing
                   to fix */}
               {entry.direction === 'regression' && (

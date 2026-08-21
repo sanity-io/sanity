@@ -6,9 +6,14 @@ import {useClient, useDocumentStore} from 'sanity'
 
 import {ackIsActive, clearAck, type DriftAck, DRIFT_ACK_QUERY, SNOOZE_DAYS, writeAck} from './acks'
 import {type TrendSeries} from './data'
-import {computeDrift, type DriftResult, worstOf} from './drift'
+import {computeDrift, type DriftResult} from './drift'
 
 export interface DriftState {
+  /**
+   * Every series with a computable baseline, including sub-threshold ones — what
+   * the charts draw their overlay from. Not a review list; see `active`.
+   */
+  all: DriftResult[]
   /** Drifted metrics not currently silenced/snoozed — the "to review" set. */
   active: DriftResult[]
   /** Drifted metrics muted by an active ack. */
@@ -52,9 +57,11 @@ export function useDriftState(series: TrendSeries[]): DriftState {
   const {active, silenced} = useMemo(() => {
     const activeList: DriftResult[] = []
     const silencedList: DriftResult[] = []
-    for (const entry of drift) {
+    // Neutral entries exist so the charts can draw an overlay everywhere; they are
+    // not findings, so they never reach the feed or the tab badges
+    for (const entry of drift.filter((candidate) => candidate.direction !== 'neutral')) {
       const found = acks.find((a) => a.metricKey === entry.seriesKey && a.branch === entry.branch)
-      const recent = worstOf(entry).recent
+      const recent = entry.baseline.recent
       if (found && ackIsActive(found, recent, now)) silencedList.push(entry)
       else activeList.push(entry)
     }
@@ -64,6 +71,7 @@ export function useDriftState(series: TrendSeries[]): DriftState {
   const regressionCount = active.filter((entry) => entry.direction === 'regression').length
 
   return {
+    all: drift,
     active,
     silenced,
     regressionCount,
@@ -75,7 +83,7 @@ export function useDriftState(series: TrendSeries[]): DriftState {
       writeAck(client, {
         metricKey: entry.seriesKey,
         branch: entry.branch,
-        baselineValue: worstOf(entry).recent,
+        baselineValue: entry.baseline.recent,
         state,
         until:
           state === 'snoozed'

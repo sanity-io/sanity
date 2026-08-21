@@ -101,6 +101,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
     })
   }, [columnDefs, data, searchFilter, searchTerm, sort])
 
+  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,
     getScrollElement: () => scrollContainerRef,

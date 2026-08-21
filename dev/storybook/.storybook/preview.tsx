@@ -1,8 +1,9 @@
-// @sanity/ui ships its static styles as a stylesheet consumers import
-// themselves; load it the same way the studio entry point and the browser
-// test setup (packages/sanity/test/setup/browser.ts) do. `ui5/styles.css` is
-// imported as a side effect of the `sanity` package entry, so it does not
-// need to be loaded here.
+// Both libraries ship static styles as stylesheets consumers import
+// themselves. Match the studio entry (`packages/sanity/src/_exports/index.ts`)
+// rather than relying on a story happening to import `sanity` (TestWrapper
+// does; authored ui-components / ui5 sentinels import source files directly
+// and would otherwise miss the ui5 reset and design tokens).
+import 'ui5/styles.css'
 import '@sanity/ui/styles.css'
 
 import {Card, LayerProvider, ThemeProvider} from '@sanity/ui'

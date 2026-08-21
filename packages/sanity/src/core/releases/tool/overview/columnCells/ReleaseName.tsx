@@ -106,7 +106,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
           <Card {...cardProps} padding={2} radius={2} flex={1}>
             <Flex align="center" gap={2}>
               <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-                <ReleaseAvatar release={release} />
+                <ReleaseAvatar release={release} size="small" fontSize={2} />
               </Box>
               <Stack flex={1} gap={2}>
                 <Flex align="center" gap={2} style={{minWidth: 0}}>

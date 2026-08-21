@@ -44,11 +44,14 @@
         "chromatic",
       ],
     },
-    // Studios that set `reactCompiler` in sanity.cli.ts need babel-plugin-react-compiler
-    // in their dependencies: `sanity dev` / `sanity build` resolve the babel plugin by
-    // name at runtime, which knip can't trace.
+    // Studios that set `reactCompiler` in sanity.cli.ts need oxc-transform-react in
+    // their dependencies: `sanity dev` / `sanity build` resolve the transform by name
+    // at runtime, which knip can't trace.
     "dev/auth-test-studio": {
-      "ignoreDependencies": ["babel-plugin-react-compiler"],
+      "ignoreDependencies": ["oxc-transform-react"],
+    },
+    "dev/design-studio": {
+      "ignoreDependencies": ["oxc-transform-react"],
     },
     // Same situation as the e2e workspace: the playwright plugin is disabled because
     // playwright.config.ts throws on missing SANITY_E2E_* env vars at load time (when CI
@@ -62,11 +65,6 @@
     // and debug code, out of scope for dependency checking). Like the e2e workspace,
     // treat every file as an entry so the full `pnpm knip` run doesn't report them,
     // while dependency usage is still traced.
-    "dev/efps": {
-      "entry": ["**/*.{ts,tsx}"],
-      "project": ["**/*.{ts,tsx}"],
-      "ignoreDependencies": ["babel-plugin-react-compiler"],
-    },
     "dev/media-library-aspects-studio": {
       "entry": ["**/*.{ts,tsx}"],
       "project": ["**/*.{ts,tsx}"],
@@ -74,17 +72,17 @@
     "dev/metrics-studio": {
       "entry": ["**/*.{ts,tsx}"],
       "project": ["**/*.{ts,tsx}"],
-      "ignoreDependencies": ["babel-plugin-react-compiler"],
+      "ignoreDependencies": ["oxc-transform-react"],
     },
     "dev/page-building-studio": {
-      "ignoreDependencies": ["babel-plugin-react-compiler"],
+      "ignoreDependencies": ["oxc-transform-react"],
     },
     "dev/sdk-app": {
       // Knip's sanity plugin doesn't know about `app.entry` in sanity.cli.ts
       "entry": ["src/App.tsx"],
     },
     "dev/starter-studio": {
-      "ignoreDependencies": ["babel-plugin-react-compiler"],
+      "ignoreDependencies": ["oxc-transform-react"],
     },
     "dev/storybook": {
       "ignoreDependencies": [
@@ -96,7 +94,7 @@
     "dev/studio-e2e-testing": {
       "entry": ["**/*.{ts,tsx}"],
       "project": ["**/*.{ts,tsx}"],
-      "ignoreDependencies": ["babel-plugin-react-compiler"],
+      "ignoreDependencies": ["oxc-transform-react"],
     },
     "dev/test-create-integration-studio": {
       "entry": ["**/*.{ts,tsx}"],
@@ -106,14 +104,14 @@
       // Also covers migrations/**, which `sanity migration run` loads without imports
       "entry": ["**/*.{js,ts,tsx}"],
       "project": ["**/*.{js,ts,tsx}"],
-      "ignoreDependencies": ["babel-plugin-react-compiler"],
+      "ignoreDependencies": ["oxc-transform-react"],
     },
     "perf/bench": {
       "entry": ["**/*.{ts,tsx}"],
       "project": ["**/*.{ts,tsx}"],
     },
     "perf/studio": {
-      "ignoreDependencies": ["babel-plugin-react-compiler"],
+      "ignoreDependencies": ["oxc-transform-react"],
     },
     "perf/tests": {
       "entry": ["**/*.{ts,tsx}"],

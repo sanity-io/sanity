@@ -1,10 +1,16 @@
 /// <reference types="vite/client" />
+import {ActivityIcon} from '@sanity/icons/Activity'
+import {BoltIcon} from '@sanity/icons/Bolt'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ClockIcon} from '@sanity/icons/Clock'
+import {ControlsIcon} from '@sanity/icons/Controls'
+import {DropIcon} from '@sanity/icons/Drop'
 import {EllipsisVerticalIcon} from '@sanity/icons/EllipsisVertical'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
+import {PackageIcon} from '@sanity/icons/Package'
 import {
   Badge,
   Box,
@@ -26,7 +32,7 @@ import {
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {Popover} from '@sanity/ui/popover'
 import {ParentSize} from '@visx/responsive'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {type ComponentType, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
@@ -47,11 +53,13 @@ import {
   type TrendGroup,
   type TrendRun,
   type TrendSeries,
+  vitalSections,
 } from './data'
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
-import {type DriftResult, worstBySeries, worstOf} from './drift'
+import {type DriftResult, worstBySeries} from './drift'
 import {DriftFeed} from './DriftFeed'
-import {efpsSourceUrl, sourceFileUrl, webVitalDocUrl} from './links'
+import {type LayerState, useLayerState} from './layers'
+import {sourceFileUrl, webVitalDocUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
 import {TrendChart} from './TrendChart'
 import {type DriftState, useDriftState} from './useDriftState'
@@ -62,6 +70,16 @@ const RANGES = [
   {label: 'Last 90 days', days: 90},
   {label: 'All time', days: null},
 ] as const
+
+/** One glanceable glyph per metric-group tab; titles stay the identifier. */
+const GROUP_ICONS: Record<TrendGroup, ComponentType> = {
+  vitals: ActivityIcon,
+  responsiveness: BoltIcon,
+  load: ClockIcon,
+  bundle: PackageIcon,
+  soak: DropIcon,
+  environment: ControlsIcon,
+}
 
 type DataSource = 'live' | DebugSource
 
@@ -141,25 +159,6 @@ function InfoButton(props: {text: string; label: string; sourceFile?: string; vi
                     <Flex align="center" gap={1}>
                       <LaunchIcon />
                       <Text size={1}>View scenario source</Text>
-                    </Flex>
-                  </Box>
-                )}
-                {/* Cross-reference the legacy eFPS scenario this was ported
-                    from, while dev/efps burns down (omitted for bench-only
-                    scenarios with no eFPS counterpart) */}
-                {props.sourceFile && efpsSourceUrl(props.sourceFile) && (
-                  <Box
-                    as="a"
-                    href={efpsSourceUrl(props.sourceFile)}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="View the legacy eFPS scenario (opens in a new tab)"
-                  >
-                    <Flex align="center" gap={1}>
-                      <LaunchIcon />
-                      <Text size={1} muted>
-                        Legacy eFPS scenario
-                      </Text>
                     </Flex>
                   </Box>
                 )}
@@ -284,11 +283,11 @@ function AckMenu(props: {
       menu={
         <Menu>
           {props.acked ? (
-            <MenuItem text="Un-ack" onClick={props.onUnack} />
+            <MenuItem text="Reopen" onClick={props.onUnack} />
           ) : (
             <>
               <MenuItem text="Silence" onClick={() => props.onAck('silenced')} />
-              <MenuItem text="Snooze 7d" onClick={() => props.onAck('snoozed')} />
+              <MenuItem text="Snooze 7 days" onClick={() => props.onAck('snoozed')} />
               {/* "Mark fixed" only makes sense for a regression — an improvement
                   has nothing to fix */}
               {props.direction === 'regression' && (
@@ -309,7 +308,7 @@ function chartDomId(seriesKey: string): string {
 }
 
 function driftBadge(entry: DriftResult): {tone: 'caution' | 'positive'; label: string} {
-  const worst = worstOf(entry)
+  const worst = entry.baseline
   const sign = worst.deltaFraction > 0 ? '+' : ''
   const arrow = entry.direction === 'regression' ? '↑' : '↓'
   return {
@@ -323,12 +322,19 @@ function SeriesCard(props: {
   height: number
   drift?: DriftResult
   silenced?: DriftResult
+  /** The baseline to draw, flagged or not. Falls back to the flagged one. */
+  baseline?: DriftResult
   focused?: boolean
   onFocus?: () => void
   onAck?: (state: 'silenced' | 'snoozed' | 'fixed') => void
   onUnack?: () => void
+  layers?: LayerState
 }) {
-  const {series, height, drift, silenced, focused, onFocus, onAck, onUnack} = props
+  const {series, height, drift, silenced, baseline, focused, onFocus, onAck, onUnack, layers} =
+    props
+  // The overlay draws from any computed baseline; the badge and tint only from a
+  // flagged one
+  const overlay = baseline ?? drift ?? silenced
   // Latest value of the first line — a headline number only when not comparing
   const latest = series.lines.length === 1 ? series.lines[0].points.at(-1) : undefined
   const badge = drift ? driftBadge(drift) : null
@@ -359,7 +365,7 @@ function SeriesCard(props: {
               <Box
                 as="button"
                 onClick={onFocus}
-                title="Focus this chart"
+                title="Go to chart"
                 style={{
                   background: 'none',
                   border: 0,
@@ -425,9 +431,17 @@ function SeriesCard(props: {
             inside an auto-height Stack row, and a 0-sized parent means no
             chart gets rendered at all */}
         <ParentSize debounceTime={50} style={{height}}>
-          {({width}) => <TrendChart series={series} width={width} height={height} />}
+          {({width}) => (
+            <TrendChart
+              series={series}
+              width={width}
+              height={height}
+              drift={overlay}
+              layers={layers}
+            />
+          )}
         </ParentSize>
-        <ChartLegend series={series} />
+        <ChartLegend series={series} drift={overlay} layers={layers} />
       </Stack>
     </Card>
   )
@@ -438,15 +452,19 @@ function ChartGrid(props: {
   series: TrendSeries[]
   driftBySeries?: Map<string, DriftResult>
   silencedBySeries?: Map<string, DriftResult>
+  /** Baselines for the chart overlay, including sub-threshold ones. */
+  baselineBySeries?: Map<string, DriftResult>
   drift?: DriftState
   focusedKey?: string | null
   onFocusMetric?: (seriesKey: string) => void
+  layers?: LayerState
 }) {
   return (
     <Grid gridTemplateColumns={[1, 1, 2, 3]} gap={3}>
       {props.series.map((entry) => {
         const entryDrift = props.driftBySeries?.get(entry.key)
         const entrySilenced = props.silencedBySeries?.get(entry.key)
+        const entryBaseline = props.baselineBySeries?.get(entry.key)
         return (
           <SeriesCard
             key={entry.key}
@@ -454,6 +472,7 @@ function ChartGrid(props: {
             height={128}
             drift={entryDrift}
             silenced={entrySilenced}
+            baseline={entryBaseline}
             focused={props.focusedKey === entry.key}
             onFocus={props.onFocusMetric ? () => props.onFocusMetric!(entry.key) : undefined}
             onAck={
@@ -462,6 +481,7 @@ function ChartGrid(props: {
             onUnack={
               entrySilenced && props.drift ? () => props.drift!.clear(entrySilenced) : undefined
             }
+            layers={props.layers}
           />
         )
       })}
@@ -477,6 +497,7 @@ function ChartGrid(props: {
 function SoakPanel(props: {
   slopes: TrendSeries[]
   endValues: TrendSeries[]
+  layers?: LayerState
   latest: {run: TrendRun; charts: TrendSeries[]} | null
 }) {
   const {slopes, endValues, latest} = props
@@ -484,20 +505,20 @@ function SoakPanel(props: {
     slopes.length > 0 && {
       id: 'slope',
       label: 'Slope over runs',
-      hint: 'Per-minute slope, across runs — is a leak or degradation worsening release over release?',
+      hint: 'Per-minute slope, across runs. Is a leak or degradation worsening release over release?',
       charts: slopes,
     },
     endValues.length > 0 && {
       id: 'end',
       label: 'End of run',
-      hint: 'End-of-run value, across runs — where each metric landed by the end of the soak.',
+      hint: 'End-of-run value, across runs: where each metric landed by the end of the soak.',
       charts: endValues,
     },
     latest &&
       latest.charts.length > 0 && {
         id: 'latest',
         label: 'Latest run',
-        hint: `Latest soak run — ${latest.run.git?.branch ?? 'unknown'} @ ${latest.run.git?.sha?.slice(0, 10) ?? '?'} · minute-by-minute.`,
+        hint: `Latest soak run: ${latest.run.git?.branch ?? 'unknown'} @ ${latest.run.git?.sha?.slice(0, 10) ?? '?'}, minute by minute.`,
         charts: latest.charts,
       },
   ].filter(Boolean) as {id: string; label: string; hint: string; charts: TrendSeries[]}[]
@@ -525,7 +546,7 @@ function SoakPanel(props: {
           <Text size={1} muted>
             {active.hint}
           </Text>
-          <ChartGrid series={active.charts} />
+          <ChartGrid series={active.charts} layers={props.layers} />
         </Stack>
       </TabPanel>
     </Stack>
@@ -542,6 +563,10 @@ export function TrendsTool() {
   // is shareable and the tool is explorable before real runs exist.
   const [rangeParam, setRangeParam] = useUrlState('range', '90')
   const [sourceParam, setSourceParam] = useUrlState('source', 'live')
+  // Encoding layers (median / band / baseline overlay), toggled from any chart
+  // legend and applied to the whole grid — see layers.ts
+  const [layersParam, setLayersParam] = useUrlState('layers', '')
+  const layers = useLayerState(layersParam, setLayersParam)
   const source: DataSource =
     sourceParam === 'live' || DEBUG_SOURCES.includes(sourceParam as DebugSource)
       ? (sourceParam as DataSource)
@@ -596,6 +621,22 @@ export function TrendsTool() {
     [inRange, selectedBranches],
   )
   const series = useMemo(() => buildSeries(filtered), [filtered])
+  /**
+   * Drift is computed over *all* history for the selected branches, never the
+   * range-filtered view. Its baseline is defined in runs (last 7 vs prior 21),
+   * so feeding it a 30-day slice would leave the baseline drawing on ~23 of 30
+   * visible runs and — worse — make the verdict a function of the range picker:
+   * the same metric could flag at 90d and not at 30d. The charts still render
+   * `series` (the range the user chose); only the drift math reads the full
+   * history.
+   */
+  const driftSeries = useMemo(
+    () =>
+      buildSeries(
+        (runs ?? []).filter((run) => run.git && selectedBranches.includes(run.git.branch)),
+      ),
+    [runs, selectedBranches],
+  )
   const soakSlopes = useMemo(() => soakSlopeSeries(filtered), [filtered])
   // End-of-run soak values across runs — the "where did it land" history that
   // complements the slope view
@@ -654,7 +695,7 @@ export function TrendsTool() {
 
   // Shared drift state (feeds both the pinned feed and the per-tab badges, so
   // they can't disagree). Badge = active regressions in that group.
-  const drift = useDriftState(series)
+  const drift = useDriftState(driftSeries)
   const showBranch = series.some((s) => s.lines.length > 1)
   const [focusedKey, setFocusedKey] = useState<string | null>(null)
   // A deep-linked (?chart=) focus arms only once data is in: at mount the
@@ -709,6 +750,10 @@ export function TrendsTool() {
   // on more than one branch; keep the worst so the card shows the biggest move,
   // regressions winning over improvements.
   const driftBySeries = useMemo(() => worstBySeries(drift.active), [drift.active])
+  // Every series' baseline, flagged or not — the charts draw an overlay from this
+  // so the reference lines don't appear and disappear as metrics cross the
+  // threshold. Badge, card tint and the ack menu still key off `drift.active`.
+  const baselineBySeries = useMemo(() => worstBySeries(drift.all), [drift.all])
   // Silenced/snoozed per series — the card keeps a muted "acknowledged" marker
   // with an Un-ack, so you can reverse it without opening the feed. Active
   // drift takes precedence, so drop any series that's also active.
@@ -788,13 +833,13 @@ export function TrendsTool() {
                 <Stack gap={3}>
                   <Text size={1} muted>
                     One benchmark run per day of the studio built from <code>main</code>, measured
-                    against a local API mock (no network, no real project) — see{' '}
-                    <code>perf/bench</code>. Each chart tracks one metric over time; each dot is one
-                    run — click it for the run details and links to the PR, commit, and CI run.
+                    against a local API mock (no network, no real project); see{' '}
+                    <code>perf/bench</code>. Each chart tracks one metric over time. Click anywhere
+                    in a chart to open the nearest run, with links to the PR, commit, and CI run.
                   </Text>
                   <Text size={1} muted>
-                    Because the CI machine varies day to day, absolute numbers are host-relative:
-                    before trusting a spike, check the host calibration in the Calibration tab — if
+                    Because the CI machine varies day to day, absolute numbers depend on the host:
+                    before trusting a spike, check the host calibration in the Calibration tab. If
                     it spikes on the same day, suspect the runner, not the studio. Flat lines are
                     the goal; the ⓘ on each chart explains what it measures.
                   </Text>
@@ -804,7 +849,9 @@ export function TrendsTool() {
 
             {error && (
               <Card tone="critical" border padding={3} radius={2}>
-                <Text size={1}>Failed to load runs: {error}</Text>
+                <Text size={1}>
+                  Couldn't load benchmark runs: {error}. Reload the page to try again.
+                </Text>
               </Card>
             )}
             {loading && (
@@ -815,8 +862,8 @@ export function TrendsTool() {
             {!error && !loading && series.length === 0 && (
               <Card tone="transparent" border padding={4} radius={2}>
                 <Text size={1} muted>
-                  No benchmark runs in this range yet. The daily track-main cron stores one run per
-                  day once perf/bench is on the main branch.
+                  No benchmark runs in this range. Try a longer range, or wait for the daily
+                  benchmark (one run per day from main).
                 </Text>
               </Card>
             )}
@@ -838,6 +885,7 @@ export function TrendsTool() {
                         key={tab.id}
                         id={`group-tab-${tab.id}`}
                         aria-controls={`group-panel-${tab.id}`}
+                        icon={GROUP_ICONS[tab.id]}
                         label={
                           <Flex align="center" gap={2}>
                             <span>{tab.title}</span>
@@ -876,9 +924,44 @@ export function TrendsTool() {
                         slopes={soakSlopes}
                         endValues={soakEndValues}
                         latest={latestSoak}
+                        layers={layers}
                       />
+                    ) : activeTab.id === 'vitals' ? (
+                      // One section per vital, so the overview reads by metric
+                      // ("how is LCP doing, everywhere?") — see vitalSections.
+                      // The extra top padding separates the first section
+                      // header from the tab description it would otherwise hug.
+                      <Stack gap={6} paddingTop={3}>
+                        {vitalSections(series.filter((entry) => entry.group === 'vitals')).map(
+                          (section) => (
+                            <Stack key={section.vital} gap={4}>
+                              <Flex align="baseline" gap={2}>
+                                <Text size={1} weight="semibold">
+                                  {section.vital}
+                                </Text>
+                                {section.name && (
+                                  <Text size={1} muted>
+                                    {section.name}
+                                  </Text>
+                                )}
+                              </Flex>
+                              <ChartGrid
+                                layers={layers}
+                                series={section.series}
+                                driftBySeries={driftBySeries}
+                                silencedBySeries={silencedBySeries}
+                                baselineBySeries={baselineBySeries}
+                                drift={drift}
+                                focusedKey={focusedKey}
+                                onFocusMetric={focusMetric}
+                              />
+                            </Stack>
+                          ),
+                        )}
+                      </Stack>
                     ) : (
                       <ChartGrid
+                        layers={layers}
                         series={
                           activeTab.id === 'environment'
                             ? environmentSeries
@@ -886,6 +969,7 @@ export function TrendsTool() {
                         }
                         driftBySeries={driftBySeries}
                         silencedBySeries={silencedBySeries}
+                        baselineBySeries={baselineBySeries}
                         drift={drift}
                         focusedKey={focusedKey}
                         onFocusMetric={focusMetric}

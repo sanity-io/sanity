@@ -13,7 +13,7 @@
     "start": "sanity preview --port 3300"
   },
   "dependencies": {
-    "babel-plugin-react-compiler": "catalog:",
+    "oxc-transform-react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
