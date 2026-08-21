@@ -233,6 +233,9 @@ export function SearchProvider({
           skipSortByScore: ordering.ignoreScore,
           ...(ordering.sort ? {sort: [ordering.sort]} : {}),
           cursor: cursor || undefined,
+          // Raw so drafts, published, and release versions are all findable. Content Agent
+          // versions are excluded by `createSearch` — they are only readable by their author
+          // and would otherwise appear as duplicate hits that open an empty document.
           perspective: 'raw',
         },
         terms: {

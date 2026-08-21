@@ -121,6 +121,11 @@ export type SearchStrategyFactory<TResult extends WeightedSearchResults | Groq20
 export type SearchOptions = {
   maxDepth?: number
   comments?: string[]
+  /**
+   * GROQ constraint AND-ed into the search query. Takes precedence over a filter passed as a
+   * factory option (`SearchFactoryOptions.filter`), matching how the strategies merge options.
+   */
+  filter?: string
   skipSortByScore?: boolean
   sort?: SearchSort[]
   cursor?: string
