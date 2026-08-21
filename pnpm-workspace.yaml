@@ -128,6 +128,9 @@ overrides:
   # (`~1.2.0` currently resolves 1.2.3; tsdown-config depends on ~1.2.4).
   'tsdown>rolldown': ~1.2.4
 
+patchedDependencies:
+  react-rx@5.1.1: patches/react-rx@5.1.1.patch
+
 preferWorkspacePackages: true
 
 trustPolicy: no-downgrade
