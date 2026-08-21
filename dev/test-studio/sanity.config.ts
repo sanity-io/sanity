@@ -315,8 +315,6 @@ const defaultWorkspace = defineConfig({
   },
   document: {
     actions: (prev, ctx) => {
-      // SAPP-4330: workspace-level filter (runs after release/scheduled-draft plugins)
-      // so version chip + inventory menus can mirror footer action visibility.
       if (ctx.schemaType === 'restrictedVersionActionsTest') {
         return prev.filter(({action}) => action === 'publish')
       }
