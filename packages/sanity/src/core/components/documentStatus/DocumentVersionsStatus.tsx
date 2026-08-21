@@ -14,6 +14,7 @@ import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {useAgentBundles} from '../../store/agent/useAgentBundles'
+import {useWorkspace} from '../../studio/workspace'
 import {readVersionType} from '../../util/versionsUtils'
 import {getVersionFilterLabel} from '../../variants/plugin/components/getVersionFilterLabel'
 import {useAllVariants} from '../../variants/store/useAllVariants'
@@ -25,9 +26,11 @@ import {
   versionStatusItem,
 } from './DocumentVersionsStatus.css'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
+import {getDocumentVersionStatusTitle} from './getDocumentVersionStatusTitle'
 import {
   type DocumentVersionStatusItem,
   groupDocumentVersionsForStatus,
+  SHOW_AGENT_VERSIONS_IN_STATUS,
 } from './sortDocumentVersionsForStatus'
 
 /**
@@ -41,10 +44,15 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   const {data: releases} = useActiveReleases()
   const {byId: variantsById} = useAllVariants()
   const {loading, versions} = useDocumentVersions({documentId: documentGroupId})
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
 
   const versionGroups = useMemo(
-    () => groupDocumentVersionsForStatus(versions, releases ?? [], variantsById),
-    [releases, variantsById, versions],
+    () =>
+      groupDocumentVersionsForStatus(versions, releases ?? [], variantsById, {
+        variantsEnabled,
+        showAgentVersions: SHOW_AGENT_VERSIONS_IN_STATUS,
+      }),
+    [releases, variantsById, variantsEnabled, versions],
   )
 
   if (loading) {
@@ -66,7 +74,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
           paddingBottom={groupIndex < allGroups.length - 1 ? 1 : 0}
         >
           {group.items.map((item) => (
-            <VersionStatus key={item.version._id} {...item} />
+            <VersionStatus key={item.version._id} variantsEnabled={variantsEnabled} {...item} />
           ))}
         </Card>
       ))}
@@ -74,7 +82,12 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   )
 }
 
-function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
+function VersionStatus({
+  release,
+  version,
+  variant,
+  variantsEnabled,
+}: DocumentVersionStatusItem & {variantsEnabled: boolean}) {
   const {t} = useTranslation()
   const schema = useSchema()
   const {bundles} = useAgentBundles()
@@ -88,6 +101,11 @@ function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
     fullTitle,
     isTruncated,
   } = getVersionFilterLabel(releasePerspective, t, bundles)
+  const title = getDocumentVersionStatusTitle({
+    variantsEnabled,
+    variantTitle,
+    releaseTitle,
+  })
 
   const updatedAt = useRelativeTime(version._updatedAt, {
     minimal: true,
@@ -102,14 +120,14 @@ function VersionStatus({release, version, variant}: DocumentVersionStatusItem) {
       <Flex gap={2} justify="space-between" paddingY={2}>
         <Stack className={titleStack} gap={2}>
           <Text size={1} title={isTruncated ? fullTitle : undefined} weight="medium">
-            {variantTitle} · {releaseTitle}
+            {title}
           </Text>
           <Text className={updatedAtText} muted size={1}>
             {timestampLabel}
           </Text>
         </Stack>
         <Flex align="center" flex="none" gap={1} paddingRight={2}>
-          {variant ? (
+          {variantsEnabled && variant ? (
             <Card className={variantIconCard} tone="suggest">
               <Text size={2}>
                 <RhombusIcon />

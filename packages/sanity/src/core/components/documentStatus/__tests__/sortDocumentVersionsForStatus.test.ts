@@ -196,7 +196,29 @@ describe('groupDocumentVersionsForStatus', () => {
     ])
   })
 
-  it('sorts agent versions after published, drafts, and releases', () => {
+  it('omits agent versions by default', () => {
+    const groups = groupDocumentVersionsForStatus(
+      [
+        createVersion({
+          id: 'versions.agent-abc.article-1',
+          bundleId: 'agent-abc',
+          createdAt: '2025-06-01T00:00:00Z',
+          updatedAt: '2025-06-01T00:00:00Z',
+        }),
+        createVersion({
+          id: 'article-1',
+          createdAt: '2025-06-02T00:00:00Z',
+          updatedAt: '2025-06-02T00:00:00Z',
+        }),
+      ],
+      [],
+      new Map(),
+    )
+
+    expect(groups[0]?.items.map((item) => item.version._id)).toEqual(['article-1'])
+  })
+
+  it('sorts agent versions after published, drafts, and releases when shown', () => {
     const groups = groupDocumentVersionsForStatus(
       [
         createVersion({
@@ -226,6 +248,7 @@ describe('groupDocumentVersionsForStatus', () => {
       ],
       [releaseSummer],
       new Map(),
+      {showAgentVersions: true},
     )
 
     expect(groups[0]?.items.map((item) => item.version._id)).toEqual([
@@ -233,6 +256,49 @@ describe('groupDocumentVersionsForStatus', () => {
       'drafts.article-1',
       'versions.rSummer.article-1',
       'versions.agent-abc.article-1',
+    ])
+  })
+
+  it('omits variant documents when variants are disabled', () => {
+    const groups = groupDocumentVersionsForStatus(
+      [
+        createVersion({
+          id: 'drafts.returning.article-1',
+          bundleId: 'drafts',
+          createdAt: '2025-06-01T00:00:00Z',
+          updatedAt: '2025-06-01T00:00:00Z',
+          variantRef: variantReturning._id,
+        }),
+        createVersion({
+          id: 'article-1',
+          createdAt: '2025-06-02T00:00:00Z',
+          updatedAt: '2025-06-02T00:00:00Z',
+        }),
+        createVersion({
+          id: 'drafts.article-1',
+          bundleId: 'drafts',
+          createdAt: '2025-06-01T00:00:00Z',
+          updatedAt: '2025-06-01T00:00:00Z',
+        }),
+        createVersion({
+          id: 'versions.rSummer.returning.article-1',
+          bundleId: 'rSummer',
+          createdAt: '2025-06-02T00:00:00Z',
+          updatedAt: '2025-06-02T00:00:00Z',
+          releaseRef: releaseSummer._id,
+          variantRef: variantReturning._id,
+        }),
+      ],
+      [releaseSummer],
+      new Map([[variantReturning._id, variantReturning]]),
+      {variantsEnabled: false},
+    )
+
+    expect(groups).toHaveLength(1)
+    expect(groups[0]?.variantId).toBeUndefined()
+    expect(groups[0]?.items.map((item) => item.version._id)).toEqual([
+      'article-1',
+      'drafts.article-1',
     ])
   })
 })

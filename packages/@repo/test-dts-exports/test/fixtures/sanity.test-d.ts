@@ -349,7 +349,9 @@ import type {
   decodePath,
   DecorationMember,
   DEFAULT_ANNOTATIONS,
+  DEFAULT_BLOCK_STYLES,
   DEFAULT_DECORATORS,
+  DEFAULT_LIST_TYPES,
   DEFAULT_MAX_RECURSION_DEPTH,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   defaultLocale,
@@ -2860,8 +2862,14 @@ describe('sanity', () => {
   test('DEFAULT_ANNOTATIONS', () => {
     expectTypeOf<typeof DEFAULT_ANNOTATIONS>().not.toBeNever()
   })
+  test('DEFAULT_BLOCK_STYLES', () => {
+    expectTypeOf<typeof DEFAULT_BLOCK_STYLES>().not.toBeNever()
+  })
   test('DEFAULT_DECORATORS', () => {
     expectTypeOf<typeof DEFAULT_DECORATORS>().not.toBeNever()
+  })
+  test('DEFAULT_LIST_TYPES', () => {
+    expectTypeOf<typeof DEFAULT_LIST_TYPES>().not.toBeNever()
   })
   test('DEFAULT_MAX_RECURSION_DEPTH', () => {
     expectTypeOf<typeof DEFAULT_MAX_RECURSION_DEPTH>().not.toBeNever()

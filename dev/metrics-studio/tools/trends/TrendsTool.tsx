@@ -59,7 +59,7 @@ import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
 import {type DriftResult, worstBySeries} from './drift'
 import {DriftFeed} from './DriftFeed'
 import {type LayerState, useLayerState} from './layers'
-import {efpsSourceUrl, sourceFileUrl, webVitalDocUrl} from './links'
+import {sourceFileUrl, webVitalDocUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
 import {TrendChart} from './TrendChart'
 import {type DriftState, useDriftState} from './useDriftState'
@@ -159,25 +159,6 @@ function InfoButton(props: {text: string; label: string; sourceFile?: string; vi
                     <Flex align="center" gap={1}>
                       <LaunchIcon />
                       <Text size={1}>View scenario source</Text>
-                    </Flex>
-                  </Box>
-                )}
-                {/* Cross-reference the legacy eFPS scenario this was ported
-                    from, while dev/efps burns down (omitted for bench-only
-                    scenarios with no eFPS counterpart) */}
-                {props.sourceFile && efpsSourceUrl(props.sourceFile) && (
-                  <Box
-                    as="a"
-                    href={efpsSourceUrl(props.sourceFile)}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="View the legacy eFPS scenario (opens in a new tab)"
-                  >
-                    <Flex align="center" gap={1}>
-                      <LaunchIcon />
-                      <Text size={1} muted>
-                        Legacy eFPS scenario
-                      </Text>
                     </Flex>
                   </Box>
                 )}

@@ -301,6 +301,7 @@ export function FormBuilder(props: FormBuilderProps) {
       changesOpen={changesOpen}
       collapsedFieldSets={collapsedFieldSets}
       collapsedPaths={collapsedPaths}
+      documentId={value?._id}
       focusPath={focusPath}
       focused={focused}
       groups={groups}
