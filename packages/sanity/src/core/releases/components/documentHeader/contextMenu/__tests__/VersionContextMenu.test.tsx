@@ -151,13 +151,14 @@ describe('VersionContextMenu', () => {
     expect(defaultProps.onDiscard).toHaveBeenCalled()
   })
 
-  it('hides discard version when discardVersion is filtered from document.actions', async () => {
+  it('hides discard version when discardVersion is omitted from document.actions', async () => {
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
     const wrapper = await createTestProvider({
       config: {
         document: {
-          actions: (prev) => prev.filter((action) => action.action !== 'discardVersion'),
+          // Axios-style filter: keep only publish so discardVersion is gone by omission
+          actions: (prev) => prev.filter((action) => action.action === 'publish'),
         },
       },
     })
@@ -168,7 +169,84 @@ describe('VersionContextMenu', () => {
     expect(screen.queryByText('Discard version')).not.toBeInTheDocument()
   })
 
-  it('hides delete schedule when discardVersion is filtered from document.actions', async () => {
+  it('hides publish now when publish is omitted from document.actions', async () => {
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+
+    const scheduledRelease: ReleaseDocument = {
+      ...mockReleases[0],
+      metadata: {
+        ...mockReleases[0].metadata,
+        cardinality: 'one',
+      },
+    }
+
+    const scheduledDraftMenuActions = {
+      actions: {
+        publishNow: {
+          'icon': undefined,
+          'text': 'Publish now',
+          'tone': 'default' as const,
+          'onClick': vi.fn(),
+          'disabled': false,
+          'data-testid': 'publish-now-menu-item',
+        },
+        editSchedule: {
+          'icon': undefined,
+          'text': 'Edit schedule',
+          'tone': 'default' as const,
+          'onClick': vi.fn(),
+          'disabled': false,
+          'data-testid': 'edit-schedule-menu-item',
+        },
+        schedulePublish: {
+          'icon': undefined,
+          'text': 'Schedule',
+          'tone': 'default' as const,
+          'onClick': vi.fn(),
+          'disabled': false,
+          'data-testid': 'schedule-publish-menu-item',
+        },
+        deleteSchedule: {
+          'icon': undefined,
+          'text': 'Delete schedule',
+          'tone': 'critical' as const,
+          'onClick': vi.fn(),
+          'disabled': false,
+          'data-testid': 'delete-schedule-menu-item',
+        },
+      },
+      dialogs: null,
+      isPerformingOperation: false,
+      selectedAction: null,
+      handleDialogClose: vi.fn(),
+    }
+
+    const wrapper = await createTestProvider({
+      config: {
+        document: {
+          // Axios-style filter: keep only duplicate so publish is gone by omission
+          actions: (prev) => prev.filter((action) => action.action === 'duplicate'),
+        },
+      },
+    })
+
+    render(
+      <VersionContextMenu
+        {...defaultProps}
+        release={scheduledRelease}
+        isScheduledDraft
+        scheduledDraftMenuActions={scheduledDraftMenuActions}
+      />,
+      {wrapper},
+    )
+    await flushMicrotasksThisIsACodeSmell()
+
+    expect(screen.queryByTestId('publish-now-menu-item')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('edit-schedule-menu-item')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('delete-schedule-menu-item')).not.toBeInTheDocument()
+  })
+
+  it('hides delete schedule when discardVersion is omitted from document.actions', async () => {
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
     const scheduledRelease: ReleaseDocument = {
