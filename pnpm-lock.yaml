@@ -1846,6 +1846,9 @@ importers:
       '@tanstack/react-virtual':
         specifier: ^3.14.9
         version: 3.14.9(react-dom@19.2.8)(react@19.2.8)
+      '@vanilla-extract/dynamic':
+        specifier: 'catalog:'
+        version: 2.1.5
       '@xstate/react':
         specifier: ^6.1.0
         version: 6.1.0(@types/react@19.2.18)(react@19.2.8)(xstate@5.32.5)
