@@ -1,6 +1,6 @@
 import {ClientError} from '@sanity/client'
-import {act, renderHook, waitFor} from '@testing-library/react'
-import {type ReactNode} from 'react'
+import {act, render, renderHook, screen, waitFor} from '@testing-library/react'
+import {Activity, type ReactNode} from 'react'
 import {firstValueFrom, of, throwError} from 'rxjs'
 import {StudioErrorHandlerContext} from 'sanity/_singletons'
 import {afterEach, describe, expect, it, vi} from 'vitest'
@@ -85,6 +85,39 @@ describe('useProject', () => {
     act(() => channel.retry())
     await waitFor(() => expect(result.current.value).toEqual(projectData))
     expect(get).toHaveBeenCalledTimes(2)
+  })
+
+  it('defers the fetch while hidden inside an Activity and fires it on reveal', async () => {
+    const get: ProjectStore['get'] = vi.fn(() => of(projectData))
+    vi.mocked(useProjectStore).mockReturnValue({get} as ProjectStore)
+
+    function ProjectName() {
+      const {value} = useProject()
+      return <span data-testid="project-name">{value ? value.displayName : 'unresolved'}</span>
+    }
+    const view = (mode: 'visible' | 'hidden') => (
+      <StudioErrorHandlerContext.Provider value={null}>
+        <Activity mode={mode}>
+          <ProjectName />
+        </Activity>
+      </StudioErrorHandlerContext.Provider>
+    )
+
+    // The closed-popover case (e.g. the workspace menu from @sanity/ui v4):
+    // the subtree renders while hidden…
+    const {rerender} = render(view('hidden'))
+    expect(await screen.findByTestId('project-name')).toBeInTheDocument()
+    // …but the request must not fire: `defer` keeps `attempt()` (which starts
+    // the request when called) out of the render phase, and the `null` initial
+    // value keeps react-rx from warm-up-subscribing during render. The
+    // subscription first starts on commit, which the hidden Activity defers.
+    expect(get).not.toHaveBeenCalled()
+
+    rerender(view('visible'))
+    await waitFor(() =>
+      expect(screen.getByTestId('project-name')).toHaveTextContent('Test project'),
+    )
+    expect(get).toHaveBeenCalledTimes(1)
   })
 
   // Note: errors the channel does NOT claim (caller-domain 4xx, etc.) are
