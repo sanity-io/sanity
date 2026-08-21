@@ -32,7 +32,10 @@ describe('DocumentActions', () => {
   it('renders discard version and unpublish when document.actions is unfiltered', async () => {
     const wrapper = await createTestProvider({resources: localeResources})
 
-    render(<DocumentActions document={documentRow} releaseTitle="Release 1" />, {wrapper})
+    render(
+      <DocumentActions document={documentRow} releaseTitle="Release 1" versionType="version" />,
+      {wrapper},
+    )
     await flushMicrotasksThisIsACodeSmell()
 
     expect(screen.getByText('Discard version')).toBeInTheDocument()
@@ -49,10 +52,32 @@ describe('DocumentActions', () => {
       },
     })
 
-    render(<DocumentActions document={documentRow} releaseTitle="Release 1" />, {wrapper})
+    render(
+      <DocumentActions document={documentRow} releaseTitle="Release 1" versionType="version" />,
+      {wrapper},
+    )
     await flushMicrotasksThisIsACodeSmell()
 
     expect(screen.queryByText('Discard version')).not.toBeInTheDocument()
+    expect(screen.queryByText('Unpublish')).not.toBeInTheDocument()
+  })
+
+  // A cardinality-one release row is a scheduled draft, and that plugin's action list has no
+  // `unpublishVersion`, so the row must not offer Unpublish where the footer cannot.
+  it('drops unpublish on a scheduled draft row', async () => {
+    const wrapper = await createTestProvider({resources: localeResources})
+
+    render(
+      <DocumentActions
+        document={documentRow}
+        releaseTitle="Release 1"
+        versionType="scheduled-draft"
+      />,
+      {wrapper},
+    )
+    await flushMicrotasksThisIsACodeSmell()
+
+    expect(screen.getByText('Discard version')).toBeInTheDocument()
     expect(screen.queryByText('Unpublish')).not.toBeInTheDocument()
   })
 
@@ -66,7 +91,10 @@ describe('DocumentActions', () => {
       },
     })
 
-    render(<DocumentActions document={documentRow} releaseTitle="Release 1" />, {wrapper})
+    render(
+      <DocumentActions document={documentRow} releaseTitle="Release 1" versionType="version" />,
+      {wrapper},
+    )
     await flushMicrotasksThisIsACodeSmell()
 
     expect(screen.queryByText('Discard version')).not.toBeInTheDocument()

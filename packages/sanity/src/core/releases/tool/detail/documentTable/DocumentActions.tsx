@@ -9,6 +9,7 @@ import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
 import {useConfiguredDocumentActionIds} from '../../../../config/document/useConfiguredDocumentActionIds'
+import {type DocumentActionsVersionType} from '../../../../config/types'
 import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
@@ -23,9 +24,11 @@ const DocumentActionsInner = memo(
   function DocumentActionsInner({
     document,
     releaseTitle,
+    versionType,
   }: {
     document: BundleDocumentRow
     releaseTitle: string | undefined
+    versionType: DocumentActionsVersionType
   }) {
     const [showDiscardDialog, setShowDiscardDialog] = useState(false)
     const [showUnpublishDialog, setShowUnpublishDialog] = useState(false)
@@ -83,7 +86,7 @@ const DocumentActionsInner = memo(
     const configuredActionIds = useConfiguredDocumentActionIds({
       schemaType: type,
       documentId: publishedId,
-      versionType: 'version',
+      versionType,
       releaseId: version,
     })
     const showDiscardVersion = configuredActionIds.has('discardVersion')
@@ -159,6 +162,7 @@ const DocumentActionsInner = memo(
 export const DocumentActions = memo(function GuardedDocumentActions(props: {
   document: BundleDocumentRow
   releaseTitle: string | undefined
+  versionType: DocumentActionsVersionType
 }) {
   const schema = useSchema()
   const type = schema.get(props.document.document._type)
