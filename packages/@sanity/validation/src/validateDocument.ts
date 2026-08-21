@@ -169,19 +169,101 @@ export interface ValidateDocumentOptions {
 }
 
 /**
+ * The validation capabilities required from a resolved Studio source or workspace.
+ *
+ * @beta
+ */
+export interface ValidationSource {
+  /** The compiled schema to validate against. */
+  schema: Schema
+
+  /** Factory used to get the client passed to custom validators. */
+  getClient: (clientOptions: {apiVersion: string}) => SanityClient
+
+  /** Internationalization utilities used for validation messages. */
+  i18n: LocaleSource
+}
+
+/**
+ * Options accepted by the compatibility overload for Studio workspace validation.
+ *
+ * @beta
+ */
+export interface ValidateDocumentWorkspaceOptions extends Omit<
+  ValidateDocumentOptions,
+  'client' | 'schema'
+> {
+  /** The resolved Studio workspace or source used for validation. */
+  workspace: ValidationSource
+
+  /**
+   * Factory used to get the client passed to custom validators.
+   *
+   * @deprecated For internal use only
+   */
+  getClient?: ValidationSource['getClient']
+
+  /** Validation environment exposed to custom validators. */
+  environment?: 'cli' | 'studio'
+}
+
+/**
+ * Validates a document against the schema in a resolved Studio workspace or source.
+ *
+ * @beta
+ * @deprecated Prefer {@link validateDocument} with `{document, schema, client}` for new code.
+ */
+export function validateDocumentWithWorkspace({
+  document,
+  workspace,
+  getClient = workspace.getClient,
+  getDocumentExists,
+  environment = 'studio',
+  maxCustomValidationConcurrency,
+  maxFetchConcurrency,
+  currentUser,
+}: ValidateDocumentWorkspaceOptions): Promise<ValidationMarker[]> {
+  return validateDocumentInternal({
+    currentUser,
+    document,
+    environment,
+    getClient,
+    getDocumentExists,
+    i18n: workspace.i18n,
+    maxCustomValidationConcurrency,
+    maxFetchConcurrency,
+    schema: workspace.schema,
+  })
+}
+
+/**
+ * Validates a document against the schema in a resolved Studio workspace or source.
+ *
+ * This compatibility overload preserves the existing `sanity` API. Prefer the
+ * `{document, schema, client}` overload for new code.
+ *
+ * @beta
+ */
+export function validateDocument(
+  options: ValidateDocumentWorkspaceOptions,
+): Promise<ValidationMarker[]>
+/**
  * Validates a document against a compiled schema. Returns validation markers
  * without deciding whether the document may be edited or published.
  *
  * @beta
  */
-export function validateDocument({
-  client,
-  document,
-  schema,
-  ...options
-}: ValidateDocumentOptions): Promise<ValidationMarker[]> {
+export function validateDocument(options: ValidateDocumentOptions): Promise<ValidationMarker[]>
+export function validateDocument(
+  options: ValidateDocumentOptions | ValidateDocumentWorkspaceOptions,
+): Promise<ValidationMarker[]> {
+  if ('workspace' in options) {
+    return validateDocumentWithWorkspace(options)
+  }
+
+  const {client, document, schema, ...internalOptions} = options
   return validateDocumentInternal({
-    ...options,
+    ...internalOptions,
     document,
     environment: 'cli',
     getClient: ({apiVersion}) => client.withConfig({apiVersion}),
