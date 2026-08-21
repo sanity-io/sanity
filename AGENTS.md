@@ -289,6 +289,18 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 
 `options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
 
+### React Compiler vs oxlint `react/*` disables
+
+`// oxlint-disable-next-line react/…` silences `pnpm check:oxlint` only. The Vite React Compiler
+plugin (`vite:react-compiler` in `sanity dev`) still warns and skips that function.
+
+For intentional opt-outs (TanStack Virtual, Portable Text member-item cache), put `'use no memo'`
+as the **first statement** of the function that uses the incompatible API. Keep the oxlint disable
+if the rule still fires inside the opted-out function.
+
+Do not add `'use no memo'` just to hide a warning — fix the code so the compiler can compile it
+when that is safe.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook

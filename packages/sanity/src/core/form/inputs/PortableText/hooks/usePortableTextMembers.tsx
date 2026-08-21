@@ -40,6 +40,10 @@ export function usePortableTextMemberItems(): PortableTextMemberItem[] {
 export function usePortableTextMemberItemsFromProps(
   props: PortableTextInputProps,
 ): PortableTextMemberItem[] {
+  // Caches member items (and their JSX) by mutating a ref during render.
+  // Compiling this hook would drop that identity cache and remount PTE object inputs.
+  'use no memo'
+
   const {
     members,
     path,
@@ -128,7 +132,7 @@ export function usePortableTextMemberItemsFromProps(
       }
     }
 
-    // oxlint-disable-next-line react/refs -- @todo this should be fixed but it's difficult and needs research
+    // oxlint-disable-next-line react/refs -- member identity cache; hook is opted out with 'use no memo'
     const items: PortableTextMemberItem[] = result.map((item) => {
       const key = pathToString(item.node.path)
       const existingItem = portableTextMemberItemsRef.current.find((refItem) => refItem.key === key)
@@ -217,11 +221,11 @@ export function usePortableTextMemberItemsFromProps(
       }
     })
 
-    // oxlint-disable-next-line react/refs -- @todo this should be fixed but it's difficult and needs research
+    // oxlint-disable-next-line react/refs -- member identity cache; hook is opted out with 'use no memo'
     portableTextMemberItemsRef.current = items
 
     return items
-    // oxlint-disable-next-line react/memo-dependencies -- pre-existing violation, to be fixed in a follow-up
+    // oxlint-disable-next-line react/memo-dependencies -- member identity cache; hook is opted out with 'use no memo'
   }, [
     members,
     onPathFocus,

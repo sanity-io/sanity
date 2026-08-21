@@ -10,6 +10,7 @@ import {
   useEffect,
   useMemo,
   useRef,
+  useState,
   version as reactVersion,
 } from 'react'
 import {useRouterState} from 'sanity/router'
@@ -94,19 +95,73 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
     ),
   )
 
-  // Ref to hold current context - allows sendEvents to always access latest values
-  // without causing re-memoization of the store
-  const contextRef = useRef<TelemetryContext | null>(null)
+  // Box latest client/project/context in a useState closure (not a ref) so the
+  // store can be created once without a render-time ref read.
+  const [telemetry] = useState(() => {
+    let currentClient = client
+    let currentProjectId = projectId
+    let currentContext: TelemetryContext | null = null
 
-  // Update context ref when dynamic values change
-  // Telemetry only runs on client - no SSR fallbacks needed
-  useEffect(() => {
-    if (!isClient) return
+    const debugTelemetry = import.meta && import.meta.env?.SANITY_STUDIO_DEBUG_TELEMETRY === 'true'
+
+    const storeOptions: CreateBatchedStoreOptions = debugTelemetry
+      ? debugLoggingStore
+      : {
+          flushInterval: 30000,
+          resolveConsent: () =>
+            currentClient.request({
+              url: '/intake/telemetry-status',
+              tag: 'telemetry-consent.studio',
+            }),
+
+          // Each event is enriched with the current context
+          sendEvents: (batch) => {
+            if (!isClient || !currentContext) return Promise.resolve()
+            const context = currentContext
+            const enrichedBatch = batch.map((event) => ({
+              ...event,
+              context,
+            }))
+            return currentClient.request({
+              url: '/intake/batch',
+              method: 'POST',
+              body: {projectId: currentProjectId, batch: enrichedBatch},
+            })
+          },
+          sendBeacon: (batch) => {
+            if (!isClient || !currentContext) return false
+            const context = currentContext
+            const enrichedBatch = batch.map((event) => ({
+              ...event,
+              context,
+            }))
+            return navigator.sendBeacon(
+              currentClient.getUrl('/intake/batch'),
+              JSON.stringify({projectId: currentProjectId, batch: enrichedBatch}),
+            )
+          },
+        }
+
+    return {
+      store: createBatchedStore(sessionId, storeOptions),
+      sync(
+        nextClient: typeof client,
+        nextProjectId: typeof projectId,
+        nextContext: TelemetryContext | null,
+      ) {
+        currentClient = nextClient
+        currentProjectId = nextProjectId
+        currentContext = nextContext
+      },
+    }
+  })
+
+  const context = useMemo((): TelemetryContext | null => {
+    if (!isClient) return null
     const pluginCount = countPlugins(workspacePlugins)
     const schemaTypeCount = workspaceSchema.getTypeNames().length
 
-    contextRef.current = {
-      // Static values
+    return {
       userAgent: navigator.userAgent,
       screen: {
         density: window.devicePixelRatio,
@@ -119,8 +174,6 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
       reactVersion,
       environment: isProd ? 'production' : 'development',
       connection: getConnection(),
-
-      // Dynamic values
       orgId: orgId || null,
       activeTool,
       workspaceCount,
@@ -141,69 +194,26 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
     workspaceSchema,
   ])
 
-  const storeOptions = useMemo((): CreateBatchedStoreOptions => {
-    const debugTelemetry = import.meta && import.meta.env?.SANITY_STUDIO_DEBUG_TELEMETRY === 'true'
-
-    if (debugTelemetry) {
-      return debugLoggingStore
-    }
-    return {
-      flushInterval: 30000,
-      resolveConsent: () =>
-        client.request({url: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
-
-      // Each event is enriched with the current context
-      sendEvents: (batch) => {
-        if (!isClient || !contextRef.current) return Promise.resolve()
-        const context = contextRef.current
-        const enrichedBatch = batch.map((event) => ({
-          ...event,
-          context,
-        }))
-        return client.request({
-          url: '/intake/batch',
-          method: 'POST',
-          body: {projectId, batch: enrichedBatch},
-        })
-      },
-      sendBeacon: (batch) => {
-        if (!isClient || !contextRef.current) return false
-        const context = contextRef.current
-        const enrichedBatch = batch.map((event) => ({
-          ...event,
-          context,
-        }))
-        return navigator.sendBeacon(
-          client.getUrl('/intake/batch'),
-          JSON.stringify({projectId, batch: enrichedBatch}),
-        )
-      },
-    }
-  }, [client, projectId])
-
-  // The storeOptions callbacks access contextRef.current, but only when called
-  // asynchronously (on flush), not during render. Suppress the lint warning.
-  // oxlint-disable-next-line react/refs -- pre-existing violation, to be fixed in a follow-up
-  const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
+  telemetry.sync(client, projectId, context)
+  const {store} = telemetry
 
   // Per-instance guard so StrictMode's double-invoked mount effect logs StudioLoaded once.
   const studioLoadedFiredRef = useRef(false)
   useEffect(() => {
-    if (!isClient || !contextRef.current || studioLoadedFiredRef.current) return
+    if (!isClient || !context || studioLoadedFiredRef.current) return
     studioLoadedFiredRef.current = true
-    const ctx = contextRef.current
     store.logger.log(StudioLoaded, {
       studioVersion: SANITY_VERSION,
       reactVersion,
-      environment: ctx.environment,
-      userAgent: ctx.userAgent,
-      screenDensity: ctx.screen.density,
-      screenHeight: ctx.screen.height,
-      screenWidth: ctx.screen.width,
-      screenInnerHeight: ctx.screen.innerHeight,
-      screenInnerWidth: ctx.screen.innerWidth,
+      environment: context.environment,
+      userAgent: context.userAgent,
+      screenDensity: context.screen.density,
+      screenHeight: context.screen.height,
+      screenWidth: context.screen.width,
+      screenInnerHeight: context.screen.innerHeight,
+      screenInnerWidth: context.screen.innerWidth,
     })
-  }, [store.logger])
+  }, [context, store.logger])
 
   const workspaceFeatures = useMemo(() => collectWorkspaceFeatures(workspace), [workspace])
   // Why: this component creates the TelemetryProvider, so `useTelemetry()` is
