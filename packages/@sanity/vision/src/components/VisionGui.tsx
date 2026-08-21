@@ -715,7 +715,7 @@ export function VisionGui(props: VisionGuiProps) {
         isScheduledDraftsEnabled={isScheduledDraftsEnabled}
       />
 
-      <SplitpaneContainer flex="auto">
+      <SplitpaneContainer flexBasis="auto" flexGrow={1} flexShrink={1}>
         <SplitPane
           minSize={800}
           defaultSize={window.innerWidth - 275}
