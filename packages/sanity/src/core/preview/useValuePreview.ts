@@ -14,6 +14,7 @@ import {usePerspective} from '../perspective/usePerspective'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {useDocumentPreviewStore} from '../store/datastores'
 import {getPublishedId} from '../util/draftUtils'
+import {useShallowUnique} from '../util/useShallowUnique'
 import {type Previewable} from './types'
 
 /**
@@ -58,14 +59,23 @@ export function useValuePreview(props: {
 }): State {
   const {
     enabled = true,
-    ordering,
+    ordering: orderingProp,
     schemaType,
-    value: previewValue,
-    perspectiveStack: chosenPerspectiveStack,
+    value: previewValueProp,
+    perspectiveStack: chosenPerspectiveStackProp,
     variant: chosenVariant,
   } = props || {}
   const {observeForPreview} = useDocumentPreviewStore()
   const {perspectiveStack, selectedVariantName} = usePerspective()
+
+  // Callers routinely pass these as inline literals (e.g. `value: {_id}` or
+  // `perspectiveStack: []`). `observeForPreview` returns a fresh pipeline per
+  // call, so keying the memo on the references would mint a new observable
+  // every render — which react-rx v5 turns into a self-sustaining render
+  // loop. Key on contents instead.
+  const previewValue = useShallowUnique(previewValueProp)
+  const ordering = useShallowUnique(orderingProp)
+  const chosenPerspectiveStack = useShallowUnique(chosenPerspectiveStackProp)
   const observable = useMemo<Observable<State>>(() => {
     // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
     if (!enabled || !previewValue || !schemaType) return of(IDLE_STATE)
