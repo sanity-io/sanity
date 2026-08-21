@@ -80,7 +80,7 @@ export function RequestPermissionDialog({
   // Kept synchronous: `onSubmit` reads this value into the request body, so a
   // deferred snapshot could submit the stale startWith('administrator') role
   // after the observable has already resolved to 'editor'.
-  const requestedRole = useSyncObservable(requestedRole$)
+  const requestedRole = useSyncObservable(requestedRole$, 'administrator')
 
   const onSubmit = () => {
     setIsSubmitting(true)

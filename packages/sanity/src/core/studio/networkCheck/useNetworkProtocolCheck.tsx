@@ -46,7 +46,7 @@ export function useNetworkProtocolCheck(): undefined {
     () => (isWarningSnoozed ? of(undefined) : isUsingLegacyHttp(client)),
     [client, isWarningSnoozed],
   )
-  const isOnLegacyHttp = useObservable(isOnLegacyHttp$)
+  const isOnLegacyHttp = useObservable(isOnLegacyHttp$, undefined)
 
   const handleSnooze = useCallback(
     () => setWarningSnoozedAt(new Date().toISOString()),

@@ -27,6 +27,9 @@ const mockDocumentStore = {
 }
 
 vi.mock('../../store/datastores', () => ({useDocumentStore: () => mockDocumentStore}))
+// `useEditState` reads the schema to build the cold-start `initialValue` it hands react-rx
+// (react-rx v7 requires one). The type lookup only feeds the liveEdit flags, so a miss is fine.
+vi.mock('../useSchema', () => ({useSchema: () => ({get: () => undefined})}))
 
 describe('useEditState', () => {
   beforeEach(() => {

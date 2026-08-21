@@ -33,7 +33,7 @@ const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) 
     [getMetadataStateForSlugs$, listenerReleaseIds],
   )
 
-  const observedResult = useObservable(memoObservable) || DEFAULT_METADATA_STATE
+  const observedResult = useObservable(memoObservable, undefined) || DEFAULT_METADATA_STATE
 
   // patch metadata in local state
   useEffect(

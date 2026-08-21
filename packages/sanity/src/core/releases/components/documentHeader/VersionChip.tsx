@@ -34,7 +34,7 @@ const useVersionIsLinked = (documentId: string, fromRelease: string) => {
   // read can't report linkage for a previous document. react-rx v5's
   // identity-coherent deferral also falls back to the live value if the
   // observable identity changes without a remount.
-  const companionDocs = useObservable(companionDocs$)
+  const companionDocs = useObservable(companionDocs$, undefined)
   return companionDocs?.data.some((companion) => companion?.studioDocumentId === versionId)
 }
 

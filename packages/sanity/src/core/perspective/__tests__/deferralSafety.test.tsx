@@ -62,14 +62,12 @@ interface MockReleasesState {
   state: 'initialising' | 'loading' | 'loaded' | 'error'
 }
 
-const releasesState$ = new BehaviorSubject<MockReleasesState>({
-  releases: new Map(),
-  state: 'initialising',
-})
-const variantsState$ = new BehaviorSubject<VariantStoreState>({
-  variants: new Map(),
-  state: 'initialising',
-})
+// Shared as BehaviorSubject seeds and as react-rx `initialValue`s — never mutated.
+const initialReleasesState: MockReleasesState = {releases: new Map(), state: 'initialising'}
+const initialVariantsState: VariantStoreState = {variants: new Map(), state: 'initialising'}
+
+const releasesState$ = new BehaviorSubject<MockReleasesState>(initialReleasesState)
+const variantsState$ = new BehaviorSubject<VariantStoreState>(initialVariantsState)
 
 // Live selection state, standing in for the router-driven perspective /
 // variant params. Read synchronously, never deferred — like the real thing.
@@ -110,7 +108,7 @@ function ReleaseIdProbe() {
 
 /** The real provider fed by the live selection, as wired in the studio. */
 function SyncReleaseHarness() {
-  const name = useSyncObservable(selectedReleaseName$)
+  const name = useSyncObservable(selectedReleaseName$, undefined)
   return (
     <PerspectiveProvider selectedPerspectiveName={name} excludedPerspectives={[]}>
       <ReleaseIdProbe />
@@ -125,7 +123,7 @@ function VariantProbe() {
 }
 
 function SyncVariantHarness() {
-  const name = useSyncObservable(selectedVariantName$)
+  const name = useSyncObservable(selectedVariantName$, undefined)
   return (
     <PerspectiveProvider
       selectedPerspectiveName={undefined}
@@ -143,9 +141,9 @@ function SyncVariantHarness() {
  * live selection and `getSelectedReleaseId` derivation the provider uses.
  */
 function DeferredActiveReleasesCounterfactual() {
-  const name = useSyncObservable(selectedReleaseName$)
+  const name = useSyncObservable(selectedReleaseName$, undefined)
   const {state$} = useReleasesStore()
-  const state = useObservable(state$)!
+  const state = useObservable(state$, initialReleasesState)
   const data = useMemo(
     () =>
       sortReleases(
@@ -164,9 +162,9 @@ function DeferredActiveReleasesCounterfactual() {
  * `getSelectedVariant` derivation `PerspectiveProvider` uses.
  */
 function DeferredAllVariantsCounterfactual() {
-  const name = useSyncObservable(selectedVariantName$)
+  const name = useSyncObservable(selectedVariantName$, undefined)
   const {state$} = useVariantsStore()
-  const {variants} = useObservable(state$)!
+  const {variants} = useObservable(state$, initialVariantsState)
   variantFrames.push({
     name,
     variantId: getSelectedVariant({selectedVariantName: name, variantsById: variants})?._id,
@@ -181,7 +179,7 @@ function DeferredAllVariantsCounterfactual() {
 function MixedSyncDeferredReleasesProbe() {
   const {data: active} = useActiveReleases()
   const {state$} = useReleasesStore()
-  const deferredState = useObservable(state$)!
+  const deferredState = useObservable(state$, initialReleasesState)
   const all = useMemo(
     () => sortReleases(Array.from(deferredState.releases.values())),
     [deferredState.releases],

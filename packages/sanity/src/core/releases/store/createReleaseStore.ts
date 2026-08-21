@@ -63,7 +63,12 @@ const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 
 const QUERY = `*[${QUERY_FILTER}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
-const INITIAL_STATE: ReleasesReducerState = {
+/**
+ * The synchronous `startWith` state of `state$` — also the `initialValue` consumers pass to
+ * react-rx hooks so their first render matches what the store emits on subscribe.
+ * @internal
+ */
+export const INITIAL_RELEASES_STATE: ReleasesReducerState = {
   releases: new Map(),
   state: 'initialising' as const,
 }
@@ -141,8 +146,8 @@ export function createReleaseStore(context: {
 
   const state$ = concat(merge(listFetch$, dispatch$)).pipe(
     filter((action): action is ReleasesReducerAction => typeof action !== 'undefined'),
-    scan((state, action) => releasesReducer(state, action), INITIAL_STATE),
-    startWith(INITIAL_STATE),
+    scan((state, action) => releasesReducer(state, action), INITIAL_RELEASES_STATE),
+    startWith(INITIAL_RELEASES_STATE),
     shareReplay(1),
   )
 
