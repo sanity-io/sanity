@@ -196,12 +196,25 @@ describe('DocumentVersionsStatus', () => {
   })
 
   it('does not show agent versions in the tooltip', async () => {
-    const agentVersion = createVersion({
-      id: `versions.agent-abc.${GROUP_ID}`,
-      bundleId: 'agent-abc',
+    const ownAgentBundle = 'agent-mine'
+    const otherAgentBundle = 'agent-other'
+    const ownAgentVersion = createVersion({
+      id: `versions.${ownAgentBundle}.${GROUP_ID}`,
+      bundleId: ownAgentBundle,
+    })
+    const otherAgentVersion = createVersion({
+      id: `versions.${otherAgentBundle}.${GROUP_ID}`,
+      bundleId: otherAgentBundle,
     })
 
-    await renderStatus({versions: [publishedDefault, draftDefault, agentVersion]})
+    mockUseAgentBundles.mockReturnValue({
+      bundles: [{id: ownAgentBundle, applicationKey: 'app'}],
+      loading: false,
+    })
+
+    await renderStatus({
+      versions: [publishedDefault, draftDefault, ownAgentVersion, otherAgentVersion],
+    })
 
     expect(screen.getByText('Published')).toBeInTheDocument()
     expect(screen.getByText('Draft')).toBeInTheDocument()
