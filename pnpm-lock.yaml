@@ -77,8 +77,8 @@ catalogs:
       specifier: ^19.2.8
       version: 19.2.8
     react-rx:
-      specifier: ^5.1.1
-      version: 5.1.1
+      specifier: ^6.0.0
+      version: 6.0.0
     rimraf:
       specifier: ^6.1.3
       version: 6.1.3
@@ -376,7 +376,7 @@ importers:
         version: 19.2.8(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
-        version: 5.1.1(react@19.2.8)(rxjs@7.8.2)
+        version: 6.0.0(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -789,7 +789,7 @@ importers:
         version: 4.0.0(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
-        version: 5.1.1(react@19.2.8)(rxjs@7.8.2)
+        version: 6.0.0(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1602,7 +1602,7 @@ importers:
         version: 7.3.0
       react-rx:
         specifier: 'catalog:'
-        version: 5.1.1(react@19.2.8)(rxjs@7.8.2)
+        version: 6.0.0(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -1941,7 +1941,7 @@ importers:
         version: 4.0.0(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
-        version: 5.1.1(react@19.2.8)(rxjs@7.8.2)
+        version: 6.0.0(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -12567,8 +12567,8 @@ packages:
       react: ^18.3 || >=19.0.0-0
       rxjs: ^7
 
-  react-rx@5.1.1:
-    resolution: {integrity: sha512-4GNme4kL2F825aNnsIDqrOSxK6j6tjkpVdbdeILS8WMWOpX1QFO/Wyb28WREYZmcXr9Vys4ZV7yDdw6k9OxuMQ==}
+  react-rx@6.0.0:
+    resolution: {integrity: sha512-Zu11eDiWd9bshDhdt1ObjDEhJ1XVxZS5hJf4lzZ1jqj0v5iNiRmtIA0LNljUs5ePusPyPKnc/IoYP20D4Dj4+Q==}
     engines: {node: '>=22.12'}
     peerDependencies:
       react: ^19.2
@@ -25592,7 +25592,7 @@ snapshots:
       rxjs: 7.8.2
       use-effect-event: 2.0.3(react@19.2.8)
 
-  react-rx@5.1.1(react@19.2.8)(rxjs@7.8.2):
+  react-rx@6.0.0(react@19.2.8)(rxjs@7.8.2):
     dependencies:
       react: 19.2.8
       rxjs: 7.8.2
