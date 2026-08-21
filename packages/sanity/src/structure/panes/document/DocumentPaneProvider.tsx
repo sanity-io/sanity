@@ -22,6 +22,7 @@ import {
   type DocumentFieldAction,
   type EditStateFor,
   EMPTY_ARRAY,
+  FormGutterCustomProperties,
   getCreatableVariantTarget,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
@@ -142,6 +143,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const workspace = useWorkspace()
   const advancedVersionControlEnabled = workspace.advancedVersionControl.enabled
   const isDraftModelEnabled = workspace.document.drafts.enabled
+  const isContentVariantsEnabled = workspace.beta?.variants?.enabled
 
   const enhancedObjectDialogEnabled = true
 
@@ -768,19 +770,23 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       ? {enabled: true, upstreamEditState, editState, subjectId: value._id, schemaType, formState}
       : {enabled: false}
 
+  const hasFormGutter = isDivergencesEnabled || isContentVariantsEnabled === true
+
   return (
     <DocumentPaneInfoContext.Provider value={documentPaneInfo}>
       <DocumentPaneContext.Provider value={documentPane}>
-        <DivergencesProvider {...divergencesProps}>
-          <DivergenceAutofocus onProgrammaticFocus={onProgrammaticFocus} />
-          <DocumentTitle
-            isDeleted={isDeleted}
-            displayed={displayed}
-            ready={ready}
-            schemaType={schemaType}
-          />
-          <ParseErrorsProvider>{children}</ParseErrorsProvider>
-        </DivergencesProvider>
+        <FormGutterCustomProperties $enabled={hasFormGutter}>
+          <DivergencesProvider {...divergencesProps}>
+            <DivergenceAutofocus onProgrammaticFocus={onProgrammaticFocus} />
+            <DocumentTitle
+              isDeleted={isDeleted}
+              displayed={displayed}
+              ready={ready}
+              schemaType={schemaType}
+            />
+            <ParseErrorsProvider>{children}</ParseErrorsProvider>
+          </DivergencesProvider>
+        </FormGutterCustomProperties>
       </DocumentPaneContext.Provider>
     </DocumentPaneInfoContext.Provider>
   )

@@ -1761,3 +1761,4 @@ export {
 } from '@sanity/schema'
 export * from '@sanity/types'
 export {type TFunction} from 'i18next'
+export {FormGutterCustomProperties} from '../core/form/components/FormGutterCustomProperties'
