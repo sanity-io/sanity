@@ -95,6 +95,7 @@ export {PaneContext} from '../_singletons/context/PaneContext'
 export {PaneLayoutContext} from '../_singletons/context/PaneLayoutContext'
 export {PaneRouterContext} from '../_singletons/context/PaneRouterContext'
 export {ParseErrorsContext, type SetParseError} from '../_singletons/context/ParseErrorsContext'
+export {PerspectiveActiveDocumentContext} from '../_singletons/context/PerspectiveActiveDocumentContext'
 export {PerspectiveContext} from '../_singletons/context/PerspectiveContext'
 export {PortableTextMarkersContext} from '../_singletons/context/PortableTextMarkersContext'
 export {
