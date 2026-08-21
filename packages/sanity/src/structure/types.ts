@@ -301,6 +301,9 @@ export interface BaseResolvedPaneNode<T extends PaneNode['type']> {
 export interface CustomComponentPaneNode extends BaseResolvedPaneNode<'component'> {
   component: UserComponent
   options?: Record<string, unknown>
+  minWidth?: number
+  currentMaxWidth?: number
+  maxWidth?: number
   // component: React.ComponentType<Props> | React.ReactNode
 }
 
