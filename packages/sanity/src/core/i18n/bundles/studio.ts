@@ -465,6 +465,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Default text for dialog confirm button */
   'common.dialog.confirm-button.text': 'Confirm',
 
+  /** Default text in shared error text*/
+  'common.error': 'Error',
+
   /** Default text in shared loader text / spinner lockup */
   'common.loading': 'Loading',
 
