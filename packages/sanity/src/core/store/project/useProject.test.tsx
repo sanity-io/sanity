@@ -46,7 +46,7 @@ afterEach(() => {
 describe('useProject', () => {
   it('emits the fetched project data', async () => {
     const {result} = setup(() => of(projectData))
-    await waitFor(() => expect(result.current.value).toEqual(projectData))
+    await waitFor(() => expect(result.current).toEqual(projectData))
   })
 
   it('delegates a session-expired 401 to the error channel (unauthorized claim)', async () => {
@@ -58,7 +58,7 @@ describe('useProject', () => {
         projectId: 'abc123',
       }),
     )
-    expect(result.current.value).toBeNull()
+    expect(result.current).toBeNull()
   })
 
   it('re-runs the fetch when the error dialog retries', async () => {
@@ -83,7 +83,7 @@ describe('useProject', () => {
       expect(await firstValueFrom(channel.claim$)).toMatchObject({type: 'rateLimited'}),
     )
     act(() => channel.retry())
-    await waitFor(() => expect(result.current.value).toEqual(projectData))
+    await waitFor(() => expect(result.current).toEqual(projectData))
     expect(get).toHaveBeenCalledTimes(2)
   })
 
@@ -92,7 +92,7 @@ describe('useProject', () => {
     vi.mocked(useProjectStore).mockReturnValue({get} as ProjectStore)
 
     function ProjectName() {
-      const {value} = useProject()
+      const value = useProject()
       return <span data-testid="project-name">{value ? value.displayName : 'unresolved'}</span>
     }
     const view = (mode: 'visible' | 'hidden') => (
@@ -103,14 +103,13 @@ describe('useProject', () => {
       </StudioErrorHandlerContext.Provider>
     )
 
-    // The closed-popover case (e.g. the workspace menu from @sanity/ui v4):
-    // the subtree renders while hidden…
+    // Mount hidden — the closed-popover case. The subtree renders…
     const {rerender} = render(view('hidden'))
     expect(await screen.findByTestId('project-name')).toBeInTheDocument()
-    // …but the request must not fire: `defer` keeps `attempt()` (which starts
-    // the request when called) out of the render phase, and the `null` initial
-    // value keeps react-rx from warm-up-subscribing during render. The
-    // subscription first starts on commit, which the hidden Activity defers.
+    // …but no request fires:
+    // - `defer` keeps `attempt()` out of the render phase
+    // - the `null` initial value skips react-rx's render-phase warm-up
+    // - the subscription starts on commit, which hidden Activity defers
     expect(get).not.toHaveBeenCalled()
 
     rerender(view('visible'))

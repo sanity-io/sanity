@@ -7,25 +7,22 @@ import {useProjectStore} from '../datastores'
 import {type ProjectData} from './types'
 
 /** @internal */
-export function useProject(): {value: ProjectData | null} {
+export function useProject(): ProjectData | null {
   const projectStore = useProjectStore()
   const errorHandler = useStudioErrorHandler()
 
   const project$ = useMemo(
     (): Observable<ProjectData> =>
-      // `defer` keeps `attempt()` — which starts the request the moment it is
-      // called — out of the render phase: the request first fires when the
-      // observable is subscribed on commit. Paired with the `null` initial
-      // value below, that keeps the request off the studio boot path while
-      // this hook is mounted inside a hidden `<Activity>` (e.g. the closed
-      // workspace menu popover, kept mounted from `@sanity/ui` v4).
+      // `defer` is load-bearing: `attempt()` fires the request the moment it
+      // is called. Deferring it to subscribe time — plus the `null` initial
+      // value below — means no request while this hook renders hidden
+      // (closed popovers stay mounted inside `<Activity>` since @sanity/ui v4).
       defer(() => from(errorHandler.attempt(() => projectStore.get(), {retryable: true}))).pipe(
-        // Errors the channel does not claim (caller-domain 4xx, etc.) are
-        // intentionally surfaced through the global unhandled path — the same
-        // path rxjs uses for errors without an error handler — so they stay
-        // visible to error monitoring instead of being rethrown into the
-        // render by react-rx (which would tear down the subtree). The value
-        // stays `null`, matching this hook's pre-react-rx behavior.
+        // Errors the channel does not claim (caller-domain 4xx, etc.) keep
+        // this hook's old contract:
+        // - rethrown out-of-band → still visible to error monitoring
+        // - NOT rethrown into the render → no subtree teardown
+        // - the value just stays `null`
         catchError((err) => {
           setTimeout(() => {
             throw err
@@ -36,5 +33,5 @@ export function useProject(): {value: ProjectData | null} {
     [errorHandler, projectStore],
   )
 
-  return {value: useObservable(project$, null)}
+  return useObservable(project$, null)
 }
