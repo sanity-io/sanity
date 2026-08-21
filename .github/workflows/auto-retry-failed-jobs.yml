@@ -9,7 +9,6 @@ on:
       - "Unit tests"
       - "End-to-End Tests"
       - "End-to-End Component Tests"
-      - "eFPS Test"
     types: [completed]
 
 jobs:

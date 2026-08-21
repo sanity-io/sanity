@@ -731,7 +731,7 @@ function sortByDependencies(compiledSchema: SchemaDef): {
             if (hoistRepetitions && !validSchemaNames.has(field.type.name)) {
               const fieldPath = path.concat([field.name])
               if (!repeated.has(field) && objectMap.has(field)) {
-                // The field is not in the repeated set, but it's the second time we see it – time to add it
+                // The field is not in the repeated set, but it's the second time we see it – time to add it
                 const name = pickRepeatedName(fieldPath)
 
                 // If we couldn't pick a name, we skip hoisting for this field

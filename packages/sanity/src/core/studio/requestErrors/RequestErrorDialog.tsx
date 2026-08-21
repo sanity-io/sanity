@@ -194,6 +194,7 @@ function RateLimitedDialog(props: {
     // disabled state. Intentional sync to the external claim, not a cascade —
     // deferred via startTransition so React can schedule the re-render lazily.
     startTransition(() => setRetrying(false))
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [claim])
   const handleRetry = useCallback(() => {
     setRetrying(true)

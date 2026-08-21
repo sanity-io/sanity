@@ -1,5 +1,6 @@
-import {Box, Card, type CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
+import {Card, type CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -57,7 +58,13 @@ export function BooleanInput(props: BooleanInputProps) {
     <Card border data-testid="boolean-input" radius={2} tone={tone}>
       <Flex style={props.elementProps.style}>
         {readOnly ? <Tooltip content={t('inputs.boolean.disabled')}>{input}</Tooltip> : input}
-        <Box flex={1} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} paddingY={2}>
+        <Box
+          flexBasis="0%"
+          flexGrow={1}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          paddingY={2}
+        >
           <FormFieldBaseHeader
             __internal_comments={comments}
             __internal_slot={slot}

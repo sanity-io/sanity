@@ -269,6 +269,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
       {...props}
       onSearch={
         // TODO(oxlint): remove this suppression in a follow-up once useEffectEvent support is fixed
+        // oxlint-disable-next-line react/rule-suppression -- pre-existing violation, to be fixed in a follow-up
         // oxlint-disable-next-line react-hooks/rules-of-hooks
         handleSearch
       }

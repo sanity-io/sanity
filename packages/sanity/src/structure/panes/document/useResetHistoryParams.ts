@@ -36,6 +36,7 @@ export function useResetHistoryParams() {
     if (isMounted.current) {
       updateHistoryParams(selectedPerspectiveName)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [selectedPerspectiveName])
 
   useEffect(() => {

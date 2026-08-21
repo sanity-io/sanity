@@ -42,6 +42,7 @@ export function PresentationDocumentProvider(props: {
   const registerEffectEvent = useEffectEvent((options: PresentationPluginOptions) =>
     register(options),
   )
+  // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   useLayoutEffect(() => registerEffectEvent(options), [options])
 
   return (

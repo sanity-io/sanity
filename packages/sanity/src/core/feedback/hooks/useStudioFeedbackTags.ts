@@ -58,7 +58,7 @@ export function useStudioFeedbackTags(): {
   const {value: orgId} = useProjectOrganizationId()
   const {value: orgData} = useProjectOrganizationData()
   const orgName = orgData?.name ?? ''
-  const {value: projectData} = useProject()
+  const projectData = useProject()
   const {projectSubscriptions} = useProjectSubscriptions()
 
   const activeTool = useRouterState(

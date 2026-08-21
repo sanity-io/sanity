@@ -39,6 +39,7 @@ export interface FormProviderProps {
   children?: ReactNode
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
+  documentId?: string
   focusPath: Path
   focused: boolean | undefined
   groups: FormFieldGroup[]
@@ -71,6 +72,7 @@ export function FormProvider(props: FormProviderProps) {
     children,
     collapsedFieldSets,
     collapsedPaths,
+    documentId,
     focusPath,
     focused,
     groups,
@@ -144,6 +146,7 @@ export function FormProvider(props: FormProviderProps) {
       changesOpen={changesOpen}
       collapsedFieldSets={collapsedFieldSets}
       collapsedPaths={collapsedPaths}
+      documentId={documentId}
       file={file}
       focusPath={focusPath}
       focused={focused}

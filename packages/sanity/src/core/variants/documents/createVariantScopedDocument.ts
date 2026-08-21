@@ -1,19 +1,19 @@
-import {type SanityClient, type SingleActionResult} from '@sanity/client'
-import {type SanityDocumentLike} from '@sanity/types'
-
-import {type TargetPerspective} from '../../perspective/types'
 import {
-  type VariantDocumentBundleId,
-  type VariantDocumentCreateFromBaseAction,
-  variantsClient,
-} from '../store/variantsClient'
+  type CreateVariantAction,
+  type SanityDocumentStub,
+  type SanityClient,
+  type SingleActionResult,
+} from '@sanity/client'
+
+import {type PerspectiveBundle, type TargetPerspective} from '../../perspective/types'
+import {variantsApiClient} from '../../store/document/document-pair/utils/variantsApiClient'
 import {getVariantId} from '../tool/util'
 import {type SystemVariant} from '../types'
 import {getBundleIdFromPerspective} from './getBundleIdFromPerspective'
 
 function getSupportedBundleId(
   selectedPerspective: TargetPerspective,
-): VariantDocumentBundleId | undefined {
+): Exclude<PerspectiveBundle, 'published'> | undefined {
   const bundleId = getBundleIdFromPerspective(selectedPerspective)
 
   if (bundleId === 'published') {
@@ -37,7 +37,7 @@ type BaseOptions = {
 export type CreateVariantScopedDocumentOptions = BaseOptions &
   (
     | {
-        document: Omit<SanityDocumentLike, '_id'>
+        document: SanityDocumentStub
       }
     | {
         baseId: string
@@ -60,18 +60,16 @@ export async function createVariantScopedDocument({
 }: CreateVariantScopedDocumentOptions): Promise<SingleActionResult> {
   const bundleId = getSupportedBundleId(selectedPerspective)
 
-  const action: Pick<
-    VariantDocumentCreateFromBaseAction,
-    'actionType' | 'variantId' | 'publishedId' | 'bundleId'
-  > = {
-    actionType: 'sanity.action.document.variant.create',
-    variantId: getVariantId(variant._id),
-    ...(bundleId ? {bundleId} : {}),
-    publishedId: documentGroupId,
-  }
+  const action: Pick<CreateVariantAction, 'actionType' | 'variantId' | 'publishedId' | 'bundleId'> =
+    {
+      actionType: 'sanity.action.document.variant.create',
+      variantId: getVariantId(variant._id),
+      ...(bundleId ? {bundleId} : {}),
+      publishedId: documentGroupId,
+    }
 
   if ('baseId' in options) {
-    return variantsClient(client).action(
+    return variantsApiClient(client).action(
       {
         baseId: options.baseId,
         ...(typeof options.ifBaseRevisionId === 'string'
@@ -87,7 +85,7 @@ export async function createVariantScopedDocument({
   }
 
   if ('document' in options) {
-    return variantsClient(client).action(
+    return variantsApiClient(client).action(
       {
         document: options.document,
         ...action,

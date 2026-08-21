@@ -227,6 +227,7 @@ export const ReleaseMenuButton = ({
     if (!selectedAction || isActionPublishOrSchedule) return
 
     if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog) void handleAction(selectedAction)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [documentsCount, handleAction, isActionPublishOrSchedule, selectedAction])
 
   const confirmActionDialog = useMemo(() => {

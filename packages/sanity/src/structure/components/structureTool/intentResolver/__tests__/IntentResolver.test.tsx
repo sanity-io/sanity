@@ -58,7 +58,9 @@ class Boundary extends Component<{children: ReactNode}, {error: unknown}> {
 }
 
 function timeoutError() {
-  return new DOMException('The operation was aborted due to timeout', 'TimeoutError')
+  return Object.assign(new Error('The operation was aborted due to timeout'), {
+    name: 'TimeoutError',
+  })
 }
 
 describe('IntentResolver', () => {

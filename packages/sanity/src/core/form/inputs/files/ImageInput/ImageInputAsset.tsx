@@ -1,7 +1,7 @@
 import {getImageDimensions} from '@sanity/asset-utils'
 import {type AssetSource, type UploadState} from '@sanity/types'
-import {Box} from '@sanity/ui'
 import {type CSSProperties, type FocusEvent, memo, useCallback, useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {type InputOnSelectFileFunctionProps, type InputProps} from '../../../types/inputProps'
@@ -75,6 +75,7 @@ function ImageInputAssetComponent(props: {
         inputProps.elementProps.onFocus(event)
       }
     },
+    // oxlint-disable-next-line react/rule-suppression -- pre-existing violation, to be fixed in a follow-up
     // oxlint-disable-next-line react-hooks/exhaustive-deps
     [inputProps, elementProps.ref?.current],
   )

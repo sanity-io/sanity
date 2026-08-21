@@ -1,6 +1,6 @@
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
 import {setHours} from 'date-fns/setHours'
@@ -15,6 +15,7 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -153,6 +154,7 @@ export function CalendarFilter(props: CalendarProps & RefAttributes<HTMLDivEleme
     ) {
       focusCurrentWeekDay()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [ref, focusCurrentWeekDay, focusedDate])
 
   // Select AND focus current date when 'today' is pressed
@@ -229,7 +231,7 @@ export function CalendarFilter(props: CalendarProps & RefAttributes<HTMLDivEleme
       </Box>
 
       {/* Today button */}
-      <Box flex={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
+      <Box flexBasis="0%" flexGrow={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
         <Button
           disabled={restProps.disabled}
           mode="bleed"

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.10.1](https://github.com/sanity-io/sanity/compare/v6.10.0...v6.10.1) (2026-08-18)
+
+### Bug Fixes
+
+* **build:** bake correct package version into cdn module bundles ([#14155](https://github.com/sanity-io/sanity/issues/14155)) ([3e5a82e](https://github.com/sanity-io/sanity/commit/3e5a82e1a10b7247a92db4cd6f2388406bd1db5b))
+* **core:** classify client v8 timeout errors in the request-error channel ([#14146](https://github.com/sanity-io/sanity/issues/14146)) ([dc5e4c0](https://github.com/sanity-io/sanity/commit/dc5e4c08c725c99eed19a9d3da5df273bf57ed61))
+* **core:** duplicate variant documents into the same variant ([#14041](https://github.com/sanity-io/sanity/issues/14041)) ([a29e7a7](https://github.com/sanity-io/sanity/commit/a29e7a72f69f5fc1c061ddf21df14b642659329e))
 ## [6.10.0](https://github.com/sanity-io/sanity/compare/v6.9.2...v6.10.0) (2026-08-18)
 
 ### Features

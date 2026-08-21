@@ -1,7 +1,8 @@
 import {type PluginPayload} from '@sanity/media-library-types'
 import {type Asset} from '@sanity/types'
-import {Box, Card, Flex, useTheme} from '@sanity/ui'
+import {Card, Flex, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'

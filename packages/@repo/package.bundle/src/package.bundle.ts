@@ -1,76 +1,90 @@
-import babel from '@rolldown/plugin-babel'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
-import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
+import viteReact from '@vitejs/plugin-react'
 import escapeRegExp from 'lodash-es/escapeRegExp.js'
 import {esmExternalRequirePlugin, type Plugin, type UserConfig} from 'vite'
 
-import packageJson from '../package.json' with {type: 'json'}
+export interface DefaultConfigOptions {
+  /**
+   * The version of the package being bundled (from that package's own package.json). Baked into
+   * the bundle as the `__PKG_VERSION__` global, which `SANITY_VERSION`
+   * (packages/sanity/src/core/version.ts) reports at runtime. The auto-update UI compares it to
+   * the module CDN manifest, so it must match the version the bundle is uploaded as — reading it
+   * from the wrong package.json causes an endless "Reload to update" loop in auto-updating
+   * studios.
+   */
+  version: string
+}
 
-export const defaultConfig: UserConfig = {
-  appType: 'custom',
-  define: {
-    '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
-    '__PKG_VERSION__': JSON.stringify(packageJson.version),
-    'process.env.NODE_ENV': '"production"',
-    'process.env': {},
-  },
-  plugins: [
-    viteReact(),
-    babel({presets: [reactCompilerPreset({target: '19'})]}),
-    vanillaExtractPlugin(),
-    cleanupCssOutputPlugin(),
-    esmExternalRequirePlugin({
-      // self-externals are required here in order to ensure that the presentation
-      // tool and future transitive dependencies that require sanity do not
-      // re-include sanity in their bundle
-      external: ['react', 'react-dom', 'styled-components', 'sanity', '@sanity/vision'].flatMap(
-        (dependency) => [
-          dependency,
-          // this matches `react/jsx-runtime`, `sanity/presentation` etc
-          new RegExp(`^${escapeRegExp(dependency)}\\/`),
-        ],
-      ),
-    }),
-  ],
-  build: {
-    emptyOutDir: true,
-    sourcemap: true,
-    lib: {
-      entry: {},
-      formats: ['es'],
+export function createDefaultConfig({version}: DefaultConfigOptions): UserConfig {
+  return {
+    appType: 'custom',
+    define: {
+      '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
+      '__PKG_VERSION__': JSON.stringify(version),
+      'process.env.NODE_ENV': '"production"',
+      'process.env': {},
     },
-    rolldownOptions: {
-      output: {
-        minify: true,
-        exports: 'named',
-        dir: 'dist',
-        format: 'es',
-        // Due to module server expecting `.mjs`, and packages/sanity/package.json#type now being `module`, it's necessary to configure vite to continue using `.mjs`
-        // Otherwise it'll start using `.js` instead: https://github.com/vitejs/vite/blob/a3cd262f37228967e455617e982b35fccc49ffe9/packages/vite/src/node/build.ts#L664-L679
-        entryFileNames: '[name].mjs',
-        chunkFileNames: '[name]-[hash].mjs',
-        // CSS assets get a predictable name so the module server can serve them at a known URL
-        assetFileNames: (assetInfo) =>
-          assetInfo.names?.some((n) => n.endsWith('.css')) ? 'index.css' : '[name]-[hash][extname]',
+    plugins: [
+      // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
+      // as the TypeScript/JSX transform (no babel in the pipeline)
+      viteReact({compiler: {target: '19'}}),
+      vanillaExtractPlugin(),
+      cleanupCssOutputPlugin(),
+      esmExternalRequirePlugin({
+        // self-externals are required here in order to ensure that the presentation
+        // tool and future transitive dependencies that require sanity do not
+        // re-include sanity in their bundle
+        external: ['react', 'react-dom', 'styled-components', 'sanity', '@sanity/vision'].flatMap(
+          (dependency) => [
+            dependency,
+            // this matches `react/jsx-runtime`, `sanity/presentation` etc
+            new RegExp(`^${escapeRegExp(dependency)}\\/`),
+          ],
+        ),
+      }),
+    ],
+    build: {
+      emptyOutDir: true,
+      sourcemap: true,
+      lib: {
+        entry: {},
+        formats: ['es'],
       },
-      transform: {
-        // Same options as pkg-utils: https://github.com/sanity-io/pkg-utils/blob/f4e229e2641049008b375caf67576130be83fcdd/packages/%40sanity/pkg-utils/src/node/tasks/rollup/resolveRollupConfig.ts#L220-L227
-        plugins: {
-          styledComponents: {
-            // Unnecessary, as the way we use styled-components in Sanity is usually by wrapping `@sanity/ui` primitives, not declaring new ones like "const Button = styled.button``"
-            fileName: false,
-            // Native template literals take less space than this transpilation
-            transpileTemplateLiterals: false,
-            // Massively helps dead code elimination and tree-shaking
-            pure: true,
-            // disabled, as pkg-utils tends to be used for npm publishing, while other tooling, like `sanity dev`, `next dev`, etc are used for testing
-            cssProp: false,
+      rolldownOptions: {
+        output: {
+          minify: true,
+          exports: 'named',
+          dir: 'dist',
+          format: 'es',
+          // Due to module server expecting `.mjs`, and packages/sanity/package.json#type now being `module`, it's necessary to configure vite to continue using `.mjs`
+          // Otherwise it'll start using `.js` instead: https://github.com/vitejs/vite/blob/a3cd262f37228967e455617e982b35fccc49ffe9/packages/vite/src/node/build.ts#L664-L679
+          entryFileNames: '[name].mjs',
+          chunkFileNames: '[name]-[hash].mjs',
+          // CSS assets get a predictable name so the module server can serve them at a known URL
+          assetFileNames: (assetInfo) =>
+            assetInfo.names?.some((n) => n.endsWith('.css'))
+              ? 'index.css'
+              : '[name]-[hash][extname]',
+        },
+        transform: {
+          // Same options as pkg-utils: https://github.com/sanity-io/pkg-utils/blob/f4e229e2641049008b375caf67576130be83fcdd/packages/%40sanity/pkg-utils/src/node/tasks/rollup/resolveRollupConfig.ts#L220-L227
+          plugins: {
+            styledComponents: {
+              // Unnecessary, as the way we use styled-components in Sanity is usually by wrapping `@sanity/ui` primitives, not declaring new ones like "const Button = styled.button``"
+              fileName: false,
+              // Native template literals take less space than this transpilation
+              transpileTemplateLiterals: false,
+              // Massively helps dead code elimination and tree-shaking
+              pure: true,
+              // disabled, as pkg-utils tends to be used for npm publishing, while other tooling, like `sanity dev`, `next dev`, etc are used for testing
+              cssProp: false,
+            },
           },
         },
+        treeshake: true,
       },
-      treeshake: true,
     },
-  },
+  }
 }
 
 /**

@@ -1,5 +1,4 @@
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Flex,
@@ -22,6 +21,7 @@ import {
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
+import {Box} from 'ui5'
 
 import {HISTORY_INSPECTOR_NAME} from '../constants'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline/timelineI18n'
@@ -217,20 +217,23 @@ export function DocumentStatusLine() {
       const timerId = setTimeout(() => setStatus(null), SAVED_TIMEOUT)
       return () => clearTimeout(timerId)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [status, lastUpdated, syncState.isSyncing])
 
   // Clear the status when documentId changes to make sure we don't show the wrong status when opening a new document
   useLayoutEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setStatus(null)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [documentId])
 
   // Set status to 'syncing' when lastUpdated changes and we go from not syncing to syncing
   useLayoutEffect(() => {
     if (syncState.isSyncing) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setStatus('syncing')
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [syncState.isSyncing, lastUpdated])
 
   return (

@@ -1,6 +1,7 @@
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {type ComponentProps, useCallback, useId, useState} from 'react'
 import {useTranslation} from 'sanity'
+import {Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'

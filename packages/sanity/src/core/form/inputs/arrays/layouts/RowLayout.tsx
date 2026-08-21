@@ -1,6 +1,7 @@
-import {Box, Card, type CardTone, Flex, Stack} from '@sanity/ui'
+import {Card, type CardTone, Flex, Stack} from '@sanity/ui'
 import {type ReactNode, useRef} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {DragHandle} from '../common/DragHandle'
@@ -77,12 +78,22 @@ export function RowLayout(props: RowLayoutProps) {
         <Flex align="center" gap={1}>
           {dragHandle && <DragHandle paddingY={3} readOnly={readOnly} />}
 
-          <Box flex={1}>{children}</Box>
+          <Box flexBasis="0%" flexGrow={1}>
+            {children}
+          </Box>
 
           {(presence || validation || menu) && (
             <Flex align="center" flex="none" gap={2} style={{lineHeight: 0}}>
-              {presence && <Box flex="none">{presence}</Box>}
-              {validation && <Box flex="none">{validation}</Box>}
+              {presence && (
+                <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+                  {presence}
+                </Box>
+              )}
+              {validation && (
+                <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+                  {validation}
+                </Box>
+              )}
               {menu}
             </Flex>
           )}

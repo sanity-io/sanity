@@ -7,10 +7,11 @@ import {
 import {CollapseIcon} from '@sanity/icons/Collapse'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
-import {Box, Flex, useElementSize} from '@sanity/ui'
+import {Flex, useElementSize} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
@@ -117,7 +118,7 @@ const InnerToolbar = memo(function InnerToolbar({
       <Flex flex={1}>
         {showActionMenu && (
           <ActionMenuBox
-            flex={collapsed ? undefined : 1}
+            {...(collapsed ? undefined : {flexBasis: '0%', flexGrow: 1})}
             padding={isFullscreen ? 2 : 1}
             $withInsertMenu={showInsertMenu}
           >
@@ -131,7 +132,10 @@ const InnerToolbar = memo(function InnerToolbar({
         )}
 
         {showInsertMenu && (
-          <Box flex={collapsed ? undefined : 1} padding={isFullscreen ? 2 : 1}>
+          <Box
+            {...(collapsed ? undefined : {flexBasis: '0%', flexGrow: 1})}
+            padding={isFullscreen ? 2 : 1}
+          >
             <InsertMenu
               disabled={disabled}
               collapsed={collapsed}

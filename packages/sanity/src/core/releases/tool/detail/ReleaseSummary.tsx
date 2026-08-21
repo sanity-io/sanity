@@ -180,10 +180,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
     if (documentsNoLongerPending.length)
       // cleanup all resolved added documents
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setPendingAddedDocument((prev) =>
         prev.filter(({document}) => !documentsNoLongerPending.includes(document._id)),
       )
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [documents, pendingAddedDocument, t, toast])
 
   const tableData = useMemo(
