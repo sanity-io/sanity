@@ -31,6 +31,10 @@ export function ciRunUrl(runId: string, attempt?: number): string {
  * two points". Three dots deliberately: the commit *range* reachable from
  * `toSha` but not `fromSha`, not a two-endpoint diff.
  */
+export function releaseUrl(tag: string): string {
+  return `https://github.com/${REPO}/releases/tag/${encodeURIComponent(tag)}`
+}
+
 export function compareUrl(fromSha: string, toSha: string): string {
   return `https://github.com/${REPO}/compare/${fromSha}...${toSha}`
 }
