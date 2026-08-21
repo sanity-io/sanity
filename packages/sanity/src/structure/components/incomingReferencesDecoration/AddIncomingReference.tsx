@@ -3,7 +3,6 @@ import {type SanityDocumentLike} from '@sanity/types'
 import {Grid, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
-import {useObservableEvent} from 'react-rx'
 import {catchError, concat, filter, map, type Observable, of, scan, switchMap, tap} from 'rxjs'
 import {
   createSearch,
@@ -19,6 +18,7 @@ import {
   type SearchStrategy,
   useClient,
   useDocumentPreviewStore,
+  useObservableEvent,
   useSchema,
   useSource,
   useTranslation,
