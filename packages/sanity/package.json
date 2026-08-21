@@ -149,7 +149,7 @@
     "@portabletext/plugin-paste-link": "^4.0.48",
     "@portabletext/plugin-table": "^1.3.18",
     "@portabletext/plugin-typography": "^8.0.49",
-    "@portabletext/react": "^8.0.0",
+    "@portabletext/react": "^8.0.1",
     "@portabletext/sanity-bridge": "^3.2.5",
     "@portabletext/to-html": "^6.0.0",
     "@portabletext/toolkit": "^6.0.0",
