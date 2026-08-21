@@ -433,9 +433,6 @@ importers:
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
-      vite:
-        specifier: 'catalog:'
-        version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
 
   dev/preview-iframe:
     dependencies:
@@ -515,10 +512,6 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
-    devDependencies:
-      rimraf:
-        specifier: 'catalog:'
-        version: 6.1.3
 
   dev/starter-studio:
     dependencies:
@@ -544,12 +537,6 @@ importers:
 
   dev/storybook:
     dependencies:
-      '@sanity/icons':
-        specifier: ^5.2.1
-        version: 5.2.1(react@19.2.8)
-      '@sanity/types':
-        specifier: workspace:*
-        version: link:../../packages/@sanity/types
       '@sanity/ui':
         specifier: 'catalog:'
         version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
@@ -697,9 +684,6 @@ importers:
       '@portabletext/react':
         specifier: ^8.0.0
         version: 8.0.0(react@19.2.8)
-      '@portabletext/toolkit':
-        specifier: ^6.0.0
-        version: 6.0.0
       '@sanity/assist':
         specifier: ^6.1.19
         version: 6.1.19(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
@@ -733,9 +717,6 @@ importers:
       '@sanity/preview-url-secret':
         specifier: ^4.1.4
         version: 4.1.4(@sanity/client@8.2.0)
-      '@sanity/react-loader':
-        specifier: ^2.1.4
-        version: 2.1.4(@sanity/types@packages+@sanity+types)(react@19.2.8)(typescript@7.0.2)
       '@sanity/themer':
         specifier: ^0.3.5
         version: 0.3.5(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
@@ -754,9 +735,6 @@ importers:
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
-      '@sanity/visual-editing':
-        specifier: ^6.0.4
-        version: 6.0.4(@sanity/client@8.2.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)(typescript@7.0.2)
       '@turf/helpers':
         specifier: ^7.4.0
         version: 7.4.0
@@ -766,33 +744,18 @@ importers:
       '@vercel/stega':
         specifier: 1.1.0
         version: 1.1.0
-      chokidar:
-        specifier: ^5.0.0
-        version: 5.0.0
-      history:
-        specifier: ^5.3.0
-        version: 5.3.0
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
-      qs:
-        specifier: ^6.15.3
-        version: 6.15.3
       react:
         specifier: 'catalog:'
         version: 19.2.8
       react-dom:
         specifier: 'catalog:'
         version: 19.2.8(react@19.2.8)
-      react-refractor:
-        specifier: ^4.0.0
-        version: 4.0.0(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
         version: 6.0.0(react@19.2.8)(rxjs@7.8.2)
-      refractor:
-        specifier: ^5.0.0
-        version: 5.0.0
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -824,9 +787,6 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.4(@types/react@19.2.18)
-      '@vanilla-extract/css':
-        specifier: 'catalog:'
-        version: 1.21.2(babel-plugin-macros@3.1.0)
       '@vitejs/devtools':
         specifier: ^0.4.12
         version: 0.4.12(@vitejs/devtools-oxc@0.4.12)(@vitejs/devtools-rolldown@0.4.12)(@vitejs/devtools-vite@0.4.12)(crossws@0.4.10)(srvx@0.12.5)(typescript@7.0.2)(valibot@1.4.2)(vite@8.2.2)
@@ -1152,9 +1112,6 @@ importers:
       vitest:
         specifier: ^4.1.11
         version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
-      zod:
-        specifier: ^4.4.3
-        version: 4.4.3
 
   packages/@repo/test-exports:
     dependencies:
@@ -1189,9 +1146,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.3
-      node-test-github-reporter:
-        specifier: ^1.3.2
-        version: 1.3.2
 
   packages/@repo/tsconfig: {}
 
@@ -2111,9 +2065,6 @@ importers:
       tsdown:
         specifier: 'catalog:'
         version: 0.22.14(@vitejs/devtools@0.4.12)(oxc-resolver@11.24.2)(publint@0.3.23)(tsx@4.23.12)(typescript@7.0.2)
-      tsx:
-        specifier: ^4.23.12
-        version: 4.23.12
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
@@ -2129,18 +2080,6 @@ importers:
       vitest-package-exports:
         specifier: ^1.2.0
         version: 1.2.0
-
-  packages/sanity/fixtures/examples/prj-with-react-19:
-    dependencies:
-      react:
-        specifier: 'catalog:'
-        version: 19.2.8
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.2.8(react@19.2.8)
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
 
   perf/bench:
     dependencies:
@@ -9685,9 +9624,6 @@ packages:
   error-ex@1.3.4:
     resolution: {integrity: sha512-sqQamAnR14VgCr1A618A3sGrygcpK+HEbenA/HiEAkkUwcZIIB/tgWqHFxWgOyDh4nB4JCRimh79dR5Ywc9MDQ==}
 
-  error-stack-parser@2.1.4:
-    resolution: {integrity: sha512-Sk5V6wVazPhq5MhpO+AUxJn5x7XSXGl1R93Vn7i+zS15KDVxQijejNCrz8340/2bgLBjR9GtEG8ZVKONDjcqGQ==}
-
   es-define-property@1.0.1:
     resolution: {integrity: sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g==}
     engines: {node: '>= 0.4'}
@@ -11686,12 +11622,6 @@ packages:
     resolution: {integrity: sha512-jVe6Z61gPcPjCElPZ6j8llB3wnqGcuQzefim1ERsqIakxnEy5JlzV7XKdO1KmacRG5TKwPc4vJTgSRQ0LfkbFw==}
     engines: {node: '>=8'}
 
-  node-test-github-reporter@1.3.2:
-    resolution: {integrity: sha512-NksThfLLllSslpXNxHb2El1tUBVBtWJpmN76e6X1TWDr5saP0dknGFTDE7pylZfAzvwBZk7GJEtq+27qnMfX2A==}
-
-  node-test-parser@3.1.0:
-    resolution: {integrity: sha512-e9CLgS/wOMVlpWI63U27wxv8Lq0jMiO2JWirhRKflLsUMHWVoh/ruEibsw1YDCgOwHZiSyNW/QXNTo9cuB7Qpw==}
-
   normalize-package-data@7.0.1:
     resolution: {integrity: sha512-linxNAT6M0ebEYZOx2tO6vBEFsVgnPpv+AVjk0wJHfaUIbq31Jm3T6vvZaarnOeWDh8ShnwXuaAyM7WT3RzErA==}
     engines: {node: ^18.17.0 || >=20.5.0}
@@ -13155,9 +13085,6 @@ packages:
 
   stackback@0.0.2:
     resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
-
-  stackframe@1.3.4:
-    resolution: {integrity: sha512-oeVtt7eWQS+Na6F//S4kJ2K2VbRlS9D43mAlMyVpVWovy9o+jfgH8O9agzANzaiLjclA0oYzUXEM4PurhSUChw==}
 
   standardwebhooks@1.0.0:
     resolution: {integrity: sha512-BbHGOQK9olHPMvQNHWul6MYlrRTAOKn03rOe4A8O3CLWhNf4YHBqq2HJKKC+sfqpxiBY52pNeesD6jIiLDz8jg==}
@@ -22233,10 +22160,6 @@ snapshots:
     dependencies:
       is-arrayish: 0.2.1
 
-  error-stack-parser@2.1.4:
-    dependencies:
-      stackframe: 1.3.4
-
   es-define-property@1.0.1: {}
 
   es-errors@1.3.0: {}
@@ -24369,15 +24292,6 @@ snapshots:
       big-integer: 1.6.52
     optional: true
 
-  node-test-github-reporter@1.3.2:
-    dependencies:
-      '@actions/core': 3.0.1
-      error-stack-parser: 2.1.4
-      node-test-parser: 3.1.0
-      stack-utils: 2.0.6
-
-  node-test-parser@3.1.0: {}
-
   normalize-package-data@7.0.1:
     dependencies:
       hosted-git-info: 8.1.0
@@ -26345,8 +26259,6 @@ snapshots:
       escape-string-regexp: 2.0.0
 
   stackback@0.0.2: {}
-
-  stackframe@1.3.4: {}
 
   standardwebhooks@1.0.0:
     dependencies:

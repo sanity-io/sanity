@@ -1,9 +1,0 @@
-{
-  "name": "prj-with-react-19",
-  "private": true,
-  "dependencies": {
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "styled-components": "catalog:"
-  }
-}

@@ -278,7 +278,6 @@
     "rxjs-etc": "^10.6.2",
     "styled-components": "catalog:",
     "tsdown": "catalog:",
-    "tsx": "^4.23.12",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
