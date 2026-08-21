@@ -325,6 +325,12 @@ function MyComponent(props: …) { … }
 export const MyComponentMemo = memo(MyComponent)
 ```
 
+Do not assign `.displayName` on components, HOCs, styled components, or `createContext`
+results. That property write is a module-level side effect and keeps the export from being
+tree-shaken. Named function declarations already give React DevTools a name via
+`function.name`. Exception (temporary): document/badge hooks prefixed with `use` and the
+HookState collection still set `displayName` — leave those until that API is reworked.
+
 For typings, include `ref` on the props type: stop omitting `'ref'` from `HTMLProps` /
 `ComponentProps`, or intersect with `RefAttributes<T>`. Avoid `PropsWithRef` — in `@types/react`
 19 it is a deprecated identity alias and trips `typescript/no-deprecated`.

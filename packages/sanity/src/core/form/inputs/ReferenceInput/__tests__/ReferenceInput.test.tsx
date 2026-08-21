@@ -28,19 +28,18 @@ const UNAVAILABLE_PERMISSION_DENIED = {
 } as const
 
 const infinityNoop: any = new Proxy<any>(() => infinityNoop, {get: () => infinityNoop})
-const StubComponent = ({
+function StubComponent({
   ref,
   documentId,
   documentType,
 }: {
   documentId: string
   documentType: string
-} & RefAttributes<any>) => {
+} & RefAttributes<any>) {
   useImperativeHandle(ref, () => infinityNoop, [])
   return null
 }
 
-StubComponent.displayName = 'StubComponent'
 type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>
 
 function ReferenceInputTester(

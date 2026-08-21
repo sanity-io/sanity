@@ -196,4 +196,3 @@ function PreloadDocumentPane(props: {documentId: string; documentType: string}) 
 
   return null
 }
-PreloadDocumentPane.displayName = 'PreloadDocumentPane'
