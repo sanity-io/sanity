@@ -15,6 +15,12 @@
  * The control (module-constant paths array) renders a handful of times and
  * settles.
  *
+ * Version-linked: under react-rx v4 (studio < 6.9.0) the same inline-literal
+ * case renders exactly twice and settles — the footgun was latent. Under v5
+ * (adopted in 6.9.0 via #13799 + #13814) each new identity schedules a
+ * deferred second pass that recreates the identity, closing the loop
+ * (verified by swapping the react-rx resolution to 4.2.5 and re-running).
+ *
  * Mounted via a raw createRoot with IS_REACT_ACT_ENVIRONMENT disabled: act
  * would flush and mask the loop's scheduling.
  */
