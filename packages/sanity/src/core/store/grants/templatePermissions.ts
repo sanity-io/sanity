@@ -10,6 +10,7 @@ import {type InitialValueTemplateItem, type Template} from '../../templates/type
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {type PartialExcept} from '../../util/PartialExcept'
+import {useShallowUnique} from '../../util/useShallowUnique'
 import {useGrantsStore} from '../datastores'
 import {useInitialValueResolverContext} from '../document/useInitialValue'
 import {getDocumentValuePermissions} from './documentValuePermissions'
@@ -176,7 +177,7 @@ export const useTemplatePermissionsFromHookFactory =
 
 /** @internal */
 export function useTemplatePermissions({
-  templateItems,
+  templateItems: unstableTemplateItems,
   ...rest
 }: PartialExcept<TemplatePermissionsOptions, 'templateItems'>): ReturnType<
   typeof useTemplatePermissionsFromHookFactory
@@ -185,6 +186,10 @@ export function useTemplatePermissions({
   const templates = useTemplates()
   const grantsStore = useGrantsStore()
   const initialValueContext = useInitialValueResolverContext()
+  // Keyed on contents: `templateItems` is often a freshly built array (map/
+  // filter results), and its reference feeds the observable identity below —
+  // per-render identities are loop-capable under react-rx v5.
+  const templateItems = useShallowUnique(unstableTemplateItems)
 
   return useTemplatePermissionsFromHookFactory(
     useMemo(

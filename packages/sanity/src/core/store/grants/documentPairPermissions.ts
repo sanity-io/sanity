@@ -11,6 +11,7 @@ import {createHookFromObservableFactory} from '../../util/createHookFromObservab
 import {getDraftId, getPublishedId, getIdPair} from '../../util/draftUtils'
 import {type PartialExcept} from '../../util/PartialExcept'
 import {shallowEquals} from '../../util/shallowEquals'
+import {useShallowUnique} from '../../util/useShallowUnique'
 import {useGrantsStore} from '../datastores'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {type DocumentStoreExtraOptions} from '../document/getPairListener'
@@ -355,7 +356,7 @@ export function useDocumentPairPermissions({
   client: overrideClient,
   schema: overrideSchema,
   grantsStore: overrideGrantsStore,
-  pairListenerOptions,
+  pairListenerOptions: unstablePairListenerOptions,
 }: PartialExcept<DocumentPairPermissionsOptions, 'id' | 'type' | 'permission'>): ReturnType<
   typeof useDocumentPairPermissionsFromHookFactory
 > {
@@ -363,6 +364,10 @@ export function useDocumentPairPermissions({
   const defaultSchema = useSchema()
   const defaultGrantsStore = useGrantsStore()
   const currentUser = useCurrentUser()
+  // Keyed on contents: an inline options object would otherwise feed a fresh
+  // reference into the observable identity below on every render, which is
+  // loop-capable under react-rx v5.
+  const pairListenerOptions = useShallowUnique(unstablePairListenerOptions)
 
   const client = useMemo(() => overrideClient || defaultClient, [defaultClient, overrideClient])
   const schema = useMemo(() => overrideSchema || defaultSchema, [defaultSchema, overrideSchema])

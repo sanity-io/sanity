@@ -15,6 +15,7 @@ import {
 } from 'rxjs'
 
 import {useClient} from '../../../../hooks/useClient'
+import {useShallowUnique} from '../../../../util/useShallowUnique'
 import {type MediaLibrary} from '../types'
 
 type ErrorCode = 'ERROR_NO_ORGANIZATION_FOUND' | 'ERROR_NO_LIBRARY_FOUND'
@@ -116,14 +117,19 @@ export type useEnsureMediaLibraryProps =
     }
 
 export function useEnsureMediaLibrary(
-  props: useEnsureMediaLibraryProps,
+  unstableProps: useEnsureMediaLibraryProps,
 ): EnsureMediaLibraryResponse {
-  if (props.from === 'library' && !props.libraryId) {
+  if (unstableProps.from === 'library' && !unstableProps.libraryId) {
     throw new Error('libraryId is required to fetch organizationId')
   }
-  if (props.from === 'project' && !props.projectId) {
+  if (unstableProps.from === 'project' && !unstableProps.projectId) {
     throw new Error('projectId is required to fetch organizationId')
   }
+
+  // Keyed on contents: callers pass this options object inline, and its
+  // reference feeds the observable identity below — a rebuilt-but-equal
+  // object would re-run the provisioning requests.
+  const props = useShallowUnique(unstableProps)
 
   const client = useClient({apiVersion: 'v2025-02-19'}).observable
   const observable = useMemo(() => {

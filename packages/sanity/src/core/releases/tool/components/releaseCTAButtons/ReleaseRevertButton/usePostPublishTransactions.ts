@@ -5,11 +5,15 @@ import {catchError, from, map, of} from 'rxjs'
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionsLogs'
 import {getPublishedId} from '../../../../../util/draftUtils'
+import {useShallowUnique} from '../../../../../util/useShallowUnique'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../util/releasesClient'
 import {type DocumentInRelease} from '../../../detail/types'
 
-export const usePostPublishTransactions = (documents: DocumentInRelease[]) => {
+export const usePostPublishTransactions = (unstableDocuments: DocumentInRelease[]) => {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
+  // Keyed on contents so a rebuilt-but-equal array does not refetch the
+  // transaction log (the observable identity below feeds react-rx).
+  const documents = useShallowUnique(unstableDocuments)
   const transactionId = documents[0]?.document._rev
 
   const memoHasPostPublishTransactions = useMemo(() => {

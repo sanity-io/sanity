@@ -17,6 +17,7 @@ import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../../store/datastores'
 import {useSource} from '../../../studio/source'
 import {schedulerYield} from '../../../util/schedulerYield'
+import {useShallowUnique} from '../../../util/useShallowUnique'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
 
@@ -261,11 +262,17 @@ export function useBundleDocuments(options: {
   results: BundleDocument[]
   error: null | Error
 } {
-  const {groqFilter, params, cacheKey, skipValidation, enabled = true} = options
+  const {groqFilter, cacheKey, skipValidation, enabled = true} = options
   const documentPreviewStore = useDocumentPreviewStore()
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {getClient, i18n, currentUser} = useSource()
+  const {getClient, i18n, currentUser: unstableCurrentUser} = useSource()
   const schema = useSchema()
+  // Keyed on contents: `params` is naturally passed as an inline object
+  // literal, and its reference feeds the observable identity below — a fresh
+  // identity per render is loop-capable under react-rx v5. Same guard for
+  // `currentUser`, whose rebuilds re-run validation for every document.
+  const params = useShallowUnique(options.params)
+  const currentUser = useShallowUnique(unstableCurrentUser)
 
   const bundleDocumentsObservable = useMemo(
     () =>
