@@ -1,5 +1,6 @@
 /**
  * Reproduction schema for https://linear.app/sanity/issue/SAPP-4084
+ * and the customer report in https://linear.app/sanity/issue/SAPP-3960
  *
  * Issue: `url`, `number`, and `array` fields crash at render when their
  * `validation` is a two-argument function `(rule, context) => ...`:
@@ -13,16 +14,18 @@
  * Manual repro:
  * 1. Structure → Inputs → Debug → Two-arg validation repro (SAPP-4084).
  * 2. Create a new document.
- * 3. `url`, `number`, and `array` fields show a red "An error occurred" box.
- * 4. `string` control field renders normally.
+ * 3. `url`, `number`, and `array` fields should render (they used to show a
+ *    red "An error occurred" box). The `string` control field is the baseline.
+ * 4. Toggle "Hide fields" to confirm skip/required two-arg validation on url
+ *    still hides and skips the same way as string (SAPP-3960).
  */
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const twoArgValidationRepro = defineType({
   name: 'twoArgValidationRepro',
   type: 'document',
-  title: 'Two-arg validation repro (SAPP-4084)',
-  description: 'url/number/array fields crash when validation uses (rule, context) => ...',
+  title: 'Two-arg validation repro (SAPP-4084 / SAPP-3960)',
+  description: 'url/number/array fields used to crash when validation uses (rule, context) => ...',
   fields: [
     defineField({
       name: 'title',
@@ -37,23 +40,42 @@ export const twoArgValidationRepro = defineType({
       title: 'How to reproduce',
       readOnly: true,
       initialValue:
-        'The url, number, and array fields below use two-argument validation and crash at render. The string control field uses the same pattern but works.',
+        'The url, number, and array fields below use two-argument validation and used to crash at render. Toggle Hide fields to exercise skip/required on url vs string (SAPP-3960).',
+    }),
+
+    defineField({
+      name: 'hideFields',
+      type: 'boolean',
+      title: 'Hide fields',
+      description:
+        'When true, the skip/required url and string fields below should hide and skip validation (SAPP-3960).',
+      initialValue: false,
     }),
 
     defineField({
       name: 'link',
       type: 'url',
-      title: 'URL (two-arg validation — crashes)',
+      title: 'URL (two-arg validation)',
       description:
-        'Two-argument validation on url fields triggers getValidationRule during render.',
+        'Two-argument validation on url fields used to crash getValidationRule during render.',
       validation: (rule, context) =>
         context?.hidden ? rule.skip() : rule.required().uri({scheme: ['https']}),
     }),
 
     defineField({
+      name: 'conditionalUrl',
+      type: 'url',
+      title: 'URL skip/required (SAPP-3960)',
+      description:
+        'Exact customer pattern: two-arg skip/required plus hidden. Used to throw inferFromSchema.',
+      hidden: ({parent}) => parent?.hideFields === true,
+      validation: (rule, context) => (context?.hidden ? rule.skip() : rule.required()),
+    }),
+
+    defineField({
       name: 'amount',
       type: 'number',
-      title: 'Number (two-arg validation — crashes)',
+      title: 'Number (two-arg validation)',
       description:
         'Two-argument validation on number fields triggers getValidationRule during render.',
       validation: (rule, context) => (context?.hidden ? rule.skip() : rule.required().min(1)),
@@ -62,7 +84,7 @@ export const twoArgValidationRepro = defineType({
     defineField({
       name: 'tags',
       type: 'array',
-      title: 'Array (two-arg validation — crashes)',
+      title: 'Array (two-arg validation)',
       description:
         'Two-argument validation on array fields triggers getValidationRule during render.',
       of: [defineArrayMember({type: 'string'})],
@@ -72,9 +94,9 @@ export const twoArgValidationRepro = defineType({
     defineField({
       name: 'label',
       type: 'string',
-      title: 'String control (two-arg validation — works)',
-      description:
-        'Same two-argument pattern on string; StringInput never reads validation rules at render.',
+      title: 'String skip/required (SAPP-3960 control)',
+      description: 'Same skip/required + hidden pattern on string, which never crashed at render.',
+      hidden: ({parent}) => parent?.hideFields === true,
       validation: (rule, context) => (context?.hidden ? rule.skip() : rule.required().min(1)),
     }),
   ],
@@ -83,7 +105,7 @@ export const twoArgValidationRepro = defineType({
     prepare({title}) {
       return {
         title: title || 'Two-arg validation repro',
-        subtitle: 'SAPP-4084',
+        subtitle: 'SAPP-4084 / SAPP-3960',
       }
     },
   },
