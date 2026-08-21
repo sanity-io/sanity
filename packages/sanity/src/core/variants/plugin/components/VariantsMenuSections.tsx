@@ -8,7 +8,7 @@ import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {stickyMenuHeadingStyle} from '../../../perspective/styles'
-import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
+import {useDocumentVariantIds} from '../../hooks/useDocumentVariantIds'
 import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
@@ -128,16 +128,7 @@ function DocumentVariantSections({
   onSelect,
 }: SectionsProps & {documentId: string}): React.JSX.Element | null {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const {versions} = useDocumentVersions({documentId})
-
-  // A variant version of a document is identified by `_system.variant`, not by
-  // anything in its id — see `getVariantVersionInfo`.
-  const documentVariantIds = useMemo(() => {
-    const refs = versions
-      .map((version) => version._system.variant?._ref)
-      .filter((ref): ref is string => typeof ref === 'string')
-    return new Set(refs)
-  }, [versions])
+  const documentVariantIds = useDocumentVariantIds(documentId)
 
   const [has, others] = useMemo(
     () => [
