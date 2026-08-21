@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {useDocumentPairPermissionsMockReturn} from '../../../../../../../test/mocks/useDocumentPairPermissions.mock'
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../../test/testUtils/flushMicrotasks'
@@ -36,6 +36,12 @@ const discardChangesAction: DocumentActionComponent = Object.assign(() => null, 
 })
 
 describe('VersionContextMenu', () => {
+  // `defaultProps` holds shared `vi.fn()`s, so without this a test asserting on one of them can
+  // pass on a call an earlier test made.
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   const mockReleases: ReleaseDocument[] = [
     {
       _id: '_.releases.release1',
@@ -355,7 +361,7 @@ describe('VersionContextMenu', () => {
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
 
-  it('calls onCreateVersion when a release is clicked and sets the perspective to the release', async () => {
+  it('calls onCreateVersion with the target release when a release is clicked', async () => {
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
     const wrapper = await createTestProvider()
@@ -372,7 +378,7 @@ describe('VersionContextMenu', () => {
     await userEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
 
     await userEvent.click(screen.getByText('Release 2'))
-    expect(defaultProps.onCreateRelease).toHaveBeenCalled()
+    expect(defaultProps.onCreateVersion).toHaveBeenCalledWith('_.releases.release2')
   })
 
   it('disables the copy version to option if the document is going to be unpublished', async () => {
