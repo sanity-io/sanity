@@ -3,13 +3,35 @@
 Validates complete Sanity documents against a compiled Sanity schema.
 
 ```ts
-import {validateDocument} from '@sanity/validation'
+import {validateDocument, validationMarkerCodes} from '@sanity/validation'
 
 const markers = await validateDocument({document, schema, client})
+
+for (const marker of markers) {
+  if (marker.code === validationMarkerCodes.stringMinimumLength) {
+    console.log(
+      `Expected at least ${marker.details?.minimumLength} characters, got ${marker.details?.actualLength}`,
+    )
+  }
+}
+
+const summary = markers
+  .map((marker) => {
+    const path = marker.path
+      .map((segment) => (typeof segment === 'object' ? segment._key : segment))
+      .join('.')
+
+    return `[${marker.level}] ${path || '<document>'}: ${marker.message} (${marker.code})`
+  })
+  .join('\n')
 ```
 
-The package reports validation markers. It does not apply mutations or decide whether a document
-may be edited or published.
+Every returned marker includes a stable machine-readable `code` alongside its localized `message`,
+`level`, and `path`. Built-in failures may also include structured `details`. Custom validators can
+return their own `code` and `details`; custom codes should be namespaced, for example
+`custom.seo-title`.
+
+The package does not apply mutations or decide whether a document may be edited or published.
 
 ## Migrating from `sanity`
 

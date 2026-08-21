@@ -17,6 +17,7 @@ import uniqBy from 'lodash-es/uniqBy.js'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
+import {type DocumentValidationMarker, validationMarkerCodes} from './codes'
 import {getFallbackLocaleSource} from './i18n/fallback'
 import {type LocaleSource} from './i18n/types'
 import {resolveConditionalProperty} from './resolveConditionalProperty'
@@ -122,10 +123,10 @@ export interface ValidateDocumentOptions {
    */
   document: SanityDocument
   /** The compiled schema to validate against. */
-  schema: Schema
+  schema: ValidationSchema
 
   /** A configured client used for reference checks and custom validators. */
-  client: SanityClient
+  client: ValidationClient
 
   /**
    * Function used to check if referenced documents exists (and is published).
@@ -166,6 +167,16 @@ export interface ValidateDocumentOptions {
    * is resolved with no user (e.g. CLI or headless validation).
    */
   currentUser?: Omit<CurrentUser, 'role'> | null
+}
+
+/** A compiled schema accepted across compatible `@sanity/types` versions. @beta */
+export interface ValidationSchema {
+  get(name: string): unknown
+}
+
+/** A configured Sanity client accepted across compatible client versions. @beta */
+export interface ValidationClient {
+  withConfig(config: {apiVersion: string}): unknown
 }
 
 /**
@@ -222,7 +233,7 @@ export function validateDocumentWithWorkspace({
   maxCustomValidationConcurrency,
   maxFetchConcurrency,
   currentUser,
-}: ValidateDocumentWorkspaceOptions): Promise<ValidationMarker[]> {
+}: ValidateDocumentWorkspaceOptions): Promise<DocumentValidationMarker[]> {
   return validateDocumentInternal({
     currentUser,
     document,
@@ -233,7 +244,7 @@ export function validateDocumentWithWorkspace({
     maxCustomValidationConcurrency,
     maxFetchConcurrency,
     schema: workspace.schema,
-  })
+  }) as Promise<DocumentValidationMarker[]>
 }
 
 /**
@@ -246,17 +257,19 @@ export function validateDocumentWithWorkspace({
  */
 export function validateDocument(
   options: ValidateDocumentWorkspaceOptions,
-): Promise<ValidationMarker[]>
+): Promise<DocumentValidationMarker[]>
 /**
  * Validates a document against a compiled schema. Returns validation markers
  * without deciding whether the document may be edited or published.
  *
  * @beta
  */
-export function validateDocument(options: ValidateDocumentOptions): Promise<ValidationMarker[]>
+export function validateDocument(
+  options: ValidateDocumentOptions,
+): Promise<DocumentValidationMarker[]>
 export function validateDocument(
   options: ValidateDocumentOptions | ValidateDocumentWorkspaceOptions,
-): Promise<ValidationMarker[]> {
+): Promise<DocumentValidationMarker[]> {
   if ('workspace' in options) {
     return validateDocumentWithWorkspace(options)
   }
@@ -266,10 +279,12 @@ export function validateDocument(
     ...internalOptions,
     document,
     environment: 'cli',
-    getClient: ({apiVersion}) => client.withConfig({apiVersion}),
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- runtime-compatible clients may come from another major
+    getClient: ({apiVersion}) => client.withConfig({apiVersion}) as SanityClient,
     i18n: getFallbackLocaleSource(),
-    schema,
-  })
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- compiled schemas may come from another compatible package version
+    schema: schema as Schema,
+  }) as Promise<DocumentValidationMarker[]>
 }
 
 /** @internal */
@@ -367,6 +382,8 @@ export function validateDocumentObservable({
 
     return of([
       {
+        code: validationMarkerCodes.documentUnknownType,
+        details: {documentType: document._type},
         level: 'warning',
         message: `Could not find schema type for type '${document._type}', skipping validation`,
         path: [],
@@ -404,6 +421,7 @@ export function validateDocumentObservable({
 
       const message = err?.message || 'Unknown error'
       const errorMarker: ValidationMarker = {
+        code: validationMarkerCodes.validationException,
         level: 'error',
         message,
         item: {message},

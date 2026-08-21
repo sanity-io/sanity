@@ -5,6 +5,7 @@ import {
   type Validators,
 } from '@sanity/types'
 
+import {validationMarkerCodes} from '../codes'
 import {deepEqualsIgnoreKey} from '../util/deepEqualsIgnoreKey'
 import {genericValidators} from './genericValidator'
 
@@ -17,7 +18,11 @@ export const arrayValidators: Validators = {
     }
 
     const context = isArrayOfBlocksSchemaType(type) ? 'blocks' : undefined
-    return message || i18n.t('validation:array.minimum-length', {minLength, context})
+    return {
+      code: validationMarkerCodes.arrayMinimumLength,
+      details: {actualLength: value.length, minimumLength: minLength},
+      message: message || i18n.t('validation:array.minimum-length', {minLength, context}),
+    }
   },
 
   max: (maxLength, value, message, {i18n, type}) => {
@@ -26,7 +31,11 @@ export const arrayValidators: Validators = {
     }
 
     const context = isArrayOfBlocksSchemaType(type) ? 'blocks' : undefined
-    return message || i18n.t('validation:array.maximum-length', {maxLength, context})
+    return {
+      code: validationMarkerCodes.arrayMaximumLength,
+      details: {actualLength: value.length, maximumLength: maxLength},
+      message: message || i18n.t('validation:array.maximum-length', {maxLength, context}),
+    }
   },
 
   length: (wantedLength, value, message, {i18n, type}) => {
@@ -35,12 +44,19 @@ export const arrayValidators: Validators = {
     }
 
     const context = isArrayOfBlocksSchemaType(type) ? 'blocks' : undefined
-    return message || i18n.t('validation:array.exact-length', {wantedLength, context})
+    return {
+      code: validationMarkerCodes.arrayExactLength,
+      details: {actualLength: value.length, expectedLength: wantedLength},
+      message: message || i18n.t('validation:array.exact-length', {wantedLength, context}),
+    }
   },
 
   presence: (flag, value, message, {i18n}) => {
     if (flag === 'required' && !value) {
-      return message || i18n.t('validation:generic.required', {context: 'array'})
+      return {
+        code: validationMarkerCodes.valueRequired,
+        message: message || i18n.t('validation:generic.required', {context: 'array'}),
+      }
     }
 
     return true
@@ -66,7 +82,12 @@ export const arrayValidators: Validators = {
     // we emit the same message for each path we find in this array
     const sharedMessage = message || i18n.t('validation:generic.not-allowed')
 
-    return paths.map((path) => ({message: sharedMessage, path}))
+    return paths.map((path) => ({
+      code: validationMarkerCodes.valueNotAllowed,
+      details: {allowedValues},
+      message: sharedMessage,
+      path,
+    }))
   },
 
   unique: (_unused, value, message, {i18n}) => {
@@ -103,6 +124,10 @@ export const arrayValidators: Validators = {
     // we emit the same message for each path we find in this array
     const sharedMessage = message || i18n.t('validation:array.item-duplicate')
 
-    return paths.map((path) => ({message: sharedMessage, path}))
+    return paths.map((path) => ({
+      code: validationMarkerCodes.arrayDuplicateItem,
+      message: sharedMessage,
+      path,
+    }))
   },
 }

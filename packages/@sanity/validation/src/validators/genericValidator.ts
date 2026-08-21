@@ -1,6 +1,7 @@
 /* oxlint-disable typescript/no-deprecated -- marker compatibility requires the legacy item field */
-import {type ValidationMarker, type Validators} from '@sanity/types'
+import {type ValidationError, type ValidationMarker, type Validators} from '@sanity/types'
 
+import {validationMarkerCodes} from '../codes'
 import {type LocaleSource} from '../i18n/types'
 import {deepEqualsIgnoreKey} from '../util/deepEqualsIgnoreKey'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
@@ -14,22 +15,43 @@ const formatValidationErrors = (options: {
   results: ValidationMarker[]
   operation: 'conjunction' | 'disjunction'
   i18n: LocaleSource
-}) => {
-  if (options.message) return options.message
-  if (options.results.length === 1) return options.results[0]?.message
+}): ValidationError => {
+  const message =
+    options.message ||
+    (options.results.length === 1
+      ? options.results[0]?.message
+      : // Intentionally hard-coded to use locale conjunction/disjunctions
+        options.i18n.t('{{messages, list}}', {
+          messages: options.results.map((err) => err.message || err.item?.message),
+          formatParams: {messages: {style: 'long', type: options.operation}},
+        }))
 
-  // Intentionally hard-coded to use locale conjunction/disjunctions
-  return options.i18n.t('{{messages, list}}', {
-    messages: options.results.map((err) => err.message || err.item?.message),
-    formatParams: {messages: {style: 'long', type: options.operation}},
-  })
+  return {
+    code:
+      options.operation === 'conjunction'
+        ? validationMarkerCodes.ruleAllFailed
+        : validationMarkerCodes.ruleEitherFailed,
+    details: {
+      causes: options.results.map(({code, details, message: causeMessage, path}) => ({
+        code,
+        details,
+        message: causeMessage,
+        path,
+      })),
+    },
+    message: message || 'Validation failed',
+  }
 }
 
 export const genericValidators: Validators = {
   type: (expectedType, value, message, {i18n}) => {
     const actualType = typeString(value)
     if (actualType !== expectedType && actualType !== 'undefined') {
-      return message || i18n.t('validation:generic.incorrect-type', {actualType, expectedType})
+      return {
+        code: validationMarkerCodes.valueTypeMismatch,
+        details: {actualType, expectedType},
+        message: message || i18n.t('validation:generic.incorrect-type', {actualType, expectedType}),
+      }
     }
 
     return true
@@ -37,7 +59,10 @@ export const genericValidators: Validators = {
 
   presence: (expected, value, message, {i18n}) => {
     if (value === undefined && expected === 'required') {
-      return message || i18n.t('validation:generic.required')
+      return {
+        code: validationMarkerCodes.valueRequired,
+        message: message || i18n.t('validation:generic.required'),
+      }
     }
 
     return true
@@ -85,13 +110,20 @@ export const genericValidators: Validators = {
     const value = (valueType === 'number' || valueType === 'string') && `${actual}`
     const strValue = value && value.length > 30 ? `${value.slice(0, 30)}…` : value
 
-    return allowedValues.some((expected) => deepEqualsIgnoreKey(expected, actual))
-      ? true
-      : message ||
-          i18n.t(
-            'validation:generic.not-allowed',
-            value ? {context: 'hint', replace: {hint: strValue}} : {},
-          )
+    if (allowedValues.some((expected) => deepEqualsIgnoreKey(expected, actual))) {
+      return true
+    }
+
+    return {
+      code: validationMarkerCodes.valueNotAllowed,
+      details: {allowedValues},
+      message:
+        message ||
+        i18n.t(
+          'validation:generic.not-allowed',
+          value ? {context: 'hint', replace: {hint: strValue}} : {},
+        ),
+    }
   },
 
   custom: async (fn, value, message, context) => {

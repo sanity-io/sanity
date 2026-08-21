@@ -5,7 +5,7 @@ import {type Rule, type SanityDocument, type SchemaTypeDefinition} from '@sanity
 import {of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
-import {validateDocument, validateDocumentWithWorkspace} from '../src'
+import {validateDocument, validateDocumentWithWorkspace, validationMarkerCodes} from '../src'
 import {getFallbackLocaleSource} from '../src/_internal'
 
 const builtinSchema = SchemaBuilder.compile({name: 'studio', types: builtinTypes})
@@ -123,11 +123,15 @@ describe('validateDocument', () => {
     expect(markers).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
+          code: validationMarkerCodes.stringMinimumLength,
+          details: {actualLength: 5, minimumLength: 80},
           level: 'error',
           message: 'Must be at least 80 characters long',
           path: ['title'],
         }),
         expect.objectContaining({
+          code: validationMarkerCodes.objectUnknownField,
+          details: {fieldName: 'unexpected', typeName: 'article'},
           level: 'warning',
           message: "Field 'unexpected' does not exist on type 'article'",
           path: ['unexpected'],
@@ -135,6 +139,155 @@ describe('validateDocument', () => {
       ]),
     )
     expect(document).toEqual(before)
+    expect(markers.every((marker) => typeof marker.code === 'string')).toBe(true)
+  })
+
+  it('preserves custom codes and details and defaults uncoded custom failures', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'coded',
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.custom(() => ({
+                code: 'custom.reserved-title',
+                details: {reservedTitle: 'Reserved'},
+                message: 'This title is reserved',
+              })),
+          },
+          {
+            name: 'uncoded',
+            type: 'string',
+            validation: (rule: Rule) => rule.custom(() => 'Custom failure'),
+          },
+          {
+            name: 'localized',
+            type: 'string',
+            validation: (rule: Rule) => rule.custom(() => ({'en-US': 'Localized custom failure'})),
+          },
+        ],
+      },
+    ])
+    const {client} = createMockClient()
+
+    const markers = await validateDocument({
+      client,
+      document: createDocument({
+        _type: 'article',
+        coded: 'Reserved',
+        localized: 'invalid',
+        uncoded: 'invalid',
+      }),
+      schema,
+    })
+
+    expect(markers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: 'custom.reserved-title',
+          details: {reservedTitle: 'Reserved'},
+          message: 'This title is reserved',
+          path: ['coded'],
+        }),
+        expect.objectContaining({
+          code: validationMarkerCodes.custom,
+          message: 'Custom failure',
+          path: ['uncoded'],
+        }),
+        expect.objectContaining({
+          code: validationMarkerCodes.custom,
+          message: 'Localized custom failure',
+          path: ['localized'],
+        }),
+      ]),
+    )
+  })
+
+  it('codes exceptions thrown by custom validators', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.custom(() => {
+                throw new Error('Custom validator failed')
+              }),
+          },
+        ],
+      },
+    ])
+    const {client} = createMockClient()
+
+    await expect(
+      validateDocument({
+        client,
+        document: createDocument({_type: 'article', title: 'Title'}),
+        schema,
+      }),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        code: validationMarkerCodes.validationException,
+        message: expect.stringContaining('Custom validator failed'),
+        path: ['title'],
+      }),
+    ])
+  })
+
+  it('keeps built-in metadata when a rule overrides the message', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) => rule.min(10).error('Use a longer title'),
+          },
+        ],
+      },
+    ])
+    const {client} = createMockClient()
+
+    await expect(
+      validateDocument({
+        client,
+        document: createDocument({_type: 'article', title: 'Short'}),
+        schema,
+      }),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        code: validationMarkerCodes.stringMinimumLength,
+        details: {actualLength: 5, minimumLength: 10},
+        message: 'Use a longer title',
+      }),
+    ])
+  })
+
+  it('returns a coded marker for an unknown document type', async () => {
+    const schema = createSchema([])
+    const {client} = createMockClient()
+
+    await expect(
+      validateDocument({
+        client,
+        document: createDocument({_type: 'missing'}),
+        schema,
+      }),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        code: validationMarkerCodes.documentUnknownType,
+        details: {documentType: 'missing'},
+        level: 'warning',
+      }),
+    ])
   })
 
   it('provides the configured client to executable custom validators', async () => {
@@ -257,6 +410,8 @@ describe('validateDocument', () => {
 
     expect(markers).toEqual([
       expect.objectContaining({
+        code: validationMarkerCodes.referenceNotPublished,
+        details: {referenceId: 'author-id'},
         level: 'error',
         message: 'Referenced document must be published',
         path: ['author'],
