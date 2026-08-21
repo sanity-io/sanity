@@ -117,4 +117,3 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
 }
 
 useUnpublishVersionAction.action = 'unpublishVersion'
-useUnpublishVersionAction.displayName = 'UnpublishVersionAction'

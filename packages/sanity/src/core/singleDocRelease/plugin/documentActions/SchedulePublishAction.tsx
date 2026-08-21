@@ -182,4 +182,3 @@ export const useSchedulePublishAction: DocumentActionComponent = (
 }
 
 useSchedulePublishAction.action = 'schedule'
-useSchedulePublishAction.displayName = 'SchedulePublishAction'

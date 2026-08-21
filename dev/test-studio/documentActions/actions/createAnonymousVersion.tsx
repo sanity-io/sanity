@@ -106,5 +106,3 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
     },
   } satisfies DocumentActionDescription
 }
-
-useCreateAnonymousVersion.displayName = 'CreateAnonymousVersion'

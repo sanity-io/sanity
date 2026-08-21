@@ -11,6 +11,5 @@ export const createTestCustomRestoreAction: (
   }
 
   useCustomRestoreAction.action = useOriginalAction.action
-  useCustomRestoreAction.displayName = 'CustomRestoreAction'
   return useCustomRestoreAction
 })

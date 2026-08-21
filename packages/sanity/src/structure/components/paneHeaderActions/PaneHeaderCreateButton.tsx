@@ -170,9 +170,6 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
               )
             }
 
-            // oxlint-disable-next-line react/immutability -- displayName assignment on render-local component
-            Link.displayName = 'Link'
-
             const {title} = getI18nText({
               ...item,
               // replace the title with the template title

@@ -25,7 +25,6 @@ const HookCollectionStateComponent = <Args, State>({
     [args, hooks, handleNext],
   )
 }
-HookCollectionStateComponent.displayName = 'HookCollectionState'
 
 /** @internal */
 export const HookCollectionState = memo(

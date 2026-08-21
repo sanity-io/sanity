@@ -84,4 +84,3 @@ export const useUnlinkFromCanvasAction: DocumentActionComponent = (props: Docume
 }
 
 useUnlinkFromCanvasAction.action = 'unlinkFromCanvas'
-useUnlinkFromCanvasAction.displayName = 'UnlinkFromCanvasAction'

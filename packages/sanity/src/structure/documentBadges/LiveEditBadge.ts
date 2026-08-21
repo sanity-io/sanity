@@ -14,4 +14,3 @@ export const useLiveEditBadge: DocumentBadgeComponent = (props) => {
 
   return null
 }
-useLiveEditBadge.displayName = 'LiveEditBadge'

@@ -153,4 +153,3 @@ export const useUnpublishAction: DocumentActionComponent = ({
 }
 
 useUnpublishAction.action = 'unpublish'
-useUnpublishAction.displayName = 'UnpublishAction'

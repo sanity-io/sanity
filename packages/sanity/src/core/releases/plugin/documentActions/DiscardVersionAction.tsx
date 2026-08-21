@@ -83,4 +83,3 @@ export const useDiscardVersionAction: DocumentActionComponent = (
 }
 
 useDiscardVersionAction.action = 'discardVersion'
-useDiscardVersionAction.displayName = 'DiscardVersionAction'

@@ -334,4 +334,3 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 }
 
 usePublishAction.action = 'publish'
-usePublishAction.displayName = 'PublishAction'

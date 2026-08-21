@@ -50,8 +50,6 @@ const ToolPreview = (props: Props) => {
         />
       )
     }
-    // oxlint-disable-next-line react/immutability -- displayName assignment on render-local component
-    Component.displayName = 'LinkComponent'
     return Component
   }, [schemaType, visibleDocument])
 

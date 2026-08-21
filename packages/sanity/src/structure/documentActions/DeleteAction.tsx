@@ -187,4 +187,3 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft}) => {
 }
 
 useDeleteAction.action = 'delete'
-useDeleteAction.displayName = 'DeleteAction'

@@ -38,5 +38,3 @@ export const useTestPopoverDialogAction: DocumentActionComponent = () => {
     onHandle: handleOpen,
   } satisfies DocumentActionDescription
 }
-
-useTestPopoverDialogAction.displayName = 'TestPopoverDialogAction'

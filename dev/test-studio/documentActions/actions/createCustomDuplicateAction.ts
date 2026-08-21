@@ -12,7 +12,6 @@ export const createCustomDuplicateAction = memoize(
         }),
       })
     }
-    useCustomDuplicateAction.displayName = 'CustomDuplicateAction'
     return useCustomDuplicateAction
   },
 )

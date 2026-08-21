@@ -28,8 +28,6 @@ export function IntentButton(
         />
       )
     }
-    // oxlint-disable-next-line react/immutability -- displayName assignment on render-local component
-    LinkComponent.displayName = 'Link'
     return LinkComponent
   }, [intent])
 

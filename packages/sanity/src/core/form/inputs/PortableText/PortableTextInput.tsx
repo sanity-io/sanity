@@ -73,7 +73,7 @@ function keyGenerator() {
  * the public `editorRef` prop's contract.
  */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const LegacyEditorRefPlugin = (props: RefAttributes<PortableTextEditor | null>) => {
+function LegacyEditorRefPlugin(props: RefAttributes<PortableTextEditor | null>) {
   const {ref} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const portableTextEditor = usePortableTextEditor()
@@ -82,13 +82,12 @@ const LegacyEditorRefPlugin = (props: RefAttributes<PortableTextEditor | null>) 
 
   return null
 }
-LegacyEditorRefPlugin.displayName = 'LegacyEditorRefPlugin'
 
 /**
  * Captures the editor instance so callbacks defined outside
  * `EditorProvider` can take snapshots.
  */
-const EditorRefPlugin = (props: RefAttributes<Editor | null>) => {
+function EditorRefPlugin(props: RefAttributes<Editor | null>) {
   const {ref} = props
   const editor = useEditor()
 
@@ -96,7 +95,6 @@ const EditorRefPlugin = (props: RefAttributes<Editor | null>) => {
 
   return null
 }
-EditorRefPlugin.displayName = 'EditorRefPlugin'
 
 /** @internal */
 export interface PortableTextMemberItem {
