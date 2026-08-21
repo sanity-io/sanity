@@ -124,7 +124,7 @@ export function useManageFavorite({
   // Kept synchronous: favorite()/unfavorite() push an optimistic SET into
   // this stream so the toggle reflects the click immediately; deferring the
   // state would make the control lag its own interaction.
-  const state = useSyncObservable(stateController.state)
+  const state = useSyncObservable(stateController.state, undefined)
 
   return {
     favorite: useCallback(() => stateController.setState(true), [stateController]),

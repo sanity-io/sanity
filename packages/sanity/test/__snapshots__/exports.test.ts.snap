@@ -664,6 +664,7 @@ exports[`exports snapshot 1`] = `
     "useMiddlewareComponents": "function",
     "useNavigateToCanvasDoc": "function",
     "useNumberFormat": "function",
+    "useObservableEvent": "function",
     "useOnScroll": "function",
     "useOnlyHasVersions": "function",
     "useParseErrorForPath": "function",

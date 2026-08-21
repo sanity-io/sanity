@@ -4,6 +4,8 @@ import {debounce, distinctUntilChanged, merge, share, shareReplay, skip, take, t
 
 import {useDocumentStore} from '../store/datastores'
 import {type EditStateFor} from '../store/document/document-pair/editState'
+import {isLiveEditEnabled} from '../store/document/document-pair/utils/isLiveEditEnabled'
+import {useSchema} from './useSchema'
 
 // Snapshot refs (draft/published/version) are preserved upstream when content
 // hasn't changed, so ref equality on those + ready + transactionSyncLock catches
@@ -26,6 +28,28 @@ export function useEditState(
     throw new Error('Version cannot be published or draft')
   }
   const documentStore = useDocumentStore()
+  const schema = useSchema()
+
+  // Mirrors the cold-start `startWith` emission of the `editState` store observable: it renders
+  // on the first pass, before the commit-time subscription delivers the store's own emission
+  // (react-rx v7 never subscribes during render). For a warm pair the replayed snapshot replaces
+  // it right after mount, in the same paint cycle.
+  const initialValue = useMemo((): EditStateFor => {
+    const liveEditSchemaType = isLiveEditEnabled(schema, docTypeName)
+    return {
+      id: publishedDocId,
+      type: docTypeName,
+      draft: null,
+      published: null,
+      version: null,
+      liveEdit: typeof version !== 'undefined' || liveEditSchemaType,
+      liveEditSchemaType,
+      ready: false,
+      transactionSyncLock: null,
+      release: version,
+      scopeId: version,
+    }
+  }, [docTypeName, publishedDocId, schema, version])
 
   const observable = useMemo(() => {
     const source = documentStore.pair.editState(publishedDocId, docTypeName, version)
@@ -47,9 +71,5 @@ export function useEditState(
       shareReplay({bufferSize: 1, refCount: true}),
     )
   }, [docTypeName, documentStore.pair, priority, publishedDocId, version])
-  /**
-   * We know that since the observable has a startWith operator, it will always emit a value
-   * and that's why the non-null assertion is used here
-   */
-  return useSyncObservable(observable)!
+  return useSyncObservable(observable, initialValue)
 }

@@ -1,7 +1,6 @@
 import {type Schema} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useMemo, useState} from 'react'
-import {useObservableEvent} from 'react-rx'
 import {concat, EMPTY, iif, type Observable, of, timer} from 'rxjs'
 import {
   catchError,
@@ -22,6 +21,7 @@ import {
 } from '../../../../../search/common/types'
 import {createSearch} from '../../../../../search/search'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
+import {useObservableEvent} from '../../../../../util/useObservableEvent'
 import {useWorkspace} from '../../../../workspace'
 import {type SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'

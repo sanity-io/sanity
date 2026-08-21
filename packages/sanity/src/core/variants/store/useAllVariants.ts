@@ -2,6 +2,7 @@ import {useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 
 import {type SystemVariant} from '../types'
+import {INITIAL_VARIANTS_STATE} from './createVariantsStore'
 import {useVariantsStore} from './useVariantsStore'
 
 /**
@@ -19,7 +20,7 @@ export function useAllVariants(): {
   // target scope, so a deferred snapshot could bind the form checkout to the
   // wrong variant after navigation. Executable proof:
   // perspective/__tests__/deferralSafety.test.tsx.
-  const {variants, error, state} = useSyncObservable(state$)!
+  const {variants, error, state} = useSyncObservable(state$, INITIAL_VARIANTS_STATE)
 
   return useMemo(
     () => ({

@@ -19,7 +19,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useObservableEvent} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {Box} from 'ui5'
@@ -33,6 +32,7 @@ import {type FIXME} from '../../../FIXME'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getPublishedId} from '../../../util/draftUtils'
 import {isNonNullable} from '../../../util/isNonNullable'
+import {useObservableEvent} from '../../../util/useObservableEvent'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch/patch'
 import {type ObjectInputProps} from '../../types/inputProps'

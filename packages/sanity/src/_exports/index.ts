@@ -1721,6 +1721,7 @@ export {
   type LoadingState,
   useLoadable,
 } from '../core/util/useLoadable'
+export {useObservableEvent} from '../core/util/useObservableEvent'
 export {userHasRole} from '../core/util/userHasRole'
 export {useThrottledCallback} from '../core/util/useThrottledCallback'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

@@ -193,6 +193,7 @@ function useCollateDivergencesContext({
           b: subjectHead?._id,
           client,
         }),
+    undefined,
   )
 
   const listenUpstreamHead = useMemo(() => new BehaviorSubject<SanityDocument | null>(null), [])
@@ -268,5 +269,5 @@ function useCollateDivergencesContext({
   // The subscription exists to drive the `context.next` pipeline above; the
   // returned snapshot is not consumed for rendering, so deferring it would
   // only desynchronize the pipeline.
-  return useSyncObservable(listenContext)
+  return useSyncObservable(listenContext, undefined)
 }
