@@ -295,6 +295,14 @@ const benchRun = defineType({
       type: 'object',
       fields: [
         defineField({name: 'sha', type: 'string'}),
+        defineField({
+          name: 'commit',
+          type: 'reference',
+          to: [{type: 'gitCommit'}],
+          weak: true,
+          description:
+            'Weak link to the measured commit\u2019s gitCommit document \u2014 dangles for PR-branch runs (never synced) and runs stored before the git-history sync existed. git.sha is the source of truth.',
+        }),
         defineField({name: 'branch', type: 'string'}),
         defineField({
           name: 'committedAt',
