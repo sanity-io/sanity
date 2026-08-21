@@ -8,6 +8,8 @@ import {
 } from '../types'
 import {type DocumentActionKeys} from './actions'
 
+const NO_ACTION_IDS: ReadonlySet<keyof DocumentActionKeys> = new Set()
+
 /**
  * Resolves the set of configured document action identifiers for a given
  * document context. Reflects `document.actions` filtering from the studio
@@ -17,15 +19,21 @@ import {type DocumentActionKeys} from './actions'
  * @internal
  */
 export function useConfiguredDocumentActionIds(
-  context: PartialContext<DocumentActionsContext>,
+  context: PartialContext<DocumentActionsContext> | null,
 ): ReadonlySet<keyof DocumentActionKeys> {
   // oxlint-disable-next-line no-deprecated -- deprecated for external consumers; the document pane resolves document.actions from this same source instance
   const source = useSource()
   const resolveDocumentActions = source.document.actions
 
-  const {schemaType, documentId, versionType, releaseId} = context
+  const schemaType = context?.schemaType
+  const documentId = context?.documentId
+  const versionType = context?.versionType
+  const releaseId = context?.releaseId
 
   return useMemo(() => {
+    // Resolving without an identity would hand a `ctx.schemaType` predicate an undefined value.
+    if (schemaType === undefined || versionType === undefined) return NO_ACTION_IDS
+
     const configured = resolveDocumentActions({
       schemaType,
       documentId,
