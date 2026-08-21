@@ -1,32 +1,18 @@
-import {type ReleaseDocument} from '@sanity/client'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {Box} from 'ui5'
 
-import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
+import {useDocumentVersionTitle} from '../../hooks/useDocumentVersionTitle'
 import {useRelativeTime} from '../../hooks/useRelativeTime'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {type TargetPerspective} from '../../perspective/types'
-import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
-import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
-import {LATEST, PUBLISHED} from '../../releases/util/const'
-import {useAgentBundles} from '../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../studio/workspace'
-import {readVersionType} from '../../util/versionsUtils'
-import {getVersionFilterLabel} from '../../variants/plugin/components/getVersionFilterLabel'
 import {useAllVariants} from '../../variants/store/useAllVariants'
-import {getVariantTitle} from '../../variants/tool/util'
-import {
-  titleStack,
-  updatedAtText,
-  variantIconCard,
-  versionStatusItem,
-} from './DocumentVersionsStatus.css'
+import {DocumentVersionIcons} from './DocumentVersionIcons'
+import {titleStack, updatedAtText, versionStatusItem} from './DocumentVersionsStatus.css'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
-import {getDocumentVersionStatusTitle} from './getDocumentVersionStatusTitle'
 import {
   type DocumentVersionStatusItem,
   groupDocumentVersionsForStatus,
@@ -82,30 +68,12 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   )
 }
 
-function VersionStatus({
-  release,
-  version,
-  variant,
-  variantsEnabled,
-}: DocumentVersionStatusItem & {variantsEnabled: boolean}) {
+function VersionStatus({version}: DocumentVersionStatusItem & {variantsEnabled: boolean}) {
   const {t} = useTranslation()
   const schema = useSchema()
-  const {bundles} = useAgentBundles()
   const liveEdit = Boolean(version._type && schema.get(version._type)?.liveEdit)
 
-  const variantTitle = variant ? getVariantTitle(variant) : t('document-group.base-variant')
-
-  const releasePerspective = getReleasePerspective({release, version})
-  const {
-    displayTitle: releaseTitle,
-    fullTitle,
-    isTruncated,
-  } = getVersionFilterLabel(releasePerspective, t, bundles)
-  const title = getDocumentVersionStatusTitle({
-    variantsEnabled,
-    variantTitle,
-    releaseTitle,
-  })
+  const {title, isTruncated, fullTitle} = useDocumentVersionTitle({version})
 
   const updatedAt = useRelativeTime(version._updatedAt, {
     minimal: true,
@@ -126,37 +94,10 @@ function VersionStatus({
             {timestampLabel}
           </Text>
         </Stack>
-        <Flex align="center" flex="none" gap={1} paddingRight={2}>
-          {variantsEnabled && variant ? (
-            <Card className={variantIconCard} tone="suggest">
-              <Text size={2}>
-                <RhombusIcon />
-              </Text>
-            </Card>
-          ) : null}
-          <ReleaseAvatar fontSize={2} size="small" release={releasePerspective} padding={0} />
-        </Flex>
+        <Box paddingRight={2}>
+          <DocumentVersionIcons version={version} />
+        </Box>
       </Flex>
     </Box>
   )
-}
-
-function getReleasePerspective({
-  release,
-  version,
-}: {
-  release?: ReleaseDocument
-  version: VersionInfoDocumentStub
-}): TargetPerspective {
-  switch (readVersionType(version)) {
-    case 'draft':
-      return LATEST
-    case 'release':
-      return release ?? version._system.bundleId ?? PUBLISHED
-    case 'agent':
-      return version._system.bundleId ?? PUBLISHED
-    case 'published':
-    default:
-      return PUBLISHED
-  }
 }

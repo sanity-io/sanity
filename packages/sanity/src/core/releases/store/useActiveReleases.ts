@@ -15,6 +15,7 @@ interface ReleasesState {
   error?: Error
   loading: boolean
   dispatch: (event: ReleasesReducerAction) => void
+  byId: Map<string, ReleaseDocument>
 }
 
 /**
@@ -39,13 +40,19 @@ export function useActiveReleases(): ReleasesState {
     [state.releases],
   )
 
+  const byId = useMemo(
+    () => new Map(releasesAsArray.map((release) => [release._id, release])),
+    [releasesAsArray],
+  )
+
   return useMemo(
     () => ({
       data: releasesAsArray,
+      byId,
       dispatch,
       error: state.error,
       loading: ['loading', 'initialising'].includes(state.state),
     }),
-    [releasesAsArray, state.error, state.state, dispatch],
+    [releasesAsArray, byId, state.error, state.state, dispatch],
   )
 }

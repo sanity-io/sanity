@@ -104,6 +104,7 @@ export {ContextMenuButton} from '../core/components/contextMenuButton/ContextMen
 export {Delay} from '../core/components/Delay'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
+export {DocumentVersionIcons} from '../core/components/documentStatus/DocumentVersionIcons'
 export {DocumentVersionsStatus} from '../core/components/documentStatus/DocumentVersionsStatus'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
@@ -370,6 +371,8 @@ export {
   type DocumentGroupInventoryProps,
 } from '../core/documentGroupInventory/components/DocumentGroupInventory'
 export {DocumentGroupInventoryAction} from '../core/documentGroupInventory/components/DocumentGroupInventoryAction'
+export {DocumentGroupPicker} from '../core/documentGroupInventory/components/DocumentGroupPicker'
+export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
 export {
   type DocumentGroupInventoryPerspectiveList,
   type DocumentGroupInventoryReferencePreviewLinkProps,

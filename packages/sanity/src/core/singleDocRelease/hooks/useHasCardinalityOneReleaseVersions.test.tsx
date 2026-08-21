@@ -29,6 +29,7 @@ const mockActiveReleasesReturn = {
   loading: false,
   error: undefined,
   dispatch: vi.fn(),
+  byId: new Map<string, ReleaseDocument>(),
 }
 
 const mockDocumentVersionsReturn = {
