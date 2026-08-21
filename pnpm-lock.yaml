@@ -29,8 +29,8 @@ catalogs:
       specifier: ^0.26.0
       version: 0.26.0
     '@sanity/ui':
-      specifier: ^4.0.4
-      version: 4.0.4
+      specifier: ^4.0.6
+      version: 4.0.6
     '@sanity/vanilla-extract-vite-plugin':
       specifier: ^0.2.13
       version: 0.2.13
@@ -244,7 +244,7 @@ importers:
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -309,7 +309,7 @@ importers:
     dependencies:
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -349,7 +349,7 @@ importers:
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@visx/axis':
         specifier: ^4.0.0
         version: 4.0.0(@types/react@19.2.18)(react@19.2.8)
@@ -456,7 +456,7 @@ importers:
         version: link:../../packages/@sanity/types
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/visual-editing':
         specifier: ^6.0.4
         version: 6.0.4(@sanity/client@8.2.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)(typescript@7.0.2)
@@ -552,7 +552,7 @@ importers:
         version: link:../../packages/@sanity/types
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -628,7 +628,7 @@ importers:
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
@@ -744,7 +744,7 @@ importers:
         version: link:../../packages/@sanity/types
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/util':
         specifier: workspace:*
         version: link:../../packages/@sanity/util
@@ -1254,7 +1254,7 @@ importers:
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -1575,7 +1575,7 @@ importers:
         version: 1.0.4
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/uuid':
         specifier: ^3.0.3
         version: 3.0.3
@@ -1830,7 +1830,7 @@ importers:
         version: link:../@sanity/types
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/util':
         specifier: workspace:*
         version: link:../@sanity/util
@@ -6776,6 +6776,14 @@ packages:
       react-dom: ^19.2
       styled-components: ^6.1
 
+  '@sanity/ui@4.0.6':
+    resolution: {integrity: sha512-iPtHRtnwcwq2ePHVrXsmTCFLNkEYfXL0kSavY4gnfkrbCPOmMD4iMe5MKcRtQ2YrJug6K70c6JQRCB+gN8kNaA==}
+    engines: {node: '>=22.12'}
+    peerDependencies:
+      react: ^19.2
+      react-dom: ^19.2
+      styled-components: ^6.1
+
   '@sanity/ui@5.0.0-alpha.4':
     resolution: {integrity: sha512-+YGO6vlZUOBqQ+2+UTkbutxiRhnM4EE0JKVfnsNDcye3JYNGf4ZcapdSCW6QKMOwIbBnLSjan+2th14whRLgWg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -10174,6 +10182,17 @@ packages:
       react-dom:
         optional: true
 
+  framer-motion@13.1.1:
+    resolution: {integrity: sha512-B/xn2TPS4f61cEBLFjiYlQFnBZUW1YVj/LM+C+N4OP8Rs95VLEI2ot/RlfBg111la/EiyECFaJJi/A3FWA8MUA==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   fresh@2.0.0:
     resolution: {integrity: sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A==}
     engines: {node: '>= 0.8'}
@@ -11524,11 +11543,25 @@ packages:
   motion-dom@13.0.0:
     resolution: {integrity: sha512-Xk+SJas70uMAUIApg+m3lZDShxI3LBFHq7mFGbBKoRXc2PVPDyAKmzN64Bbzt4CZdP/CItTiJxWtn4TA0v53Ng==}
 
+  motion-dom@13.1.1:
+    resolution: {integrity: sha512-XSf8VYWSB6G/0IY3rWVbyLcxWXtAVHkN1PQE2agTaCv3u8RGvbwu56TyyR/MNzBqqNavEBTZzErcxI1TxBrjcA==}
+
   motion-utils@13.0.0:
     resolution: {integrity: sha512-7DnN7TmbLcYXcG4RVadXIihWlyuM9afoUww8Y5Agg431kGKiuL2/OMyP4mJ5wLz+pvN3t5ySClLOaVXJ+wekRQ==}
 
   motion@13.1.0:
     resolution: {integrity: sha512-qtvscq59uCPdWnNW4SdSkrxR+BS/QYsa923bx7ocA+4p+ZGNbbVQwkSnG4aukB81QWjtl3AxX36plxNyZLmHCA==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
+  motion@13.1.1:
+    resolution: {integrity: sha512-WNZoK6xiF+kkTqkZ5K7FDDh6A8BG4i5Hc7KXtW8gtTxkpJFds+hIOrDaQGKjQj/AE/i4hJqAaUHEqp/Qo02y6Q==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
@@ -18956,7 +18989,7 @@ snapshots:
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/mutator': link:packages/@sanity/mutator
-      '@sanity/ui': 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/util': link:packages/@sanity/util
       '@sanity/uuid': 3.0.3
       react: 19.2.8
@@ -18996,7 +19029,7 @@ snapshots:
   '@sanity/google-maps-input@6.1.11(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/ui': 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@vis.gl/react-google-maps': 1.9.0(react-dom@19.2.8)(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
@@ -19256,7 +19289,7 @@ snapshots:
     dependencies:
       '@sanity/color': 3.0.8
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/ui': 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react: 19.2.8
       react-compiler-runtime: 1.0.0(react@19.2.8)
       react-refractor: 4.0.0(react@19.2.8)
@@ -19303,6 +19336,20 @@ snapshots:
       '@sanity/icons': 5.2.1(react@19.2.8)
       csstype: 3.2.3
       motion: 13.1.0(react-dom@19.2.8)(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      react-is: 19.2.8
+      react-refractor: 4.0.0(react@19.2.8)
+      styled-components: 6.5.3(react-dom@19.2.8)(react@19.2.8)
+      use-effect-event: 2.0.3(react@19.2.8)
+
+  '@sanity/ui@4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)':
+    dependencies:
+      '@floating-ui/react-dom': 2.1.9(react-dom@19.2.8)(react@19.2.8)
+      '@sanity/color': 3.0.8
+      '@sanity/icons': 5.2.1(react@19.2.8)
+      csstype: 3.2.3
+      motion: 13.1.1(react-dom@19.2.8)(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       react-is: 19.2.8
@@ -19396,7 +19443,7 @@ snapshots:
       '@sanity/presentation-comlink': 2.2.3(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret': 4.1.4(@sanity/client@8.2.0)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/ui': 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/visual-editing-csm': 3.0.15(@sanity/client@8.2.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
       '@vercel/stega': 1.1.0
       dequal: 2.0.3
@@ -22824,6 +22871,15 @@ snapshots:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
+  framer-motion@13.1.1(react-dom@19.2.8)(react@19.2.8):
+    dependencies:
+      motion-dom: 13.1.1
+      motion-utils: 13.0.0
+      tslib: 2.8.1
+    optionalDependencies:
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+
   fresh@2.0.0: {}
 
   fs-constants@1.0.0: {}
@@ -24238,11 +24294,23 @@ snapshots:
     dependencies:
       motion-utils: 13.0.0
 
+  motion-dom@13.1.1:
+    dependencies:
+      motion-utils: 13.0.0
+
   motion-utils@13.0.0: {}
 
   motion@13.1.0(react-dom@19.2.8)(react@19.2.8):
     dependencies:
       framer-motion: 13.1.0(react-dom@19.2.8)(react@19.2.8)
+      tslib: 2.8.1
+    optionalDependencies:
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+
+  motion@13.1.1(react-dom@19.2.8)(react@19.2.8):
+    dependencies:
+      framer-motion: 13.1.1(react-dom@19.2.8)(react@19.2.8)
       tslib: 2.8.1
     optionalDependencies:
       react: 19.2.8
@@ -25954,7 +26022,7 @@ snapshots:
   sanity-plugin-asset-source-unsplash@7.0.23(@types/react@19.2.18)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3):
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/ui': 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       lodash-es: 4.18.1
       react: 19.2.8
       react-photo-album: 3.6.1(@types/react@19.2.18)(react@19.2.8)
@@ -25968,7 +26036,7 @@ snapshots:
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/language-filter': 5.0.16(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
-      '@sanity/ui': 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/util': link:packages/@sanity/util
       lodash-es: 4.18.1
       react: 19.2.8
@@ -25986,7 +26054,7 @@ snapshots:
       '@sanity/client': 7.26.2
       '@sanity/color': 3.0.8
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/ui': 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/uuid': 3.0.3
       '@tanem/react-nprogress': 5.0.63(react-dom@19.2.8)(react@19.2.8)
       copy-to-clipboard: 3.3.3
@@ -26019,7 +26087,7 @@ snapshots:
       '@sanity/asset-utils': 2.3.0
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/image-url': 2.1.1
-      '@sanity/ui': 4.0.4(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       react-fast-compare: 3.2.2
