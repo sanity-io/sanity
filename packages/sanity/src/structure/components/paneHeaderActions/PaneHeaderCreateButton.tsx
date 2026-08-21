@@ -155,7 +155,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
             if (!template || !intent) return null
 
             const resolvedIntent = intent
-            const Link = (linkProps: {children?: ReactNode; ref?: Ref<HTMLElement>}) => {
+            function Link(linkProps: {children?: ReactNode; ref?: Ref<HTMLElement>}) {
               const {ref: linkRef, ...rest} = linkProps
               return disabled ? (
                 <button type="button" disabled {...rest} ref={linkRef as Ref<HTMLButtonElement>} />
@@ -169,9 +169,6 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
                 />
               )
             }
-
-            // oxlint-disable-next-line react/immutability -- displayName assignment on render-local component
-            Link.displayName = 'Link'
 
             const {title} = getI18nText({
               ...item,
