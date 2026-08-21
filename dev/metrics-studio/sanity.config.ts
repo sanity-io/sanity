@@ -27,6 +27,20 @@ export default defineConfig({
                   .title('Benchmark runs')
                   .defaultOrdering([{field: 'startedAt', direction: 'desc'}]),
               ),
+            S.listItem()
+              .title('Commits')
+              .child(
+                S.documentTypeList('gitCommit')
+                  .title('Commits')
+                  .defaultOrdering([{field: 'committedAt', direction: 'desc'}]),
+              ),
+            S.listItem()
+              .title('Releases')
+              .child(
+                S.documentTypeList('gitTag')
+                  .title('Releases')
+                  .defaultOrdering([{field: 'taggedAt', direction: 'desc'}]),
+              ),
           ]),
     }),
   ],
