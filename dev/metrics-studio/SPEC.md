@@ -1,10 +1,11 @@
 # Metrics-studio dashboard
 
-One place to answer three questions without opening CI logs: **is studio
-performance drifting on main?** (Trends), **what did a specific run look
-like?** (run detail), **did anything change that needs a human?** (drift
-feed). Primary users: studio engineers checking the effect of merged work;
-secondary: leads scanning health weekly.
+One place to answer repo-health questions without opening CI logs: **is
+studio performance drifting on main?** (Trends), **what did a specific run
+look like?** (run detail), **did anything change that needs a human?**
+(drift feed), **which commit broke it?** (Bisect), **what shipped when, and
+what regressed?** (Releases). Primary users: studio engineers checking the
+effect of merged work; secondary: leads scanning health weekly.
 
 ## Data reality
 
@@ -253,6 +254,15 @@ secondary: leads scanning health weekly.
    with the runs in between collapsed into gap rows labelled by what the
    bisect has already deduced (broken / untested / working), each linking to
    the GitHub compare of the span.
+
+6. **Releases** — every synced release tag, newest first: current dist-tags,
+   weekly downloads, publish time, and links out (GitHub release, sanity.io
+   changelog, npmx.dev). The changelog link is derived from the release's
+   base version — the previous release on the first-parent chain, the same
+   value release automation computes — so off-mainline releases (maintenance
+   lines) may lack it. Each release also shows the count of confirmed
+   regressions bisect sessions have attributed to it, blamed on the release
+   that FIRST shipped the offending commit.
 
 ## Architecture
 
