@@ -27,21 +27,10 @@ interface ScheduledDraftContextMenuProps {
   scheduledDraftMenuActions: UseScheduledDraftMenuActionsReturn
   documentType: string
   release?: ReleaseDocument
-  /**
-   * Whether the Publish now action is configured in `document.actions`.
-   * Defaults to `true`.
-   */
-  showPublishNow?: boolean
-  /**
-   * Whether the Edit schedule action is configured in `document.actions`.
-   * Defaults to `true`.
-   */
-  showEditSchedule?: boolean
-  /**
-   * Whether the Delete schedule action is configured in `document.actions`.
-   * Defaults to `true`.
-   */
-  showDeleteSchedule?: boolean
+  /** Each gated on the matching `document.actions` id still being configured. */
+  showPublishNow: boolean
+  showEditSchedule: boolean
+  showDeleteSchedule: boolean
 }
 
 export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu(
@@ -59,9 +48,9 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
     scheduledDraftMenuActions,
     documentType,
     release,
-    showPublishNow = true,
-    showEditSchedule = true,
-    showDeleteSchedule = true,
+    showPublishNow,
+    showEditSchedule,
+    showDeleteSchedule,
   } = props
   const {t} = useTranslation()
   const hasCopyToDraftOption = useHasCopyToDraftOption(documentType, bundleId)
@@ -72,6 +61,7 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
   const showCopyToReleaseMenuItem = isReleasesEnabled && copyToReleaseOptions.length > 0
   const showCopySection = showCopyToReleaseMenuItem || hasCopyToDraftOption
   const showEditScheduleItem = showEditSchedule && !isPausedCardinalityOneRelease(release)
+  const showCopyToDeleteDivider = showCopySection && showDeleteSchedule
 
   const {actions} = scheduledDraftMenuActions
 
@@ -102,7 +92,7 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
             hasCreatePermission={hasCreatePermission}
             documentType={documentType}
           />
-          {showDeleteSchedule && <MenuDivider />}
+          {showCopyToDeleteDivider && <MenuDivider />}
         </>
       )}
       {showDeleteSchedule && <MenuItem {...actions.deleteSchedule} />}

@@ -19,7 +19,7 @@ import {type DocumentActionKeys} from './actions'
 export function useConfiguredDocumentActionIds(
   context: PartialContext<DocumentActionsContext>,
 ): ReadonlySet<keyof DocumentActionKeys> {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  // oxlint-disable-next-line no-deprecated -- deprecated for external consumers; the document pane resolves document.actions from this same source instance
   const source = useSource()
   const resolveDocumentActions = source.document.actions
 
@@ -32,15 +32,7 @@ export function useConfiguredDocumentActionIds(
       versionType,
       releaseId,
     })
-    const ids = new Set<keyof DocumentActionKeys>()
-
-    for (const action of configured) {
-      if (action.action) {
-        ids.add(action.action)
-      }
-    }
-
-    return ids
+    return new Set(configured.flatMap(({action}) => (action ? [action] : [])))
   }, [schemaType, documentId, versionType, releaseId, resolveDocumentActions])
 }
 
@@ -95,8 +87,8 @@ export function getDiscardDocumentActionId(options: {
     return null
   }
 
-  if (fromRelease === 'draft' && !isScheduledDraft) {
-    return 'discardChanges'
+  if (fromRelease === 'draft') {
+    return isScheduledDraft ? 'discardVersion' : 'discardChanges'
   }
 
   return 'discardVersion'

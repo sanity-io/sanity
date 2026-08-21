@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {memo, useEffect, useMemo, useRef, useState} from 'react'
+import {memo, useEffect, useRef, useState} from 'react'
 
 import {
   getDiscardDocumentActionId,
@@ -63,23 +63,20 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
   const isPublished = isPublishedId(versionId)
   const versionName = getVersionFromId(versionId)
 
-  const documentActionsContext = useMemo(
-    () =>
-      getVersionContextMenuActionsContext({
-        schemaType: type,
-        documentGroupId,
-        fromRelease,
-        isScheduledDraft,
-      }),
-    [type, documentGroupId, fromRelease, isScheduledDraft],
+  const configuredActionIds = useConfiguredDocumentActionIds(
+    getVersionContextMenuActionsContext({
+      schemaType: type,
+      documentGroupId,
+      fromRelease,
+      isScheduledDraft,
+    }),
   )
-  const configuredActionIds = useConfiguredDocumentActionIds(documentActionsContext)
 
   const discardActionId = getDiscardDocumentActionId({fromRelease, isScheduledDraft})
   const isDiscardActionConfigured = discardActionId
     ? configuredActionIds.has(discardActionId)
     : false
-  const canDiscardVersion = isDiscardable && isDiscardActionConfigured
+  const isDiscardVersionAvailable = isDiscardable && isDiscardActionConfigured
 
   const {checkWithPermissionGuard} = useReleasePermissions()
   const {createRelease} = useReleaseOperations()
@@ -149,7 +146,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
       hasCreatePermission={hasCreatePermission}
       hasDiscardPermission={hasDiscardPermission || false}
       isPublished={isPublished}
-      isDiscardable={canDiscardVersion}
+      isDiscardable={isDiscardVersionAvailable}
       documentType={type}
     />
   )

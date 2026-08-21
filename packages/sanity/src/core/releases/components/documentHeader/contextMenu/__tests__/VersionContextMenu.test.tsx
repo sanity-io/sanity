@@ -6,6 +6,7 @@ import {describe, expect, it, vi} from 'vitest'
 import {useDocumentPairPermissionsMockReturn} from '../../../../../../../test/mocks/useDocumentPairPermissions.mock'
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {type DocumentActionComponent} from '../../../../../config/document/actions'
 import {
   mockUseReleasePermissions,
   useReleasePermissionsMockReturn,
@@ -28,6 +29,11 @@ vi.mock('../../../../store/useReleasePermissions', () => ({
 vi.mock('../../../../../store/grants/documentPairPermissions', () => ({
   useDocumentPairPermissions: vi.fn(() => useDocumentPairPermissionsMockReturn),
 }))
+
+// `discardChanges` is contributed by the structure tool, which the core test harness does not load.
+const discardChangesAction: DocumentActionComponent = Object.assign(() => null, {
+  action: 'discardChanges' as const,
+})
 
 describe('VersionContextMenu', () => {
   const mockReleases: ReleaseDocument[] = [
@@ -74,6 +80,54 @@ describe('VersionContextMenu', () => {
     disabled: false,
     type: 'document',
   }
+
+  const draftChipProps = {...defaultProps, fromRelease: 'draft', versionId: 'drafts.doc1'}
+
+  const createScheduledDraftRelease = (): ReleaseDocument => ({
+    ...mockReleases[0],
+    metadata: {...mockReleases[0].metadata, cardinality: 'one'},
+  })
+
+  const createScheduledDraftMenuActions = () => ({
+    actions: {
+      publishNow: {
+        'icon': undefined,
+        'text': 'Publish now',
+        'tone': 'default' as const,
+        'onClick': vi.fn(),
+        'disabled': false,
+        'data-testid': 'publish-now-menu-item',
+      },
+      editSchedule: {
+        'icon': undefined,
+        'text': 'Edit schedule',
+        'tone': 'default' as const,
+        'onClick': vi.fn(),
+        'disabled': false,
+        'data-testid': 'edit-schedule-menu-item',
+      },
+      schedulePublish: {
+        'icon': undefined,
+        'text': 'Schedule',
+        'tone': 'default' as const,
+        'onClick': vi.fn(),
+        'disabled': false,
+        'data-testid': 'schedule-publish-menu-item',
+      },
+      deleteSchedule: {
+        'icon': undefined,
+        'text': 'Delete schedule',
+        'tone': 'critical' as const,
+        'onClick': vi.fn(),
+        'disabled': false,
+        'data-testid': 'delete-schedule-menu-item',
+      },
+    },
+    dialogs: null,
+    isPerformingOperation: false,
+    selectedAction: null,
+    handleDialogClose: vi.fn(),
+  })
 
   it('renders the menu items correctly', async () => {
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
@@ -168,57 +222,64 @@ describe('VersionContextMenu', () => {
     expect(screen.queryByText('Discard version')).not.toBeInTheDocument()
   })
 
+  it('shows discard version on a draft chip while discardChanges is configured', async () => {
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+
+    const wrapper = await createTestProvider({
+      config: {document: {actions: (prev) => [...prev, discardChangesAction]}},
+    })
+
+    render(<VersionContextMenu {...draftChipProps} />, {wrapper})
+    await flushMicrotasksThisIsACodeSmell()
+
+    expect(screen.getByText('Discard version')).toBeInTheDocument()
+  })
+
+  it('hides discard version on a draft chip when discardChanges is omitted', async () => {
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+
+    const wrapper = await createTestProvider({
+      config: {
+        document: {
+          actions: (prev) =>
+            [...prev, discardChangesAction].filter((action) => action.action !== 'discardChanges'),
+        },
+      },
+    })
+
+    render(<VersionContextMenu {...draftChipProps} />, {wrapper})
+    await flushMicrotasksThisIsACodeSmell()
+
+    expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
+    expect(screen.queryByText('Discard version')).not.toBeInTheDocument()
+  })
+
+  it('shows every scheduled draft action when document.actions is unfiltered', async () => {
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+
+    const wrapper = await createTestProvider()
+
+    render(
+      <VersionContextMenu
+        {...defaultProps}
+        release={createScheduledDraftRelease()}
+        isScheduledDraft
+        scheduledDraftMenuActions={createScheduledDraftMenuActions()}
+      />,
+      {wrapper},
+    )
+    await flushMicrotasksThisIsACodeSmell()
+
+    expect(screen.getByTestId('publish-now-menu-item')).toBeInTheDocument()
+    expect(screen.getByTestId('edit-schedule-menu-item')).toBeInTheDocument()
+    expect(screen.getByTestId('delete-schedule-menu-item')).toBeInTheDocument()
+  })
+
   it('hides publish now when publish is omitted from document.actions', async () => {
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
-    const scheduledRelease: ReleaseDocument = {
-      ...mockReleases[0],
-      metadata: {
-        ...mockReleases[0].metadata,
-        cardinality: 'one',
-      },
-    }
-
-    const scheduledDraftMenuActions = {
-      actions: {
-        publishNow: {
-          'icon': undefined,
-          'text': 'Publish now',
-          'tone': 'default' as const,
-          'onClick': vi.fn(),
-          'disabled': false,
-          'data-testid': 'publish-now-menu-item',
-        },
-        editSchedule: {
-          'icon': undefined,
-          'text': 'Edit schedule',
-          'tone': 'default' as const,
-          'onClick': vi.fn(),
-          'disabled': false,
-          'data-testid': 'edit-schedule-menu-item',
-        },
-        schedulePublish: {
-          'icon': undefined,
-          'text': 'Schedule',
-          'tone': 'default' as const,
-          'onClick': vi.fn(),
-          'disabled': false,
-          'data-testid': 'schedule-publish-menu-item',
-        },
-        deleteSchedule: {
-          'icon': undefined,
-          'text': 'Delete schedule',
-          'tone': 'critical' as const,
-          'onClick': vi.fn(),
-          'disabled': false,
-          'data-testid': 'delete-schedule-menu-item',
-        },
-      },
-      dialogs: null,
-      isPerformingOperation: false,
-      selectedAction: null,
-      handleDialogClose: vi.fn(),
-    }
+    const scheduledRelease = createScheduledDraftRelease()
+    const scheduledDraftMenuActions = createScheduledDraftMenuActions()
 
     const wrapper = await createTestProvider({
       config: {
@@ -247,54 +308,8 @@ describe('VersionContextMenu', () => {
   it('hides delete schedule when discardVersion is omitted from document.actions', async () => {
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
 
-    const scheduledRelease: ReleaseDocument = {
-      ...mockReleases[0],
-      metadata: {
-        ...mockReleases[0].metadata,
-        cardinality: 'one',
-      },
-    }
-
-    const scheduledDraftMenuActions = {
-      actions: {
-        publishNow: {
-          'icon': undefined,
-          'text': 'Publish now',
-          'tone': 'default' as const,
-          'onClick': vi.fn(),
-          'disabled': false,
-          'data-testid': 'publish-now-menu-item',
-        },
-        editSchedule: {
-          'icon': undefined,
-          'text': 'Edit schedule',
-          'tone': 'default' as const,
-          'onClick': vi.fn(),
-          'disabled': false,
-          'data-testid': 'edit-schedule-menu-item',
-        },
-        schedulePublish: {
-          'icon': undefined,
-          'text': 'Schedule',
-          'tone': 'default' as const,
-          'onClick': vi.fn(),
-          'disabled': false,
-          'data-testid': 'schedule-publish-menu-item',
-        },
-        deleteSchedule: {
-          'icon': undefined,
-          'text': 'Delete schedule',
-          'tone': 'critical' as const,
-          'onClick': vi.fn(),
-          'disabled': false,
-          'data-testid': 'delete-schedule-menu-item',
-        },
-      },
-      dialogs: null,
-      isPerformingOperation: false,
-      selectedAction: null,
-      handleDialogClose: vi.fn(),
-    }
+    const scheduledRelease = createScheduledDraftRelease()
+    const scheduledDraftMenuActions = createScheduledDraftMenuActions()
 
     const wrapper = await createTestProvider({
       config: {
