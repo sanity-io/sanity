@@ -295,6 +295,23 @@ describe('mergeShards', () => {
     expect(merged.runner).toEqual(RUN.runner)
   })
 
+  it('stamps every scenario with its own shard cpu model', () => {
+    // The CPU model is what stops a scenario being attributed to the first
+    // shard's machine — the calibration assertion above would still pass if
+    // this propagation were dropped.
+    const merged = mergeShards([
+      {...RUN, runner: {...RUN.runner, cpuModel: 'AMD EPYC 7763'}},
+      {...shardTwo, runner: {...shardTwo.runner, cpuModel: 'Intel Xeon 8370C'}},
+    ])
+    for (const scenario of merged.scenarios.slice(0, -1)) {
+      expect(scenario.runner?.cpuModel).toBe('AMD EPYC 7763')
+    }
+    expect(merged.scenarios.at(-1)?.runner).toEqual({
+      calibrationMs: 19,
+      cpuModel: 'Intel Xeon 8370C',
+    })
+  })
+
   it('fails loudly on duplicate scenario reports (they would collide as stored _keys)', () => {
     expect(() => mergeShards([RUN, {...shardTwo, scenarios: [RUN.scenarios[1]]}])).toThrow(
       /duplicate scenario report\(s\): interaction-article/,
