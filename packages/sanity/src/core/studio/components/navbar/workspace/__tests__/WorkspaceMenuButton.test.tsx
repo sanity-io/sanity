@@ -55,10 +55,9 @@ describe('WorkspaceMenuButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     probeSubscriptions.count = 0
-    // Each subscription of a probe observable stands in for one `/auth/id`
-    // request — the accurate proxy for network activity, since building the
-    // observable (calling `probeWorkspaceAuth`) is free and happens during
-    // render, while the request only fires on subscribe.
+    // One subscription = one would-be `/auth/id` request.
+    // Creating the observable is free and happens during render;
+    // only subscribing fires the request. So: count subscriptions.
     mockProbeWorkspaceAuth.mockImplementation(() =>
       defer(() => {
         probeSubscriptions.count += 1
@@ -68,22 +67,19 @@ describe('WorkspaceMenuButton', () => {
   })
 
   it('keeps the closed menu content mounted without subscribing any auth probe', async () => {
-    // From @sanity/ui v4, closed popovers keep their children mounted via
-    // React `<Activity>`: the subtree renders (hidden) but effects are
-    // deferred until reveal. The render-phase part is real — the menu content
-    // is in the DOM and the probe observables get created…
     render(<WorkspaceMenuButton />, {wrapper})
 
+    // Closed popovers keep children mounted (`<Activity>`, @sanity/ui v4).
+    // So: content is in the DOM, probe observables got created…
     expect(await screen.findByTestId('manage-menu')).toBeInTheDocument()
     expect(screen.getByText('Workspace B')).toBeInTheDocument()
     expect(mockProbeWorkspaceAuth).toHaveBeenCalledTimes(2)
 
-    // …but nothing subscribes them: with an initialValue, react-rx skips its
-    // render-phase warm-up subscription (react-rx#506) and first subscribes on
-    // commit, which the hidden `<Activity>` defers until the menu opens. This
-    // keeps the per-workspace `/auth/id` probes off the studio boot path.
-    // (Without the warm-up skip this count is 2 — one request per workspace
-    // at mount.)
+    // …but zero subscriptions = zero requests at boot.
+    // Why: with an initialValue, react-rx skips its render-phase warm-up
+    // (react-rx#506). The subscription waits for commit, and hidden
+    // Activity defers commit until the menu opens.
+    // Without the warm-up skip this count is 2 — one request per workspace.
     expect(probeSubscriptions.count).toBe(0)
   })
 
@@ -93,8 +89,7 @@ describe('WorkspaceMenuButton', () => {
     // oxlint-disable-next-line testing-library/prefer-user-event -- userEvent.click emits hover and focus first, which would trigger the preload; this test needs a bare click so the only probe trigger is the reveal itself
     fireEvent.click(screen.getByRole('button', {name: /Workspace A/}))
 
-    // Opening flips the popover's <Activity> to visible, the deferred effects
-    // mount, and each workspace item's store subscription starts its probe.
+    // Open → Activity flips visible → effects mount → each item subscribes.
     await waitFor(() => expect(probeSubscriptions.count).toBe(2))
   })
 
@@ -103,9 +98,8 @@ describe('WorkspaceMenuButton', () => {
 
     await userEvent.hover(screen.getByRole('button', {name: /Workspace A/}))
 
-    // The preload on the trigger fires one probe per workspace so results are
-    // buffered by the time the user clicks — while the (still hidden) menu
-    // items themselves remain unsubscribed.
+    // Hover preload: one probe per workspace, buffered before the click.
+    // The hidden menu items themselves still subscribe nothing.
     expect(probeSubscriptions.count).toBe(2)
   })
 })
