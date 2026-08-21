@@ -18,6 +18,13 @@ interface WorkspaceMenuItemProps {
  * `/auth/id` independently, so the list renders immediately on open and
  * resolves badges per-workspace as their probes settle.
  *
+ * The `null` initial value keeps the probe subscription out of the render
+ * phase: closed menus keep their items mounted (React `<Activity>` from
+ * `@sanity/ui` v4), and without an initial value react-rx would eagerly
+ * subscribe during that hidden render — putting the `/auth/id` probes on
+ * the studio boot path. With it, the probe first fires when the menu is
+ * revealed (or via the hover/focus preload on the menu button).
+ *
  * @internal
  */
 export function WorkspaceMenuItem({workspace, isSelected, scrollbarWidth}: WorkspaceMenuItemProps) {
@@ -30,7 +37,7 @@ export function WorkspaceMenuItem({workspace, isSelected, scrollbarWidth}: Works
       }),
     [workspace.apiHost, workspace.dataset, workspace.projectId],
   )
-  const probe = useObservable(probe$)
+  const probe = useObservable(probe$, null)
 
   const state: keyof typeof STATE_TITLES = !probe
     ? 'loading'
