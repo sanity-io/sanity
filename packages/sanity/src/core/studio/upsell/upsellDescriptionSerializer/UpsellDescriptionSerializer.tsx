@@ -6,10 +6,11 @@ import {
 import {Icon} from '@sanity/icons'
 import {LinkIcon} from '@sanity/icons/Link'
 import {type PortableTextBlock} from '@sanity/types'
-import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
+import {Card, Flex, Heading, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {interpolateTemplate} from '../../../util/interpolateTemplate'
 import {transformBlocks} from './helpers'

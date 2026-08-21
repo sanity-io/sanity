@@ -5,14 +5,7 @@ import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
 import {defaultClientConditions, mergeConfig} from 'vite'
 
 const config: StorybookConfig = {
-  // Package-owned stories are the guideline (see #14104). The `../stories` glob
-  // stays until leftover CSF wrappers on stacked ui5-coverage branches are
-  // colocated. Do not use a recursive `packages/**` glob — it follows pnpm
-  // symlinks and duplicates stories.
-  stories: [
-    '../../../packages/{sanity,groq,@repo/*,@sanity/*}/src/**/*.stories.@(ts|tsx)',
-    '../stories/**/*.stories.@(ts|tsx)',
-  ],
+  stories: ['../../../packages/{sanity,groq,@repo/*,@sanity/*}/src/**/*.stories.@(ts|tsx)'],
   addons: ['@chromatic-com/storybook', '@storybook/addon-vitest'],
   framework: {
     name: '@storybook/react-vite',

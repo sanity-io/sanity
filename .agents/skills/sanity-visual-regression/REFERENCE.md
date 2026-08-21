@@ -18,7 +18,7 @@
   vanilla-extract plugin compiles `.css.ts`; the React Compiler babel preset matches what the
   studio ships. Divergence here would make snapshots render differently from production.
 - **Why preview imports both `ui5/styles.css` and `@sanity/ui/styles.css`:** the studio entry
-  side-effect-imports both. Storybook must too — authored sentinel stories import source files
+  side-effect-imports both. Storybook must too — colocated sentinel stories import source files
   directly and never hit the `sanity` package entry, so they would otherwise snapshot without
   the ui5 reset and design tokens.
 - **One Chromatic project per integration type** (Chromatic constraint): `sanity` (Storybook),
@@ -91,10 +91,10 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
   play) via portable stories. The project is intentionally NOT in the root `vitest.config.mts`
   multi-project list — same reason as `sanity-browser` (needs a real browser).
 - Story files: CSF3 with `satisfies Meta<typeof Component>`; titles group by area
-  (`Portable Text/…`, `UI Components/…`). For internal components, import a
-  `*Story.tsx` harness from `packages/sanity/src/.../__tests__/` — never the
-  implementation file. The harness uses relative imports and wraps `TestWrapper`
-  when it needs i18n/workspace. Public `sanity` exports are fine without a harness.
+  (`Portable Text/…`, `UI Components/…`). Put each story in the owning package's `src` tree,
+  normally in the same `__tests__` directory as its component or `*Story.tsx` harness, and use
+  package-local relative imports. Do not deep-import implementation or test files from another
+  workspace.
 - Icons: import per-icon subpaths (`@sanity/icons/Add`), never the barrel. `@sanity/ui` v4:
   `ToastProvider` comes from `@sanity/ui/toast`; `Stack`/`Grid` use `gap`/`gridTemplateColumns`.
 - Components that call `useTranslation` (directly or via `ui-components`) must render inside

@@ -36,7 +36,7 @@ import {
 } from '../../runner/session/pageLoad'
 import {getScenario, SCENARIOS} from '../../scenarios'
 import {bootstrapDiffOfMedians} from '../../stats/bootstrap'
-import {gate, PAGELOAD_THRESHOLDS} from '../../stats/gate'
+import {gate, isDecidedVerdict, PAGELOAD_THRESHOLDS} from '../../stats/gate'
 import {summarize} from '../../stats/quantiles'
 import {mulberry32} from '../../stats/rng'
 import {resolveFromInvocation} from '../benchRoot'
@@ -424,13 +424,16 @@ export async function runBench(argv: RunArgs): Promise<void> {
       console.log(`\nwrote ${outPath}`)
     }
     if (argv.failOnVerdict) {
-      const nonNeutral = scenarioReports
+      // Only decided verdicts fail; see isDecidedVerdict for why inconclusive
+      // must not (it is the designed absorber for a noisy run, and this flag's
+      // only caller is the self-test)
+      const decided = scenarioReports
         .flatMap((scenarioReport) => scenarioReport.metrics)
-        .filter((metric) => metric.comparison && metric.comparison.verdict !== 'neutral')
-      if (nonNeutral.length > 0) {
+        .filter((metric) => isDecidedVerdict(metric.comparison?.verdict))
+      if (decided.length > 0) {
         console.error(
-          `fail-on-verdict: ${nonNeutral.length} non-neutral comparison(s): ` +
-            nonNeutral.map((metric) => `${metric.label}=${metric.comparison?.verdict}`).join(', '),
+          `fail-on-verdict: ${decided.length} non-neutral comparison(s): ` +
+            decided.map((metric) => `${metric.label}=${metric.comparison?.verdict}`).join(', '),
         )
         process.exitCode = 1
       }

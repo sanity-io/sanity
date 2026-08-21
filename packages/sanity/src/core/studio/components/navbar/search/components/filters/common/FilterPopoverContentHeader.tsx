@@ -1,7 +1,8 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {Box, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import {type ChangeEvent, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../contexts/search/useSearchState'
