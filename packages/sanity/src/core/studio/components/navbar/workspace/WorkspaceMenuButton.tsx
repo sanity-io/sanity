@@ -32,6 +32,7 @@ export function WorkspaceMenuButton() {
   const {activeWorkspace} = useActiveWorkspace()
   const {t} = useTranslation()
   const [scrollbarWidth, setScrollbarWidth] = useState(0)
+  const [mountMenuContent, setMountMenuContent] = useState(false)
 
   const stackRef = useCallback((node: HTMLDivElement | null) => {
     if (node) {
@@ -43,7 +44,15 @@ export function WorkspaceMenuButton() {
   // Preload probes on hover/focus so the result is already buffered by the
   // time the user clicks. The probe's grace window keeps the cached value
   // alive across the transient subscribe/unsubscribe cycle from `take(1)`.
+  //
+  // This is also where the menu content gets mounted: from @sanity/ui v4,
+  // closed popovers keep their children mounted (React `<Activity>`), which
+  // would put the per-workspace `/auth/id` probes and the project/grants
+  // requests in ManageMenu on the studio boot path. Hover/focus always
+  // precedes the click that opens the menu, so mounting here keeps those
+  // requests deferred to interaction intent without an empty first frame.
   const handlePreload = useCallback(() => {
+    setMountMenuContent(true)
     visibleWorkspaces.forEach((workspace) => {
       probeWorkspaceAuth({
         projectId: workspace.projectId,
@@ -54,6 +63,11 @@ export function WorkspaceMenuButton() {
         .subscribe()
     })
   }, [visibleWorkspaces])
+
+  // Fallback for opens that are not preceded by hover/focus (e.g. Safari does
+  // not focus buttons on click): fires after the popover is shown, so the
+  // content mounts a frame late rather than not at all.
+  const handleOpen = useCallback(() => setMountMenuContent(true), [])
 
   return (
     <MenuButton
@@ -76,10 +90,11 @@ export function WorkspaceMenuButton() {
         </Flex>
       }
       id="workspace-menu"
+      onOpen={handleOpen}
       menu={
         <Menu padding={0} style={{maxWidth: '350px', minWidth: '250px', overflowY: 'hidden'}}>
-          <ManageMenu multipleWorkspaces={visibleWorkspaces.length > 1} />
-          {visibleWorkspaces.length > 1 && (
+          {mountMenuContent && <ManageMenu multipleWorkspaces={visibleWorkspaces.length > 1} />}
+          {mountMenuContent && visibleWorkspaces.length > 1 && (
             <>
               <MenuDivider style={{padding: 0}} />
               <Box paddingTop={2} paddingBottom={1}>
