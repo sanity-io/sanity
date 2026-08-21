@@ -23,6 +23,7 @@ vi.mock('../../../releases/hooks/useDocumentVersions', () => ({
 vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => ({
     data: [],
+    byId: new Map(),
     error: undefined,
     loading: false,
     dispatch: vi.fn(),
@@ -134,6 +135,7 @@ describe('DocumentVersionsStatus', () => {
     })
     mockUseActiveReleases.mockReturnValue({
       data: [],
+      byId: new Map(),
       error: undefined,
       loading: false,
       dispatch: vi.fn(),
