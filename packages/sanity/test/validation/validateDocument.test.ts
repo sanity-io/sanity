@@ -145,6 +145,82 @@ describe('validateDocument', () => {
       },
     ])
   })
+
+  it('honors maxFetchConcurrency values across validation calls', async () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'concurrentDoc',
+          type: 'document',
+          fields: ['first', 'second', 'third'].map((name) => ({
+            name,
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.custom(async (_value, context) => {
+                await context.getClient({apiVersion: '2026-01-01'}).fetch('*[]')
+                return true as const
+              }),
+          })),
+        },
+      ],
+    })
+    const document: SanityDocument = {
+      _id: 'testId',
+      _createdAt: '2021-08-27T14:48:51.650Z',
+      _rev: 'exampleRev',
+      _type: 'concurrentDoc',
+      _updatedAt: '2021-08-27T14:48:51.650Z',
+      first: 'one',
+      second: 'two',
+      third: 'three',
+    }
+
+    const validateWithConcurrency = async (maxFetchConcurrency: number) => {
+      let active = 0
+      let peak = 0
+      const testClient = {
+        fetch: async () => {
+          active += 1
+          peak = Math.max(peak, active)
+          await new Promise((resolve) => setTimeout(resolve, 5))
+          active -= 1
+          return null
+        },
+      }
+
+      await validateDocument({
+        document,
+        // oxlint-disable-next-line no-deprecated -- explicit client isolates the concurrency limit under test
+        getClient: () => testClient as unknown as ReturnType<ValidationContext['getClient']>,
+        maxFetchConcurrency,
+        workspace: {schema} as Workspace,
+      })
+
+      return peak
+    }
+
+    await expect(validateWithConcurrency(1)).resolves.toBe(1)
+    await expect(validateWithConcurrency(2)).resolves.toBe(2)
+  })
+
+  it.each([0, -1, NaN, 1.5, Infinity])(
+    'rejects invalid maxFetchConcurrency value %s',
+    (maxFetchConcurrency) => {
+      expect(() =>
+        validateDocument({
+          document: {_type: 'simpleDoc'} as SanityDocument,
+          maxFetchConcurrency,
+          workspace: {
+            schema: createSchema({
+              name: 'default',
+              types: [{name: 'simpleDoc', type: 'document', fields: []}],
+            }),
+          } as Workspace,
+        }),
+      ).toThrow('`maxFetchConcurrency` must be a positive integer')
+    },
+  )
 })
 
 describe('validateItem', () => {
