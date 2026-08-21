@@ -1,10 +1,8 @@
 import CloseIcon from '@sanity/icons/Close'
-import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {FeedbackIcon} from '@sanity/icons/Feedback'
-import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type SanityDocumentLike} from '@sanity/types'
-import {PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
+import {PortalProvider, Stack, Text} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
@@ -40,7 +38,6 @@ import {feedbackLocaleNamespace, studioLocaleNamespace} from '../../i18n/localeN
 import {type SetVariant, useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
-import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
 import {useVersionContextMenu} from '../../releases/hooks/useVersionContextMenu'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
@@ -52,7 +49,7 @@ import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
 import {useDocumentStore} from '../../store/datastores'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {getPublishedId, isVersionId, type SystemBundle} from '../../util/draftUtils'
+import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
 import {readVersionType} from '../../util/versionsUtils'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
@@ -70,15 +67,14 @@ import {Body} from './Body'
 import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
 import {CreateVariant} from './CreateVariant/CreateVariant'
+import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
+import {DocumentGroupFilter} from './DocumentGroupFilter'
+import {DocumentGroupSet} from './DocumentGroupSet'
 import {Footer} from './Footer'
 import {Header} from './Header'
 import {TextButton} from './TextButton'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
-import {StatusBadge} from './VariantSet/StatusBadge'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
-import {VariantSet} from './VariantSet/VariantSet'
-import {VariantSetEntry} from './VariantSet/VariantSetEntry'
-import {VariantSetHeader} from './VariantSet/VariantSetHeader'
 
 /**
  * @internal
@@ -345,21 +341,10 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                     </Text>
                   </TextButton>
                 </Flex>
-                <search>
-                  <TextInput
-                    name={t('document-group-inventory.filter-string.label', {
-                      subject: t('document-group.subject.version_other'),
-                    })}
-                    placeholder={t('document-group-inventory.filter-string.label', {
-                      subject: t('document-group.subject.version_other'),
-                    })}
-                    icon={<SearchIcon />}
-                    readOnly={isReadOnly}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      filterStringEvent.next(event)
-                    }
-                  />
-                </search>
+                <DocumentGroupFilter
+                  readOnly={isReadOnly}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
+                />
               </Stack>
             </Header>
             <Body>
@@ -445,7 +430,6 @@ const Select: ComponentType<{
   menuPortalElement,
   perspectiveList,
 }) => {
-  const {t} = useTranslation(studioLocaleNamespace)
   const sets = useSelector(inventoryRef, ({context}) => context.sets)
 
   // For now, selection mode is constant.
@@ -464,11 +448,10 @@ const Select: ComponentType<{
   return (
     <Stack gap={5}>
       {sets.map((set) => (
-        <VariantSet key={set.key} data-variant-set={set.name}>
-          <VariantSetHeader as="header">
-            <Text size={1} weight="medium">
-              {set.name}
-            </Text>
+        <DocumentGroupSet
+          key={set.key}
+          name={set.name}
+          headerActions={
             <TextButton
               onClick={() => {
                 set.variants.forEach((variant) =>
@@ -483,7 +466,8 @@ const Select: ComponentType<{
                   : `${set.variants.length} documents`}
               </Text>
             </TextButton>
-          </VariantSetHeader>
+          }
+        >
           {set.variants
             .filter(({id}) => !hasFilterString || filterMatchingVariantIds.has(id))
             .map((variant) => (
@@ -500,7 +484,7 @@ const Select: ComponentType<{
                 perspectiveList={perspectiveList}
               />
             ))}
-        </VariantSet>
+        </DocumentGroupSet>
       ))}
     </Stack>
   )
@@ -527,7 +511,6 @@ const Variant: ComponentType<{
   menuPortalElement,
   perspectiveList,
 }) => {
-  const {t} = useTranslation(studioLocaleNamespace)
   const releasesToolAvailable = useReleasesToolAvailable()
   const {loading: releasesLoading} = useActiveReleases()
   // Derived from `_system` rather than the id, because `_system` is authoritative: it
@@ -539,7 +522,6 @@ const Variant: ComponentType<{
   const releaseRef = document._system.release?._ref
   const isPublishedVersion = !document._system.bundleId
   const isDraftVersion = document._system.bundleId === 'drafts'
-  const isVersion = isVersionId(versionId)
   const bundleId = isPublishedVersion
     ? 'published'
     : isDraftVersion
@@ -555,7 +537,7 @@ const Variant: ComponentType<{
 
   const {clearScheduledDraftPerspective} = perspectiveList
 
-  const release = releaseRef ? releases.get(releaseRef) : undefined
+  const release = resolveVariantRelease(variant, releases)
 
   const pendingReleases = useVariantPendingReleases({
     documentId: documentGroupId,
@@ -589,38 +571,35 @@ const Variant: ComponentType<{
 
   return (
     <>
-      <VariantSetEntry data-variant-name={variant.name} data-selected={isSelected || undefined}>
-        <div className="atom">
-          <button
-            type="button"
-            className="primary-action"
-            ref={setReferenceElement}
-            onClick={() => {
-              let bundle
+      <DocumentGroupEntry
+        variant={variant}
+        releases={releases}
+        isSelected={isSelected}
+        primaryActionRef={setReferenceElement}
+        onContextMenu={contextMenuHandler}
+        onPrimaryAction={() => {
+          let bundle
 
-              switch (readVersionType(document)) {
-                case 'release':
-                  bundle = getReleaseIdFromReleaseDocumentId(releaseRef ?? '')
-                  break
-                case 'published':
-                  bundle = 'published'
-                  break
-                case 'draft':
-                  bundle = 'drafts'
-                  break
-              }
+          switch (readVersionType(document)) {
+            case 'release':
+              bundle = getReleaseIdFromReleaseDocumentId(releaseRef ?? '')
+              break
+            case 'published':
+              bundle = 'published'
+              break
+            case 'draft':
+              bundle = 'drafts'
+              break
+          }
 
-              const variantId = isVariantId(document._system.variant?._ref)
-                ? document._system.variant._ref
-                : undefined
+          const variantId = isVariantId(document._system.variant?._ref)
+            ? document._system.variant._ref
+            : undefined
 
-              onPrimaryAction({variantId, perspective: agentBundleName ?? bundle})
-            }}
-            onContextMenu={contextMenuHandler}
-          >
-            {variant.name}
-          </button>
-          {isSelectable && (
+          onPrimaryAction({variantId, perspective: agentBundleName ?? bundle})
+        }}
+        leading={
+          isSelectable ? (
             <VariantCheckbox
               checked={selectedIds.has(variant.id)}
               readOnly={isReadOnly}
@@ -631,32 +610,9 @@ const Variant: ComponentType<{
                 })
               }}
             />
-          )}
-          <Text size={1} weight="medium" className="inert">
-            {variant.name}
-          </Text>
-        </div>
-        <div className="atom inert">
-          {isSelected && (
-            <StatusBadge radius={2} tone="primary">
-              <EyeOpenIcon /> {t('document-group-inventory.viewing-item-label')}
-            </StatusBadge>
-          )}
-          <Text size={1}>
-            {agentBundleName ? (
-              // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-              <ReleaseAvatarIcon tone="suggest" />
-            ) : (
-              <ReleaseAvatarIcon
-                release={
-                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
-                  (isDraftVersion ? 'drafts' : isPublishedVersion ? 'published' : release) ?? ''
-                }
-              />
-            )}
-          </Text>
-        </div>
-      </VariantSetEntry>
+          ) : undefined
+        }
+      />
       <PortalProvider element={menuPortalElement}>
         <VersionContextMenuPopover
           contextMenu={contextMenu}
