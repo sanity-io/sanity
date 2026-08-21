@@ -1,10 +1,10 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {Flex} from '@sanity/ui'
-import {useVirtualizer} from '@tanstack/react-virtual'
 import {useEffect, useMemo, useRef} from 'react'
 import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
+import {useVirtualizer} from '../../../util/tanstackVirtual'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
 import {type Schedule, type ScheduleSort} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
@@ -97,7 +97,6 @@ function useVirtualizedSchedules(activeSchedules: Schedule[], sortBy?: ScheduleS
     return items
   }, [activeSchedules, sortBy])
 
-  // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual; function is opted out with 'use no memo'
   const virtualizer = useVirtualizer({
     count: listSourceItems.length,
     getScrollElement: () => containerRef.current,

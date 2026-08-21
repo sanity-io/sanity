@@ -1,10 +1,5 @@
 import {rem, Stack} from '@sanity/ui'
-import {
-  measureElement,
-  type ScrollToOptions,
-  useVirtualizer,
-  type Virtualizer,
-} from '@tanstack/react-virtual'
+import {measureElement, type ScrollToOptions, type Virtualizer} from '@tanstack/react-virtual'
 import throttle from 'lodash-es/throttle.js'
 import {
   cloneElement,
@@ -25,6 +20,7 @@ import {Box} from 'ui5'
 
 import {type FIXME} from '../../FIXME'
 import {focusRingStyle} from '../../form/components/formField/styles'
+import {useVirtualizer} from '../../util/tanstackVirtual'
 import {
   type CommandListElementType,
   type CommandListGetItemDisabledCallback,
@@ -160,7 +156,6 @@ function CommandListComponent({
   )
 
   // This will trigger a re-render whenever its internal state changes
-  // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual; function is opted out with 'use no memo'
   const virtualizer = useVirtualizer({
     count: items.length,
     getItemKey,
@@ -252,11 +247,24 @@ function CommandListComponent({
   }, [activeItemDataAttr, childContainerElement?.children])
 
   /**
-   * Throttled version of `showChildrenActiveState`, used when DOM mutations are detected in virtual lists
+   * Throttled version of `showChildrenActiveState`, used when DOM mutations are detected in virtual lists.
+   * Latest callback is boxed in a useState closure so we do not pass a ref-closing function to
+   * `throttle` during render (which the compiler treats as a render-time ref read).
    */
-  const refreshChildrenActiveStateThrottled = useMemo(() => {
-    return throttle(showChildrenActiveState, 200)
-  }, [showChildrenActiveState])
+  const [activeStateRefresh] = useState(() => {
+    let latest: () => void = () => {}
+    return {
+      sync(fn: () => void) {
+        latest = fn
+      },
+      run: throttle(() => {
+        latest()
+      }, 200),
+    }
+  })
+  useEffect(() => {
+    activeStateRefresh.sync(showChildrenActiveState)
+  }, [activeStateRefresh, showChildrenActiveState])
 
   /**
    * Assign active descendant on input element (if present)
@@ -476,6 +484,7 @@ function CommandListComponent({
       })
     }
     isMountedRef.current = true
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- CommandList is opted out with 'use no memo'
   }, [initialIndex, initialScrollAlign, onlyShowSelectionWhenActive, setActiveIndex])
 
   /**
@@ -508,6 +517,7 @@ function CommandListComponent({
       virtualListElement?.removeEventListener('keydown', handleKeyDownList)
     }
   }, [
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- CommandList is opted out with 'use no memo'
     canReceiveFocus,
     handleFocus,
     handleKeyDown,
@@ -525,6 +535,7 @@ function CommandListComponent({
    */
   useEffect(() => {
     handleUpdateActiveDescendant()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- CommandList is opted out with 'use no memo'
   }, [handleUpdateActiveDescendant, items])
 
   /**
@@ -537,7 +548,7 @@ function CommandListComponent({
    * this changes on _every_ internal state change.
    */
   useEffect(() => {
-    const mutationObserver = new MutationObserver(refreshChildrenActiveStateThrottled)
+    const mutationObserver = new MutationObserver(activeStateRefresh.run)
 
     if (childContainerElement) {
       mutationObserver.observe(childContainerElement, {
@@ -549,7 +560,7 @@ function CommandListComponent({
     return () => {
       mutationObserver.disconnect()
     }
-  }, [childContainerElement, refreshChildrenActiveStateThrottled])
+  }, [activeStateRefresh, childContainerElement])
 
   /**
    * Apply input aria attributes
@@ -568,6 +579,7 @@ function CommandListComponent({
     if (autoFocus) {
       focusElement(autoFocus)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- CommandList is opted out with 'use no memo'
   }, [autoFocus, canReceiveFocus, focusListElement, focusInputElement, focusElement])
 
   const rootTabIndex = canReceiveFocus ? 0 : -1

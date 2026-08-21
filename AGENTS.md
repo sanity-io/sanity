@@ -294,9 +294,16 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 `// oxlint-disable-next-line react/…` silences `pnpm check:oxlint` only. The Vite React Compiler
 plugin (`vite:react-compiler` in `sanity dev`) still warns and skips that function.
 
-For intentional opt-outs (TanStack Virtual, Portable Text member-item cache), put `'use no memo'`
-as the **first statement** of the function that uses the incompatible API. Keep the oxlint disable
-if the rule still fires inside the opted-out function.
+`'use no memo'` (first statement of the function) skips compilation, but `oxc-transform-react`
+still emits diagnostics for that function — Vite will still print `[plugin vite:react-compiler]`.
+Use the directive when compiling the function is unsafe (TanStack Virtual: compiling
+`useVirtualizer()` results can leave lists/scroll positions stale). To also silence Vite:
+
+- Prefer a compiler-safe rewrite (no render-time `ref.current`, no `try/finally`, no hooks-rule
+  suppressions).
+- For `useVirtualizer`, import it from `packages/sanity/src/core/util/tanstackVirtual.ts` instead
+  of `@tanstack/react-virtual`. The compiler matches the package specifier, not the local name.
+  Keep `'use no memo'` on the caller.
 
 Do not add `'use no memo'` just to hide a warning — fix the code so the compiler can compile it
 when that is safe.

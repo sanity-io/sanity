@@ -1,11 +1,12 @@
 import {Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
-import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
+import {type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns/isValid'
 import get from 'lodash-es/get.js'
 import {type CSSProperties, type ElementType, Fragment, useMemo} from 'react'
 import {Box} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useVirtualizer} from '../../../../util/tanstackVirtual'
 import {TableEmptyState} from './TableEmptyState'
 import {TableHeader} from './TableHeader'
 import {TableLayout} from './TableLayout'
@@ -104,7 +105,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
     })
   }, [columnDefs, data, searchFilter, searchTerm, sort])
 
-  // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual; function is opted out with 'use no memo'
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,
     getScrollElement: () => scrollContainerRef,
