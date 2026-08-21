@@ -194,4 +194,18 @@ describe('DocumentVersionsStatus', () => {
     expect(screen.queryByText(/All users/)).not.toBeInTheDocument()
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
   })
+
+  it('does not show agent versions in the tooltip', async () => {
+    const agentVersion = createVersion({
+      id: `versions.agent-abc.${GROUP_ID}`,
+      bundleId: 'agent-abc',
+    })
+
+    await renderStatus({versions: [publishedDefault, draftDefault, agentVersion]})
+
+    expect(screen.getByText('Published')).toBeInTheDocument()
+    expect(screen.getByText('Draft')).toBeInTheDocument()
+    expect(screen.queryByText('Proposed changes')).not.toBeInTheDocument()
+    expect(screen.queryByText('Agent changes')).not.toBeInTheDocument()
+  })
 })
