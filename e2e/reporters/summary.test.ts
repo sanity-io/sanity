@@ -181,7 +181,7 @@ describe('SummaryReporter', () => {
     expect(report).toContain('- Workflow run: https://github.com/sanity-io/sanity/actions/runs/99')
     expect(report).toContain('SANITY_E2E_PROJECT_ID=ittbm412 \\')
     expect(report).toContain('SANITY_E2E_DATASET=pr-1-chromium-99 \\')
-    expect(report).toContain('pnpm test:e2e \\')
+    expect(report).toContain('pnpm test:e2e --project chromium \\')
     expect(report).toContain(path.join('tests', 'navbar', 'search.spec.ts'))
   })
 
@@ -214,5 +214,83 @@ describe('SummaryReporter', () => {
     expect(report).toContain('### Error (attempt 1 of 2)')
     expect(report).toContain('first attempt failed')
     expect(report).not.toContain('## How to reproduce locally')
+  })
+
+  test('does not claim all tests passed when the run failed or tests were skipped', () => {
+    const reporter = new SummaryReporter()
+    reporter.onTestEnd(
+      mockTest({
+        id: 'skip-1',
+        outcome: 'skipped',
+        titlePath: ['chromium', 'search.spec.ts', 'skipped'],
+      }),
+    )
+    reporter.onEnd(FAILED)
+
+    const report = fs.readFileSync(path.join('playwright-report', 'agent-report.md'), 'utf8')
+    expect(report).toContain(
+      'No unexpected or flaky test results. Run status: failed. 0 passed, 1 skipped.',
+    )
+    expect(report).not.toContain('All tests passed')
+  })
+
+  test('emits a per-project repro command with the matching dataset', () => {
+    const chromiumFile = path.join(tmpDir, 'tests', 'navbar', 'search.spec.ts')
+    const firefoxFile = path.join(tmpDir, 'tests', 'document-actions', 'publish.spec.ts')
+    const reporter = new SummaryReporter()
+    const previousEnv = {
+      SANITY_E2E_PROJECT_ID: process.env.SANITY_E2E_PROJECT_ID,
+      SANITY_E2E_BASE_URL: process.env.SANITY_E2E_BASE_URL,
+      SANITY_E2E_DATASET: process.env.SANITY_E2E_DATASET,
+      SANITY_E2E_DATASET_CHROMIUM: process.env.SANITY_E2E_DATASET_CHROMIUM,
+      SANITY_E2E_DATASET_FIREFOX: process.env.SANITY_E2E_DATASET_FIREFOX,
+    }
+
+    process.env.SANITY_E2E_PROJECT_ID = 'ittbm412'
+    process.env.SANITY_E2E_BASE_URL = 'https://example.sanity.dev'
+    process.env.SANITY_E2E_DATASET = 'pr-1-chromium-99'
+    process.env.SANITY_E2E_DATASET_CHROMIUM = 'pr-1-chromium-99'
+    process.env.SANITY_E2E_DATASET_FIREFOX = 'pr-1-firefox-99'
+
+    try {
+      reporter.onTestEnd(
+        mockTest({
+          id: 'fail-chromium',
+          outcome: 'unexpected',
+          file: chromiumFile,
+          projectName: 'chromium',
+          titlePath: ['chromium', 'search.spec.ts', 'finds a document'],
+          results: [mockResult({status: 'failed', errors: [{message: 'chromium failed'}]})],
+        }),
+      )
+      reporter.onTestEnd(
+        mockTest({
+          id: 'fail-firefox',
+          outcome: 'unexpected',
+          file: firefoxFile,
+          projectName: 'firefox',
+          titlePath: ['firefox', 'publish.spec.ts', 'publishes'],
+          results: [mockResult({status: 'failed', errors: [{message: 'firefox failed'}]})],
+        }),
+      )
+      reporter.onEnd(FAILED)
+    } finally {
+      for (const [key, value] of Object.entries(previousEnv)) {
+        if (value === undefined) delete process.env[key]
+        else process.env[key] = value
+      }
+    }
+
+    const report = fs.readFileSync(path.join('playwright-report', 'agent-report.md'), 'utf8')
+    const blocks = report
+      .split('```sh')
+      .slice(1)
+      .map((block) => block.split('```')[0] ?? '')
+    expect(blocks).toHaveLength(2)
+    const chromiumBlock = blocks.find((block) => block.includes('--project chromium'))
+    const firefoxBlock = blocks.find((block) => block.includes('--project firefox'))
+    expect(chromiumBlock).toContain('SANITY_E2E_DATASET=pr-1-chromium-99 \\')
+    expect(firefoxBlock).toContain('SANITY_E2E_DATASET=pr-1-firefox-99 \\')
+    expect(firefoxBlock).not.toContain('SANITY_E2E_DATASET=pr-1-chromium-99 \\')
   })
 })

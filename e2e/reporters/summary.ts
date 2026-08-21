@@ -157,15 +157,15 @@ export default class SummaryReporter implements Reporter {
     }
     fs.writeFileSync('test-summary.json', JSON.stringify(summary))
 
-    this.writeAgentReport(cwd, counts, failedTests, flakyTests, failedFiles)
+    this.writeAgentReport(cwd, _result.status, counts, failedTests, flakyTests)
   }
 
   private writeAgentReport(
     cwd: string,
+    runStatus: FullResult['status'],
     counts: {passed: number; failed: number; flaky: number; skipped: number},
     failedTests: TestCase[],
     flakyTests: TestCase[],
-    failedFiles: string[],
   ) {
     const lines: string[] = []
     lines.push('# E2E test report (agent-friendly)')
@@ -187,7 +187,13 @@ export default class SummaryReporter implements Reporter {
     lines.push('')
 
     if (failedTests.length === 0 && flakyTests.length === 0) {
-      lines.push('All tests passed — no failures to report.')
+      if (runStatus === 'passed' && counts.skipped === 0) {
+        lines.push('All tests passed — no failures to report.')
+      } else {
+        lines.push(
+          `No unexpected or flaky test results. Run status: ${runStatus}. ${counts.passed} passed, ${counts.skipped} skipped.`,
+        )
+      }
       lines.push('')
     } else {
       for (const test of [...failedTests, ...flakyTests]) {
@@ -197,30 +203,70 @@ export default class SummaryReporter implements Reporter {
       }
     }
 
-    if (failedFiles.length > 0) {
-      const reproEnv = [
-        'SANITY_E2E_PROJECT_ID',
-        'SANITY_E2E_BASE_URL',
-        'SANITY_E2E_DATASET',
-        'SANITY_E2E_DATASET_CHROMIUM',
-        'SANITY_E2E_DATASET_FIREFOX',
-      ]
-        .map((name) => (process.env[name] ? `${name}=${process.env[name]} \\` : undefined))
-        .filter((line) => line !== undefined)
+    const failedByProject = groupFailedFilesByProject(cwd, failedTests)
+    if (failedByProject.size > 0) {
       lines.push('## How to reproduce locally')
       lines.push('')
       lines.push('From the repository root:')
       lines.push('')
-      lines.push('```sh')
-      lines.push(...reproEnv)
-      lines.push('pnpm test:e2e \\')
-      lines.push(`  ${failedFiles.join(' \\\n  ')}`)
-      lines.push('```')
-      lines.push('')
+      for (const [projectName, files] of failedByProject) {
+        lines.push(...formatReproCommand(projectName, files))
+        lines.push('')
+      }
     }
 
     const reportDir = path.join(cwd, 'playwright-report')
     fs.mkdirSync(reportDir, {recursive: true})
     fs.writeFileSync(path.join(reportDir, 'agent-report.md'), lines.join('\n'))
   }
+}
+
+function groupFailedFilesByProject(cwd: string, failedTests: TestCase[]): Map<string, string[]> {
+  const byProject = new Map<string, string[]>()
+  for (const test of failedTests) {
+    const projectName = test.parent.project()?.name ?? ''
+    const relativeFile = path.relative(cwd, test.location.file)
+    const files = byProject.get(projectName) ?? []
+    if (!files.includes(relativeFile)) files.push(relativeFile)
+    byProject.set(projectName, files)
+  }
+  return byProject
+}
+
+function datasetForProject(projectName: string): string | undefined {
+  if (projectName === 'firefox') {
+    return process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET
+  }
+  if (projectName === 'chromium') {
+    return process.env.SANITY_E2E_DATASET_CHROMIUM || process.env.SANITY_E2E_DATASET
+  }
+  return process.env.SANITY_E2E_DATASET
+}
+
+function formatReproCommand(projectName: string, files: string[]): string[] {
+  const dataset = datasetForProject(projectName)
+  const envLines = [
+    process.env.SANITY_E2E_PROJECT_ID
+      ? `SANITY_E2E_PROJECT_ID=${process.env.SANITY_E2E_PROJECT_ID} \\`
+      : undefined,
+    process.env.SANITY_E2E_BASE_URL
+      ? `SANITY_E2E_BASE_URL=${process.env.SANITY_E2E_BASE_URL} \\`
+      : undefined,
+    dataset ? `SANITY_E2E_DATASET=${dataset} \\` : undefined,
+    process.env.SANITY_E2E_DATASET_CHROMIUM
+      ? `SANITY_E2E_DATASET_CHROMIUM=${process.env.SANITY_E2E_DATASET_CHROMIUM} \\`
+      : undefined,
+    process.env.SANITY_E2E_DATASET_FIREFOX
+      ? `SANITY_E2E_DATASET_FIREFOX=${process.env.SANITY_E2E_DATASET_FIREFOX} \\`
+      : undefined,
+  ].filter((line) => line !== undefined)
+
+  const projectFlag = projectName ? ` --project ${projectName}` : ''
+  return [
+    '```sh',
+    ...envLines,
+    `pnpm test:e2e${projectFlag} \\`,
+    `  ${files.join(' \\\n  ')}`,
+    '```',
+  ]
 }
