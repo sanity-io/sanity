@@ -11,6 +11,7 @@ import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
 import {PresenceOverlay} from '../../presence/overlay/PresenceOverlay'
 import {isNativeEditableElement} from '../../studio/copyPaste/utils'
+import {EMPTY_ARRAY} from '../../util/empty'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {
   NestedDialogClosed,
@@ -110,14 +111,20 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
     setDocumentScrollElement(element)
   }, [])
 
-  // Log telemetry when the dialog opens
+  const currentPathString = pathToString(currentPath ?? EMPTY_ARRAY)
+
+  // navigateTo drops entries at or below the target depth, so the stack can empty while this dialog
+  // stays mounted. Without the ref that reads as a second open.
+  const hasLoggedOpen = useRef(false)
+
   useEffect(() => {
-    if (stack.length === 0) {
-      telemetry.log(NestedDialogOpened, {
-        path: pathToString([]),
-      })
+    if (hasLoggedOpen.current || stack.length > 0) {
+      return
     }
-  }, [stack, telemetry])
+
+    hasLoggedOpen.current = true
+    telemetry.log(NestedDialogOpened, {path: currentPathString})
+  }, [currentPathString, stack.length, telemetry])
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
