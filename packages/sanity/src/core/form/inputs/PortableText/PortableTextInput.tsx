@@ -43,7 +43,7 @@ import {useDocumentDivergences} from '../../contexts/DivergencesProvider'
 import {SANITY_PATCH_TYPE} from '../../patch/patch'
 import {type ArrayOfObjectsItemMember} from '../../store/types/members'
 import {type ObjectFormNode} from '../../store/types/nodes'
-import {immutableReconcile} from '../../store/utils/immutableReconcile'
+import {useImmutableReconcile} from '../../store/utils/useImmutableReconcile'
 import {type EditorChange, type PortableTextInputProps} from '../../types/inputProps'
 import {Compositor} from './Compositor'
 import {useFullscreenPTE} from './contexts/fullscreen'
@@ -306,55 +306,40 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   )
 
   // Handle editor changes
-  const handleEditorChange = useCallback(
-    (change: EditorChange): void => {
-      switch (change.type) {
-        case 'mutation':
-          onChange(toFormPatches(change.patches))
-          break
-        case 'selection':
-          setFocusPathFromEditorSelection(
-            change.selection,
-            editorRef.current?.getSnapshot() ?? null,
-          )
-          break
-        case 'focus':
-          setIsActive(true)
-          setHasFocusWithin(true)
-          break
-        case 'blur':
-          onBlur(change.event)
-          setHasFocusWithin(false)
-          break
-        case 'invalidValue':
-          setInvalidValue(change)
-          break
-        case 'error':
-          toast.push({
-            status: change.level,
-            description: change.description,
-          })
-          break
-        case 'ready':
-          setReady(true)
-          break
-        default:
-      }
-      if (legacyEditorRef.current && onEditorChange) {
-        onEditorChange(change, legacyEditorRef.current)
-      }
-    },
-    // oxlint-disable-next-line react/preserve-manual-memoization -- pre-existing violation, to be fixed in a follow-up
-    [
-      legacyEditorRef,
-      editorRef,
-      onEditorChange,
-      onChange,
-      setFocusPathFromEditorSelection,
-      onBlur,
-      toast,
-    ],
-  )
+  function handleEditorChange(change: EditorChange): void {
+    switch (change.type) {
+      case 'mutation':
+        onChange(toFormPatches(change.patches))
+        break
+      case 'selection':
+        setFocusPathFromEditorSelection(change.selection, editorRef.current?.getSnapshot() ?? null)
+        break
+      case 'focus':
+        setIsActive(true)
+        setHasFocusWithin(true)
+        break
+      case 'blur':
+        onBlur(change.event)
+        setHasFocusWithin(false)
+        break
+      case 'invalidValue':
+        setInvalidValue(change)
+        break
+      case 'error':
+        toast.push({
+          status: change.level,
+          description: change.description,
+        })
+        break
+      case 'ready':
+        setReady(true)
+        break
+      default:
+    }
+    if (legacyEditorRef.current && onEditorChange) {
+      onEditorChange(change, legacyEditorRef.current)
+    }
+  }
 
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
@@ -366,23 +351,19 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     setIgnoreValidationError(true)
   }, [])
 
-  const respondToInvalidContent = useMemo(() => {
-    if (invalidValue && invalidValue.resolution) {
-      return (
-        <Box marginBottom={2}>
-          <RespondToInvalidContent
-            onChange={handleEditorChange}
-            onIgnore={handleIgnoreInvalidValue}
-            resolution={invalidValue.resolution}
-            readOnly={readOnly}
-          />
-        </Box>
-      )
-    }
-    return null
-  }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue, readOnly])
+  const respondToInvalidContent =
+    invalidValue && invalidValue.resolution ? (
+      <Box marginBottom={2}>
+        <RespondToInvalidContent
+          onChange={handleEditorChange}
+          onIgnore={handleIgnoreInvalidValue}
+          resolution={invalidValue.resolution}
+          readOnly={readOnly}
+        />
+      </Box>
+    ) : null
 
-  const handleActivate = useCallback((): void => {
+  function handleActivate(): void {
     if (!isActive) {
       setIsActive(true)
       if (legacyEditorRef.current) {
@@ -390,10 +371,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         PortableTextEditor.focus(legacyEditorRef.current)
       }
     }
-    // oxlint-disable-next-line react/preserve-manual-memoization -- pre-existing violation, to be fixed in a follow-up
-  }, [legacyEditorRef, isActive])
+  }
 
-  const previousRangeDecorations = useRef<RangeDecoration[]>([])
+  const reconcileRangeDecorations = useImmutableReconcile<RangeDecoration[]>()
 
   const rangeDecorations = useMemo((): RangeDecoration[] => {
     // Portable Text Editor cannot reliably handle overlapping range decorations. In the worst case,
@@ -410,12 +390,14 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       ? diffRangeDecorations
       : [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
 
-    // oxlint-disable-next-line react/refs -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
-    const reconciled = immutableReconcile(previousRangeDecorations.current, result)
-    // oxlint-disable-next-line react/refs -- see above
-    previousRangeDecorations.current = reconciled
-    return reconciled
-  }, [diffRangeDecorations, displayInlineChanges, presenceCursorDecorations, rangeDecorationsProp])
+    return reconcileRangeDecorations(result)
+  }, [
+    diffRangeDecorations,
+    displayInlineChanges,
+    presenceCursorDecorations,
+    rangeDecorationsProp,
+    reconcileRangeDecorations,
+  ])
 
   return (
     <Box>
