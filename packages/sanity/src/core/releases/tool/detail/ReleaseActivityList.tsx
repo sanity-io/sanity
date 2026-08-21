@@ -1,10 +1,10 @@
-import {useVirtualizer} from '@tanstack/react-virtual'
 import {AnimatePresence} from 'motion/react'
 import {useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {useVirtualizer} from '../../../util/tanstackVirtual'
 import {
   isAddDocumentToReleaseEvent,
   isDiscardDocumentFromReleaseEvent,
@@ -80,7 +80,6 @@ export const ReleaseActivityList = ({
     })
   }, [events, hasMore, isLoading])
 
-  // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual; function is opted out with 'use no memo'
   const virtualizer = useVirtualizer({
     // If we have more events, or the events are loading, we add a loader row at the end
     count: hasMore || isLoading ? listEvents.length + 1 : listEvents.length,

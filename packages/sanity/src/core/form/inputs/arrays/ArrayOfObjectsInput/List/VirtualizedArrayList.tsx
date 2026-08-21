@@ -4,11 +4,11 @@ import {
   defaultRangeExtractor,
   elementScroll,
   type Range,
-  useVirtualizer,
   type VirtualizerOptions,
 } from '@tanstack/react-virtual'
 import {useCallback, useLayoutEffect, useRef, useState} from 'react'
 
+import {useVirtualizer} from '../../../../../util/tanstackVirtual'
 import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
 import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
 import {type ObjectItem} from '../../../../types/itemProps'
@@ -97,6 +97,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
     }
 
     setResolvedScrollElement(ancestor || scrollElement)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- VirtualizedArrayList is opted out with 'use no memo'
   }, [scrollElement, members.length])
 
   /**
@@ -195,7 +196,6 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
   // custom components can have different dimensions and the library recalculate the size of the element
   const estimateSize = useCallback(() => 53, [])
 
-  // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual; function is opted out with 'use no memo'
   const virtualizer = useVirtualizer({
     count: members.length,
     estimateSize,
