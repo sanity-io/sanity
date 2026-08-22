@@ -39,14 +39,27 @@ const renderBanner = async (documentActions?: DocumentActionsResolver) => {
   return render(<CanvasLinkedBanner />, {wrapper})
 }
 
+function mockDocumentPane(options?: {
+  displayedId?: string
+  versionType?: 'published' | 'draft' | 'version' | 'scheduled-draft' | 'revision'
+}) {
+  mockUseDocumentPane.mockReturnValue({
+    documentId: 'doc1',
+    documentType: 'author',
+    displayed: {_id: options?.displayedId ?? 'drafts.doc1', _type: 'author'},
+    documentActionsContext: {
+      schemaType: 'author',
+      documentId: 'doc1',
+      versionType: options?.versionType ?? 'draft',
+      releaseId: undefined,
+    },
+  } as ReturnType<typeof useDocumentPane>)
+}
+
 describe('CanvasLinkedBanner', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockUseDocumentPane.mockReturnValue({
-      documentId: 'doc1',
-      documentType: 'author',
-      displayed: {_id: 'drafts.doc1', _type: 'author'},
-    } as ReturnType<typeof useDocumentPane>)
+    mockDocumentPane()
     mockUseCanvasCompanionDoc.mockReturnValue({
       isLinked: true,
       isLockedByCanvas: true,
@@ -84,12 +97,33 @@ describe('CanvasLinkedBanner', () => {
     expect(screen.queryByRole('button', {name: 'Edit in Canvas'})).not.toBeInTheDocument()
   })
 
-  it('hides the edit in canvas action for a published displayed document', async () => {
-    mockUseDocumentPane.mockReturnValue({
-      documentId: 'doc1',
-      documentType: 'author',
-      displayed: {_id: 'doc1', _type: 'author'},
-    } as ReturnType<typeof useDocumentPane>)
+  it('shows the edit in canvas action for a live-edit document whose displayed id is published', async () => {
+    mockDocumentPane({displayedId: 'doc1', versionType: 'draft'})
+
+    await renderBanner()
+
+    await waitFor(() => {
+      expect(document.querySelector('[data-test-id="canvas-linked-banner"]')).toBeInTheDocument()
+    })
+    expect(screen.getByRole('button', {name: 'Edit in Canvas'})).toBeInTheDocument()
+  })
+
+  it('hides the edit in canvas action when the pane context is published', async () => {
+    mockDocumentPane({displayedId: 'doc1', versionType: 'published'})
+
+    await renderBanner()
+
+    await waitFor(() => {
+      expect(document.querySelector('[data-test-id="canvas-linked-banner"]')).toBeInTheDocument()
+    })
+    expect(screen.queryByRole('button', {name: 'Edit in Canvas'})).not.toBeInTheDocument()
+  })
+
+  it('hides the edit in canvas action when the pane context is scheduled-draft', async () => {
+    mockDocumentPane({
+      displayedId: 'versions.rSchedule.doc1',
+      versionType: 'scheduled-draft',
+    })
 
     await renderBanner()
 

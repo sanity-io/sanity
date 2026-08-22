@@ -3,7 +3,6 @@ import {
   type DocumentActionComponent,
   type DocumentActionsResolver,
   LATEST,
-  PUBLISHED,
   type ReleaseDocument,
   useActiveReleases,
   usePerspective,
@@ -160,24 +159,36 @@ describe('DeletedDocumentBanners', () => {
     expect(screen.getByRole('button', {name: 'Restore most recent revision'})).toBeInTheDocument()
   })
 
-  it('shows restore from the published perspective when restore is configured', async () => {
-    mockUsePerspective.mockReturnValue({
-      selectedPerspective: PUBLISHED,
-    } as unknown as ReturnType<typeof usePerspective>)
-    mockUseActiveReleases.mockReturnValue({
-      data: [],
-      dispatch: vi.fn(),
-      loading: false,
-    })
-    mockUseReleasesIds.mockReturnValue({
-      releasesIds: [],
-    })
+  it('hides restore on a live-edit type when restore is only configured for draft', async () => {
+    mockDraftPerspective()
     mockUseDocumentPane.mockReturnValue({
       isDeleted: true,
       isDeleting: false,
       ready: true,
       documentId: 'test-document',
       documentType: 'author',
+      schemaType: {name: 'author', liveEdit: true},
+    } as ReturnType<typeof useDocumentPane>)
+
+    await renderTest((prev, ctx) => (ctx.versionType === 'draft' ? [...prev, restoreAction] : prev))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('deleted-document-banner')).toBeInTheDocument()
+    })
+    expect(
+      screen.queryByRole('button', {name: 'Restore most recent revision'}),
+    ).not.toBeInTheDocument()
+  })
+
+  it('shows restore for a live-edit schema type when restore is configured', async () => {
+    mockDraftPerspective()
+    mockUseDocumentPane.mockReturnValue({
+      isDeleted: true,
+      isDeleting: false,
+      ready: true,
+      documentId: 'test-document',
+      documentType: 'author',
+      schemaType: {name: 'author', liveEdit: true},
     } as ReturnType<typeof useDocumentPane>)
 
     await renderTest((prev) => [...prev, restoreAction])

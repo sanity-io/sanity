@@ -104,11 +104,7 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
             mode="ghost"
             onClick={compareDraft}
           />
-          {/*
-            Publish stays available even when `publish` is absent from document.actions.
-            DocumentStatusBarActions hides the primary action for live-edit documents
-            without a version, and this banner is the remediation for that gap.
-          */}
+          {/* Deliberately ungated: `usePublishAction` returns null for live-edit types, so this is the only way to resolve an obsolete draft. */}
           <Button
             onClick={handlePublish}
             text={t('banners.obsolete-draft.actions.publish-draft.text')}
