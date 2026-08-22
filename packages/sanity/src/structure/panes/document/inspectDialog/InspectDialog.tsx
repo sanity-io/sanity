@@ -13,7 +13,7 @@ import {useStructureToolSetting} from '../../../useStructureToolSetting'
 import {useDocumentPane} from '../useDocumentPane'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
-import {JSONInspectorWrapper} from './InspectDialog.styles'
+import {ClampedTitle, JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
 
 const JSON_INSPECTOR_SEARCH_OPTIONS = {debounceTime: 200}
@@ -55,17 +55,19 @@ export function InspectDialog(props: InspectDialogProps) {
       id={`${dialogIdPrefix}dialog`}
       header={
         isDocumentLike(value) ? (
-          <Translate
-            t={t}
-            i18nKey="document-inspector.dialog.title"
-            components={{
-              DocumentTitle: () => (
-                <em>
-                  <DocTitle document={value} />
-                </em>
-              ),
-            }}
-          />
+          <ClampedTitle>
+            <Translate
+              t={t}
+              i18nKey="document-inspector.dialog.title"
+              components={{
+                DocumentTitle: () => (
+                  <em>
+                    <DocTitle document={value} />
+                  </em>
+                ),
+              }}
+            />
+          </ClampedTitle>
         ) : (
           <em>{t('document-inspector.dialog.title-no-value')}</em>
         )
