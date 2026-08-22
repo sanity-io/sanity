@@ -716,17 +716,7 @@ These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The st
 
 ### Git branch naming
 
-Cursor Cloud already requires lowercase branches of the form `cursor/<descriptive-name>-<hash>` (`cursor/` prefix, session hash suffix).
-
-When the session is working from a Linear issue — an identifier in the prompt, a `linear.app` URL, or Linear MCP context — put that identifier, lowercased, immediately after `cursor/`:
-
-```
-cursor/<linear-id>-<descriptive-name>-<hash>
-```
-
-Example: working on `SAPP-1234` becomes `cursor/sapp-1234-some-thing-hash`.
-
-Do not invent an identifier. If no Linear issue is provided during the session, keep `cursor/<descriptive-name>-<hash>`.
+When a Linear issue is provided during the session, include its lowercased id in the branch name: `cursor/<linear-id>-<descriptive-name>-<hash>` (e.g. `cursor/sapp-1234-some-thing-hash`).
 
 ### Services
 
