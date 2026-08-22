@@ -714,6 +714,10 @@ See `turbo.json` for full list of environment variables that affect builds.
 
 These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The startup update script already runs `pnpm install`.
 
+### Git branch naming
+
+When a Linear issue is provided during the session, include its lowercased id in the branch name: `cursor/<linear-id>-<descriptive-name>-<hash>` (e.g. `cursor/sapp-1234-some-thing-hash`).
+
 ### Services
 
 | Service                                           | Port | Purpose                                          |
