@@ -39,6 +39,12 @@ const FILTER_TABS_STYLE: CSSProperties = {
  * gains a leading checkbox column (select-all in the header row, per-row checkboxes) and the command
  * lane swaps to a bulk toolbar while a selection exists.
  *
+ * Bulk actions that honour `document.actions` must follow the rule in
+ * `packages/sanity/src/core/config/document/bulkDocumentActions.ts`
+ * (`partitionBulkActionSelection`): hide the control only when the action id is
+ * absent for every selected row, and operate only on the included subset. Both
+ * halves are required.
+ *
  * @internal
  */
 export interface DocumentTableSelection<Row = unknown> {

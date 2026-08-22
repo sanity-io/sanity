@@ -597,6 +597,12 @@ interface DocumentActionProps {
 }
 ```
 
+### Bulk selections
+
+`document.actions` resolves per document, so a control over many rows has no single context. Hide that control only when the mirrored action id is absent for every selected row, and exclude any row that lacks the id from the operation (transaction, dialog list, and counts). A mixed selection therefore still shows the control and acts only on the allowed subset. See `packages/sanity/src/core/config/document/bulkDocumentActions.ts`.
+
+The rule reaches config-array omission and nothing else. An action left in the array that returns `null` from its own hook for a given document keeps its id in the resolved set, so that row stays in the selection and in the operation. Reading that second mechanism means calling the action hook once per row, which a variable-length selection cannot do. Treat the presence check as the ceiling for any bulk control.
+
 ### Dialogs
 
 Actions can show dialogs for confirmation or additional input:
