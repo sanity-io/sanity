@@ -5,7 +5,6 @@ import {Card, Container, Flex, Heading, Text, useClickOutsideEvent} from '@sanit
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   getDocumentVariantType,
-  getVersionFromId,
   useCanvasCompanionDoc,
   useConfiguredDocumentActionIds,
   useNavigateToCanvasDoc,
@@ -138,21 +137,13 @@ const CanvasLinkedBannerContent = ({documentId}: {documentId: string}) => {
 }
 
 export function CanvasLinkedBanner() {
-  const {documentId, documentType, displayed} = useDocumentPane()
+  const {documentId, displayed, documentActionsContext} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
   const id = displayed?._id || documentId
   const {companionDoc} = useCanvasCompanionDoc(id)
   const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId, 'banner')
-  const documentVariantType = getDocumentVariantType(id)
   const configuredActionIds = useConfiguredDocumentActionIds(
-    companionDoc && documentType
-      ? {
-          schemaType: documentType,
-          documentId,
-          versionType: documentVariantType,
-          releaseId: documentVariantType === 'version' ? getVersionFromId(id) : undefined,
-        }
-      : null,
+    companionDoc ? documentActionsContext : null,
   )
   const showEditInCanvas = configuredActionIds.has('editInCanvas')
 

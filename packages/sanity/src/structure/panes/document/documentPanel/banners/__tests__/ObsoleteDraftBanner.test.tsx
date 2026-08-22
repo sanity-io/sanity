@@ -79,6 +79,17 @@ describe('ObsoleteDraftBanner', () => {
     })
   })
 
+  it('hides discard when discardChanges is only configured for published', async () => {
+    await renderBanner((prev, ctx) =>
+      ctx.versionType === 'published' ? [...prev, discardChangesAction] : prev,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('live-edit-type-banner')).toBeInTheDocument()
+    })
+    expect(screen.queryByRole('button', {name: 'Discard draft'})).not.toBeInTheDocument()
+  })
+
   it('keeps publish when document.actions is empty', async () => {
     await renderBanner(() => [])
 
