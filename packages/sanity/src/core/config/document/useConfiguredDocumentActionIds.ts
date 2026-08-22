@@ -44,6 +44,44 @@ export function useConfiguredDocumentActionIds(
   }, [schemaType, documentId, versionType, releaseId, resolveDocumentActions])
 }
 
+// Callers pass isScheduledDraft. Do not look the release up here: the chip's
+// `releases` prop is notCurrentReleases and the chip's own release is absent.
+/**
+ * Resolves the document-actions version type from pane or chip flags.
+ *
+ * @internal
+ */
+export function getDocumentVersionType(options: {
+  isRevision?: boolean
+  isScheduledDraft?: boolean
+  isVersionDocument?: boolean
+  perspectiveName?: string
+  draftsEnabled?: boolean
+}): DocumentActionsVersionType {
+  const {
+    isRevision = false,
+    isScheduledDraft = false,
+    isVersionDocument = false,
+    perspectiveName,
+    draftsEnabled = false,
+  } = options
+
+  if (isRevision) return 'revision'
+  if (isScheduledDraft) return 'scheduled-draft'
+  if (isVersionDocument) return 'version'
+  if (perspectiveName === 'published') return 'published'
+  if (draftsEnabled) return 'draft'
+  return 'published'
+}
+
+function isDraftBundleId(bundleId: string | undefined): boolean {
+  return bundleId === 'draft' || bundleId === 'drafts' || bundleId === undefined
+}
+
+function isDraftOrPublishedBundleId(bundleId: string | undefined): boolean {
+  return bundleId === 'published' || isDraftBundleId(bundleId)
+}
+
 /**
  * Derives the document-actions context for a version chip / inventory row
  * context menu from the chip's release identity.
@@ -58,25 +96,16 @@ export function getVersionContextMenuActionsContext(options: {
 }): PartialContext<DocumentActionsContext> {
   const {schemaType, documentGroupId, fromRelease, isScheduledDraft = false} = options
 
-  let versionType: DocumentActionsVersionType
-  if (isScheduledDraft) {
-    versionType = 'scheduled-draft'
-  } else if (fromRelease === 'published') {
-    versionType = 'published'
-  } else if (fromRelease === 'draft') {
-    versionType = 'draft'
-  } else {
-    versionType = 'version'
-  }
+  const versionType = getDocumentVersionType({
+    isScheduledDraft,
+    isVersionDocument: isScheduledDraft || !isDraftOrPublishedBundleId(fromRelease),
+    perspectiveName: fromRelease,
+    draftsEnabled: true,
+  })
 
-  const releaseId = fromRelease === 'published' || fromRelease === 'draft' ? undefined : fromRelease
+  const releaseId = isDraftOrPublishedBundleId(fromRelease) ? undefined : fromRelease
 
-  return {
-    schemaType,
-    documentId: documentGroupId,
-    versionType,
-    releaseId,
-  }
+  return {schemaType, documentId: documentGroupId, versionType, releaseId}
 }
 
 /**
@@ -91,13 +120,9 @@ export function getDiscardDocumentActionId(options: {
 }): keyof DocumentActionKeys | null {
   const {fromRelease, isScheduledDraft = false} = options
 
-  if (fromRelease === 'published') {
-    return null
-  }
-
-  if (fromRelease === 'draft') {
+  if (fromRelease === 'published') return null
+  if (isDraftBundleId(fromRelease)) {
     return isScheduledDraft ? 'discardVersion' : 'discardChanges'
   }
-
   return 'discardVersion'
 }
