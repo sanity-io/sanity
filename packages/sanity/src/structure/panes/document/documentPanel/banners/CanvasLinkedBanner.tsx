@@ -6,6 +6,7 @@ import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   getDocumentVariantType,
   useCanvasCompanionDoc,
+  useConfiguredDocumentActionIds,
   useNavigateToCanvasDoc,
   useTranslation,
 } from 'sanity'
@@ -136,11 +137,15 @@ const CanvasLinkedBannerContent = ({documentId}: {documentId: string}) => {
 }
 
 export function CanvasLinkedBanner() {
-  const {documentId, displayed} = useDocumentPane()
+  const {documentId, displayed, documentActionsContext} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
   const id = displayed?._id || documentId
   const {companionDoc} = useCanvasCompanionDoc(id)
   const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId, 'banner')
+  const configuredActionIds = useConfiguredDocumentActionIds(
+    companionDoc ? documentActionsContext : null,
+  )
+  const showEditInCanvas = configuredActionIds.has('editInCanvas')
 
   if (!companionDoc) return null
 
@@ -150,11 +155,15 @@ export function CanvasLinkedBanner() {
       data-test-id="canvas-linked-banner"
       paddingY={0}
       content={<CanvasLinkedBannerContent documentId={id} />}
-      action={{
-        mode: 'ghost',
-        text: t('canvas.banner.edit-in-canvas-action'),
-        onClick: navigateToCanvas,
-      }}
+      action={
+        showEditInCanvas
+          ? {
+              mode: 'ghost',
+              text: t('canvas.banner.edit-in-canvas-action'),
+              onClick: navigateToCanvas,
+            }
+          : undefined
+      }
     />
   )
 }

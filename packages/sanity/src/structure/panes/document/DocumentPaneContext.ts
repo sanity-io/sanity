@@ -7,6 +7,7 @@ import {
 } from '@sanity/types'
 import {
   type DocumentActionComponent,
+  type DocumentActionsContext,
   type DocumentBadgeComponent,
   type DocumentFieldAction,
   type DocumentFormNode,
@@ -15,6 +16,7 @@ import {
   type DocumentSyncState,
   type EditStateFor,
   type NodeChronologyProps,
+  type PartialContext,
   type PatchEvent,
   type PermissionCheckResult,
   type ReleaseId,
@@ -86,6 +88,12 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   timelineMode?: undefined
   setTimelineRange(since: string | null, rev: string | null): void
   setIsDeleting: (state: boolean) => void
+  /**
+   * The document-actions context the pane resolves `document.actions` from.
+   * In-pane surfaces that mirror a configured action must read this instead of
+   * deriving a version type from the displayed document id.
+   */
+  documentActionsContext: PartialContext<DocumentActionsContext>
   /**
    * Resolution state of the document targeted by the selected perspective and variant.
    * The single source in-pane consumers should read instead of resolving the target themselves.

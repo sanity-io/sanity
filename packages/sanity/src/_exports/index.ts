@@ -278,6 +278,7 @@ export {
   type DocumentInspectorProps,
   type DocumentInspectorUseMenuItemProps,
 } from '../core/config/document/inspector'
+export {useConfiguredDocumentActionIds} from '../core/config/document/useConfiguredDocumentActionIds'
 export {flattenConfig} from '../core/config/flattenConfig'
 export {type FormComponents} from '../core/config/form/types'
 export {prepareConfig} from '../core/config/prepareConfig'

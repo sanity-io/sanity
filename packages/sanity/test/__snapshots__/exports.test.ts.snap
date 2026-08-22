@@ -595,6 +595,7 @@ exports[`exports snapshot 1`] = `
     "useCommentsTelemetry": "function",
     "useConditionalToast": "function",
     "useConfigContextFromSource": "function",
+    "useConfiguredDocumentActionIds": "function",
     "useConnectionState": "function",
     "useConnectionStatusStore": "function",
     "useCopyErrorDetails": "function",
