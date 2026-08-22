@@ -14,6 +14,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {type DocumentActionsResolver} from '../../../../config/types'
 import type * as ConnectionStatusStoreMod from '../../../../store/connection-status/connection-status-store'
 import {
   activeASAPRelease,
@@ -144,11 +145,14 @@ const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
 
 const renderTest = async (
   props: Partial<ReleaseSummaryProps>,
-  options?: {variantsEnabled?: boolean},
+  options?: {variantsEnabled?: boolean; documentActions?: DocumentActionsResolver},
 ) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
-    ...(options?.variantsEnabled ? {config: {beta: {variants: {enabled: true}}}} : undefined),
+    config: {
+      ...(options?.variantsEnabled ? {beta: {variants: {enabled: true}}} : undefined),
+      ...(options?.documentActions ? {document: {actions: options.documentActions}} : undefined),
+    },
   })
 
   return render(
@@ -356,6 +360,32 @@ describe('ReleaseSummary', () => {
       expect(screen.queryAllByTestId('table-row')).toHaveLength(0)
       expect(screen.getByRole('tab', {name: /all/i})).toBeInTheDocument()
       expect(searchInput).toHaveFocus()
+    })
+  })
+
+  // Both table shapes share one `renderRowActions`, so the document.actions gate has to hold for
+  // the default table and the beta.variants DocumentTable alike.
+  describe.each([
+    {tableShape: 'default table', variantsEnabled: false},
+    {tableShape: 'variants DocumentTable', variantsEnabled: true},
+  ])('row action menu in the $tableShape', ({variantsEnabled}) => {
+    const findFirstRowMenuButton = async (documentActions?: DocumentActionsResolver) => {
+      await renderTest({}, {variantsEnabled, documentActions})
+      await screen.findByTestId('document-table-card')
+
+      const [firstDocumentRow] = screen.getAllByTestId('table-row')
+      return firstDocumentRow.querySelector('[data-ui="MenuButton"]')
+    }
+
+    it('renders while discardVersion and unpublishVersion are configured', async () => {
+      expect(await findFirstRowMenuButton()).toBeInTheDocument()
+    })
+
+    it('is gone once both action ids are omitted from document.actions', async () => {
+      const publishOnly: DocumentActionsResolver = (prev) =>
+        prev.filter(({action}) => action === 'publish')
+
+      expect(await findFirstRowMenuButton(publishOnly)).not.toBeInTheDocument()
     })
   })
 
