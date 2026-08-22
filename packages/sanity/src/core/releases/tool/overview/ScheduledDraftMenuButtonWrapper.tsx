@@ -57,6 +57,8 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
       : null,
   )
   const showPublishNow = configuredActionIds.has('publish')
+  // Both EditScheduledDraftAction and useSchedulePublishAction claim the `schedule`
+  // action id, so a config that removes only one of them still leaves this gate open.
   const showSchedule = configuredActionIds.has('schedule')
   const showDeleteSchedule = configuredActionIds.has('discardVersion')
 
