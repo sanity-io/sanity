@@ -8,6 +8,7 @@ import {
   isReleaseDocument,
   type ReleaseDocument,
   Translate,
+  useConfiguredDocumentActionIds,
   useDocumentOperation,
   usePerspective,
   useTranslation,
@@ -35,10 +36,22 @@ export function DeletedDocumentBanners() {
 
 function DeletedDocumentBanner() {
   const {documentId, documentType} = useDocumentPane()
+  const {selectedPerspective} = usePerspective()
   // No `getTargetScopeId(useTargetDocumentState())` here: restoring a deleted document deliberately operates on
   // the draft/published pair, so no version scope applies.
   const {restore} = useDocumentOperation(documentId, documentType)
   const {navigateIntent} = useRouter()
+  const configuredActionIds = useConfiguredDocumentActionIds(
+    documentType
+      ? {
+          schemaType: documentType,
+          documentId,
+          versionType: isPublishedPerspective(selectedPerspective) ? 'published' : 'draft',
+          releaseId: undefined,
+        }
+      : null,
+  )
+  const canRestore = configuredActionIds.has('restore')
 
   const handleRestore = useCallback(() => {
     restore.execute('lastRevision')
@@ -49,10 +62,14 @@ function DeletedDocumentBanner() {
 
   return (
     <Banner
-      action={{
-        onClick: handleRestore,
-        text: t('banners.deleted-document-banner.restore-button.text'),
-      }}
+      action={
+        canRestore
+          ? {
+              onClick: handleRestore,
+              text: t('banners.deleted-document-banner.restore-button.text'),
+            }
+          : undefined
+      }
       content={
         <Text size={1} weight="medium">
           {t('banners.deleted-document-banner.text')}
