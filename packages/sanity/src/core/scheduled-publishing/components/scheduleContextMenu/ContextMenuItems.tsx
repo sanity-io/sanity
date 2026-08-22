@@ -25,6 +25,17 @@ interface Props {
   schemaType: SchemaType
 }
 
+/**
+ * Intentionally not gated on `document.actions`.
+ * These items call `useScheduleOperation` (schedules HTTP API), not document operations.
+ * Edit patches a schedule record; the in-pane call site is already behind
+ * `useScheduleAction.action = 'schedule'`.
+ * Publish now is a document publish. Gating it on `publish` would reach only config-array
+ * omission, the same presence-only ceiling the shipped out-of-pane gates accept.
+ * Delete and Clear are not `delete` (the document lives) and not `discardVersion`
+ * (legacy schedules are not versions).
+ * Grant checks stay on `useDocumentPairPermissions({permission: 'publish'})`.
+ */
 const ContextMenuItems = (props: Props) => {
   const {actions, onDelete, onEdit, schedule, schemaType} = props
   const {mode} = useScheduledPublishingEnabled()
