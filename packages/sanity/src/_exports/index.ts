@@ -249,6 +249,7 @@ export {
   isSanityDefinedAction,
   type SanityDefinedAction,
 } from '../core/config/document/actions'
+export {getDocumentVersionType} from '../core/config/document/useConfiguredDocumentActionIds'
 export {
   type DocumentBadgeComponent,
   type DocumentBadgeDescription,
