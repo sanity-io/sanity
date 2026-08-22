@@ -8,6 +8,7 @@ import {
   getPublishedId,
   type ObjectSchemaType,
   Translate,
+  useConfiguredDocumentActionIds,
   useDocumentOperation,
   useTranslation,
 } from 'sanity'
@@ -44,6 +45,13 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   // No `getTargetScopeId(useTargetDocumentState())` here: resolving an obsolete draft deliberately operates on
   // the draft/published pair, so no version scope applies.
   const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '')
+  const configuredActionIds = useConfiguredDocumentActionIds({
+    schemaType: schemaType.name,
+    documentId,
+    versionType: 'draft',
+    releaseId: undefined,
+  })
+  const showDiscardDraft = configuredActionIds.has('discardChanges')
 
   const handlePublish = useCallback(() => {
     publish.execute()
@@ -96,6 +104,11 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
             mode="ghost"
             onClick={compareDraft}
           />
+          {/*
+            Publish stays available even when `publish` is absent from document.actions.
+            DocumentStatusBarActions hides the primary action for live-edit documents
+            without a version, and this banner is the remediation for that gap.
+          */}
           <Button
             onClick={handlePublish}
             text={t('banners.obsolete-draft.actions.publish-draft.text')}
@@ -109,19 +122,21 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
             loading={isPublishing}
             tone="positive"
           />
-          <Button
-            onClick={handleDiscard}
-            text={t('banners.obsolete-draft.actions.discard-draft.text')}
-            tooltipProps={
-              isEditBlocking
-                ? {
-                    content: t('banners.live-edit-draft-banner.discard.tooltip'),
-                  }
-                : {}
-            }
-            loading={isDiscarding}
-            tone="caution"
-          />
+          {showDiscardDraft ? (
+            <Button
+              onClick={handleDiscard}
+              text={t('banners.obsolete-draft.actions.discard-draft.text')}
+              tooltipProps={
+                isEditBlocking
+                  ? {
+                      content: t('banners.live-edit-draft-banner.discard.tooltip'),
+                    }
+                  : {}
+              }
+              loading={isDiscarding}
+              tone="caution"
+            />
+          ) : null}
         </Flex>
       }
       data-testid="live-edit-type-banner"
