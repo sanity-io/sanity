@@ -523,18 +523,28 @@ interface InputProps {
 
 ## Document Actions
 
-Document Actions are buttons and operations that appear in the document editor's action bar. They control publishing, deletion, duplication, and other document-level operations.
+Document actions are identified by a stable `action` id (`SanityDefinedAction` / `DocumentActionKeys`). The document pane footer is one consumer; other surfaces (version chip, release table, banners) may _mirror_ an id. Mirroring is behavioural: a control reproduces an id even when its file never writes that string (`CanvasLinkedBanner` ↔ `editInCanvas`).
 
 ### Built-in Actions
 
-| Action           | Description               |
-| ---------------- | ------------------------- |
-| `publish`        | Publish draft to live     |
-| `unpublish`      | Remove published version  |
-| `delete`         | Delete document entirely  |
-| `duplicate`      | Create a copy             |
-| `discardChanges` | Revert draft to published |
-| `restore`        | Restore from history      |
+| Action             | Description                                                     |
+| ------------------ | --------------------------------------------------------------- |
+| `publish`          | Publish draft to live                                           |
+| `unpublish`        | Remove published version                                        |
+| `delete`           | Delete document entirely                                        |
+| `duplicate`        | Create a copy                                                   |
+| `discardChanges`   | Revert draft to published                                       |
+| `restore`          | Restore from history                                            |
+| `discardVersion`   | Discard a release version (Delete schedule on scheduled drafts) |
+| `unpublishVersion` | Unpublish the published document when this release publishes    |
+| `linkToCanvas`     | Link the document to Canvas                                     |
+| `editInCanvas`     | Open the linked Canvas document                                 |
+| `unlinkFromCanvas` | Unlink the document from Canvas                                 |
+| `schedule`         | Schedule a draft, or edit a scheduled-draft schedule            |
+
+Ids are not 1:1 with UI items: `EditScheduledDraftAction.action = 'schedule'` and `useSchedulePublishAction.action = 'schedule'`. `DeleteScheduledDraftAction.action = 'discardVersion'`. `PublishScheduledDraftAction.action = 'publish'`.
+
+`releases` and `singleDocRelease` **replace** the action list for `versionType === 'version'` and `'scheduled-draft'` rather than composing, so only a root / workspace-level `document.actions` filter survives into those version types.
 
 ### Action Component Structure
 
@@ -583,17 +593,45 @@ export default defineConfig({
 
 ### Action Context
 
-Actions receive context about the document state:
+Two types:
+
+**Resolver context** — `DocumentActionsContext`, argument to `document.actions(prev, ctx)`. This is where `versionType` and `releaseId` live (`DocumentActionsContext` also extends `ConfigContext`).
 
 ```typescript
+type DocumentActionsVersionType = 'published' | 'draft' | 'revision' | 'version' | 'scheduled-draft'
+
+interface DocumentActionsContext {
+  documentId?: string
+  schemaType: string
+  releaseId: string | undefined
+  versionType: DocumentActionsVersionType
+}
+```
+
+Derivation of `ctx.versionType`:
+
+- `params.rev` present → `'revision'`
+- cardinality-one release version → `'scheduled-draft'`
+- other release version → `'version'`
+- published perspective → `'published'`
+- `draftsEnabled` → `'draft'`
+- `draftsEnabled` false and no other match → `'published'`
+
+**Invoked props** — `DocumentActionProps` extends `EditStateFor`. It does **not** have `versionType`.
+
+```typescript
+// DocumentActionProps extends EditStateFor. It is the document pair
+// handed to an invoked action hook, not the resolver context.
 interface DocumentActionProps {
-  id: string // Document ID
-  type: string // Schema type
+  id: string
+  type: string
   draft: SanityDocument | null
   published: SanityDocument | null
+  version: SanityDocument | null
   liveEdit: boolean
-  versionType: 'published' | 'draft' | 'version'
-  releaseId?: string // If editing in a release
+  release?: string
+  revision?: string
+  initialValueResolved: boolean
 }
 ```
 
@@ -613,7 +651,73 @@ return {
 }
 ```
 
+### The document.actions invariant
+
+> For every control that lets a user trigger a document mutation, the set of Sanity-defined action ids that control's behaviour reproduces must be a subset of the ids present in `source.document.actions(ctx)` for the exact `ctx = {schemaType, documentId, versionType, releaseId}` that control acts on, not the context of the document the user happens to have open.
+
+1. **Keyed on the resolver's id set, not on what the footer renders.** Footer _hiding_ is placement; config _removing_ an id is permission. Only the second binds.
+2. **One-directional.** Presence licenses rendering; it never compels it. An action hook may still return `null`.
+3. **Behavioural.** A control mirrors an id even when nothing in its file names that id (`CanvasLinkedBanner` ↔ `editInCanvas`).
+
+### In-pane versus out-of-pane
+
+| Surface                                                                             | How it honours config                                                                                                       |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Inside the pane** (footer, overflow, in-pane dialogs fed by the same provider)    | Render from `DocumentActionsStateContext` (`DocumentActionsProvider` already invoked the configured hooks). **No id gate.** |
+| **Outside the pane** (chip, inventory, release table, banners that reproduce an id) | Gate on the mirrored id via `useConfiguredDocumentActionIds(ctx)` for **that control's** `ctx`.                             |
+
+- Hook path: `packages/sanity/src/core/config/document/useConfiguredDocumentActionIds.ts`
+- The hook lands with the gating work (PR 14244). This docs change does not add it.
+- `src/core` must not import `src/structure`. Out-of-pane core surfaces cannot invoke structure action hooks.
+
+### Why descriptions cannot be resolved out of pane
+
+Do **not** render resolved `DocumentActionDescription[]` outside the pane.
+
+1. **Structure hooks throw outside the pane provider.** The six built-ins in `packages/sanity/src/structure/documentActions/` — `DeleteAction`, `DiscardChangesAction`, `DuplicateAction`, `HistoryRestoreAction`, `PublishAction`, `UnpublishAction` — call `useDocumentPane()`, which throws `'DocumentPane: missing context value'` outside the pane provider (`packages/sanity/src/structure/panes/document/useDocumentPane.tsx`). Combined with the `core ↛ structure` boundary, core surfaces cannot invoke them anyway.
+2. **Version-action hooks read ambient perspective, not the chip's release.** `useDiscardVersionAction` reads `usePerspective()` and `useTargetDocumentState()`. `useUnpublishVersionAction` reads `useTargetDocumentState()`. Running them for a chip that represents a different release mislabels / mis-targets the dialog. Nesting `PerspectiveProvider` per chip was rejected: it introduces a `usePerspective` / router / `useDocumentPane().targetDocumentState` three-way divergence.
+3. **Each distinct version id opens a document-pair listener.** `editState` is memoised per `(client, idPair, typeName)` (`packages/sanity/src/core/store/document/document-pair/editState.ts`). Resolving a description requires that pair. With `@sanity/ui` v4 keeping closed overlays mounted (`<Activity>`), resolving per chip costs one listener per chip for as long as the overlay tree stays mounted.
+
+Rejected alternatives: rendering resolved descriptions out of pane; widening `DocumentActionGroup` into placement slots; `.find(...)` on resolved components; a per-row resolver twin; gating inside `useScheduledDraftMenuActions`; branded `GatedAction` tokens; custom lint on i18n keys; nesting `PerspectiveProvider` per chip; relaxing `.oxlintrc.json` boundaries.
+
+### Exemptions
+
+Presence of an exemption does not weaken the invariant for a control that _does_ reproduce a Sanity-defined id.
+
+**1. No id in the vocabulary.** `createVersion`, `copyToDrafts`, `copyToRelease`, add-document-to-release, revert-release. `SANITY_DEFINED_ACTIONS` names none of them.
+
+**2. Non-document entity.** Release and variant actions are governed by `releases.actions` or by nothing. `document.actions` is the wrong authority.
+
+**3. Bulk over a selection.** No single `ctx`. Hide the control only when the id is absent for every selected row; exclude rows where it is absent from the transaction. Do not invent a per-row resolver twin.
+
+**4. Remediation UI.** Banners that appear because the footer cannot offer the action. Polarity is per-banner:
+
+| Banner                   | Rule                                                                                         |
+| ------------------------ | -------------------------------------------------------------------------------------------- |
+| Obsolete draft Publish   | **Exempt** — `usePublishAction` returns null for live-edit; the status bar hides the primary |
+| Obsolete draft Discard   | **Gate** `discardChanges` with `versionType: 'draft'`                                        |
+| Deleted-document Restore | **Gate** `restore`. Keep the informational banner                                            |
+| Canvas Edit in Canvas    | **Gate** `editInCanvas`                                                                      |
+
+**5. Deprecated scheduled publishing (`sanity/scheduled-publishing`).** `ContextMenuItems` (Schedules tool and the in-pane Schedule dialog) and `FallbackContextMenu` (no-schema rows) are **not** gated on `document.actions`. They predate the action-id vocabulary and mutate schedule records through the schedules HTTP API (`useScheduleOperation`), not document operations. Edit / Delete / Clear have no honest Sanity-defined id: they are not `delete` (the document is unchanged) and not `discardVersion` (legacy schedules are not versions). Publish now is a real document publish via `POST /schedules/…/publish`, but an id gate would not honour a _replaced_ `publish` action and the plugin is `@deprecated` (enabled only when `scheduledPublishing.enabled` or `hasUsedScheduledPublishing`). In-pane Edit/Delete are already behind `useScheduleAction.action = 'schedule'`. The no-schema fallback cannot build `{schemaType, documentId, versionType, releaseId}`. Studios that want these controls to honour `document.actions` should use scheduled drafts (`singleDocRelease`), where Publish now → `publish`, Edit schedule → `schedule`, Delete schedule → `discardVersion`. See SAPP-4342 and the file comments on `packages/sanity/src/core/scheduled-publishing/components/scheduleContextMenu/ContextMenuItems.tsx` and `FallbackContextMenu.tsx`.
+
+### Reference implementations
+
+1. `packages/sanity/src/core/releases/components/documentHeader/contextMenu/VersionContextMenu.tsx` — resolve `useConfiguredDocumentActionIds` at the surface for the chip's own `ctx`. Derive booleans locally. Pass those booleans into the child menu. Do not invoke action hooks.
+2. `packages/sanity/src/core/releases/tool/detail/documentTable/DocumentActions.tsx` — empty-menu idiom:
+
+```ts
+const showDiscardVersion = configuredActionIds.has('discardVersion')
+const showUnpublish = configuredActionIds.has('unpublishVersion')
+const hasConfiguredMenuItems = showDiscardVersion || showUnpublish
+if (!hasConfiguredMenuItems) return null
+```
+
+Use this whenever a menu would otherwise render a chrome-only shell.
+
 **Source**: `packages/sanity/src/core/config/document/actions.ts`
+
+**Out-of-pane gate**: `packages/sanity/src/core/config/document/useConfiguredDocumentActionIds.ts`
 
 ---
 
