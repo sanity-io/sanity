@@ -12,6 +12,7 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {useSyncObservable} from 'react-rx'
@@ -29,6 +30,7 @@ import {
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
+import {restrictIdsToConfiguredAction} from '../../config/document/bulkDocumentActions'
 import {STUDIO_DSN} from '../../error/sentry/sentryErrorReporter'
 import {StudioFeedbackDialog} from '../../feedback/components/StudioFeedbackDialog'
 import {useFeedbackTelemetry} from '../../feedback/hooks/useFeedbackTelemetry'
@@ -49,6 +51,7 @@ import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAva
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
 import {useDocumentStore} from '../../store/datastores'
+import {useSource} from '../../studio/source'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, isVersionId, type SystemBundle} from '../../util/draftUtils'
@@ -65,6 +68,7 @@ import {
   type DocumentGroupInventoryPerspectiveList,
   type DocumentGroupInventoryReferencePreviewLinkProps,
 } from '../types'
+import {getDeletableInventorySelection} from '../utils/getDeletableInventorySelection'
 import {Body} from './Body'
 import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
@@ -129,6 +133,8 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const {t} = useTranslation(studioLocaleNamespace)
   const {t: feedbackT} = useTranslation(feedbackLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  // oxlint-disable-next-line typescript/no-deprecated -- deprecated for external consumers; inventory resolves document.actions from this same source instance
+  const source = useSource()
   const schema = useSchema().get(documentType)
   const versionState = useDocumentVersionsObservable({documentId})
   const {state$: releases} = useReleasesStore()
@@ -141,6 +147,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const setVariant = useSetVariant()
   const {createVariantDocument} = useVariantDocumentOperations()
   const documentStore = useDocumentStore()
+  const deletableAllowlistRef = useRef(new Set<string>())
 
   const filterString = useMemo(
     () =>
@@ -187,8 +194,18 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           deletionMachine.provide({
             actors: {
               referringDocuments: fromObservable(() => referringDocuments$),
+              // oxlint-disable-next-line react/refs -- invoked on confirm, not during render; the ref is the latest allowlist
               deleteVariants: fromPromise(({input, signal}) => {
-                return input.ids
+                const ids = restrictIdsToConfiguredAction(input.ids, deletableAllowlistRef.current)
+                if (ids.length === 0) {
+                  return Promise.resolve({
+                    transactionId: '',
+                    documentIds: [],
+                    results: [],
+                  })
+                }
+
+                return ids
                   .reduce(
                     (pendingTransaction, id) => pendingTransaction.delete(id),
                     client.transaction(),
@@ -201,7 +218,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
               }),
             },
           }),
-        [referringDocuments$, client],
+        [referringDocuments$, client, deletableAllowlistRef],
       ),
       variantCreationMachine: useMemo(
         () =>
@@ -285,7 +302,37 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const variantCreationRef = useSelector(inventoryRef, ({context}) => context.variantCreationRef)
   const metaState = useSelector(inventoryRef, ({context}) => context.metaState)
 
-  const selectionCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
+  const selectedIds = useSelector(selectionRef, ({context}) => context.selectedIds)
+  const selectedVariants = useSelector(selectionRef, ({context}) => context.variants)
+  const inventoryReleases = useSelector(inventoryRef, ({context}) => context.releases)
+  const {deletableIds, shouldShowDelete} = useMemo(
+    () =>
+      getDeletableInventorySelection({
+        selectedIds,
+        variants: selectedVariants,
+        releases: inventoryReleases,
+        schemaType: schema ? documentType : undefined,
+        resolveActions: source.document.actions,
+      }),
+    [
+      selectedIds,
+      selectedVariants,
+      inventoryReleases,
+      schema,
+      documentType,
+      source.document.actions,
+    ],
+  )
+
+  useLayoutEffect(() => {
+    deletableAllowlistRef.current = new Set(deletableIds)
+    deletionRef.send({type: 'selection.changed', selectedIds: new Set(deletableIds)})
+  }, [deletionRef, deletableIds, deletableAllowlistRef])
+
+  const canRequestDeletion = useSelector(deletionRef, (machine) =>
+    machine.can({type: 'delete.request'}),
+  )
+
   const isReadOnly = useSelector(selectionRef, (snapshot) => snapshot.matches('readonly'))
   const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
   const isFeedbackActive = useSelector(inventoryRef, (snapshot) => snapshot.matches('feedback'))
@@ -296,10 +343,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
 
   const isVariantCreationPending = useSelector(variantCreationRef, (snapshot) =>
     snapshot.matches({active: 'creating'}),
-  )
-
-  const canRequestDeletion = useSelector(deletionRef, (machine) =>
-    machine.can({type: 'delete.request'}),
   )
 
   const [isActive, setIsActive] = useState<boolean>(false)
@@ -390,10 +433,17 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                   onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
                 />
               )}
-              {canRequestDeletion && (
+              {shouldShowDelete && canRequestDeletion && (
                 <Button
-                  text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
-                  onClick={() => deletionRef.send({type: 'delete.request'})}
+                  text={t('document-group.delete.confirm-button.text', {
+                    count: deletableIds.length,
+                  })}
+                  onClick={() => {
+                    const allowedIds = new Set(deletableIds)
+                    deletableAllowlistRef.current = allowedIds
+                    deletionRef.send({type: 'selection.changed', selectedIds: allowedIds})
+                    deletionRef.send({type: 'delete.request'})
+                  }}
                   tone="critical"
                   size="large"
                   icon={TrashIcon}
@@ -409,7 +459,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           documentId={documentId}
           documentType={documentType}
           deletionRef={deletionRef}
-          selectionRef={selectionRef}
           portalElementName={portalElementName}
           components={components}
         />
