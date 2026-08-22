@@ -3,7 +3,6 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {getPublishedId} from '@sanity/id-utils'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
@@ -23,7 +22,6 @@ import {
   type deletionMachine,
   type InternalReferences,
 } from '../machines/deletionMachine'
-import {type selectionMachine} from '../machines/selectionMachine'
 import {type DocumentGroupInventoryReferencePreviewLinkProps} from '../types'
 import {
   ChevronWrapper,
@@ -42,7 +40,6 @@ interface Props {
   documentId: string
   documentType: string
   deletionRef: ActorRefFromLogic<typeof deletionMachine>
-  selectionRef: ActorRefFromLogic<typeof selectionMachine>
   portalElementName: string
   components: DocumentGroupInventoryProps['components']
 }
@@ -51,14 +48,13 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   documentId,
   documentType,
   deletionRef,
-  selectionRef,
   portalElementName,
   components,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
   const {DocTitle, ReferencePreviewLink, VersionsPreviewList} = components
 
-  const variantIds = useSelector(selectionRef, ({context}) => context.selectedIds)
+  const variantIds = useSelector(deletionRef, ({context}) => context.ids)
 
   const internalReferences =
     useSelector(deletionRef, ({context}) => context.internalReferences) ?? EMPTY_INTERNAL_REFERENCES
@@ -87,7 +83,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
     snapshot.can({type: 'delete.confirm'}),
   )
 
-  const subjectCount = variantIds.size
+  const subjectCount = variantIds.length
   const subject = t('document-group.subject.version', {count: subjectCount})
 
   const totalCount = internalReferences.totalCount + crossDatasetReferences.totalCount
@@ -129,7 +125,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
             <Text size={1}>{t('document-group.delete.error.message')}</Text>
           </Card>
         ) : null}
-        <VersionsPreviewList documentType={documentType} documentVersions={[...variantIds]} />
+        <VersionsPreviewList documentType={documentType} documentVersions={variantIds} />
         {warnIncomingReferences && (
           <>
             <Card padding={3} radius={2} tone="caution" flex="none">
