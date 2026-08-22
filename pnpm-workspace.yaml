@@ -64,6 +64,7 @@ minimumReleaseAgeExclude:
   - '@oxfmt/*'
   - '@oxlint/*'
   - '@oxlint-tsgolint/*'
+  - '@oxc-project/types'
   - '@oclif/core'
   - '@vitest/*'
   - '@vite/*'
@@ -132,7 +133,7 @@ overrides:
   # @sanity/tsdown-config's `bundleAnalyzer` constructs a Rolldown BuiltinPlugin from
   # `rolldown/experimental`. That instance must be the same rolldown tsdown runs
   # (`~1.2.0` currently resolves 1.2.3; tsdown-config depends on ~1.2.4).
-  'tsdown>rolldown': ~1.2.4
+  'tsdown>rolldown': ~1.2.5
 
 preferWorkspacePackages: true
 
