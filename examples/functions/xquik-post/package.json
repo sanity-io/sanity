@@ -1,0 +1,38 @@
+{
+  "name": "xquik-post",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "test": "vitest run --config vitest.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sanity/client": "^8.2.0",
+    "@sanity/functions": "^1.6.8",
+    "x-twitter-scraper": "0.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  },
+  "blueprintResourceItem": {
+    "type": "sanity.function.document",
+    "name": "xquik-post",
+    "src": "./functions/xquik-post",
+    "memory": 1,
+    "timeout": 60,
+    "event": {
+      "on": [
+        "create"
+      ],
+      "filter": "_type == 'post' && postToX == true && defined(xPost)",
+      "projection": "{_id, _rev, xPost, \"imageUrl\": mainImage.asset->url}"
+    },
+    "env": {
+      "X_TWITTER_SCRAPER_API_KEY": "X_TWITTER_SCRAPER_API_KEY",
+      "XQUIK_ACCOUNT": "XQUIK_ACCOUNT"
+    }
+  },
+  "exampleInstructions": "Add the schema fields and resource to your project. Read README.md before testing because local tests create live X posts."
+}

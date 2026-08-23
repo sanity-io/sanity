@@ -36,6 +36,7 @@ The `functions/` directory contains examples of [Sanity Functions](https://www.s
 - **[algolia-document-sync](./functions/algolia-document-sync/)** - Automatically sync documents into an Algolia search index
 - **[auto-summary](./functions/auto-summary/)** - AI-Powered summary generation for editorial content
 - **[stale-content-digest](./functions/stale-content-digest/README.md)** - Scheduled function that finds stale documents, has the Content Agent review them, and posts a weekly digest to Slack
+- **[xquik-post](./functions/xquik-post/README.md)** - Retry-safe X posting with durable write status
 
 ## 🎨 Studios
 

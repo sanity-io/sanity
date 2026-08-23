@@ -1,0 +1,7 @@
+{
+  "_id": "test-xquik-post-123",
+  "_rev": "test-revision-1",
+  "_type": "post",
+  "postToX": true,
+  "xPost": "Testing a retry-safe Sanity Function for X."
+}
