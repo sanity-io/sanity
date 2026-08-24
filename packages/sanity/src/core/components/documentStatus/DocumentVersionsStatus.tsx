@@ -60,7 +60,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
           paddingBottom={groupIndex < allGroups.length - 1 ? 1 : 0}
         >
           {group.items.map((item) => (
-            <VersionStatus key={item.version._id} variantsEnabled={variantsEnabled} {...item} />
+            <VersionStatus key={item.version._id} {...item} />
           ))}
         </Card>
       ))}
@@ -68,7 +68,7 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   )
 }
 
-function VersionStatus({version}: DocumentVersionStatusItem & {variantsEnabled: boolean}) {
+function VersionStatus({version}: DocumentVersionStatusItem) {
   const {t} = useTranslation()
   const schema = useSchema()
   const liveEdit = Boolean(version._type && schema.get(version._type)?.liveEdit)

@@ -7,7 +7,7 @@ import {
   LayerProvider,
   useClickOutsideEvent,
 } from '@sanity/ui'
-import {type ComponentType, type RefObject, useMemo, useRef, useState} from 'react'
+import {type ComponentType, type RefAttributes, useMemo, useRef, useState} from 'react'
 import {
   DocumentGroupInventory,
   DocumentVersionIcons,
@@ -134,12 +134,11 @@ function DocumentGroupPickerButton({
   version,
   release,
 }: {
-  ref: RefObject<HTMLButtonElement | null>
   release: ReleaseDocument | undefined
   role: 'previous' | 'next'
   onClick: () => void
   version: VersionInfoDocumentStub
-}) {
+} & RefAttributes<HTMLButtonElement>) {
   const {title, isTruncated, fullTitle} = useDocumentVersionTitle({version})
 
   const isDraftVersion = version._system.bundleId === 'drafts'
