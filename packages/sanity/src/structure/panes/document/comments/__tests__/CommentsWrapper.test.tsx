@@ -7,6 +7,11 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {CommentsWrapper} from '../CommentsWrapper'
 
 const mockResolveIntentLink = vi.hoisted(() => vi.fn(() => '/mock-intent-link'))
+// Mirrors the real hook: in a standalone Studio the intent link is appended to the
+// origin unchanged. Overridden per-test to cover the dashboard (coreUi) behaviour.
+const mockBuildIntentUrl = vi.hoisted(() =>
+  vi.fn((intentLink: string) => `${window.location.origin}${intentLink}`),
+)
 
 let capturedCommentsProviderProps: Record<string, unknown> | undefined
 
@@ -19,6 +24,11 @@ vi.mock('sanity', () => ({
   },
   getTargetScopeId: vi.fn(() => undefined),
   useCommentsEnabled: vi.fn(() => ({enabled: true})),
+  useStudioUrl: vi.fn(() => ({
+    buildIntentUrl: mockBuildIntentUrl,
+    buildStudioUrl: vi.fn(),
+    studioUrl: window.location.origin,
+  })),
   usePerspective: vi.fn(() => ({
     selectedPerspectiveName: undefined,
     selectedReleaseId: undefined,
@@ -266,7 +276,7 @@ describe('CommentsWrapper', () => {
       expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([])
     })
 
-    it('returns a URL combining window.location.origin with the resolved intent link', () => {
+    it('builds the comment URL from the resolved intent link via buildIntentUrl', () => {
       mockResolveIntentLink.mockReturnValue('/intent/edit/id=doc-789;type=page')
 
       render(
@@ -280,7 +290,35 @@ describe('CommentsWrapper', () => {
 
       const result = getCommentLink('comment-123')
 
+      expect(mockBuildIntentUrl).toHaveBeenCalledWith('/intent/edit/id=doc-789;type=page')
       expect(result).toBe(`${window.location.origin}/intent/edit/id=doc-789;type=page`)
+    })
+
+    it('uses the dashboard URL rather than the origin when running in the dashboard', () => {
+      // Regression test for SAPP-3134: a Studio hosted in the dashboard is addressed by
+      // its dashboard path, not by the workspace basePath. Building the link from
+      // `window.location.origin` kept the basePath in the URL, which the dashboard could
+      // not resolve — it dropped the user on Structure instead of the commented document.
+      mockResolveIntentLink.mockReturnValue('/default/intent/edit/id=doc-789;type=page')
+      mockBuildIntentUrl.mockReturnValueOnce(
+        'https://www.sanity.io/@org/studio/app-id/default/intent/edit/id=doc-789;type=page',
+      )
+
+      render(
+        <CommentsWrapper documentId="doc-789" documentType="page">
+          <div>children</div>
+        </CommentsWrapper>,
+      )
+
+      const getCommentLink = capturedCommentsProviderProps!.getCommentLink as (id: string) => string
+
+      const result = getCommentLink('comment-123')
+
+      expect(mockBuildIntentUrl).toHaveBeenCalledWith('/default/intent/edit/id=doc-789;type=page')
+      expect(result).toBe(
+        'https://www.sanity.io/@org/studio/app-id/default/intent/edit/id=doc-789;type=page',
+      )
+      expect(result).not.toContain(window.location.origin)
     })
   })
 

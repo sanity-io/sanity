@@ -9,6 +9,7 @@ import {useFormValue} from '../../../../form/contexts/FormValue'
 import {set} from '../../../../form/patch/patch'
 import {type ObjectFieldProps} from '../../../../form/types/fieldProps'
 import {useClient} from '../../../../hooks/useClient'
+import {useStudioUrl} from '../../../../hooks/useStudioUrl'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useWorkspace} from '../../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
@@ -21,8 +22,13 @@ import {useDocumentPreviewValues} from '../../../hooks/useDocumentPreviewValues'
 import {type TaskContext, type TaskDocument} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 
-export function getTaskURL(taskId: string, basePath?: string, toolName: string = ''): string {
-  let path = window.location.origin
+export function getTaskURL(
+  taskId: string,
+  basePath?: string,
+  toolName: string = '',
+  origin: string = window.location.origin,
+): string {
+  let path = origin
   if (basePath) path += basePath
   if (toolName) path += `/${toolName}`
 
@@ -45,6 +51,7 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
   )
   const {target, _id, context, _rev} = useFormValue([]) as TaskDocument
   const {title: workspaceTitle, basePath, name: workspaceName} = useWorkspace()
+  const {buildStudioUrl} = useStudioUrl()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => createImageUrlBuilder(client), [client])
   const documentId = target?.document?._ref ?? ''
@@ -66,7 +73,15 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
     const contextUrl = context?.notification?.url
     const studioUrl =
       // Avoid updating the contextURL in dev mode if it already exists, persist the deployed one.
-      contextUrl && isDev ? contextUrl : getTaskURL(_id, basePath, activeToolName)
+      contextUrl && isDev
+        ? contextUrl
+        : buildStudioUrl({
+            // In the dashboard the studio URL already identifies the workspace, so
+            // repeating the workspace basePath produces a path the dashboard cannot
+            // resolve and it falls back to Structure instead of opening the task.
+            coreUi: (base) => getTaskURL(_id, undefined, activeToolName, base),
+            studio: (base) => getTaskURL(_id, basePath, activeToolName, base),
+          })
 
     return {
       url: studioUrl,
@@ -80,6 +95,7 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
     _id,
     basePath,
     activeToolName,
+    buildStudioUrl,
     workspaceTitle,
     workspaceName,
     imageUrl,
