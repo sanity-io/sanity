@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
@@ -70,7 +71,7 @@ const releaseSummer = {
     releaseType: 'scheduled',
   },
   state: 'active',
-} as const
+} as const satisfies ReleaseDocument
 
 const releaseHalloween = {
   _id: '_.releases.rHalloween',
@@ -84,7 +85,7 @@ const releaseHalloween = {
     releaseType: 'scheduled',
   },
   state: 'active',
-} as const
+} as const satisfies ReleaseDocument
 
 const releaseAsap = {
   _id: '_.releases.rASAP',
@@ -98,7 +99,7 @@ const releaseAsap = {
     releaseType: 'asap',
   },
   state: 'active',
-} as const
+} as const satisfies ReleaseDocument
 
 describe('groupDocumentVersionsForStatus', () => {
   it('groups default variant first, then sorts variants by id', () => {
@@ -124,7 +125,7 @@ describe('groupDocumentVersionsForStatus', () => {
           variantRef: variantReturning._id,
         }),
       ],
-      [],
+      new Map(),
       new Map([
         [variantReturning._id, variantReturning],
         [variantFirstTime._id, variantFirstTime],
@@ -178,7 +179,11 @@ describe('groupDocumentVersionsForStatus', () => {
           variantRef: variantReturning._id,
         }),
       ],
-      [releaseSummer, releaseHalloween, releaseAsap],
+      new Map<string, ReleaseDocument>([
+        [releaseSummer._id, releaseSummer],
+        [releaseHalloween._id, releaseHalloween],
+        [releaseAsap._id, releaseAsap],
+      ]),
       new Map([
         [variantReturning._id, variantReturning],
         [variantFirstTime._id, variantFirstTime],
@@ -211,7 +216,7 @@ describe('groupDocumentVersionsForStatus', () => {
           updatedAt: '2025-06-02T00:00:00Z',
         }),
       ],
-      [],
+      new Map(),
       new Map(),
     )
 
@@ -246,7 +251,7 @@ describe('groupDocumentVersionsForStatus', () => {
           releaseRef: releaseSummer._id,
         }),
       ],
-      [releaseSummer],
+      new Map([[releaseSummer._id, releaseSummer]]),
       new Map(),
       {showAgentVersions: true},
     )
@@ -289,7 +294,7 @@ describe('groupDocumentVersionsForStatus', () => {
           variantRef: variantReturning._id,
         }),
       ],
-      [releaseSummer],
+      new Map([[releaseSummer._id, releaseSummer]]),
       new Map([[variantReturning._id, variantReturning]]),
       {variantsEnabled: false},
     )

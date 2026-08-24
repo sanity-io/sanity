@@ -70,6 +70,7 @@ describe('OpenReleaseToEditbanner', () => {
   it('does not show when is draft', async () => {
     mockUseActiveReleases.mockReturnValue({
       data: [],
+      byId: new Map(),
       dispatch: vi.fn(),
       loading: false,
     })
@@ -87,6 +88,7 @@ describe('OpenReleaseToEditbanner', () => {
   it('does not show when is published', async () => {
     mockUseActiveReleases.mockReturnValue({
       data: [],
+      byId: new Map(),
       dispatch: vi.fn(),
       loading: false,
     })
@@ -105,6 +107,7 @@ describe('OpenReleaseToEditbanner', () => {
 
     mockUseActiveReleases.mockReturnValue({
       data: [release1],
+      byId: new Map([[release1._id, release1]]),
       dispatch: vi.fn(),
       loading: false,
     })

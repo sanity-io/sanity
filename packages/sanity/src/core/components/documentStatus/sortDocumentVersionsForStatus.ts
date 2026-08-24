@@ -133,15 +133,15 @@ function compareDocumentVersionsForStatus(
  */
 export function groupDocumentVersionsForStatus(
   versions: VersionInfoDocumentStub[],
-  releases: ReleaseDocument[],
+  releasesById: Map<string, ReleaseDocument>,
   variantsById: Map<string, SystemVariant>,
   {
     variantsEnabled = true,
     showAgentVersions = SHOW_AGENT_VERSIONS_IN_STATUS,
   }: GroupDocumentVersionsForStatusOptions = {},
 ): DocumentVersionStatusGroup[] {
+  const releases = Array.from(releasesById.values())
   const sortedReleases = sortReleases(releases)
-  const releasesById = new Map(sortedReleases.map((release) => [release._id, release]))
   const visibleVersions = versions.filter((version) => {
     if (!variantsEnabled && version._system.variant?._ref) {
       return false
