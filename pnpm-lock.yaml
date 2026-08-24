@@ -1924,7 +1924,7 @@ importers:
         specifier: ^3.0.8
         version: 3.0.8
       motion:
-        specifier: ^13.1.0
+        specifier: ^13.1.1
         version: 13.1.1(react-dom@19.2.8)(react@19.2.8)
       nano-pubsub:
         specifier: ^3.0.0
