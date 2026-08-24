@@ -889,7 +889,7 @@ importers:
         version: 3.0.3
       chromatic:
         specifier: ^18.2.0
-        version: 18.2.0(@chromatic-com/playwright@0.14.11)(@chromatic-com/vitest@0.1.8)
+        version: 18.5.0(@chromatic-com/playwright@0.14.11)(@chromatic-com/vitest@0.1.8)
       tsx:
         specifier: ^4.23.12
         version: 4.23.12
@@ -2113,7 +2113,7 @@ importers:
         version: 9.0.20240710
       chromatic:
         specifier: ^18.2.0
-        version: 18.2.0(@chromatic-com/playwright@0.14.11)(@chromatic-com/vitest@0.1.8)
+        version: 18.5.0(@chromatic-com/playwright@0.14.11)(@chromatic-com/vitest@0.1.8)
       jsdom:
         specifier: 'catalog:'
         version: 29.1.1(@noble/hashes@2.2.0)
@@ -2218,7 +2218,7 @@ importers:
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
         specifier: ^5.2.0
-        version: 5.2.0(@sanity/assist@6.1.21)(@sanity/language-filter@5.0.16)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
+        version: 5.2.2(@sanity/assist@6.1.21)(@sanity/language-filter@5.0.18)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
       styled-components:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
@@ -6821,14 +6821,6 @@ packages:
     resolution: {integrity: sha512-skhIX8gT/hLritEBkjfc7+TBlJNu/NLisyA8noKceCk28OatFK0wX7dIuFawkt3pfhTYVomVPykAYFcIm2OqJg==}
     engines: {node: '>=18.2'}
 
-  '@sanity/language-filter@5.0.16':
-    resolution: {integrity: sha512-O0uVnwNUewh5ofjhhIoX1ZCTudiRlSnxaOgdL7v0bYuIM/7X+/n7cy+jvxMdI38MsXPsYMMNE0DM6k7MGzjLrQ==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-    peerDependencies:
-      react: ^19.2
-      react-dom: ^19.2
-      sanity: ^5 || ^6.0.0-0
-
   '@sanity/language-filter@5.0.18':
     resolution: {integrity: sha512-4dV2mOFi3HVYCPqTPYnQgxmBpluaOMmsDMX+K/KW/ISCfygnHPwU2pfSvzULdSnD2pQy0z67RRWbv3CVJhSL9g==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -9004,22 +8996,6 @@ packages:
   chownr@3.0.0:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
     engines: {node: '>=18'}
-
-  chromatic@18.2.0:
-    resolution: {integrity: sha512-xyTKDhBQPDd4qrsXhJK7GAJyIStpRoSTs4b7EtPyliSL0luej3DcqkeCZ9osHxbiLXiViNyWfMxo5Xgzejex8A==}
-    engines: {node: '>=22.0.0'}
-    hasBin: true
-    peerDependencies:
-      '@chromatic-com/cypress': ^0.*.* || ^1.0.0
-      '@chromatic-com/playwright': ^0.*.* || ^1.0.0
-      '@chromatic-com/vitest': ^0.*.* || ^1.0.0
-    peerDependenciesMeta:
-      '@chromatic-com/cypress':
-        optional: true
-      '@chromatic-com/playwright':
-        optional: true
-      '@chromatic-com/vitest':
-        optional: true
 
   chromatic@18.5.0:
     resolution: {integrity: sha512-3oBcGP4V+6SV0qu2NJnutnPYsrxnPpOHhtQAbzxEtIQrDJNzn1wfXtzwkEiJGQm5eANTW0AvL4WxHtz+BTJbYg==}
@@ -13018,19 +12994,6 @@ packages:
       react: ^19.2
       sanity: ^5 || ^6.0.0-0
       styled-components: ^6.1
-
-  sanity-plugin-internationalized-array@5.2.0:
-    resolution: {integrity: sha512-bc1BpNQT/BoKWk/LP9Ii4918ceAMagBqcxDMg91fvRZN3KEucimy6m2aajOb0aNIdXsGxDeiffUDrLvRh6AzMg==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-    peerDependencies:
-      '@sanity/assist': ^6.1.19
-      '@sanity/language-filter': ^5.0.16
-      react: ^19.2
-      react-dom: ^19.2
-      sanity: ^5 || ^6.0.0-0
-    peerDependenciesMeta:
-      '@sanity/assist':
-        optional: true
 
   sanity-plugin-internationalized-array@5.2.2:
     resolution: {integrity: sha512-seLY7R2Vd8r98INE7uxn3QrPXyTUhe5yhDpyqUJvhftkcSBN8Jd9K7kTNrYgo5YgszGXeSwmUBA3yBnPTR9B7g==}
@@ -19291,18 +19254,6 @@ snapshots:
 
   '@sanity/json-match@1.0.5': {}
 
-  '@sanity/language-filter@5.0.16(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)':
-    dependencies:
-      '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/ui': 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
-      react-rx: 4.2.5(react@19.2.8)(rxjs@7.8.2)
-      rxjs: 7.8.2
-      sanity: link:packages/sanity
-    transitivePeerDependencies:
-      - styled-components
-
   '@sanity/language-filter@5.0.18(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
@@ -21736,13 +21687,6 @@ snapshots:
   chownr@1.1.4: {}
 
   chownr@3.0.0: {}
-
-  chromatic@18.2.0(@chromatic-com/playwright@0.14.11)(@chromatic-com/vitest@0.1.8):
-    dependencies:
-      semver: 7.8.5
-    optionalDependencies:
-      '@chromatic-com/playwright': 0.14.11(@playwright/test@1.62.1)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)
-      '@chromatic-com/vitest': 0.1.8(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)(vitest@4.1.11)
 
   chromatic@18.5.0(@chromatic-com/playwright@0.14.11)(@chromatic-com/vitest@0.1.8):
     dependencies:
@@ -26179,21 +26123,6 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
       - react-dom
-
-  sanity-plugin-internationalized-array@5.2.0(@sanity/assist@6.1.21)(@sanity/language-filter@5.0.16)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3):
-    dependencies:
-      '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/language-filter': 5.0.16(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
-      '@sanity/ui': 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
-      '@sanity/util': link:packages/@sanity/util
-      lodash-es: 4.18.1
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
-      sanity: link:packages/sanity
-    optionalDependencies:
-      '@sanity/assist': 6.1.21(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)(vitest@4.1.11)
-    transitivePeerDependencies:
-      - styled-components
 
   sanity-plugin-internationalized-array@5.2.2(@sanity/assist@6.1.21)(@sanity/language-filter@5.0.18)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3):
     dependencies:
