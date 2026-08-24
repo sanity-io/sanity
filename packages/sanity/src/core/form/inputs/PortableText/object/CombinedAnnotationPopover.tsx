@@ -17,6 +17,7 @@ import {Button} from '../../../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useSelectedAnnotations} from '../contexts/SelectedAnnotationsContext'
+import {usePortableTextMemberItems} from '../hooks/usePortableTextMembers'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
@@ -29,6 +30,16 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
   const {annotationOpeningRef, referenceBoundary} = props
   const {element: floatingBoundary} = useBoundaryElement()
   const {annotations} = useSelectedAnnotations()
+  const portableTextMemberItems = usePortableTextMemberItems()
+
+  // The popover must stay closed for the whole lifetime of the annotation
+  // edit modal, not only while it is opening: when multiple annotations cover
+  // the same text, the ones not being edited stay registered while the modal
+  // is open, and a selection re-check could otherwise reopen the popover on
+  // top of the modal.
+  const hasOpenAnnotation = portableTextMemberItems.some(
+    (m) => m.kind === 'annotation' && m.member.open,
+  )
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const rangeRef = useRef<Range | null>(null)
@@ -73,11 +84,13 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
 
   // Track selection changes to position popover
   const handleSelectionChange = useCallback(() => {
-    // Don't show the popover while an annotation object edit modal is opening.
-    // Right after inserting an annotation (or clicking "Edit" on one), the
-    // editor renders the annotated text as selected before the form state
-    // reflects the member as open, and the popover would flash in that window.
-    if (annotationOpeningRef.current) {
+    // Don't show the popover while an annotation object edit modal is opening
+    // or open. Right after inserting an annotation (or clicking "Edit" on
+    // one), the editor renders the annotated text as selected before the form
+    // state reflects the member as open (`annotationOpeningRef` covers that
+    // window), and the popover must stay closed while the modal is open
+    // (`hasOpenAnnotation`).
+    if (annotationOpeningRef.current || hasOpenAnnotation) {
       setPopoverOpen(false)
       setCursorRect(null)
       return
@@ -111,7 +124,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
       setCursorRect(rect)
       setPopoverOpen(true)
     }
-  }, [annotations, annotationOpeningRef])
+  }, [annotations, annotationOpeningRef, hasOpenAnnotation])
 
   // Listen for selection changes
   useEffect(() => {
