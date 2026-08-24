@@ -785,6 +785,7 @@ export function VisionGui(props: VisionGuiProps) {
                   perspectiveStack,
                   scheduledDraftsStack,
                 })}
+                variant={activeVariant}
                 queryInProgress={queryInProgress}
                 queryResult={queryResult}
                 listenInProgress={listenInProgress}

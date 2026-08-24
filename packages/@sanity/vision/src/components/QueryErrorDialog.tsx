@@ -1,9 +1,9 @@
 import {type ClientPerspective, isHttpError} from '@sanity/client'
 import {Stack, Text} from '@sanity/ui'
-import {RELEASES_STUDIO_CLIENT_OPTIONS, useTranslation} from 'sanity'
+import {useTranslation} from 'sanity'
 
 import {visionLocaleNamespace} from '../i18n'
-import {isIncompatibleReleasePerspectiveError} from '../util/isIncompatibleReleasePerspectiveError'
+import {getUnsatisfiedApiVersionCapability} from '../util/apiVersionCapabilities'
 import {prefixApiVersion} from '../util/prefixApiVersion'
 import {QueryErrorDetails} from './QueryErrorDetails'
 import {ErrorCode} from './QueryErrorDialog.styled'
@@ -12,24 +12,26 @@ interface QueryErrorDialogProps {
   error: Error
   apiVersion: string
   perspective: ClientPerspective | undefined
+  variant: string | undefined
 }
 
 export function QueryErrorDialog(props: QueryErrorDialogProps) {
-  const {error, apiVersion, perspective} = props
+  const {error, apiVersion, perspective, variant} = props
   const {t} = useTranslation(visionLocaleNamespace)
-  const minimumApiVersion = prefixApiVersion(RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion)
-  const showReleasePerspectiveHint = isIncompatibleReleasePerspectiveError({
+  const unsatisfiedCapability = getUnsatisfiedApiVersionCapability({
     statusCode: isHttpError(error) ? error.statusCode : undefined,
     apiVersion,
     perspective,
-    minimumApiVersion,
+    variant,
   })
 
   return (
     <Stack gap={5} marginTop={2}>
-      {showReleasePerspectiveHint ? (
-        <Text data-testid="query-error-release-perspective-hint" size={1}>
-          {t('query.error.unsupported-release-perspective', {apiVersion: minimumApiVersion})}
+      {unsatisfiedCapability ? (
+        <Text data-testid="query-error-api-version-capability-hint" size={1}>
+          {t(unsatisfiedCapability.explanationKey, {
+            apiVersion: prefixApiVersion(unsatisfiedCapability.requiredApiVersion),
+          })}
         </Text>
       ) : null}
       <ErrorCode size={1}>{error.message}</ErrorCode>

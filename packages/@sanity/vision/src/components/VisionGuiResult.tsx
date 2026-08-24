@@ -27,6 +27,7 @@ interface VisionGuiResultProps {
   error?: Error | undefined
   apiVersion: string
   perspective: ClientPerspective | undefined
+  variant: string | undefined
   queryInProgress: boolean
   queryResult?: unknown | undefined
   listenInProgress: boolean
@@ -41,6 +42,7 @@ export function VisionGuiResult({
   error,
   apiVersion,
   perspective,
+  variant,
   queryInProgress,
   queryResult,
   listenInProgress,
@@ -78,7 +80,12 @@ export function VisionGuiResult({
                 </Box>
               )}
               {error && (
-                <QueryErrorDialog apiVersion={apiVersion} error={error} perspective={perspective} />
+                <QueryErrorDialog
+                  apiVersion={apiVersion}
+                  error={error}
+                  perspective={perspective}
+                  variant={variant}
+                />
               )}
               {hasResult && <ResultView data={queryResult} datasetName={dataset} />}
               {listenInProgress && listenMutations.length > 0 && (
