@@ -2,6 +2,7 @@ import {render} from '@testing-library/react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {activeScheduledRelease} from '../../../releases/__fixtures__/release.fixture'
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {variantAlphaAudience} from '../../../variants/__fixtures__/variants.fixture'
@@ -36,10 +37,12 @@ function createVersion({
   id,
   bundleId,
   variantRef,
+  releaseRef,
 }: {
   id: string
   bundleId?: string
   variantRef?: string
+  releaseRef?: string
 }): VersionInfoDocumentStub {
   return {
     _id: id,
@@ -51,6 +54,7 @@ function createVersion({
       bundleId,
       group: {_ref: GROUP_ID, _weak: true},
       variant: variantRef ? {_ref: variantRef, _weak: true} : undefined,
+      release: releaseRef ? {_ref: releaseRef, _weak: true} : undefined,
     },
   }
 }
@@ -126,5 +130,26 @@ describe('DocumentVersionIcons', () => {
     })
 
     expect(document.querySelector('[data-sanity-icon="rhombus"]')).not.toBeInTheDocument()
+  })
+
+  it('resolves the release avatar from the byId map', async () => {
+    mockUseActiveReleases.mockReturnValue({
+      // Leave `data` empty so a `.find` on the array would miss the release.
+      data: [],
+      byId: new Map([[activeScheduledRelease._id, activeScheduledRelease]]),
+      error: undefined,
+      loading: false,
+      dispatch: vi.fn(),
+    })
+
+    await renderIcons({
+      version: createVersion({
+        id: `versions.${activeScheduledRelease.name}.${GROUP_ID}`,
+        bundleId: activeScheduledRelease.name,
+        releaseRef: activeScheduledRelease._id,
+      }),
+    })
+
+    expect(document.querySelector('[data-testid="release-avatar-suggest"]')).toBeInTheDocument()
   })
 })

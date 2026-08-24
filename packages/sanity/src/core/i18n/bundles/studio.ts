@@ -530,6 +530,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group-inventory.action.cancel': 'Cancel',
   /** The label for the button that opens the document group inventory */
   'document-group-inventory.action.manage-versions': 'Manage versions',
+  /** The error shown when document group versions fail to load */
+  'document-group-inventory.error.load': 'Failed to load versions',
   /** The label used in the feedback dialog asking how easy the document group inventory is to use */
   'document-group-inventory.feedback.sentiment-label':
     'How easy or difficult is the new version inventory to use?',

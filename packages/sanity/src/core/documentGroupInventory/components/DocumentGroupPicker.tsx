@@ -1,7 +1,9 @@
-import {Stack} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {type ChangeEvent, type ComponentType, useState} from 'react'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {useDocumentGroupSets} from '../hooks/useDocumentGroupSets'
 import {type Variant} from '../machines/selectionMachine'
 import {Body} from './Body'
@@ -35,7 +37,8 @@ export const DocumentGroupPicker: ComponentType<DocumentGroupPickerProps> = ({
   selectedId,
   onSelect,
 }) => {
-  const {sets, releases, loading} = useDocumentGroupSets({documentId})
+  const {t} = useTranslation(studioLocaleNamespace)
+  const {sets, releases, loading, error} = useDocumentGroupSets({documentId})
   const [filterInput, setFilterInput] = useState('')
   const trimmedFilter = filterInput.trim()
   const filterString = trimmedFilter.length > 1 ? trimmedFilter.toLowerCase() : undefined
@@ -53,6 +56,10 @@ export const DocumentGroupPicker: ComponentType<DocumentGroupPickerProps> = ({
       <Body>
         {loading ? (
           <LoadingBlock />
+        ) : error ? (
+          <Text size={1} muted>
+            {t('document-group-inventory.error.load')}
+          </Text>
         ) : (
           <Stack gap={5}>
             {sets.map((set) => (

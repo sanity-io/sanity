@@ -63,7 +63,11 @@ export const DocumentGroupPickerMenu: ComponentType<{
   if (variantsError || releasesError) {
     return (
       <Badge tone="critical" radius={3}>
-        {tStructure('compare-version.error.loadReleases.title')}
+        {tStructure(
+          variantsError
+            ? 'compare-version.error.loadVersions.title'
+            : 'compare-version.error.loadReleases.title',
+        )}
       </Badge>
     )
   }

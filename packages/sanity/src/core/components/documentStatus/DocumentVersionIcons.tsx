@@ -1,5 +1,4 @@
 import {Card, Flex, Text} from '@sanity/ui'
-import {useMemo} from 'react'
 
 import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
 import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
@@ -19,13 +18,11 @@ import {getReleasePerspective} from './getReleasePerspective'
  */
 export function DocumentVersionIcons({version}: {version: VersionInfoDocumentStub}) {
   const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
-  const {data: releases} = useActiveReleases()
+  const {byId: releasesById} = useActiveReleases()
   const {byId: variantsById} = useAllVariants()
 
-  const release = useMemo(() => {
-    const releaseRef = version._system.release?._ref
-    return releaseRef ? releases.find((candidate) => candidate._id === releaseRef) : undefined
-  }, [releases, version._system.release?._ref])
+  const releaseRef = version._system.release?._ref
+  const release = releaseRef ? releasesById.get(releaseRef) : undefined
 
   const variant = version._system.variant?._ref
     ? variantsById.get(version._system.variant._ref)
