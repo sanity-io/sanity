@@ -46,6 +46,12 @@ interface DocumentGroupInventoryContext {
   t: TFunction
   variantsEnabled: boolean | undefined
   metaState: 'pending' | 'ready'
+  /**
+   * Whether this instance only presents the document group's versions. Every
+   * mutative action is refused by the spawned machines, so the UI can hide the
+   * affordances behind `can` checks.
+   */
+  readOnly: boolean
 }
 
 type DocumentGroupInventoryEvents =
@@ -65,6 +71,7 @@ export const documentGroupInventoryMachine = setup({
       variantCreationMachine: VariantCreationLogic
       t: TFunction
       variantsEnabled: boolean | undefined
+      readOnly?: boolean
     }
     context: DocumentGroupInventoryContext
     events: DocumentGroupInventoryEvents
@@ -83,21 +90,22 @@ export const documentGroupInventoryMachine = setup({
   context: ({input, spawn}) => ({
     selectionRef: spawn(input.selectionMachine, {
       systemId: 'selection',
-      input: undefined,
+      input: {readOnly: input.readOnly},
     }),
     deletionRef: spawn(input.deletionMachine, {
       systemId: 'deletion',
-      input: undefined,
+      input: {readOnly: input.readOnly},
     }),
     variantCreationRef: spawn(input.variantCreationMachine, {
       systemId: 'variantCreation',
-      input: undefined,
+      input: {readOnly: input.readOnly, enabled: input.variantsEnabled ?? false},
     }),
     sets: [],
     releases: new Map(),
     t: input.t,
     variantsEnabled: input.variantsEnabled,
     metaState: 'pending' as const,
+    readOnly: input.readOnly ?? false,
   }),
   invoke: {
     src: 'meta',
@@ -170,7 +178,7 @@ export const documentGroupInventoryMachine = setup({
   },
 })
 
-export function metaHasError(meta: Meta | undefined): boolean {
+function metaHasError(meta: Meta | undefined): boolean {
   if (!meta) {
     return false
   }
@@ -178,7 +186,7 @@ export function metaHasError(meta: Meta | undefined): boolean {
   return Boolean(meta.versionState.error) || meta.releases.state === 'error'
 }
 
-export function metaIsSettled(meta: Meta | undefined): boolean {
+function metaIsSettled(meta: Meta | undefined): boolean {
   if (!meta) {
     return false
   }

@@ -9,7 +9,7 @@ import {
 } from '@sanity/ui'
 import {type ComponentType, type RefObject, useMemo, useRef, useState} from 'react'
 import {
-  DocumentGroupPicker,
+  DocumentGroupInventory,
   DocumentVersionIcons,
   getPublishedId,
   getReleaseTone,
@@ -79,12 +79,14 @@ export const DocumentGroupPickerMenu: ComponentType<{
       <Popover
         ref={popoverRef}
         content={
-          <DocumentGroupPicker
+          <DocumentGroupInventory
+            mode="readOnly"
             documentId={document.id}
+            documentType={document.type}
             selectedId={document.id}
-            onSelect={(variant) => {
+            onSelect={(selected) => {
               setOpen(false)
-              onSelectDocument(variant.id)
+              onSelectDocument(selected._id)
             }}
           />
         }

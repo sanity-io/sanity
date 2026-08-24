@@ -58,6 +58,8 @@ interface DeletionContext {
   datasetNames: string[]
   hasUnknownDatasetNames: boolean
   error?: unknown
+  /** Whether this instance may never delete anything. */
+  readOnly: boolean
 }
 
 type DeletionEvents =
@@ -70,6 +72,7 @@ export const deletionMachine = setup({
   types: {} as {
     context: DeletionContext
     events: DeletionEvents
+    input: {readOnly?: boolean} | undefined
     tags: 'awaitingDeletionConfirmation' | 'warnIncomingReferences'
   },
   actors: {
@@ -85,12 +88,15 @@ export const deletionMachine = setup({
   },
   guards: {
     hasSelection: ({context}) => context.ids.length !== 0,
+    isMutable: ({context}) => !context.readOnly,
     selectionExcludesPublished: ({context}) => !context.ids.some(isPublishedId),
-    canRequestDeletion: and(['hasSelection']),
+    canRequestDeletion: and(['hasSelection', 'isMutable']),
     canConfirmDeletion: and([
       'hasSelection',
+      'isMutable',
       or(['selectionExcludesPublished', stateIn('#incomingReferencesChecked')]),
     ]),
+    canRetryDeletion: and(['hasSelection', 'isMutable']),
     shouldWarnIncomingReferences: ({context}) =>
       context.ids.some(isPublishedId) &&
       ((context.internalReferences?.references.length ?? 0) > 0 ||
@@ -98,7 +104,7 @@ export const deletionMachine = setup({
   },
 }).createMachine({
   id: 'deletion',
-  context: {
+  context: ({input}) => ({
     ids: [],
     internalReferences: undefined,
     crossDatasetReferences: undefined,
@@ -106,7 +112,8 @@ export const deletionMachine = setup({
     datasetNames: [],
     hasUnknownDatasetNames: false,
     error: undefined,
-  },
+    readOnly: input?.readOnly ?? false,
+  }),
   on: {
     'selection.changed': {
       actions: assign({ids: ({event}) => [...event.selectedIds]}),
@@ -197,7 +204,7 @@ export const deletionMachine = setup({
             error: {
               on: {
                 'delete.confirm': {
-                  guard: 'hasSelection',
+                  guard: 'canRetryDeletion',
                   target: '#deletion.active.deletion.deleting',
                 },
               },

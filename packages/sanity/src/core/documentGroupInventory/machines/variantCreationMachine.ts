@@ -20,6 +20,10 @@ interface VariantCreationContext {
   selectedVariantId: string | undefined
   selectedBundle: VariantCreationBundle | undefined
   error?: unknown
+  /** Whether this instance may never create a variant. */
+  readOnly: boolean
+  /** Whether the variants feature is switched on for this workspace. */
+  enabled: boolean
 }
 
 type VariantCreationEvents =
@@ -33,6 +37,7 @@ export const variantCreationMachine = setup({
   types: {} as {
     context: VariantCreationContext
     events: VariantCreationEvents
+    input: {readOnly?: boolean; enabled?: boolean} | undefined
   },
   actors: {
     variants: fromObservable<VariantStoreState, unknown>(() => EMPTY),
@@ -45,17 +50,21 @@ export const variantCreationMachine = setup({
   guards: {
     hasSelectedVariant: ({context}) => typeof context.selectedVariantId !== 'undefined',
     hasSelectedBundle: ({context}) => typeof context.selectedBundle !== 'undefined',
-    canConfirmCreation: and(['hasSelectedVariant', 'hasSelectedBundle']),
+    isMutable: ({context}) => !context.readOnly && context.enabled,
+    canRequestCreation: and(['isMutable']),
+    canConfirmCreation: and(['isMutable', 'hasSelectedVariant', 'hasSelectedBundle']),
   },
 }).createMachine({
   id: 'variantCreation',
-  context: {
+  context: ({input}) => ({
     variants: undefined,
     releases: undefined,
     selectedVariantId: undefined,
     selectedBundle: undefined,
     error: undefined,
-  },
+    readOnly: input?.readOnly ?? false,
+    enabled: input?.enabled ?? true,
+  }),
   invoke: [
     {
       src: 'variants',
@@ -74,7 +83,10 @@ export const variantCreationMachine = setup({
   states: {
     idle: {
       on: {
-        'createVariant.request': 'active',
+        'createVariant.request': {
+          guard: 'canRequestCreation',
+          target: 'active',
+        },
       },
     },
     active: {
