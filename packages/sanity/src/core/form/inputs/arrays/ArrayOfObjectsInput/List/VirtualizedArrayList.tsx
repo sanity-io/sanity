@@ -47,9 +47,6 @@ interface VirtualizedArrayListProps<Item extends ObjectItem> {
 export function VirtualizedArrayList<Item extends ObjectItem>(
   props: VirtualizedArrayListProps<Item>,
 ) {
-  // TanStack Virtual returns functions that cannot be memoized safely.
-  'use no memo'
-
   const {
     members,
     memberKeys,

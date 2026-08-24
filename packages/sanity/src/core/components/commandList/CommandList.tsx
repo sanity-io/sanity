@@ -129,9 +129,6 @@ function CommandListComponent({
   wrapAround = true,
   ...paddingProps
 }: CommandListProps & RefAttributes<CommandListHandle>) {
-  // TanStack Virtual returns functions that cannot be memoized safely.
-  'use no memo'
-
   const isMountedRef = useRef(false)
   const [commandListId] = useState(useId())
   const activeIndexRef = useRef(initialIndex ?? 0)

@@ -68,9 +68,6 @@ const VirtualList = () => {
 export default VirtualList
 
 function useVirtualizedSchedules(activeSchedules: Schedule[], sortBy?: ScheduleSort) {
-  // TanStack Virtual returns functions that cannot be memoized safely.
-  'use no memo'
-
   const containerRef = useRef<HTMLDivElement>(null)
 
   const listSourceItems = useMemo(() => {

@@ -60,9 +60,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
   scrollContainerRef,
   hideTableInlinePadding = false,
 }: TableProps<TableData, AdditionalRowTableData>) => {
-  // TanStack Virtual returns functions that cannot be memoized safely.
-  'use no memo'
-
   const {searchTerm, sort} = useTableContext()
 
   const filteredData = useMemo(() => {

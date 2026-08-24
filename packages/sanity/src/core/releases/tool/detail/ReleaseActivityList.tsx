@@ -44,9 +44,6 @@ export const ReleaseActivityList = ({
   loadMore,
   isLoading,
 }: ReleaseActivityListProps) => {
-  // TanStack Virtual returns functions that cannot be memoized safely.
-  'use no memo'
-
   const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
 
   const listEvents: ReleaseEvent[] = useMemo(() => {
