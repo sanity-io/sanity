@@ -744,7 +744,7 @@ importers:
         version: 8.0.2(supports-color@8.1.1)(xstate@5.32.5)
       '@sanity/preview-url-secret':
         specifier: ^4.1.4
-        version: 4.1.4(@sanity/client@8.2.0)
+        version: 4.1.5(@sanity/client@8.2.0)
       '@sanity/react-loader':
         specifier: ^2.1.4
         version: 2.1.4(@sanity/types@packages+@sanity+types)(react@19.2.8)(typescript@7.0.2)
@@ -6711,12 +6711,6 @@ packages:
     resolution: {integrity: sha512-XRsLYFNq6DhMm+Ddt+lWzV4nuARmteYAYHrrbKFzpOpt9hCBsLjWbvTELxohEzhIFNoxbVBaRcY6GDB1/ANRFw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@sanity/preview-url-secret@4.1.4':
-    resolution: {integrity: sha512-FZvWDDUd9ezeKHXnNeDitjJUUrOft+SKGLstNPYo5jtsxaTyFQCmXOlD0HVGNON+FnlJ3BKaw7UyncPJPJ8hhQ==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-    peerDependencies:
-      '@sanity/client': ^7.26.2
-
   '@sanity/preview-url-secret@4.1.5':
     resolution: {integrity: sha512-XDmLWn734GI0ssfegDjp24LwSKkPqwPkzwg9klApVfUFFWqfWt9o/WTN2+Vc940TV6fzD7hmVcWCwccMrPXGvQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -9755,9 +9749,6 @@ packages:
   es-set-tostringtag@2.1.0:
     resolution: {integrity: sha512-j6vWzfrGVfyXxge+O0x5sh6cvxAog0a/4Rdd2K36zCMV5eJ+/+tOAngRO8cODMNWbVRdVlmGZQL2YS3yR8bIUA==}
     engines: {node: '>= 0.4'}
-
-  es-toolkit@1.50.0:
-    resolution: {integrity: sha512-OyZKhUVvEep9ITEiwHn8GKnMRQIVqoSIX7WnRbkWgJkllCujilqP2rD0u979tkl8wqyc8ICwlc1UBVv/Sl1G6w==}
 
   es-toolkit@1.51.0:
     resolution: {integrity: sha512-zC2lQGkM7QX+Gm6iM3+WIdZJzthsEd14LvRNJneSO2hzyz/zNBENR8+YXWo1cKxgPBtV6ksPYHELbcwBRzmdCw==}
@@ -18981,7 +18972,7 @@ snapshots:
   '@sanity/debug-preview-url-secret-plugin@2.0.20(@sanity/client@8.2.0)(react@19.2.8)(sanity@packages+sanity)':
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/preview-url-secret': 4.1.4(@sanity/client@8.2.0)
+      '@sanity/preview-url-secret': 4.1.5(@sanity/client@8.2.0)
       react: 19.2.8
       sanity: link:packages/sanity
     transitivePeerDependencies:
@@ -19162,11 +19153,6 @@ snapshots:
       xstate: 5.32.5
     transitivePeerDependencies:
       - '@sanity/types'
-
-  '@sanity/preview-url-secret@4.1.4(@sanity/client@8.2.0)':
-    dependencies:
-      '@sanity/client': 8.2.0(vitest@4.1.11)
-      '@sanity/uuid': 3.0.3
 
   '@sanity/preview-url-secret@4.1.5(@sanity/client@8.2.0)':
     dependencies:
@@ -19463,7 +19449,7 @@ snapshots:
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/mutate': 0.18.1(xstate@5.32.5)
       '@sanity/presentation-comlink': 2.2.3(@sanity/types@packages+@sanity+types)
-      '@sanity/preview-url-secret': 4.1.4(@sanity/client@8.2.0)
+      '@sanity/preview-url-secret': 4.1.5(@sanity/client@8.2.0)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/visual-editing-csm': 3.0.15(@sanity/client@8.2.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
@@ -19526,7 +19512,7 @@ snapshots:
       '@sanity/color': 3.0.8
       '@sanity/sdk': 2.19.0(@types/react@19.2.18)(immer@11.1.15)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
-      es-toolkit: 1.50.0
+      es-toolkit: 1.51.0
       rxjs: 7.8.2
       verkit: 0.3.2
       xstate: 5.32.5
@@ -22325,8 +22311,6 @@ snapshots:
       has-tostringtag: 1.0.2
       hasown: 2.0.4
 
-  es-toolkit@1.50.0: {}
-
   es-toolkit@1.51.0: {}
 
   es6-error@4.1.1:
@@ -23442,7 +23426,7 @@ snapshots:
       cli-cursor: 4.0.0
       cli-truncate: 5.2.0
       code-excerpt: 4.0.0
-      es-toolkit: 1.50.0
+      es-toolkit: 1.51.0
       indent-string: 5.0.0
       is-in-ci: 2.0.0
       patch-console: 2.0.0
