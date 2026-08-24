@@ -35,6 +35,47 @@ const discardChangesAction: DocumentActionComponent = Object.assign(() => null, 
   action: 'discardChanges' as const,
 })
 
+const createScheduledDraftMenuActions = () => ({
+  actions: {
+    publishNow: {
+      'icon': undefined,
+      'text': 'Publish now',
+      'tone': 'default' as const,
+      'onClick': vi.fn(),
+      'disabled': false,
+      'data-testid': 'publish-now-menu-item',
+    },
+    editSchedule: {
+      'icon': undefined,
+      'text': 'Edit schedule',
+      'tone': 'default' as const,
+      'onClick': vi.fn(),
+      'disabled': false,
+      'data-testid': 'edit-schedule-menu-item',
+    },
+    schedulePublish: {
+      'icon': undefined,
+      'text': 'Schedule',
+      'tone': 'default' as const,
+      'onClick': vi.fn(),
+      'disabled': false,
+      'data-testid': 'schedule-publish-menu-item',
+    },
+    deleteSchedule: {
+      'icon': undefined,
+      'text': 'Delete schedule',
+      'tone': 'critical' as const,
+      'onClick': vi.fn(),
+      'disabled': false,
+      'data-testid': 'delete-schedule-menu-item',
+    },
+  },
+  dialogs: null,
+  isPerformingOperation: false,
+  selectedAction: null,
+  handleDialogClose: vi.fn(),
+})
+
 describe('VersionContextMenu', () => {
   // `defaultProps` holds shared `vi.fn()`s, so without this a test asserting on one of them can
   // pass on a call an earlier test made.
@@ -92,47 +133,6 @@ describe('VersionContextMenu', () => {
   const createScheduledDraftRelease = (): ReleaseDocument => ({
     ...mockReleases[0],
     metadata: {...mockReleases[0].metadata, cardinality: 'one'},
-  })
-
-  const createScheduledDraftMenuActions = () => ({
-    actions: {
-      publishNow: {
-        'icon': undefined,
-        'text': 'Publish now',
-        'tone': 'default' as const,
-        'onClick': vi.fn(),
-        'disabled': false,
-        'data-testid': 'publish-now-menu-item',
-      },
-      editSchedule: {
-        'icon': undefined,
-        'text': 'Edit schedule',
-        'tone': 'default' as const,
-        'onClick': vi.fn(),
-        'disabled': false,
-        'data-testid': 'edit-schedule-menu-item',
-      },
-      schedulePublish: {
-        'icon': undefined,
-        'text': 'Schedule',
-        'tone': 'default' as const,
-        'onClick': vi.fn(),
-        'disabled': false,
-        'data-testid': 'schedule-publish-menu-item',
-      },
-      deleteSchedule: {
-        'icon': undefined,
-        'text': 'Delete schedule',
-        'tone': 'critical' as const,
-        'onClick': vi.fn(),
-        'disabled': false,
-        'data-testid': 'delete-schedule-menu-item',
-      },
-    },
-    dialogs: null,
-    isPerformingOperation: false,
-    selectedAction: null,
-    handleDialogClose: vi.fn(),
   })
 
   it('renders the menu items correctly', async () => {

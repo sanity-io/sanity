@@ -11,7 +11,11 @@ import {
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQueries'
+import {
+  getAllByDataUi,
+  getByDataUi,
+  queryByDataUi,
+} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type DocumentActionsResolver} from '../../../../config/types'
@@ -173,6 +177,20 @@ const renderTest = async (
   )
 }
 
+const publishOnly: DocumentActionsResolver = (prev) =>
+  prev.filter(({action}) => action === 'publish')
+
+// Every row keeps its menu mounted, and closed ones are hidden with `display: none`. Runtime
+// styles are disabled in jsdom, so the open menu does not read as visible to `getByRole` either,
+// which is why it is picked by the absence of that hidden style.
+const getOpenRowMenu = () => {
+  const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
+    (popover) => popover.style.display !== 'none',
+  )
+
+  return openMenu
+}
+
 describe('ReleaseSummary', () => {
   setupVirtualListEnv()
 
@@ -201,15 +219,8 @@ describe('ReleaseSummary', () => {
 
       await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
 
-      // Every row keeps its menu mounted, and closed ones are hidden with `display: none`.
-      // Runtime styles are disabled in jsdom, so the open menu does not read as visible to
-      // `getByRole` either, which is why it is picked by the absence of that hidden style.
-      const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
-        (popover) => popover.style.display !== 'none',
-      )
-
       await userEvent.click(
-        within(openMenu).getByRole('menuitem', {name: 'Discard version', hidden: true}),
+        within(getOpenRowMenu()).getByRole('menuitem', {name: 'Discard version', hidden: true}),
       )
 
       expect(await screen.findByRole('dialog')).toBeInTheDocument()
@@ -374,7 +385,7 @@ describe('ReleaseSummary', () => {
       await screen.findByTestId('document-table-card')
 
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
-      return firstDocumentRow.querySelector('[data-ui="MenuButton"]')
+      return queryByDataUi(firstDocumentRow, 'MenuButton')
     }
 
     it('renders while discardVersion and unpublishVersion are configured', async () => {
@@ -382,10 +393,24 @@ describe('ReleaseSummary', () => {
     })
 
     it('is gone once both action ids are omitted from document.actions', async () => {
-      const publishOnly: DocumentActionsResolver = (prev) =>
-        prev.filter(({action}) => action === 'publish')
-
       expect(await findFirstRowMenuButton(publishOnly)).not.toBeInTheDocument()
+    })
+
+    it('drops unpublish for a cardinality-one release row', async () => {
+      await renderTest({release: activeCardinalityOneRelease}, {variantsEnabled})
+      await screen.findByTestId('document-table-card')
+
+      const [firstDocumentRow] = screen.getAllByTestId('table-row')
+      await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
+
+      const openMenu = getOpenRowMenu()
+
+      expect(
+        within(openMenu).getByRole('menuitem', {name: 'Discard version', hidden: true}),
+      ).toBeInTheDocument()
+      expect(
+        within(openMenu).queryByRole('menuitem', {name: 'Unpublish', hidden: true}),
+      ).not.toBeInTheDocument()
     })
   })
 
