@@ -94,6 +94,35 @@ describe('resolveTypeForArrayItem', () => {
 
     expect(resolved).toBe(fooType)
   })
+
+  it('does not assume the sole candidate when the item declares a mismatched _type', () => {
+    // Regression test for SAPP-4206. Returning the sole candidate before looking at
+    // `_type` validated the item's other fields against a type the array does not
+    // allow, and reported nothing.
+    const resolved = resolveTypeForArrayItem(
+      {
+        _type: 'notAllowed',
+        _key: 'exampleKey',
+        title: 5,
+      },
+      [fooType!],
+    )
+
+    expect(resolved).toBeUndefined()
+  })
+
+  it('still resolves the sole candidate when the item declares a matching _type', () => {
+    const resolved = resolveTypeForArrayItem(
+      {
+        _type: 'foo',
+        _key: 'exampleKey',
+        title: 5,
+      },
+      [fooType!],
+    )
+
+    expect(resolved).toBe(fooType)
+  })
 })
 
 describe('validateDocument', () => {
@@ -144,6 +173,89 @@ describe('validateDocument', () => {
         path: ['title'],
       },
     ])
+  })
+
+  it('reports an array item whose _type is not among the allowed types', async () => {
+    // Repro from SAPP-4206: a single-candidate array silently accepted an item
+    // declaring a type it does not allow, because the sole candidate was inferred
+    // before `_type` was ever consulted. The remaining fields are deliberately
+    // valid for `foo`, so this only produced a marker once the type mismatch was
+    // reported in its own right.
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'foo',
+          type: 'object',
+          fields: [{name: 'title', type: 'string'}],
+        },
+        {
+          name: 'arrayDoc',
+          type: 'document',
+          fields: [{name: 'items', type: 'array', of: [{type: 'foo'}]}],
+        },
+      ],
+    })
+
+    const document: SanityDocument = {
+      _id: 'testId',
+      _createdAt: '2021-08-27T14:48:51.650Z',
+      _rev: 'exampleRev',
+      _type: 'arrayDoc',
+      _updatedAt: '2021-08-27T14:48:51.650Z',
+      items: [{_key: 'a', _type: 'notAllowed', title: 'valid for foo'}],
+    }
+
+    const result = await validateDocument({
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      getClient,
+      document,
+      workspace: {schema} as Workspace,
+    })
+
+    expect(result).toMatchObject([
+      {
+        level: 'error',
+        message: 'Array item type "notAllowed" is not allowed here. Allowed types: "foo"',
+        path: ['items', {_key: 'a'}],
+      },
+    ])
+  })
+
+  it('does not report an array item whose _type matches an allowed type', async () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'foo',
+          type: 'object',
+          fields: [{name: 'title', type: 'string'}],
+        },
+        {
+          name: 'arrayDoc',
+          type: 'document',
+          fields: [{name: 'items', type: 'array', of: [{type: 'foo'}]}],
+        },
+      ],
+    })
+
+    const document: SanityDocument = {
+      _id: 'testId',
+      _createdAt: '2021-08-27T14:48:51.650Z',
+      _rev: 'exampleRev',
+      _type: 'arrayDoc',
+      _updatedAt: '2021-08-27T14:48:51.650Z',
+      items: [{_key: 'a', _type: 'foo', title: 'valid'}],
+    }
+
+    const result = await validateDocument({
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      getClient,
+      document,
+      workspace: {schema} as Workspace,
+    })
+
+    expect(result).toEqual([])
   })
 })
 
