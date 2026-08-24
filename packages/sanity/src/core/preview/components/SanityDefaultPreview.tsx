@@ -7,7 +7,7 @@ import {
   type ImageUrlBuilder,
   type SanityImageSource,
 } from '@sanity/image-url'
-import {Card, Flex, Skeleton} from '@sanity/ui'
+import {Card, Skeleton} from '@sanity/ui'
 import {
   type ComponentType,
   type ElementType,
@@ -19,6 +19,7 @@ import {
   useState,
 } from 'react'
 import {isValidElementType} from 'react-is'
+import {Flex} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {resolveBlockImageDimensions} from '../../components/previews/helpers'
@@ -88,7 +89,7 @@ function SanityDefaultMedia({
   if (showAccessWarning) {
     return (
       <Card tone="critical" style={{width: '100%', height: '100%'}}>
-        <Flex justify="center" align="center" style={{width: '100%', height: '100%'}}>
+        <Flex justifyContent="center" alignItems="center" style={{width: '100%', height: '100%'}}>
           <WarningOutlineIcon />
         </Flex>
       </Card>

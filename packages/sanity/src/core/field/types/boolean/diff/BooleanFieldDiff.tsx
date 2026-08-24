@@ -1,5 +1,5 @@
-import {Flex, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Text} from '@sanity/ui'
+import {Box, Flex} from 'ui5'
 
 import {useDiffAnnotationColor} from '../../../diff/annotations/hooks'
 import {DiffTooltip} from '../../../diff/components/DiffTooltip'
@@ -17,9 +17,9 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
   const showToValue = toValue !== undefined && toValue !== null
 
   return (
-    <Flex align="center">
+    <Flex alignItems="center">
       <DiffTooltip diff={diff}>
-        <Flex align="center">
+        <Flex alignItems="center">
           {showFromValue && <Preview checked={fromValue} color={userColor} />}
 
           {showToValue && (
