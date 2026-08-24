@@ -1,6 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {Menu} from '@sanity/ui/menu'
-import {type ReactNode, type Ref, useMemo} from 'react'
+import {useMemo} from 'react'
 import {
   type InitialValueTemplateItem,
   type ReleaseId,
@@ -152,16 +152,6 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
             const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
 
-            const resolvedIntent = intent
-            function Link(linkProps: {children?: ReactNode; ref?: Ref<HTMLElement>}) {
-              const {ref: linkRef, ...rest} = linkProps
-              return disabled ? (
-                <button type="button" disabled {...rest} ref={linkRef as Ref<HTMLButtonElement>} />
-              ) : (
-                <IntentLink {...rest} {...resolvedIntent} ref={linkRef as Ref<HTMLAnchorElement>} />
-              )
-            }
-
             const {title} = getI18nText({
               ...item,
               // replace the title with the template title
@@ -175,17 +165,27 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
                 reveal={disabled}
                 loading={isTemplatePermissionsLoading}
               >
-                <MenuItem
-                  as={Link}
-                  data-as={disabled ? 'button' : 'a'}
-                  icon={item.icon}
-                  text={title}
-                  aria-label={
-                    disabled ? t('pane-header.disabled-created-button.aria-label') : title
-                  }
-                  disabled={disabled}
-                  data-testid={`action-intent-button-${itemIndex}`}
-                />
+                {disabled ? (
+                  <MenuItem
+                    as="button"
+                    data-as="button"
+                    icon={item.icon}
+                    text={title}
+                    aria-label={t('pane-header.disabled-created-button.aria-label')}
+                    disabled
+                    data-testid={`action-intent-button-${itemIndex}`}
+                  />
+                ) : (
+                  <MenuItem
+                    as={IntentLink}
+                    {...intent}
+                    data-as="a"
+                    icon={item.icon}
+                    text={title}
+                    aria-label={title}
+                    data-testid={`action-intent-button-${itemIndex}`}
+                  />
+                )}
               </InsufficientPermissionsMessageTooltip>
             )
           })}
