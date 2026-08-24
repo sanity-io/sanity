@@ -9,7 +9,7 @@
   "dependencies": {
     "@sanity/client": "^8.2.0",
     "@sanity/functions": "^1.6.8",
-    "x-twitter-scraper": "0.12.0"
+    "x-twitter-scraper": "0.12.4"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
