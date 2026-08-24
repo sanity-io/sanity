@@ -374,7 +374,7 @@ function SeriesCard(props: {
             percentage it contextualizes instead of floating top-right while
             the badge wraps under a long title. */}
         <Flex align="center" justify="space-between" gap={3}>
-          <Box flex={1} style={{minWidth: 0}}>
+          <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
             {/* Clicking the title deep-links to this chart (shareable focus) */}
             {onFocus ? (
               <Box

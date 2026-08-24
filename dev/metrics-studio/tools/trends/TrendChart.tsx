@@ -4,7 +4,6 @@ import {Group} from '@visx/group'
 import {scaleLinear, scaleTime} from '@visx/scale'
 import {Area, LinePath} from '@visx/shape'
 import {useRef, useState} from 'react'
-import {Box} from 'ui5'
 
 import {
   CALIBRATION_EXPLAINER,
