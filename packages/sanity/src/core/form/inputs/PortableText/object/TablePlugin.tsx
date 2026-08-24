@@ -14,15 +14,23 @@ import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Flex, Switch, Text, usePortal} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import {useId, useMemo} from 'react'
-import {createGlobalStyle, useTheme} from 'styled-components'
+import {createGlobalStyle, css, styled, useTheme} from 'styled-components'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {pathToString} from '../../../../field/paths/helpers'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useColorSchemeValue} from '../../../../studio/colorScheme'
+import {EMPTY_ARRAY} from '../../../../util/empty'
+import {useFormBuilder} from '../../../useFormBuilder'
+import {usePortableTextInputPath} from '../contexts/PortableTextInputPath'
+import {useMemberValidation} from '../hooks/useMemberValidation'
+import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
+import {TooltipBox} from './BlockObject.styles'
 
 const studioTableRender = (props: ContainerRenderProps) => <StudioTable {...props} />
 
@@ -106,28 +114,77 @@ function StudioTable(props: ContainerRenderProps): React.JSX.Element {
   const portal = usePortal()
   const {t} = useTranslation()
   const tokens = useTableTokens()
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  const {Markers} = useFormBuilder().__internal.components
+  const inputPath = usePortableTextInputPath()
+  const memberItem = usePortableTextMemberItem(pathToString(inputPath.concat(props.path)))
+  const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.node)
+  const tooltipEnabled = hasError || hasWarning || hasInfo
+  const tooltipContent = useMemo(
+    () =>
+      (tooltipEnabled && (
+        <TooltipBox>
+          <Markers markers={EMPTY_ARRAY} validation={validation} />
+        </TooltipBox>
+      )) ||
+      null,
+    [Markers, tooltipEnabled, validation],
+  )
+
   return (
-    <Table
-      {...props}
-      icons={tableIcons}
-      portalElement={portal.element}
-      tokens={tokens}
-      labels={{
-        'add-column': t('inputs.portable-text.table.add-column'),
-        'add-row': t('inputs.portable-text.table.add-row'),
-        'column-handle': t('inputs.portable-text.table.column-handle'),
-        'delete-column': t('inputs.portable-text.table.delete-column'),
-        'delete-row': t('inputs.portable-text.table.delete-row'),
-        'insert-here': t('inputs.portable-text.table.insert-here'),
-        'row-handle': t('inputs.portable-text.table.row-handle'),
-      }}
-      // Wrapped in JSX because the plugin calls `renderMenu` as a plain
-      // function; a bare `StudioTableMenu` would run its hooks inside the
-      // plugin's render.
-      renderMenu={(menuProps) => <StudioTableMenu {...menuProps} />}
-    />
+    <TableValidationWrapper
+      data-invalid={hasError ? '' : undefined}
+      data-testid="pte-table-block"
+      data-warning={hasWarning ? '' : undefined}
+    >
+      <Tooltip content={tooltipContent} disabled={!tooltipEnabled} placement="top" portal="editor">
+        <div>
+          <Table
+            {...props}
+            icons={tableIcons}
+            portalElement={portal.element}
+            tokens={tokens}
+            labels={{
+              'add-column': t('inputs.portable-text.table.add-column'),
+              'add-row': t('inputs.portable-text.table.add-row'),
+              'column-handle': t('inputs.portable-text.table.column-handle'),
+              'delete-column': t('inputs.portable-text.table.delete-column'),
+              'delete-row': t('inputs.portable-text.table.delete-row'),
+              'insert-here': t('inputs.portable-text.table.insert-here'),
+              'row-handle': t('inputs.portable-text.table.row-handle'),
+            }}
+            // Wrapped in JSX because the plugin calls `renderMenu` as a plain
+            // function; a bare `StudioTableMenu` would run its hooks inside the
+            // plugin's render.
+            renderMenu={(menuProps) => <StudioTableMenu {...menuProps} />}
+          />
+        </div>
+      </Tooltip>
+    </TableValidationWrapper>
   )
 }
+
+// The `data-invalid`/`data-warning` states match `BlockObject.styles.ts`,
+// but the visual treatment is deliberately different: that file draws a
+// tinted `:after` overlay, this draws a box-shadow ring, scoped to a
+// wrapper around the table instead of the shared object-block `Root`
+// because the table renders its own borders and background via
+// `useTableTokens`, so reusing that `Card` here would fight the plugin's
+// own theming.
+const TableValidationWrapper = styled.div(({theme}: {theme: Theme}) => {
+  const {color, radius} = getTheme_v2(theme)
+  return css`
+    border-radius: ${radius[2]}px;
+
+    &[data-invalid] {
+      box-shadow: 0 0 0 2px ${color.input.invalid.enabled.border};
+    }
+
+    &[data-warning] {
+      box-shadow: 0 0 0 2px ${color.selectable.caution.enabled.border};
+    }
+  `
+})
 
 // The values ride the plugin's `tokens` prop, which applies them to the
 // plugin's own elements including the portal layers, so each table
