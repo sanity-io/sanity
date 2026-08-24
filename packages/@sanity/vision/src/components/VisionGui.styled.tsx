@@ -1,6 +1,7 @@
-import {Box, Card, Flex, Label, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Card, Flex, Label, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ComponentProps, type ComponentPropsWithoutRef, type RefAttributes} from 'react'
+import {Box} from 'ui5'
 
 import {
   controlsContainer,

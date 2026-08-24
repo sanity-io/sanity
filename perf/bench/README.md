@@ -1,8 +1,6 @@
 # bench
 
-Hermetic studio performance benchmark suite — the eFPS (`dev/efps`) replacement. Measures editing responsiveness, load vitals, and resource usage of a built Studio against a local mock of the Sanity API, and compares a PR's build (**experiment**) against its merge-base build (**reference**) with real statistics.
-
-`dev/efps` is kept for reference and keeps running in CI while this suite burns in.
+Hermetic studio performance benchmark suite — the replacement for the retired eFPS suite (`dev/efps`, removed from the repo; see git history). Measures editing responsiveness, load vitals, and resource usage of a built Studio against a local mock of the Sanity API, and compares a PR's build (**experiment**) against its merge-base build (**reference**) with real statistics.
 
 ## Why it exists
 

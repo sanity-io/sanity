@@ -1,9 +1,10 @@
 import {type PortableTextBlock} from '@portabletext/editor'
 import {CommentIcon} from '@sanity/icons/Comment'
-import {Box, Button, Stack, Text, TextArea} from '@sanity/ui'
+import {Button, Stack, Text, TextArea} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {type ChangeEvent, useCallback, useState} from 'react'
 import {type RenderBlockActionsCallback} from 'sanity'
+import {Box} from 'ui5'
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const renderBlockActions: RenderBlockActionsCallback = (props) => {

@@ -1,5 +1,6 @@
-import {Badge, Box, Stack} from '@sanity/ui'
+import {Badge, Stack} from '@sanity/ui'
 import {type ComponentType, type PropsWithChildren} from 'react'
+import {Box} from 'ui5'
 
 type Props = PropsWithChildren<{
   name: string

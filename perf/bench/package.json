@@ -2,7 +2,7 @@
   "name": "bench",
   "version": "6.3.0",
   "private": true,
-  "description": "Hermetic studio performance benchmark suite (eFPS replacement)",
+  "description": "Hermetic studio performance benchmark suite",
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "type": "module",

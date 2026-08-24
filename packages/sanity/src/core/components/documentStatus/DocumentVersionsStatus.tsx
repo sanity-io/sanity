@@ -30,6 +30,7 @@ import {getDocumentVersionStatusTitle} from './getDocumentVersionStatusTitle'
 import {
   type DocumentVersionStatusItem,
   groupDocumentVersionsForStatus,
+  SHOW_AGENT_VERSIONS_IN_STATUS,
 } from './sortDocumentVersionsForStatus'
 
 /**
@@ -46,7 +47,11 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
   const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
 
   const versionGroups = useMemo(
-    () => groupDocumentVersionsForStatus(versions, releases ?? [], variantsById, variantsEnabled),
+    () =>
+      groupDocumentVersionsForStatus(versions, releases ?? [], variantsById, {
+        variantsEnabled,
+        showAgentVersions: SHOW_AGENT_VERSIONS_IN_STATUS,
+      }),
     [releases, variantsById, variantsEnabled, versions],
   )
 

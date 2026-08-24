@@ -1,9 +1,10 @@
 import {stegaClean} from '@sanity/client/stega'
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
 import {registerLanguage} from 'react-refractor'
 import markdown from 'refractor/markdown'
+import {Box} from 'ui5'
 
 import {useQuery} from './loader'
 
