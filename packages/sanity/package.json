@@ -271,7 +271,7 @@
     "@vitest/browser-playwright": "catalog:",
     "@vitest/expect": "^4.1.11",
     "blob-polyfill": "^9.0.20240710",
-    "chromatic": "^18.2.0",
+    "chromatic": "^18.5.0",
     "jsdom": "catalog:",
     "oxc-transform-react": "catalog:",
     "react": "catalog:",
