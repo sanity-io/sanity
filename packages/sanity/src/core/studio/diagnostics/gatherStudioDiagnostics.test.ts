@@ -203,7 +203,7 @@ describe('gatherStudioDiagnostics', () => {
 
   it('uses diagnostic tags relative to the client request tag prefix', async () => {
     mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
-    const {client} = createClient()
+    const {client, credentiallessRequest} = createClient()
 
     await gatherStudioDiagnostics(createOptions(client))
 
@@ -212,8 +212,10 @@ describe('gatherStudioDiagnostics', () => {
       {},
       expect.objectContaining({tag: 'diagnostics.listen'}),
     )
-    expect(client.request).toHaveBeenCalledWith(expect.objectContaining({tag: 'diagnostics.ping'}))
-    expect(client.request).toHaveBeenCalledWith(
+    expect(credentiallessRequest).toHaveBeenCalledWith(
+      expect.objectContaining({tag: 'diagnostics.ping'}),
+    )
+    expect(credentiallessRequest).toHaveBeenCalledWith(
       expect.objectContaining({tag: 'diagnostics.geoip-country', url: '/geoip/country'}),
     )
     const queryProbeUrl = new URL(String(vi.mocked(fetch).mock.calls[0]?.[0]))
@@ -275,6 +277,18 @@ describe('gatherStudioDiagnostics', () => {
     })
   })
 
+  it('does not send inherited credentials to public endpoint probes', async () => {
+    mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
+    const {client} = createClient({requireCredentiallessPublicRequests: true})
+
+    const diagnostics = await gatherStudioDiagnostics(createOptions(client))
+
+    expect(diagnostics.network.requests.slice(0, 2)).toEqual([
+      expect.objectContaining({path: '/ping', status: 'success'}),
+      expect.objectContaining({path: '/geoip/country', status: 'success'}),
+    ])
+  })
+
   it('records a local storage failure without failing the report', async () => {
     mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
@@ -334,14 +348,29 @@ function createOptions(client: SanityClient): StudioDiagnosticsOptions {
 }
 
 function createClient(
-  options: {emitListenEvents?: boolean; geoIpCountry?: string | null; resolvePing?: boolean} = {},
-): {
-  client: SanityClient
-  getMaximumActiveListeners: () => number
-} {
-  const {emitListenEvents = true, geoIpCountry = 'US', resolvePing = true} = options
+  options: {
+    emitListenEvents?: boolean
+    geoIpCountry?: string | null
+    requireCredentiallessPublicRequests?: boolean
+    resolvePing?: boolean
+  } = {},
+) {
+  const {
+    emitListenEvents = true,
+    geoIpCountry = 'US',
+    requireCredentiallessPublicRequests = false,
+    resolvePing = true,
+  } = options
   let activeListeners = 0
   let maximumActiveListeners = 0
+
+  const resolvePublicRequest = ({url}: {url: string}) => {
+    if (url === '/geoip/country') return Promise.resolve({isoCode: geoIpCountry})
+    return resolvePing ? Promise.resolve('pong') : new Promise(() => undefined)
+  }
+  const credentiallessRequest = vi.fn(resolvePublicRequest)
+
+  let credentiallessClient: SanityClient
 
   const client = {
     config: () => ({
@@ -371,15 +400,21 @@ function createClient(
           }
         }),
     ),
-    request: vi.fn(({url}: {url: string}) => {
-      if (url === '/geoip/country') return Promise.resolve({isoCode: geoIpCountry})
-      return resolvePing ? Promise.resolve('pong') : new Promise(() => undefined)
-    }),
-    withConfig: vi.fn(() => client),
+    request: vi.fn((request: {url: string}) =>
+      requireCredentiallessPublicRequests
+        ? Promise.reject(new TypeError('Credentialed CORS request blocked'))
+        : resolvePublicRequest(request),
+    ),
+    withConfig: vi.fn((config: {withCredentials?: boolean}) =>
+      config.withCredentials === false ? credentiallessClient : client,
+    ),
   } as unknown as SanityClient
+
+  credentiallessClient = {request: credentiallessRequest} as unknown as SanityClient
 
   return {
     client,
+    credentiallessRequest,
     getMaximumActiveListeners: () => maximumActiveListeners,
   }
 }

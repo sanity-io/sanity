@@ -314,11 +314,12 @@ async function runRequestDiagnostics(
   timeoutMs: number,
 ): Promise<{geoIpCountry?: string | null; requests: RequestDiagnostic[]}> {
   const requests: RequestDiagnostic[] = []
+  const credentiallessClient = client.withConfig({token: undefined, withCredentials: false})
   let geoIpCountry: string | null | undefined
 
   requests.push(
     await measureRequest('/ping', timeoutMs, async (signal) => {
-      await client.request({
+      await credentiallessClient.request({
         maxRetries: 0,
         signal,
         tag: 'diagnostics.ping',
@@ -331,7 +332,7 @@ async function runRequestDiagnostics(
 
   requests.push(
     await measureRequest('/geoip/country', timeoutMs, async (signal) => {
-      const result = await client.request<{isoCode: string | null}>({
+      const result = await credentiallessClient.request<{isoCode: string | null}>({
         maxRetries: 0,
         signal,
         tag: 'diagnostics.geoip-country',
