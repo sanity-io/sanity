@@ -1,7 +1,7 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Flex, Inline, rem, Text} from '@sanity/ui'
+import {Inline, rem, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
