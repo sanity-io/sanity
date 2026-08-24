@@ -446,8 +446,8 @@ importers:
   dev/preview-iframe:
     dependencies:
       '@portabletext/react':
-        specifier: ^8.0.0
-        version: 8.0.0(react@19.2.8)
+        specifier: ^8.0.1
+        version: 8.0.1(react@19.2.8)
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.2.0(vitest@4.1.11)
@@ -707,8 +707,8 @@ importers:
         specifier: ^8.0.49
         version: 8.0.49(@portabletext/editor@7.12.0)(@types/react@19.2.18)(react@19.2.8)
       '@portabletext/react':
-        specifier: ^8.0.0
-        version: 8.0.0(react@19.2.8)
+        specifier: ^8.0.1
+        version: 8.0.1(react@19.2.8)
       '@portabletext/toolkit':
         specifier: ^6.0.0
         version: 6.0.0
@@ -1751,8 +1751,8 @@ importers:
         specifier: ^8.0.49
         version: 8.0.49(@portabletext/editor@7.12.0)(@types/react@19.2.18)(react@19.2.8)
       '@portabletext/react':
-        specifier: ^8.0.0
-        version: 8.0.0(react@19.2.8)
+        specifier: ^8.0.1
+        version: 8.0.1(react@19.2.8)
       '@portabletext/sanity-bridge':
         specifier: ^3.2.5
         version: 3.2.5
@@ -6161,8 +6161,8 @@ packages:
       '@portabletext/editor': ^7.12.0
       react: ^19.2
 
-  '@portabletext/react@8.0.0':
-    resolution: {integrity: sha512-xXWm0LvJrWPqv1BI2wR95q/+YNQW2hFl0wG26hoF0YUoQFhXz5jWZHlsvTtLx/IkFcPd+LCsfoYRgEHnLJslIQ==}
+  '@portabletext/react@8.0.1':
+    resolution: {integrity: sha512-Fy9UxVhppgEckEvczZytg4bBxiPcZIM49NrJ3sizEoz19aNzJWEYoUj7f3TI94907psEk0yfR145eoOgkedM2A==}
     engines: {node: '>=22.12'}
     peerDependencies:
       react: ^19
@@ -18293,7 +18293,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/react@8.0.0(react@19.2.8)':
+  '@portabletext/react@8.0.1(react@19.2.8)':
     dependencies:
       '@portabletext/toolkit': 6.0.0
       '@portabletext/types': 4.0.2
