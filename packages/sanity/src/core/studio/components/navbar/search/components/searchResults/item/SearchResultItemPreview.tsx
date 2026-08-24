@@ -1,11 +1,12 @@
 import {type SchemaType} from '@sanity/types'
-import {Badge, Box, Flex} from '@sanity/ui'
+import {Badge, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {DocumentStatus} from '../../../../../../../components/documentStatus/DocumentStatus'
-import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator/DocumentStatusIndicator'
+import {DocumentVersionsStatus} from '../../../../../../../components/documentStatus/DocumentVersionsStatus'
+import {DocumentVersionsStatusIndicator} from '../../../../../../../components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components/previews/types'
 import {type PerspectiveStack} from '../../../../../../../perspective/types'
 import {DocumentPreviewPresence} from '../../../../../../../presence/DocumentPreviewPresence'
@@ -13,7 +14,6 @@ import {SanityDefaultPreview} from '../../../../../../../preview/components/Sani
 import {getPreviewStateObservable} from '../../../../../../../preview/utils/getPreviewStateObservable'
 import {getPreviewValueWithFallback} from '../../../../../../../preview/utils/getPreviewValueWithFallback'
 import {useDocumentVersions} from '../../../../../../../releases/hooks/useDocumentVersions'
-import {getDocumentVersionInfoFromVersions} from '../../../../../../../releases/util/getDocumentVersionInfoFromVersions'
 import {useDocumentPreviewStore} from '../../../../../../../store/datastores'
 import {type DocumentPresence} from '../../../../../../../store/presence/types'
 
@@ -86,7 +86,6 @@ export function SearchResultItemPreview({
   const {isLoading, snapshot, original} = useObservable(observable, INITIAL_PREVIEW_STATE)
 
   const {versions} = useDocumentVersions({documentId})
-  const versionsInfo = useMemo(() => getDocumentVersionInfoFromVersions(versions), [versions])
 
   const status = useMemo(() => {
     if (isLoading) return null
@@ -94,30 +93,12 @@ export function SearchResultItemPreview({
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         {showBadge && <Badge>{schemaType.title}</Badge>}
-        <DocumentStatusIndicator
-          draft={versionsInfo.draft}
-          published={versionsInfo.published}
-          versions={versionsInfo.versions}
-        />
+        <DocumentVersionsStatusIndicator documentVersions={versions} />
       </Flex>
     )
-  }, [
-    isLoading,
-    presence,
-    schemaType.title,
-    showBadge,
-    versionsInfo.draft,
-    versionsInfo.published,
-    versionsInfo.versions,
-  ])
+  }, [isLoading, presence, schemaType.title, showBadge, versions])
 
-  const tooltip = (
-    <DocumentStatus
-      draft={versionsInfo.draft}
-      published={versionsInfo.published}
-      versions={versionsInfo.versions}
-    />
-  )
+  const tooltip = <DocumentVersionsStatus documentGroupId={documentId} />
 
   return (
     <SearchResultItemPreviewBox>

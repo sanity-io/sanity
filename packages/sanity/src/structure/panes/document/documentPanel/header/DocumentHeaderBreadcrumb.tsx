@@ -1,6 +1,7 @@
 import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {Fragment} from 'react'
+import {Box} from 'ui5'
 
 import {LOADING_PANE} from '../../../../constants'
 import {type Panes} from '../../../../structureResolvers/useResolvedPanes'

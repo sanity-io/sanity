@@ -1,4 +1,5 @@
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {Box} from 'ui5'
 
 import {type LogoProps} from '../../../config/studio/types'
 

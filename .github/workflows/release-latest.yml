@@ -169,6 +169,23 @@ jobs:
             sleep 15
           done
 
+  sync-git-metrics:
+    # Mirror the new tag + npm data into the metrics dataset. After
+    # npm-publish so the registry already knows the version. Nothing
+    # downstream depends on it; a failure alerts Slack via the called
+    # workflow's alert job.
+    needs: [git-operations, npm-publish]
+    # always(): also sync on publish-only dispatch runs, where
+    # git-operations is skipped
+    if: always() && needs.npm-publish.result == 'success'
+    permissions:
+      contents: read
+      deployments: read
+    uses: ./.github/workflows/sync-git-metrics.yml
+    secrets:
+      BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+      SLACK_WEBHOOK_URL_CI_ALERTS: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+
   publish-releases:
     # Publish sanity.io Changelog & github release
     needs: [build-and-validate, npm-publish]

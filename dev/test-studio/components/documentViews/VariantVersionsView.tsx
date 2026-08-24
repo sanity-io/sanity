@@ -1,5 +1,5 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Box, Button, Card, Dialog, Grid, Inline, Stack, Text} from '@sanity/ui'
+import {Button, Card, Dialog, Grid, Inline, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
@@ -17,6 +17,7 @@ import {
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
+import {Box} from 'ui5'
 
 const DOCUMENT_QUERY = '*[_id == $id][0]'
 const RAW_PERSPECTIVE_CLIENT_OPTIONS = {apiVersion: 'X' as const}
@@ -334,6 +335,7 @@ function VersionSlotCard({label, contextTitle, snapshot, status}: VersionSlot) {
       await client.delete(documentId)
     } catch (deleteErr: unknown) {
       setDeleteError(deleteErr instanceof Error ? deleteErr.message : 'Failed to delete document')
+      // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
     } finally {
       setDeleting(false)
     }

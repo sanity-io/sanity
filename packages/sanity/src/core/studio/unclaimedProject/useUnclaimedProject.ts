@@ -46,18 +46,11 @@ export type UnclaimedProjectState =
       /** The lookup reported the claim link spent or gone — don't point the user at it. */
       claimLinkSpent?: boolean
     }
-  | {status: 'claimed'; email?: string}
   | {status: 'expired'}
-
-interface ProjectMember {
-  id?: string
-  isRobot?: boolean
-}
 
 interface ProjectResponse {
   createdAt?: string
   organizationId?: string
-  members?: ProjectMember[]
 }
 
 interface ClaimLookupResponse {
@@ -123,6 +116,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
     let lookupSawNotFound = false
     let claimLinkSpent = false
     let checkInFlight = false
+    let logoutInFlight = false
     const claimPollingStopped$ = new Subject<void>()
 
     const stopClaimPolling = () => {
@@ -145,30 +139,22 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
       if (!disposed) setSessionState({sessionKey, value: next})
     }
 
-    const finishClaimed = (members?: ProjectMember[]) => {
+    const finishClaimed = async () => {
+      if (!auth.logout || logoutInFlight) return
+      logoutInFlight = true
+
+      try {
+        await auth.logout()
+      } catch {
+        logoutInFlight = false
+        return
+      }
+
       terminal = true
       stopClaimPolling()
+      clearUnclaimedProjectRecord(projectId)
       clearUnclaimedProjectSnooze(projectId)
-      update({status: 'claimed'})
-
-      const humanMembers = members?.filter(
-        (member): member is ProjectMember & {id: string} =>
-          member.isRobot === false && typeof member.id === 'string' && Boolean(member.id),
-      )
-      if (humanMembers?.length !== 1) return
-
-      void client
-        .request<{email?: string}>({
-          uri: `/users/${humanMembers[0].id}`,
-          tag: 'unclaimed-project.claimant',
-        })
-        .then((user) => {
-          const email = typeof user.email === 'string' ? user.email.trim() : ''
-          if (!disposed && email) update({status: 'claimed', email})
-        })
-        .catch(() => {
-          // The targeted label is optional; keep the generic sign-in CTA on any lookup failure.
-        })
+      if (!disposed) setSessionState(undefined)
     }
 
     const finishExpired = () => {
@@ -242,7 +228,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
       }
       if (disposed || terminal) return
       if (data.state === 'claimed') {
-        finishClaimed()
+        await finishClaimed()
       } else if (data.state === 'expired') {
         dropClaimRecord()
       } else if (data.state === 'claimable' && data.expiresAt) {
@@ -257,7 +243,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
     const performCheck = async () => {
       let project: ProjectResponse
       try {
-        project = await client.request({uri: `/projects/${projectId}`, tag: 'unclaimed-project'})
+        project = await client.request({url: `/projects/${projectId}`, tag: 'unclaimed-project'})
       } catch (err) {
         const statusCode = getStatusCode(err)
         const hasMintProvenance =
@@ -270,7 +256,7 @@ export function useUnclaimedProject({claimAttemptedAt}: UseUnclaimedProjectOptio
       if (!project.organizationId) return
       const record = readUnclaimedProjectRecord(projectId)
       if (project.organizationId !== UNCLAIMED_ORGANIZATION_ID) {
-        if (hasSeenUnclaimed() || record) finishClaimed(project.members)
+        if (hasSeenUnclaimed() || record) await finishClaimed()
         return
       }
 

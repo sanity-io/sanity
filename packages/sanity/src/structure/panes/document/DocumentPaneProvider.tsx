@@ -756,6 +756,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     pathRef.current = paramPath
 
     return undefined
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [paramPath, ready])
 
   // Disable when `formState` or `schemaType` is transiently absent
@@ -842,6 +843,7 @@ const DivergenceAutofocus: ComponentType<
   })
 
   useEffect(() => {
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     focusDivergentPath()
   }, [focusedDivergence])
 

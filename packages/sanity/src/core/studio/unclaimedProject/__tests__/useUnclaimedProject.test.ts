@@ -104,98 +104,49 @@ describe('useUnclaimedProject', () => {
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
-  it('reports claimed, keeps mint provenance, and clears snooze state', async () => {
+  it('clears mint provenance and redirects to login when the project is claimed', async () => {
     mockRequest.mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
     writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
     writeUnclaimedProjectSnoozedAt(PROJECT_ID, new Date().toISOString())
 
     const {result} = renderHook(() => useUnclaimedProject())
 
-    await waitFor(() => expect(result.current).toEqual({status: 'claimed'}))
-    expect(readUnclaimedProjectRecord(PROJECT_ID)).toEqual({claimUrl: CLAIM_URL})
+    await waitFor(() => expect(mockLogout).toHaveBeenCalledOnce())
+    expect(result.current).toBeUndefined()
+    expect(readUnclaimedProjectRecord(PROJECT_ID)).toBeUndefined()
     expect(readUnclaimedProjectSnoozedAt(PROJECT_ID)).toBeUndefined()
   })
 
-  it('restores the claimed state after a remount while the robot session remains active', async () => {
+  it('keeps mint provenance until logout has cleared the robot session', async () => {
+    let resolveLogout: (() => void) | undefined
+    mockLogout.mockReturnValue(
+      new Promise<void>((resolve) => {
+        resolveLogout = resolve
+      }),
+    )
     mockRequest.mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
     writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
 
-    const first = renderHook(() => useUnclaimedProject())
-    await waitFor(() => expect(first.result.current).toEqual({status: 'claimed'}))
-    first.unmount()
+    const {result} = renderHook(() => useUnclaimedProject())
 
-    const second = renderHook(() => useUnclaimedProject())
-    await waitFor(() => expect(second.result.current).toEqual({status: 'claimed'}))
-
+    await waitFor(() => expect(mockLogout).toHaveBeenCalledOnce())
+    expect(result.current).toBeUndefined()
     expect(readUnclaimedProjectRecord(PROJECT_ID)).toEqual({claimUrl: CLAIM_URL})
-    expect(mockRequest).toHaveBeenCalledTimes(2)
+
+    resolveLogout?.()
+
+    await waitFor(() => expect(readUnclaimedProjectRecord(PROJECT_ID)).toBeUndefined())
   })
 
-  it('resolves the sole human project member for the claimed sign-in CTA', async () => {
-    mockRequest.mockImplementation(({uri}: {uri: string}) => {
-      if (uri === `/projects/${PROJECT_ID}`) {
-        return Promise.resolve({
-          createdAt: CREATED_AT,
-          organizationId: 'oReal',
-          members: [
-            {id: 'robot', isRobot: true},
-            {id: 'claimant', isRobot: false},
-          ],
-        })
-      }
-      if (uri === '/users/claimant') return Promise.resolve({email: 'claimant@example.com'})
-      return Promise.reject(new Error(`Unexpected request: ${uri}`))
-    })
+  it('keeps mint provenance when logout rejects', async () => {
+    mockLogout.mockRejectedValue(new Error('logout failed'))
+    mockRequest.mockResolvedValue({createdAt: CREATED_AT, organizationId: 'oReal'})
     writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
 
-    const {result} = renderHook(() => useUnclaimedProject())
+    renderHook(() => useUnclaimedProject())
 
-    await waitFor(() =>
-      expect(result.current).toEqual({status: 'claimed', email: 'claimant@example.com'}),
-    )
-    expect(mockRequest).toHaveBeenCalledWith({
-      tag: 'unclaimed-project.claimant',
-      uri: '/users/claimant',
-    })
-  })
-
-  it('keeps the generic claimed state when the claimant is ambiguous', async () => {
-    mockRequest.mockResolvedValue({
-      createdAt: CREATED_AT,
-      organizationId: 'oReal',
-      members: [
-        {id: 'first-human', isRobot: false},
-        {id: 'second-human', isRobot: false},
-      ],
-    })
-    writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
-
-    const {result} = renderHook(() => useUnclaimedProject())
-
-    await waitFor(() => expect(result.current).toEqual({status: 'claimed'}))
-    expect(mockRequest).toHaveBeenCalledExactlyOnceWith({
-      tag: 'unclaimed-project',
-      uri: `/projects/${PROJECT_ID}`,
-    })
-  })
-
-  it('keeps the generic claimed state when claimant lookup fails', async () => {
-    mockRequest.mockImplementation(({uri}: {uri: string}) => {
-      if (uri === `/projects/${PROJECT_ID}`) {
-        return Promise.resolve({
-          createdAt: CREATED_AT,
-          organizationId: 'oReal',
-          members: [{id: 'claimant', isRobot: false}],
-        })
-      }
-      return Promise.reject(new Error('user lookup unavailable'))
-    })
-    writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
-
-    const {result} = renderHook(() => useUnclaimedProject())
-
-    await waitFor(() => expect(mockRequest).toHaveBeenCalledTimes(2))
-    expect(result.current).toEqual({status: 'claimed'})
+    await waitFor(() => expect(mockLogout).toHaveBeenCalledOnce())
+    expect(readUnclaimedProjectRecord(PROJECT_ID)).toEqual({claimUrl: CLAIM_URL})
   })
 
   it('stays quiet for a regular robot-token session on a claimed project', async () => {
@@ -206,7 +157,7 @@ describe('useUnclaimedProject', () => {
     await waitFor(() =>
       expect(mockRequest).toHaveBeenCalledExactlyOnceWith({
         tag: 'unclaimed-project',
-        uri: `/projects/${PROJECT_ID}`,
+        url: `/projects/${PROJECT_ID}`,
       }),
     )
     expect(result.current).toBeUndefined()
@@ -418,14 +369,15 @@ describe('useUnclaimedProject', () => {
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
-  it('flips to claimed when the lookup says the claim was spent', async () => {
+  it('redirects to login when the lookup says the project was claimed', async () => {
     writeUnclaimedProjectRecord(PROJECT_ID, {claimUrl: CLAIM_URL})
     mockFetch.mockResolvedValue(lookupResponse(200, {state: 'claimed'}))
 
     const {result} = renderHook(() => useUnclaimedProject())
 
-    await waitFor(() => expect(result.current).toEqual({status: 'claimed'}))
-    expect(readUnclaimedProjectRecord(PROJECT_ID)).toMatchObject({claimUrl: CLAIM_URL})
+    await waitFor(() => expect(mockLogout).toHaveBeenCalledOnce())
+    expect(result.current).toBeUndefined()
+    expect(readUnclaimedProjectRecord(PROJECT_ID)).toBeUndefined()
   })
 
   it('keeps the countdown when the lookup is rate-limited', async () => {
@@ -542,7 +494,8 @@ describe('useUnclaimedProject', () => {
 
       await act(() => vi.advanceTimersByTimeAsync(5 * 60_000))
       expect(mockRequest).toHaveBeenCalledTimes(2)
-      expect(result.current).toEqual({status: 'claimed'})
+      expect(result.current).toBeUndefined()
+      expect(mockLogout).toHaveBeenCalledOnce()
     } finally {
       vi.useRealTimers()
     }
@@ -571,7 +524,8 @@ describe('useUnclaimedProject', () => {
 
       await act(() => vi.advanceTimersByTimeAsync(10_000))
       expect(mockRequest).toHaveBeenCalledTimes(3)
-      expect(result.current).toEqual({status: 'claimed'})
+      expect(result.current).toBeUndefined()
+      expect(mockLogout).toHaveBeenCalledOnce()
 
       await act(() => vi.advanceTimersByTimeAsync(30_000))
       expect(mockRequest).toHaveBeenCalledTimes(3)
@@ -607,7 +561,8 @@ describe('useUnclaimedProject', () => {
       await act(() => vi.advanceTimersByTimeAsync(0))
 
       expect(mockRequest).toHaveBeenCalledTimes(3)
-      expect(result.current).toEqual({status: 'claimed'})
+      expect(result.current).toBeUndefined()
+      expect(mockLogout).toHaveBeenCalledOnce()
     } finally {
       vi.useRealTimers()
     }

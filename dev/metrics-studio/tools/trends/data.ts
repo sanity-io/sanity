@@ -15,14 +15,29 @@ export interface TrendRun {
     prNumber?: number
     mergeBaseSha?: string
   } | null
-  runner: {calibrationMs: number; runId?: string; runAttempt?: number} | null
-  bundle: {experiment: {initialJsBytes: number} | null} | null
+  runner: {
+    calibrationMs: number
+    runId?: string
+    runAttempt?: number
+    os?: string
+    arch?: string
+    cpus?: number
+    memGb?: number
+    nodeVersion?: string
+    /** Hardware generation discriminator — collected from Aug 2026 on. */
+    cpuModel?: string
+    imageOs?: string
+    imageVersion?: string
+    /** Chromium the sessions ran in — collected from Aug 2026 on. */
+    browserVersion?: string
+  } | null
+  bundle: {experiment: {initialJsBytes: number; totalJsBytes?: number | null} | null} | null
   scenarios:
     | {
         scenario: string
         sourceFile?: string
         /** Per-scenario shard runner calibration (multi-shard CI runs only). */
-        runner?: {calibrationMs: number | null} | null
+        runner?: {calibrationMs: number | null; cpuModel?: string | null} | null
         kind: 'interaction' | 'pageload'
         metrics:
           | {
@@ -58,12 +73,12 @@ export const TREND_QUERY = `*[_type == "benchRun" && mode == "absolute"] | order
   startedAt,
   mode,
   git{sha, branch, committedAt, prNumber, mergeBaseSha},
-  runner{calibrationMs, runId, runAttempt},
-  bundle{experiment{initialJsBytes}},
+  runner{calibrationMs, runId, runAttempt, os, arch, cpus, memGb, nodeVersion, cpuModel, imageOs, imageVersion, browserVersion},
+  bundle{experiment{initialJsBytes, totalJsBytes}},
   scenarios[]{
     scenario,
     sourceFile,
-    runner{calibrationMs},
+    runner{calibrationMs, cpuModel},
     kind,
     metrics[]{label, unit, experiment{summary{median, p75, p90}}},
     soak{minutes, samples[]{minute, heapMb, domNodes, listeners, latencyP50Ms, cpuTaskMs, connections, requests}}
@@ -86,6 +101,39 @@ export interface TrendPoint {
   value: number
   p75?: number
   p90?: number
+  /**
+   * INP points only: how many interactions the run's INP sessions observed
+   * (median across sessions) — confidence context for the INP value, shown in
+   * the tooltip/popover rather than charted as a series of its own. The
+   * percentile rule wants at least INP_MIN_INTERACTIONS.
+   */
+  interactions?: number
+  /**
+   * Host-speed score of the machine that measured this point (higher = slower
+   * host) — the scenario's own shard calibration on multi-shard CI runs,
+   * falling back to the run-level score. Drawn as a per-chart context line so
+   * a metric spike can be eyeballed against the host that produced it without
+   * leaving the chart (the Calibration tab keeps the full per-shard spread).
+   */
+  calibrationMs?: number
+  /**
+   * The machine that produced this point, for the run popover's Host section.
+   * Run-level metadata, except `cpuModel`, which the scenario's own shard
+   * overrides where stamped (multi-shard runs land on different machines).
+   * Older documents carry only the always-collected fields; cpuModel /
+   * image / browser exist from Aug 2026 on.
+   */
+  host?: {
+    os?: string
+    arch?: string
+    cpus?: number
+    memGb?: number
+    nodeVersion?: string
+    cpuModel?: string
+    imageOs?: string
+    imageVersion?: string
+    browserVersion?: string
+  }
   sha: string
   /** benchRun document id — opens the run in the studio. */
   runId: string
@@ -120,6 +168,22 @@ export interface TrendSeries {
    * works unchanged.
    */
   xKind?: 'date' | 'minute'
+  /**
+   * What one plotted point *is*, for the legend. Defaults to 'median (p50)' —
+   * true for the interaction/pageload series, whose points are per-run medians
+   * — but a soak slope point is a least-squares fit and an end-of-run point is
+   * a single sample; calling those "median (p50)" would be a false label.
+   */
+  lineLabel?: string
+  /**
+   * Published "good" threshold for the metric, drawn as a reference rule on
+   * the chart. Only set where a real recommendation exists (the web.dev Core
+   * Web Vitals thresholds); made-up bars would dilute the real ones. Note the
+   * honesty gap: web.dev thresholds are for field data at the 75th percentile,
+   * while these charts plot lab-run medians — the bar is orientation, not a
+   * pass/fail verdict.
+   */
+  goodThreshold?: number
   /** One line per branch (usually just one — comparison overlays several). */
   lines: TrendLine[]
 }
@@ -219,12 +283,29 @@ export const SOAK_METRICS: {
   },
 ]
 
+/**
+ * What the host-calibration score actually is — one string shared by every
+ * surface that mentions it (the Calibration tab, the chart ⓘ, the legend
+ * entry, the tooltip line, the run popover's Host section), so the dashboard
+ * can't describe its own honesty measure in two different ways. Mirrors
+ * calibrateHost in perf/bench/runner/browser.ts. Declared above TREND_GROUPS,
+ * which folds it into the Calibration tab's description.
+ */
+export const CALIBRATION_EXPLAINER =
+  'Host calibration is a fixed CPU workload (an integer-hashing loop, median of 5 runs) executed ' +
+  'unthrottled in the browser on the CI machine before it benchmarks anything. Higher = slower ' +
+  'host. It is an absolute score of its own, with no particular relationship to any metric’s ' +
+  'value — only its movement between runs is meaningful — and it measures CPU speed only, not ' +
+  'memory, disk or network.'
+
 export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[] = [
   {
     id: 'vitals',
     title: 'Web Vitals',
+    // The individual vitals are named (and spelled out) by the per-vital
+    // section headers right below, so the description doesn't list them
     description:
-      'Google Core Web Vitals and supporting load metrics — LCP, INP, CLS, FCP, TTFB. The user-facing quality bar; lower is better on all of them.',
+      'Google Core Web Vitals and supporting load metrics; lower is better on all of them. Measured in a canned environment (local API mock, no external network), so vitals that would only measure that setup are left out. TTFB, for example, would just time the mock.',
   },
   {
     id: 'responsiveness',
@@ -239,19 +320,19 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
   {
     id: 'bundle',
     title: 'Bundle size',
-    description: 'JavaScript shipped to boot the studio.',
+    description:
+      'How much JavaScript the build ships, and how much of it booting actually downloads.',
   },
   {
     id: 'soak',
     title: 'Soak (endurance)',
     description:
-      'One long session typing continuously into a self-erasing document. Every line should stay flat — an upward slope is a leak or degradation over time.',
+      'One long session typing continuously into a self-erasing document. Every line should stay flat. An upward slope is a leak or degradation over time.',
   },
   {
     id: 'environment',
     title: 'Calibration',
-    description:
-      'CI host speed per run — honesty context for every other tab, since absolute numbers are host-relative.',
+    description: `${CALIBRATION_EXPLAINER} Every number in the other tabs depends on how fast the host was, so check here before trusting a spike.`,
   },
 ]
 
@@ -263,7 +344,7 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
 function describeSeries(
   kind: 'interaction' | 'pageload',
   label: string,
-): Pick<TrendSeries, 'description' | 'goal' | 'group'> {
+): Pick<TrendSeries, 'description' | 'goal' | 'group' | 'goodThreshold'> {
   if (label.includes('time to editable')) {
     return {
       group: 'load',
@@ -275,52 +356,51 @@ function describeSeries(
     return {
       group: 'load',
       description:
-        'How long the main thread was frozen during load (long animation frames) — the UI is unresponsive for this time.',
+        'How long the main thread was frozen during load (long animation frames). The UI is unresponsive for this time.',
       goal: 'lower',
     }
   }
-  if (label.endsWith('TTFB')) {
-    return {
-      group: 'vitals',
-      description: 'Time to first byte of the document response.',
-      goal: 'lower',
-    }
-  }
+  // goodThreshold values are the web.dev "good" recommendations
+  // (https://web.dev/articles/defining-core-web-vitals-thresholds)
   if (label.endsWith('FCP')) {
     return {
       group: 'vitals',
-      description: 'First Contentful Paint — first pixels drawn.',
+      description: 'First Contentful Paint: first pixels drawn.',
       goal: 'lower',
+      goodThreshold: 1800,
     }
   }
   if (label.endsWith('LCP')) {
     return {
       group: 'vitals',
-      description: 'Largest Contentful Paint — the main content is visible (Core Web Vital).',
+      description: 'Largest Contentful Paint: the main content is visible (Core Web Vital).',
       goal: 'lower',
+      goodThreshold: 2500,
     }
   }
   if (label.endsWith('CLS')) {
     return {
       group: 'vitals',
       description:
-        'Cumulative Layout Shift — how much the layout jumps during load (Core Web Vital; lower is steadier).',
+        'Cumulative Layout Shift: how much the layout jumps during load (Core Web Vital; lower is steadier).',
       goal: 'lower',
-    }
-  }
-  if (label === 'INP interactions') {
-    return {
-      group: 'vitals',
-      description:
-        'How many distinct interactions the INP session observed — confidence context for the INP number (the percentile rule wants at least 50). Not a judged metric.',
-      goal: 'context',
+      goodThreshold: 0.1,
     }
   }
   if (label.endsWith('INP')) {
     return {
       group: 'vitals',
       description:
-        'Interaction to Next Paint — a high percentile of interaction latencies (click/type → next paint) under a realistic interaction mix (Core Web Vital).',
+        'Interaction to Next Paint: a high percentile of interaction latencies (click/type → next paint) under a realistic interaction mix (Core Web Vital).',
+      goal: 'lower',
+      goodThreshold: 200,
+    }
+  }
+  if (label.includes('boot JS')) {
+    return {
+      group: 'bundle',
+      description:
+        'Exact gzip sum of the JS chunks fetched before the document was editable (boot-cold): what booting actually downloads. The entry-chunk chart counts only what index.html references.',
       goal: 'lower',
     }
   }
@@ -335,7 +415,7 @@ function describeSeries(
     return {
       group: 'load',
       description:
-        'How long after navigation the first auth request was issued — client-side work we control.',
+        'How long after navigation the first auth request was issued. This is client-side work we control.',
       goal: 'lower',
     }
   }
@@ -343,7 +423,7 @@ function describeSeries(
     return {
       group: 'load',
       description:
-        'Time auth requests spent waiting on the API before the form was editable — scales with real-world API latency.',
+        'Time auth requests spent waiting on the API before the form was editable. Scales with real-world API latency.',
       goal: 'lower',
     }
   }
@@ -360,14 +440,75 @@ function describeSeries(
 export function formatValue(value: number, unit: TrendUnit): string {
   if (unit === 'count') return value.toFixed(0)
   if (unit === 'cls') return value.toFixed(3) // unitless layout-shift score
-  if (unit === 'bytes') return `${(value / 1024).toFixed(1)} KB`
+  // MB past 1 MiB: the total-JS series runs to megabytes, where "2368.1 KB"
+  // buries the magnitude a reader actually wants
+  if (unit === 'bytes') {
+    return Math.abs(value) >= 1024 * 1024
+      ? `${(value / (1024 * 1024)).toFixed(2)} MB`
+      : `${(value / 1024).toFixed(1)} KB`
+  }
   if (unit === 'megabytes') return `${value.toFixed(1)} MB`
   // Slope units are signed and typically fractional — keep the sign and
   // enough precision that a near-zero rate reads as "~0", not a rounded 0
   if (unit === 'mb-per-min') return `${value >= 0 ? '+' : ''}${value.toFixed(2)} MB/min`
   if (unit === 'count-per-min') return `${value >= 0 ? '+' : ''}${value.toFixed(2)}/min`
   if (unit === 'ms-per-min') return `${value >= 0 ? '+' : ''}${value.toFixed(2)} ms/min`
-  return `${value.toFixed(0)}ms`
+  // Seconds past 10s. Load metrics run to tens of thousands of ms, and a
+  // "60000ms" tick does not fit the 44px axis gutter — it silently renders as
+  // "0000ms", which reads as wrong data rather than as a clipped label. Below 10s
+  // stay in exact ms: keystroke latency lives at 30–200ms, where "0.09s" would
+  // throw away the precision the whole suite exists to measure.
+  if (Math.abs(value) >= 10_000) {
+    const seconds = value / 1000
+    // One decimal under 100s keeps 27.0s distinguishable from 27.9s; past that
+    // the extra digit is noise and costs width again
+    return `${Math.abs(seconds) < 100 ? seconds.toFixed(1) : seconds.toFixed(0)}s`
+  }
+  // Sub-10ms fractional values keep one decimal: host calibration lives at
+  // 5–9ms, where whole-ms rounding collapses its entire dynamic range into
+  // four buckets ("8ms" hiding 7.6→8.4). One decimal matches the 0.1ms
+  // granularity Chromium's coarsened performance.now() actually measures at —
+  // more would be false precision. Exact integers stay whole so axis zero
+  // ticks and round latencies don't grow a pointless ".0".
+  return `${Math.abs(value) < 10 && !Number.isInteger(value) ? value.toFixed(1) : value.toFixed(0)}ms`
+}
+
+/**
+ * Axis-tick variant of `formatValue`, sized for the 44px gutter — a label that
+ * doesn't fit clips at the SVG edge from the left ("40.0 MB" → "0.0 MB"), which
+ * reads as wrong data rather than as a clipped label. Position carries the
+ * precision on an axis, so ticks trade decimals and padding for width; the
+ * header and tooltip keep the full `formatValue` rendering.
+ *
+ * - Slope ticks are the number alone: the full form ("+1.08 MB/min") kept only
+ *   its unit visible. The unit stays in the title ("… per minute") and header,
+ *   and the "+" goes too — on an axis spanning zero the sign is the position.
+ * - MB/KB ticks drop the space and any spurious decimals: "40.0 MB" (clips its
+ *   first digit; "M" glyphs are wide) becomes "40MB". KB ticks round to whole
+ *   units — nice() picks round *byte* values, so the KB form is fractional
+ *   ("146.5 KB") and would both clip and imply precision a tick doesn't need.
+ * - ms ticks speak ONE unit per axis, decided by the scale top (`domainMax`),
+ *   not per tick: formatValue's per-value cutoff put "10.0s" above "5000ms" on
+ *   the same axis, which reads as two different scales.
+ * - ms ticks switch to seconds already at 1s, not at formatValue's 10s:
+ *   a four-digit ms tick ("8000ms") overflows the gutter by a couple of
+ *   pixels, which shaves the leading glyph's left stroke — "8000" reads as
+ *   "3000", "6000" as "5000". A wrong-but-plausible number is worse than an
+ *   obviously clipped one. Sub-second axes (keystroke latency) stay in ms,
+ *   where three digits fit and the precision matters.
+ */
+export function formatTick(value: number, unit: TrendUnit, domainMax = 0): string {
+  if (isSignedUnit(unit)) return parseFloat(value.toFixed(2)).toString()
+  if (unit === 'megabytes') return `${parseFloat(value.toFixed(1))}MB`
+  if (unit === 'bytes') {
+    return Math.abs(value) >= 1024 * 1024
+      ? `${parseFloat((value / (1024 * 1024)).toFixed(1))}MB`
+      : `${Math.round(value / 1024)}KB`
+  }
+  if (unit === 'ms' && Math.max(Math.abs(value), domainMax) >= 1_000) {
+    return `${parseFloat((value / 1000).toFixed(1))}s`
+  }
+  return formatValue(value, unit)
 }
 
 /** Slope/rate units are signed and centered on zero (flat = good). */
@@ -393,17 +534,146 @@ export function filterByRange(runs: TrendRun[], days: number | null): TrendRun[]
  * series holds one line per git branch present in the runs — a single branch
  * renders as one line, several overlay for comparison.
  */
+/** The run-level machine description (see TrendPoint.host), or undefined. */
+function hostOf(run: TrendRun): TrendPoint['host'] {
+  const runner = run.runner
+  if (!runner) return undefined
+  return {
+    os: runner.os,
+    arch: runner.arch,
+    cpus: runner.cpus,
+    memGb: runner.memGb,
+    nodeVersion: runner.nodeVersion,
+    cpuModel: runner.cpuModel,
+    imageOs: runner.imageOs,
+    imageVersion: runner.imageVersion,
+    browserVersion: runner.browserVersion,
+  }
+}
+
+/**
+ * Per-shard attribution for a point produced by one scenario: the shard's own
+ * calibration score (falling back to the run level), and — where mergeShards
+ * stamped one — the shard's CPU model layered over the run-level host, since
+ * multi-shard CI runs land each scenario on a different machine and the
+ * run-level runner block describes only the first shard's. Shared by the
+ * metric, soak and calibration series builders so none of them can
+ * misattribute a shard's host.
+ */
+function shardMeta(
+  run: TrendRun,
+  runner: NonNullable<TrendRun['scenarios']>[number]['runner'],
+): Pick<TrendPoint, 'calibrationMs' | 'host'> {
+  const calibrationMs =
+    typeof runner?.calibrationMs === 'number'
+      ? runner.calibrationMs
+      : (run.runner?.calibrationMs ?? undefined)
+  const shardCpuModel = typeof runner?.cpuModel === 'string' ? runner.cpuModel : undefined
+  return {
+    ...(calibrationMs !== undefined ? {calibrationMs} : {}),
+    ...(shardCpuModel ? {host: {...hostOf(run), cpuModel: shardCpuModel}} : {}),
+  }
+}
+
 /** Backlink + identity fields every TrendPoint carries, derived from a run. */
 function pointMeta(
   run: TrendRun,
-): Pick<TrendPoint, 'sha' | 'runId' | 'prNumber' | 'ciRunId' | 'ciRunAttempt'> {
+): Pick<TrendPoint, 'sha' | 'runId' | 'prNumber' | 'ciRunId' | 'ciRunAttempt' | 'host'> {
+  const host = hostOf(run)
   return {
     sha: run.git?.sha ?? 'unknown',
     runId: run._id,
     prNumber: run.git?.prNumber,
     ciRunId: run.runner?.runId,
     ciRunAttempt: run.runner?.runAttempt,
+    // Only when the run recorded any host detail — an empty Host section
+    // would be noise on documents that predate the metadata
+    ...(host && Object.values(host).some((value) => value != null) ? {host} : {}),
   }
+}
+
+/**
+ * Mirrors perf/bench/stats/inp.ts INP_MIN_INTERACTIONS — the percentile rule
+ * wants at least this many interactions before an INP value is trustworthy.
+ * Mirrored rather than imported, like the gate thresholds in drift.ts: the
+ * dashboard has no build-time dependency on the bench suite.
+ */
+export const INP_MIN_INTERACTIONS = 50
+
+function medianOf(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid]
+}
+
+/**
+ * One point per commit: several runs of the same sha are merged into their
+ * median.
+ *
+ * CI re-runs the suite on a commit fairly often (4 shas in the stored history
+ * have 2–3 runs each). Left unmerged, that puts several dots on one
+ * x-position, weights that commit several times in every median, and makes a
+ * "7 runs" window cover fewer than 7 commits' worth of history. Within-document
+ * duplicates of one metric are also collapsed — none are known to exist, but
+ * the merge guards against them all the same.
+ *
+ * Median rather than mean, matching the p50/median language used throughout the
+ * dashboard: a single throttled or failed re-run can't drag the point.
+ *
+ * The merged point keeps the *last* run's identity (runId, CI run, PR) so the
+ * click-through opens a real document, and takes the median of `value`/`p75`/
+ * `p90` independently. Note the honesty cost: re-runs of one commit often land
+ * on hosts of different speed (sha 7147d045's two runs differ by 21% of
+ * calibration), so a merged point averages across hosts. The calibration strip
+ * is where that stays visible — and it is deliberately NOT merged, since its
+ * whole job is showing per-run and cross-shard host spread.
+ */
+function mergeRunsPerCommit(points: TrendPoint[]): TrendPoint[] {
+  const byCommit = new Map<string, TrendPoint[]>()
+  for (const point of points) {
+    // An unknown sha can't be de-duplicated by commit — key those by run so
+    // they stay distinct rather than collapsing into one blob
+    const key = point.sha === 'unknown' ? `run:${point.runId}` : point.sha
+    const group = byCommit.get(key)
+    if (group) group.push(point)
+    else byCommit.set(key, [point])
+  }
+
+  const merged: TrendPoint[] = []
+  for (const group of byCommit.values()) {
+    const last = group[group.length - 1]
+    if (group.length === 1) {
+      merged.push(last)
+      continue
+    }
+    const p75s = group.map((point) => point.p75).filter((v): v is number => v !== undefined)
+    const p90s = group.map((point) => point.p90).filter((v): v is number => v !== undefined)
+    const interactionCounts = group
+      .map((point) => point.interactions)
+      .filter((v): v is number => v !== undefined)
+    const calibrations = group
+      .map((point) => point.calibrationMs)
+      .filter((v): v is number => v !== undefined)
+    // Host identity survives the merge only when every merged run agrees on
+    // it: same-commit re-runs land on different machines exactly when host
+    // context matters, and pairing the median score below with the *last*
+    // re-run's CPU model/browser would attribute a synthetic point to one
+    // specific machine it does not describe.
+    const hostKeys = new Set(group.map((point) => JSON.stringify(point.host ?? null)))
+    merged.push({
+      ...last,
+      value: medianOf(group.map((point) => point.value)),
+      p75: p75s.length > 0 ? medianOf(p75s) : undefined,
+      p90: p90s.length > 0 ? medianOf(p90s) : undefined,
+      interactions: interactionCounts.length > 0 ? medianOf(interactionCounts) : undefined,
+      // Median host speed across the merged runs — consistent with the value
+      // merge, so the context line describes the same synthetic point. The
+      // unmerged per-run spread stays visible in the Calibration tab.
+      calibrationMs: calibrations.length > 0 ? medianOf(calibrations) : undefined,
+      host: hostKeys.size === 1 ? last.host : undefined,
+    })
+  }
+  return merged.sort((a, b) => a.date.getTime() - b.date.getTime())
 }
 
 export function buildSeries(runs: TrendRun[]): TrendSeries[] {
@@ -412,9 +682,12 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
     key: string,
     title: string,
     unit: TrendUnit,
-    meta: Pick<TrendSeries, 'description' | 'goal' | 'group' | 'sourceFile'>,
+    meta: Pick<
+      TrendSeries,
+      'description' | 'goal' | 'group' | 'sourceFile' | 'lineLabel' | 'goodThreshold'
+    >,
     run: TrendRun,
-    point: Pick<TrendPoint, 'value' | 'p75' | 'p90'>,
+    point: Pick<TrendPoint, 'value' | 'p75' | 'p90' | 'interactions' | 'calibrationMs' | 'host'>,
   ) => {
     const existing = series.get(key) ?? {key, title, unit, ...meta, lines: []}
     const branch = run.git?.branch ?? 'unknown'
@@ -429,7 +702,21 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
 
   for (const run of runs) {
     for (const scenario of run.scenarios ?? []) {
+      // The interaction count is confidence context for INP, not a health
+      // metric of its own — a chart of it answers no question ("are counts
+      // trending?" is nothing anyone asks) and its default goal framing is
+      // backwards (more interactions = MORE confidence). Attach it to the
+      // INP point instead, where the tooltip/popover can qualify the value.
+      const inpInteractions = scenario.metrics?.find(
+        (metric) => metric.label === 'INP interactions',
+      )?.experiment?.summary?.median
+      const scenarioMeta = shardMeta(run, scenario.runner)
       for (const metric of scenario.metrics ?? []) {
+        if (metric.label === 'INP interactions') continue
+        // Older documents carry a TTFB metric; skip it. Against the local
+        // mock it is a 2–10ms constant of the bench setup, not a studio
+        // signal, and the bench does not store it anymore.
+        if (metric.label.endsWith('TTFB')) continue
         const summary = metric.experiment?.summary
         if (!summary) continue
         push(
@@ -438,27 +725,104 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
           metric.unit,
           {...describeSeries(scenario.kind, metric.label), sourceFile: scenario.sourceFile},
           run,
-          {value: summary.median, p75: summary.p75, p90: summary.p90},
+          {
+            value: summary.median,
+            p75: summary.p75,
+            p90: summary.p90,
+            ...scenarioMeta,
+            ...(metric.label === 'INP' && inpInteractions !== undefined
+              ? {interactions: inpInteractions}
+              : {}),
+          },
         )
       }
     }
     const initialJs = run.bundle?.experiment?.initialJsBytes
     if (typeof initialJs === 'number') {
+      // Key stays 'bundle:initialJs' (acks and deep links reference it), but
+      // the title stopped claiming this is what boot downloads: it's only the
+      // chunk index.html references, ~6% of the build — the studio loads the
+      // rest through dynamic imports before it is usable.
       push(
         'bundle:initialJs',
-        'bundle · initial JS (gzip)',
+        'bundle · entry chunk (gzip)',
         'bytes',
         {
           group: 'bundle',
-          description: 'Initial JavaScript downloaded to boot the studio, gzip-compressed.',
+          description:
+            'The one JS chunk index.html references, gzip-compressed. Not what boot downloads: the studio dynamic-imports most of its code from here.',
           goal: 'lower',
+          // A build measures one size — there is no distribution to take a
+          // median of, so the default 'median (p50)' legend would be false
+          lineLabel: 'size per run',
         },
         run,
         {value: initialJs},
       )
     }
+    const totalJs = run.bundle?.experiment?.totalJsBytes
+    if (typeof totalJs === 'number') {
+      push(
+        'bundle:totalJs',
+        'bundle · total JS (gzip)',
+        'bytes',
+        {
+          group: 'bundle',
+          description:
+            'Gzipped bytes of every JS chunk in the build; the ceiling on what a session can download. Boot fetches most of it through dynamic imports.',
+          goal: 'lower',
+          lineLabel: 'size per run',
+        },
+        run,
+        {value: totalJs},
+      )
+    }
   }
-  return [...series.values()]
+  // Merge after collection: one point per commit per line (calibrationSeries is
+  // deliberately left unmerged — see mergeRunsPerCommit)
+  return [...series.values()].map((entry) => ({
+    ...entry,
+    lines: entry.lines.map((line) => ({...line, points: mergeRunsPerCommit(line.points)})),
+  }))
+}
+
+/**
+ * Vitals-tab layout: one section per vital, not a flat scenario-ordered grid.
+ * The tab's question is per-vital ("how is LCP doing, everywhere?"), so all of
+ * one vital's charts sit under a shared header — same unit, similar scale —
+ * and a single scenario going bad stands out from its neighbours. Core Web
+ * Vitals first — INP leading, since responsiveness is this studio's whole
+ * reason to exist — then the supporting diagnostics; within a section, titles
+ * (= scenarios) keep a stable alphabetical order.
+ */
+const VITALS = [
+  {vital: 'INP', name: 'Interaction to Next Paint'},
+  {vital: 'LCP', name: 'Largest Contentful Paint'},
+  {vital: 'CLS', name: 'Cumulative Layout Shift'},
+  {vital: 'FCP', name: 'First Contentful Paint'},
+] as const
+
+export interface VitalSection {
+  vital: string
+  /** Spelled-out name for the section header; absent for the catch-all. */
+  name?: string
+  series: TrendSeries[]
+}
+
+const byTitle = (a: TrendSeries, b: TrendSeries) => a.title.localeCompare(b.title)
+
+export function vitalSections(list: TrendSeries[]): VitalSection[] {
+  const matched = new Set<TrendSeries>()
+  const sections: VitalSection[] = VITALS.map(({vital, name}) => {
+    const series = list.filter((entry) => entry.title.endsWith(vital)).sort(byTitle)
+    for (const entry of series) matched.add(entry)
+    return {vital, name, series}
+  })
+  // Anything in the vitals group that isn't a known vital still renders —
+  // a new metric must never silently vanish from the dashboard
+  const leftover = list.filter((entry) => !matched.has(entry)).sort(byTitle)
+  if (leftover.length > 0) sections.push({vital: 'Other', series: leftover})
+  return sections.filter((section) => section.series.length > 0)
 }
 
 /** The honesty overlay: host-speed score per run (higher = slower host). */
@@ -474,26 +838,33 @@ export function calibrationSeries(runs: TrendRun[]): TrendSeries {
     // by mergeShards). Plot each distinct shard calibration as its own point —
     // the vertical spread at one date IS the cross-shard host variance. Older
     // documents (no per-scenario runner) fall back to the run-level score.
-    const shardScores = new Set<number>()
+    // Each point keeps its own shard's identity (via shardMeta): the run-level
+    // runner block is the first shard's, and naming that machine on every
+    // shard's point would misattribute the host in the tooltip and popover.
+    const shards = new Map<string, NonNullable<TrendRun['scenarios']>[number]['runner']>()
     for (const scenario of run.scenarios ?? []) {
       if (typeof scenario.runner?.calibrationMs === 'number') {
-        shardScores.add(scenario.runner.calibrationMs)
+        shards.set(
+          `${scenario.runner.calibrationMs}:${scenario.runner.cpuModel ?? ''}`,
+          scenario.runner,
+        )
       }
     }
-    const values =
-      shardScores.size > 0 ? [...shardScores] : run.runner ? [run.runner.calibrationMs] : []
-    if (values.length === 0) continue
+    const runners = shards.size > 0 ? [...shards.values()] : run.runner ? [null] : []
+    if (runners.length === 0) continue
     const branch = run.git?.branch ?? 'unknown'
     let line = byBranch.get(branch)
     if (!line) {
       line = {branch, points: []}
       byBranch.set(branch, line)
     }
-    for (const value of values) {
+    for (const runner of runners) {
+      const meta = shardMeta(run, runner)
       line.points.push({
         date: runDate(run),
-        value,
+        value: meta.calibrationMs!,
         ...pointMeta(run),
+        ...(meta.host ? {host: meta.host} : {}),
       })
     }
   }
@@ -501,8 +872,7 @@ export function calibrationSeries(runs: TrendRun[]): TrendSeries {
     key: 'runner:calibration',
     title: 'host calibration (higher = slower host)',
     unit: 'ms',
-    description:
-      'A fixed CPU workload run on the CI machine before each benchmark. All numbers above are relative to host speed — when this line spikes where a metric spikes, suspect the runner, not the studio.',
+    description: `${CALIBRATION_EXPLAINER} All numbers in the other tabs are relative to host speed — when this line spikes where a metric spikes, suspect the runner, not the studio.`,
     goal: 'context',
     group: 'environment',
     lines: [...byBranch.values()],
@@ -513,13 +883,19 @@ type SoakScenario = NonNullable<NonNullable<TrendRun['scenarios']>[number]['soak
 type SoakSample = NonNullable<SoakScenario['samples']>[number]
 
 /** Find each run's soak scenario (there's at most one), newest run first. */
-function runsWithSoak(
-  runs: TrendRun[],
-): {run: TrendRun; soak: SoakScenario; sourceFile?: string}[] {
+function runsWithSoak(runs: TrendRun[]): {
+  run: TrendRun
+  soak: SoakScenario
+  sourceFile?: string
+  /** The soak scenario's own shard runner — see shardMeta. */
+  runner: NonNullable<TrendRun['scenarios']>[number]['runner']
+}[] {
   return runs
     .map((run) => {
       const scenario = run.scenarios?.find((s) => s.soak?.samples?.length)
-      return scenario?.soak ? {run, soak: scenario.soak, sourceFile: scenario.sourceFile} : null
+      return scenario?.soak
+        ? {run, soak: scenario.soak, sourceFile: scenario.sourceFile, runner: scenario.runner}
+        : null
     })
     .filter((entry) => entry !== null)
 }
@@ -545,6 +921,7 @@ export function latestSoakCharts(runs: TrendRun[]): {run: TrendRun; charts: Tren
         date: new Date(sample.minute * 60_000),
         value,
         ...pointMeta(latest.run),
+        ...shardMeta(latest.run, latest.runner),
       }))
     return {
       key: `soak:latest:${metric.key}`,
@@ -555,6 +932,7 @@ export function latestSoakCharts(runs: TrendRun[]): {run: TrendRun; charts: Tren
       group: 'soak',
       sourceFile: latest.sourceFile,
       xKind: 'minute',
+      lineLabel: 'per-minute sample',
       lines: [{branch: latest.run.git?.branch ?? 'unknown', points}],
     }
   }).filter((chart) => chart.lines[0].points.length > 0)
@@ -599,19 +977,19 @@ function soakHistory(
   reduce: (samples: SoakSample[], key: keyof SoakSample) => number | null,
   meta: (
     metric: (typeof SOAK_METRICS)[number],
-  ) => Pick<TrendSeries, 'title' | 'unit' | 'description'>,
+  ) => Pick<TrendSeries, 'title' | 'unit' | 'description' | 'lineLabel'>,
 ): TrendSeries[] {
   const withSoak = runsWithSoak(runs)
   const byMetric = SOAK_METRICS.map((metric): TrendSeries => {
     const lineByBranch = new Map<string, TrendLine>()
     let sourceFile: string | undefined
-    for (const {run, soak, sourceFile: file} of withSoak) {
+    for (const {run, soak, sourceFile: file, runner} of withSoak) {
       const value = reduce(soak.samples ?? [], metric.key)
       if (value === null) continue
       sourceFile ??= file
       const branch = run.git?.branch ?? 'unknown'
       const line = lineByBranch.get(branch) ?? {branch, points: []}
-      line.points.push({date: runDate(run), value, ...pointMeta(run)})
+      line.points.push({date: runDate(run), value, ...pointMeta(run), ...shardMeta(run, runner)})
       lineByBranch.set(branch, line)
     }
     return {
@@ -641,6 +1019,7 @@ export function soakSlopeSeries(runs: TrendRun[]): TrendSeries[] {
       title: `soak · ${metric.title} per minute`,
       unit: slopeUnitFor(metric.unit),
       description: `${metric.title} change per soak minute (linear fit), per run. Flat (~0) is healthy; a rising slope across runs is a worsening leak or degradation.`,
+      lineLabel: 'slope per run',
     }),
   )
 }
@@ -660,6 +1039,7 @@ export function soakLatestValueSeries(runs: TrendRun[]): TrendSeries[] {
       title: `soak · ${metric.title} at end`,
       unit: metric.unit,
       description: `${metric.title} at the end of the soak run, tracked across runs. ${metric.description}`,
+      lineLabel: 'end-of-run value',
     }),
   )
 }

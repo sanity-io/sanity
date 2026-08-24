@@ -24,7 +24,7 @@ import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 export const useUnpublishVersionAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
-  const {id, type, release, published, version, liveEditSchemaType} = props
+  const {id, type, release, published, version} = props
   const currentUser = useCurrentUser()
   const {t} = useTranslation(releasesLocaleNamespace)
   const isAlreadyUnpublished = version ? isGoingToUnpublish(version) : false

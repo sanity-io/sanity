@@ -1,9 +1,10 @@
 import {white} from '@sanity/color'
 import {CloseIcon} from '@sanity/icons/Close'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Box, Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
@@ -63,7 +64,7 @@ export function UpsellDialog(props: UpsellDialogProps) {
       onClose={onClose}
       onClickOutside={onClose}
       __unstable_hideCloseButton
-      bodyHeight="fill"
+      bodyHeight="100%"
       padding={false}
       zOffset={800}
       footer={{

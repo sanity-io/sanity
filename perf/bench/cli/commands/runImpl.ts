@@ -36,7 +36,7 @@ import {
 } from '../../runner/session/pageLoad'
 import {getScenario, SCENARIOS} from '../../scenarios'
 import {bootstrapDiffOfMedians} from '../../stats/bootstrap'
-import {gate, PAGELOAD_THRESHOLDS} from '../../stats/gate'
+import {gate, isDecidedVerdict, PAGELOAD_THRESHOLDS} from '../../stats/gate'
 import {summarize} from '../../stats/quantiles'
 import {mulberry32} from '../../stats/rng'
 import {resolveFromInvocation} from '../benchRoot'
@@ -123,7 +123,10 @@ export async function runBench(argv: RunArgs): Promise<void> {
   try {
     const calibration = await calibrateHost(browser)
     console.log(
-      `host calibration: ${calibration.toFixed(0)}ms (fixed workload; higher = slower host), CPU throttle: ${argv.throttle}x` +
+      // One decimal: the score lives at 5–9ms and is measured at 0.1ms
+      // granularity — whole-ms rounding collapses its whole range (see the
+      // dashboard's formatValue, which made the same call)
+      `host calibration: ${calibration.toFixed(1)}ms (fixed workload; higher = slower host), CPU throttle: ${argv.throttle}x` +
         `${reference ? `, mode: A/B (seed ${argv.seed})` : ', mode: absolute'}`,
     )
     const runMetadata = collectRunMetadata({
@@ -132,6 +135,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
       cpuThrottleRate: argv.throttle,
       seed: argv.seed,
       startedAt,
+      browserVersion: browser.version(),
     })
 
     if (argv.mode === 'soak') {
@@ -197,14 +201,19 @@ export async function runBench(argv: RunArgs): Promise<void> {
         scenarioReports.push(collectInp(scenario.name, results, scenario.sourceFile))
       }
     } else if (argv.mode === 'pageload') {
-      const sizes = await measureBundleSize(dist)
+      // sizesByPath feeds the per-scenario "boot JS" metric but must not be
+      // stored — it's ~400 map entries of per-chunk noise in a document
+      const {sizesByPath, ...sizes} = await measureBundleSize(dist)
+      let referenceSizesByPath: Map<string, number> | undefined
       console.log(
         `bundle (experiment): initial JS ${(sizes.initialJsBytes / 1024).toFixed(1)} KB gzip, ` +
           `total ${(sizes.totalJsBytes / 1024).toFixed(1)} KB gzip across ${sizes.chunkCount} chunks`,
       )
       bundleReport = {experiment: sizes}
       if (referenceDist) {
-        const referenceSizes = await measureBundleSize(referenceDist)
+        const {sizesByPath: refSizesByPath, ...referenceSizes} =
+          await measureBundleSize(referenceDist)
+        referenceSizesByPath = refSizesByPath
         bundleReport = {experiment: sizes, reference: referenceSizes}
         console.log(
           `bundle (reference):  initial JS ${(referenceSizes.initialJsBytes / 1024).toFixed(1)} KB gzip ` +
@@ -314,7 +323,10 @@ export async function runBench(argv: RunArgs): Promise<void> {
           }
         }
         scenarioReports.push(
-          collectPageLoad(scenario.name, bySide, conditionComparisons, scenario.sourceFile),
+          collectPageLoad(scenario.name, bySide, conditionComparisons, scenario.sourceFile, {
+            experiment: sizesByPath,
+            reference: referenceSizesByPath,
+          }),
         )
       }
     } else {
@@ -424,13 +436,16 @@ export async function runBench(argv: RunArgs): Promise<void> {
       console.log(`\nwrote ${outPath}`)
     }
     if (argv.failOnVerdict) {
-      const nonNeutral = scenarioReports
+      // Only decided verdicts fail; see isDecidedVerdict for why inconclusive
+      // must not (it is the designed absorber for a noisy run, and this flag's
+      // only caller is the self-test)
+      const decided = scenarioReports
         .flatMap((scenarioReport) => scenarioReport.metrics)
-        .filter((metric) => metric.comparison && metric.comparison.verdict !== 'neutral')
-      if (nonNeutral.length > 0) {
+        .filter((metric) => isDecidedVerdict(metric.comparison?.verdict))
+      if (decided.length > 0) {
         console.error(
-          `fail-on-verdict: ${nonNeutral.length} non-neutral comparison(s): ` +
-            nonNeutral.map((metric) => `${metric.label}=${metric.comparison?.verdict}`).join(', '),
+          `fail-on-verdict: ${decided.length} non-neutral comparison(s): ` +
+            decided.map((metric) => `${metric.label}=${metric.comparison?.verdict}`).join(', '),
         )
         process.exitCode = 1
       }

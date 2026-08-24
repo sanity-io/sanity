@@ -147,6 +147,11 @@ const benchScenario = defineType({
           description: 'Host-speed score (ms for a fixed workload; higher = slower host)',
           type: 'number',
         }),
+        defineField({
+          name: 'cpuModel',
+          description: 'CPU model of the shard machine that ran this scenario',
+          type: 'string',
+        }),
       ],
     }),
     defineField({name: 'kind', type: 'string', options: {list: ['interaction', 'pageload']}}),
@@ -207,6 +212,22 @@ const benchScenario = defineType({
             defineField({name: 'totalMs', type: 'number'}),
           ],
           preview: {select: {title: 'functionName', subtitle: 'sourceUrl'}},
+        }),
+      ],
+    }),
+    defineField({
+      name: 'clsAttribution',
+      description: 'Which elements shifted during load, with summed CLS contribution',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'shiftSource',
+          fields: [
+            defineField({name: 'source', type: 'string'}),
+            defineField({name: 'totalValue', type: 'number'}),
+          ],
+          preview: {select: {title: 'source', subtitle: 'totalValue'}},
         }),
       ],
     }),
@@ -279,6 +300,14 @@ const benchRun = defineType({
       type: 'object',
       fields: [
         defineField({name: 'sha', type: 'string'}),
+        defineField({
+          name: 'commit',
+          type: 'reference',
+          to: [{type: 'gitCommit'}],
+          weak: true,
+          description:
+            'Weak link to the measured commit\u2019s gitCommit document \u2014 dangles for PR-branch runs and pre-sync history. git.sha is the source of truth.',
+        }),
         defineField({name: 'branch', type: 'string'}),
         defineField({
           name: 'committedAt',
@@ -301,6 +330,27 @@ const benchRun = defineType({
         defineField({name: 'cpus', type: 'number'}),
         defineField({name: 'memGb', type: 'number'}),
         defineField({name: 'nodeVersion', type: 'string'}),
+        defineField({
+          name: 'cpuModel',
+          description:
+            'CPU model string — discriminates hosted-runner hardware generations that share the same vCPU count',
+          type: 'string',
+        }),
+        defineField({
+          name: 'imageOs',
+          description: 'GitHub runner image (ImageOS env), e.g. ubuntu24',
+          type: 'string',
+        }),
+        defineField({
+          name: 'imageVersion',
+          description: 'GitHub runner image version (ImageVersion env)',
+          type: 'string',
+        }),
+        defineField({
+          name: 'browserVersion',
+          description: 'Chromium version the sessions ran in — the measuring instrument',
+          type: 'string',
+        }),
         defineField({name: 'ci', type: 'boolean'}),
         defineField({name: 'runId', type: 'string'}),
         defineField({name: 'runAttempt', type: 'number'}),

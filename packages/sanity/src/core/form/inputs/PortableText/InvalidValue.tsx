@@ -1,7 +1,6 @@
 import {type InvalidValueResolution} from '@portabletext/editor'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
@@ -11,6 +10,7 @@ import {
 } from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
+import {Box} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'

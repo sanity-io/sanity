@@ -71,6 +71,7 @@ export function Title(props: {
     if (!ref.current) return
     ref.current.style.height = 'auto'
     ref.current.style.height = `${ref.current.scrollHeight}px`
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [value])
 
   const handleChange = useCallback(

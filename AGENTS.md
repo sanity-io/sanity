@@ -6,7 +6,7 @@ This document helps AI agents work successfully with the Sanity monorepo.
 
 ## Prerequisites
 
-- **Node.js**: v24 or latest LTS
+- **Node.js**: v24 or latest LTS. Published packages must declare `"engines": { "node": ">=22.12" }` (`pnpm normalize-pkgfields` keeps this in sync; publint warns if the field is missing).
 - **Package Manager**: pnpm v10+ (exact version managed via `packageManager` field in package.json)
 
 ## Quick Reference
@@ -192,6 +192,16 @@ How it works:
 - The flag is declared in `dev/test-studio/turbo.json` so turbo-cached builds are invalidated when it changes
 - Enabling devtools makes `sanity build` noticeably slower; that's why it's opt-in via the env flag
 
+### Analyzing the `sanity` package bundle
+
+The `sanity` package tsdown build can emit a Rolldown [bundle analyzer](https://rolldown.rs/builtin-plugins/bundle-analyzer) markdown report (module/chunk breakdown for humans and coding agents) when `ENABLE_BUNDLE_ANALYZER=true`:
+
+```bash
+pnpm analyze:sanity
+```
+
+The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with `lib/`). The flag is opt-in because analysis adds work to the package build; it is declared in `packages/sanity/turbo.json` so turbo-cached builds are invalidated when it changes. Wiring is `@sanity/tsdown-config`'s `bundleAnalyzer` option (`true` selects markdown).
+
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
 The `perf/bench` suite benchmarks a built studio against a **local mock** of the Sanity API — fully hermetic, no tokens, no network:
@@ -205,7 +215,7 @@ pnpm bench:unit                                    # mock-contract + stats unit 
 pnpm bench dev                                     # mock + `sanity dev` for interactive debugging
 ```
 
-See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. `dev/efps` is the legacy perf suite, kept for reference while perf/bench burns in.
+See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. (The legacy `dev/efps` suite has been decommissioned; perf/bench replaces it.)
 
 ### E2E Tests (Token Required)
 
@@ -371,6 +381,16 @@ Two traps when unit testing a component or hook that suspends on a promise with 
   catch as an unhandled error and fail the run. Once a load has started, keep calling `use()` on
   the same cached promise on every render instead of re-checking the environment.
 
+#### Custom matchers shipped in node_modules (e.g. `get-it/vitest`)
+
+TypeScript 7 (the root `tsc` and oxlint's `typeCheck`) currently mis-scopes `declare module`
+augmentations shipped in node_modules `.d.ts` files: the file that directly contains the
+side-effect import (e.g. `import 'get-it/vitest'`) does not see the augmented types and gets
+TS2339 on every matcher, while every other file in the same program sees them fine.
+TypeScript 6 applies the augmentation in both cases. Workaround: put the side-effect import in
+a vitest setup file (registered via `test.setupFiles`) instead of the test file that uses the
+matchers — see `packages/@sanity/schema/test/setup.ts` and its `vitest.config.mts`.
+
 #### Vanilla-extract in jsdom tests
 
 The `sanity` and `@sanity/vision` jsdom suites import
@@ -423,10 +443,11 @@ while closed (hidden with `display: none`). Consequences for tests:
 
 ### Visual Regression Tests (Chromatic + Storybook)
 
-Visual regression runs on Chromatic via `.github/workflows/chromatic.yml`. `dev/storybook`
-contains the stories — most reuse the vitest browser-mode test harnesses (`TestWrapper` +
-`*Story.tsx` components), plus authored migration sentinels for `ui-components` and
-vanilla-extract-migrated components.
+Visual regression runs on Chromatic via `.github/workflows/chromatic.yml`. Stories are co-located
+with their source under `packages/**/src/**/__tests__`; most reuse vitest browser-mode test
+harnesses (`TestWrapper` + `*Story.tsx` components), alongside authored migration sentinels for
+`ui-components` and vanilla-extract-migrated components. `dev/storybook` contains the shared
+Storybook, Chromatic, and addon-vitest infrastructure.
 
 ```bash
 pnpm dev:storybook                    # Storybook dev server at http://localhost:6006
@@ -470,6 +491,32 @@ pnpm --filter sanity add <package>
 # Add to root (dev dependency)
 pnpm add -w -D <package>
 ```
+
+Catalog versions live in `pnpm-workspace.yaml`. After changing a catalog specifier, run `pnpm install` to refresh `pnpm-lock.yaml`.
+
+The workspace sets `minimumReleaseAge: 4320` (3 days) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally.
+
+### Testing an Unreleased Dependency Fix (pnpm patch)
+
+To validate an upstream PR of a dependency before it is released (example: [sanity#14234](https://github.com/sanity-io/sanity/pull/14234) vendoring react-rx#506):
+
+```bash
+# 1. Build the dependency's dist from its PR branch (in a separate clone)
+git clone <repo> /tmp/dep && cd /tmp/dep && git fetch origin pull/<n>/head && git checkout FETCH_HEAD
+pnpm install && pnpm --filter <pkg> build
+
+# 2. Patch the locked version in this repo
+pnpm patch <pkg>@<version> --edit-dir /tmp/patch-edit
+cp /tmp/dep/packages/<pkg>/dist/* /tmp/patch-edit/dist/
+pnpm patch-commit /tmp/patch-edit
+```
+
+Notes:
+
+- `pnpm patch-commit` writes `patches/<pkg>@<version>.patch` and a `patchedDependencies` entry in `pnpm-workspace.yaml` — commit both plus `pnpm-lock.yaml`
+- Key the patch by exact version (`<pkg>@<version>`) so other locked versions of the same package stay untouched
+- Record the upstream commit sha in the commit/PR so the patch is reproducible
+- The patch is an experiment vehicle: before merging, land + release the upstream fix, bump the catalog, drop the patch
 
 ### Creating a New Test
 
@@ -653,6 +700,7 @@ Key env vars used in development:
 - `SANITY_STUDIO_PROJECT_ID` - Project ID for dev studio
 - `SANITY_STUDIO_DATASET` - Dataset for dev studio
 - `SANITY_INTERNAL_ENV` - Internal environment flag
+- `ENABLE_BUNDLE_ANALYZER` - When `true`, the `sanity` package tsdown build emits `lib/analyze-data.md` (`pnpm analyze:sanity`)
 
 See `turbo.json` for full list of environment variables that affect builds.
 
@@ -688,3 +736,52 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
+- **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
+
+### Running e2e (Playwright) tests in the VM
+
+The e2e suite runs against the staging project `ittbm412` (see `.env.example`) on `api.sanity.work`. `STUDIO_E2E_AUTH_TOKEN` is injected into the VM for exactly this: it is a `manage-datasets` robot token on that project, so specs run the way CI runs them, with no source edits. Do not reach for `STUDIO_AUTH_TOKEN` or `SANITY_TEST_STUDIO_AUTH_TOKEN` here — those are production tokens and get 401 "Session not found" against `api.sanity.work`.
+
+1. **Build the packages.** `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH" && pnpm build`, then `git checkout packages/sanity/package.json` — the build rewrites its `inlinedDependencies`.
+
+2. **Install the browsers** (not preinstalled): `pnpm --filter e2e exec playwright install chromium firefox`.
+
+3. **Create a dataset.** Give every run its own, like CI does, and name it `cursor_ci_<random>` so the periodic cleanup can find it afterwards:
+
+   ```bash
+   export SANITY_E2E_PROJECT_ID=ittbm412
+   export SANITY_E2E_SESSION_TOKEN=$STUDIO_E2E_AUTH_TOKEN
+   export SANITY_E2E_DATASET=cursor_ci_$(openssl rand -hex 3)
+   pnpm e2e:setup # creates $SANITY_E2E_DATASET (public ACL) unless it already exists
+   ```
+
+4. **Start the studio** with those variables still exported. It serves on port 3339, which `playwright.config.ts` reuses instead of starting its own server:
+
+   ```bash
+   pnpm --filter studio-e2e-testing dev
+   ```
+
+   `sanity dev` needs no token of its own: Playwright authenticates the browser by seeding `SANITY_E2E_SESSION_TOKEN` into local storage through `storageState`.
+
+5. **Run specs**, again with those variables exported:
+
+   ```bash
+   cd e2e && pnpm exec playwright test --project=chromium tests/navbar/search.spec.ts --retries=0
+   ```
+
+   Keep `--retries=0` so a flake stays visible, and add `--repeat-each=N` when chasing one. `--project=firefox` runs the other browser CI uses. CI gives each browser its own dataset through `SANITY_E2E_DATASET_CHROMIUM` / `SANITY_E2E_DATASET_FIREFOX`; both fall back to `SANITY_E2E_DATASET`, so run one project at a time unless you create a dataset per browser — specs that touch per-user state (key-value keys such as recent searches or sort orders) otherwise interfere across browsers.
+
+6. **Delete the dataset when you are done:**
+
+   ```bash
+   curl -X DELETE "https://$SANITY_E2E_PROJECT_ID.api.sanity.work/v2023-02-03/datasets/$SANITY_E2E_DATASET" \
+     -H "Authorization: Bearer $STUDIO_E2E_AUTH_TOKEN"
+   ```
+
+   `pnpm e2e:cleanup`, scheduled every 6 hours, sweeps `cursor_ci_*` datasets older than 24 hours as a backstop — treat that as a safety net, not as the cleanup step.
+
+Debugging notes:
+
+- A fresh dataset is empty. Specs that need content seed it themselves; if one assumes documents exist, that is a bug in the spec, not a reason to point at the shared `staging` dataset.
+- The failure video is written to `e2e/results/<test>/video.webm`; extract frames with the bundled ffmpeg: `~/.cache/ms-playwright/ffmpeg-*/ffmpeg-linux -i video.webm -r 1 /tmp/frame_%03d.png` (this build has no `-vf fps=` filter).
+- To reproduce load-related flakiness, throttle the browser from within the spec: `const cdp = await page.context().newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 8})` (chromium only). Stub a slow or eventually-consistent backend with `page.route('**/data/query/**', …)`; the global search query is identifiable by its `findability-source: global` GROQ comment.

@@ -11,6 +11,7 @@ import {
   UnclaimedProjectCountdown,
   UnclaimedProjectNudge,
 } from '../UnclaimedProjectNudge'
+import {UnclaimedProjectProvider} from '../UnclaimedProjectProvider'
 
 const {
   mockClearUnclaimedProjectRecord,
@@ -69,21 +70,17 @@ const COPY = {
     claimButtonText: 'Claim project',
     snoozeButtonText: 'Remind me later',
   },
-  claimed: {
-    text: 'This project is yours.',
-    identityText: 'Log in as {{identity}}.',
-    signInButtonText: 'Log in',
-  },
   noClaimUrl: {text: 'Open the original claim link.'},
 }
 
 const wrapper = ({children}: {children: ReactNode}) => (
-  <ThemeProvider theme={theme}>{children}</ThemeProvider>
+  <ThemeProvider theme={theme}>
+    <UnclaimedProjectProvider>{children}</UnclaimedProjectProvider>
+  </ThemeProvider>
 )
 
 function renderNudge(
   state:
-    | {status: 'claimed'; email?: string}
     | {status: 'expired'}
     | {
         status: 'unclaimed'
@@ -111,6 +108,13 @@ function latestToast(): Record<string, unknown> {
 describe('UnclaimedProjectNudge', () => {
   beforeEach(() => {
     localStorage.clear()
+    mockEnvironment.isDev = true
+    mockUseWorkspace.mockReturnValue({
+      auth: {logout: mockLogout},
+      currentUser: {provider: 'sanity-token'},
+      projectId: PROJECT_ID,
+    })
+    mockUseUnclaimedProject.mockReturnValue(undefined)
   })
 
   afterEach(() => {
@@ -283,24 +287,6 @@ describe('UnclaimedProjectNudge', () => {
     expect(latestToast()).toMatchObject({enabled: true})
   })
 
-  it('renders the claimant identity when the project has been claimed', () => {
-    renderNudge({status: 'claimed', email: 'claimant@example.com'})
-
-    const banner = screen.getByTestId('unclaimed-project-banner')
-    expect(banner).toHaveTextContent('This project is yours.')
-    expect(banner).toHaveAttribute('data-tone', 'positive')
-    expect(screen.getAllByText('claimant@example.com')).toHaveLength(2)
-    expect(latestToast()).toMatchObject({enabled: false})
-  })
-
-  it('renders a generic claimed identity when the claimant cannot be resolved', () => {
-    renderNudge({status: 'claimed'})
-
-    expect(screen.getByTestId('unclaimed-project-banner')).toHaveTextContent(
-      'Log in as the account tied to this project.',
-    )
-  })
-
   it('renders no stale banner for an expired project', () => {
     renderNudge({status: 'expired'})
 
@@ -321,15 +307,6 @@ describe('UnclaimedProjectNudge', () => {
 
     expect(screen.queryByTestId('unclaimed-project-banner')).not.toBeInTheDocument()
     expect(latestToast()).toMatchObject({enabled: false})
-  })
-
-  it('clears claim provenance before leaving the post-claim robot session', async () => {
-    renderNudge({status: 'claimed', email: 'claimant@example.com'})
-    const [signInButton] = screen.getAllByRole('button', {name: 'Log in'})
-    await userEvent.click(signInButton)
-
-    expect(mockClearUnclaimedProjectRecord).toHaveBeenCalledExactlyOnceWith(PROJECT_ID)
-    expect(mockLogout).toHaveBeenCalledOnce()
   })
 
   it('hides the complete nudge after the local project expiry', () => {

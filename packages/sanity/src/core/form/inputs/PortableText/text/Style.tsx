@@ -1,11 +1,16 @@
-import {type BlockStyleRenderProps} from '@portabletext/editor'
+import {type PortableTextTextBlock} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
 
 import {type BlockStyleProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'
 
-type StyleProps = Pick<BlockStyleRenderProps, 'block' | 'children' | 'focused' | 'selected'>
+type StyleProps = {
+  block: PortableTextTextBlock
+  children: React.JSX.Element
+  focused: boolean
+  selected: boolean
+}
 
 export const Style = (props: StyleProps) => {
   const {block, focused, children, selected} = props
@@ -50,7 +55,7 @@ export const Style = (props: StyleProps) => {
     return CustomComponent ? (
       <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
-      // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
+      // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
   }, [DefaultComponent, block, children, focused, sanitySchemaType, selected])

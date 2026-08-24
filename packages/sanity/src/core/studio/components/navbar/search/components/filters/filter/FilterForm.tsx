@@ -1,7 +1,8 @@
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ErrorInfo, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {ErrorBoundary} from '../../../../../../../../ui-components/errorBoundary/ErrorBoundary'

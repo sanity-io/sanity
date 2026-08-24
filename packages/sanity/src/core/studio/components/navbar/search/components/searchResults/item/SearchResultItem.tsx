@@ -1,10 +1,10 @@
 import {type StackablePerspective} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
-import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
 import {type MouseEvent, useCallback, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {useIntentLink} from 'sanity/router'
+import {Box, type MarginProps, type PaddingProps} from 'ui5'
 
 import {Tooltip} from '../../../../../../../../ui-components/tooltip/Tooltip'
 import {PreviewCard} from '../../../../../../../components/previewCard/PreviewCard'
@@ -20,7 +20,7 @@ import {SearchResultItemPreview} from './SearchResultItemPreview'
 
 export type ItemSelectHandler = (item: Pick<SanityDocumentLike, '_id' | '_type' | 'title'>) => void
 
-interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
+interface SearchResultItemProps extends MarginProps, PaddingProps {
   disableIntentLink?: boolean
   documentId: string
   documentType: string

@@ -59,6 +59,7 @@ describe('useVersionOperations', () => {
     const {result} = renderHook(() => useVersionOperations(), {wrapper})
 
     await act(async () => {
+      // oxlint-disable-next-line no-deprecated
       await result.current.discardVersion('releaseId', 'documentId')
     })
 

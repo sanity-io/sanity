@@ -15,18 +15,19 @@
   },
   "dependencies": {
     "@repo/utils": "workspace:*",
-    "@sanity/google-maps-input": "^6.1.10",
+    "@sanity/google-maps-input": "^6.1.13",
     "@sanity/icons": "^5.2.1",
     "@sanity/ui": "catalog:",
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "catalog:",
+    "oxc-transform-react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "sanity-plugin-internationalized-array": "^5.1.26",
-    "sanity-plugin-media": "^6.1.2",
+    "sanity-plugin-internationalized-array": "^5.2.2",
+    "sanity-plugin-media": "^6.1.6",
     "sanity-test-studio": "workspace:*",
-    "styled-components": "catalog:"
+    "styled-components": "catalog:",
+    "ui5": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:"

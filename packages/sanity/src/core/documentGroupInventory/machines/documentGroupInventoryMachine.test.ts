@@ -100,6 +100,7 @@ function versionStub(id: string): VersionInfoDocumentStub {
     _rev: 'rev',
     _createdAt: '2024-01-01T00:00:00.000Z',
     _updatedAt: '2024-01-01T00:00:00.000Z',
+    _type: 'article',
     _system: isDraftId(id)
       ? {bundleId: 'drafts', group}
       : isVersionId(id) && typeof bundleId === 'string'

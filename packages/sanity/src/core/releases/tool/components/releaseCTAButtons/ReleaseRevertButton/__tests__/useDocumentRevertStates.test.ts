@@ -36,7 +36,6 @@ describe('useDocumentRevertStates', () => {
     }
   }
 
-  // @ts-expect-error -- pre-existing, fix later
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const mockUseClient = useClient as Mock<typeof useClient>
   const mockGetTransactionsLogs = getTransactionsLogs as Mock<typeof getTransactionsLogs>

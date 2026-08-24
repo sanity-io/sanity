@@ -1,4 +1,4 @@
-import {type BlockDecoratorRenderProps} from '@portabletext/editor'
+import {type DecoratorRenderProps} from '@portabletext/editor'
 import {type Theme} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
@@ -21,25 +21,25 @@ const Root = styled.span(({theme}: {theme: Theme}) => {
   `
 })
 
-export function Decorator(props: BlockDecoratorRenderProps) {
-  const {value, focused, selected, children, schemaType} = props
+export function Decorator(props: DecoratorRenderProps) {
+  const {decorator, focused, selected, children} = props
   const schemaTypes = usePortableTextMemberSchemaTypes()
-  const sanitySchemaType = schemaTypes.decorators.find((type) => type.value === schemaType.name)
+  const sanitySchemaType = schemaTypes.decorators.find((type) => type.value === decorator)
   if (!sanitySchemaType) {
     // This should never happen
-    throw new Error(`Could not find Sanity schema type for decorator: ${schemaType.name}`)
+    throw new Error(`Could not find Sanity schema type for decorator: ${decorator}`)
   }
-  const tag = TEXT_DECORATOR_TAGS[value]
+  const tag = TEXT_DECORATOR_TAGS[decorator]
   const CustomComponent = sanitySchemaType.component
   const DefaultComponent = useCallback(
     (defaultComponentProps: BlockDecoratorProps) => {
       return (
-        <Root as={tag} data-mark={value}>
+        <Root as={tag} data-mark={decorator}>
           {defaultComponentProps.children}
         </Root>
       )
     },
-    [tag, value],
+    [tag, decorator],
   )
   return useMemo(() => {
     const componentProps = {
@@ -48,13 +48,13 @@ export function Decorator(props: BlockDecoratorRenderProps) {
       schemaType: sanitySchemaType,
       selected,
       title: sanitySchemaType.title,
-      value,
+      value: decorator,
     }
     return CustomComponent ? (
       <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
-      // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
+      // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
-  }, [CustomComponent, DefaultComponent, children, focused, sanitySchemaType, selected, value])
+  }, [CustomComponent, DefaultComponent, children, focused, sanitySchemaType, selected, decorator])
 }

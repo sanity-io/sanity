@@ -192,6 +192,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
   // custom components can have different dimensions and the library recalculate the size of the element
   const estimateSize = useCallback(() => 53, [])
 
+  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
   const virtualizer = useVirtualizer({
     count: members.length,
     estimateSize,

@@ -1,9 +1,8 @@
 import {ClockIcon} from '@sanity/icons/Clock'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {EMPTY, fromEvent, map, merge, of, timer, timestamp} from 'rxjs'
+import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
+import {useCallback, useEffect, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
@@ -17,22 +16,16 @@ import {
 } from '../../store/authStore/unclaimedProjectStorage'
 import {interpolateTemplate} from '../../util/interpolateTemplate'
 import {useWorkspace} from '../workspace'
-import {
-  ROBOT_PROVIDER,
-  type UnclaimedProjectState,
-  useUnclaimedProject,
-} from './useUnclaimedProject'
-import {
-  getClaimedIdentityText,
-  getClaimedIdentityTextParts,
-  useUnclaimedProjectCopy,
-} from './useUnclaimedProjectCopy'
+import {useUnclaimedProjectContext} from './UnclaimedProjectProvider'
+import {ROBOT_PROVIDER, type UnclaimedProjectState} from './useUnclaimedProject'
+import {useUnclaimedProjectClock} from './useUnclaimedProjectClock'
+import {useUnclaimedProjectCopy} from './useUnclaimedProjectCopy'
 
 /**
  * Persistent banner + snoozable toast nudging the user to claim a minted-but-unclaimed project
- * before it expires, flipping to an identity-aware login banner once it's claimed. Renders
- * nothing after the claim period or for anything not part of mint-and-claim — see
- * {@link useUnclaimedProject}.
+ * before it expires. Once claimed, the robot session is cleared and the user is sent directly
+ * to login. Renders nothing after the claim period or for anything not part of mint-and-claim —
+ * see {@link useUnclaimedProject}.
  *
  * @internal
  */
@@ -56,19 +49,11 @@ function UnclaimedProjectNudgeAuthCheck() {
 }
 
 function UnclaimedProjectNudgeStateCheck() {
-  const {projectId} = useWorkspace()
-  const [claimAttempt, setClaimAttempt] = useState<{projectId: string; startedAt: number}>()
-  const claimAttemptedAt =
-    claimAttempt?.projectId === projectId ? claimAttempt.startedAt : undefined
-  const state = useUnclaimedProject({claimAttemptedAt})
-  const handleClaim = useCallback(
-    () => setClaimAttempt({projectId, startedAt: Date.now()}),
-    [projectId],
-  )
+  const {onClaim, state} = useUnclaimedProjectContext()
 
   if (!state) return null
 
-  return <UnclaimedProjectNudgeInner onClaim={handleClaim} state={state} />
+  return <UnclaimedProjectNudgeInner onClaim={onClaim} state={state} />
 }
 
 function UnclaimedProjectNudgeInner({
@@ -78,7 +63,7 @@ function UnclaimedProjectNudgeInner({
   onClaim: () => void
   state: UnclaimedProjectState
 }) {
-  const {auth, projectId} = useWorkspace()
+  const {projectId} = useWorkspace()
   const copy = useUnclaimedProjectCopy(true)
 
   const unclaimed = state?.status === 'unclaimed' ? state : undefined
@@ -111,13 +96,6 @@ function UnclaimedProjectNudgeInner({
     claimable &&
     claimable.expiresAt.getTime() - now <= copy.criticalThresholdHours * 3_600_000,
   )
-
-  // The claim URL is spent; keep its provenance while the robot token is active so this banner
-  // survives refreshes. Clear it together with the token so a fresh session lands on login.
-  const handleSignIn = useCallback(() => {
-    clearUnclaimedProjectRecord(projectId)
-    void auth.logout?.()
-  }, [auth, projectId])
 
   // Dismissal happens through the snooze button: useConditionalToast re-pushes while enabled,
   // which would defeat a close control.
@@ -179,48 +157,6 @@ function UnclaimedProjectNudgeInner({
 
   if (!copy) return null
 
-  if (state?.status === 'claimed') {
-    return (
-      <Card data-testid="unclaimed-project-banner" tone="positive" padding={3} borderBottom>
-        <Box display={['block', 'block', 'none']}>
-          <Stack gap={3}>
-            <Flex align="center" gap={3} justify="space-between">
-              <Text size={1} weight="medium" style={{flex: 1, minWidth: 0}}>
-                {copy.claimed.text}
-              </Text>
-              <Button
-                mode="default"
-                tone="positive"
-                size="default"
-                text={copy.claimed.signInButtonText}
-                onClick={handleSignIn}
-                style={{flexShrink: 0}}
-              />
-            </Flex>
-            <Text size={1} weight="medium" style={{overflowWrap: 'anywhere'}}>
-              <ClaimedIdentityText text={copy.claimed.identityText} email={state.email} />
-            </Text>
-          </Stack>
-        </Box>
-        <Box display={['none', 'none', 'block']}>
-          <Flex align="center" gap={3} justify="center" wrap="wrap">
-            <Text size={1} weight="medium" style={{overflowWrap: 'anywhere'}}>
-              {copy.claimed.text}{' '}
-              <ClaimedIdentityText text={copy.claimed.identityText} email={state.email} />
-            </Text>
-            <Button
-              mode="default"
-              tone="positive"
-              size="default"
-              text={copy.claimed.signInButtonText}
-              onClick={handleSignIn}
-            />
-          </Flex>
-        </Box>
-      </Card>
-    )
-  }
-
   if (!claimable) return null
 
   return (
@@ -270,20 +206,6 @@ function UnclaimedProjectNudgeInner({
   )
 }
 
-function ClaimedIdentityText({text, email}: {text: string; email?: string}) {
-  const parts = getClaimedIdentityTextParts(text, email)
-
-  return parts ? (
-    <>
-      {parts.before}
-      <strong>{parts.identity}</strong>
-      {parts.after}
-    </>
-  ) : (
-    getClaimedIdentityText(text, email)
-  )
-}
-
 /** Isolates the per-second update so the full nudge does not re-render on every tick. */
 export function UnclaimedProjectCountdown({
   critical,
@@ -327,26 +249,4 @@ export function formatCountdown(expiresAt: Date, now: number): string {
   const seconds = totalSeconds % 60
 
   return [hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':')
-}
-
-/** Keeps all time-based nudge state on one clock, including resume after timer throttling. */
-function useUnclaimedProjectClock(enabled: boolean, expiresAt: Date | undefined): number {
-  const [initialNow] = useState(() => Date.now())
-  const expiresAtTime = expiresAt?.getTime()
-  const clock$ = useMemo(() => {
-    if (!enabled) return EMPTY
-
-    return merge(
-      of(undefined),
-      timer(60_000, 60_000),
-      expiresAtTime === undefined ? EMPTY : timer(new Date(expiresAtTime)),
-      fromEvent(window, 'focus'),
-      fromEvent(document, 'visibilitychange'),
-    ).pipe(
-      timestamp(),
-      map(({timestamp: now}) => now),
-    )
-  }, [enabled, expiresAtTime])
-
-  return useObservable(clock$, initialNow)
 }

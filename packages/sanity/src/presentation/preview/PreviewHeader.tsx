@@ -3,10 +3,11 @@ import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PanelLeftIcon} from '@sanity/icons/PanelLeft'
 import {RefreshIcon} from '@sanity/icons/Refresh'
 import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
-import {Box, Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
+import {Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
+import {Box} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
@@ -164,7 +165,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
         </Card>
       </Tooltip>
 
-      <Box flex={1}>
+      <Box flexBasis="0%" flexGrow={1}>
         <PreviewLocationInput
           previewUrlRef={previewUrlRef}
           prefix={

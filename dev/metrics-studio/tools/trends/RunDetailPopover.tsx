@@ -1,22 +1,22 @@
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
-import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {
-  Badge,
-  Box,
-  Button,
-  Flex,
-  Stack,
-  Text,
-  useClickOutsideEvent,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {RobotIcon} from '@sanity/icons/Robot'
+import {Badge, Button, Flex, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
+import {Box} from 'ui5'
 
-import {formatValue, type TrendPoint, type TrendSeries} from './data'
-import {abDispatchCommand, backlinksFor, sourceFileUrl} from './links'
+import {
+  CALIBRATION_EXPLAINER,
+  formatValue,
+  INP_MIN_INTERACTIONS,
+  type TrendPoint,
+  type TrendSeries,
+} from './data'
+import {buildInvestigationPrompt} from './investigationPrompt'
+import {backlinksFor, compareUrl, sourceFileUrl} from './links'
 
 const FULL_SHA = /^[0-9a-f]{40}$/i
 
@@ -31,26 +31,50 @@ const FULL_SHA = /^[0-9a-f]{40}$/i
 export function RunDetailPopover(props: {
   series: TrendSeries
   point: TrendPoint
-  /** Sha of the nearest earlier distinct commit on the same line, if any. */
-  previousSha?: string
+  /** The nearest earlier point on the same line measuring a distinct commit. */
+  previousPoint?: TrendPoint
   referenceElement: HTMLElement | null
   onClose: () => void
 }) {
-  const {series, point, previousSha, referenceElement, onClose} = props
+  const {series, point, previousPoint, referenceElement, onClose} = props
+  const {host} = point
   const [contentEl, setContentEl] = useState<HTMLDivElement | null>(null)
-  const [abCopyState, setAbCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
-  // The bench workflow's ab_from/ab_to inputs require full shas, and GitHub
-  // has no URL that prefills a workflow_dispatch form — so the affordance is
-  // a copyable command, previous point as reference, this point as experiment
-  const abCommand =
-    previousSha && FULL_SHA.test(previousSha) && FULL_SHA.test(point.sha)
-      ? abDispatchCommand(previousSha, point.sha)
+  // "What landed between this point and the previous one?" — the GitHub
+  // compare view answers it directly. Guarded by the full-sha shape so a
+  // 'unknown' or malformed sha never builds a dead link.
+  const compareHref =
+    previousPoint && FULL_SHA.test(previousPoint.sha) && FULL_SHA.test(point.sha)
+      ? compareUrl(previousPoint.sha, point.sha)
       : undefined
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const documentLink = useIntentLink({
     intent: 'edit',
     params: {id: point.runId, type: 'benchRun'},
   })
+  // Feedback for the copy-prompt button lives on the button itself (label +
+  // icon flip) rather than a toast — the popover is small enough that the
+  // change is right under the cursor, and a failure is just as visible.
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
+  const copyResetTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  useEffect(() => () => clearTimeout(copyResetTimer.current), [])
+  const handleCopyPrompt = () => {
+    if (!previousPoint) return
+    const finish = (state: 'copied' | 'failed') => {
+      setCopyState(state)
+      clearTimeout(copyResetTimer.current)
+      copyResetTimer.current = setTimeout(() => setCopyState('idle'), 2000)
+    }
+    // navigator.clipboard is undefined outside secure contexts, where the
+    // call would throw synchronously instead of rejecting
+    try {
+      navigator.clipboard.writeText(buildInvestigationPrompt(series, point, previousPoint)).then(
+        () => finish('copied'),
+        () => finish('failed'),
+      )
+    } catch {
+      finish('failed')
+    }
+  }
   const backlinks = backlinksFor(point)
   // The scenario source *as it ran for this commit* — pinning to the run's sha
   // (not main) shows exactly the definition that produced this point, since
@@ -88,12 +112,17 @@ export function RunDetailPopover(props: {
       placement="top"
       fallbackPlacements={['bottom', 'right', 'left']}
       referenceElement={referenceElement}
+      // A drifted chart tints its card caution/positive, and the popover would
+      // otherwise inherit that tone through the theme context — making run
+      // details look like a warning about themselves. The run detail is neutral
+      // information; the flag belongs to the card, not to this panel.
+      tone="default"
       content={
-        <Box ref={setContentEl} padding={4} style={{width: 288, maxWidth: '92vw'}}>
+        <Box ref={setContentEl} padding={4} style={{width: 320, maxWidth: '92vw'}}>
           <Stack gap={4}>
             {/* Header: series title as a quiet eyebrow, close button aligned */}
             <Flex align="flex-start" gap={3}>
-              <Box flex={1} paddingTop={1}>
+              <Box flexBasis="0%" flexGrow={1} paddingTop={1}>
                 <Text size={1} weight="medium" muted textOverflow="ellipsis">
                   {series.title}
                 </Text>
@@ -134,9 +163,77 @@ export function RunDetailPopover(props: {
                     </Text>
                     <Text size={1}>{formatValue(point.p90 ?? point.value, series.unit)}</Text>
                   </Stack>
+                  {point.interactions !== undefined && (
+                    <Stack gap={2}>
+                      <Text size={0} muted>
+                        interactions
+                      </Text>
+                      <Text size={1}>{point.interactions}</Text>
+                    </Stack>
+                  )}
                 </Flex>
               )}
+              {/* An INP from too few interactions is a weak estimate — say so
+                  where the number is read, not in a separate chart */}
+              {point.interactions !== undefined && point.interactions < INP_MIN_INTERACTIONS && (
+                <Badge tone="caution" fontSize={0}>
+                  Low confidence: only {point.interactions} interactions (a reliable INP needs{' '}
+                  {INP_MIN_INTERACTIONS})
+                </Badge>
+              )}
             </Stack>
+
+            {/* The machine that produced this run — the context every absolute
+                number depends on. cpuModel/image/browser exist on documents
+                from Aug 2026 on; older runs show what they recorded. */}
+            {(host || point.calibrationMs !== undefined) && (
+              <Stack gap={2}>
+                <Text size={0} muted weight="medium">
+                  Host
+                </Text>
+                <Stack gap={2}>
+                  {host?.cpuModel && (
+                    <Text size={1} muted>
+                      {host.cpuModel}
+                    </Text>
+                  )}
+                  {host && (host.os || host.cpus !== undefined || host.memGb !== undefined) && (
+                    <Text size={1} muted>
+                      {[
+                        host.os && (host.arch ? `${host.os}/${host.arch}` : host.os),
+                        host.cpus !== undefined ? `${host.cpus} cores` : undefined,
+                        host.memGb !== undefined ? `${host.memGb} GB RAM` : undefined,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </Text>
+                  )}
+                  {(host?.browserVersion || host?.nodeVersion) && (
+                    <Text size={1} muted>
+                      {[
+                        host.browserVersion ? `Chromium ${host.browserVersion}` : undefined,
+                        host.nodeVersion ? `Node ${host.nodeVersion}` : undefined,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </Text>
+                  )}
+                  {(host?.imageOs || host?.imageVersion) && (
+                    <Text size={1} muted>
+                      image {[host.imageOs, host.imageVersion].filter(Boolean).join(' ')}
+                    </Text>
+                  )}
+                  {point.calibrationMs !== undefined && (
+                    <Flex align="center" gap={2} title={CALIBRATION_EXPLAINER}>
+                      <Text size={1} muted>
+                        calibration
+                      </Text>
+                      <Text size={1}>{formatValue(point.calibrationMs, 'ms')}</Text>
+                    </Flex>
+                  )}
+                </Stack>
+              </Stack>
+            )}
 
             {(backlinks.length > 0 || scenarioHref) && (
               <Stack gap={2}>
@@ -175,33 +272,39 @@ export function RunDetailPopover(props: {
               </Stack>
             )}
 
-            {abCommand && (
+            {compareHref && (
               <Stack gap={2}>
                 <Text size={0} muted weight="medium">
-                  Suspect a change at this point?
+                  Suspect a regression?
                 </Text>
+                <Button
+                  as="a"
+                  href={compareHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  mode="ghost"
+                  fontSize={1}
+                  icon={LaunchIcon}
+                  text="Compare with previous run"
+                  aria-label="GitHub compare view of the commits between the previous run's commit and this one (opens in a new tab)"
+                />
+                {/* A paste-ready brief for a coding agent: the full signal
+                    (metric, both commits, delta, backlinks) plus the A/B
+                    dispatch / bisect recipe from perf/bench/README.md */}
                 <Button
                   mode="ghost"
                   fontSize={1}
-                  icon={CopyIcon}
+                  icon={copyState === 'copied' ? CheckmarkIcon : RobotIcon}
+                  tone={copyState === 'copied' ? 'positive' : 'default'}
                   text={
-                    abCopyState === 'copied'
-                      ? 'Copied — paste in a terminal'
-                      : abCopyState === 'failed'
-                        ? 'Copy failed — command in tooltip'
-                        : 'Copy A/B vs previous run'
+                    copyState === 'copied'
+                      ? 'Copied'
+                      : copyState === 'failed'
+                        ? 'Copy failed'
+                        : 'Copy investigation prompt'
                   }
-                  title={abCommand}
-                  aria-label="Copy the gh command dispatching an A/B bench comparison of this commit against the previous point's commit"
-                  onClick={() => {
-                    // Only claim success on success: clipboard access can be
-                    // denied (permissions, non-secure context) and the title
-                    // attribute is the manual fallback either way
-                    navigator.clipboard.writeText(abCommand).then(
-                      () => setAbCopyState('copied'),
-                      () => setAbCopyState('failed'),
-                    )
-                  }}
+                  aria-label="Copy an investigation brief for a coding agent to the clipboard"
+                  onClick={handleCopyPrompt}
                 />
               </Stack>
             )}

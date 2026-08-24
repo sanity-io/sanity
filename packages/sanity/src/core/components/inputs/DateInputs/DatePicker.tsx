@@ -12,7 +12,7 @@ export function DatePicker(
     timeStep?: number
     calendarLabels: CalendarLabels
     monthPickerVariant?: CalendarProps['monthPickerVariant']
-    padding?: number
+    padding?: CalendarProps['padding']
     showTimeZone?: boolean
     isPastDisabled?: boolean
     timeZoneScope: TimeZoneScope

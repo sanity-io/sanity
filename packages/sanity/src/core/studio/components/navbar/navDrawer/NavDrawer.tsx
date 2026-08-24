@@ -1,10 +1,10 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {LeaveIcon} from '@sanity/icons/Leave'
-import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Layer, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {CapabilityGate} from '../../../../components/CapabilityGate'
@@ -17,6 +17,7 @@ import {useToolMenuComponent} from '../../../studio-components-hooks/useToolMenu
 import {useWorkspace} from '../../../workspace'
 import {useWorkspaces} from '../../../workspaces/useWorkspaces'
 import {HomeButton} from '../home/HomeButton'
+import {UserMenuAuthAction} from '../userMenu/UserMenuAuthAction'
 import {WorkspaceMenuButton} from '../workspace/WorkspaceMenuButton'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
@@ -87,7 +88,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const {__internal_actions: actions, activeToolName, isOpen, onClose, tools} = props
 
   const setScheme = useColorSchemeSetValue()
-  const {auth, currentUser} = useWorkspace()
+  const {currentUser} = useWorkspace()
   const workspaces = useWorkspaces()
   const ToolMenu = useToolMenuComponent()
 
@@ -168,7 +169,8 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                         <Flex flex={1} align="center">
                           <UserAvatar size={1} user="me" />
                           <Box
-                            flex={1}
+                            flexBasis="0%"
+                            flexGrow={1}
                             marginLeft={3}
                             title={currentUser?.name || currentUser?.email}
                           >
@@ -200,7 +202,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               <Flex direction="column" flex={1} justify="space-between" overflow="auto">
                 {/* Tools */}
                 <Card flex="none" padding={2}>
-                  {/* oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work */}
+                  {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
                   <ToolMenu
                     activeToolName={activeToolName}
                     closeSidebar={onClose}
@@ -226,20 +228,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               </Flex>
 
               <CapabilityGate capability="globalUserMenu">
-                {auth.logout && (
-                  <Card flex="none" padding={2} borderTop>
-                    <Stack>
-                      <Button
-                        iconRight={LeaveIcon}
-                        justify="flex-start"
-                        mode="bleed"
-                        onClick={auth.logout}
-                        size="large"
-                        text={t('user-menu.action.sign-out')}
-                      />
-                    </Stack>
-                  </Card>
-                )}
+                <UserMenuAuthAction layout="drawer" />
               </CapabilityGate>
             </InnerCardMotion>
           </Root>

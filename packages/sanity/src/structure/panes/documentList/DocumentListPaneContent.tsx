@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {Box, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
@@ -16,6 +16,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePane} from '../../components/pane/usePane'
@@ -129,6 +130,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     return () => {
       clearTimeout(timer)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [collapsed, items])
 
   const renderItem = useCallback<CommandListRenderItemCallback<SanityDocument>>(
@@ -282,7 +284,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     const key = `${index}-${collapsed}`
 
     return (
-      <RootBox overflow="hidden" height="fill" $opacity={muted ? 0.8 : 1}>
+      <RootBox overflow="hidden" height="100%" $opacity={muted ? 0.8 : 1}>
         <CommandListBox>
           <CommandList
             key={key}
