@@ -103,7 +103,6 @@ catalogs:
 
 overrides:
   vitest: ^4.1.11
-  tsdown>rolldown: ~1.2.4
 
 importers:
 
