@@ -88,6 +88,24 @@ export interface ArrayOptions<V = unknown> extends SearchConfiguration, BaseSche
   // inferring the array.of value for ArrayDefinition cause too much code-noise and was removed.
   // Since we don't have the type-info needed here, we allow values
   layout?: 'list' | 'tags' | 'grid'
+  /**
+   * The number of columns to render when `layout` is `'grid'`. Has no effect for
+   * other layouts. Defaults to `4`.
+   *
+   * The value applies at the widest breakpoint and steps down on narrower ones, so
+   * the grid stays readable on small screens. Values below `1` are ignored.
+   *
+   * @example
+   * ```ts
+   * defineField({
+   *   name: 'gallery',
+   *   type: 'array',
+   *   of: [{type: 'image'}],
+   *   options: {layout: 'grid', columns: 2},
+   * })
+   * ```
+   */
+  columns?: number
   /** @deprecated This option does not have any effect anymore */
   direction?: 'horizontal' | 'vertical'
   sortable?: boolean
