@@ -779,6 +779,12 @@ export function VisionGui(props: VisionGuiProps) {
               </Box>
               <VisionGuiResult
                 error={error}
+                apiVersion={userApiVersion}
+                perspective={getActivePerspective({
+                  visionPerspective: perspective,
+                  perspectiveStack,
+                  scheduledDraftsStack,
+                })}
                 queryInProgress={queryInProgress}
                 queryResult={queryResult}
                 listenInProgress={listenInProgress}

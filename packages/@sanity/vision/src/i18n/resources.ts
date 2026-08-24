@@ -77,6 +77,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'query.error.column': 'Column',
   /** Label for 'Line' indicator when there is an error within the query */
   'query.error.line': 'Line',
+  /** Extra explanation when a 400 is returned for a release perspective on an old API version */
+  'query.error.unsupported-release-perspective':
+    'This API version does not support pinned release perspectives. Use {{apiVersion}} or later.',
   /** Label for "Query" editor/input */
   'query.label': 'Query',
   /** Label for the "Query URL" field, shown after executing a query, and allows for copying */

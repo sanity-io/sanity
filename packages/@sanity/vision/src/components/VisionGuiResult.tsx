@@ -1,4 +1,4 @@
-import {type MutationEvent} from '@sanity/client'
+import {type ClientPerspective, type MutationEvent} from '@sanity/client'
 import {Text} from '@sanity/ui'
 import {Translate, useTranslation} from 'sanity'
 import {Box} from 'ui5'
@@ -25,6 +25,8 @@ import {
 
 interface VisionGuiResultProps {
   error?: Error | undefined
+  apiVersion: string
+  perspective: ClientPerspective | undefined
   queryInProgress: boolean
   queryResult?: unknown | undefined
   listenInProgress: boolean
@@ -37,6 +39,8 @@ interface VisionGuiResultProps {
 
 export function VisionGuiResult({
   error,
+  apiVersion,
+  perspective,
   queryInProgress,
   queryResult,
   listenInProgress,
@@ -73,7 +77,9 @@ export function VisionGuiResult({
                   <DelayedSpinner />
                 </Box>
               )}
-              {error && <QueryErrorDialog error={error} />}
+              {error && (
+                <QueryErrorDialog apiVersion={apiVersion} error={error} perspective={perspective} />
+              )}
               {hasResult && <ResultView data={queryResult} datasetName={dataset} />}
               {listenInProgress && listenMutations.length > 0 && (
                 <ResultView data={listenMutations} datasetName={dataset} />
