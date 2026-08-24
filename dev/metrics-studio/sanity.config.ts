@@ -14,16 +14,16 @@ export default defineConfig({
   icon: MetricsStudioIcon,
   projectId: 'mhfozd0z',
   dataset: 'bench',
-  // Trends first (the dashboard and default view), raw document access
-  // second, then the investigation tools — comparisons last, it's the least
-  // visited
+  // Trends first (the dashboard and default view), then the investigation
+  // tools (releases, bisect), then raw document access — comparisons last,
+  // it's the least visited
   tools: (prev) => {
     const structure = prev.filter((tool) => tool.name === 'structure')
-    // Drop the built-in Content Releases tool: this dataset has no content
-    // releases, and our release-tags tool owns the "Releases" name
-    const rest = prev.filter((tool) => tool.name !== 'structure' && tool.name !== 'releases')
+    const rest = prev.filter((tool) => tool.name !== 'structure')
     return [trendsTool, releasesTool, bisectTool, ...structure, ...rest, comparisonsTool]
   },
+  releases: {enabled: false},
+  scheduledDrafts: {enabled: false},
   plugins: [
     structureTool({
       structure: (S) =>

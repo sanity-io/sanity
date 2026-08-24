@@ -40,6 +40,58 @@ export async function createSession(client: SanityClient, input: NewSessionInput
   return created._id
 }
 
+export interface ManualRegressionInput {
+  /** The release BEFORE the blamed one (base on the first-parent chain). */
+  good: {sha: string; label?: string}
+  /** The release the regression is pinned on. */
+  bad: {sha: string; label?: string}
+  /** Commits strictly between the two releases — the possible culprits. */
+  suspectShas: string[]
+  description: string
+  linearIssue?: string
+  createdBy: string
+}
+
+/**
+ * A regression reported by hand from the Studio Releases tool — no bisect was
+ * run, only the introducing release is known. Stored as a bisectSession that
+ * is converged from birth: releases-only endpoints at the blamed release and
+ * its base, no marks, and the verdict written at creation. That keeps one
+ * source of truth for regression attribution, and opening the session offers
+ * the usual drill-down over the suspect commits.
+ */
+export async function reportRegression(
+  client: SanityClient,
+  input: ManualRegressionInput,
+): Promise<string> {
+  const created = await client.create({
+    _id: `bisectSession-${crypto.randomUUID()}`,
+    _type: 'bisectSession',
+    title: `${endpointLabel(input.good)} → ${endpointLabel(input.bad)}`,
+    good: input.good,
+    bad: input.bad,
+    releasesOnly: true,
+    marks: [],
+    result: {
+      firstBadSha: input.bad.sha,
+      lastGoodSha: input.good.sha,
+      suspectShas: input.suspectShas,
+      regression: true,
+      description: input.description,
+      ...(input.linearIssue ? {linearIssue: input.linearIssue} : {}),
+      concludedAt: new Date().toISOString(),
+    },
+    createdAt: new Date().toISOString(),
+    createdBy: input.createdBy,
+  })
+  return created._id
+}
+
+/** Sessions are the only user-owned documents here — plain hard delete. */
+export function deleteSession(client: SanityClient, sessionId: string): Promise<unknown> {
+  return client.delete(sessionId)
+}
+
 /**
  * Append a mark. Every append is authoritative about `result`: a converging
  * mark writes it in the same patch (so the list and the marks log can never

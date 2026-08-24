@@ -1,7 +1,7 @@
 import {expect, test} from 'vitest'
 
 import {type BisectCommit} from '../bisect/bisect'
-import {baseVersionOf, changelogUrl, npmxUrl, regressionCountByTag} from './releaseInfo'
+import {baseTagOf, baseVersionOf, changelogUrl, npmxUrl, regressionCountByTag} from './releaseInfo'
 
 function sha(index: number): string {
   return index.toString(16).repeat(40).slice(0, 40)
@@ -34,6 +34,9 @@ test('baseVersionOf walks first parents to the previous release', () => {
     [sha(5), 'v2.0.0'],
   ])
   expect(baseVersionOf(bySha(commits), tagBySha, {sha: sha(1)})).toBe('2.0.0')
+  // baseTagOf is the same walk but keeps the tag name (AddRegressionDialog
+  // uses it to find the base TagSlice by name)
+  expect(baseTagOf(bySha(commits), tagBySha, {sha: sha(1)})).toBe('v2.0.0')
   // oldest tag walks off the cutoff without finding a predecessor
   expect(baseVersionOf(bySha(commits), tagBySha, {sha: sha(5)})).toBeUndefined()
   // off-mainline tag can't even start the walk

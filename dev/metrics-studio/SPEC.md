@@ -4,7 +4,7 @@ One place to answer repo-health questions without opening CI logs: **is
 studio performance drifting on main?** (Trends), **what did a specific run
 look like?** (run detail), **did anything change that needs a human?**
 (drift feed), **which commit broke it?** (Bisect), **what shipped when, and
-what regressed?** (Releases). Primary users: studio engineers checking the
+what regressed?** (Studio Releases). Primary users: studio engineers checking the
 effect of merged work; secondary: leads scanning health weekly.
 
 ## Data reality
@@ -160,10 +160,12 @@ effect of merged work; secondary: leads scanning health weekly.
    `?layers=-band` so a stripped-back view is shareable. Global rather than
    per-card because the grid is 40+ small multiples.
 
-5. **Release markers** — one dotted vertical rule per stable `v*` tag
-   (`gitTag`, rc tags excluded) inside the plotted window, so "did this step
-   land with a release?" is answerable without leaving the chart. The first
-   consumer of the git-history join surface.
+5. **Release markers** — one tick above the plot per stable `v*` tag
+   (`gitTag`, rc tags excluded) inside the plotted window — a tick rather than
+   a rule through the data, so ~20 annotations don't compete with the series
+   they annotate — making "did this step land with a release?" answerable
+   without leaving the chart. The first consumer of the git-history join
+   surface.
 
    **Main-branch releases only.** The charts only ever plot main (bench runs are
    main-branch crons), so a release cut off main is a _false_ annotation — its
@@ -220,12 +222,14 @@ effect of merged work; secondary: leads scanning health weekly.
 
    **Labels are size-dependent.** At grid-card width (~330px) a 90-day window
    holds ~20 markers, one every ~15px, so resting text is guaranteed overlap:
-   cards draw unlabelled rules (each with a tick at the top so it still reads as
-   an anchor) and the hover tooltip names the release nearest the crosshair,
-   within half the median run gap. The maximized view has the room and draws
-   rotated labels, thinned so that a cluster keeps its last tag — releases
-   cluster on release days, and the last of a cluster is the one in effect for
-   the runs that follow.
+   cards draw unlabelled ticks, and the hover tooltip names every release
+   within half the median run gap of the crosshair (floored at one hour) —
+   all of them, not just the nearest, since releases ship in bursts whose
+   marks merge into one tick. A run that measured a release names it from the
+   run itself, on its own "measured release" row. The maximized view has the
+   room and draws rotated labels, thinned so that a cluster keeps its last
+   tag (the others fold into a "+n") — releases cluster on release days, and
+   the last of a cluster is the one in effect for the runs that follow.
 
 6. **Maximize a single chart** — the grid is built for scanning; reading one
    chart closely needs room. An expand button on each card opens the same
@@ -237,7 +241,7 @@ effect of merged work; secondary: leads scanning health weekly.
    full-viewport — stretching 90 days across a 2500px monitor reads as a flat
    line no matter what the metric did.
 
-5. **Bisect** — guided binary search over mainline history: pick a good and a
+7. **Bisect** — guided binary search over mainline history: pick a good and a
    bad commit (or a release tag as shortcut), and the tool proposes which
    commit's test-studio preview build (`gitCommit.testStudioUrl`) to test
    next, halving the range per good/bad verdict until the first bad commit is
@@ -253,16 +257,23 @@ effect of merged work; secondary: leads scanning health weekly.
    endpoints, current bounds, every visited commit and the one under test,
    with the runs in between collapsed into gap rows labelled by what the
    bisect has already deduced (broken / untested / working), each linking to
-   the GitHub compare of the span.
+   the GitHub compare of the span. Sessions can be deleted from the session
+   view (hard delete behind a confirm — they're the only user-owned documents
+   here).
 
-6. **Releases** — every synced release tag, newest first: current dist-tags,
-   weekly downloads, publish time, and links out (GitHub release, sanity.io
-   changelog, npmx.dev). The changelog link is derived from the release's
-   base version — the previous release on the first-parent chain, the same
-   value release automation computes — so off-mainline releases (maintenance
-   lines) may lack it. Each release also shows the count of confirmed
-   regressions bisect sessions have attributed to it, blamed on the release
-   that FIRST shipped the offending commit.
+8. **Studio Releases** — every synced release tag, newest first: current
+   dist-tags, weekly downloads, publish time, links out (GitHub release,
+   sanity.io changelog, npmx.dev), and the version linking to the gitTag
+   document in the structure tool. The changelog link is derived from the
+   release's base version — the previous release on the first-parent chain,
+   the same value release automation computes — so off-mainline releases
+   (maintenance lines) may lack it. Each release also shows the count of
+   confirmed regressions bisect sessions have attributed to it, blamed on the
+   release that FIRST shipped the offending commit. Regressions found outside
+   a bisect (user reports) are added by hand via "Add regression", stored as
+   a born-converged releases-only bisectSession (base release → blamed
+   release, the commits between as suspects) so attribution and the bisect
+   drill-down work unchanged.
 
 ## Architecture
 

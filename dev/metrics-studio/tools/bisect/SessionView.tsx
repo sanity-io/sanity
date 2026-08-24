@@ -1,7 +1,8 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
-import {Badge, Box, Button, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {useToast} from '@sanity/ui/toast'
-import {useEffect, useMemo} from 'react'
+import {TrashIcon} from '@sanity/icons/Trash'
+import {Badge, Box, Button, Card, Container, Dialog, Flex, Stack, Text} from '@sanity/ui'
+import {type ToastContextValue, useToast} from '@sanity/ui/toast'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {type SanityClient, useDocumentStore} from 'sanity'
@@ -22,6 +23,7 @@ import {
   appendMark,
   clearResult,
   createSession,
+  deleteSession,
   type ResultAnnotations,
   setResult,
   undoMark,
@@ -35,6 +37,16 @@ interface LiveState {
   error: string | null
 }
 
+/** Error-toast curry, hoisted so the persist effect and the handlers share it. */
+function toastError(toast: ToastContextValue, title: string) {
+  return (err: unknown) =>
+    toast.push({
+      status: 'error',
+      title,
+      description: err instanceof Error ? err.message : String(err),
+    })
+}
+
 /**
  * The stepper for one bisect session. All state is derived live from the
  * session's marks and the commit chain — `result` on the document is only
@@ -44,15 +56,22 @@ interface LiveState {
 export function SessionView(props: {
   sessionId: string
   commitsBySha: Map<string, BisectCommit>
-  tags: TagSlice[]
+  /** `null` while the tags query is loading (or after it errored) — the
+   * distinction matters: releases-only sessions derive their candidate set
+   * from the tags, and an empty set would spuriously converge. */
+  tags: TagSlice[] | null
+  /** Commits/tags query failure, surfaced here since both feed this view. */
+  dataError?: string | null
   client: SanityClient
   userName: string
   onBack: () => void
   onOpenSession: (id: string) => void
 }) {
-  const {sessionId, commitsBySha, tags, client, userName, onBack, onOpenSession} = props
+  const {sessionId, commitsBySha, tags, dataError, client, userName, onBack, onOpenSession} = props
   const documentStore = useDocumentStore()
   const toast = useToast()
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const live$ = useMemo(
     () =>
@@ -91,22 +110,32 @@ export function SessionView(props: {
 
   // Release tag lookup: sha → npm version ("v6.10.1" → "6.10.1")
   const versionBySha = useMemo(
-    () => new Map(tags.map((tag) => [tag.sha, tag.tag.replace(/^v/, '')])),
+    () => new Map((tags ?? []).map((tag) => [tag.sha, tag.tag.replace(/^v/, '')])),
     [tags],
   )
   const releasesOnly = Boolean(session?.releasesOnly)
+  // `null` = can't derive yet: a releases-only session must wait for the tags
+  // to load. An empty candidate set is NOT "unrestricted" to the engine — it
+  // is "nothing testable", which would derive a spurious `converged` and the
+  // persist effect below would write a false verdict onto the document.
   const bisectOptions = useMemo(
-    () => (releasesOnly ? {candidateShas: new Set(versionBySha.keys())} : {}),
-    [releasesOnly, versionBySha],
+    () => (releasesOnly ? (tags ? {candidateShas: new Set(versionBySha.keys())} : null) : {}),
+    [releasesOnly, tags, versionBySha],
   )
 
   const state = useMemo(
-    () => (chainResult?.ok ? deriveBisectState(chainResult.chain, marks, bisectOptions) : null),
+    () =>
+      chainResult?.ok && bisectOptions
+        ? deriveBisectState(chainResult.chain, marks, bisectOptions)
+        : null,
     [chainResult, marks, bisectOptions],
   )
 
   const timeline = useMemo(
-    () => (chainResult?.ok ? buildTimeline(chainResult.chain, marks, bisectOptions) : []),
+    () =>
+      chainResult?.ok && bisectOptions
+        ? buildTimeline(chainResult.chain, marks, bisectOptions)
+        : [],
     [chainResult, marks, bisectOptions],
   )
 
@@ -119,16 +148,11 @@ export function SessionView(props: {
         ? state.next.sha
         : undefined
   const releases = useMemo(
-    () => (focusSha ? releasesContaining(commitsBySha, tags, focusSha) : []),
+    () => (focusSha ? releasesContaining(commitsBySha, tags ?? [], focusSha) : []),
     [focusSha, commitsBySha, tags],
   )
 
-  const onError = (title: string) => (err: unknown) =>
-    toast.push({
-      status: 'error',
-      title,
-      description: err instanceof Error ? err.message : String(err),
-    })
+  const onError = (title: string) => toastError(toast, title)
 
   // Sessions can be converged FROM BIRTH (adjacent endpoints, a drill-down
   // over an untestable range) — no converging mark ever fires, so appendMark
@@ -139,12 +163,7 @@ export function SessionView(props: {
   const hasStoredResult = Boolean(session?.result?.firstBadSha)
   useEffect(() => {
     if (!session || !state) return
-    const fail = (title: string) => (err: unknown) =>
-      toast.push({
-        status: 'error',
-        title,
-        description: err instanceof Error ? err.message : String(err),
-      })
+    const fail = (title: string) => toastError(toast, title)
     if (state.kind === 'converged' && !hasStoredResult) {
       void setResult(client, sessionId, {
         firstBadSha: state.firstBad.sha,
@@ -160,7 +179,7 @@ export function SessionView(props: {
   }, [state, session, hasStoredResult, client, sessionId, toast])
 
   const mark = (sha: string, verdict: Verdict) => {
-    if (!chainResult?.ok) return
+    if (!chainResult?.ok || !bisectOptions) return
     // Detect convergence with the new mark included, so the denormalized
     // result lands in the same patch as the mark that concluded the run —
     // and a non-converging mark clears any (now possibly stale) result
@@ -187,10 +206,29 @@ export function SessionView(props: {
     if (last) undoMark(client, sessionId, last._key).catch(onError('Could not undo mark'))
   }
 
+  // On failure the confirm dialog stays open, so the toast lands next to a
+  // retryable Delete button
+  const removeSession = () => {
+    setDeleting(true)
+    deleteSession(client, sessionId)
+      .then(() => {
+        setConfirmingDelete(false)
+        onBack()
+      })
+      .catch((err: unknown) => {
+        setDeleting(false)
+        onError('Could not delete session')(err)
+      })
+  }
+
   // Drill-down from a releases-only verdict: a fresh commit-granular session
-  // over exactly the suspect range
+  // over exactly the suspect range. Ref-guarded rather than disabling the
+  // (deeply nested) button: a repeat click during the round-trip would
+  // otherwise create a duplicate session.
+  const continuePending = useRef(false)
   const continueBisect = () => {
-    if (state?.kind !== 'converged') return
+    if (state?.kind !== 'converged' || continuePending.current) return
+    continuePending.current = true
     const label = (sha: string) => {
       const version = versionBySha.get(sha)
       return version ? {sha, label: `v${version}`} : {sha}
@@ -202,6 +240,9 @@ export function SessionView(props: {
     })
       .then(onOpenSession)
       .catch(onError('Could not create session'))
+      .finally(() => {
+        continuePending.current = false
+      })
   }
 
   return (
@@ -215,8 +256,22 @@ export function SessionView(props: {
                 {session?.title ?? 'Bisect session'}
               </Text>
             </Box>
+            {session && (
+              <Button
+                mode="bleed"
+                tone="critical"
+                icon={TrashIcon}
+                text="Delete session"
+                onClick={() => setConfirmingDelete(true)}
+              />
+            )}
           </Flex>
 
+          {dataError && (
+            <Card padding={4} radius={3} tone="critical">
+              <Text size={1}>Failed to load: {dataError}</Text>
+            </Card>
+          )}
           {live.error && (
             <Card padding={4} radius={3} tone="critical">
               <Text size={1}>Failed to load session: {live.error}</Text>
@@ -231,6 +286,16 @@ export function SessionView(props: {
             <Card padding={4} radius={3} tone="caution">
               <Text size={1}>This session no longer exists.</Text>
             </Card>
+          )}
+          {session && !dataError && !chainResult && (
+            <Text size={1} muted>
+              Loading commit history…
+            </Text>
+          )}
+          {session && !dataError && chainResult?.ok && !bisectOptions && (
+            <Text size={1} muted>
+              Loading release tags…
+            </Text>
           )}
 
           {session && chainResult && !chainResult.ok && (
@@ -287,6 +352,33 @@ export function SessionView(props: {
           )}
         </Stack>
       </Container>
+
+      {confirmingDelete && (
+        <Dialog
+          id="bisect-delete-session"
+          header="Delete session"
+          width={0}
+          onClose={() => setConfirmingDelete(false)}
+        >
+          <Box padding={4}>
+            <Stack gap={4}>
+              <Text size={1}>
+                Delete “{session?.title ?? sessionId}”? The session, its marks log, and any verdict
+                (including a regression pinned on a release) are permanently removed.
+              </Text>
+              <Flex gap={2} justify="flex-end">
+                <Button mode="ghost" text="Cancel" onClick={() => setConfirmingDelete(false)} />
+                <Button
+                  tone="critical"
+                  text={deleting ? 'Deleting…' : 'Delete'}
+                  disabled={deleting}
+                  onClick={removeSession}
+                />
+              </Flex>
+            </Stack>
+          </Box>
+        </Dialog>
+      )}
     </Box>
   )
 }

@@ -1,9 +1,12 @@
+import {AddIcon} from '@sanity/icons/Add'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {useMemo} from 'react'
+import {Badge, Box, Button, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
+import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
-import {useDocumentStore} from 'sanity'
+import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
+import {useIntentLink} from 'sanity/router'
 
 import {
   BISECT_COMMITS_QUERY,
@@ -15,8 +18,10 @@ import {
   toBisectCommit,
 } from '../bisect/data'
 import {RelativeDate} from '../bisect/RelativeDate'
+import {type ManualRegressionInput, reportRegression} from '../bisect/sessions'
 import {pluralize} from '../bisect/text'
 import {releaseUrl} from '../trends/links'
+import {AddRegressionDialog} from './AddRegressionDialog'
 import {baseVersionOf, changelogUrl, npmxUrl, regressionCountByTag} from './releaseInfo'
 
 interface LiveState<T> {
@@ -31,10 +36,15 @@ interface LiveState<T> {
  * sessions have attributed to it (blamed on the INTRODUCING release). The
  * changelog link needs the release's base version — the previous release on
  * the first-parent chain — so off-mainline releases (maintenance lines) may
- * lack it.
+ * lack it. Regressions found outside a bisect are added by hand via
+ * AddRegressionDialog, stored as born-converged bisect sessions.
  */
 export function ReleasesTool() {
   const documentStore = useDocumentStore()
+  const client = useClient({apiVersion: '2025-02-19'})
+  const currentUser = useCurrentUser()
+  const toast = useToast()
+  const [addingRegression, setAddingRegression] = useState(false)
 
   const tagsLive = useObservable(
     useMemo(
@@ -118,19 +128,45 @@ export function ReleasesTool() {
 
   const error = tagsLive.error ?? commitsLive.error ?? sessionsLive.error
 
+  const userName = currentUser?.name ?? currentUser?.email ?? 'unknown'
+  // Async so the dialog can disable its submit until it settles
+  const handleAddRegression = async (input: ManualRegressionInput) => {
+    try {
+      await reportRegression(client, input)
+      setAddingRegression(false)
+    } catch (err) {
+      toast.push({
+        status: 'error',
+        title: 'Could not add the regression',
+        description: err instanceof Error ? err.message : String(err),
+      })
+    }
+  }
+
   return (
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
       <Container width={2}>
         <Stack gap={4}>
-          <Stack gap={3}>
-            <Text size={3} weight="semibold">
-              Releases
-            </Text>
-            <Text size={1} muted>
-              Every synced release tag with its npm state and the regressions bisect sessions have
-              pinned on it (blamed on the release that first shipped the offending commit).
-            </Text>
-          </Stack>
+          <Flex align="center" gap={3}>
+            <Box flex={1}>
+              <Stack gap={3}>
+                <Text size={3} weight="semibold">
+                  Studio Releases
+                </Text>
+                <Text size={1} muted>
+                  Every synced release tag with its npm state and the regressions bisect sessions
+                  have pinned on it (blamed on the release that first shipped the offending commit).
+                </Text>
+              </Stack>
+            </Box>
+            <Button
+              icon={AddIcon}
+              text="Add regression"
+              mode="ghost"
+              disabled={!tagsLive.data || !commitsLive.data}
+              onClick={() => setAddingRegression(true)}
+            />
+          </Flex>
 
           {error && (
             <Card padding={4} radius={3} tone="critical">
@@ -160,6 +196,16 @@ export function ReleasesTool() {
           ))}
         </Stack>
       </Container>
+
+      {addingRegression && (
+        <AddRegressionDialog
+          tags={tags}
+          commitsBySha={commitsBySha}
+          createdBy={userName}
+          onClose={() => setAddingRegression(false)}
+          onCreate={handleAddRegression}
+        />
+      )}
     </Box>
   )
 }
@@ -167,13 +213,18 @@ export function ReleasesTool() {
 function ReleaseRow(props: {tag: TagSlice; baseVersion: string | undefined; regressions: number}) {
   const {tag, baseVersion, regressions} = props
   const version = tag.tag.replace(/^v/, '')
+  // The version opens the gitTag document in the structure tool — the raw
+  // synced record behind the row
+  const documentLink = useIntentLink({intent: 'edit', params: {id: tag._id, type: 'gitTag'}})
 
   return (
     <Card padding={3} radius={2} border>
       <Flex align="center" gap={3} wrap="wrap">
         <Box style={{width: 110, flexShrink: 0}}>
           <Text size={2} weight="medium">
-            {tag.tag}
+            <a href={documentLink.href} onClick={documentLink.onClick}>
+              {tag.tag}
+            </a>
           </Text>
         </Box>
         {tag.npm?.distTags?.map((distTag) => (

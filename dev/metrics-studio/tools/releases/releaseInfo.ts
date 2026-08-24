@@ -22,11 +22,11 @@ export function npmxUrl(version: string): string {
 }
 
 /**
- * The previous release on the first-parent chain — the release automation's
- * "base version" for a tag. Undefined when the walk leaves the synced set
- * (off-mainline tags) or hits the sync cutoff before another tag.
+ * The previous release on the first-parent chain — the tag NAME (e.g.
+ * "v6.10.0"). Undefined when the walk leaves the synced set (off-mainline
+ * tags) or hits the sync cutoff before another tag.
  */
-export function baseVersionOf(
+export function baseTagOf(
   commitsBySha: Map<string, BisectCommit>,
   tagBySha: Map<string, string>,
   tag: {sha: string},
@@ -36,11 +36,24 @@ export function baseVersionOf(
   current = current?.parentSha ? commitsBySha.get(current.parentSha) : undefined
   while (current && !visited.has(current.sha)) {
     const found = tagBySha.get(current.sha)
-    if (found) return found.replace(/^v/, '')
+    if (found) return found
     visited.add(current.sha)
     current = current.parentSha ? commitsBySha.get(current.parentSha) : undefined
   }
   return undefined
+}
+
+/**
+ * The previous release as a bare VERSION ("6.10.0") — the release
+ * automation's "base version" for a tag, which the changelog URL is derived
+ * from.
+ */
+export function baseVersionOf(
+  commitsBySha: Map<string, BisectCommit>,
+  tagBySha: Map<string, string>,
+  tag: {sha: string},
+): string | undefined {
+  return baseTagOf(commitsBySha, tagBySha, tag)?.replace(/^v/, '')
 }
 
 /**

@@ -6,7 +6,7 @@ import {ReleasesTool} from './ReleasesTool'
 /** Release tags with npm state, links out, and attributed regressions — see ReleasesTool. */
 export const releasesTool: Tool = {
   name: 'releases',
-  title: 'Releases',
+  title: 'Studio Releases',
   icon: PackageIcon,
   component: ReleasesTool,
 }
