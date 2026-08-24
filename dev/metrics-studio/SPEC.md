@@ -25,6 +25,37 @@ secondary: leads scanning health weekly.
   principle.
 - PR A/B runs are _not_ stored (by design). The dashboard is main-branch
   health; PR verdicts live in PR comments.
+- **Git history as data.** One `gitCommit` document per main-branch commit
+  and one `gitTag` document per `v*` release tag, coverage starting at
+  v5.0.0.
+
+  Commit documents are metadata only: sha, first-parent sha (the exact
+  mainline chain — `committedAt` ordering has tie/rebase hazards), author,
+  dates, subject, and a best-effort conventional-commit parse plus PR
+  number. Tag documents carry the dereferenced sha, a weak reference to
+  their commit, and parsed semver so interleaved release lines group by
+  major. Tags also carry npm data (`publishedAt`, `distTags`,
+  `weeklyDownloads`), collected on releases, the daily cron, and dispatches
+  — the cron is the floor because dist-tags re-point and download counts
+  roll without commits.
+
+  Sync (scripts/syncGitHistory.ts via sync-git-metrics.yml): every push to
+  main re-upserts the last 50 commits — deterministic ids + createOrReplace
+  make that stateless and self-healing; a larger gap takes one `backfill`
+  dispatch. Documents are replaced whole, so a run never writes what it
+  could not collect: an API error aborts before anything is written (the
+  workflow alerts Slack; re-running is always safe), and tags are written
+  only on npm-collecting runs.
+
+  This is the join surface for future health metrics; joins are by value
+  (`sha`, `committedAt`, `tag`). Two enrichments exist today: `benchRun`
+  documents carry `git.commit`, a weak reference to their commit (written by
+  perf/bench's storeShape.ts, backfilled once via the `patch_bench_run_refs`
+  dispatch; dangles for PR-branch runs, `git.sha` stays the source of
+  truth), and each `gitCommit` records `testStudioUrl`, the immutable Vercel
+  deploy of dev/test-studio built at that commit — collected from GitHub
+  deployment statuses, landing one sync late since the Vercel build outlives
+  the sync run.
 
 ## Views
 
@@ -136,5 +167,8 @@ secondary: leads scanning health weekly.
 - **P2:** run detail view + drift feed (both baselines).
 - **Later:** Slack alerting (a Sanity Function on `benchRun` create running
   the drift computation — event-driven, no cron); broader health metrics
-  (coverage reports from CI's `json-summary`, flake rates) as sibling
-  document types with their own trends tabs.
+  (coverage reports from CI's `json-summary`, flake rates, version stability,
+  error rates) as sibling document types with their own trends tabs — the
+  `gitCommit`/`gitTag` documents (landed Aug 2026) are the join surface these
+  build on; release markers / commit subjects in the Trends charts are the
+  first consumer to build.

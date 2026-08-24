@@ -346,6 +346,12 @@ importers:
 
   dev/metrics-studio:
     dependencies:
+      '@repo/utils':
+        specifier: workspace:*
+        version: link:../../packages/@repo/utils
+      '@sanity/client':
+        specifier: 'catalog:'
+        version: 8.2.0(vitest@4.1.11)
       '@sanity/icons':
         specifier: ^5.2.1
         version: 5.2.1(react@19.2.8)
@@ -407,6 +413,9 @@ importers:
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
+      tsx:
+        specifier: ^4.23.12
+        version: 4.23.12
       vitest:
         specifier: ^4.1.11
         version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)

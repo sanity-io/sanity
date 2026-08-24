@@ -1,0 +1,125 @@
+name: Sync git metrics
+permissions: {}
+
+# Mirror git history into the metrics-studio dataset as gitCommit / gitTag
+# documents — the join surface for repo-health metrics (see
+# dev/metrics-studio/SPEC.md). Every push upserts a trailing window
+# idempotently; a gap larger than the window needs one backfill dispatch.
+# The sync fails loudly on API errors, before anything is written, and
+# alerts Slack — "Re-run failed jobs" is always safe.
+#
+# Trusted contexts only, never pull_request: the sync step holds the dataset
+# write token, which must never run PR-authored code (same stance as
+# bench.yml's store jobs).
+on:
+  push:
+    branches: [main]
+    # Manually pushed tags only: release-latest.yml pushes its tag with the
+    # default GITHUB_TOKEN, whose events never trigger workflows — releases
+    # reach the sync by calling this workflow instead (same pattern as typedoc).
+    tags: ["v*"]
+  workflow_call:
+    inputs:
+      release:
+        description: "Collect npm data for the freshly published release"
+        required: false
+        type: boolean
+        default: true
+    secrets:
+      BENCH_METRICS_WRITE_TOKEN:
+        required: true
+      SLACK_WEBHOOK_URL_CI_ALERTS:
+        required: true
+  schedule:
+    # Daily floor for the npm enrichment: dist-tags can move and download
+    # counts roll without any commit being pushed
+    - cron: "30 5 * * *"
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: "Full backfill since v5.0.0 (instead of the incremental window)"
+        required: false
+        type: boolean
+        default: false
+      patch_bench_run_refs:
+        description: "One-off: patch existing benchRun docs with the weak git.commit reference"
+        required: false
+        type: boolean
+        default: false
+
+# Serialize runs — not for correctness (upserts are idempotent) but to keep
+# a burst of pushes from hammering the API concurrently
+concurrency:
+  group: sync-git-metrics
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      # Read Vercel's per-commit deployments (test-studio deploy URLs)
+      deployments: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Always run current main's code: a tag push would otherwise check
+          # out the tag's tree, which for a release-branch tag may predate
+          # this workflow entirely. The script reads origin/main and
+          # refs/tags explicitly, not HEAD.
+          ref: main
+          # Full commit graph and all tags, but no file contents beyond
+          # main's tree — the sync reads only commit/tag metadata
+          fetch-depth: 0
+          filter: tree:0
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - name: Sync git history to metrics dataset
+        env:
+          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+          # For deploy URL collection. A push-triggered run usually precedes
+          # its own Vercel build; that commit's URL lands on the next sync.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BACKFILL: ${{ inputs.backfill }}
+          # npm data moves on releases and daily, not on every main push —
+          # collect it only when it can have changed. `inputs.release` is the
+          # release-workflow call; the github context is the caller's push
+          # event there, so the event name can't tell a release from a push.
+          COLLECT_NPM: ${{ github.event_name != 'push' || inputs.release == true || startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          ARGS=""
+          if [ "$BACKFILL" = "true" ]; then ARGS="--all"; fi
+          if [ "$COLLECT_NPM" = "true" ]; then ARGS="$ARGS --npm"; fi
+          pnpm --filter metrics-studio sync-git $ARGS
+
+      # One-off migration (idempotent): links pre-existing benchRun docs to
+      # their gitCommit docs. Runs after the sync so the commit docs exist.
+      - name: Patch benchRun git.commit references
+        if: inputs.patch_bench_run_refs
+        env:
+          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+        run: pnpm --filter metrics-studio backfill-benchrun-refs
+
+  # Nothing goes red on a PR for this workflow and nobody watches its runs —
+  # alert the CI channel instead (same pattern as bench.yml). `cancelled`
+  # included because job timeouts conclude as cancelled, not failure.
+  alert-failure:
+    needs: [sync]
+    if: >-
+      always() &&
+      (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":alert-dot: \"${{ github.workflow }}\" (${{ github.event_name }}) failed — git/npm metrics are not syncing to the metrics dataset (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"
+            }
