@@ -185,7 +185,7 @@ describe('SummaryReporter', () => {
     expect(report).toContain(path.join('tests', 'navbar', 'search.spec.ts'))
   })
 
-  test('marks flaky tests and keeps hasFailures false when nothing hard-failed', () => {
+  test('counts flaky tests but omits their details from the digest', () => {
     const reporter = new SummaryReporter()
     reporter.onTestEnd(
       mockTest({
@@ -209,11 +209,48 @@ describe('SummaryReporter', () => {
     expect(summary).toMatchObject({failed: 0, flaky: 1, hasFailures: false, failedFiles: []})
 
     const report = fs.readFileSync(path.join('playwright-report', 'agent-report.md'), 'utf8')
-    expect(report).toContain('## ⚠️ firefox › publish.spec.ts › publishes')
-    expect(report).toContain('flaky — failed, then passed on retry (2 attempts)')
-    expect(report).toContain('### Error (attempt 1 of 2)')
-    expect(report).toContain('first attempt failed')
+    expect(report).toContain('Summary: 0 passed, 0 failed, 1 flaky, 0 skipped')
+    expect(report).toContain(
+      'No tests failed after retries (1 flaky, recovered on retry). Details stay in the HTML report.',
+    )
+    expect(report).not.toContain('## ⚠️')
+    expect(report).not.toContain('first attempt failed')
     expect(report).not.toContain('## How to reproduce locally')
+  })
+
+  test('includes only hard failures when the same run also has flakes', () => {
+    const failedFile = path.join(tmpDir, 'tests', 'navbar', 'search.spec.ts')
+    const reporter = new SummaryReporter()
+    reporter.onTestEnd(
+      mockTest({
+        id: 'fail-1',
+        outcome: 'unexpected',
+        file: failedFile,
+        projectName: 'chromium',
+        titlePath: ['chromium', 'search.spec.ts', 'finds a document'],
+        results: [mockResult({status: 'failed', errors: [{message: 'still failing'}]})],
+      }),
+    )
+    reporter.onTestEnd(
+      mockTest({
+        id: 'flaky-1',
+        outcome: 'flaky',
+        projectName: 'firefox',
+        titlePath: ['firefox', 'publish.spec.ts', 'publishes'],
+        results: [
+          mockResult({status: 'failed', errors: [{message: 'first attempt failed'}]}),
+          mockResult({retry: 1, status: 'passed'}),
+        ],
+      }),
+    )
+    reporter.onEnd(FAILED)
+
+    const report = fs.readFileSync(path.join('playwright-report', 'agent-report.md'), 'utf8')
+    expect(report).toContain('Summary: 0 passed, 1 failed, 1 flaky, 0 skipped')
+    expect(report).toContain('## ❌ chromium › search.spec.ts › finds a document')
+    expect(report).toContain('still failing')
+    expect(report).not.toContain('firefox › publish.spec.ts')
+    expect(report).not.toContain('first attempt failed')
   })
 
   test('does not claim all tests passed when the run failed or tests were skipped', () => {
@@ -229,7 +266,7 @@ describe('SummaryReporter', () => {
 
     const report = fs.readFileSync(path.join('playwright-report', 'agent-report.md'), 'utf8')
     expect(report).toContain(
-      'No unexpected or flaky test results. Run status: failed. 0 passed, 1 skipped.',
+      'No tests failed after retries. Run status: failed. 0 passed, 1 skipped.',
     )
     expect(report).not.toContain('All tests passed')
   })

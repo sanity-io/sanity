@@ -42,20 +42,14 @@ function readErrorContext(result: TestResult): string | undefined {
 function formatFailedTest(test: TestCase, relativeFile: string): string {
   const lines: string[] = []
   const title = test.titlePath().filter(Boolean).join(' › ')
-  const outcome = test.outcome()
-  const icon = outcome === 'flaky' ? '⚠️' : '❌'
-  lines.push(`## ${icon} ${title}`)
+  lines.push(`## ❌ ${title}`)
   lines.push('')
   lines.push(`- Location: \`${relativeFile}:${test.location.line}:${test.location.column}\``)
   const projectName = test.parent.project()?.name
   if (projectName) lines.push(`- Browser (Playwright project): ${projectName}`)
-  if (outcome === 'flaky') {
-    lines.push(`- Status: flaky — failed, then passed on retry (${test.results.length} attempts)`)
-  } else {
-    lines.push(
-      `- Status: failed (${test.results.length} attempt${test.results.length === 1 ? '' : 's'}, all failed)`,
-    )
-  }
+  lines.push(
+    `- Status: failed (${test.results.length} attempt${test.results.length === 1 ? '' : 's'}, all failed)`,
+  )
   lines.push('')
 
   const lastFailed = [...test.results].reverse().find((r) => r.errors.length > 0)
@@ -118,7 +112,6 @@ export default class SummaryReporter implements Reporter {
     const counts = {passed: 0, failed: 0, flaky: 0, skipped: 0}
     const failedFileSet = new Set<string>()
     const failedTests: TestCase[] = []
-    const flakyTests: TestCase[] = []
 
     // Deduplicate by test ID — onTestEnd is called per attempt (including retries),
     // so we only want the last attempt for each test.
@@ -139,7 +132,6 @@ export default class SummaryReporter implements Reporter {
           break
         case 'flaky':
           counts.flaky++
-          flakyTests.push(test)
           break
         case 'skipped':
           counts.skipped++
@@ -157,7 +149,7 @@ export default class SummaryReporter implements Reporter {
     }
     fs.writeFileSync('test-summary.json', JSON.stringify(summary))
 
-    this.writeAgentReport(cwd, _result.status, counts, failedTests, flakyTests)
+    this.writeAgentReport(cwd, _result.status, counts, failedTests)
   }
 
   private writeAgentReport(
@@ -165,7 +157,6 @@ export default class SummaryReporter implements Reporter {
     runStatus: FullResult['status'],
     counts: {passed: number; failed: number; flaky: number; skipped: number},
     failedTests: TestCase[],
-    flakyTests: TestCase[],
   ) {
     const lines: string[] = []
     lines.push('# E2E test report (agent-friendly)')
@@ -186,17 +177,21 @@ export default class SummaryReporter implements Reporter {
     )
     lines.push('')
 
-    if (failedTests.length === 0 && flakyTests.length === 0) {
-      if (runStatus === 'passed' && counts.skipped === 0) {
+    if (failedTests.length === 0) {
+      if (runStatus === 'passed' && counts.skipped === 0 && counts.flaky === 0) {
         lines.push('All tests passed — no failures to report.')
+      } else if (counts.flaky > 0) {
+        lines.push(
+          `No tests failed after retries (${counts.flaky} flaky, recovered on retry). Details stay in the HTML report.`,
+        )
       } else {
         lines.push(
-          `No unexpected or flaky test results. Run status: ${runStatus}. ${counts.passed} passed, ${counts.skipped} skipped.`,
+          `No tests failed after retries. Run status: ${runStatus}. ${counts.passed} passed, ${counts.skipped} skipped.`,
         )
       }
       lines.push('')
     } else {
-      for (const test of [...failedTests, ...flakyTests]) {
+      for (const test of failedTests) {
         const relativeFile = path.relative(cwd, test.location.file)
         lines.push(formatFailedTest(test, relativeFile))
         lines.push('')
