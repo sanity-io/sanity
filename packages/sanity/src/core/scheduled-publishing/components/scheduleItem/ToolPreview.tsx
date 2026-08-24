@@ -7,7 +7,6 @@ import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPre
 import {getPublishedId} from '../../../util/draftUtils'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../constants'
 import useDialogScheduleEdit from '../../hooks/useDialogScheduleEdit'
-import {usePublishedId} from '../../hooks/usePublishedId'
 import {type Schedule} from '../../types'
 import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
 import {ScheduleContextMenu} from '../scheduleContextMenu'
