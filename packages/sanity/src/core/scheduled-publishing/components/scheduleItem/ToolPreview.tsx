@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {type ComponentType, type ReactNode, type Ref, useMemo} from 'react'
+import {type ComponentType} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {Preview} from '../../../preview/components/Preview'
@@ -31,27 +31,7 @@ const ToolPreview = (props: Props) => {
     schedule,
     timeZoneScope,
   )
-
-  const publishedId = usePublishedId(visibleDocument?._id)
-
-  const Link = useMemo(() => {
-    function LinkComponent(linkProps: {children?: ReactNode; ref?: Ref<HTMLAnchorElement>}) {
-      const {ref, ...rest} = linkProps
-      const publishedDocId = visibleDocument ? getPublishedId(visibleDocument._id) : undefined
-      return (
-        <IntentLink
-          {...rest}
-          intent="edit"
-          params={{
-            type: schemaType.name,
-            ...(publishedDocId ? {id: publishedDocId} : {}),
-          }}
-          ref={ref}
-        />
-      )
-    }
-    return LinkComponent
-  }, [schemaType, visibleDocument])
+  const publishedDocId = visibleDocument ? getPublishedId(visibleDocument._id) : undefined
 
   return (
     <>
@@ -71,8 +51,15 @@ const ToolPreview = (props: Props) => {
             schemaType={schemaType}
           />
         }
-        linkComponent={Link}
-        publishedDocumentId={publishedId}
+        linkComponent={IntentLink}
+        linkProps={{
+          intent: 'edit',
+          params: {
+            type: schemaType.name,
+            ...(publishedDocId ? {id: publishedDocId} : {}),
+          },
+        }}
+        publishedDocumentId={publishedDocId}
         schedule={schedule}
         schemaType={schemaType}
         useElementQueries
