@@ -887,7 +887,7 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       chromatic:
-        specifier: ^18.2.0
+        specifier: ^18.5.0
         version: 18.5.0(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@0.1.9)
       tsx:
         specifier: ^4.23.12
@@ -2111,7 +2111,7 @@ importers:
         specifier: ^9.0.20240710
         version: 9.0.20240710
       chromatic:
-        specifier: ^18.2.0
+        specifier: ^18.5.0
         version: 18.5.0(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@0.1.9)
       jsdom:
         specifier: 'catalog:'
