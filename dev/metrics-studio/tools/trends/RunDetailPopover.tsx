@@ -8,7 +8,13 @@ import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
 import {Box} from 'ui5'
 
-import {formatValue, INP_MIN_INTERACTIONS, type TrendPoint, type TrendSeries} from './data'
+import {
+  CALIBRATION_EXPLAINER,
+  formatValue,
+  INP_MIN_INTERACTIONS,
+  type TrendPoint,
+  type TrendSeries,
+} from './data'
 import {buildInvestigationPrompt} from './investigationPrompt'
 import {backlinksFor, compareUrl, sourceFileUrl} from './links'
 
@@ -31,6 +37,7 @@ export function RunDetailPopover(props: {
   onClose: () => void
 }) {
   const {series, point, previousPoint, referenceElement, onClose} = props
+  const {host} = point
   const [contentEl, setContentEl] = useState<HTMLDivElement | null>(null)
   // "What landed between this point and the previous one?" — the GitHub
   // compare view answers it directly. Guarded by the full-sha shape so a
@@ -175,6 +182,58 @@ export function RunDetailPopover(props: {
                 </Badge>
               )}
             </Stack>
+
+            {/* The machine that produced this run — the context every absolute
+                number depends on. cpuModel/image/browser exist on documents
+                from Aug 2026 on; older runs show what they recorded. */}
+            {(host || point.calibrationMs !== undefined) && (
+              <Stack gap={2}>
+                <Text size={0} muted weight="medium">
+                  Host
+                </Text>
+                <Stack gap={2}>
+                  {host?.cpuModel && (
+                    <Text size={1} muted>
+                      {host.cpuModel}
+                    </Text>
+                  )}
+                  {host && (host.os || host.cpus !== undefined || host.memGb !== undefined) && (
+                    <Text size={1} muted>
+                      {[
+                        host.os && (host.arch ? `${host.os}/${host.arch}` : host.os),
+                        host.cpus !== undefined ? `${host.cpus} cores` : undefined,
+                        host.memGb !== undefined ? `${host.memGb} GB RAM` : undefined,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </Text>
+                  )}
+                  {(host?.browserVersion || host?.nodeVersion) && (
+                    <Text size={1} muted>
+                      {[
+                        host.browserVersion ? `Chromium ${host.browserVersion}` : undefined,
+                        host.nodeVersion ? `Node ${host.nodeVersion}` : undefined,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </Text>
+                  )}
+                  {(host?.imageOs || host?.imageVersion) && (
+                    <Text size={1} muted>
+                      image {[host.imageOs, host.imageVersion].filter(Boolean).join(' ')}
+                    </Text>
+                  )}
+                  {point.calibrationMs !== undefined && (
+                    <Flex align="center" gap={2} title={CALIBRATION_EXPLAINER}>
+                      <Text size={1} muted>
+                        calibration
+                      </Text>
+                      <Text size={1}>{formatValue(point.calibrationMs, 'ms')}</Text>
+                    </Flex>
+                  )}
+                </Stack>
+              </Stack>
+            )}
 
             {(backlinks.length > 0 || scenarioHref) && (
               <Stack gap={2}>

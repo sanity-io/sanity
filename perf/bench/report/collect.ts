@@ -30,6 +30,8 @@ export function collectRunMetadata(options: {
   cpuThrottleRate: number
   seed: number
   startedAt: string
+  /** Chromium version the sessions run in (`browser.version()`). */
+  browserVersion?: string
 }): Omit<BenchRunDocument, 'scenarios' | 'completedAt' | 'bundle'> {
   const prNumber = Number(
     (process.env.GITHUB_REF ?? '').match(/refs\/pull\/(\d+)\//)?.[1] ?? Number.NaN,
@@ -77,6 +79,17 @@ export function collectRunMetadata(options: {
       cpus: os.cpus().length,
       memGb: Math.round(os.totalmem() / 1024 ** 3),
       nodeVersion: process.version,
+      // The hardware discriminator: GitHub rotates CPU generations under the
+      // same vCPU shape, so cpus/memGb can't explain a host-speed step but
+      // the model string can. Empty on platforms where Node reports none.
+      ...(os.cpus()[0]?.model.trim() ? {cpuModel: os.cpus()[0].model.trim()} : {}),
+      // GitHub runner image identity — pins when the image (toolchain, libs)
+      // rolled, which tends to coincide with host-speed regime changes
+      ...(process.env.ImageOS ? {imageOs: process.env.ImageOS} : {}),
+      ...(process.env.ImageVersion ? {imageVersion: process.env.ImageVersion} : {}),
+      // The measuring instrument: a Playwright bump moves INP/vitals with no
+      // studio change, and this is what makes that visible after the fact
+      ...(options.browserVersion ? {browserVersion: options.browserVersion} : {}),
       ci: process.env.CI === 'true',
       ...(process.env.GITHUB_RUN_ID ? {runId: process.env.GITHUB_RUN_ID} : {}),
       ...(process.env.GITHUB_RUN_ATTEMPT

@@ -32,6 +32,24 @@ export interface BenchRunDocument {
     cpus: number
     memGb: number
     nodeVersion: string
+    /**
+     * CPU model string (`os.cpus()[0].model`) — the field that discriminates
+     * hosted-runner hardware generations: GitHub rotates Xeon/EPYC models
+     * under the same vCPU shape, so cpus/memGb stay identical while the
+     * machine (and every absolute number) changes. Absent where Node reports
+     * no model.
+     */
+    cpuModel?: string
+    /** GitHub runner image (`ImageOS` env), e.g. "ubuntu24" — CI only. */
+    imageOs?: string
+    /** GitHub runner image version (`ImageVersion` env) — pins when the image (toolchain, libs) rolled. */
+    imageVersion?: string
+    /**
+     * Chromium version the sessions ran in (`browser.version()`). The browser
+     * is the measuring instrument — a Playwright bump can move INP/vitals
+     * with no studio change, and this is what makes that visible.
+     */
+    browserVersion?: string
     ci: boolean
     runId?: string
     /** CI run attempt (re-runs increment it) — for the exact Actions URL. */
@@ -68,10 +86,11 @@ export interface ScenarioReport {
    * Host-speed calibration of the runner that produced THIS scenario.
    * CI runs one shard per scenario on separate runners, so the document-level
    * `runner.calibrationMs` (first shard's) doesn't apply to every scenario —
-   * mergeShards stamps each scenario with its own shard's score. Absent on
-   * single-shard/local documents (the document-level value applies).
+   * mergeShards stamps each scenario with its own shard's score (and CPU
+   * model, since shards can land on different hardware generations). Absent
+   * on single-shard/local documents (the document-level value applies).
    */
-  runner?: {calibrationMs: number}
+  runner?: {calibrationMs: number; cpuModel?: string}
   /**
    * How the metrics are rendered/grouped (interaction vs pageload charts).
    * Soak and INP reports reuse these kinds but are distinct measurement modes;

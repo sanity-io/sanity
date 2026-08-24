@@ -3,6 +3,7 @@ import {expect, test} from 'vitest'
 import {
   buildSeries,
   calibrationSeries,
+  soakLatestValueSeries,
   formatTick,
   formatValue,
   type TrendRun,
@@ -22,8 +23,10 @@ function run(options: {
   /** Extra copies of the same metric, as the pageload scenario does for INP. */
   repeats?: number
   calibrationMs?: number
+  /** Per-scenario shard calibration, as mergeShards stamps on multi-shard CI runs. */
+  shardCalibrationMs?: number
 }): TrendRun {
-  const {id, sha, day, value, repeats = 1, calibrationMs = 8} = options
+  const {id, sha, day, value, repeats = 1, calibrationMs = 8, shardCalibrationMs} = options
   return {
     _id: id,
     startedAt: new Date(START + day * DAY).toISOString(),
@@ -35,6 +38,7 @@ function run(options: {
       {
         scenario: 'singleString',
         kind: 'interaction',
+        ...(shardCalibrationMs !== undefined ? {runner: {calibrationMs: shardCalibrationMs}} : {}),
         metrics: Array.from({length: repeats}, () => ({
           label: 'stringField',
           unit: 'ms' as const,
@@ -193,6 +197,61 @@ test('merged INP points keep the median interaction count', () => {
   expect(point.interactions).toBe(55)
 })
 
+// The run popover's Host section reads the machine description off the point;
+// a shard-stamped cpuModel overrides the run-level one, since multi-shard runs
+// land each scenario on its own machine.
+test('points carry the host description, shard cpuModel winning', () => {
+  const base = run({id: 'a', sha: 'sha-1', day: 0, value: 100})
+  const withHost: TrendRun = {
+    ...base,
+    runner: {
+      ...base.runner!,
+      os: 'linux',
+      arch: 'x64',
+      cpus: 8,
+      memGb: 31,
+      nodeVersion: 'v24.19.0',
+      cpuModel: 'AMD EPYC 7763',
+    },
+    scenarios: [{...base.scenarios![0], runner: {calibrationMs: 9, cpuModel: 'Intel Xeon 8370C'}}],
+  }
+  const [point] = pointsOf([withHost])
+  expect(point.host?.os).toBe('linux')
+  expect(point.host?.cpus).toBe(8)
+  expect(point.host?.cpuModel).toBe('Intel Xeon 8370C')
+})
+
+// Old documents recorded nothing beyond run identity — no empty Host section.
+test('points omit host when the run recorded no host details', () => {
+  const [point] = pointsOf([run({id: 'a', sha: 'sha-1', day: 0, value: 100})])
+  expect(point.host).toBeUndefined()
+})
+
+// The in-chart calibration overlay draws the host that measured *this* point:
+// the scenario's own shard score when present (multi-shard CI runs execute each
+// scenario on a separate machine), else the run-level score.
+test('points carry the calibration of the shard that measured them', () => {
+  const points = pointsOf([
+    run({id: 'a', sha: 'sha-1', day: 0, value: 100, calibrationMs: 8, shardCalibrationMs: 11}),
+  ])
+  expect(points[0].calibrationMs).toBe(11)
+})
+
+test('points fall back to the run-level calibration', () => {
+  const points = pointsOf([run({id: 'a', sha: 'sha-1', day: 0, value: 100, calibrationMs: 8})])
+  expect(points[0].calibrationMs).toBe(8)
+})
+
+test('merged points keep the median calibration', () => {
+  const points = pointsOf([
+    run({id: 'a1', sha: 'sha-1', day: 0, value: 100, calibrationMs: 7}),
+    run({id: 'a2', sha: 'sha-1', day: 0, value: 120, calibrationMs: 20}),
+    run({id: 'a3', sha: 'sha-1', day: 0, value: 110, calibrationMs: 9}),
+  ])
+  expect(points).toHaveLength(1)
+  expect(points[0].calibrationMs).toBe(9)
+})
+
 const vitalStub = (title: string) => ({title}) as TrendSeries
 
 // The vitals tab reads by vital ("how is LCP doing, everywhere?"): one section
@@ -263,6 +322,89 @@ test('long durations abbreviate to seconds', () => {
   expect(formatValue(60_000, 'ms')).toBe('60.0s')
   expect(formatValue(33_863, 'ms')).toBe('33.9s')
   expect(formatValue(120_000, 'ms')).toBe('120s')
+})
+
+// A merged point's calibration is a median across machines — attributing it
+// to the last re-run's host would pair a synthetic score with one specific
+// machine. Host survives the merge only when every merged run agrees.
+test('a mixed-host merge drops the host, an agreeing merge keeps it', () => {
+  const withModel = (id: string, cpuModel: string): TrendRun => {
+    const base = run({id, sha: 'sha-1', day: 0, value: 100})
+    return {...base, runner: {...base.runner!, os: 'linux', cpuModel}}
+  }
+  const [mixed] = pointsOf([withModel('a1', 'AMD EPYC 7763'), withModel('a2', 'Intel Xeon 8370C')])
+  expect(mixed.host).toBeUndefined()
+  const [agreeing] = pointsOf([withModel('b1', 'AMD EPYC 7763'), withModel('b2', 'AMD EPYC 7763')])
+  expect(agreeing.host?.cpuModel).toBe('AMD EPYC 7763')
+})
+
+// Each Calibration-tab point names its own shard's machine: the run-level
+// runner block is the first shard's, and multi-shard runs land on different
+// hardware.
+test('calibration points carry their own shard host, not the first shard', () => {
+  const base = run({id: 'a', sha: 'sha-1', day: 0, value: 100})
+  const multiShard: TrendRun = {
+    ...base,
+    runner: {...base.runner!, cpuModel: 'AMD EPYC 7763'},
+    scenarios: [
+      {...base.scenarios![0], runner: {calibrationMs: 6, cpuModel: 'AMD EPYC 7763'}},
+      {
+        ...base.scenarios![0],
+        scenario: 'article',
+        runner: {calibrationMs: 9, cpuModel: 'Intel Xeon 8370C'},
+      },
+    ],
+  }
+  const points = calibrationSeries([multiShard]).lines[0].points
+  expect(points.map((p) => [p.value, p.host?.cpuModel])).toEqual([
+    [6, 'AMD EPYC 7763'],
+    [9, 'Intel Xeon 8370C'],
+  ])
+})
+
+// Soak charts are produced by their own shard too — its calibration enables
+// the in-chart context line, and its cpuModel keeps the popover honest.
+test('soak history points carry the soak shard calibration and host', () => {
+  const soakRun = (id: string, sha: string, day: number, latency: number): TrendRun => ({
+    ...run({id, sha, day, value: 0}),
+    scenarios: [
+      {
+        scenario: 'singleString',
+        kind: 'interaction',
+        runner: {calibrationMs: 9, cpuModel: 'Intel Xeon 8370C'},
+        metrics: [],
+        soak: {
+          minutes: 2,
+          samples: [1, 2].map((minute) => ({
+            minute,
+            heapMb: 100,
+            domNodes: 1000,
+            listeners: 50,
+            latencyP50Ms: latency,
+            cpuTaskMs: 200,
+            connections: 2,
+            requests: 10,
+          })),
+        },
+      },
+    ],
+  })
+  const series = soakLatestValueSeries([soakRun('a', 'sha-1', 0, 40), soakRun('b', 'sha-2', 1, 44)])
+  const latencySeries = series.find((entry) => entry.key === 'soak:latest:latencyP50Ms')
+  const [point] = latencySeries!.lines[0].points
+  expect(point.calibrationMs).toBe(9)
+  expect(point.host?.cpuModel).toBe('Intel Xeon 8370C')
+})
+
+// Host calibration lives at 5–9ms — whole-ms rounding would collapse its whole
+// dynamic range into four buckets. One decimal matches the 0.1ms granularity
+// Chromium's coarsened performance.now() actually measures at; exact integers
+// stay whole so zero ticks don't grow a pointless ".0".
+test('small fractional ms keep one decimal, integers stay whole', () => {
+  expect(formatValue(7.699999999953434, 'ms')).toBe('7.7ms')
+  expect(formatValue(8, 'ms')).toBe('8ms')
+  expect(formatValue(0, 'ms')).toBe('0ms')
+  expect(formatValue(64, 'ms')).toBe('64ms')
 })
 
 // Keystroke latency lives at 30–200ms; "0.09s" would throw away the precision
