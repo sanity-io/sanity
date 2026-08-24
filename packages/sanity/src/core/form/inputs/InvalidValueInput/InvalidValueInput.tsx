@@ -39,10 +39,14 @@ interface InvalidValueProps {
   validTypes: string[]
   value?: unknown
   onChange: (event: PatchEvent) => void
+  /** The schema name of the field this value belongs to, shown under developer info. */
+  fieldName?: string
+  /** The human-readable title of the field, used to say which field is affected. */
+  fieldTitle?: string
 }
 
 export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focus: () => void}>) {
-  const {ref, value, actualType, validTypes, onChange} = props
+  const {ref, value, actualType, validTypes, onChange, fieldName, fieldTitle} = props
 
   useImperativeHandle(ref, () => ({
     // @todo
@@ -87,14 +91,31 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
     </Stack>
   )
 
+  // Name the affected field in the title where we know it — the alert renders inline
+  // with the field, but a document with several of these is otherwise a wall of
+  // identical "Invalid property value" headings.
+  const title = fieldTitle
+    ? t('inputs.invalid-value.title-with-field', {fieldTitle})
+    : t('inputs.invalid-value.title')
+
   return (
-    <Alert status="error" suffix={suffix} title={t('inputs.invalid-value.title')}>
+    <Alert status="error" suffix={suffix} title={title}>
       <Text as="p" muted size={1}>
         {t('inputs.invalid-value.description')}
       </Text>
 
       <Details marginTop={4} open={isDev} title={t('inputs.invalid-value.details.title')}>
         <Stack gap={3}>
+          {fieldName && (
+            <Text as="p" muted size={1}>
+              <Translate
+                t={t}
+                i18nKey="inputs.invalid-value.details.field-name"
+                values={{fieldName}}
+              />
+            </Text>
+          )}
+
           {validTypes.length === 1 && (
             <Text as="p" muted size={1}>
               <Translate
