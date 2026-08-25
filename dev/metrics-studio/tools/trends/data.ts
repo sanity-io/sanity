@@ -820,9 +820,9 @@ export function clusterTags(
  * place its label will actually be drawn — which makes it a true label-to-label
  * distance: the next group's first mark is at least `minGapPx` to the right of
  * this label, and that group's own label only moves further right. Measuring
- * from the group's first mark instead is equivalent only while labels are
- * left-anchored; with right-anchored labels it let two land ~6px apart, which
- * overlaps at these font sizes.
+ * from the group's *first* mark would only bound the distance from a position
+ * no label occupies, letting two labels land a few px apart — close enough to
+ * overlap at these font sizes.
  *
  * A chain of sub-gap steps folds into a single label, matching the
  * chain-collapse `clusterTags` already applies to marks.
@@ -997,8 +997,15 @@ function mergeRunsPerCommit(points: TrendPoint[]): TrendPoint[] {
     // re-run's CPU model/browser would attribute a synthetic point to one
     // specific machine it does not describe.
     const hostKeys = new Set(group.map((point) => JSON.stringify(point.host ?? null)))
+    // The release tag describes the *commit*, not the individual run, so it
+    // survives the merge from any member rather than only from `last`. A release
+    // run regularly shares its commit with a cron run (the cron measures main at
+    // 05:00; the release run measures the tag hours later), and the merged point
+    // has to keep the tag for the marker, tooltip and popover to attribute it.
+    const releaseTag = group.find((point) => point.releaseTag)?.releaseTag
     merged.push({
       ...last,
+      ...(releaseTag ? {releaseTag} : {}),
       value: medianOf(group.map((point) => point.value)),
       p75: p75s.length > 0 ? medianOf(p75s) : undefined,
       p90: p90s.length > 0 ? medianOf(p90s) : undefined,

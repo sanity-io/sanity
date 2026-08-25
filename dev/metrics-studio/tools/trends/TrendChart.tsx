@@ -433,12 +433,12 @@ function labelFor(cluster: TagCluster): string {
  * the plotted window, so "did this step land with a release?" is answerable
  * without leaving the chart.
  *
- * The mark deliberately lives *outside* the plot. It began as a full-height
- * dotted rule, which located the release but crossed every measured value to do
- * it — nine releases in a 90-day window meant nine lines drawn through the data
- * to convey nine x positions. A tick in the top margin says the same thing while
- * leaving the measurement alone, which is the rule annotation has to follow here
- * (the same reason the baseline overlay paints under the data layers).
+ * The mark deliberately lives *outside* the plot. A full-height rule would
+ * locate the release just as well, but it crosses every measured value to do it
+ * — nine releases in a 90-day window means nine lines drawn through the data to
+ * convey nine x positions. A tick in the top margin says the same thing while
+ * leaving the measurement alone, which is the rule annotation follows here (the
+ * same reason the baseline overlay paints under the data layers).
  *
  * Markers whose release was actually benchmarked (`measured`) sit above that
  * run's point; the rest fall back to the tag's own date. Both are drawn
@@ -472,10 +472,9 @@ function ReleaseMarkers(props: {
   // one name.
   //
   // Crucially the *text* of a thinned label is not discarded — it folds into the
-  // label that survives, as "+n". Dropping it outright is what made v6.10.1
-  // vanish from the all-time view while its tick was still drawn: a mark with no
-  // name and no hint that a name existed. Marks stay one-per-release wherever
-  // they are separable; only the naming collapses.
+  // label that survives, as "+n", so a release is never left with a tick that
+  // carries no name and no hint that a name exists. Marks stay one-per-release
+  // wherever they are separable; only the naming collapses.
   const clusters = clusterTags(tags, xScale, 6)
   // 14px between labels: at -60° that is ~12px perpendicular against a 9px line
   // height. See labelledClusters for why the gap is measured where it is.

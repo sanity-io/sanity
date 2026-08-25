@@ -147,10 +147,10 @@ test('a point tagged with an unknown release adds no marker', () => {
   expect(names(resolved)).toEqual(['v6.1.0'])
 })
 
-// Regression: anchoring must happen BEFORE domain filtering. A release tagged
-// just outside the window whose measuring run is inside it still belongs on the
-// chart — filtering on the tag date first dropped it, and hovering that run then
-// showed no release at all, losing the strongest claim for the run that earned
+// Anchoring happens BEFORE domain filtering. A release tagged just outside the
+// window whose measuring run is inside it still belongs on the chart: filtering
+// on the tag date would drop it, and hovering that run would then show no
+// release at all — losing the strongest claim available for the run that earned
 // it. Release runs are dispatched hours after tagging, so this is a real case.
 test('a tag outside the domain is kept when its run is inside', () => {
   const taggedAt = '2026-02-09T23:00:00.000Z'
@@ -194,11 +194,12 @@ test('a shared label sits on the last mark it speaks for', () => {
   expect(labels.get(1)!.alsoCount).toBe(1)
 })
 
-// Regression: the gap must be measured against the group's *last* mark (where
-// its label is drawn), not its first. Measuring from the first put a group's
-// label at x=12 and the next group's at x=18 — 6px apart, ~5px perpendicular at
-// -60° against a 9px line height, so they overlapped. Reachable from a hotfix
-// burst: three releases inside ~2 days.
+// The gap is measured against the group's *last* mark, where its label is drawn,
+// not its first. Measuring from the first would bound the distance from a
+// position no label occupies: marks at 0/6/12 label at 12 while the next group
+// starts at 18, leaving 6px — ~5px perpendicular at -60° against a 9px line
+// height, so they overlap. Reachable from a hotfix burst of three releases
+// inside ~2 days.
 test('adjacent labels are never closer than the gap', () => {
   const clusters = clusterTags(at([0, 6, 12, 18]), identity, 6)
   const labels = labelledClusters(clusters, 14)
@@ -219,9 +220,9 @@ test('a chain of sub-gap steps folds into one label', () => {
   expect(only.alsoCount).toBe(only.tags.length - 1)
 })
 
-// Regression: re-anchoring can move a marker past a close neighbour, and both
-// clusterTags (which merges adjacent marks left-to-right) and the aria-label
-// range depend on the array agreeing with what is drawn
+// Anchoring can move a marker past a close neighbour, and both clusterTags
+// (which merges adjacent marks left-to-right) and the aria-label range depend on
+// the array agreeing with what is drawn
 test('sorts by drawn position, not by tag date', () => {
   const resolved = markers(
     [tag('v6.1.0', '2026-02-10T01:00:00.000Z'), tag('v6.2.0', '2026-02-10T12:00:00.000Z')],

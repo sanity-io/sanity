@@ -27,6 +27,8 @@ function run(options: {
   shardCalibrationMs?: number
   trigger?: TrendRun['trigger']
   releaseTag?: string
+  /** Hour within `day`, to order same-commit runs (cron at 05:00, release later). */
+  hour?: number
 }): TrendRun {
   const {
     id,
@@ -38,10 +40,11 @@ function run(options: {
     shardCalibrationMs,
     trigger,
     releaseTag,
+    hour = 0,
   } = options
   return {
     _id: id,
-    startedAt: new Date(START + day * DAY).toISOString(),
+    startedAt: new Date(START + day * DAY + hour * 60 * 60 * 1000).toISOString(),
     mode: 'absolute',
     ...(trigger ? {trigger} : {}),
     ...(releaseTag ? {releaseTag} : {}),
@@ -505,4 +508,32 @@ test('carries the release tag only for release runs', () => {
     undefined,
     undefined,
   ])
+})
+
+// A cron run and a release run of the same commit merge into one point (the
+// cron measures main at 05:00; the release run measures the tag hours later).
+// The tag describes the commit, so the merged point keeps it regardless of
+// which run sorts last — otherwise the marker, tooltip and popover fall back to
+// weaker by-date claims for exactly the commits that can be attributed.
+test('the release tag survives a same-commit merge, whichever run sorts last', () => {
+  const release = {sha: 'a1', day: 0, value: 30, trigger: 'release' as const, releaseTag: 'v6.10.1'}
+  const cron = {sha: 'a1', day: 0, value: 32, trigger: 'cron' as const}
+
+  const releaseFirst = buildSeries([
+    run({id: 'rel', hour: 1, ...release}),
+    run({id: 'cron', hour: 9, ...cron}),
+  ])
+  const releaseLast = buildSeries([
+    run({id: 'cron', hour: 1, ...cron}),
+    run({id: 'rel', hour: 9, ...release}),
+  ])
+
+  for (const [name, series] of [
+    ['release first', releaseFirst],
+    ['release last', releaseLast],
+  ] as const) {
+    const points = series[0].lines[0].points
+    expect(points, name).toHaveLength(1)
+    expect(points[0].releaseTag, name).toBe('v6.10.1')
+  }
 })
