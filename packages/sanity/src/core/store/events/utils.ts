@@ -254,15 +254,12 @@ export function updateVersionEvents(events: DocumentGroupEvent[]) {
  * Merges remote edits, API events and expanded edit events into one list sorted newest-first.
  *
  * Sorting rules:
- * - Primary: timestamp descending.
- * - Special case: a `publishDocumentVersion` event always sorts *before* the `editDocumentVersion`
- *   event it published (`publish.versionRevisionId === edit.revisionId`), regardless of their
- *   timestamps — the publish's API timestamp has seconds granularity and can tie with or trail the
- *   edit's transaction timestamp.
- *
- * Known quirk: the special case makes the comparator non-transitive (the publish sorts before its
- * paired edit while both compare by timestamp against everything else), so ordering around such
- * pairs can depend on input order — tracked as a known issue.
+ * - Primary: timestamp descending (stable sort, so input order breaks ties).
+ * - Special case, applied as a post-pass: a `publishDocumentVersion` event always sorts *before*
+ *   the `editDocumentVersion` event it published (`publish.versionRevisionId ===
+ *   edit.revisionId`), regardless of their timestamps — the publish's API timestamp has seconds
+ *   granularity and can tie with or trail the edit's transaction timestamp. The post-pass (rather
+ *   than a comparator branch) keeps the sort transitive, so ordering never depends on input order.
  */
 export function sortEvents({
   remoteEdits,
@@ -273,26 +270,23 @@ export function sortEvents({
   events: DocumentGroupEvent[]
   expandedEvents: EditDocumentVersionEvent[]
 }): DocumentGroupEvent[] {
-  const eventsWithRemoteEdits = [...remoteEdits, ...events, ...expandedEvents].sort(
-    // Sort by timestamp, newest first unless is an edit event that has a corresponding publish event
-    (a, b) => {
-      if (
-        isPublishDocumentVersionEvent(a) &&
-        isEditDocumentVersionEvent(b) &&
-        a.versionRevisionId === b.revisionId
-      ) {
-        return -1
-      }
-      if (
-        isPublishDocumentVersionEvent(b) &&
-        isEditDocumentVersionEvent(a) &&
-        b.versionRevisionId === a.revisionId
-      ) {
-        return +1
-      }
-
-      return Date.parse(b.timestamp) - Date.parse(a.timestamp)
-    },
+  const sorted = [...remoteEdits, ...events, ...expandedEvents].sort(
+    (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp),
   )
-  return eventsWithRemoteEdits
+
+  // Post-pass: move each publish event directly above the edit event it published when the
+  // timestamp sort placed the edit first.
+  for (let publishIndex = 0; publishIndex < sorted.length; publishIndex++) {
+    const publish = sorted[publishIndex]
+    if (!isPublishDocumentVersionEvent(publish) || !publish.versionRevisionId) continue
+    const editIndex = sorted.findIndex(
+      (event) =>
+        isEditDocumentVersionEvent(event) && event.revisionId === publish.versionRevisionId,
+    )
+    if (editIndex !== -1 && editIndex < publishIndex) {
+      sorted.splice(publishIndex, 1)
+      sorted.splice(editIndex, 0, publish)
+    }
+  }
+  return sorted
 }
