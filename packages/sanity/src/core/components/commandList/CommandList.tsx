@@ -648,7 +648,6 @@ function CommandListComponent({
  * @internal
  */
 export const CommandList = memo(CommandListComponent)
-CommandList.displayName = 'Memo(CommandList)'
 
 function CommandListItemComponent(
   props: {
@@ -728,7 +727,6 @@ function CommandListItemComponent(
 }
 
 const CommandListItem = memo(CommandListItemComponent)
-CommandListItem.displayName = 'Memo(CommandListItem)'
 
 function getItemIndicies(
   items: FIXME[],

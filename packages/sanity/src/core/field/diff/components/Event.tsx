@@ -1,8 +1,8 @@
-import {type AvatarSize, AvatarStack, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {type AvatarSize, AvatarStack, Skeleton, Stack, Text} from '@sanity/ui'
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
@@ -86,7 +86,7 @@ const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)
 
   return (
-    <Flex key={userId} align="center" gap={2} padding={1}>
+    <Flex key={userId} alignItems="center" gap={2} padding={1}>
       <Box>{loading || !user ? <AvatarSkeleton animated /> : <UserAvatar user={user} />}</Box>
       <Box>
         {loading || !user?.displayName ? (
@@ -148,10 +148,14 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
 
   return (
     <>
-      <Flex align="center" gap={3}>
+      <Flex alignItems="center" gap={3}>
         <div style={{position: 'relative'}}>
           <UserAvatarStack maxLength={3} userIds={userIds.filter(Boolean)} size={2} />
-          <IconBox align="center" justify="center" $color={TIMELINE_ITEM_EVENT_TONE[type]}>
+          <IconBox
+            alignItems="center"
+            justifyContent="center"
+            $color={TIMELINE_ITEM_EVENT_TONE[type]}
+          >
             <Text size={0}>{IconComponent && <IconComponent />}</Text>
           </IconBox>
         </div>
@@ -193,7 +197,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
         </Stack>
 
         {contributors.length > 0 && showChangesBy == 'tooltip' && (
-          <Flex flex={1} justify="flex-end" align="center">
+          <Flex flexBasis="0%" flexGrow={1} justifyContent="flex-end" alignItems="center">
             <Tooltip placement="top" content={<ChangesBy collaborators={contributors} />} portal>
               <Box paddingLeft={2} paddingY={2}>
                 <UserAvatarStack

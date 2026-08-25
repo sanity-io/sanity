@@ -165,5 +165,3 @@ export const ReleaseActivityListItem = memo(
     return prevProps.event.id === nextProps.event.id && prevProps.releaseId === nextProps.releaseId
   },
 )
-
-ReleaseActivityListItem.displayName = 'ReleaseActivityListItem'
