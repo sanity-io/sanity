@@ -9,9 +9,10 @@ const markers = await validateDocument({document, schema, client})
 
 for (const marker of markers) {
   if (marker.code === validationMarkerCodes.stringMinimumLength) {
-    console.log(
-      `Expected at least ${marker.details?.minimumLength} characters, got ${marker.details?.actualLength}`,
-    )
+    const {actualLength, minimumLength} = marker.details || {}
+    if (typeof actualLength === 'number' && typeof minimumLength === 'number') {
+      console.log(`Expected at least ${minimumLength} characters, got ${actualLength}`)
+    }
   }
 }
 

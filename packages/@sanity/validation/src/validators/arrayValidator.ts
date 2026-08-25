@@ -84,7 +84,7 @@ export const arrayValidators: Validators = {
 
     return paths.map((path) => ({
       code: validationMarkerCodes.valueNotAllowed,
-      details: {allowedValues},
+      details: {allowedValuesCount: allowedValues.length},
       message: sharedMessage,
       path,
     }))

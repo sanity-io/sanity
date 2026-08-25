@@ -267,6 +267,26 @@ describe('schema validation inference', () => {
       client.fetch.mockReset()
     })
 
+    test('reports the actual type for an invalid slug value', async () => {
+      await expect(
+        validateDocument({
+          client: sanityClient,
+          document: {...mockDocument, slugField: []},
+          getDocumentExists: () => Promise.resolve(true),
+          schema,
+        }),
+      ).resolves.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            code: validationMarkerCodes.slugInvalidType,
+            details: {actualType: 'Array'},
+            path: ['slugField'],
+          }),
+        ]),
+      )
+      expect(client.fetch).not.toHaveBeenCalled()
+    })
+
     test('slug is valid if uniqueness queries returns true', async () => {
       client.fetch.mockImplementation(() =>
         Promise.resolve(
@@ -391,7 +411,7 @@ describe('schema validation inference', () => {
       ).resolves.toMatchObject([
         {
           code: validationMarkerCodes.referenceInvalid,
-          details: {actualType: 'object'},
+          details: {actualType: 'Object'},
           message: 'Must be a reference to a document',
           level: 'error',
           path: ['referenceField'],

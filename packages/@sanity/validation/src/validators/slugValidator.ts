@@ -12,6 +12,7 @@ import {
 import memoize from 'lodash-es/memoize.js'
 
 import {validationMarkerCodes} from '../codes'
+import {typeString} from '../util/typeString'
 
 const DEFAULT_API_VERSION = '2025-02-19'
 
@@ -91,7 +92,7 @@ export const slugValidator: CustomValidator = async (value, context) => {
   if (typeof value !== 'object' || Array.isArray(value)) {
     return {
       code: validationMarkerCodes.slugInvalidType,
-      details: {actualType: Array.isArray(value) ? 'array' : typeof value},
+      details: {actualType: typeString(value)},
       message: i18n.t('validation:slug.not-object'),
     }
   }

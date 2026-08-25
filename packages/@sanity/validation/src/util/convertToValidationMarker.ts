@@ -6,7 +6,7 @@ import {type ValidationContext} from '../types'
 import {pathToString} from '../util/pathToString'
 
 function isNonNullable<T>(t: T): t is NonNullable<T> {
-  return t !== null || t !== undefined
+  return t !== null && t !== undefined
 }
 
 export function convertToValidationMarker(

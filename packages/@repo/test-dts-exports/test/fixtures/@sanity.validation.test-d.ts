@@ -2,6 +2,7 @@
 // If deleting the exports, for example, then please use this command to regenerate the tests
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
+import type {SanityClient} from '@sanity/client'
 import type {ValidationContext} from '@sanity/types'
 import type {
   BuiltInValidationMarkerCode,
@@ -37,6 +38,7 @@ describe('@sanity/validation', () => {
   })
   test('ValidationClient', () => {
     expectTypeOf<ValidationClient>().toBeObject()
+    expectTypeOf<SanityClient>().toMatchTypeOf<ValidationClient>()
   })
   test('ValidationMarkerCode', () => {
     expectTypeOf<ValidationMarkerCode>().not.toBeNever()

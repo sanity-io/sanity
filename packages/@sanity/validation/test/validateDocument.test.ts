@@ -208,6 +208,34 @@ describe('validateDocument', () => {
     )
   })
 
+  it('adds a fallback code to markers from legacy compiled rules', async () => {
+    const message = 'Legacy failure'
+    const legacyRule = {
+      _fieldRules: undefined,
+      _rules: [],
+      isRequired: () => false,
+      validate: async () => [{item: {message}, level: 'error' as const, message, path: ['title']}],
+    } as unknown as Rule
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [{name: 'title', type: 'string', validation: legacyRule}],
+      },
+    ])
+    const {client} = createMockClient()
+
+    await expect(
+      validateDocument({
+        client,
+        document: createDocument({_type: 'article', title: 'Title'}),
+        schema,
+      }),
+    ).resolves.toEqual([
+      expect.objectContaining({code: validationMarkerCodes.validationFailed, message}),
+    ])
+  })
+
   it('codes exceptions thrown by custom validators', async () => {
     const schema = createSchema([
       {

@@ -33,7 +33,7 @@ const formatValidationErrors = (options: {
         : validationMarkerCodes.ruleEitherFailed,
     details: {
       causes: options.results.map(({code, details, message: causeMessage, path}) => ({
-        code,
+        code: code || validationMarkerCodes.validationFailed,
         details,
         message: causeMessage,
         path,
@@ -116,7 +116,7 @@ export const genericValidators: Validators = {
 
     return {
       code: validationMarkerCodes.valueNotAllowed,
-      details: {allowedValues},
+      details: {allowedValuesCount: allowedValues.length},
       message:
         message ||
         i18n.t(

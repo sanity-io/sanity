@@ -4,6 +4,7 @@ import {type CustomValidatorResult, isReference, type Validators} from '@sanity/
 import {validationMarkerCodes} from '../codes'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'
+import {typeString} from '../util/typeString'
 import {genericValidators, SLOW_VALIDATOR_TIMEOUT} from './genericValidator'
 
 const metaKeys = ['_key', '_type', '_weak']
@@ -43,7 +44,7 @@ export const objectValidators: Validators = {
     if (!isReference(value)) {
       return {
         code: validationMarkerCodes.referenceInvalid,
-        details: {actualType: typeof value},
+        details: {actualType: typeString(value)},
         message: message || i18n.t('validation:object.not-reference'),
       }
     }
