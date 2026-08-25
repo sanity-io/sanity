@@ -695,7 +695,6 @@ exports[`exports snapshot 1`] = `
     "useSearchState": "function",
     "useSetPerspective": "function",
     "useSetVariant": "function",
-    "useShallowUnique": "function",
     "useSingleDocRelease": "function",
     "useSource": "function",
     "useStudioErrorHandler": "function",

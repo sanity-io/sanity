@@ -12,8 +12,10 @@ import {useState} from 'react'
  * (Don't feed it Map/Set/class instances; the lite variant only sees their own
  * enumerable properties.)
  *
- * Deliberately not exported from `sanity` — this is an implementation detail
- * of keeping observable identities render-stable, not public API.
+ * Local duplicate of `core/util/useShallowUnique`: that util is deliberately
+ * not exported from `sanity`, and the architectural boundaries
+ * (`boundaries/dependencies` in `.oxlintrc.json`) don't let `src/structure`
+ * import `src/core` internals directly. Keep the two implementations in sync.
  *
  * @internal
  */

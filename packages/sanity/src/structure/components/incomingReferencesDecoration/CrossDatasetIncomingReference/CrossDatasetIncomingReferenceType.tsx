@@ -10,11 +10,11 @@ import {
   useClient,
   useDocumentPreviewStore,
   useSchema,
-  useShallowUnique,
   useTranslation,
 } from 'sanity'
 import {Box} from 'ui5'
 
+import {useShallowUnique} from '../../../hooks/useShallowUnique'
 import {structureLocaleNamespace} from '../../../i18n'
 import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from '../shared'
 import {type CrossDatasetIncomingReference} from '../types'
