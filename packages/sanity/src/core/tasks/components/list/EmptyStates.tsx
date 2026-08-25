@@ -1,8 +1,8 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -125,7 +125,14 @@ export function EmptyTasksListState() {
   }, [setViewMode])
   return (
     <Root>
-      <Flex direction={'column'} gap={3} align={'center'} flex={1} justify={'center'}>
+      <Flex
+        flexDirection={'column'}
+        gap={3}
+        alignItems={'center'}
+        flexBasis="0%"
+        flexGrow={1}
+        justifyContent={'center'}
+      >
         <AnimatedText key={key} size={1} weight="semibold">
           {t(heading)}
         </AnimatedText>

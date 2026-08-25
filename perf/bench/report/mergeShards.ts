@@ -19,7 +19,13 @@ export function mergeShards(shards: BenchRunDocument[]): BenchRunDocument {
   const scenarios = shards.flatMap((shard) =>
     shard.scenarios.map((scenario) => ({
       ...scenario,
-      runner: {calibrationMs: shard.runner.calibrationMs},
+      // The shard's own host speed AND hardware identity — shards can land on
+      // different CPU generations, and the document-level runner (first
+      // shard's) would misattribute both
+      runner: {
+        calibrationMs: shard.runner.calibrationMs,
+        ...(shard.runner.cpuModel ? {cpuModel: shard.runner.cpuModel} : {}),
+      },
     })),
   )
 

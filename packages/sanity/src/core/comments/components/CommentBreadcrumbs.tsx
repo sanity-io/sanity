@@ -1,7 +1,7 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {Fragment, useMemo} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 
@@ -81,7 +81,7 @@ export function CommentBreadcrumbs(props: CommentBreadcrumbsProps) {
   }, [items])
 
   return (
-    <Flex align="center" as="ol" gap={2}>
+    <Flex alignItems="center" as="ol" gap={2}>
       {nodes}
     </Flex>
   )

@@ -5,7 +5,7 @@ import {
   type ValidationContext,
   type ValidationMarker,
 } from '@sanity/types'
-import {BoundaryElementProvider, Box} from '@sanity/ui'
+import {BoundaryElementProvider} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   createPatchChannel,
@@ -29,6 +29,7 @@ import {
   type Workspace,
 } from 'sanity'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {applyAll} from '../../src/core/form/patch/applyPatch'
 import {PresenceProvider} from '../../src/core/form/studio/contexts/Presence'

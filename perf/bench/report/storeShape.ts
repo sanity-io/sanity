@@ -14,13 +14,25 @@ import {
  * - `byClass` is an arbitrary-key record, which a studio schema can't
  *   declare either — stored as a keyed `{endpointClass, count}` array
  * - every object in an array gets a `_key`
+ * - `git.commit` is added as a weak reference to the run's `gitCommit`
+ *   document, derived from the deterministic id `gitCommit-<sha>` — no
+ *   lookup. Weak because the target may not exist (PR-branch commits are
+ *   never synced; a fresh main run can beat the sync). `git.sha` stays the
+ *   source of truth.
  *
  * The artifact/report JSON keeps the raw shape; only the stored document
  * differs. The metrics-studio schema mirrors THIS shape — keep them in sync.
  */
 export function toStorableRun(document: BenchRunDocument) {
+  const isFullSha = /^[0-9a-f]{40}$/.test(document.git.sha)
   return {
     ...document,
+    git: {
+      ...document.git,
+      ...(isFullSha
+        ? {commit: {_type: 'reference', _ref: `gitCommit-${document.git.sha}`, _weak: true}}
+        : {}),
+    },
     scenarios: document.scenarios.map((scenario) => ({
       ...scenario,
       _key: `${scenario.mode ?? scenario.kind}-${scenario.scenario}`,

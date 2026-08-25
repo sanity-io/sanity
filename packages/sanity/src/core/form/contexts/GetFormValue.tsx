@@ -10,7 +10,7 @@ import {type FormDocumentValue} from '../types/formDocumentValue'
  * @internal
  * @hidden
  */
-export const GetFormValueProvider = function GetFormValueProvider(props: {
+export function GetFormValueProvider(props: {
   value: FormDocumentValue | undefined
   children: ReactNode
 }) {
@@ -24,7 +24,6 @@ export const GetFormValueProvider = function GetFormValueProvider(props: {
     <GetFormValueContext.Provider value={getValue}>{props.children}</GetFormValueContext.Provider>
   )
 }
-GetFormValueProvider.displayName = 'GetFormValueProvider'
 
 /**
  * React hook that returns a function that can be called to look up the value from the current document at the given path.

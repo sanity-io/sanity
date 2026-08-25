@@ -1,5 +1,5 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Box, Button, Card, Flex, Grid, Inline, Select, Stack, Text, TextInput} from '@sanity/ui'
+import {Button, Card, Flex, Grid, Inline, Select, Stack, Text, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type ChangeEvent,
@@ -17,6 +17,7 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
+import {Box} from 'ui5'
 
 import {API_VERSIONS} from '../apiVersions'
 import {visionLocaleNamespace} from '../i18n'
@@ -115,7 +116,7 @@ export function VisionGuiHeader({
     <Header paddingX={3} paddingY={2}>
       <Grid gridTemplateColumns={[1, 4, 8, 12]}>
         {/* Dataset selector */}
-        <Box padding={1} gridColumn={[1, 2]}>
+        <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
           <Stack>
             <Card paddingTop={2} paddingBottom={3}>
               <StyledLabel>{t('settings.dataset-label')}</StyledLabel>
@@ -129,7 +130,7 @@ export function VisionGuiHeader({
         </Box>
 
         {/* API version selector */}
-        <Box padding={1} gridColumn={[1, 2]}>
+        <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
           <Stack>
             <Card paddingTop={2} paddingBottom={3}>
               <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
@@ -161,7 +162,7 @@ export function VisionGuiHeader({
 
         {/* Custom API version input */}
         {!isApiVersionLocked && customApiVersion !== false && (
-          <Box padding={1} gridColumn={[1, 2]}>
+          <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
             <Stack>
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel textOverflow="ellipsis">
@@ -183,7 +184,7 @@ export function VisionGuiHeader({
         )}
 
         {/* Perspective selector */}
-        <Box padding={1} gridColumn={[1, 2]}>
+        <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
           <Stack>
             <Card paddingBottom={1}>
               <Inline gap={1}>
@@ -229,7 +230,15 @@ export function VisionGuiHeader({
 
         {/* Query URL (for copying) */}
         {typeof url === 'string' ? (
-          <Box padding={1} flex={1} gridColumn={[1, customApiVersion === false ? 6 : 4]}>
+          <Box
+            padding={1}
+            flexBasis="0%"
+            flexGrow={1}
+            gridColumn={[
+              'span 1 / span 1',
+              customApiVersion === false ? 'span 6 / span 6' : 'span 4 / span 4',
+            ]}
+          >
             <Stack>
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel>
@@ -247,7 +256,7 @@ export function VisionGuiHeader({
                 </StyledLabel>
               </Card>
               <Flex flex={1} gap={1}>
-                <Box flex={1}>
+                <Box flexBasis="0%" flexGrow={1}>
                   <TextInput
                     data-testid="vision-query-url"
                     readOnly
@@ -269,7 +278,7 @@ export function VisionGuiHeader({
             </Stack>
           </Box>
         ) : (
-          <Box flex={1} />
+          <Box flexBasis="0%" flexGrow={1} />
         )}
       </Grid>
     </Header>

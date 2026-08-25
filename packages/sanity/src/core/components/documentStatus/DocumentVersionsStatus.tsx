@@ -41,18 +41,18 @@ import {
  */
 export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: string}) {
   const {t} = useTranslation()
-  const {data: releases} = useActiveReleases()
+  const {byId: releasesById} = useActiveReleases()
   const {byId: variantsById} = useAllVariants()
   const {loading, versions} = useDocumentVersions({documentId: documentGroupId})
   const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
 
   const versionGroups = useMemo(
     () =>
-      groupDocumentVersionsForStatus(versions, releases ?? [], variantsById, {
+      groupDocumentVersionsForStatus(versions, releasesById, variantsById, {
         variantsEnabled,
         showAgentVersions: SHOW_AGENT_VERSIONS_IN_STATUS,
       }),
-    [releases, variantsById, variantsEnabled, versions],
+    [releasesById, variantsById, variantsEnabled, versions],
   )
 
   if (loading) {

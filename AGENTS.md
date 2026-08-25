@@ -200,7 +200,7 @@ The `sanity` package tsdown build can emit a Rolldown [bundle analyzer](https://
 pnpm analyze:sanity
 ```
 
-The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with `lib/`). The flag is opt-in because analysis adds work to the package build; it is declared in `packages/sanity/turbo.json` so turbo-cached builds are invalidated when it changes. Wiring is `@sanity/tsdown-config`'s `bundleAnalyzer` option (`true` selects markdown). `pnpm-workspace.yaml` pins `tsdown>rolldown` to the same rolldown that `@sanity/tsdown-config` uses, so the analyzer BuiltinPlugin actually runs.
+The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with `lib/`). The flag is opt-in because analysis adds work to the package build; it is declared in `packages/sanity/turbo.json` so turbo-cached builds are invalidated when it changes. Wiring is `@sanity/tsdown-config`'s `bundleAnalyzer` option (`true` selects markdown).
 
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
@@ -324,6 +324,12 @@ When wrapping with `memo`, declare the component as a function first, then memoi
 function MyComponent(props: …) { … }
 export const MyComponentMemo = memo(MyComponent)
 ```
+
+Do not assign `.displayName` on components, HOCs, styled components, or `createContext`
+results. That property write is a module-level side effect and keeps the export from being
+tree-shaken. Named function declarations already give React DevTools a name via
+`function.name`. Exception (temporary): document/badge hooks prefixed with `use` and the
+HookState collection still set `displayName` — leave those until that API is reworked.
 
 For typings, include `ref` on the props type: stop omitting `'ref'` from `HTMLProps` /
 `ComponentProps`, or intersect with `RefAttributes<T>`. Avoid `PropsWithRef` — in `@types/react`

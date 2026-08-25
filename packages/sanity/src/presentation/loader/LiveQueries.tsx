@@ -267,7 +267,6 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
   return null
 }
 const QuerySubscription = memo(QuerySubscriptionComponent)
-QuerySubscription.displayName = 'Memo(QuerySubscription)'
 
 interface UseQuerySubscriptionProps extends Required<Pick<SharedProps, 'client'>> {
   liveDocument: Partial<SanityDocument> | null | undefined

@@ -1092,7 +1092,6 @@ exports[`exports snapshot 1`] = `
     "useStructureTool": "function",
   },
   "./workbench": {
-    "renderWorkbench": "function",
     "unstable_defineService": "function",
     "unstable_defineView": "function",
   },
