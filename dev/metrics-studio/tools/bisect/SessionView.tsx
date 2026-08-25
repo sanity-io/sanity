@@ -21,7 +21,6 @@ import {
 import {BISECT_SESSION_QUERY, type SessionDocument, type TagSlice} from './data'
 import {
   appendMark,
-  clearResult,
   createSession,
   deleteSession,
   type ResultAnnotations,
@@ -160,21 +159,23 @@ export function SessionView(props: {
   // forever-active. A deliberate effect-driven write, guarded on the document
   // lacking a result so the realtime echo terminates it; a concurrent
   // duplicate is an idempotent set.
+  // Deliberately NO mirror-image auto-clear when the derived state is active
+  // while a result is stored. Marks are the source of truth and every mark
+  // patch already keeps `result` in sync atomically (appendMark sets or
+  // unsets it, undoMark unsets it), so a contradicting concurrent mark never
+  // leaves a stale verdict. The only other way the two can disagree is the
+  // dataset catching up — a suspect's `testStudioUrl` lands one sync late and
+  // becomes testable — and there the concluded verdict (with its annotations
+  // and regression pin) must stand until a human's mark says otherwise.
   const hasStoredResult = Boolean(session?.result?.firstBadSha)
   useEffect(() => {
     if (!session || !state) return
-    const fail = (title: string) => toastError(toast, title)
     if (state.kind === 'converged' && !hasStoredResult) {
       void setResult(client, sessionId, {
         firstBadSha: state.firstBad.sha,
         lastGoodSha: state.lastGood.sha,
         suspectShas: state.suspects.map((suspect) => suspect.sha),
-      }).catch(fail('Could not store the verdict'))
-    } else if (state.kind === 'active' && hasStoredResult) {
-      // Mirror image: a concurrent editor's contradicting mark can land a
-      // stale verdict on the document while the live-derived state has
-      // re-opened — clear it so the sessions list agrees with reality
-      void clearResult(client, sessionId).catch(fail('Could not clear the stale verdict'))
+      }).catch(toastError(toast, 'Could not store the verdict'))
     }
   }, [state, session, hasStoredResult, client, sessionId, toast])
 
@@ -346,6 +347,7 @@ export function SessionView(props: {
                   ? {
                       state,
                       releases,
+                      releasesOnly,
                       annotations: {
                         regression: session?.result?.regression ?? undefined,
                         description: session?.result?.description ?? undefined,

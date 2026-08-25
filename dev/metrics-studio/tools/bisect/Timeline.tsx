@@ -47,6 +47,8 @@ export function Timeline(props: {
   converged?: {
     state: Extract<ReturnType<typeof deriveBisectState>, {kind: 'converged'}>
     releases: TagSlice[]
+    /** Releases-only session — the suspects are untested by design, not unbuildable */
+    releasesOnly?: boolean
     annotations: ResultAnnotations
     onAnnotate: (patch: ResultAnnotations) => void
     onContinue?: () => void
@@ -67,6 +69,7 @@ export function Timeline(props: {
               key={entry.commit.sha}
               state={converged.state}
               releases={converged.releases}
+              releasesOnly={converged.releasesOnly}
               version={versionBySha?.get(entry.commit.sha)}
               annotations={converged.annotations}
               onAnnotate={converged.onAnnotate}

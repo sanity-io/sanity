@@ -20,6 +20,8 @@ import {pluralize} from './text'
 export function ResultCard(props: {
   state: Extract<ReturnType<typeof deriveBisectState>, {kind: 'converged'}>
   releases: TagSlice[]
+  /** Releases-only session — the suspects are untested by design, not unbuildable */
+  releasesOnly?: boolean
   /** npm version if the first bad commit is itself a release */
   version?: string
   annotations: ResultAnnotations
@@ -28,7 +30,8 @@ export function ResultCard(props: {
   onContinue?: () => void
   onUndo?: () => void
 }) {
-  const {state, releases, version, annotations, onAnnotate, onContinue, onUndo} = props
+  const {state, releases, releasesOnly, version, annotations, onAnnotate, onContinue, onUndo} =
+    props
   return (
     <CommitCard
       commit={state.firstBad}
@@ -107,8 +110,15 @@ export function ResultCard(props: {
         <Card padding={3} radius={2} tone="caution">
           <Stack gap={3}>
             <Text size={1} weight="semibold">
-              {pluralize(state.suspects.length, 'commit')} between last good and first bad had no
-              testable preview build (skipped or never built) — any of these could be the culprit:
+              {/* Two different reasons the range stays untested: a releases-only
+                  session never proposes non-release commits (most have builds —
+                  the drill-down below tests them), while in a commit-granular
+                  session the only leftovers are genuinely untestable ones */}
+              {pluralize(state.suspects.length, 'commit')}{' '}
+              {releasesOnly
+                ? `shipped between these releases and ${state.suspects.length === 1 ? 'was' : 'were'} not individually tested`
+                : 'between last good and first bad had no testable preview build (skipped or never built)'}{' '}
+              — any of these could be the culprit:
             </Text>
             {state.suspects.map((suspect) => (
               <Text key={suspect.sha} size={1}>

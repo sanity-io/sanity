@@ -144,11 +144,6 @@ export function setResult(
   return withResult(client.patch(sessionId), result).commit()
 }
 
-/** Clear a stale verdict (live-derived state no longer converged). */
-export function clearResult(client: SanityClient, sessionId: string): Promise<unknown> {
-  return client.patch(sessionId).unset(['result']).commit()
-}
-
 export interface ResultAnnotations {
   regression?: boolean
   description?: string
