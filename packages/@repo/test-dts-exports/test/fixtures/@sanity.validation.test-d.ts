@@ -2,6 +2,7 @@
 // If deleting the exports, for example, then please use this command to regenerate the tests
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
+import type {ValidationContext} from '@sanity/types'
 import type {ValidateDocumentOptions, validateDocument} from '@sanity/validation'
 import {describe, expectTypeOf, test} from 'vitest'
 
@@ -9,5 +10,6 @@ describe('@sanity/validation', () => {
   test('validateDocument', () => {
     expectTypeOf<typeof validateDocument>().toBeFunction()
     expectTypeOf<Parameters<typeof validateDocument>[0]>().toEqualTypeOf<ValidateDocumentOptions>()
+    expectTypeOf<ValidationContext['i18n']>().toBeObject()
   })
 })

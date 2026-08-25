@@ -6,6 +6,7 @@ import type {
   inferFromSchema,
   Rule,
   ValidateDocumentInternalOptions,
+  ValidationContext,
 } from '@sanity/validation/_internal'
 import {describe, expectTypeOf, test} from 'vitest'
 
@@ -14,5 +15,6 @@ describe('@sanity/validation/_internal', () => {
     expectTypeOf<typeof inferFromSchema>().toBeFunction()
     expectTypeOf<typeof Rule>().not.toBeNever()
     expectTypeOf<ValidateDocumentInternalOptions>().toBeObject()
+    expectTypeOf<ValidationContext['i18n']>().toBeObject()
   })
 })

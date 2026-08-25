@@ -138,11 +138,11 @@ export interface ValidateDocumentOptions {
 
   /**
    * The amount of allowed inflight fetch requests at once for this validation.
-   * You may need to up this value if you have complex custom validations that require many
-   * `client.fetch` requests at once. It's possible for custom validator to
-   * stall if there are not enough concurrent fetch requests available to
-   * fulfill the custom validation. Must be a positive integer. This is 25 by
-   * default.
+   * You may need to up this value if you have complex custom validations that
+   * require many `client.fetch` requests at once. It's possible for a custom
+   * validator to stall if there are not enough concurrent fetch requests
+   * available to fulfill the custom validation. Must be a positive integer.
+   * This is 25 by default.
    */
   maxFetchConcurrency?: number
 
@@ -238,7 +238,22 @@ export interface ValidateDocumentObservableOptions extends Pick<
   currentUser?: Omit<CurrentUser, 'role'> | null
 }
 
-const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimiter>()
+const customValidationConcurrencyLimiters = new WeakMap<Schema, Map<number, ConcurrencyLimiter>>()
+
+function getCustomValidationConcurrencyLimiter(schema: Schema, maxConcurrency: number) {
+  let limiters = customValidationConcurrencyLimiters.get(schema)
+  if (!limiters) {
+    limiters = new Map()
+    customValidationConcurrencyLimiters.set(schema, limiters)
+  }
+
+  let limiter = limiters.get(maxConcurrency)
+  if (!limiter) {
+    limiter = new ConcurrencyLimiter(maxConcurrency)
+    limiters.set(maxConcurrency, limiter)
+  }
+  return limiter
+}
 
 /**
  * Validates a document against the given schema, returning an Observable
@@ -278,13 +293,10 @@ export function validateDocumentObservable({
     ])
   }
 
-  let customValidationConcurrencyLimiter = customValidationConcurrencyLimiters.get(schema)
-  if (!customValidationConcurrencyLimiter) {
-    customValidationConcurrencyLimiter = new ConcurrencyLimiter(
-      maxCustomValidationConcurrency ?? DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY,
-    )
-    customValidationConcurrencyLimiters.set(schema, customValidationConcurrencyLimiter)
-  }
+  const customValidationConcurrencyLimiter = getCustomValidationConcurrencyLimiter(
+    schema,
+    maxCustomValidationConcurrency ?? DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY,
+  )
 
   const validationOptions: ValidateItemOptions = {
     getClient,

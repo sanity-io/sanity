@@ -1,3 +1,6 @@
+// oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps ValidationContext module augmentations on the internal type surface
+import './types'
+
 export {getFallbackLocaleSource} from './i18n/fallback'
 export {validationLocaleStrings} from './i18n/resources'
 export type {LocaleSource} from './i18n/types'

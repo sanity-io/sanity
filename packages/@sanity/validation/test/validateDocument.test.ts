@@ -166,14 +166,16 @@ describe('validateDocument', () => {
     (maxFetchConcurrency) => {
       const {client} = createMockClient()
 
-      expect(() =>
+      const validate = () =>
         validateDocument({
           client,
           document: createDocument({_type: 'article'}),
           maxFetchConcurrency,
           schema: createSchema([{name: 'article', type: 'document', fields: []}]),
-        }),
-      ).toThrow('`maxFetchConcurrency` must be a positive integer')
+        })
+
+      expect(validate).toThrow(RangeError)
+      expect(validate).toThrow('`maxFetchConcurrency` must be a positive integer')
     },
   )
 
@@ -261,20 +263,28 @@ describe('validateDocument', () => {
     ])
     const {client} = createMockClient()
 
-    await validateDocument({
-      client,
-      document: createDocument({
-        _type: 'article',
-        items: Array.from({length: 6}, (_, index) => ({
-          _key: String(index),
-          _type: 'item',
-          value: String(index),
-        })),
-      }),
-      maxCustomValidationConcurrency: 2,
-      schema,
+    const document = createDocument({
+      _type: 'article',
+      items: Array.from({length: 6}, (_, index) => ({
+        _key: String(index),
+        _type: 'item',
+        value: String(index),
+      })),
     })
 
-    expect(peak).toBe(2)
+    const validateWithConcurrency = async (maxCustomValidationConcurrency: number) => {
+      active = 0
+      peak = 0
+      await validateDocument({
+        client,
+        document,
+        maxCustomValidationConcurrency,
+        schema,
+      })
+      return peak
+    }
+
+    await expect(validateWithConcurrency(1)).resolves.toBe(1)
+    await expect(validateWithConcurrency(2)).resolves.toBe(2)
   })
 })

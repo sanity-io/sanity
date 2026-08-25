@@ -1650,7 +1650,7 @@ importers:
         version: 19.2.18
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.14(@vitejs/devtools@0.5.1)(oxc-resolver@11.24.2)(publint@0.3.23)(tsx@4.23.12)(typescript@7.0.2)
+        version: 0.22.14(@vitejs/devtools@0.5.1)(oxc-resolver@11.24.2)(publint@0.3.24)(tsx@4.23.12)(typescript@7.0.2)
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
