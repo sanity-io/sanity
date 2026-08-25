@@ -99,12 +99,13 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       return (
         <DocumentActions
           document={rowProps.datum}
+          releaseId={releaseId}
           releaseTitle={release.metadata.title}
           versionType={rowVersionType}
         />
       )
     },
-    [release.metadata.title, release.state, rowVersionType],
+    [release.metadata.title, release.state, releaseId, rowVersionType],
   )
 
   const documentTableColumnDefs = useMemo(
