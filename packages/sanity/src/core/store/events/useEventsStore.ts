@@ -16,20 +16,7 @@ import {
   resolveRevisionId,
   resolveSinceId,
 } from './resolveRevisions'
-import {type DocumentGroupEvent, type EventsStore} from './types'
-
-export interface EventsObservableValue {
-  events: DocumentGroupEvent[]
-  nextCursor: string
-  loading: boolean
-  error: null | Error
-}
-const INITIAL_VALUE: EventsObservableValue = {
-  events: [],
-  nextCursor: '',
-  loading: true,
-  error: null,
-}
+import {type EventsStore, INITIAL_EVENTS_VALUE} from './types'
 
 /**
  * React entry point of the events store: creates a `createEventsStore` instance for the document
@@ -90,7 +77,7 @@ export function useEventsStore({
   // diff was deferred incoherently while events stayed live.
   const {events, loading, error, nextCursor} = useObservable(
     eventsStore.eventsObservable$,
-    INITIAL_VALUE,
+    INITIAL_EVENTS_VALUE,
   )
 
   useEffect(() => {

@@ -1,13 +1,10 @@
 import {type SanityDocument} from '@sanity/types'
 import {firstValueFrom, toArray} from 'rxjs'
-import {afterEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockClient} from './__fixtures__/mockClient'
-import {getDocumentAtRevision} from './getDocumentAtRevision'
+import {clearDocumentRevisionCache, getDocumentAtRevision} from './getDocumentAtRevision'
 import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
-
-// The module keeps a cache keyed by `${documentId}@<revision|time>` that survives between tests,
-// so every test uses its own document id.
 
 const document = (id: string, rev = 'rev-1'): SanityDocument => ({
   _id: id,
@@ -18,6 +15,10 @@ const document = (id: string, rev = 'rev-1'): SanityDocument => ({
 })
 
 describe('getDocumentAtRevision', () => {
+  beforeEach(() => {
+    clearDocumentRevisionCache()
+  })
+
   afterEach(() => {
     vi.restoreAllMocks()
   })
@@ -82,6 +83,41 @@ describe('getDocumentAtRevision', () => {
     expect(first.at(-1)).toEqual({document: doc, loading: false, revisionId: 'rev-1'})
     // Late subscribers replay only the settled value.
     expect(second).toEqual([{document: doc, loading: false, revisionId: 'rev-1'}])
+  })
+
+  it('caches per project/dataset: a client for a different dataset refetches', async () => {
+    const docA = document('doc-workspace', 'rev-a')
+    const docB = document('doc-workspace', 'rev-b')
+    const {client: clientA, requests: requestsA} = createMockClient({
+      projectId: 'project-a',
+      dataset: 'dataset-a',
+      respond: () => ({documents: [docA]}),
+    })
+    const {client: clientB, requests: requestsB} = createMockClient({
+      projectId: 'project-b',
+      dataset: 'dataset-b',
+      respond: () => ({documents: [docB]}),
+    })
+
+    const first = await firstValueFrom(
+      getDocumentAtRevision({
+        client: clientA,
+        documentId: 'doc-workspace',
+        revisionId: 'rev-1',
+      }).pipe(toArray()),
+    )
+    const second = await firstValueFrom(
+      getDocumentAtRevision({
+        client: clientB,
+        documentId: 'doc-workspace',
+        revisionId: 'rev-1',
+      }).pipe(toArray()),
+    )
+
+    expect(requestsA).toHaveLength(1)
+    expect(requestsB).toHaveLength(1)
+    expect(first.at(-1)).toEqual({document: docA, loading: false, revisionId: 'rev-a'})
+    expect(second.at(-1)).toEqual({document: docB, loading: false, revisionId: 'rev-b'})
   })
 
   it('short-circuits the synthetic history-cleared revision without a request', async () => {
