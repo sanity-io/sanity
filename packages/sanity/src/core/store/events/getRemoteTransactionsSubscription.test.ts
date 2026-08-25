@@ -8,13 +8,103 @@ import {collectEmissions} from './__fixtures__/collect.fixture'
 import {DOCUMENT_ID, DRAFT_ID, minutesAfterBase, VERSION_ID} from './__fixtures__/events.fixture'
 import {createMockClient} from './__fixtures__/mockClient'
 import {effectPair, remoteMutationEvent} from './__fixtures__/transactions.fixture'
-import {getRemoteTransactionsSubscription} from './getRemoteTransactionsSubscription'
+import {
+  classifyRemoteMutation,
+  getRemoteTransactionsSubscription,
+  type RemoteMutationVerdict,
+} from './getRemoteTransactionsSubscription'
 
 vi.mock('../document/document-pair/remoteSnapshots', () => ({
   remoteSnapshots: vi.fn(),
 }))
 
 const mockRemoteSnapshots = vi.mocked(remoteSnapshots)
+
+describe('classifyRemoteMutation', () => {
+  const createdEffects = effectPair({before: null, after: {_id: DRAFT_ID}})
+  const deletedEffects = effectPair({before: {_id: DRAFT_ID}, after: null})
+  const modifiedEffects = effectPair({
+    before: {_id: DRAFT_ID, name: 'before'},
+    after: {_id: DRAFT_ID, name: 'after'},
+  })
+
+  it.each<{
+    name: string
+    version: 'draft' | 'published' | 'version'
+    documentVariantType: 'draft' | 'published' | 'version'
+    isLiveEdit: boolean
+    effects: ReturnType<typeof effectPair>
+    expected: RemoteMutationVerdict
+  }>([
+    {
+      name: 'mutation for a different variant is ignored',
+      version: 'published',
+      documentVariantType: 'draft',
+      isLiveEdit: false,
+      effects: modifiedEffects,
+      expected: 'ignore',
+    },
+    {
+      name: 'draft mutation while viewing published is ignored',
+      version: 'draft',
+      documentVariantType: 'published',
+      isLiveEdit: false,
+      effects: modifiedEffects,
+      expected: 'ignore',
+    },
+    {
+      name: 'published mutation (non-liveEdit) triggers a refetch',
+      version: 'published',
+      documentVariantType: 'published',
+      isLiveEdit: false,
+      effects: modifiedEffects,
+      expected: 'refetch',
+    },
+    {
+      name: 'published modification with liveEdit is appended',
+      version: 'published',
+      documentVariantType: 'published',
+      isLiveEdit: true,
+      effects: modifiedEffects,
+      expected: 'append',
+    },
+    {
+      name: 'created effect triggers refetch-and-clear',
+      version: 'draft',
+      documentVariantType: 'draft',
+      isLiveEdit: false,
+      effects: createdEffects,
+      expected: 'refetch-and-clear',
+    },
+    {
+      name: 'deleted effect triggers refetch-and-clear',
+      version: 'draft',
+      documentVariantType: 'draft',
+      isLiveEdit: false,
+      effects: deletedEffects,
+      expected: 'refetch-and-clear',
+    },
+    {
+      name: 'draft modification is appended',
+      version: 'draft',
+      documentVariantType: 'draft',
+      isLiveEdit: false,
+      effects: modifiedEffects,
+      expected: 'append',
+    },
+    {
+      name: 'version modification is appended',
+      version: 'version',
+      documentVariantType: 'version',
+      isLiveEdit: false,
+      effects: modifiedEffects,
+      expected: 'append',
+    },
+  ])('$name', ({version, documentVariantType, isLiveEdit, effects, expected}) => {
+    const mutation = remoteMutationEvent({version, effects})
+    expect(classifyRemoteMutation(mutation, {documentVariantType, isLiveEdit})).toBe(expected)
+  })
+})
 
 describe('getRemoteTransactionsSubscription', () => {
   let snapshots$: Subject<WithVersion<DocumentRemoteMutationEvent>>

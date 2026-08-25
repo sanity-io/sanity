@@ -13,8 +13,12 @@ import {
 } from './__fixtures__/events.fixture'
 import {createEventsStore} from './createEventsStore'
 import {getDocumentAtRevision} from './getDocumentAtRevision'
-import {type DocumentGroupEvent, type EventsStoreRevision} from './types'
-import {type EventsObservableValue, useEventsStore} from './useEventsStore'
+import {
+  type DocumentGroupEvent,
+  type EventsObservableValue,
+  type EventsStoreRevision,
+} from './types'
+import {useEventsStore} from './useEventsStore'
 
 const {mockUseClient} = vi.hoisted(() => ({mockUseClient: vi.fn()}))
 

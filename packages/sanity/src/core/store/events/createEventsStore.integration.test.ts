@@ -19,6 +19,8 @@ import {
 } from './__fixtures__/mockClient'
 import {editTransaction, remoteMutationEvent} from './__fixtures__/transactions.fixture'
 import {createEventsStore} from './createEventsStore'
+import {clearDocumentRevisionCache} from './getDocumentAtRevision'
+import {clearDocumentTransactionsCache} from './getDocumentTransactions'
 import {
   type DocumentGroupEvent,
   type EventsStoreRevision,
@@ -38,8 +40,8 @@ const mockRemoteSnapshots = vi.mocked(remoteSnapshots)
  * (events/history endpoints on the client, translog over `fetch`) plus the `remoteSnapshots`
  * listener machinery.
  *
- * Note: `getDocumentTransactions`/`getDocumentAtRevision` keep module-level caches keyed by
- * document id, so every test uses a unique document id.
+ * Note: `getDocumentTransactions`/`getDocumentAtRevision` keep module-level caches (keyed by
+ * project, dataset and document id); they are cleared before each test.
  */
 
 /** Serves the events API, one entry of `pages` per call (last page repeats). */
@@ -114,6 +116,8 @@ describe('createEventsStore (integration)', () => {
     snapshots$ = new Subject()
     mockRemoteSnapshots.mockReset()
     mockRemoteSnapshots.mockReturnValue(snapshots$ as never)
+    clearDocumentTransactionsCache()
+    clearDocumentRevisionCache()
   })
 
   afterEach(() => {

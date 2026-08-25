@@ -12,9 +12,8 @@ import {
   updateLiveDocumentEvent,
   VERSION_ID,
 } from './__fixtures__/events.fixture'
-import {createEventsObservable} from './createEventsObservable'
-import {type EventsObservableValue} from './getInitialFetchEvents'
-import {type DocumentGroupEvent} from './types'
+import {applyVariantTransforms, createEventsObservable} from './createEventsObservable'
+import {type DocumentGroupEvent, type EventsObservableValue} from './types'
 
 function eventsValue(events: DocumentGroupEvent[]): EventsObservableValue {
   return {events, nextCursor: '', loading: false, error: null}
@@ -30,6 +29,52 @@ function setup({documentId, events}: {documentId: string; events: DocumentGroupE
   })
   return {observable, events$}
 }
+
+describe('applyVariantTransforms', () => {
+  it('draft: links edits/creates to their publish event', () => {
+    const create = createDocumentVersionEvent({timestamp: minutesAfterBase(0)})
+    const edit = editDocumentVersionEvent({
+      revisionId: 'edit-rev',
+      id: 'edit-rev',
+      timestamp: minutesAfterBase(1),
+    })
+    const publish = publishDocumentVersionEvent({
+      versionRevisionId: 'edit-rev',
+      timestamp: minutesAfterBase(2),
+    })
+
+    const result = applyVariantTransforms([publish, edit, create], 'draft')
+    expect(result[0]).toMatchObject({
+      documentId: publish.versionId,
+      creationEvent: expect.objectContaining({type: 'createDocumentVersion'}),
+    })
+    expect(result[1]).toMatchObject({parentId: publish.id})
+  })
+
+  it('published: passes events through untouched', () => {
+    const publish = publishDocumentVersionEvent()
+    expect(applyVariantTransforms([publish], 'published')).toEqual([
+      {...publish, documentVariantType: 'published'},
+    ])
+  })
+
+  it('version: re-points publish events at the version id', () => {
+    const publish = publishDocumentVersionEvent({versionId: VERSION_ID})
+    expect(applyVariantTransforms([publish], 'version')[0]).toMatchObject({
+      documentId: VERSION_ID,
+      documentVariantType: 'version',
+    })
+  })
+
+  it('stamps every event with the variant and squashes live edit events', () => {
+    const newest = updateLiveDocumentEvent({id: 'live-2', timestamp: minutesAfterBase(4)})
+    const oldest = updateLiveDocumentEvent({id: 'live-1', timestamp: minutesAfterBase(0)})
+
+    const result = applyVariantTransforms([newest, oldest], 'published')
+    expect(result.map((event) => event.id)).toEqual(['live-2'])
+    expect(result.every((event) => event.documentVariantType === 'published')).toBe(true)
+  })
+})
 
 describe('createEventsObservable', () => {
   it('draft: links edits/creates to their publish event and stamps the variant', () => {
