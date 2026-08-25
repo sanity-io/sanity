@@ -25,12 +25,26 @@ function run(options: {
   calibrationMs?: number
   /** Per-scenario shard calibration, as mergeShards stamps on multi-shard CI runs. */
   shardCalibrationMs?: number
+  trigger?: TrendRun['trigger']
+  releaseTag?: string
 }): TrendRun {
-  const {id, sha, day, value, repeats = 1, calibrationMs = 8, shardCalibrationMs} = options
+  const {
+    id,
+    sha,
+    day,
+    value,
+    repeats = 1,
+    calibrationMs = 8,
+    shardCalibrationMs,
+    trigger,
+    releaseTag,
+  } = options
   return {
     _id: id,
     startedAt: new Date(START + day * DAY).toISOString(),
     mode: 'absolute',
+    ...(trigger ? {trigger} : {}),
+    ...(releaseTag ? {releaseTag} : {}),
     git: {sha, branch: 'main', committedAt: new Date(START + day * DAY).toISOString()},
     runner: {calibrationMs, runId: id, runAttempt: 1},
     bundle: null,
@@ -473,4 +487,22 @@ test('ms ticks share one unit across the axis', () => {
 test('other ticks keep the full formatValue rendering', () => {
   expect(formatTick(88, 'ms')).toBe('88ms')
   expect(formatTick(60_000, 'count')).toBe('60000')
+})
+
+// The release tag rides on the point so a marker can anchor to the run that
+// measured it, and the popover can say "released as" rather than bracketing.
+// Gated on the trigger, not just the tag's presence: a tag on a non-release run
+// would claim that run measured the release, which is the attribution error
+// release runs exist to remove.
+test('carries the release tag only for release runs', () => {
+  const [series] = buildSeries([
+    run({id: 'r1', sha: 'a1', day: 0, value: 30, trigger: 'release', releaseTag: 'v6.10.1'}),
+    run({id: 'r2', sha: 'a2', day: 1, value: 31, trigger: 'cron', releaseTag: 'v6.10.1'}),
+    run({id: 'r3', sha: 'a3', day: 2, value: 32}),
+  ])
+  expect(series.lines[0].points.map((point) => point.releaseTag)).toEqual([
+    'v6.10.1',
+    undefined,
+    undefined,
+  ])
 })
