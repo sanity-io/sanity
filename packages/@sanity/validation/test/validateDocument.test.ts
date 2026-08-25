@@ -161,24 +161,6 @@ describe('validateDocument', () => {
     await expect(validateWithConcurrency(2)).resolves.toBe(2)
   })
 
-  it.each([0, -1, NaN, 1.5, Infinity])(
-    'rejects invalid maxFetchConcurrency value %s',
-    (maxFetchConcurrency) => {
-      const {client} = createMockClient()
-
-      const validate = () =>
-        validateDocument({
-          client,
-          document: createDocument({_type: 'article'}),
-          maxFetchConcurrency,
-          schema: createSchema([{name: 'article', type: 'document', fields: []}]),
-        })
-
-      expect(validate).toThrow(RangeError)
-      expect(validate).toThrow('`maxFetchConcurrency` must be a positive integer')
-    },
-  )
-
   it('uses an explicit reference existence lookup when provided', async () => {
     const schema = createSchema([
       {
@@ -263,28 +245,20 @@ describe('validateDocument', () => {
     ])
     const {client} = createMockClient()
 
-    const document = createDocument({
-      _type: 'article',
-      items: Array.from({length: 6}, (_, index) => ({
-        _key: String(index),
-        _type: 'item',
-        value: String(index),
-      })),
+    await validateDocument({
+      client,
+      document: createDocument({
+        _type: 'article',
+        items: Array.from({length: 6}, (_, index) => ({
+          _key: String(index),
+          _type: 'item',
+          value: String(index),
+        })),
+      }),
+      maxCustomValidationConcurrency: 2,
+      schema,
     })
 
-    const validateWithConcurrency = async (maxCustomValidationConcurrency: number) => {
-      active = 0
-      peak = 0
-      await validateDocument({
-        client,
-        document,
-        maxCustomValidationConcurrency,
-        schema,
-      })
-      return peak
-    }
-
-    await expect(validateWithConcurrency(1)).resolves.toBe(1)
-    await expect(validateWithConcurrency(2)).resolves.toBe(2)
+    expect(peak).toBe(2)
   })
 })

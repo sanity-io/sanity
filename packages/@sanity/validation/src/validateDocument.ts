@@ -238,22 +238,7 @@ export interface ValidateDocumentObservableOptions extends Pick<
   currentUser?: Omit<CurrentUser, 'role'> | null
 }
 
-const customValidationConcurrencyLimiters = new WeakMap<Schema, Map<number, ConcurrencyLimiter>>()
-
-function getCustomValidationConcurrencyLimiter(schema: Schema, maxConcurrency: number) {
-  let limiters = customValidationConcurrencyLimiters.get(schema)
-  if (!limiters) {
-    limiters = new Map()
-    customValidationConcurrencyLimiters.set(schema, limiters)
-  }
-
-  let limiter = limiters.get(maxConcurrency)
-  if (!limiter) {
-    limiter = new ConcurrencyLimiter(maxConcurrency)
-    limiters.set(maxConcurrency, limiter)
-  }
-  return limiter
-}
+const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimiter>()
 
 /**
  * Validates a document against the given schema, returning an Observable
@@ -293,10 +278,13 @@ export function validateDocumentObservable({
     ])
   }
 
-  const customValidationConcurrencyLimiter = getCustomValidationConcurrencyLimiter(
-    schema,
-    maxCustomValidationConcurrency ?? DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY,
-  )
+  let customValidationConcurrencyLimiter = customValidationConcurrencyLimiters.get(schema)
+  if (!customValidationConcurrencyLimiter) {
+    customValidationConcurrencyLimiter = new ConcurrencyLimiter(
+      maxCustomValidationConcurrency ?? DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY,
+    )
+    customValidationConcurrencyLimiters.set(schema, customValidationConcurrencyLimiter)
+  }
 
   const validationOptions: ValidateItemOptions = {
     getClient,
