@@ -5,9 +5,9 @@ Validates complete Sanity documents against a compiled Sanity schema.
 ```ts
 import {validateDocument, validationMarkerCodes} from '@sanity/validation'
 
-const markers = await validateDocument({document, schema, client})
+const result = await validateDocument({document, schema, client})
 
-for (const marker of markers) {
+for (const marker of result.markers) {
   if (marker.code === validationMarkerCodes.stringMinimumLength) {
     const {actualLength, minimumLength} = marker.details || {}
     if (typeof actualLength === 'number' && typeof minimumLength === 'number') {
@@ -16,7 +16,7 @@ for (const marker of markers) {
   }
 }
 
-const summary = markers
+const summary = result.markers
   .map((marker) => {
     const path = marker.path
       .map((segment) => (typeof segment === 'object' ? segment._key : segment))
@@ -27,26 +27,30 @@ const summary = markers
   .join('\n')
 ```
 
-Every returned marker includes a stable machine-readable `code` alongside its localized `message`,
+Every failed marker includes a stable machine-readable `code` alongside its localized `message`,
 `level`, and `path`. Built-in failures may also include structured `details`. Custom validators can
 return their own `code` and `details`; custom codes should be namespaced, for example
 `custom.seo-title`.
+
+Checks that cannot run are returned in `result.skipped`. Pass `customValidation: false` to skip
+user-defined callbacks. Omitting `client` skips built-in network checks. Using both options provides
+a no-network validation path.
 
 The package does not apply mutations or decide whether a document may be edited or published.
 
 ## Migrating from `sanity`
 
 Add `@sanity/validation` as a direct dependency. The workspace-based API is available as a
-compatibility overload, so call sites that only import `validateDocument` can migrate by changing
-the import:
+deprecated compatibility helper, so call sites that only import the validation function can
+migrate by changing the imported symbol:
 
 ```ts
-import {validateDocument} from '@sanity/validation'
+import {validateDocumentWithWorkspace} from '@sanity/validation'
 
-const markers = await validateDocument({document, workspace})
+const markers = await validateDocumentWithWorkspace({document, workspace})
 ```
 
 Call sites that also import `ValidateDocumentOptions` from `sanity` should use
 `ValidateDocumentWorkspaceOptions` for the workspace-shaped options.
 
-Prefer the `{document, schema, client}` API for new code.
+Prefer `validateDocument({document, schema, client})` for new code.

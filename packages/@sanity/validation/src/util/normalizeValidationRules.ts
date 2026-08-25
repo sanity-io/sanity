@@ -8,6 +8,7 @@ import {
 import {dequal as isEqual} from 'dequal/lite'
 
 import {Rule as RuleClass} from '../Rule'
+import {markValidator} from '../validatorMetadata'
 import {slugValidator} from '../validators/slugValidator'
 
 const ruleConstraintTypes: {[P in Lowercase<RuleTypeConstraint>]: true} = {
@@ -61,7 +62,9 @@ function baseRuleReducer(inputRule: Rule, type: SchemaType) {
   if (type.name === 'datetime') return baseRule.type('Date')
   if (type.name === 'date') return baseRule.type('Date')
   if (type.name === 'url') return baseRule.uri()
-  if (type.name === 'slug') return baseRule.custom(slugValidator, {bypassConcurrencyLimit: true})
+  if (type.name === 'slug') {
+    return baseRule.custom(markValidator(slugValidator, 'internal'), {bypassConcurrencyLimit: true})
+  }
   if (type.name === 'reference') return baseRule.reference()
   if (type.name === 'email') return baseRule.email()
   return baseRule

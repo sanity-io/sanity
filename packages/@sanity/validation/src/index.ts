@@ -8,6 +8,7 @@ export {
   validationMarkerCodes,
 } from './codes'
 export {
+  type DocumentValidationResult,
   validateDocument,
   type ValidateDocumentOptions,
   type ValidateDocumentWorkspaceOptions,
@@ -17,3 +18,4 @@ export {
   type ValidationSchema,
   type ValidationSource,
 } from './validateDocument'
+export type {SkippedValidation} from '@sanity/types'

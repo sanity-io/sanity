@@ -11,6 +11,7 @@ import {
 } from '@sanity/types'
 import memoize from 'lodash-es/memoize.js'
 
+import {isClientUnavailableError} from '../clientUnavailable'
 import {validationMarkerCodes} from '../codes'
 import {typeString} from '../util/typeString'
 
@@ -107,6 +108,26 @@ export const slugValidator: CustomValidator = async (value, context) => {
   const options = context?.type?.options as {isUnique?: SlugIsUniqueValidator} | undefined
   const isUnique = options?.isUnique || defaultIsUnique
 
+  if (options?.isUnique && context.__internal?.customValidation === false) {
+    context.__internal.onSkipped?.({
+      check: 'slugUniqueness',
+      level: context.__internal?.validationLevel || 'error',
+      path: context.path || [],
+      reason: 'customValidationDisabled',
+    })
+    return true
+  }
+
+  if (!options?.isUnique && context.__internal?.hasClient === false) {
+    context.__internal.onSkipped?.({
+      check: 'slugUniqueness',
+      level: context.__internal?.validationLevel || 'error',
+      path: context.path || [],
+      reason: 'clientUnavailable',
+    })
+    return true
+  }
+
   const slugContext: SlugValidationContext = {
     ...context,
     parent: context.parent as SlugParent,
@@ -114,7 +135,19 @@ export const slugValidator: CustomValidator = async (value, context) => {
     defaultIsUnique,
   }
 
-  const wasUnique = await isUnique(value.current, slugContext)
+  let wasUnique: boolean
+  try {
+    wasUnique = await isUnique(value.current, slugContext)
+  } catch (error) {
+    if (!isClientUnavailableError(error)) throw error
+    context.__internal?.onSkipped?.({
+      check: 'slugUniqueness',
+      level: context.__internal?.validationLevel || 'error',
+      path: context.path || [],
+      reason: 'clientUnavailable',
+    })
+    return true
+  }
   if (wasUnique) {
     return true
   }

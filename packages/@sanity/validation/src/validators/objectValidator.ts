@@ -58,7 +58,13 @@ export const objectValidators: Validators = {
     }
 
     if (!getDocumentExists) {
-      throw new Error(`\`getDocumentExists\` was not provided in validation context`)
+      context.__internal?.onSkipped?.({
+        check: 'referenceExistence',
+        level: context.__internal?.validationLevel || 'error',
+        path: context.path || [],
+        reason: 'clientUnavailable',
+      })
+      return true
     }
 
     const documentId = document?._id
