@@ -114,12 +114,15 @@ export function createTransactionsCache() {
   let lastResolvedSince: string | null = null
   let lastResolvedTo: string | null = null
   let lastTransactions: TransactionLogEventWithEffects[] = []
+  let lastRemoteTransactionsCount = 0
 
   return {
     /**
      * Returns the transactions to reuse for the given range, or `null` when a fetch is needed:
      * - Viewing latest (no `toRev`) with an unchanged since: reuses the cached transactions
-     *   concatenated with the live remote transactions (deduped by id).
+     *   concatenated with the live remote transactions (deduped by id) — unless the remote buffer
+     *   *shrank* (it was cleared after hitting its cap), in which case the cleared transactions
+     *   are only in the translog and the range must be refetched.
      * - Unchanged since *and* to: reuses the cached transactions as-is.
      */
     get({
@@ -133,7 +136,13 @@ export function createTransactionsCache() {
       viewingLatest: boolean
       remoteTransactions: TransactionLogEventWithEffects[]
     }): TransactionLogEventWithEffects[] | null {
+      const remoteShrank = remoteTransactions.length < lastRemoteTransactionsCount
+      lastRemoteTransactionsCount = remoteTransactions.length
       if (viewingLatest && lastResolvedSince === sinceRev) {
+        if (remoteShrank) {
+          // The remote buffer was cleared: its transactions are only in the translog now.
+          return null
+        }
         // The document has been previously resolved and it's on latest, we can use the remote transactions, we don't need to fetch them again
         return removeDuplicatedTransactions(lastTransactions.concat(remoteTransactions))
       }

@@ -18,6 +18,13 @@ interface GetRemoteTransactionsSubscriptionOptions {
   onRefetch: () => void
 }
 
+/**
+ * Maximum number of remote transactions accumulated before the buffer is cleared and the event
+ * list refetched (which re-synthesizes edit events from the translog). Keeps long editing
+ * sessions from growing the buffer — and the diff recomputation cost — without bound.
+ */
+export const REMOTE_TRANSACTIONS_BUFFER_LIMIT = 100
+
 /** What the events store should do with an incoming remote mutation. */
 export type RemoteMutationVerdict = 'ignore' | 'refetch' | 'refetch-and-clear' | 'append'
 
@@ -72,8 +79,10 @@ export function classifyRemoteMutation(
  * latest version), `remoteEdits$` (merged into the events list), and `subscribe` which activates
  * the listener and returns the rxjs subscription.
  *
- * Known quirk: `remoteTransactions$` only resets on created/deleted effects, so it accumulates
- * without bound during long editing sessions (tracked as a known issue).
+ * The accumulated buffer is bounded by {@link REMOTE_TRANSACTIONS_BUFFER_LIMIT}: when the cap is
+ * reached the buffer is cleared and the events are refetched, so long editing sessions don't grow
+ * memory or diff recomputation cost without bound. `getDocumentChanges` detects the cleared
+ * buffer and refetches the affected range from the translog.
  */
 export function getRemoteTransactionsSubscription({
   client,
@@ -107,12 +116,21 @@ export function getRemoteTransactionsSubscription({
         onRefetch()
         remoteTransactions$.next([])
         return
-      case 'append':
-        remoteTransactions$.next([
+      case 'append': {
+        const transactions = [
           ...remoteTransactions$.value,
           remoteMutationToTransaction(remoteMutation),
-        ])
+        ]
+        if (transactions.length > REMOTE_TRANSACTIONS_BUFFER_LIMIT) {
+          // Buffer cap reached: refetch the events (re-synthesizing edit events from the
+          // translog) and start accumulating again, instead of growing without bound.
+          onRefetch()
+          remoteTransactions$.next([])
+          return
+        }
+        remoteTransactions$.next(transactions)
         return
+      }
       default:
         verdict satisfies never
     }
