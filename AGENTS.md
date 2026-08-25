@@ -116,20 +116,6 @@ pnpm dev                # Starts dev studio at http://localhost:3333
 
 **Note:** The dev studio requires Sanity user authentication in the browser. It's a Vite application that communicates with Sanity API endpoints, so you'll need to log in with a Sanity account when you access `http://localhost:3333` to use the studio.
 
-### Running the Studio diagnostics viewer
-
-The standalone, client-only diagnostics viewer does not require authentication:
-
-```bash
-pnpm dev:studio-diagnostics
-pnpm build:studio-diagnostics
-```
-
-Its `vercel.json` configures builds and SPA routing but does not create a Vercel project. A
-maintainer must create and connect a project under the `sanity-sandbox` team once, with
-`dev/studio-diagnostics-viewer` as its Root Directory. The Vercel Git integration then provides
-automatic PR previews and production deploys from `main`.
-
 ## Local Development
 
 This section clarifies what requires authentication and what doesn't—critical for AI agents to avoid getting stuck on auth flows.
