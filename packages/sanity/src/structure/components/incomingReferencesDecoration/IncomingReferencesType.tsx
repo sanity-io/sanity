@@ -169,15 +169,14 @@ function IncomingReferencesTypeList({
             description: 'The document you are trying to link cannot be linked to',
             status: 'error',
           })
-          return
+        } else {
+          // if the document is published and the schema is not live edit, we want to update the draft id, not the published id
+          // If it's a version, we can update the version document.
+          if (isPublishedId(documentId) && !liveEdit) {
+            linkedDocument._id = getDraftId(documentId)
+          }
+          await client.createOrReplace(linkedDocument)
         }
-
-        // if the document is published and the schema is not live edit, we want to update the draft id, not the published id
-        // If it's a version, we can update the version document.
-        if (isPublishedId(documentId) && !liveEdit) {
-          linkedDocument._id = getDraftId(documentId)
-        }
-        await client.createOrReplace(linkedDocument)
       } catch (err) {
         // The fetch or write failed (e.g. insufficient permissions) —
         // tell the user.
@@ -187,14 +186,12 @@ function IncomingReferencesTypeList({
           description: err instanceof Error ? err.message : undefined,
           status: 'error',
         })
-        // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
-      } finally {
-        // Always clear the optimistic placeholder. The effect below also clears
-        // it once the linked document shows up in `documents`, but that never
-        // happens if the references stream has degraded to an empty list (e.g.
-        // after a load error), so don't rely on it alone.
-        setNewReferenceId(null)
       }
+      // Always clear the optimistic placeholder. The effect below also clears
+      // it once the linked document shows up in `documents`, but that never
+      // happens if the references stream has degraded to an empty list (e.g.
+      // after a load error), so don't rely on it alone.
+      setNewReferenceId(null)
     },
     [client, onLinkDocument, referenced, publishedExists, toast, schemaType],
   )
