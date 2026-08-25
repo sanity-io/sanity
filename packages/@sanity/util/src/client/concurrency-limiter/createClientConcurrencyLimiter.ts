@@ -70,28 +70,31 @@ export function createClientConcurrencyLimiter(
           case 'fetch': {
             return (...args: Parameters<ObservableSanityClient['fetch']>) => {
               const signal = args[2]?.signal
-              const ready = limiter.ready(signal)
-              let acquired = false
 
-              return from(ready).pipe(
-                tap(() => {
-                  acquired = true
-                }),
-                switchMap(() =>
-                  defer(() => {
-                    signal?.throwIfAborted()
-                    return target.fetch(...args)
+              return defer(() => {
+                const ready = limiter.ready(signal)
+                let acquired = false
+
+                return from(ready).pipe(
+                  tap(() => {
+                    acquired = true
                   }),
-                ),
-                finalize(() => {
-                  if (acquired) {
-                    limiter.release()
-                    return
-                  }
+                  switchMap(() =>
+                    defer(() => {
+                      signal?.throwIfAborted()
+                      return target.fetch(...args)
+                    }),
+                  ),
+                  finalize(() => {
+                    if (acquired) {
+                      limiter.release()
+                      return
+                    }
 
-                  void ready.then(limiter.release, () => undefined)
-                }),
-              )
+                    void ready.then(limiter.release, () => undefined)
+                  }),
+                )
+              })
             }
           }
           case 'clone': {
