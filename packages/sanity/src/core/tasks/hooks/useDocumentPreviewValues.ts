@@ -7,6 +7,7 @@ import {useSchema} from '../../hooks/useSchema'
 import {usePerspective} from '../../perspective/usePerspective'
 import {getPreviewStateObservable} from '../../preview/utils/getPreviewStateObservable'
 import {useDocumentPreviewStore} from '../../store/datastores'
+import {useShallowUnique} from '../../util/useShallowUnique'
 
 interface PreviewHookOptions {
   documentId: string
@@ -28,12 +29,12 @@ interface PreviewHookValue {
 
 /** @internal */
 export function useDocumentPreviewValues(options: PreviewHookOptions): PreviewHookValue {
-  const {
-    documentId,
-    documentType,
-    perspectiveStack: perspectiveStackFromOptions,
-    variant,
-  } = options || {}
+  const {documentId, documentType, variant} = options || {}
+  // Keyed on contents: callers naturally pass the stack as an inline array
+  // literal, and `getPreviewStateObservable` returns a fresh pipeline per
+  // call — keying the memo on the array reference would mint a new observable
+  // identity every render, which react-rx v5 turns into a render loop.
+  const perspectiveStackFromOptions = useShallowUnique(options?.perspectiveStack)
   const schemaType = useSchema().get(documentType)
 
   const documentPreviewStore = useDocumentPreviewStore()

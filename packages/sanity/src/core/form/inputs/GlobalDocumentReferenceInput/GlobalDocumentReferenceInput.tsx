@@ -144,14 +144,18 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
     [getReferenceInfo, schemaType],
   )
 
+  // Keyed on the `_ref` string, not the `value` object: unrelated value
+  // updates (e.g. `_weak`) would otherwise mint a new refDoc identity and
+  // rebuild/refetch the reference info observable.
+  const refId = value?._ref
   const refDoc = useMemo(() => {
-    if (!value?._ref) {
+    if (!refId) {
       return null
     }
 
-    const [, , _id] = value._ref.split(':', 3)
+    const [, , _id] = refId.split(':', 3)
     return {_id}
-  }, [value])
+  }, [refId])
 
   const loadableReferenceInfo = useReferenceInfo(refDoc as FIXME, getReferenceInfoMemo)
 

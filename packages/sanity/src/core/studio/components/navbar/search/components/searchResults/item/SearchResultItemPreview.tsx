@@ -16,6 +16,7 @@ import {getPreviewValueWithFallback} from '../../../../../../../preview/utils/ge
 import {useDocumentVersions} from '../../../../../../../releases/hooks/useDocumentVersions'
 import {useDocumentPreviewStore} from '../../../../../../../store/datastores'
 import {type DocumentPresence} from '../../../../../../../store/presence/types'
+import {useShallowUnique} from '../../../../../../../util/useShallowUnique'
 
 interface SearchResultItemPreviewProps {
   documentId: string
@@ -59,10 +60,16 @@ export function SearchResultItemPreview({
   presence,
   schemaType,
   showBadge = true,
-  perspective,
+  perspective: perspectiveProp,
   variant,
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
+
+  // Keyed on contents: `perspective` may arrive as a freshly built array
+  // (e.g. an inline `[releaseId]` upstream), and `getPreviewStateObservable`
+  // returns a fresh pipeline per call — keying on the reference would rebuild
+  // and resubscribe the preview for every result item on each parent render.
+  const perspective = useShallowUnique(perspectiveProp)
 
   const observable = useMemo(() => {
     return getPreviewStateObservable(

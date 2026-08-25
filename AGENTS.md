@@ -298,6 +298,21 @@ returns first-render values when the calling component is wrapped in `forwardRef
 wraps the native hook, so check the implementation before trusting one — `react-rx` is safe on both
 v4 and v5 because `useObservableEvent` builds on the same `use-effect-event` ponyfill.
 
+### Observable identity must be render-stable (react-rx)
+
+Observables handed to react-rx (`useObservable`, `useSyncObservable`, `useObservablePromise`,
+`useLoadable`, hooks from `createHookFromObservableFactory`) are cached **by reference** — a new
+observable identity per render tears down and resubscribes the pipeline every render, and under
+react-rx v5 self-sustained a render loop (real incident: ~60 update passes/sec studio-wide,
+fixed in e089afde26; react-rx v6 converges instead, but the churn and refetches remain). Never
+build `.pipe(...)` / `of(...)` / `new Subject()` in a render body outside `useMemo`, and key
+observable memos on **contents**, not on caller-provided array/object references — use the
+internal `useShallowUnique` (`dequal/lite`-based; not exported from `sanity`) on such hook
+params (callers pass inline literals; the React Compiler does not compile external callers and
+bails out silently, so explicit memoization is the only real defense). Full rubric, factory
+cache inventory, and regression-test recipe: the `sanity-observable-identity` skill
+(`.agents/skills/sanity-observable-identity/SKILL.md`).
+
 ### Refs: use `props.ref`, not `forwardRef`
 
 React 19 passes `ref` as a regular prop. Do not use `forwardRef` — destructure `ref` from props

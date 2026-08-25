@@ -3,6 +3,8 @@ import {useObservable, useSyncObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
 
+import {useShallowUnique} from './useShallowUnique'
+
 /** @internal */
 export type LoadingTuple<T> = [T, boolean]
 
@@ -41,7 +43,14 @@ export function createHookFromObservableFactory<T, TArg = void>(
   const initialLoadingTuple: LoadingTuple<T | undefined> = [initialValue, true]
   const initialResult = {type: 'tuple', tuple: initialLoadingTuple} as const
 
-  return function useLoadableFromCreateLoadable(arg: TArg) {
+  return function useLoadableFromCreateLoadable(unstableArg: TArg) {
+    // Key the observable on the arg's CONTENTS, not its reference: hooks
+    // created from this factory take option objects/arrays that callers may
+    // build inline every render, and react-rx keys its store on observable
+    // identity — a fresh identity per render becomes a self-sustaining render
+    // loop under `useObservable`'s deferred pass (see the useDocumentValues
+    // regression, e089afde26).
+    const arg = useShallowUnique(unstableArg)
     const observable = useMemo(
       () =>
         of(arg).pipe(

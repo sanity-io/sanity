@@ -3,6 +3,8 @@ import {useObservable, useSyncObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
 import {type KeyValueStoreValue, useKeyValueStore} from 'sanity'
 
+import {useShallowUnique} from './hooks/useShallowUnique'
+
 const STRUCTURE_TOOL_NAMESPACE = 'studio.structure-tool'
 
 /**
@@ -11,9 +13,13 @@ const STRUCTURE_TOOL_NAMESPACE = 'studio.structure-tool'
 export function useStructureToolSetting<ValueType>(
   namespace: string,
   key: string | null,
-  defaultValue?: ValueType,
+  unstableDefaultValue?: ValueType,
 ): [ValueType | undefined, (_value: ValueType | null) => Promise<void>] {
   const keyValueStore = useKeyValueStore()
+  // Keyed on contents: `defaultValue` can be an object (e.g. a sort order),
+  // and its reference feeds the observable identity below — a fresh identity
+  // per render is loop-capable under react-rx v5.
+  const defaultValue = useShallowUnique(unstableDefaultValue)
 
   const keyValueStoreKey = [STRUCTURE_TOOL_NAMESPACE, namespace, key].filter(Boolean).join('.')
 

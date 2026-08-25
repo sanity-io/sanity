@@ -79,16 +79,24 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
     ? editState.published
     : (editState.version ?? editState.draft)
 
-  const collatedDivergences =
-    !hasUpstreamVersion || typeof upstreamId === 'undefined' || typeof subjectId === 'undefined'
-      ? {
-          context: new Subject<FindDivergencesContext>(),
-          observable: of(collateDocumentDivergencesInitialState),
-        }
-      : collateDocumentDivergences({
-          subjectId: subjectId,
-          upstreamId: upstreamId,
-        })
+  // Memoized: the no-upstream fallback would otherwise mint a fresh Subject
+  // and `of(...)` observable every render. Downstream `useSyncObservable`s key
+  // on those identities, so per-render identities cascade into resubscription
+  // on every render. (`collateDocumentDivergences` itself is LRU-cached per
+  // `upstreamId`/`subjectId`, so the upstream branch is already stable.)
+  const collatedDivergences = useMemo(
+    () =>
+      typeof upstreamId === 'undefined' || typeof subjectId === 'undefined'
+        ? {
+            context: new Subject<FindDivergencesContext>(),
+            observable: of(collateDocumentDivergencesInitialState),
+          }
+        : collateDocumentDivergences({
+            subjectId: subjectId,
+            upstreamId: upstreamId,
+          }),
+    [upstreamId, subjectId],
+  )
 
   useCollateDivergencesContext({
     upstreamHead,

@@ -15,6 +15,7 @@ import {
 
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
+import {useShallowUnique} from '../../hooks/useShallowUnique'
 import {structureLocaleNamespace} from '../../i18n'
 import {assignId} from '../../structureResolvers/assignId'
 import {type PaneMenuItem} from '../../types'
@@ -30,7 +31,6 @@ import {
 } from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder, type StaticSortOrder} from './types'
-import {useShallowUnique} from './useShallowUnique'
 
 /**
  * Type for custom menu item state storage.

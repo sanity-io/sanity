@@ -21,6 +21,7 @@ import {keyframes, styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {usePane} from '../../components/pane/usePane'
+import {useShallowUnique} from '../../hooks/useShallowUnique'
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
@@ -35,7 +36,6 @@ import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
 import {isOrderByIdsParam, reorderItemsByIdsParam} from './orderByIdsParam'
 import {type LoadingVariant, type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
-import {useShallowUnique} from './useShallowUnique'
 
 /**
  * @internal

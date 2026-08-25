@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {type CSSProperties, useCallback, useEffect, useRef, useState} from 'react'
+import {type CSSProperties, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -58,7 +58,8 @@ export function UnpublishVersionDialog(props: {
   const tone = getReleaseTone(release as ReleaseDocument)
   const schemaType = schema.get(documentType)
 
-  const preview = useValuePreview({schemaType, value: {_id: documentVersionId}})
+  const previewedValue = useMemo(() => ({_id: documentVersionId}), [documentVersionId])
+  const preview = useValuePreview({schemaType, value: previewedValue})
   const previewTitle = preview?.value?.title
 
   const event = useDocumentOperationEvent(publishedId, documentType)

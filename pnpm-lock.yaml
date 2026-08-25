@@ -1896,6 +1896,9 @@ importers:
       debug:
         specifier: ^4.4.3
         version: 4.4.3(supports-color@8.1.1)
+      dequal:
+        specifier: ^2.0.3
+        version: 2.0.3
       exif-component:
         specifier: ^1.0.1
         version: 1.0.1

@@ -7,6 +7,7 @@ import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionsLogs'
 import {getPublishedId} from '../../../../../util/draftUtils'
 import {promiseWithResolvers} from '../../../../../util/promiseWithResolvers'
+import {useShallowUnique} from '../../../../../util/useShallowUnique'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../util/releasesClient'
 import {type DocumentInRelease} from '../../../detail/types'
 
@@ -20,9 +21,13 @@ type RevertDocuments = RevertDocument[]
 
 type DocumentRevertStates = RevertDocuments | null | undefined
 
-export const useDocumentRevertStates = (releaseDocuments: DocumentInRelease[]) => {
+export const useDocumentRevertStates = (unstableReleaseDocuments: DocumentInRelease[]) => {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const observableClient = client.observable
+  // Keyed on contents so a rebuilt-but-equal array does not refetch the
+  // transaction log and revert revisions (the observable identity below
+  // feeds react-rx).
+  const releaseDocuments = useShallowUnique(unstableReleaseDocuments)
   const transactionId = releaseDocuments[0]?.document._rev
   const {dataset} = client.config()
 
