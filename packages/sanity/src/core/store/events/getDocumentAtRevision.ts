@@ -5,16 +5,20 @@ import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
 import {type EventsStoreRevision} from './types'
 
-const documentRevisionCache: Record<string, Observable<EventsStoreRevision>> = Object.create(null)
+/**
+ * Maximum number of revision observables kept in the module cache (LRU).
+ * @internal
+ */
+export const REVISION_CACHE_MAX_ENTRIES = 100
+
+const documentRevisionCache = new Map<string, Observable<EventsStoreRevision>>()
 
 /**
  * Clears the module-level revision cache. Exposed for tests.
  * @internal
  */
 export function clearDocumentRevisionCache(): void {
-  for (const key of Object.keys(documentRevisionCache)) {
-    delete documentRevisionCache[key]
-  }
+  documentRevisionCache.clear()
 }
 
 /**
@@ -56,8 +60,9 @@ type Context = {client: SanityClient; documentId: string} & (
  * - Errors are logged and emitted as `{document: null, loading: false}` — never thrown.
  *
  * Results are cached module-level per `projectId:dataset:documentId@<revisionId|time>` observable
- * (`shareReplay(1)`), so concurrent and repeated subscribers share one request.
- * Known quirks:  error results are cached forever, and the cache never evicts (tracked as known issues).
+ * (`shareReplay(1)`), so concurrent and repeated subscribers share one request. The cache is
+ * LRU-bounded (oldest entry evicted beyond the cap), and failed requests are dropped from the
+ * cache so the next subscriber retries.
  */
 export function getDocumentAtRevision<InputContext extends Context>({
   client,
@@ -70,40 +75,54 @@ export function getDocumentAtRevision<InputContext extends Context>({
   }
   const {projectId, dataset} = client.config()
   const cacheKey = `${projectId}:${dataset}:${documentId}@${revisionId ? ['revisionId', revisionId].join('.') : ['time', time].join('.')}`
-  if (!documentRevisionCache[cacheKey]) {
-    const searchParams = new URLSearchParams(
-      typeof revisionId === 'string' ? {revision: revisionId} : {time},
-    )
-    documentRevisionCache[cacheKey] = client.observable
-      .request<{documents: SanityDocument[]}>({
-        url: `/data/history/${dataset}/documents/${documentId}?${searchParams}`,
-        tag: 'get-document-revision',
-      })
-      .pipe(
-        map((response) => {
-          const document = response.documents[0]
-          return {document: document, loading: false, revisionId: document?._rev}
-        }),
-
-        catchError((error: Error) => {
-          // TODO: Handle error
-          console.error('Error fetching document at revision', error)
-          return [
-            {
-              document: null,
-              loading: false,
-              revisionId: revisionId,
-            } satisfies Result<Context> as any,
-          ]
-        }),
-        startWith({
-          document: null,
-          loading: true,
-          revisionId: revisionId,
-        } satisfies Result<Context> as any),
-        shareReplay(1),
-      )
+  const cached = documentRevisionCache.get(cacheKey)
+  if (cached) {
+    // Refresh recency so frequently viewed revisions survive eviction.
+    documentRevisionCache.delete(cacheKey)
+    documentRevisionCache.set(cacheKey, cached)
+    return cached as Observable<Result<InputContext>>
   }
 
-  return documentRevisionCache[cacheKey]
+  const searchParams = new URLSearchParams(
+    typeof revisionId === 'string' ? {revision: revisionId} : {time},
+  )
+  const revision$ = client.observable
+    .request<{documents: SanityDocument[]}>({
+      url: `/data/history/${dataset}/documents/${documentId}?${searchParams}`,
+      tag: 'get-document-revision',
+    })
+    .pipe(
+      map((response) => {
+        const document = response.documents[0]
+        return {document: document, loading: false, revisionId: document?._rev}
+      }),
+
+      catchError((error: Error) => {
+        // TODO: Handle error
+        console.error('Error fetching document at revision', error)
+        // Drop the failed observable from the cache so the next subscriber retries the request.
+        documentRevisionCache.delete(cacheKey)
+        return [
+          {
+            document: null,
+            loading: false,
+            revisionId: revisionId,
+          } satisfies Result<Context> as any,
+        ]
+      }),
+      startWith({
+        document: null,
+        loading: true,
+        revisionId: revisionId,
+      } satisfies Result<Context> as any),
+      shareReplay(1),
+    )
+
+  documentRevisionCache.set(cacheKey, revision$)
+  if (documentRevisionCache.size > REVISION_CACHE_MAX_ENTRIES) {
+    const oldestKey = documentRevisionCache.keys().next().value
+    if (oldestKey !== undefined) documentRevisionCache.delete(oldestKey)
+  }
+
+  return revision$
 }
