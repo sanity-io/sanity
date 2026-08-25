@@ -1,6 +1,7 @@
 import {type DocumentId, getPublishedId} from '@sanity/id-utils'
 import {type CustomValidatorResult, isReference, type Validators} from '@sanity/types'
 
+import {ClientUnavailableError} from '../clientUnavailable'
 import {validationMarkerCodes} from '../codes'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'
@@ -58,6 +59,10 @@ export const objectValidators: Validators = {
     }
 
     if (!getDocumentExists) {
+      if (context.__internal?.hasClient !== false) {
+        throw new Error(`\`getDocumentExists\` was not provided in validation context`)
+      }
+
       context.__internal?.onSkipped?.({
         check: 'referenceExistence',
         level: context.__internal?.validationLevel || 'error',
@@ -162,6 +167,8 @@ export const objectValidators: Validators = {
         context,
       )
     } catch (err) {
+      if (err instanceof ClientUnavailableError) throw err
+
       const error = new Error(
         `Media validator at ${pathToString(
           context.path,

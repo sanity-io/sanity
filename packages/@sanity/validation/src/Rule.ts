@@ -2,6 +2,7 @@
 import {Rule as BaseRule} from '@sanity/schema'
 import {
   type CustomValidator,
+  type MediaValidator,
   type Rule as IRule,
   type RuleClass,
   type SchemaType,
@@ -129,7 +130,7 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
         }
 
         if (curr.flag === 'custom' || curr.flag === 'media') {
-          const validationCallback = specConstraint as CustomValidator
+          const validationCallback = specConstraint as CustomValidator | MediaValidator
           const metadata = validationCallback.__sanityValidation
 
           if (metadata === 'unavailable') {
