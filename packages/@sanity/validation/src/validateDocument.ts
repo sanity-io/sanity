@@ -17,7 +17,7 @@ import flatten from 'lodash-es/flatten.js'
 import {concat, defer, from, lastValueFrom, merge, Observable, of, throwError} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, raceWith, switchMap, toArray} from 'rxjs/operators'
 
-import {abortSignalAsObservable, getAbortReason, throwIfAborted} from './abortSignal'
+import {abortSignalAsObservable} from './abortSignal'
 import {ClientUnavailableError} from './clientUnavailable'
 import {type DocumentValidationMarker, validationMarkerCodes} from './codes'
 import {getFallbackLocaleSource} from './i18n/fallback'
@@ -371,7 +371,7 @@ export function evaluateDocumentInternal({
   customValidation = true,
   signal,
 }: ValidateDocumentInternalOptions): Promise<DocumentValidationResult> {
-  if (signal?.aborted) return Promise.reject(getAbortReason(signal))
+  if (signal?.aborted) return Promise.reject(signal.reason)
   const limitConcurrency = createClientConcurrencyLimiter(
     maxFetchConcurrency ?? DEFAULT_MAX_FETCH_CONCURRENCY,
   )
@@ -433,7 +433,7 @@ export function evaluateDocumentObservable(
 ): Observable<DocumentValidationResult> {
   const {signal} = options
   return defer(() => {
-    throwIfAborted(signal)
+    signal?.throwIfAborted()
     const validation$ = evaluateDocumentObservableWithoutCancellation(options)
     return signal ? validation$.pipe(raceWith(abortSignalAsObservable(signal))) : validation$
   })
@@ -520,7 +520,7 @@ function evaluateDocumentObservableWithoutCancellation({
       switchMap(() => validateItemObservable(validationOptions)),
       map((markers) => createDocumentValidationResult(markers, complete)),
       catchError((err) => {
-        if (signal?.aborted) return throwError(() => getAbortReason(signal))
+        if (signal?.aborted) return throwError(() => signal.reason)
         console.error(err)
 
         const message = err?.message || 'Unknown error'
@@ -561,7 +561,7 @@ export type ValidateItemOptions = {
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
   return lastValueFrom(
     defer(() => {
-      throwIfAborted(opts.signal)
+      opts.signal?.throwIfAborted()
       const validation$ = validateItemObservable(opts)
       return opts.signal
         ? validation$.pipe(raceWith(abortSignalAsObservable(opts.signal)))

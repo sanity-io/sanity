@@ -20,7 +20,7 @@ export class ConcurrencyLimiter {
    * If under the limit, it resolves immediately; otherwise, it waits until a slot is free.
    */
   ready = (signal?: AbortSignal): Promise<void> => {
-    if (signal?.aborted) return Promise.reject(getAbortReason(signal))
+    if (signal?.aborted) return Promise.reject(signal.reason)
     if (this.max === Infinity) return Promise.resolve()
 
     if (this.current < this.max) {
@@ -33,7 +33,7 @@ export class ConcurrencyLimiter {
       pending.onAbort = () => {
         const index = this.resolvers.indexOf(pending)
         if (index !== -1) this.resolvers.splice(index, 1)
-        if (signal) reject(getAbortReason(signal))
+        if (signal) reject(signal.reason)
       }
       signal?.addEventListener('abort', pending.onAbort, {once: true})
       this.resolvers.push(pending)
@@ -51,7 +51,7 @@ export class ConcurrencyLimiter {
     while (next) {
       next.signal?.removeEventListener('abort', next.onAbort)
       if (next.signal?.aborted) {
-        next.reject(getAbortReason(next.signal))
+        next.reject(next.signal.reason)
         next = this.resolvers.shift()
         continue
       }
@@ -61,15 +61,4 @@ export class ConcurrencyLimiter {
 
     this.current = Math.max(0, this.current - 1)
   }
-}
-
-function getAbortReason(signal: AbortSignal): unknown {
-  return signal.reason === undefined
-    ? new DOMException('The operation was aborted', 'AbortError')
-    : signal.reason
-}
-
-/** @internal */
-export function throwIfAborted(signal: AbortSignal | undefined): void {
-  if (signal?.aborted) throw getAbortReason(signal)
 }
