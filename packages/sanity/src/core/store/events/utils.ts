@@ -123,47 +123,54 @@ export function addEventId(
  * Draft-variant post-processing: links publish/delete events to the edit and create events that
  * produced them, so the UI can render those as an expandable group under the publish event.
  *
- * For every `publishDocumentVersion` / `deleteDocumentVersion` event (scanning newest → oldest):
- * - Rewrites its `documentId` to the `versionId` (the draft id).
- * - Walks the *older* events: every `editDocumentVersion` on the way gets `parentId` set to the
- *   publish/delete event id; the first `createDocumentVersion` found is attached as
- *   `creationEvent` (and gets `parentId` too), then the walk stops.
+ * Single newest → oldest pass (assumes `events` is sorted newest-first, as produced by
+ * {@link sortEvents}):
+ * - `publishDocumentVersion` / `deleteDocumentVersion`: `documentId` is rewritten to the
+ *   `versionId` (the draft id), and the event becomes the active parent for the edits below it.
+ * - `editDocumentVersion`: gets `parentId` set to the nearest publish/delete event above it
+ *   (with no creation event in between). If its id equals that `parentId` (the last edit before
+ *   a publish shares the publish event's id), the id is re-pointed at the second transaction's
+ *   revision so the edit remains individually selectable.
+ * - `createDocumentVersion`: attached as `creationEvent` (and given `parentId`) to every
+ *   publish/delete event above it that hasn't found its creation event yet, then closes the
+ *   current group — older edits belong to the next publish.
  *
- * For `editDocumentVersion` events whose id equals their own `parentId` (the last edit before a
- * publish shares the publish event's id), the id is re-pointed at the second transaction's
- * revision so the edit remains individually selectable.
- *
- * Notes on current behavior:
- * - Operates on a `JSON.parse(JSON.stringify(...))` deep clone (runs on every pipeline emission
- *   for drafts — known perf cost, tracked as a known issue).
- * - Assumes `events` is sorted newest-first (as produced by {@link sortEvents}).
+ * Events are shallow-copied; the input list and its events are not mutated.
  */
 export function addParentToEvents(events: DocumentGroupEvent[]): DocumentGroupEvent[] {
-  const eventsWithParent = JSON.parse(JSON.stringify(events)) as DocumentGroupEvent[]
-  eventsWithParent.forEach((event, index) => {
+  type ParentEvent = Extract<
+    DocumentGroupEvent,
+    {type: 'publishDocumentVersion' | 'deleteDocumentVersion'}
+  >
+  const eventsWithParent = events.map((event) => ({...event})) as DocumentGroupEvent[]
+
+  /** The publish/delete event whose group the walk is currently inside. */
+  let activeParent: ParentEvent | null = null
+  /** Publish/delete events that haven't found their creation event yet. */
+  let awaitingCreationEvent: ParentEvent[] = []
+
+  for (const event of eventsWithParent) {
     if (isPublishDocumentVersionEvent(event) || isDeleteDocumentVersionEvent(event)) {
       event.documentId = event.versionId
-      // Find the creation event and edit events for this published event
-      for (let i = index; i < eventsWithParent.length; i++) {
-        const nextEvent = eventsWithParent[i]
-        if (isEditDocumentVersionEvent(nextEvent)) {
-          nextEvent.parentId = event.id
-        }
-        if (isCreateDocumentVersionEvent(nextEvent)) {
-          event.creationEvent = nextEvent
-          nextEvent.parentId = event.id
-          // When we find the create event we should stop the loop. Events are ordered
-          break
-        }
+      activeParent = event
+      awaitingCreationEvent.push(event)
+    } else if (isEditDocumentVersionEvent(event)) {
+      if (activeParent) {
+        event.parentId = activeParent.id
       }
-    }
-    if (isEditDocumentVersionEvent(event)) {
       // If it's the first edit event after expanding a publish, the id of this event will be shared with the id of the published event, we need to use the following transaction id.
       if (event.parentId === event.id && event.transactions[1]?.revisionId) {
         event.id = event.transactions[1].revisionId
       }
+    } else if (isCreateDocumentVersionEvent(event)) {
+      for (const parent of awaitingCreationEvent) {
+        parent.creationEvent = event
+        event.parentId = parent.id
+      }
+      awaitingCreationEvent = []
+      activeParent = null
     }
-  })
+  }
   return eventsWithParent
 }
 
