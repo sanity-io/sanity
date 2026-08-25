@@ -19,27 +19,26 @@ describe('useShallowUnique', () => {
     expect(result.current).toBe(changed)
   })
 
-  it('keeps the previous identity when object contents are equal', () => {
-    const member = {nested: true}
-    const initial = {id: 'a', member}
+  it('keeps the previous identity when object contents are deeply equal', () => {
+    const initial = {id: 'a', member: {nested: true}}
     const {result, rerender} = renderHook(({value}) => useShallowUnique(value), {
       initialProps: {value: initial},
     })
 
-    rerender({value: {id: 'a', member}})
+    // dequal/lite compares plain objects deeply: a rebuilt nested object with
+    // equal contents is not a change
+    rerender({value: {id: 'a', member: {nested: true}}})
     expect(result.current).toBe(initial)
 
-    // Members compare by reference: a new nested identity is a change
-    const changed = {id: 'a', member: {nested: true}}
+    const changed = {id: 'a', member: {nested: false}}
     rerender({value: changed})
     expect(result.current).toBe(changed)
   })
 
-  it('compares functions by identity, not by enumerable keys', () => {
-    // shallow-equals reports two different plain functions as equal (it
-    // compares their own enumerable keys, of which plain functions have
-    // none). That would pin a stale first function forever for union-typed
-    // params that may hold callbacks.
+  it('compares functions by identity', () => {
+    // dequal/lite falls through to identity for functions — two different
+    // plain functions must count as a change, or a stale first function
+    // would be pinned forever for union-typed params that may hold callbacks.
     const first = () => 'first'
     const {result, rerender} = renderHook(({value}) => useShallowUnique<() => string>(value), {
       initialProps: {value: first},

@@ -3,31 +3,34 @@ name: sanity-observable-identity
 description: Keep observable identities render-stable in React code that subscribes via react-rx (useObservable, useSyncObservable, useObservablePromise, useLoadable, createHookFromObservableFactory). Use when writing or reviewing hooks/components that build RxJS observables in render, when adding hook parameters that are arrays/objects/functions feeding an observable memo, or when investigating render loops, resubscription churn, or redundant refetches in the studio.
 ---
 
-# Stable Observable Identity (react-rx v5)
+# Stable Observable Identity (react-rx)
 
 ## The rule
 
 An observable handed to react-rx must keep the **same identity across renders** unless a
-semantic input actually changed. react-rx v5 keys its internal store cache on the observable
+semantic input actually changed. react-rx keys its internal store cache on the observable
 reference (a WeakMap), so a new identity means: new store entry, warm-up subscription, teardown
-and resubscription of the old pipeline — and in the worst case a **self-sustaining render loop**.
+and resubscription of the old pipeline — and under react-rx v5, in the worst case a
+**self-sustaining render loop**.
 
 Real incident: `useDocumentValues(id, ['title'])` memoized its observable on the `paths` array
 reference. An inline literal from an uncompiled caller busted the memo every render — ~60 update
 passes/second, sustained, studio-wide slowdown (fixed in e089afde26, `useShallowUnique`).
 
-## Why a new identity per render loops
+## Why a new identity per render loops (v5) or churns (v6+)
 
-- `useObservable` wraps each snapshot as `{observable, value}` and passes it through
-  `useDeferredValue` (identity-coherent deferral). A new observable identity schedules a
+- Under react-rx v5, `useObservable` wraps each snapshot as `{observable, value}` and passes it
+  through `useDeferredValue` (identity-coherent deferral). A new observable identity schedules a
   deferred re-render pass; that pass runs the component body again, which mints another
   identity, which schedules another pass — forever. The emitted **values being equal does not
   help**; the wrapper's `observable` field alone sustains the loop.
-- `useSyncObservable` has no deferral, but each new identity is a fresh store entry whose warm-up
-  replays the source synchronously. Pipelines that `map` emissions into fresh objects
-  (`{isLoading, value}` wrappers) then present a changed snapshot on resubscription — sustained
-  rebuild/refetch churn that escalates to a loop when the replay lands before React's passive
-  effects.
+- react-rx v6 (adopted via #14234) skips the warm-up for replacement observables after a first
+  emission and re-subscribes them during render, so rebuild-every-render consumers **converge
+  instead of looping**. The rule still stands: stable identity means exactly one subscription
+  for the hook's lifetime; identity churn still tears down and rebuilds the pipeline.
+- `useSyncObservable` has no deferral, but each new identity is a fresh store entry. Pipelines
+  that `map` emissions into fresh objects (`{isLoading, value}` wrappers) then present a changed
+  snapshot on resubscription — sustained rebuild/refetch churn.
 - `useObservablePromise` creates a fresh **pending promise** per identity — `use()` consumers
   re-suspend on every render.
 - Even when nothing loops, every identity change tears down and resubscribes the pipeline. For
@@ -63,8 +66,8 @@ Write explicit memoization; treat compiler coverage as a bonus, never as the def
 | Input feeding an observable memo                                      | Do this                                                                                                                                                                                                  |
 | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Primitives (`id`, `type`, `permission`)                               | Plain `useMemo` dep. Prefer deriving primitives from objects (`value?._ref`, `currentUser?.id`) when only those matter.                                                                                  |
-| Array / plain-object hook param (`paths`, `params`, options objects)  | `useShallowUnique(param)` (`packages/sanity/src/core/util/useShallowUnique.ts`, exported from `sanity`) before using it as a dep — keys the memo on contents.                                            |
-| Document values                                                       | `useShallowUnique` works (immutable updates change top-level field refs), or key on `_id`/`_rev` when content is not needed.                                                                             |
+| Array / plain-object hook param (`paths`, `params`, options objects)  | `useShallowUnique(param)` before using it as a dep — keys the memo on contents.                                                                                                                          |
+| Document values                                                       | `useShallowUnique` works, or key on `_id`/`_rev` when content is not needed.                                                                                                                             |
 | Function param (`getReferenceInfo`, `observeAsset`, `skipValidation`) | Require a stable identity from callers (`useCallback`); document it. `useShallowUnique` compares functions by identity, so it neither helps nor hurts. Do not silently drop function identity from deps. |
 | Constant fallback branches                                            | Module-level constants: `const DISABLED$ = of(false)`, `EMPTY_ARRAY`, a memoized `{context, observable}` pair — never a fresh `of(...)` / `new Subject()` per render.                                    |
 | Whole pipelines in render                                             | Always wrap `.pipe(...)` in `useMemo` keyed per this table. Store-owned pipelines can also be cached in the store itself (`shareReplay` + per-args map).                                                 |
@@ -72,9 +75,14 @@ Write explicit memoization; treat compiler coverage as a bonus, never as the def
 Canonical examples: `useDocumentValues`, `useValuePreview`, `createHookFromObservableFactory`
 (stabilizes its `arg` for every hook created from it), `useCanInviteProjectMembers`.
 
-`useShallowUnique` notes: shallow = top-level `===` per element/member; nested fresh references
-still count as changes. `useUnique` (deep `isEqual`) is the deprecated escape hatch — avoid in
-new code.
+`useShallowUnique` notes: equality is `dequal/lite` — plain objects and arrays compare deeply,
+Date/RegExp by value, everything else (functions, Map, Set, class instances) effectively by
+identity. It is **deliberately not exported from `sanity`** (implementation detail, not public
+API): `src/core` imports `core/util/useShallowUnique`, `src/structure` keeps a synced local copy
+at `structure/hooks/useShallowUnique` because the architectural boundaries forbid
+structure → core internal imports, and separate packages (e.g. `@sanity/vision`) cannot use it —
+key their memos on primitives instead. `useUnique` (lodash `isEqual`) is the deprecated escape
+hatch — avoid in new code.
 
 ## Fresh-per-call vs internally cached factories
 

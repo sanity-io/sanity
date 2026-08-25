@@ -19,11 +19,11 @@ import {
   SanityDefaultPreview,
   useDocumentVersions,
   usePerspective,
-  useShallowUnique,
 } from 'sanity'
 import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {useShallowUnique} from '../../hooks/useShallowUnique'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
