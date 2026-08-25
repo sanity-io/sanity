@@ -157,8 +157,9 @@ function LoadedIncomingReferencesList({
     Array<{type: string; documents: CrossDatasetIncomingReferenceDocument[]}>
   >
 }) {
-  // Both requests run in parallel — they start when the parent creates the
-  // promises, and this component waits for the slower of the two.
+  // Both requests run in parallel — they start when the parent commits (or,
+  // for a live parent swapping in new observables, during that render), and
+  // this component waits for the slower of the two.
   const references = use(referencesPromise)
   const crossDatasetRefs = use(crossDatasetRefsPromise)
 
