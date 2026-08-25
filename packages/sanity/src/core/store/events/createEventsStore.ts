@@ -1,7 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type Observable} from 'rxjs'
 
-import {type useReleasesStore} from '../../releases/store/useReleasesStore'
 import {createEventsObservable} from './createEventsObservable'
 import {getDocumentChanges} from './getDocumentChanges'
 import {getExpandEvents} from './getExpandEvents'
@@ -13,7 +12,6 @@ interface EventsStoreOptions {
   client: SanityClient
   documentId: string
   documentType: string
-  releases$: ReturnType<typeof useReleasesStore>['state$']
   isLiveEdit: boolean
 }
 
@@ -37,7 +35,6 @@ export function createEventsStore({
   client,
   documentId,
   documentType,
-  releases$,
   isLiveEdit,
 }: EventsStoreOptions) {
   const initialEvents = getInitialFetchEvents({client, documentId})
@@ -54,7 +51,6 @@ export function createEventsStore({
     events$: initialEvents.events$,
     remoteEdits$,
     expandedEvents$,
-    releases$,
   })
 
   return {
