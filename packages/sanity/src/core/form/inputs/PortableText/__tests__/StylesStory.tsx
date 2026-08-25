@@ -1,4 +1,4 @@
-import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {defineArrayMember, defineField, defineType, type SanityDocument} from '@sanity/types'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
@@ -31,10 +31,10 @@ const SCHEMA_TYPES = [
     ],
   }),
 ]
-export function StylesStory() {
+export function StylesStory(props: {document?: SanityDocument}) {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
-      <TestForm />
+      <TestForm document={props.document} />
     </TestWrapper>
   )
 }

@@ -9,6 +9,15 @@ const VARIANT_ID = 'Ab12cd34'
 const DOCUMENT_ID = `${VARIANT_DOCUMENTS_PATH}.${VARIANT_ID}`
 const ACTION_RESULT = {transactionId: 'txn-1'}
 
+function mockClient() {
+  const client = {
+    action: vi.fn().mockResolvedValue(ACTION_RESULT),
+    withConfig: vi.fn(() => client),
+  }
+
+  return client
+}
+
 function createEditableVariant(): EditableSystemVariant {
   return {
     _id: DOCUMENT_ID as `_.variants.${string}`,
@@ -25,9 +34,7 @@ function createEditableVariant(): EditableSystemVariant {
 describe('createVariantOperationsStore', () => {
   it('creates a variant definition with the create action', async () => {
     const variant = createEditableVariant()
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
     // @ts-expect-error -- pre-existing, fix later
     const store = createVariantOperationsStore({client: client as SanityClient})
@@ -47,9 +54,7 @@ describe('createVariantOperationsStore', () => {
 
   it('updates a variant definition with the edit action', async () => {
     const variant = createEditableVariant()
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
     // @ts-expect-error -- pre-existing, fix later
     const store = createVariantOperationsStore({client: client as SanityClient})
@@ -80,9 +85,8 @@ describe('createVariantOperationsStore', () => {
       conditions: variant.conditions,
       priority: variant.priority,
     }
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+
+    const client = mockClient()
 
     // @ts-expect-error -- pre-existing, fix later
     const store = createVariantOperationsStore({client: client as SanityClient})
@@ -106,9 +110,7 @@ describe('createVariantOperationsStore', () => {
   })
 
   it('deletes a variant definition with the delete action', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
     // @ts-expect-error -- pre-existing, fix later
     const store = createVariantOperationsStore({client: client as SanityClient})

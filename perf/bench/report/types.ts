@@ -11,6 +11,24 @@ export interface BenchRunDocument {
   _type: 'benchRun'
   schemaVersion: 1
   mode: 'ab' | 'absolute'
+  /**
+   * Why this run happened.
+   *
+   * `release` is the load-bearing one: those runs measure a tagged release
+   * commit, and are the only runs whose numbers can be attributed to a shipped
+   * version. Everything else measures whatever main happened to be — the daily
+   * `cron`, a `backfill` repairing history, a manual `dispatch`, or a `pr` run.
+   *
+   * Absent on documents stored before this field existed; consumers treat that
+   * as `cron`, which is what the schedule wrote for all of them.
+   */
+  trigger?: 'cron' | 'release' | 'backfill' | 'dispatch' | 'pr'
+  /**
+   * Release runs only: the tag whose commit this run measured, e.g. `v6.10.1`.
+   * Lets a chart anchor a release marker on this exact run instead of guessing
+   * by date, and lets the run popover name the release outright.
+   */
+  releaseTag?: string
   git: {
     sha: string
     branch: string
@@ -32,6 +50,24 @@ export interface BenchRunDocument {
     cpus: number
     memGb: number
     nodeVersion: string
+    /**
+     * CPU model string (`os.cpus()[0].model`) — the field that discriminates
+     * hosted-runner hardware generations: GitHub rotates Xeon/EPYC models
+     * under the same vCPU shape, so cpus/memGb stay identical while the
+     * machine (and every absolute number) changes. Absent where Node reports
+     * no model.
+     */
+    cpuModel?: string
+    /** GitHub runner image (`ImageOS` env), e.g. "ubuntu24" — CI only. */
+    imageOs?: string
+    /** GitHub runner image version (`ImageVersion` env) — pins when the image (toolchain, libs) rolled. */
+    imageVersion?: string
+    /**
+     * Chromium version the sessions ran in (`browser.version()`). The browser
+     * is the measuring instrument — a Playwright bump can move INP/vitals
+     * with no studio change, and this is what makes that visible.
+     */
+    browserVersion?: string
     ci: boolean
     runId?: string
     /** CI run attempt (re-runs increment it) — for the exact Actions URL. */
@@ -68,10 +104,11 @@ export interface ScenarioReport {
    * Host-speed calibration of the runner that produced THIS scenario.
    * CI runs one shard per scenario on separate runners, so the document-level
    * `runner.calibrationMs` (first shard's) doesn't apply to every scenario —
-   * mergeShards stamps each scenario with its own shard's score. Absent on
-   * single-shard/local documents (the document-level value applies).
+   * mergeShards stamps each scenario with its own shard's score (and CPU
+   * model, since shards can land on different hardware generations). Absent
+   * on single-shard/local documents (the document-level value applies).
    */
-  runner?: {calibrationMs: number}
+  runner?: {calibrationMs: number; cpuModel?: string}
   /**
    * How the metrics are rendered/grouped (interaction vs pageload charts).
    * Soak and INP reports reuse these kinds but are distinct measurement modes;
@@ -100,6 +137,12 @@ export interface ScenarioReport {
   }
   /** Top blocking-script attributions (experiment side). */
   loafAttribution: {sourceUrl: string; functionName: string; totalMs: number}[]
+  /**
+   * Which elements shifted during load, with summed CLS contribution across
+   * experiment samples (pageload mode only) — names the culprit behind a CLS
+   * number instead of leaving it a bare score.
+   */
+  clsAttribution?: {source: string; totalValue: number}[]
   /** Resources bucket — report-only, never gated (per-session medians). */
   resources?: {
     experiment: ResourceSide
@@ -142,7 +185,7 @@ export interface MetricReport {
   /** e.g. "title", "body", "boot-cold · time to editable" */
   label: string
   /** 'cls' is the unitless layout-shift score (~0–0.25), shown to 3 decimals. */
-  unit: 'ms' | 'count' | 'cls'
+  unit: 'ms' | 'count' | 'cls' | 'bytes'
   /** Present the median as eFPS (1000/ms) in reports. */
   presentAsEfps: boolean
   experiment: SideMetric

@@ -1,7 +1,8 @@
-import {Card, Flex, Spinner, Stack} from '@sanity/ui'
+import {Card, Spinner, Stack} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
@@ -64,7 +65,7 @@ function TasksStudioSidebarInner() {
 
     if (isLoading) {
       return (
-        <Flex align="center" justify="center">
+        <Flex alignItems="center" justifyContent="center">
           <Spinner />
         </Flex>
       )
@@ -95,13 +96,13 @@ function TasksStudioSidebarInner() {
       </HeaderStack>
 
       <ContentFlex
-        direction="column"
-        flex={1}
+        flexDirection="column"
+        flexBasis="0%"
+        flexGrow={1}
         overflow="auto"
         padding={3}
         paddingTop={4}
         paddingX={4}
-        sizing="border"
       >
         {content}
       </ContentFlex>

@@ -1,10 +1,10 @@
 import {type Path} from '@sanity/types'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {useMemo, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {CommentDeleteDialog} from '../../../comments/components/CommentDeleteDialog'
 import {type CommentInputProps} from '../../../comments/components/pte/comment-input/CommentInput'
@@ -227,7 +227,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
       )}
 
       <Stack gap={5}>
-        <Flex align="center">
+        <Flex alignItems="center">
           <Box flexBasis="0%" flexGrow={1}>
             <Text size={2} weight="semibold">
               {t('panel.activity.title')}

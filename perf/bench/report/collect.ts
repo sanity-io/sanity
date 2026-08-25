@@ -24,12 +24,59 @@ function git(args: string[]): string {
   }
 }
 
+const TRIGGERS = new Set(['cron', 'release', 'backfill', 'dispatch', 'pr'])
+
+/**
+ * Why this run happened, and (for release runs) which tag it measured.
+ *
+ * `BENCH_TRIGGER` is set by the workflow, but it is not trusted blindly: an
+ * unrecognized value falls back to inference rather than being stored, so a typo
+ * in a workflow edit cannot invent a trigger kind that consumers then filter on.
+ * Inference covers every path that does not set it — notably the daily schedule,
+ * which predates this field and must keep producing `cron`.
+ *
+ * `releaseTag` is only kept for `release` runs: a tag on a cron run would claim
+ * that run measured a release, which is exactly the false attribution this
+ * field exists to eliminate.
+ */
+function triggerFields(
+  prNumber: number,
+  mode: 'ab' | 'absolute',
+): {
+  trigger?: BenchRunDocument['trigger']
+  releaseTag?: string
+} {
+  const declared = process.env.BENCH_TRIGGER
+  const trigger: BenchRunDocument['trigger'] =
+    declared && TRIGGERS.has(declared)
+      ? (declared as BenchRunDocument['trigger'])
+      : !Number.isNaN(prNumber)
+        ? 'pr'
+        : process.env.GITHUB_EVENT_NAME === 'schedule'
+          ? 'cron'
+          : // A dispatch measuring a historical commit is a backfill — but only
+            // in absolute mode. An A/B dispatch also sets BENCH_GIT_SHA (to
+            // ab_to), and calling that a backfill would misdescribe it: it
+            // measures two commits against each other rather than repairing a
+            // hole in the series.
+            mode === 'absolute' && process.env.BENCH_GIT_SHA
+            ? 'backfill'
+            : 'dispatch'
+  const releaseTag = process.env.BENCH_RELEASE_TAG
+  return {
+    trigger,
+    ...(trigger === 'release' && releaseTag ? {releaseTag} : {}),
+  }
+}
+
 export function collectRunMetadata(options: {
   mode: 'ab' | 'absolute'
   calibrationMs: number
   cpuThrottleRate: number
   seed: number
   startedAt: string
+  /** Chromium version the sessions run in (`browser.version()`). */
+  browserVersion?: string
 }): Omit<BenchRunDocument, 'scenarios' | 'completedAt' | 'bundle'> {
   const prNumber = Number(
     (process.env.GITHUB_REF ?? '').match(/refs\/pull\/(\d+)\//)?.[1] ?? Number.NaN,
@@ -46,10 +93,13 @@ export function collectRunMetadata(options: {
   // repo, and a malformed workflow override must not poison the time axis
   // consumers sort and filter on
   const committedAt = Number.isNaN(Date.parse(committedAtRaw)) ? undefined : committedAtRaw
+  const triggerInfo = triggerFields(prNumber, options.mode)
+
   return {
     _type: 'benchRun',
     schemaVersion: 1,
     mode: options.mode,
+    ...triggerInfo,
     git: {
       // BENCH_GIT_SHA: the commit the measured dist was actually built from,
       // when that differs from the checkout — backfill runs build a
@@ -57,10 +107,18 @@ export function collectRunMetadata(options: {
       // cli/commands/prepareBackfill.ts) and must be stored under that
       // commit, not the workflow's HEAD
       sha: process.env.BENCH_GIT_SHA || process.env.GITHUB_SHA || git(['rev-parse', 'HEAD']),
+      // A release run is dispatched at its tag, so GITHUB_REF_NAME is the tag
+      // name ('v6.11.0'). The commit it measures is a main commit, and the
+      // dashboards group runs into per-branch lines and default to main — a run
+      // filed under a tag name would sit outside the main series it belongs to.
+      // The ref names how the run was dispatched; the branch names where the
+      // measured commit lives, which for a release is always main.
+      //
       // GITHUB_HEAD_REF is empty (not unset) outside pull_request events, and
       // schedule runs are detached checkouts where rev-parse answers "HEAD" —
       // prefer GITHUB_REF_NAME there
       branch:
+        (triggerInfo.trigger === 'release' ? 'main' : '') ||
         process.env.GITHUB_HEAD_REF ||
         process.env.GITHUB_REF_NAME ||
         git(['rev-parse', '--abbrev-ref', 'HEAD']),
@@ -77,6 +135,17 @@ export function collectRunMetadata(options: {
       cpus: os.cpus().length,
       memGb: Math.round(os.totalmem() / 1024 ** 3),
       nodeVersion: process.version,
+      // The hardware discriminator: GitHub rotates CPU generations under the
+      // same vCPU shape, so cpus/memGb can't explain a host-speed step but
+      // the model string can. Empty on platforms where Node reports none.
+      ...(os.cpus()[0]?.model.trim() ? {cpuModel: os.cpus()[0].model.trim()} : {}),
+      // GitHub runner image identity — pins when the image (toolchain, libs)
+      // rolled, which tends to coincide with host-speed regime changes
+      ...(process.env.ImageOS ? {imageOs: process.env.ImageOS} : {}),
+      ...(process.env.ImageVersion ? {imageVersion: process.env.ImageVersion} : {}),
+      // The measuring instrument: a Playwright bump moves INP/vitals with no
+      // studio change, and this is what makes that visible after the fact
+      ...(options.browserVersion ? {browserVersion: options.browserVersion} : {}),
       ci: process.env.CI === 'true',
       ...(process.env.GITHUB_RUN_ID ? {runId: process.env.GITHUB_RUN_ID} : {}),
       ...(process.env.GITHUB_RUN_ATTEMPT
@@ -283,12 +352,37 @@ export function collectInp(
   }
 }
 
-/** pageLoad samples (both sides) → scenario report. */
+/** Exact gzip sum of the chunks a sample fetched; null when none matched. */
+function bootJsBytes(paths: string[], sizes: ReadonlyMap<string, number>): number | null {
+  let total = 0
+  let matched = 0
+  for (const path of paths) {
+    const size = sizes.get(path)
+    if (size !== undefined) {
+      total += size
+      matched += 1
+    }
+  }
+  return matched > 0 ? total : null
+}
+
+/**
+ * pageLoad samples (both sides) → scenario report. `chunkGzipSizes` (dist
+ * path → exact gzip bytes per side, from measureBundleSize) enables the
+ * "boot JS" row: what booting actually downloads, as opposed to the entry
+ * chunk the bundle report counts. Per side because chunk names are
+ * content-hashed: valuing reference-side fetches against the experiment
+ * build's sizes would produce a partial sum that reads as a fake A/B diff.
+ */
 export function collectPageLoad(
   scenario: string,
   samplesBySide: Map<string, PageLoadSample[]>,
   comparisons: Map<LoadCondition, {interval: DiffInterval; verdict: Verdict}>,
   sourceFile?: string,
+  chunkGzipSizes?: {
+    experiment: ReadonlyMap<string, number>
+    reference?: ReadonlyMap<string, number>
+  },
 ): ScenarioReport {
   const experiment = samplesBySide.get('experiment') ?? []
   const reference = samplesBySide.get('reference')
@@ -298,17 +392,17 @@ export function collectPageLoad(
     condition: LoadCondition,
     label: string,
     unit: MetricReport['unit'],
-    value: (sample: PageLoadSample) => number | null,
+    value: (sample: PageLoadSample, side: 'experiment' | 'reference') => number | null,
   ): MetricReport[] => {
-    const values = (samples: PageLoadSample[] | undefined) =>
+    const values = (samples: PageLoadSample[] | undefined, side: 'experiment' | 'reference') =>
       (samples ?? [])
         .filter((sample) => sample.condition === condition)
-        .map(value)
+        .map((sample) => value(sample, side))
         .filter((sampleValue): sampleValue is number => sampleValue !== null)
         .map((sampleValue) => [sampleValue])
-    const experimentValues = values(experiment)
+    const experimentValues = values(experiment, 'experiment')
     if (experimentValues.length === 0) return []
-    const referenceValues = values(reference)
+    const referenceValues = values(reference, 'reference')
     return [
       {
         label: `${condition} · ${label}`,
@@ -362,8 +456,8 @@ export function collectPageLoad(
         },
         // Core Web Vitals (report-only) — captured per sample but previously
         // only logged; surface them so the dashboard tracks load quality, not
-        // just time-to-editable
-        ...reportOnly(condition, 'TTFB', 'ms', (sample) => sample.ttfbMs),
+        // just time-to-editable. No TTFB: against the local mock it's a
+        // constant of the bench setup, not a studio signal.
         ...reportOnly(condition, 'FCP', 'ms', (sample) => sample.fcpMs),
         ...reportOnly(condition, 'LCP', 'ms', (sample) => sample.lcpMs),
         ...reportOnly(condition, 'CLS', 'cls', (sample) => sample.cls),
@@ -383,6 +477,20 @@ export function collectPageLoad(
           (sample) => sample.auth.firstRequestMs,
         ),
         ...reportOnly(condition, 'auth in flight', 'ms', (sample) => sample.auth.inFlightMs),
+        // What booting actually downloads: exact gzip sum of the chunks this
+        // sample fetched before editable. boot-cold only — the warm page
+        // replays the same set from cache. (The bundle report's entry-chunk
+        // number is only what index.html references.)
+        ...(condition === 'boot-cold' && chunkGzipSizes
+          ? reportOnly(condition, 'boot JS', 'bytes', (sample, side) => {
+              // Each side's fetches valued against its own build's chunk
+              // sizes; a side without a size map gets no value at all rather
+              // than a misleading partial sum
+              const sizes =
+                side === 'reference' ? chunkGzipSizes.reference : chunkGzipSizes.experiment
+              return sizes ? bootJsBytes(sample.jsPaths, sizes) : null
+            })
+          : []),
       ]
     },
   )
@@ -400,6 +508,17 @@ export function collectPageLoad(
     }
   }
 
+  // Which elements shifted, summed across experiment samples — the CLS
+  // number's culprit list, same idea as the script blockers above
+  const byShiftSource = new Map<string, {source: string; totalValue: number}>()
+  for (const sample of experiment) {
+    for (const shift of sample.clsAttribution) {
+      const existing = byShiftSource.get(shift.source) ?? {source: shift.source, totalValue: 0}
+      existing.totalValue += shift.totalValue
+      byShiftSource.set(shift.source, existing)
+    }
+  }
+
   return {
     scenario,
     ...(sourceFile ? {sourceFile} : {}),
@@ -408,5 +527,8 @@ export function collectPageLoad(
     failures: [],
     interruptions: {experiment: {count: 0, totalMs: 0}},
     loafAttribution: [...byScript.values()].sort((a, b) => b.totalMs - a.totalMs).slice(0, 5),
+    clsAttribution: [...byShiftSource.values()]
+      .sort((a, b) => b.totalValue - a.totalValue)
+      .slice(0, 5),
   }
 }

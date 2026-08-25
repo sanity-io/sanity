@@ -1,5 +1,4 @@
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Flex,
@@ -22,6 +21,7 @@ import {
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
+import {Box} from 'ui5'
 
 import {HISTORY_INSPECTOR_NAME} from '../constants'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline/timelineI18n'

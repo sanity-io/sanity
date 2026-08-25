@@ -7,7 +7,6 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDraftId} from '../../util/draftUtils'
 import {getTargetDocument} from '../../util/getTargetDocument'
-import {type VariantDocumentAction} from '../../variants/store/variantsClient'
 import {getVariantId} from '../../variants/tool/util'
 import {type VersionInfoDocumentStub} from '../store/types'
 import {useDocumentVersions} from './useDocumentVersions'
@@ -64,7 +63,7 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
         if (documentVersionInfoStub._system.bundleId === 'drafts') {
           throw new Error('Cannot copy a draft onto itself')
         }
-        const actions: (Action | VariantDocumentAction)[] = []
+        const actions: Action[] = []
 
         const variantRef = documentVersionInfoStub._system.variant?._ref
         if (variantRef) {
@@ -104,8 +103,7 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
           })
         }
 
-        // `client.action` is not typed for variant actions yet; see `variantsClient`.
-        await client.action(actions as Action[], {
+        await client.action(actions, {
           tag: 'document.copy-to-drafts',
         })
 

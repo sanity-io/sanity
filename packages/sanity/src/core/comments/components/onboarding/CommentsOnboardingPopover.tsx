@@ -1,6 +1,6 @@
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {keyframes, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../../ui-components/popover/Popover'
@@ -46,7 +46,7 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
 
             <Text size={1}>{t('onboarding.body')}</Text>
 
-            <Flex justify="flex-end" marginTop={2}>
+            <Flex justifyContent="flex-end" marginTop={2}>
               <Button text={t('onboarding.dismiss')} tone="primary" onClick={onDismiss} />
             </Flex>
           </Stack>

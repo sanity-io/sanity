@@ -21,6 +21,7 @@ function versionStub(
     _rev: '',
     _createdAt: '',
     _updatedAt: '',
+    _type: 'article',
     _system: {group: groupRef, ...system},
   }
 }

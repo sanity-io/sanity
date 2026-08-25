@@ -1,6 +1,7 @@
 import {type MutationEvent} from '@sanity/client'
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {Translate, useTranslation} from 'sanity'
+import {Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
 import {getCsvBlobUrl, getJsonBlobUrl} from '../util/getBlobUrl'
@@ -50,7 +51,7 @@ export function VisionGuiResult({
 
   return (
     <ResultOuterContainer direction="column" data-testid="vision-result">
-      <ResultInnerContainer flex={1}>
+      <ResultInnerContainer flexBasis="0%" flexGrow={1}>
         <ResultContainer
           flex={1}
           overflow="hidden"

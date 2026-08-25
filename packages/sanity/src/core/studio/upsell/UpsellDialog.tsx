@@ -64,7 +64,7 @@ export function UpsellDialog(props: UpsellDialogProps) {
       onClose={onClose}
       onClickOutside={onClose}
       __unstable_hideCloseButton
-      bodyHeight="fill"
+      bodyHeight="100%"
       padding={false}
       zOffset={800}
       footer={{

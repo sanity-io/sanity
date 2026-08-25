@@ -1,9 +1,10 @@
 import {type SanityDocument} from '@sanity/types'
-import {Box, Flex, Spinner, Text} from '@sanity/ui'
+import {Flex, Spinner, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type Ref, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {useClient} from 'sanity'
+import {Box} from 'ui5'
 
 export function JsonDocumentDump(props: {
   itemId: string
@@ -83,7 +84,7 @@ export function JsonDocumentDump(props: {
   }
 
   return (
-    <Box height="fill" overflow="auto" padding={4} sizing="border">
+    <Box height="100%" overflow="auto" padding={4}>
       <Code language="json" size={[1, 1, 2]}>
         {JSON.stringify(document, null, 2)}
       </Code>
