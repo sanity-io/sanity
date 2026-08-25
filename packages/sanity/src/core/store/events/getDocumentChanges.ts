@@ -274,7 +274,9 @@ export function getDocumentChanges({
                 ) as ObjectDiff)
               : null,
         }),
-        shareReplay(1),
+        // refCount so the upstream (remote transactions + translog fetches) unsubscribes when the
+        // last consumer (e.g. the review changes pane) unsubscribes.
+        shareReplay({bufferSize: 1, refCount: true}),
       )
     }),
   )
