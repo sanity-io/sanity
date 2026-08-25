@@ -24,6 +24,51 @@ function git(args: string[]): string {
   }
 }
 
+const TRIGGERS = new Set(['cron', 'release', 'backfill', 'dispatch', 'pr'])
+
+/**
+ * Why this run happened, and (for release runs) which tag it measured.
+ *
+ * `BENCH_TRIGGER` is set by the workflow, but it is not trusted blindly: an
+ * unrecognized value falls back to inference rather than being stored, so a typo
+ * in a workflow edit cannot invent a trigger kind that consumers then filter on.
+ * Inference covers every path that does not set it — notably the daily schedule,
+ * which predates this field and must keep producing `cron`.
+ *
+ * `releaseTag` is only kept for `release` runs: a tag on a cron run would claim
+ * that run measured a release, which is exactly the false attribution this
+ * field exists to eliminate.
+ */
+function triggerFields(
+  prNumber: number,
+  mode: 'ab' | 'absolute',
+): {
+  trigger?: BenchRunDocument['trigger']
+  releaseTag?: string
+} {
+  const declared = process.env.BENCH_TRIGGER
+  const trigger: BenchRunDocument['trigger'] =
+    declared && TRIGGERS.has(declared)
+      ? (declared as BenchRunDocument['trigger'])
+      : !Number.isNaN(prNumber)
+        ? 'pr'
+        : process.env.GITHUB_EVENT_NAME === 'schedule'
+          ? 'cron'
+          : // A dispatch measuring a historical commit is a backfill — but only
+            // in absolute mode. An A/B dispatch also sets BENCH_GIT_SHA (to
+            // ab_to), and calling that a backfill would misdescribe it: it
+            // measures two commits against each other rather than repairing a
+            // hole in the series.
+            mode === 'absolute' && process.env.BENCH_GIT_SHA
+            ? 'backfill'
+            : 'dispatch'
+  const releaseTag = process.env.BENCH_RELEASE_TAG
+  return {
+    trigger,
+    ...(trigger === 'release' && releaseTag ? {releaseTag} : {}),
+  }
+}
+
 export function collectRunMetadata(options: {
   mode: 'ab' | 'absolute'
   calibrationMs: number
@@ -48,10 +93,12 @@ export function collectRunMetadata(options: {
   // repo, and a malformed workflow override must not poison the time axis
   // consumers sort and filter on
   const committedAt = Number.isNaN(Date.parse(committedAtRaw)) ? undefined : committedAtRaw
+
   return {
     _type: 'benchRun',
     schemaVersion: 1,
     mode: options.mode,
+    ...triggerFields(prNumber, options.mode),
     git: {
       // BENCH_GIT_SHA: the commit the measured dist was actually built from,
       // when that differs from the checkout — backfill runs build a
