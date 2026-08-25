@@ -311,7 +311,7 @@ function createDocumentValidationResult(
   return {
     status: getDocumentValidationStatus(markers, skipped),
     markers: markers.map(toDocumentValidationMarker),
-    skipped,
+    skipped: uniqWith(skipped, isEqual),
   }
 }
 
