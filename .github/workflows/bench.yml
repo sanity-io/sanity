@@ -30,6 +30,10 @@ on:
         description: "Backfill: build and measure this main-history commit instead of HEAD (full 40-char sha; requires run_suite, incompatible with self_test and ab_from/ab_to; result is stored under this sha, harness/scenarios come from HEAD)"
         required: false
         type: string
+      release_tag:
+        description: "Release: the tag whose commit is being measured (e.g. v6.10.1). Set together with backfill_sha (the tag's dereferenced sha) by release-latest.yml; marks the stored run as the measurement of a shipped version"
+        required: false
+        type: string
       ab_from:
         description: "A/B: reference commit to compare against (full 40-char sha; set together with ab_to; incompatible with backfill_sha and self_test; verdicts land in the run summary)"
         required: false
@@ -104,11 +108,13 @@ jobs:
       - name: Validate dispatch inputs
         if: >-
           github.event_name == 'workflow_dispatch' &&
-          (inputs.backfill_sha != '' || inputs.ab_from != '' || inputs.ab_to != '')
+          (inputs.backfill_sha != '' || inputs.ab_from != '' || inputs.ab_to != ''
+           || inputs.release_tag != '')
         env:
           RUN_SUITE: ${{ inputs.run_suite }}
           SELF_TEST: ${{ inputs.self_test }}
           BACKFILL_SHA: ${{ inputs.backfill_sha }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
           AB_FROM: ${{ inputs.ab_from }}
           AB_TO: ${{ inputs.ab_to }}
         run: |
@@ -133,6 +139,30 @@ jobs:
             fi
             if [ "$SELF_TEST" = "true" ]; then
               echo "::error::backfill_sha cannot be combined with self_test"
+              exit 1
+            fi
+          fi
+          # A release run measures the tag's dereferenced sha via the backfill
+          # path. Without a sha the run would measure HEAD and be stored as the
+          # release's measurement — the exact false attribution release runs
+          # exist to prevent — so this is an error, not a warning.
+          if [ -n "$RELEASE_TAG" ] && [ -z "$BACKFILL_SHA" ]; then
+            echo "::error::release_tag requires backfill_sha (the tag's dereferenced commit)"
+            exit 1
+          fi
+          # ...and the sha must actually BE that commit. The pair is also set
+          # by hand (the recovery runbook in release-latest.yml), and a stale
+          # copy-paste would store numbers measured on some other commit as
+          # the release's measurement. The checkout above is fetch-depth 0
+          # whenever backfill_sha is set, so the tag is resolvable here.
+          if [ -n "$RELEASE_TAG" ]; then
+            TAG_SHA="$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}" 2>/dev/null || true)"
+            if [ -z "$TAG_SHA" ]; then
+              echo "::error::release_tag $RELEASE_TAG does not exist"
+              exit 1
+            fi
+            if [ "$TAG_SHA" != "$BACKFILL_SHA" ]; then
+              echo "::error::backfill_sha $BACKFILL_SHA is not the commit $RELEASE_TAG points at ($TAG_SHA)"
               exit 1
             fi
           fi
@@ -282,6 +312,11 @@ jobs:
       # report/collect.ts)
       BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
+      # Why this run happened. A release_tag means release-latest.yml dispatched
+      # this to measure a shipped version; otherwise collect.ts infers it from
+      # the event (empty string is not a valid trigger, so it falls through).
+      BENCH_TRIGGER: ${{ inputs.release_tag != '' && 'release' || '' }}
+      BENCH_RELEASE_TAG: ${{ inputs.release_tag }}
     strategy:
       fail-fast: false
       matrix:
@@ -383,6 +418,9 @@ jobs:
       # See bench-interaction: stamps backfill runs with the measured sha
       BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
+      # See bench-interaction
+      BENCH_TRIGGER: ${{ inputs.release_tag != '' && 'release' || '' }}
+      BENCH_RELEASE_TAG: ${{ inputs.release_tag }}
     strategy:
       fail-fast: false
       matrix:
@@ -785,6 +823,10 @@ jobs:
       # measured sha
       BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
+      # See bench-interaction. This is the job that stores the absolute-mode
+      # document, so this is where the trigger actually reaches the dataset.
+      BENCH_TRIGGER: ${{ inputs.release_tag != '' && 'release' || '' }}
+      BENCH_RELEASE_TAG: ${{ inputs.release_tag }}
     steps:
       - uses: actions/checkout@v7
         with:

@@ -12,8 +12,10 @@ import {
   CALIBRATION_EXPLAINER,
   formatValue,
   INP_MIN_INTERACTIONS,
+  releaseContextAt,
   type TrendPoint,
   type TrendSeries,
+  type TrendTag,
 } from './data'
 import {buildInvestigationPrompt} from './investigationPrompt'
 import {backlinksFor, compareUrl, sourceFileUrl} from './links'
@@ -33,11 +35,25 @@ export function RunDetailPopover(props: {
   point: TrendPoint
   /** The nearest earlier point on the same line measuring a distinct commit. */
   previousPoint?: TrendPoint
+  /** Stable main-branch release tags — for this run's release context. */
+  tags?: TrendTag[]
   referenceElement: HTMLElement | null
   onClose: () => void
 }) {
-  const {series, point, previousPoint, referenceElement, onClose} = props
+  const {series, point, previousPoint, tags = [], referenceElement, onClose} = props
   const {host} = point
+  // Which releases this run sits between. Always stated when known, unlike the
+  // hover tooltip's proximity-based row: "which release is this run's code in?"
+  // is a question every run has an answer to. Meaningless on soak minute charts,
+  // whose x-axis is elapsed minutes rather than a calendar date.
+  // A release run measured the tagged commit itself, so it needs no bracket:
+  // its value *is* that release's number. The bracket stays for ordinary runs,
+  // where sitting between two releases is the strongest true statement.
+  const releaseContext =
+    series.xKind === 'minute' || point.releaseTag
+      ? {}
+      : releaseContextAt(tags, point.date.getTime())
+  const measuredTag = series.xKind === 'minute' ? undefined : point.releaseTag
   const [contentEl, setContentEl] = useState<HTMLDivElement | null>(null)
   // "What landed between this point and the previous one?" — the GitHub
   // compare view answers it directly. Guarded by the full-sha shape so a
@@ -182,6 +198,74 @@ export function RunDetailPopover(props: {
                 </Badge>
               )}
             </Stack>
+
+            {/* Where this run sits in the release timeline. Stated for every
+                run (not only ones next to a marker), because "is this before or
+                after the release I care about?" is the question the markers
+                raise and the popover is where it gets answered.
+
+                Wording is careful: "released in" would claim commit containment,
+                which a by-date bound does not establish — so it says "after" /
+                "before", which is exactly what the dates support. */}
+            {/* This run built and measured the release commit — the one case
+                where a performance number attributes to a shipped version
+                rather than to "main around then". Stated plainly, and
+                deliberately distinct from the after/before bracket below. */}
+            {measuredTag && (
+              <Stack gap={2}>
+                <Text size={0} muted weight="medium">
+                  Release
+                </Text>
+                <Flex align="center" gap={2}>
+                  <Text size={1} muted>
+                    released as
+                  </Text>
+                  <Text size={1} weight="semibold">
+                    {measuredTag}
+                  </Text>
+                </Flex>
+                <Text size={0} muted>
+                  This run measured the release commit.
+                </Text>
+              </Stack>
+            )}
+
+            {(releaseContext.previous || releaseContext.next) && (
+              <Stack gap={2}>
+                <Text size={0} muted weight="medium">
+                  Release
+                </Text>
+                <Stack gap={2}>
+                  {releaseContext.previous && (
+                    <Flex align="center" gap={2}>
+                      <Text size={1} muted>
+                        after
+                      </Text>
+                      <Text size={1}>{releaseContext.previous.tag}</Text>
+                      {releaseContext.previous.distTags?.includes('latest') && (
+                        <Badge tone="primary" fontSize={0}>
+                          latest
+                        </Badge>
+                      )}
+                    </Flex>
+                  )}
+                  {releaseContext.next ? (
+                    <Flex align="center" gap={2}>
+                      <Text size={1} muted>
+                        before
+                      </Text>
+                      <Text size={1}>{releaseContext.next.tag}</Text>
+                    </Flex>
+                  ) : (
+                    // The common case for recent runs, and worth saying out
+                    // loud: silence here would read as missing data
+                    <Text size={1} muted>
+                      not yet released
+                    </Text>
+                  )}
+                </Stack>
+              </Stack>
+            )}
 
             {/* The machine that produced this run — the context every absolute
                 number depends on. cpuModel/image/browser exist on documents
