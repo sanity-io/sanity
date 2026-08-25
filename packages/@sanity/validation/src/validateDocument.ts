@@ -14,7 +14,6 @@ import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import flatten from 'lodash-es/flatten.js'
 import isEqual from 'lodash-es/isEqual.js'
-import uniqWith from 'lodash-es/uniqWith.js'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
@@ -627,11 +626,29 @@ function validateItemObservable({
       // Deduplicate markers when `_fieldRules` are present because they can
       // cause repeat markers (check recursively for nested rules)
       if (rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)) {
-        return uniqWith(results, isEqual)
+        return deduplicateMarkers(results)
       }
       return results
     }),
   )
+}
+
+function deduplicateMarkers(markers: ValidationMarker[]): ValidationMarker[] {
+  const buckets = new Map<string, ValidationMarker[]>()
+
+  return markers.filter((marker) => {
+    const key = JSON.stringify([marker.level, marker.code, marker.message, marker.path])
+    const bucket = buckets.get(key)
+    if (!bucket) {
+      buckets.set(key, [marker])
+      return true
+    }
+
+    if (bucket.some((existing) => isEqual(existing, marker))) return false
+
+    bucket.push(marker)
+    return true
+  })
 }
 
 function toDocumentValidationMarker(marker: ValidationMarker): DocumentValidationMarker {
