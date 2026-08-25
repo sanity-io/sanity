@@ -315,6 +315,9 @@ const defaultWorkspace = defineConfig({
   },
   document: {
     actions: (prev, ctx) => {
+      if (ctx.schemaType === 'restrictedVersionActionsTest') {
+        return prev.filter(({action}) => action === 'publish')
+      }
       if (ctx.schemaType === 'book' && ctx.releaseId) {
         return [useTestVersionAction, ...prev]
       }
