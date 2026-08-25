@@ -3,7 +3,6 @@ import {LockIcon} from '@sanity/icons/Lock'
 import {TransferIcon} from '@sanity/icons/Transfer'
 import {
   Badge,
-  Box,
   // oxlint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
   Button,
   // oxlint-disable-next-line no-restricted-imports -- the resolved menu button props are spread onto the `@sanity/ui` Button above
@@ -46,6 +45,7 @@ import {
   useWorkspace,
 } from 'sanity'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'

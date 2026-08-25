@@ -29,6 +29,7 @@ function stub(id: string, system: Partial<DocumentSystem> = {}): VersionInfoDocu
     _rev: 'rev',
     _createdAt: '2026-01-01T00:00:00.000Z',
     _updatedAt: '2026-01-01T00:00:00.000Z',
+    _type: 'article',
     _system: {
       group: {_ref: PUBLISHED_ID, _weak: true},
       ...system,

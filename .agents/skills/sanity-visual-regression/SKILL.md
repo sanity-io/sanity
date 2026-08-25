@@ -22,7 +22,7 @@ baselines. Review diffs on the Chromatic build linked from the PR check.
 
 1. Add a co-located `*.stories.tsx` file to the owning package's `src` tree, usually in the same
    `__tests__` directory as the component or harness. Storybook discovers story files in workspace
-   package `src` trees. Two patterns:
+   package `src` trees — do not add CSF under `dev/storybook/stories/`. Two patterns:
    - **Plain component states** (ui-components wrappers, tone/card sentinels): render variants
      directly — see
      [Button.stories.tsx](../../../packages/sanity/src/ui-components/button/__tests__/Button.stories.tsx).
@@ -32,7 +32,9 @@ baselines. Review diffs on the Chromatic build linked from the PR check.
      [Dialog.stories.tsx](../../../packages/sanity/src/ui-components/dialog/__tests__/Dialog.stories.tsx)
      and the Portable Text stories. If a vitest browser test already has a `*Story.tsx` harness,
      put the story beside it and reuse it (never fork it): the harness stays shared between the
-     test and the story.
+     test and the story. New coverage can also use a colocated `*Story.tsx` when the grid needs
+     `TestWrapper` inside the harness — see
+     [ConfirmPopover.stories.tsx](../../../packages/sanity/src/ui-components/confirmPopover/__tests__/ConfirmPopover.stories.tsx).
 2. Verify locally: `pnpm dev:storybook` (port 6006), then `pnpm --filter sanity-storybook test`
    (every story runs as a vitest browser-mode test via `@storybook/addon-vitest`).
 3. Push — the `Chromatic / Storybook visual tests` check snapshots only affected stories

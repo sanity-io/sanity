@@ -3,12 +3,13 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {UlistIcon} from '@sanity/icons/Ulist'
 import {type InsertMenuOptions, type SchemaType} from '@sanity/types'
-import {Box, Button, Flex, Grid, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
+import {Button, Flex, Grid, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
 import {Menu, MenuItem, type MenuItemProps} from '@sanity/ui/menu'
 import {Tooltip} from '@sanity/ui/tooltip'
 import startCase from 'lodash-es/startCase.js'
 import {useReducer, useState, type ChangeEvent, type CSSProperties} from 'react'
 import {isValidElementType} from 'react-is'
+import {Box} from 'ui5'
 
 import {getSchemaTypeIcon} from './getSchemaTypeIcon'
 
@@ -106,7 +107,7 @@ export function InsertMenu(props: InsertMenuProps): React.JSX.Element {
           {showingFilterOrViews ? (
             <Flex flex="none" align="center" paddingTop={1} paddingX={1} gap={1}>
               {showFilter ? (
-                <Box flex={1}>
+                <Box flexBasis="0%" flexGrow={1}>
                   <TextInput
                     autoFocus
                     border={false}
@@ -121,7 +122,7 @@ export function InsertMenu(props: InsertMenuProps): React.JSX.Element {
                 </Box>
               ) : null}
               {state.views.length > 1 ? (
-                <Box flex="none">
+                <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                   <ViewToggle
                     views={state.views}
                     onToggle={(name) => {
@@ -257,7 +258,9 @@ function GridMenuItem(props: GridMenuItemProps) {
     <MenuItem padding={0} radius={2} onClick={props.onClick} style={{overflow: 'hidden'}}>
       <Flex direction="column" gap={1} padding={1}>
         <Box
-          flex="none"
+          flexBasis="auto"
+          flexGrow={0}
+          flexShrink={0}
           style={{
             backgroundColor: 'var(--card-muted-bg-color)',
             paddingBottom: '66.6%',
@@ -309,7 +312,7 @@ function GridMenuItem(props: GridMenuItemProps) {
             }}
           />
         </Box>
-        <Box flex="none" paddingX={2} paddingY={1}>
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingX={2} paddingY={1}>
           <Text size={1} weight="medium">
             {props.schemaType.title ?? props.schemaType.name}
           </Text>

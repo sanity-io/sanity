@@ -1,6 +1,8 @@
+import 'ui5/styles.css'
+import './preview.css'
+
 import {type ClientPerspective} from '@sanity/client'
 import {
-  Box,
   Card,
   Flex,
   Stack,
@@ -14,6 +16,7 @@ import {
 import {enableVisualEditing} from '@sanity/visual-editing'
 import {Suspense, useEffect, useState} from 'react'
 import {createRoot} from 'react-dom/client'
+import {Box} from 'ui5'
 
 import {FieldGroups} from './FieldGroups'
 import {InitialValues} from './InitialValues'

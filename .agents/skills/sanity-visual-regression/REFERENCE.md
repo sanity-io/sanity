@@ -17,6 +17,10 @@
   test-harness, and test-only imports within the same workspace boundary. `dev/storybook` is only
   the shared host; its discovery globs target workspace package `src` roots without traversing
   dependency symlinks under nested `node_modules` directories.
+- **Why preview imports both `ui5/styles.css` and `@sanity/ui/styles.css`:** the studio entry
+  side-effect-imports both. Storybook must too — colocated sentinel stories import source files
+  directly and never hit the `sanity` package entry, so they would otherwise snapshot without
+  the ui5 reset and design tokens.
 - **One Chromatic project per integration type** (Chromatic constraint): `sanity` (Storybook),
   `sanity_e2e` (Playwright), plus a Vitest-type project once early access lands.
 

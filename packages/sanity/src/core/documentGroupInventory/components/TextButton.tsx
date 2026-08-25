@@ -8,6 +8,7 @@ export const TextButton = styled.button(({theme}) => {
     all: unset;
     display: inline-block;
     max-inline-size: 100%;
+    white-space: nowrap;
     appearance: none;
     border: 0;
     margin: 0;

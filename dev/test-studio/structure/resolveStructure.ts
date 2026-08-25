@@ -25,6 +25,7 @@ import {
 } from 'sanity/structure'
 
 import {DebugPane} from '../components/panes/debug/DebugPane'
+import {RenderLoopRepro} from '../components/panes/debug/RenderLoopRepro'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
 import {PerspectiveExample} from '../components/PerspectiveExample'
 import {TranslateExample} from '../components/TranslateExample'
@@ -156,6 +157,14 @@ export const structure: StructureResolver = (
             .id('custom')
             .title('Custom panes')
             .items([
+              S.listItem()
+                .id('render-loop-repro')
+                .title('useDocumentValues render loop (repro)')
+                .child(
+                  S.component(RenderLoopRepro)
+                    .id('render-loop-repro')
+                    .title('useDocumentValues render loop'),
+                ),
               S.listItem()
                 .id('component1')
                 .title('Component pane (1)')

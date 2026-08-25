@@ -247,6 +247,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const focusedDivergence = divergenceNavigator.enabled
     ? divergenceNavigator.state.focusedDivergence
     : undefined
+  // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => controlImplicitExpandedState(), [focusedDivergence])
 
   const toast = useToast()
@@ -266,7 +267,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
     if (invalidValue && value !== invalidValue.value) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setInvalidValue(null)
     }
   }, [invalidValue, value])
@@ -276,7 +277,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   // Set active if focused within the editor
   useEffect(() => {
     if (hasFocusWithin) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setIsActive(true)
     }
   }, [hasFocusWithin])
@@ -306,7 +307,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
 
   // Handle editor changes
   const handleEditorChange = useCallback(
-    // oxlint-disable-next-line react/react-compiler
     (change: EditorChange): void => {
       switch (change.type) {
         case 'mutation':
@@ -344,6 +344,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         onEditorChange(change, legacyEditorRef.current)
       }
     },
+    // oxlint-disable-next-line react/preserve-manual-memoization -- pre-existing violation, to be fixed in a follow-up
     [
       legacyEditorRef,
       editorRef,
@@ -356,8 +357,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   )
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setIgnoreValidationError(false)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [value])
 
   const handleIgnoreInvalidValue = useCallback((): void => {
@@ -380,7 +382,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     return null
   }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue, readOnly])
 
-  // oxlint-disable-next-line react/react-compiler
   const handleActivate = useCallback((): void => {
     if (!isActive) {
       setIsActive(true)
@@ -389,6 +390,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         PortableTextEditor.focus(legacyEditorRef.current)
       }
     }
+    // oxlint-disable-next-line react/preserve-manual-memoization -- pre-existing violation, to be fixed in a follow-up
   }, [legacyEditorRef, isActive])
 
   const previousRangeDecorations = useRef<RangeDecoration[]>([])
@@ -408,9 +410,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       ? diffRangeDecorations
       : [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
 
-    // oxlint-disable-next-line react/react-compiler -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
+    // oxlint-disable-next-line react/refs -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
     const reconciled = immutableReconcile(previousRangeDecorations.current, result)
-    // oxlint-disable-next-line react/react-compiler -- see above
+    // oxlint-disable-next-line react/refs -- see above
     previousRangeDecorations.current = reconciled
     return reconciled
   }, [diffRangeDecorations, displayInlineChanges, presenceCursorDecorations, rangeDecorationsProp])
@@ -479,7 +481,6 @@ function EditorChangePlugin(
 ) {
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       switch (event.type) {
         case 'blurred':
           props.onChange({
@@ -487,30 +488,10 @@ function EditorChangePlugin(
             event: event.event,
           })
           break
-        case 'error':
-          props.onChange({
-            type: 'error',
-            name: event.name,
-            level: 'warning',
-            description: event.description,
-          })
-          break
         case 'focused':
           props.onChange({
             type: 'focus',
             event: event.event,
-          })
-          break
-        case 'loading':
-          props.onChange({
-            type: 'loading',
-            isLoading: true,
-          })
-          break
-        case 'done loading':
-          props.onChange({
-            type: 'loading',
-            isLoading: false,
           })
           break
         case 'invalid value':

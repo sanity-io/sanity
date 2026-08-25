@@ -1,4 +1,4 @@
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
   CommandList,
@@ -8,6 +8,7 @@ import {
   useI18nText,
 } from 'sanity'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'

@@ -28,7 +28,7 @@ export function LiveUserApplicationProvider({children}: LiveUserApplicationProvi
 
   useEffect(() => {
     let hasSubscriber = true
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setIsLoading(true)
     findUserApplication(userApplicationCache, workspaces)
       .then((found) => {

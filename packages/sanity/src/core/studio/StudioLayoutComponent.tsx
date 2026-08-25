@@ -186,7 +186,7 @@ export function StudioLayoutComponent() {
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
-        {/* oxlint-disable-next-line react/react-compiler -- Navbar comes from useNavbarComponent(), stable per workspace */}
+        {/* oxlint-disable-next-line react/static-components -- Navbar comes from useNavbarComponent(), stable per workspace */}
         <Navbar />
       </NavbarContext.Provider>
       <UnclaimedProjectNudge />
@@ -215,7 +215,7 @@ export function StudioLayoutComponent() {
               }
             >
               <Suspense fallback={<LoadingBlock showText />}>
-                {/* oxlint-disable-next-line react/react-compiler -- ActiveToolLayout comes from useActiveToolLayoutComponent(), stable per workspace */}
+                {/* oxlint-disable-next-line react/static-components -- ActiveToolLayout comes from useActiveToolLayoutComponent(), stable per workspace */}
                 <ActiveToolLayout activeTool={activeTool} />
                 <ToolMountTimer toolName={activeTool.name} t0Ref={toolMountT0Ref} />
               </Suspense>

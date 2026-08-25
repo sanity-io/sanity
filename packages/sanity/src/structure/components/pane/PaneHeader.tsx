@@ -1,6 +1,7 @@
-import {Box, Card, Flex, LayerProvider, useElementSize} from '@sanity/ui'
+import {Card, Flex, LayerProvider, useElementSize} from '@sanity/ui'
 import {type ReactNode, type RefAttributes, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
+import {Box} from 'ui5'
 
 import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
 import {usePane} from './usePane'
@@ -80,8 +81,12 @@ export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement
               sizing="border"
               style={layoutStyle}
             >
-              <Flex align="flex-start" gap={3}>
-                {backButton && <Box flex="none">{backButton}</Box>}
+              <Flex align="center" gap={3}>
+                {backButton && (
+                  <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+                    {backButton}
+                  </Box>
+                )}
 
                 <TitleCard
                   __unstable_focusRing
@@ -115,7 +120,7 @@ export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement
 
               {showTabsOrSubActions && (
                 <Flex align="center" hidden={collapsed} overflow="auto">
-                  <Box flex={1} marginRight={subActions ? 3 : 0}>
+                  <Box flexBasis="0%" flexGrow={1} marginRight={subActions ? 3 : 0}>
                     {tabs}
                   </Box>
 

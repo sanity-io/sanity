@@ -57,10 +57,9 @@ export function EditReleaseDialog({
         status: 'error',
         title: t('release.toast.edit-release-error.title'),
       })
-    } finally {
-      isSavingRef.current = false
-      setIsSaving(false)
     }
+    isSavingRef.current = false
+    setIsSaving(false)
   }, [description, onClose, release, t, title, toast, updateRelease])
 
   // Ignore click-outside / Escape / close while a save is in flight: dismissing mid-mutation would

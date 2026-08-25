@@ -2,11 +2,11 @@ import {diffInput, wrap} from '@sanity/diff'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, Flex, Skeleton, Spinner, Text, useLayer} from '@sanity/ui'
+import {Card, Skeleton, Spinner, Text, useLayer} from '@sanity/ui'
 import {fromString} from '@sanity/util/paths'
 import {type RefObject, type ComponentType, Fragment} from 'react'
 import {DocumentChangeContext} from 'sanity/_singletons'
-import {Box, type Space} from 'ui5'
+import {Box, Flex, type Space} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {type DiffComponent, type DiffComponentOptions} from '../../field/types'
@@ -94,7 +94,7 @@ export const DivergenceDetail: ComponentType<DivergenceDetailProps> = ({
           contentEditable={false}
           $layer={layer}
         >
-          <Flex justify="space-between" align="center">
+          <Flex justifyContent="space-between" alignItems="center">
             <Box paddingX={sectionPadding} paddingY={sectionPadding}>
               <Text size={1}>
                 {upstreamReleaseState === 'loaded' &&
@@ -133,16 +133,16 @@ export const DivergenceDetail: ComponentType<DivergenceDetailProps> = ({
               <>
                 {diff &&
                   DiffComponent && (
-                    // oxlint-disable-next-line react/react-compiler
+                    // oxlint-disable-next-line react/static-components -- pre-existing violation, to be fixed in a follow-up
                     <DiffComponent diff={diff} schemaType={divergence.schemaType} />
                   )}
               </>
             )}
           </Card>
           <Box paddingX={sectionPadding} paddingY={(sectionPadding - 1) as Space}>
-            <Flex flex={1} gap={2} justify="space-between">
-              <Flex flex={1} gap={3} align="center">
-                <Flex gap={2} align="center">
+            <Flex flexBasis="0%" flexGrow={1} gap={2} justifyContent="space-between">
+              <Flex flexBasis="0%" flexGrow={1} gap={3} alignItems="center">
+                <Flex gap={2} alignItems="center">
                   <Button
                     mode="ghost"
                     tone="neutral"
@@ -162,7 +162,13 @@ export const DivergenceDetail: ComponentType<DivergenceDetailProps> = ({
                 </Flex>
                 {isActionPending && <Spinner />}
               </Flex>
-              <Flex flex={1} gap={2} style={{justifyContent: 'flex-end'}} align="center">
+              <Flex
+                flexBasis="0%"
+                flexGrow={1}
+                gap={2}
+                justifyContent="flex-end"
+                alignItems="center"
+              >
                 <Text size={1}>
                   {t('divergence.pagination', {
                     position: divergenceIndex + 1,

@@ -51,7 +51,7 @@ export function InspectDialog(props: InspectDialogProps) {
 
   return (
     <Dialog
-      bodyHeight="fill"
+      bodyHeight="100%"
       id={`${dialogIdPrefix}dialog`}
       header={
         isDocumentLike(value) ? (

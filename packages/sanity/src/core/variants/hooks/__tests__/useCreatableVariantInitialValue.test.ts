@@ -32,6 +32,7 @@ const siblingStub: VersionInfoDocumentStub = {
   _rev: 'rev-pub',
   _createdAt: '2026-01-01T00:00:00Z',
   _updatedAt: '2026-01-02T00:00:00Z',
+  _type: 'article',
   _system: {
     group: {_ref: PUBLISHED_ID, _weak: true},
     variant: {_ref: variantAlphaAudience._id, _weak: true},
