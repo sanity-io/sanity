@@ -144,21 +144,22 @@ jobs:
               exit 1
             fi
           fi
-          # What a release run must guarantee: the measured commit IS the
-          # tagged one. There are two honest ways to get there.
+          # What a release run must guarantee: the measured commit IS the tagged
+          # one. There are two ways to get there.
           #
-          # 1. No backfill_sha — the run measures HEAD, which is correct exactly
-          #    when HEAD is the tag's commit. That is the case during a release:
-          #    the tag is cut on the `chore(release): publish` commit at the tip
-          #    of main, so the ordinary HEAD build already measures the release.
-          #    Cheaper and more faithful than replaying it, since the historical
-          #    replay path exists to reconstruct trees that no longer match HEAD.
-          # 2. With backfill_sha — for a release whose commit is no longer HEAD
-          #    (measuring past releases), where the replay path is required.
+          # 1. No backfill_sha — the run measures the checkout, which is correct
+          #    when the workflow was dispatched at the tag itself (`--ref <tag>`,
+          #    what release-latest.yml does). An ordinary build of the right tree
+          #    is cheaper and more faithful than replaying it.
+          # 2. With backfill_sha — for a release whose commit is not the
+          #    checkout, i.e. measuring past releases from a main dispatch, where
+          #    the replay path is required.
           #
           # Either way the sha actually measured has to be the tag's, so both
-          # branches are checked rather than trusted. A stale copy-paste of the
-          # recovery command in release-latest.yml is the realistic mistake.
+          # branches are checked rather than trusted. Dispatching `--ref main`
+          # without a backfill_sha is the realistic mistake: main has almost
+          # always moved past the release by then, so it would silently measure
+          # someone else's commit as the release.
           if [ -n "$RELEASE_TAG" ]; then
             TAG_SHA="$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}" 2>/dev/null || true)"
             if [ -z "$TAG_SHA" ]; then
@@ -173,7 +174,7 @@ jobs:
             else
               HEAD_SHA="$(git rev-parse HEAD)"
               if [ "$TAG_SHA" != "$HEAD_SHA" ]; then
-                echo "::error::$RELEASE_TAG points at $TAG_SHA but HEAD is $HEAD_SHA — pass backfill_sha=$TAG_SHA to measure that commit instead of HEAD"
+                echo "::error::$RELEASE_TAG points at $TAG_SHA but this run checked out $HEAD_SHA. Dispatch at the tag (--ref $RELEASE_TAG), or pass backfill_sha=$TAG_SHA to replay that commit from a main dispatch."
                 exit 1
               fi
             fi
