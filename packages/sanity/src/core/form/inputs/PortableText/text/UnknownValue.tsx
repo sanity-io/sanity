@@ -7,6 +7,7 @@ import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {getValueAtPath} from '../../../../field/paths/helpers'
+import {useListFormat} from '../../../../hooks/useListFormat'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {warnOnce} from '../warnOnce'
@@ -19,8 +20,10 @@ const Root = styled.span`
 type UnknownMarksProps = SpanRenderProps & {portableTextPath: Path}
 
 export function UnknownValue(props: {labels: string[]; block?: boolean; children: ReactNode}) {
+  const listFormat = useListFormat({style: 'narrow', type: 'unit'})
+
   return (
-    <Tooltip content={props.labels.join('; ')} placement="top" portal>
+    <Tooltip content={listFormat.format(props.labels)} placement="top" portal>
       <Root as={props.block ? 'div' : 'span'} data-testid="unknown-value">
         {props.children}
       </Root>
