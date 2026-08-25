@@ -47,7 +47,6 @@ export const releasesOverviewColumnDefs: (
             flexBasis="0%"
             flexGrow={1}
             paddingLeft={6}
-            width="80rem"
             paddingRight={2}
             paddingY={3}
           >
