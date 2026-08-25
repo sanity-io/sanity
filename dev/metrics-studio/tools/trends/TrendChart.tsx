@@ -11,9 +11,16 @@ import {
   formatValue,
   INP_MIN_INTERACTIONS,
   isSignedUnit,
+  clusterTags,
+  labelledClusters,
+  medianGapMs,
+  type TagCluster,
+  type ResolvedTag,
+  resolveTagPositions,
   type TrendLine,
   type TrendPoint,
   type TrendSeries,
+  type TrendTag,
 } from './data'
 import {baselineDetail, type DriftBaseline, type DriftResult} from './drift'
 import {ALL_LAYERS_VISIBLE, type LayerState} from './layers'
@@ -21,7 +28,29 @@ import {categoricalColor} from './palette'
 import {RunDetailPopover} from './RunDetailPopover'
 
 // Left gutter is computed per chart from its tick labels — see marginLeft
-const MARGIN = {top: 8, right: 8, bottom: 22}
+// top: 12 so the release markers' 6px ticks (drawn above the plot, at negative
+// y) clear the SVG's own edge with a little room rather than touching it — paid
+// unconditionally so the plot never resizes when the releases layer is toggled.
+// bottom: 22 for the axis line + its tick labels, plus 4 so the last row of
+// glyphs isn't shaved by the SVG's own edge.
+const MARGIN = {top: 12, right: 8, bottom: 26}
+
+/**
+ * Top gutter on a chart that can draw release labels.
+ *
+ * Deliberately a **fixed** amount, and reserved whenever the chart is capable of
+ * labelling releases — not only when it currently is. Sizing it to the labels
+ * actually drawn (or making it conditional on the `releases` layer) meant the
+ * plot resized when the layer was toggled and differed between charts in the
+ * same grid, so the same metric read at two different heights. A stable plot is
+ * worth more than the ~60px a short-label chart could reclaim: the eye compares
+ * these small multiples against each other.
+ *
+ * Sized for the longest label in practice — 'v10.10.10 +2 (latest)' is ~21
+ * glyphs of 9px text at ~5.4px/glyph, of which sin(60°) ≈ 87% becomes height at
+ * the label's tilt — plus the tick and breathing room.
+ */
+const TAG_LABEL_MARGIN_TOP = 112
 
 /**
  * The nearest earlier point on the selected point's own line that measured a
@@ -120,6 +149,17 @@ export const COLOR = {
    * neutral baseline's before-rule.
    */
   goodThreshold: 'var(--card-badge-caution-fg-color, #a35200)',
+  /**
+   * Release markers. The same neutral as the host-calibration context line —
+   * both are reference, not measurement, and a hue here would compete with the
+   * data series for meaning ("is the purple one a branch?"). They stay
+   * distinguishable by position and shape rather than color: calibration is a
+   * horizontal dotted trail *inside* the plot, a release is a short vertical
+   * tick *above* it, and the legend names both. Its own entry rather than
+   * reusing `context` because a future re-tone of one must not silently move
+   * the other.
+   */
+  release: 'var(--card-fg-color, #101112)',
 }
 
 /**
@@ -158,6 +198,27 @@ export function seriesHasCalibration(series: TrendSeries): boolean {
   if (series.xKind === 'minute') return false
   if (series.unit !== 'ms') return false
   return series.lines[0].points.filter((point) => point.calibrationMs !== undefined).length > 1
+}
+
+/**
+ * Whether this chart can carry release markers.
+ *
+ * Only the x-axis kind decides it: soak latest-run charts plot minutes *within*
+ * one run, so a calendar-dated release rule there would claim a relationship
+ * between a release and a minute of runtime, which is nonsense. Everything else
+ * qualifies — including branch comparisons, unlike the band and the baseline
+ * overlay: a release is global context, identical for every line, so it can't
+ * turn into per-branch mud.
+ *
+ * Exported so `ChartLegend` keys off the same predicate. Unlike
+ * `seriesHasBand` this is a *capability* test, not a "currently drawing" test:
+ * markers are domain-filtered per chart, so a chart whose plotted range holds
+ * no release still advertises the layer — the toggle applies grid-wide, and
+ * hiding it because one window is empty would make it unreachable.
+ */
+export function seriesHasReleases(series: TrendSeries, tags: TrendTag[]): boolean {
+  if (series.xKind === 'minute') return false
+  return tags.length > 0
 }
 
 /** Per-line color: the studio accent for a lone line, categorical when comparing. */
@@ -347,6 +408,161 @@ function BaselineOverlay(props: {
   )
 }
 
+/**
+ * A cluster's label: its name, "+n" when the mark stands for several releases,
+ * and "latest" when one of them is what npm currently serves.
+ *
+ * `latest` is marked in *text* rather than by drawing that tick differently. It
+ * is worth pointing out — it's the release most readers mean — but an
+ * unexplained heavier mark reads as a different kind of thing, and needs a
+ * legend entry to decode. A word next to a version number needs nothing: it
+ * also carries its own tense, so a reader takes it as a current fact about that
+ * version rather than something baked into the chart's history (dist-tags
+ * re-point on the next publish).
+ */
+function labelFor(cluster: TagCluster): string {
+  const isLatest = cluster.tags.some((entry) => entry.distTags?.includes('latest'))
+  const also = cluster.alsoCount > 0 ? ` +${cluster.alsoCount}` : ''
+  // Parenthesised, so it reads as an aside about the version rather than running
+  // together with it into one token ("v6.10.1 latest")
+  return `${cluster.tag.tag}${also}${isLatest ? ' (latest)' : ''}`
+}
+
+/**
+ * Release markers: a small tick above the plot per stable `v*` tag positioned in
+ * the plotted window, so "did this step land with a release?" is answerable
+ * without leaving the chart.
+ *
+ * The mark deliberately lives *outside* the plot. A full-height rule would
+ * locate the release just as well, but it crosses every measured value to do it
+ * — nine releases in a 90-day window means nine lines drawn through the data to
+ * convey nine x positions. A tick in the top margin says the same thing while
+ * leaving the measurement alone, which is the rule annotation follows here (the
+ * same reason the baseline overlay paints under the data layers).
+ *
+ * Markers whose release was actually benchmarked (`measured`) sit above that
+ * run's point; the rest fall back to the tag's own date. Both are drawn
+ * identically — see ResolvedTag for why the distinction lives in the wording
+ * rather than in the mark.
+ *
+ * The position claim stays weak for unanchored markers: "this release shipped
+ * here", never "this run measured this release".
+ *
+ * Labels are opt-in (`showLabels`) because at grid-card width (~330px) a 90-day
+ * window holds ~20 markers, i.e. one every ~15px: resting text there is
+ * guaranteed overlap. The maximized dialog has the room, and at card size the
+ * hover tooltip names the release instead.
+ *
+ * `aria-hidden` like the other annotation layers: the capture rect's label
+ * carries the count, and the tooltip names the individual release.
+ */
+function ReleaseMarkers(props: {
+  tags: ResolvedTag[]
+  xScale: (ms: number) => number
+  /** Resting text labels above the plot — only where there is room for them. */
+  showLabels?: boolean
+}) {
+  const {tags, xScale, showLabels} = props
+  if (tags.length === 0) return null
+  // Two gaps, because marks and text need different room. Marks merge below 6px,
+  // where two ticks stop reading as two; labels need 14px, since at -60° a
+  // 7-glyph tag leans ~19px sideways (~12px perpendicular to its neighbour,
+  // against a 9px line height). Marks merge first, then labels thin across what
+  // survives — so a cluster is one mark with one label, never two marks sharing
+  // one name.
+  //
+  // Crucially the *text* of a thinned label is not discarded — it folds into the
+  // label that survives, as "+n", so a release is never left with a tick that
+  // carries no name and no hint that a name exists. Marks stay one-per-release
+  // wherever they are separable; only the naming collapses.
+  const clusters = clusterTags(tags, xScale, 6)
+  // 14px between labels: at -60° that is ~12px perpendicular against a 9px line
+  // height. See labelledClusters for why the gap is measured where it is.
+  const labels = showLabels ? labelledClusters(clusters, 14) : new Map<number, TagCluster>()
+
+  return (
+    <g aria-hidden="true" pointerEvents="none">
+      {clusters.map((cluster, index) => {
+        const {tag, x} = cluster
+        // Every marker is drawn identically — the `latest` release is called out
+        // in its label's text instead (see labelFor), which needs no legend to
+        // decode and no second mark weight to notice.
+        return (
+          <g key={tag.tag}>
+            {/* A tick above the plot, not a rule through it.
+
+                A full-height dotted rule marked the same x, but it crossed
+                every measured value on the way — and with ~9 releases in a
+                90-day window that is nine lines drawn over the data to convey
+                nine positions. The tick sits in the top margin and touches the
+                plot's edge, so it locates the release without competing with
+                the series, the band, or the reference marks for the reader's
+                attention inside the plot.
+
+                It has to carry findability alone now, so it is solid and full
+                strength rather than the recessive dotting a rule needed: a mark
+                that only exists in 6px must actually read at a glance. */}
+            <line
+              x1={x}
+              x2={x}
+              y1={-6}
+              y2={1}
+              stroke={COLOR.release}
+              strokeWidth={1.5}
+              opacity={0.7}
+              strokeLinecap="round"
+            />
+            {labels.has(index) && (
+              // A shallow tilt, rotated about the point where the text meets its
+              // own tick.
+              //
+              // Three positions were tried. -45° leaned ~40px sideways, crossing
+              // the neighbouring tick and forcing most labels to be thinned
+              // away. Fully vertical (-90°) fixed the density but is genuinely
+              // hard to read. -60° keeps most of the width saving — a 7-glyph
+              // tag leans only ~19px — while staying legible at a glance.
+              //
+              // Rotating about `translate(x, -7)` with textAnchor="start" means
+              // the text's *start* is pinned a couple of px above the tick and
+              // the string grows up-and-right from there, so a label always sits
+              // against the mark it names instead of drifting away from it as
+              // the tag gets longer.
+              <text
+                transform={`translate(${x + 1}, -7) rotate(-60)`}
+                textAnchor="start"
+                fontSize={9}
+                fill={COLOR.axis}
+                opacity={0.9}
+              >
+                {/* "+n" rather than dropping the others silently: the reader can
+                    see more shipped here and hover for the names */}
+                {labelFor(labels.get(index)!)}
+              </text>
+            )}
+          </g>
+        )
+      })}
+    </g>
+  )
+}
+
+/**
+ * The release nearest a run, when it is near enough to be worth naming in that
+ * run's tooltip.
+ *
+ * "Near enough" is half the median gap between runs: the marker the crosshair is
+ * standing next to is the release that plausibly explains this run's value, and
+ * anything further away belongs to a different run. A fixed pixel or day
+ * tolerance would either go silent on sparse history or name an unrelated
+ * release on dense history.
+ */
+function releasesNearRun(tags: ResolvedTag[], runMs: number, toleranceMs: number): TrendTag[] {
+  return tags
+    .filter((entry) => Math.abs(entry.atMs - runMs) <= toleranceMs)
+    .sort((a, b) => Math.abs(a.atMs - runMs) - Math.abs(b.atMs - runMs))
+    .map((entry) => entry.tag)
+}
+
 export function TrendChart(props: {
   series: TrendSeries
   width: number
@@ -355,8 +571,23 @@ export function TrendChart(props: {
   drift?: DriftResult
   /** Which encoding layers to draw; defaults to all. */
   layers?: LayerState
+  /** Stable release tags, drawn as vertical markers. Empty = no markers. */
+  tags?: TrendTag[]
+  /**
+   * Draw resting labels on the release markers. Only true where there is room
+   * for them (the maximized dialog) — see ReleaseMarkers.
+   */
+  showTagLabels?: boolean
 }) {
-  const {series, width, height, drift, layers = ALL_LAYERS_VISIBLE} = props
+  const {
+    series,
+    width,
+    height,
+    drift,
+    layers = ALL_LAYERS_VISIBLE,
+    tags = [],
+    showTagLabels = false,
+  } = props
   const {lines, unit} = series
   const [hoverMs, setHoverMs] = useState<number | null>(null)
   // The selected point only — its anchor coords are derived from the current
@@ -368,7 +599,25 @@ export function TrendChart(props: {
   const allPoints = lines.flatMap((line) => line.points)
   if (width < 10 || allPoints.length === 0) return null
 
-  const innerHeight = height - MARGIN.top - MARGIN.bottom
+  const showReleases = layers.visible('releases') && seriesHasReleases(series, tags)
+  // Reserved by *capability*, not by what is currently drawn: keyed on the
+  // layer's visibility (or on the label lengths) the plot resized when releases
+  // were toggled, and charts in one grid disagreed on height depending on
+  // whether a release happened to fall in their window.
+  //
+  // The conditions here stay stable under the reader: `showTagLabels` is a
+  // property of the surface (only the maximized dialog sets it), and a
+  // minute-axis chart can *never* label a release — seriesHasReleases rejects
+  // `xKind: 'minute'` outright, since a calendar-dated release says nothing
+  // about a minute of one run's soak. Reserving for them anyway cost a
+  // maximized soak chart ~100px of its 460 to permanently empty space.
+  // `tags.length > 0` is the same reasoning against a tag-less dataset (or a
+  // failed tag query): no tag can ever be labelled, so the gutter would be
+  // permanently blank. It can reflow once, when the tag stream first emits
+  // after the dialog mounts — a one-time jump on one chart, not grid churn.
+  const canLabelReleases = showTagLabels && series.xKind !== 'minute' && tags.length > 0
+  const marginTop = canLabelReleases ? TAG_LABEL_MARGIN_TOP : MARGIN.top
+  const innerHeight = height - marginTop - MARGIN.bottom
 
   // Signed units (slopes) center on zero with a symmetric domain, so a
   // near-flat metric reads as a calm line through the middle rather than
@@ -418,6 +667,16 @@ export function TrendChart(props: {
   const xScale = scaleTime({domain: [new Date(minDate), new Date(maxDate)], range: [0, innerWidth]})
 
   const x = (point: TrendPoint) => xScale(point.date)
+  // Anchored to the runs that measured them where possible — a release run's
+  // point *is* the release, so the marker belongs on it rather than on the tag
+  // date (which is hours earlier). resolveTagPositions owns the whole pipeline
+  // (anchor, then filter to the domain, then sort by drawn position) precisely
+  // so those steps cannot be ordered wrongly here — see its docstring.
+  //
+  // Cheap by construction: the tags array is shared across every chart and tiny
+  // (~54 documents for all of v5+v6), so one O(n) pass per chart render costs
+  // nothing next to the plot itself.
+  const visibleTags = showReleases ? resolveTagPositions(tags, allPoints, minDate, maxDate) : []
   // The band only reads when there's one line — overlapping bands across branches
   // would be mud, so comparison mode shows lines only (see seriesHasBand for the
   // low-sample case)
@@ -496,13 +755,37 @@ export function TrendChart(props: {
           .filter((entry): entry is {branch: string; color: string; point: TrendPoint} =>
             Boolean(entry.point),
           )
+  // The release the crosshair is standing next to, named in the tooltip — this
+  // is how a marker gets identified at grid-card size, where resting labels
+  // don't fit. The floor keeps a very dense history (several runs an hour) from
+  // narrowing the tolerance to the point where no marker is ever nameable.
+  // A release run states its release outright — it measured that commit, so
+  // there is nothing to infer; it is named from the run itself, not from the
+  // tag documents, which can lag the run (the tag sync is a separate cron).
+  const measuredRelease = hovered.find((entry) => entry.point.releaseTag)?.point.releaseTag
+  // All of them, not just the nearest: releases ship in bursts (v6.10.0 and
+  // v6.10.1 6.8 hours apart), and their marks merge into one tick — so the
+  // tooltip is where the individual names have to remain reachable, including
+  // next to a measured release (which gets its own row above this list).
+  const hoveredReleases = (
+    snappedMs === null || visibleTags.length === 0
+      ? []
+      : releasesNearRun(
+          visibleTags,
+          snappedMs,
+          Math.max(medianGapMs(stepTimes) / 2, 60 * 60 * 1000),
+        )
+  ).filter((entry) => entry.tag !== measuredRelease)
+  const measuredIsLatest = visibleTags.some(
+    (entry) => entry.tag.tag === measuredRelease && entry.tag.distTags?.includes('latest'),
+  )
 
   return (
     <div style={{position: 'relative', width, height}}>
       {/* No role="img": the plot is interactive (see the focusable capture
           rect below), not a static image — claiming "img" would hide that */}
       <svg width={width} height={height}>
-        <Group left={marginLeft} top={MARGIN.top}>
+        <Group left={marginLeft} top={marginTop}>
           {/* Zero reference for signed slope charts — the "flat is good" line.
               Dashed like the other reference marks: solid, it reads as a flat
               data series the moment the median layer is toggled off. */}
@@ -546,6 +829,14 @@ export function TrendChart(props: {
               innerHeight={innerHeight}
             />
           )}
+          {/* Release markers sit with the other annotation, under the band,
+              line and dots: they explain the measurement and must never
+              obscure it. */}
+          <ReleaseMarkers
+            tags={visibleTags}
+            xScale={(ms) => xScale(new Date(ms))}
+            showLabels={canLabelReleases}
+          />
           {showBand && (
             <>
               <Area<TrendPoint>
@@ -701,6 +992,16 @@ export function TrendChart(props: {
               series.goodThreshold !== undefined
                 ? ` Good is ${formatValue(series.goodThreshold, unit)} or less (web.dev).`
                 : ''
+            }${
+              // The markers themselves are aria-hidden (decoration), so the count
+              // is what tells a screen reader user the annotation exists at all;
+              // the individual tag is named in the tooltip as the crosshair
+              // reaches it. Naming all ~20 here would bury the metric.
+              visibleTags.length === 1
+                ? ` 1 release marked, ${visibleTags[0].tag.tag}.`
+                : visibleTags.length > 1
+                  ? ` ${visibleTags.length} releases marked, ${visibleTags[0].tag.tag} to ${visibleTags.at(-1)!.tag.tag}.`
+                  : ''
             } Arrow keys inspect runs, Enter opens details.`}
             onPointerMove={handleMove}
             onPointerLeave={() => setHoverMs(null)}
@@ -843,6 +1144,56 @@ export function TrendChart(props: {
                     ))}
                 </Stack>
               )}
+              {/* The run's own release, when it measured one. "measured" is a
+                  stronger claim than "near", and only earned when the run
+                  built that exact commit. */}
+              {measuredRelease && (
+                <Flex
+                  align="center"
+                  gap={2}
+                  title="This run measured the release commit, so the value is that release."
+                >
+                  <Text size={0} muted>
+                    measured release
+                  </Text>
+                  <Text size={0} weight="semibold">
+                    {measuredRelease}
+                  </Text>
+                  {measuredIsLatest && (
+                    <Text size={0} muted>
+                      latest
+                    </Text>
+                  )}
+                </Flex>
+              )}
+              {/* The other release markers the crosshair is standing next to,
+                  named. This is how a marker is identified at grid-card size,
+                  where resting labels don't fit — and the wording stays honest
+                  about the join: these releases shipped near this run, they
+                  were not necessarily what this run measured. */}
+              {hoveredReleases.length > 0 && (
+                <Flex
+                  align="center"
+                  gap={2}
+                  title="Release tags near this run. Unmeasured releases are placed by tag date, so a release near a run does not mean that run measured it."
+                >
+                  <Text size={0} muted>
+                    {measuredRelease
+                      ? 'also near'
+                      : hoveredReleases.length > 1
+                        ? 'releases'
+                        : 'release'}
+                  </Text>
+                  <Text size={0} weight="semibold">
+                    {hoveredReleases.map((entry) => entry.tag).join(', ')}
+                  </Text>
+                  {hoveredReleases.some((entry) => entry.distTags?.includes('latest')) && (
+                    <Text size={0} muted>
+                      latest
+                    </Text>
+                  )}
+                </Flex>
+              )}
               {/* No baseline medians here: the legend names the baseline and
                   its window, the overlay draws the levels, and repeating the
                   same two labelled rows in every chart's tooltip was noise. */}
@@ -860,7 +1211,7 @@ export function TrendChart(props: {
             style={{
               position: 'absolute',
               left: marginLeft + x(selected),
-              top: MARGIN.top + yScale(selected.value),
+              top: marginTop + yScale(selected.value),
               width: 1,
               height: 1,
               pointerEvents: 'none',
@@ -871,6 +1222,12 @@ export function TrendChart(props: {
             series={series}
             point={selected}
             previousPoint={previousPointFor(lines, selected)}
+            // The *full* tag list, not `visibleTags`: the release a run comes
+            // after is often older than the plotted window (a 30-day view of a
+            // month with no release), and the popover states release context
+            // unconditionally. Independent of the `releases` layer toggle too —
+            // that hides marks on the plot, it doesn't make the fact untrue.
+            tags={tags}
             referenceElement={anchorEl}
             onClose={() => {
               setSelected(null)

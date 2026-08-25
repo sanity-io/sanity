@@ -1,15 +1,7 @@
 /* oxlint-disable no-restricted-imports */
 import {Badge, Flex, Stack, Text} from '@sanity/ui'
 import {MenuItem as UIMenuItem, type MenuItemProps as UIMenuItemProps} from '@sanity/ui/menu'
-import {
-  type ElementType,
-  type HTMLProps,
-  isValidElement,
-  type ReactNode,
-  type Ref,
-  useMemo,
-  type RefAttributes,
-} from 'react'
+import {type ElementType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
@@ -26,15 +18,18 @@ const SubtitleText = styled(Text)`
 `
 
 /** @internal */
-export type MenuItemProps = Pick<
-  UIMenuItemProps<ElementType>,
-  'as' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
+export type MenuItemProps<E extends ElementType = 'button'> = Omit<
+  UIMenuItemProps<E>,
+  'children' | 'icon' | 'iconRight' | 'text'
 > & {
   badgeText?: string
   /**
    * Usage of `children` is not supported, import `MenuItem` from `@sanity/ui` instead.
    */
   children?: undefined
+  disabled?: boolean
+  icon?: UIMenuItemProps['icon']
+  iconRight?: UIMenuItemProps['iconRight']
   /**
    * Previews should be 25x25.
    */
@@ -74,7 +69,7 @@ const PreviewWrapper = styled(Box)`
  *
  * @internal
  */
-export function MenuItem({
+export function MenuItem<E extends ElementType = 'button'>({
   ref,
   badgeText,
   children: childrenProp,
@@ -89,9 +84,7 @@ export function MenuItem({
   __unstable_subtitle,
   __unstable_space,
   ...rest
-}: MenuItemProps &
-  Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'selected' | 'tabIndex' | 'size'> &
-  RefAttributes<HTMLDivElement>) {
+}: MenuItemProps<E>) {
   const menuItemContent = useMemo(() => {
     return (
       <Flex align="center" gap={2}>
@@ -164,7 +157,8 @@ export function MenuItem({
       paddingRight={3}
       paddingY={preview ? 1 : 3}
       ref={ref}
-      {...rest}
+      // UIMenuItem is not invoked with E, so forwarded `as` props need a wide cast.
+      {...(rest as UIMenuItemProps)}
     >
       {typeof childrenProp === 'undefined' && typeof renderMenuItem === 'function'
         ? renderMenuItem(menuItemContent)

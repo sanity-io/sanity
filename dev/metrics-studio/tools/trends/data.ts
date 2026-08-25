@@ -7,6 +7,13 @@ export interface TrendRun {
   _id: string
   startedAt: string
   mode: 'ab' | 'absolute'
+  /**
+   * Why this run happened. Absent on documents written before the field
+   * existed — those were all cron runs.
+   */
+  trigger?: 'cron' | 'release' | 'backfill' | 'dispatch' | 'pr' | null
+  /** Release runs only: the tag this run measured, e.g. `v6.10.1`. */
+  releaseTag?: string | null
   git: {
     sha: string
     branch: string
@@ -72,6 +79,8 @@ export const TREND_QUERY = `*[_type == "benchRun" && mode == "absolute"] | order
   _id,
   startedAt,
   mode,
+  trigger,
+  releaseTag,
   git{sha, branch, committedAt, prNumber, mergeBaseSha},
   runner{calibrationMs, runId, runAttempt, os, arch, cpus, memGb, nodeVersion, cpuModel, imageOs, imageVersion, browserVersion},
   bundle{experiment{initialJsBytes, totalJsBytes}},
@@ -135,6 +144,13 @@ export interface TrendPoint {
     browserVersion?: string
   }
   sha: string
+  /**
+   * Set when this run measured a tagged release commit (`trigger: 'release'`),
+   * naming the tag. This is what lets a release marker anchor on a real
+   * measured point instead of being placed by date, and what lets the run
+   * popover say "released as" instead of bracketing between two releases.
+   */
+  releaseTag?: string
   /** benchRun document id — opens the run in the studio. */
   runId: string
   /** Backlink metadata (GitHub PR / commit / CI run). */
@@ -530,6 +546,320 @@ export function filterByRange(runs: TrendRun[], days: number | null): TrendRun[]
 }
 
 /**
+ * A release tag as the charts need it: enough to place a mark on the time axis
+ * and name it. Projected from `gitTag` (see schemaTypes/gitTag.ts).
+ */
+export interface TrendTag {
+  /** Tag name, e.g. `v6.10.1`. */
+  tag: string
+  /** ISO datetime the tag was created — the marker's x position. */
+  taggedAt: string
+  /**
+   * Semver major. Release lines interleave in time (v5.31.2 shipped after
+   * v6.10.1), so the major is what tells two markers apart when they don't
+   * belong to the same line.
+   */
+  major: number
+  /**
+   * Dist-tags currently pointing at this version. `latest` is the release the
+   * ecosystem is actually installing, which is worth distinguishing from a
+   * maintenance-line tag that shipped the same week.
+   */
+  distTags?: string[] | null
+}
+
+/**
+ * Stable releases cut **from main**, in time order.
+ *
+ * Two filters, for two different reasons:
+ *
+ * - `!defined(prerelease)` — rc tags would roughly double marker density for no
+ *   added reading; nobody asks "did this regress at v6.11.0-rc.2?" of a trend
+ *   chart.
+ * - the `gitCommit` existence check — the charts only ever plot main (bench runs
+ *   are main-branch crons), so a release cut off main is a *false* annotation:
+ *   its commits are not in the line being measured. `gitCommit` documents are
+ *   main-only by construction, so "is this tag's commit on main?" is a by-value
+ *   sha join against them. This is what excludes maintenance releases like
+ *   v5.31.2, which shipped mid-window from a release branch.
+ *
+ * Note it is *not* a filter on `major`: the v5 tags up to the v6 cutover were
+ * cut from main and belong on a chart that reaches back that far. Being on main
+ * is the property that matters, and it is the one being tested.
+ *
+ * Cost note: the correlated subquery means `listenQuery` treats every
+ * `gitCommit` mutation as relevant, so the daily history sync causes a refetch
+ * burst. Fine here — the projection is ~54 tiny documents and this is an
+ * internal dashboard — but don't copy the pattern somewhere hot.
+ *
+ * The tag's own `commit` weak reference is deliberately not used for this: it
+ * dangles for off-main tags today, but a dangling weak ref means "not synced",
+ * which is not the same claim as "not on main" and would silently start
+ * including release-branch tags if sync coverage ever widened.
+ *
+ * Projection stays tiny (SPEC: never over-fetch).
+ */
+export const TAGS_QUERY = `*[
+  _type == "gitTag"
+  && !defined(prerelease)
+  && defined(*[_type == "gitCommit" && sha == ^.sha][0])
+] | order(taggedAt asc) {
+  tag,
+  taggedAt,
+  major,
+  "distTags": npm.distTags
+}`
+
+/** A release marker resolved to a position, and how certain that position is. */
+export interface ResolvedTag {
+  tag: TrendTag
+  /** Where to draw it, as a time on the chart's x-axis. */
+  atMs: number
+  /**
+   * True when a run in this chart actually measured this release's commit, so
+   * the marker sits on a real measured point rather than on the tag's date.
+   *
+   * Both kinds are drawn identically — the distinction is carried by the run
+   * popover's wording, not by the mark (a second visual language would need a
+   * legend entry to explain a difference that only matters once you are already
+   * asking about a specific run). What it changes is *where* the rule sits, and
+   * whether the tooltip can claim the run measured the release.
+   */
+  measured: boolean
+}
+
+/**
+ * The release markers a chart draws: anchored to the runs that measured them
+ * where those exist, placed by tag date otherwise, filtered to the chart's
+ * x-domain and ordered by drawn position.
+ *
+ * A release run (`trigger: 'release'`) measures the tagged commit itself, so its
+ * point *is* the release: the marker belongs exactly on it. Without one the only
+ * honest position is the tag's own date — what every marker did before release
+ * runs existed — so history keeps working and the two kinds mix on one chart.
+ *
+ * **Anchoring happens before domain filtering, deliberately.** The two positions
+ * genuinely differ: a tag is cut, then CI measures it hours later. Filtering on
+ * the tag date first would drop a release tagged just outside the window whose
+ * measuring run is inside it (a 23:00 tag measured the next morning is a real
+ * case) — and worse, hovering that run would then show no release at all, losing
+ * the strongest claim the feature can make for exactly the run that earned it.
+ * Resolving first makes the anchor position *the* position, for filtering and
+ * ordering alike.
+ *
+ * Sorted by `atMs` rather than by tag date for the same reason: re-anchoring can
+ * move a marker past a close neighbour, and both `clusterTags` (which merges
+ * adjacent marks scanning left to right, keeping each cluster's last release)
+ * and the chart's aria-label (which reports first and last as the range) require
+ * the array to agree with what is drawn.
+ *
+ * Domain bounds are inclusive: a release on the first or last plotted run is
+ * part of that window's story, and dropping it would lose the marker most likely
+ * to explain an edge step.
+ *
+ * Tolerates unsorted and unparseable `taggedAt` — this reads live documents, and
+ * one bad date must not take a chart down.
+ */
+export function resolveTagPositions(
+  tags: TrendTag[],
+  points: TrendPoint[],
+  minDateMs: number,
+  maxDateMs: number,
+): ResolvedTag[] {
+  // One pass over the points; charts hold at most a few hundred
+  const measuredByTag = new Map<string, number>()
+  for (const point of points) {
+    if (!point.releaseTag) continue
+    // Earliest measurement wins if a release somehow got measured twice (a
+    // re-run stores a second document — see documentIdForRun), so the marker
+    // position is stable rather than flipping between equally valid runs
+    const existing = measuredByTag.get(point.releaseTag)
+    const ms = point.date.getTime()
+    if (existing === undefined || ms < existing) measuredByTag.set(point.releaseTag, ms)
+  }
+  return tags
+    .map((tag) => {
+      const measuredAt = measuredByTag.get(tag.tag)
+      if (measuredAt !== undefined) return {tag, atMs: measuredAt, measured: true}
+      return {tag, atMs: new Date(tag.taggedAt).getTime(), measured: false}
+    })
+    .filter(
+      (entry) => Number.isFinite(entry.atMs) && entry.atMs >= minDateMs && entry.atMs <= maxDateMs,
+    )
+    .sort((a, b) => a.atMs - b.atMs)
+}
+
+/**
+ * The most recent release at or before `atMs`, and the next one after it.
+ *
+ * This is the release context of a run: `previous` is the newest release whose
+ * code the run's commit builds on, `next` is the release that shipped it. The
+ * run popover states both unconditionally — unlike the hover tooltip, which
+ * names whichever marker the crosshair is *near*, this is a claim that can
+ * always be made and is always the same for a given run.
+ *
+ * Deliberately still a **by-time** statement, like the markers themselves: it
+ * bounds a run between two releases in time, and does not assert that the run's
+ * commit is contained in `next`. Proving containment needs an ancestry walk over
+ * `gitCommit.parentSha`, which is not what this reads.
+ *
+ * Either side is undefined at the ends of history (a run before the first known
+ * release, or after the latest one — the common case for recent runs).
+ */
+export function releaseContextAt(
+  tags: TrendTag[],
+  atMs: number,
+): {previous?: TrendTag; next?: TrendTag} {
+  let previous: (TrendTag & {ms: number}) | undefined
+  let next: (TrendTag & {ms: number}) | undefined
+  for (const tag of tags) {
+    const ms = new Date(tag.taggedAt).getTime()
+    if (!Number.isFinite(ms)) continue
+    // `<=` so a run measured exactly at a tag counts as being in that release
+    if (ms <= atMs) {
+      if (!previous || ms > previous.ms) previous = {...tag, ms}
+    } else if (!next || ms < next.ms) {
+      next = {...tag, ms}
+    }
+  }
+  return {previous, next}
+}
+
+/**
+ * Median gap between consecutive run times, in ms — the natural "how far apart
+ * are these runs?" scale, used to decide whether a release marker is near
+ * enough to a run to name in that run's tooltip.
+ *
+ * Median rather than mean because run history is gappy by nature (weekend
+ * skips, CI outages, a backfill landing a dozen historical runs at once) and a
+ * single 3-week hole would triple a mean. Falls back to one day — the cron
+ * cadence — when there is no gap to measure.
+ */
+export function medianGapMs(times: number[]): number {
+  const DEFAULT = 24 * 60 * 60 * 1000
+  if (times.length < 2) return DEFAULT
+  const sorted = [...times].sort((a, b) => a - b)
+  const gaps = sorted.slice(1).map((time, index) => time - sorted[index])
+  gaps.sort((a, b) => a - b)
+  return gaps[Math.floor(gaps.length / 2)] || DEFAULT
+}
+
+/** A drawn release marker: one mark, which may stand for several releases. */
+export interface TagCluster {
+  /** The release the mark is positioned on and named after. */
+  tag: TrendTag
+  /** Where to draw it (px). */
+  x: number
+  /** How many further releases this mark stands for (0 when it is alone). */
+  alsoCount: number
+  /**
+   * Every release the mark stands for, newest last. Read when composing the
+   * label — a merged mark is "(latest)" if *any* of its releases carries that
+   * dist-tag, not only the one it is named after.
+   *
+   * Invariant: `alsoCount === tags.length - 1`.
+   */
+  tags: TrendTag[]
+}
+
+/**
+ * Group markers that are too close to draw separately into one mark each.
+ *
+ * Releases cluster hard: v6.10.0 and v6.10.1 shipped 6.8 hours apart, which is
+ * **4.6px** on a 90-day maximized chart and about 1px on a grid card. Drawing
+ * both produced one thick smudge with a single label lying across it — two marks
+ * conveying one position, badly.
+ *
+ * So a cluster collapses to a single mark, positioned and named after its
+ * **last** release (scanning left to right, that is the one in effect for the
+ * runs that follow) and carrying `alsoCount` for the rest, which the label
+ * renders as "v6.10.1 +1". Nothing is silently dropped: the count says more
+ * shipped here, and hovering names each one (the chart's tooltip lists every
+ * release within its snapping tolerance).
+ *
+ * This supersedes label-only thinning. Thinning text while still drawing every
+ * mark was defensible for faint full-height rules, but a solid tick has to be
+ * either drawn legibly or merged — there is no recessive version of a 6px mark.
+ *
+ * `minGapPx` is the smallest separation at which two marks read as two. Input
+ * must be sorted by `x` (resolveTagPositions guarantees it).
+ */
+export function clusterTags(
+  resolved: {tag: TrendTag; atMs: number}[],
+  xOf: (atMs: number) => number,
+  minGapPx: number,
+): TagCluster[] {
+  const clusters: TagCluster[] = []
+  for (const entry of resolved) {
+    const x = xOf(entry.atMs)
+    const open = clusters.at(-1)
+    // Compared against the cluster's own mark, so a run of releases each just
+    // under the gap collapses into one mark rather than chaining indefinitely
+    if (open && x - open.x < minGapPx) {
+      // The newest release takes the mark: it is the one in effect afterwards
+      open.tag = entry.tag
+      open.x = x
+      open.alsoCount += 1
+      open.tags.push(entry.tag)
+      continue
+    }
+    clusters.push({tag: entry.tag, x, alsoCount: 0, tags: [entry.tag]})
+  }
+  return clusters
+}
+
+/**
+ * Which marks carry a resting text label, and what each label speaks for.
+ *
+ * Marks merge at a few px (see `clusterTags`), but text needs much more room, so
+ * a label can cover several marks. A label is drawn at the **last** mark it
+ * speaks for and named after that mark's release, so its name and its position
+ * never disagree.
+ *
+ * The gap is therefore measured against the group's *current last* mark — the
+ * place its label will actually be drawn — which makes it a true label-to-label
+ * distance: the next group's first mark is at least `minGapPx` to the right of
+ * this label, and that group's own label only moves further right. Measuring
+ * from the group's *first* mark would only bound the distance from a position
+ * no label occupies, letting two labels land a few px apart — close enough to
+ * overlap at these font sizes.
+ *
+ * A chain of sub-gap steps folds into a single label, matching the
+ * chain-collapse `clusterTags` already applies to marks.
+ *
+ * Returns a map from cluster index to the cluster that index's label describes.
+ */
+export function labelledClusters(
+  clusters: TagCluster[],
+  minGapPx: number,
+): Map<number, TagCluster> {
+  const labels = new Map<number, TagCluster>()
+  let group: {index: number; merged: TagCluster} | null = null
+  const flush = () => {
+    if (group) labels.set(group.index, group.merged)
+  }
+  for (const [index, cluster] of clusters.entries()) {
+    if (group && cluster.x - group.merged.x < minGapPx) {
+      // Too close to label separately: fold it into the open group, which moves
+      // to this cluster's mark and takes its newer name
+      group = {
+        index,
+        merged: {
+          ...cluster,
+          alsoCount: group.merged.alsoCount + cluster.tags.length,
+          tags: [...group.merged.tags, ...cluster.tags],
+        },
+      }
+      continue
+    }
+    flush()
+    group = {index, merged: cluster}
+  }
+  flush()
+  return labels
+}
+
+/**
  * One series per scenario·metric across all runs, plus the bundle size. Each
  * series holds one line per git branch present in the runs — a single branch
  * renders as one line, several overlay for comparison.
@@ -578,10 +908,17 @@ function shardMeta(
 /** Backlink + identity fields every TrendPoint carries, derived from a run. */
 function pointMeta(
   run: TrendRun,
-): Pick<TrendPoint, 'sha' | 'runId' | 'prNumber' | 'ciRunId' | 'ciRunAttempt' | 'host'> {
+): Pick<
+  TrendPoint,
+  'sha' | 'runId' | 'prNumber' | 'ciRunId' | 'ciRunAttempt' | 'host' | 'releaseTag'
+> {
   const host = hostOf(run)
   return {
     sha: run.git?.sha ?? 'unknown',
+    // Gated on the trigger, not just the tag's presence: a tag on a non-release
+    // run would claim that run measured the release, which is the attribution
+    // error release runs exist to remove (perf/bench keeps them paired too)
+    ...(run.trigger === 'release' && run.releaseTag ? {releaseTag: run.releaseTag} : {}),
     runId: run._id,
     prNumber: run.git?.prNumber,
     ciRunId: run.runner?.runId,
@@ -660,8 +997,15 @@ function mergeRunsPerCommit(points: TrendPoint[]): TrendPoint[] {
     // re-run's CPU model/browser would attribute a synthetic point to one
     // specific machine it does not describe.
     const hostKeys = new Set(group.map((point) => JSON.stringify(point.host ?? null)))
+    // The release tag describes the *commit*, not the individual run, so it
+    // survives the merge from any member rather than only from `last`. A release
+    // run regularly shares its commit with a cron run (the cron measures main at
+    // 05:00; the release run measures the tag hours later), and the merged point
+    // has to keep the tag for the marker, tooltip and popover to attribute it.
+    const releaseTag = group.find((point) => point.releaseTag)?.releaseTag
     merged.push({
       ...last,
+      ...(releaseTag ? {releaseTag} : {}),
       value: medianOf(group.map((point) => point.value)),
       p75: p75s.length > 0 ? medianOf(p75s) : undefined,
       p90: p90s.length > 0 ? medianOf(p90s) : undefined,
@@ -924,7 +1268,11 @@ export function latestSoakCharts(runs: TrendRun[]): {run: TrendRun; charts: Tren
         ...shardMeta(latest.run, latest.runner),
       }))
     return {
-      key: `soak:latest:${metric.key}`,
+      // `soak:run:` — NOT `soak:latest:`, which soakLatestValueSeries owns
+      // for the end-of-run history charts. The two sets cover the same
+      // metrics, and `?max=` resolves against a single key → series map, so
+      // a shared prefix would open the wrong chart from a maximize link.
+      key: `soak:run:${metric.key}`,
       title: metric.title,
       unit: metric.unit,
       description: metric.description,

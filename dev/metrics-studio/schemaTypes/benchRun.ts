@@ -296,6 +296,19 @@ const benchRun = defineType({
     defineField({name: 'schemaVersion', type: 'number'}),
     defineField({name: 'mode', type: 'string', options: {list: ['ab', 'absolute']}}),
     defineField({
+      name: 'trigger',
+      description:
+        'Why this run happened. Only `release` runs measure a tagged release commit, so they are the only ones whose numbers attribute to a shipped version. Absent on documents written before this field existed — treat as `cron`.',
+      type: 'string',
+      options: {list: ['cron', 'release', 'backfill', 'dispatch', 'pr']},
+    }),
+    defineField({
+      name: 'releaseTag',
+      description:
+        'Release runs only: the tag whose commit this run measured, e.g. v6.10.1 — lets a chart anchor a release marker on this run instead of guessing by date',
+      type: 'string',
+    }),
+    defineField({
       name: 'git',
       type: 'object',
       fields: [

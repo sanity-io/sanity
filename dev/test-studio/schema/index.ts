@@ -100,6 +100,7 @@ import recursivePopover from './debug/recursivePopover'
 import {pageDocRepro, sectionDocRepro} from './debug/referenceCreateButtonRepro'
 import removeRestoreAction from './debug/removeRestoreAction'
 import reservedFieldNames from './debug/reservedFieldNames'
+import restrictedVersionActions from './debug/restrictedVersionActions'
 import review from './debug/review'
 import * as scrollBugTypes from './debug/scrollBug'
 import select from './debug/select'
@@ -262,6 +263,7 @@ export function createSchemaTypes(projectId: string) {
     ...hiddenFieldValidationTypes,
     fieldsets,
     removeRestoreAction,
+    restrictedVersionActions,
 
     fieldValidationInferReproSharedObject,
     fieldValidationInferReproDoc,

@@ -7,6 +7,7 @@ import {ClockIcon} from '@sanity/icons/Clock'
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {DropIcon} from '@sanity/icons/Drop'
 import {EllipsisVerticalIcon} from '@sanity/icons/EllipsisVertical'
+import {ExpandIcon} from '@sanity/icons/Expand'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
@@ -16,6 +17,7 @@ import {
   Button,
   Card,
   Container,
+  Dialog,
   Flex,
   Grid,
   PortalProvider,
@@ -49,14 +51,16 @@ import {
   calibrationSeries,
   filterByRange,
   formatValue,
+  TAGS_QUERY,
   TREND_QUERY,
   TREND_GROUPS,
   type TrendGroup,
   type TrendRun,
   type TrendSeries,
+  type TrendTag,
   vitalSections,
 } from './data'
-import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
+import {DEBUG_SOURCES, type DebugSource, generateDebugRuns, generateDebugTags} from './debugData'
 import {type DriftResult, worstBySeries} from './drift'
 import {DriftFeed} from './DriftFeed'
 import {type LayerState, useLayerState} from './layers'
@@ -342,9 +346,33 @@ function SeriesCard(props: {
   onAck?: (state: 'silenced' | 'snoozed' | 'fixed') => void
   onUnack?: () => void
   layers?: LayerState
+  /** Release tags for the chart's markers. */
+  tags?: TrendTag[]
+  /** Open this chart in the maximized dialog. Absent = not expandable. */
+  onExpand?: () => void
+  /**
+   * Rendered inside the maximize dialog. The card is then the superset view:
+   * no expand button (it's already expanded), the description reads as visible
+   * text instead of hiding behind ⓘ, and the release markers carry labels —
+   * all things there is room for at dialog width and not in a grid cell.
+   */
+  expanded?: boolean
 }) {
-  const {series, height, drift, silenced, baseline, focused, onFocus, onAck, onUnack, layers} =
-    props
+  const {
+    series,
+    height,
+    drift,
+    silenced,
+    baseline,
+    focused,
+    onFocus,
+    onAck,
+    onUnack,
+    layers,
+    tags,
+    onExpand,
+    expanded,
+  } = props
   // The overlay draws from any computed baseline; the badge and tint only from a
   // flagged one
   const overlay = baseline ?? drift ?? silenced
@@ -374,9 +402,14 @@ function SeriesCard(props: {
             percentage it contextualizes instead of floating top-right while
             the badge wraps under a long title. */}
         <Flex align="center" justify="space-between" gap={3}>
+          {/* flexBasis/flexGrow rather than `flex`: this is ui5's Box, which
+              (unlike @sanity/ui's) has no `flex` prop — same pair
+              RunDetailPopover's header uses. */}
           <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
-            {/* Clicking the title deep-links to this chart (shareable focus) */}
-            {onFocus ? (
+            {/* In the dialog the title lives in the dialog header — repeating it
+                here would only push the plot down. Clicking the grid card's
+                title deep-links to that chart (shareable focus). */}
+            {expanded ? null : onFocus ? (
               <Box
                 as="button"
                 onClick={onFocus}
@@ -413,19 +446,42 @@ function SeriesCard(props: {
                 onUnack={onUnack ?? (() => {})}
               />
             )}
+            {onExpand && (
+              <Button
+                mode="bleed"
+                padding={2}
+                fontSize={1}
+                icon={ExpandIcon}
+                tone="default"
+                aria-label={`Expand ${series.title}`}
+                onClick={onExpand}
+              />
+            )}
             {/* Context hidden behind the info button so the grid stays
-                scannable — one click, not a paragraph per card */}
-            <InfoButton
-              text={series.description}
-              label={`About ${series.title}`}
-              sourceFile={series.sourceFile}
-              vitalDoc={webVitalDocUrl(series.title)}
-              // Explain the dotted context line where the chart is explained —
-              // "calibration of what?" shouldn't require the Calibration tab
-              calibrationNote={seriesHasCalibration(series) ? CALIBRATION_EXPLAINER : undefined}
-            />
+                scannable — one click, not a paragraph per card. In the dialog
+                it's redundant: the description is already visible text there. */}
+            {!expanded && (
+              <InfoButton
+                text={series.description}
+                label={`About ${series.title}`}
+                sourceFile={series.sourceFile}
+                vitalDoc={webVitalDocUrl(series.title)}
+                // Explain the dotted context line where the chart is explained —
+                // "calibration of what?" shouldn't require the Calibration tab
+                calibrationNote={seriesHasCalibration(series) ? CALIBRATION_EXPLAINER : undefined}
+              />
+            )}
           </Flex>
         </Flex>
+        {/* The dialog has room for the paragraph the grid cannot afford — the
+            whole point of maximizing is more context per chart, not just a
+            bigger plot. */}
+        {expanded && (
+          <Text size={1} muted>
+            {series.description}
+            {seriesHasCalibration(series) ? ` ${CALIBRATION_EXPLAINER}` : ''}
+          </Text>
+        )}
         {(badge || silenced || latest) && (
           // Value first, badge after — "64ms ↓ -22%" reads as a statement
           // qualified by its move, where badge-first read as two stats
@@ -462,10 +518,13 @@ function SeriesCard(props: {
               height={height}
               drift={overlay}
               layers={layers}
+              tags={tags}
+              // Resting marker labels need ~40px per marker; only the dialog has it
+              showTagLabels={expanded}
             />
           )}
         </ParentSize>
-        <ChartLegend series={series} drift={overlay} layers={layers} />
+        <ChartLegend series={series} drift={overlay} layers={layers} tags={tags} />
       </Stack>
     </Card>
   )
@@ -482,6 +541,9 @@ function ChartGrid(props: {
   focusedKey?: string | null
   onFocusMetric?: (seriesKey: string) => void
   layers?: LayerState
+  /** Release tags for the charts' markers. */
+  tags?: TrendTag[]
+  onExpand?: (seriesKey: string) => void
 }) {
   return (
     <Grid gridTemplateColumns={[1, 1, 2, 3]} gap={3}>
@@ -506,6 +568,8 @@ function ChartGrid(props: {
               entrySilenced && props.drift ? () => props.drift!.clear(entrySilenced) : undefined
             }
             layers={props.layers}
+            tags={props.tags}
+            onExpand={props.onExpand ? () => props.onExpand!(entry.key) : undefined}
           />
         )
       })}
@@ -522,6 +586,8 @@ function SoakPanel(props: {
   slopes: TrendSeries[]
   endValues: TrendSeries[]
   layers?: LayerState
+  tags?: TrendTag[]
+  onExpand?: (seriesKey: string) => void
   latest: {run: TrendRun; charts: TrendSeries[]} | null
 }) {
   const {slopes, endValues, latest} = props
@@ -570,10 +636,64 @@ function SoakPanel(props: {
           <Text size={1} muted>
             {active.hint}
           </Text>
-          <ChartGrid series={active.charts} layers={props.layers} />
+          <ChartGrid
+            series={active.charts}
+            layers={props.layers}
+            tags={props.tags}
+            onExpand={props.onExpand}
+          />
         </Stack>
       </TabPanel>
     </Stack>
+  )
+}
+
+/**
+ * One chart, maximized. The grid is 40+ small multiples — great for scanning,
+ * too cramped for reading: at ~330px a 90-day window puts a release marker every
+ * ~15px and the metric's own description has to hide behind an ⓘ. This is the
+ * same `SeriesCard`, not a second implementation of it, given room to draw
+ * labelled markers and show its description.
+ *
+ * State lives in `?max=<series key>` (see TrendsTool) so a maximized chart is
+ * shareable and reloadable like every other view state, and opening it pushes a
+ * history entry so Back closes it.
+ */
+function MaximizedChartDialog(props: {
+  series: TrendSeries
+  drift?: DriftResult
+  silenced?: DriftResult
+  baseline?: DriftResult
+  layers?: LayerState
+  tags?: TrendTag[]
+  onAck?: (state: 'silenced' | 'snoozed' | 'fixed') => void
+  onUnack?: () => void
+  onClose: () => void
+}) {
+  const {series, onClose, ...rest} = props
+  return (
+    // width={4} rather than "fill": on a very wide monitor a full-viewport plot
+    // stretches ~90 days across 2500px, which reads as a flat line no matter
+    // what the metric did. Dialog owns Escape and the focus trap.
+    <Dialog
+      id="chart-maximize"
+      header={series.title}
+      width={4}
+      onClose={onClose}
+      onClickOutside={onClose}
+    >
+      <Box padding={3}>
+        {/* No border/padding duplication: the card renders inside the dialog's
+            own content box.
+
+            560 rather than 460: the label gutter grew to ~112px once markers
+            carried rotated '(latest)' labels, and at 460 that left the plot
+            itself only ~320px — the labels had room but the data no longer did.
+            This keeps ~420px of plot, which is what the original 460 was chosen
+            to give, while still fitting the legend without scrolling. */}
+        <SeriesCard series={series} height={560} expanded {...rest} />
+      </Box>
+    </Dialog>
   )
 }
 
@@ -615,8 +735,27 @@ export function TrendsTool() {
   )
   const live = useObservable(live$, {runs: null, error: null})
 
+  // Release tags, for the chart markers. Its own stream, and its own error
+  // handling: markers are annotation, so a tag query that fails degrades to
+  // "no markers" rather than poisoning the runs stream into an error card.
+  // Realtime like everything else — a new release appears without a reload
+  // (the daily cron re-upserts tags, and dist-tags re-point between releases).
+  const liveTags$ = useMemo(
+    () =>
+      documentStore.listenQuery(TAGS_QUERY, {}, {tag: 'metrics.trends.tags'}).pipe(
+        map((result) => result as TrendTag[]),
+        catchError(() => of<TrendTag[]>([])),
+      ),
+    [documentStore],
+  )
+  const liveTags = useObservable(liveTags$, [])
+
   const debugRuns = useMemo(() => (source === 'live' ? null : generateDebugRuns(source)), [source])
   const runs = source === 'live' ? live.runs : debugRuns
+  // Debug sources get synthetic tags too, so the marker layer (including label
+  // collision) is testable offline like every other layer — see SPEC
+  const debugTags = useMemo(() => (source === 'live' ? [] : generateDebugTags(source)), [source])
+  const tags = source === 'live' ? liveTags : debugTags
   const error = source === 'live' ? live.error : null
   const loading = source === 'live' && live.runs === null && live.error === null
 
@@ -700,6 +839,23 @@ export function TrendsTool() {
     return map
   }, [series, calibration])
 
+  // Every chart the tool can show, by key — what `?max=` resolves against.
+  // The soak views and the environment tab build their series outside `series`,
+  // so a maximize link into one of those has to find them here.
+  const seriesByKey = useMemo(() => {
+    const map = new Map<string, TrendSeries>()
+    for (const entry of [
+      ...series,
+      ...environmentSeries,
+      ...soakSlopes,
+      ...soakEndValues,
+      ...(latestSoak?.charts ?? []),
+    ]) {
+      map.set(entry.key, entry)
+    }
+    return map
+  }, [series, environmentSeries, soakSlopes, soakEndValues, latestSoak])
+
   // Deep-linkable focused chart: the `chart` URL param names the series to
   // jump to (shareable). Jumping from a drift-feed row or a chart header writes
   // it (pushState, so Back returns) and flashes a focus ring; the URL param
@@ -760,6 +916,38 @@ export function TrendsTool() {
       if (timer !== undefined) window.clearTimeout(timer)
     }
   }, [focusedKey])
+
+  // Which chart is maximized, as a URL param — same vocabulary as `?chart=`, so
+  // a maximized chart is shareable and survives reload. Resolved by key at
+  // render: a stale link (or a chart filtered out by the current branch/range)
+  // resolves to nothing and simply shows no dialog.
+  const [maximizedParam, setMaximizedParam] = useUrlState('max', '')
+  const maximized = maximizedParam ? seriesByKey.get(maximizedParam) : undefined
+  const expandMetric = (seriesKey: string) => {
+    // 'push' so Back closes the dialog — the same precedent focusMetric sets,
+    // and the behaviour a Back press means once something modal is open
+    setMaximizedParam(seriesKey, 'push')
+  }
+  const closeMaximized = () => setMaximizedParam('')
+  // Return focus to the expand button that opened the dialog, rather than
+  // dropping the keyboard user at the top of the document.
+  //
+  // Keyed on the param clearing rather than done in the close handler, because
+  // the dialog also closes via Back (popstate updates the param without going
+  // through any handler) — an effect covers every route out. Deferred a frame
+  // so it lands after the dialog's own focus restoration.
+  const previousMaximized = useRef('')
+  useEffect(() => {
+    const justClosed = previousMaximized.current && !maximizedParam
+    const key = previousMaximized.current
+    previousMaximized.current = maximizedParam
+    if (!justClosed) return undefined
+    const raf = requestAnimationFrame(() => {
+      const card = document.getElementById(chartDomId(key))
+      card?.querySelector<HTMLButtonElement>('button[aria-label^="Expand "]')?.focus()
+    })
+    return () => cancelAnimationFrame(raf)
+  }, [maximizedParam])
 
   const regressionsByGroup = useMemo(() => {
     const counts = new Map<TrendGroup, number>()
@@ -949,6 +1137,8 @@ export function TrendsTool() {
                         endValues={soakEndValues}
                         latest={latestSoak}
                         layers={layers}
+                        tags={tags}
+                        onExpand={expandMetric}
                       />
                     ) : activeTab.id === 'vitals' ? (
                       // One section per vital, so the overview reads by metric
@@ -978,6 +1168,8 @@ export function TrendsTool() {
                                 drift={drift}
                                 focusedKey={focusedKey}
                                 onFocusMetric={focusMetric}
+                                tags={tags}
+                                onExpand={expandMetric}
                               />
                             </Stack>
                           ),
@@ -997,6 +1189,8 @@ export function TrendsTool() {
                         drift={drift}
                         focusedKey={focusedKey}
                         onFocusMetric={focusMetric}
+                        tags={tags}
+                        onExpand={expandMetric}
                       />
                     )}
                   </Stack>
@@ -1006,6 +1200,29 @@ export function TrendsTool() {
           </Stack>
         </Container>
       </Card>
+      {/* The maximized chart. Rendered last, outside the scroll container: it's
+          a Dialog, and it gets the same per-series drift/baseline/ack props the
+          grid card gets, so maximizing is always a superset of the card and
+          never a downgrade. */}
+      {maximized && (
+        <MaximizedChartDialog
+          series={maximized}
+          drift={driftBySeries.get(maximized.key)}
+          silenced={silencedBySeries.get(maximized.key)}
+          baseline={baselineBySeries.get(maximized.key)}
+          layers={layers}
+          tags={tags}
+          onAck={(state) => {
+            const entry = driftBySeries.get(maximized.key)
+            if (entry) drift.ack(entry, state)
+          }}
+          onUnack={() => {
+            const entry = silencedBySeries.get(maximized.key)
+            if (entry) drift.clear(entry)
+          }}
+          onClose={closeMaximized}
+        />
+      )}
     </PortalProvider>
   )
 }
