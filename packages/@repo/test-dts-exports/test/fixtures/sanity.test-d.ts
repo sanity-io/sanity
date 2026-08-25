@@ -3924,9 +3924,7 @@ describe('sanity', () => {
     expectTypeOf<typeof getExpandOperations>().toBeFunction()
   })
   test('GetFormValueProvider', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof GetFormValueProvider>().toBeFunction()
-    expectTypeOf<typeof GetFormValueProvider>().not.toBeNever()
   })
   test('GetHookCollectionState', () => {
     expectTypeOf<typeof GetHookCollectionState>().toBeFunction()
@@ -4209,9 +4207,7 @@ describe('sanity', () => {
     expectTypeOf<ImageValue>().toBeObject()
   })
   test('ImperativeToast', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof ImperativeToast>().toBeFunction()
-    expectTypeOf<typeof ImperativeToast>().not.toBeNever()
   })
   test('ImplicitLocaleResourceBundle', () => {
     expectTypeOf<ImplicitLocaleResourceBundle>().not.toBeNever()
