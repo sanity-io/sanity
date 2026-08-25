@@ -142,7 +142,7 @@ describe('useEventsStore', () => {
 
     it('@release:<id> unresolved keeps loading more events and leaks the raw string (known issue)', () => {
       const {result, store} = setup({rev: '@release:missing'})
-      // Side effect inside useMemo: pagination is triggered during render.
+      // While unresolved, resolveRevisionId keeps requesting the next events page.
       expect(store.loadMoreEvents).toHaveBeenCalled()
       // Bonus bug: while unresolved, the raw @release: string is used as the revision id.
       expect(result.current.revision?.revisionId).toBe('@release:missing')
