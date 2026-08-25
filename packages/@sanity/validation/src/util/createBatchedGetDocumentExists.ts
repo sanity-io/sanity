@@ -13,6 +13,7 @@ import {
   share,
   Subject,
   switchMap,
+  tap,
   throwError,
 } from 'rxjs'
 
@@ -58,8 +59,14 @@ export function createBatchedGetDocumentExists(
       }
       return from(Array.from(groups, ([signal, ids]) => ({ids: Array.from(ids), signal})))
     }),
-    mergeMap(({ids, signal}) =>
-      from(limiter.ready(signal)).pipe(
+    mergeMap(({ids, signal}) => {
+      const ready = limiter.ready(signal)
+      let acquired = false
+
+      return from(ready).pipe(
+        tap(() => {
+          acquired = true
+        }),
         switchMap(() =>
           defer(() => {
             signal?.throwIfAborted()
@@ -69,14 +76,19 @@ export function createBatchedGetDocumentExists(
               signal,
               tag: 'documents-availability',
             })
-          }).pipe(
-            map((availability) => ({availability, ids, signal})),
-            finalize(limiter.release),
-          ),
+          }).pipe(map((availability) => ({availability, ids, signal}))),
         ),
         catchError((error) => (signal?.aborted ? EMPTY : throwError(() => error))),
-      ),
-    ),
+        finalize(() => {
+          if (acquired) {
+            limiter.release()
+            return
+          }
+
+          void ready.then(limiter.release, () => undefined)
+        }),
+      )
+    }),
     mergeMap(({availability, ids, signal}) =>
       ids.map((id) => {
         const omittedIds = availability.omitted.reduce<Record<string, 'existence' | 'permission'>>(
