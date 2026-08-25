@@ -119,15 +119,33 @@ describe('getExpandEvents', () => {
     subscription.unsubscribe()
   })
 
-  it('propagates transaction fetch failures as a rejected promise (known quirk: callers do not catch)', async () => {
+  it('catches transaction fetch failures, logs them, and allows retrying', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const {client} = createMockClient()
     const publish = publishDocumentVersionEvent({
       versionRevisionId: 'published-version-rev',
       creationEvent: createDocumentVersionEvent(),
     })
-    mockGetDocumentTransactions.mockRejectedValue(new Error('translog unavailable'))
+    mockGetDocumentTransactions
+      .mockRejectedValueOnce(new Error('translog unavailable'))
+      .mockResolvedValueOnce([editTransaction({id: 'tx-edit-1'})])
 
-    const {handleExpandEvent} = getExpandEvents({client, documentId: DRAFT_ID})
-    await expect(handleExpandEvent(publish)).rejects.toThrow('translog unavailable')
+    const {handleExpandEvent, expandedEvents$} = getExpandEvents({client, documentId: DRAFT_ID})
+    const {values, subscription} = collectEmissions(expandedEvents$)
+
+    // The failure resolves (no unhandled rejection), logs, and leaves the event unexpanded.
+    await expect(handleExpandEvent(publish)).resolves.toBeUndefined()
+    expect(consoleError).toHaveBeenCalledWith('Failed to expand event', expect.any(Error))
+    expect(values.at(-1)).toEqual([])
+
+    // The event was not marked as expanded, so a retry fetches again and succeeds.
+    await handleExpandEvent(publish)
+    expect(mockGetDocumentTransactions).toHaveBeenCalledTimes(2)
+    expect(values.at(-1)).toEqual([
+      expect.objectContaining({type: 'editDocumentVersion', id: 'tx-edit-1'}),
+    ])
+
+    consoleError.mockRestore()
+    subscription.unsubscribe()
   })
 })
