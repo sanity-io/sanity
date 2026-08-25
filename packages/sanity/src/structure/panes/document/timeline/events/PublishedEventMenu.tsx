@@ -7,6 +7,7 @@ import {
 import {useCallback} from 'react'
 import {
   ContextMenuButton,
+  getReleaseDocumentIdFromReleaseId,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
@@ -15,6 +16,7 @@ import {
   RELEASES_INTENT,
   ReleaseTitle,
   Translate,
+  useAllReleases,
   useSetPerspective,
   useTranslation,
   useWorkspace,
@@ -62,25 +64,32 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
     }, 100)
   }, [setParams, params, event.versionRevisionId, setPerspective, isDraftModelEnabled])
 
-  const releaseTitle = event.release?.metadata?.title
+  // Resolve the release behind a release publish. When the release is missing from the store
+  // (e.g. it was deleted) a stub {_id} keeps the release indicated but disables the menu;
+  // draft publishes have no releaseId.
+  const {map: releasesMap} = useAllReleases()
+  const releaseDocumentId = event.releaseId
+    ? getReleaseDocumentIdFromReleaseId(event.releaseId)
+    : undefined
+  const release = releaseDocumentId
+    ? releasesMap.get(releaseDocumentId) || {_id: releaseDocumentId, metadata: undefined}
+    : undefined
+
+  const releaseTitle = release?.metadata?.title
   const releaseFallback = tCore('release.placeholder-untitled-release')
 
   const VersionBadge = ({children}: {children: React.ReactNode}) => {
     return (
       <VersionInlineBadge
         $tone={
-          event.release
-            ? isReleaseDocument(event.release)
-              ? getReleaseTone(event.release)
-              : 'default'
-            : undefined
+          release ? (isReleaseDocument(release) ? getReleaseTone(release) : 'default') : undefined
         }
       >
         {children}
       </VersionInlineBadge>
     )
   }
-  const isMenuDisabled = event.release && !isReleaseDocument(event.release)
+  const isMenuDisabled = release && !isReleaseDocument(release)
   return (
     <MenuButton
       id={`timeline-item-menu-button-${event.versionId}`}
@@ -90,8 +99,8 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
           tooltipProps={{
             content: isMenuDisabled
               ? t('timeline-item.not-found-release.tooltip', {
-                  releaseId: event.release?._id
-                    ? getReleaseIdFromReleaseDocumentId(event.release._id)
+                  releaseId: release?._id
+                    ? getReleaseIdFromReleaseDocumentId(release._id)
                     : undefined,
                 })
               : t('timeline-item.menu-button.tooltip'),
@@ -101,11 +110,11 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
       }
       menu={
         <Menu padding={1}>
-          {event.release ? (
+          {release ? (
             <>
               <IntentLink
                 intent={RELEASES_INTENT}
-                params={{id: getReleaseIdFromReleaseDocumentId(event.release._id)}}
+                params={{id: getReleaseIdFromReleaseDocumentId(release._id)}}
                 style={{textDecoration: 'none'}}
               >
                 <MenuItem padding={3}>

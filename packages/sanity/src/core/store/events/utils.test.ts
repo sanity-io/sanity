@@ -1,8 +1,5 @@
 import {describe, expect, it} from 'vitest'
 
-import {activeASAPRelease} from '../../releases/__fixtures__/release.fixture'
-import {type ReleasesReducerState} from '../../releases/store/reducer'
-import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {
   BASE_TIME,
   createDocumentVersionEvent,
@@ -31,7 +28,6 @@ import {
   removeDupes,
   sortEvents,
   squashLiveEditEvents,
-  updatePublishedEvents,
   updateVersionEvents,
 } from './utils'
 
@@ -624,44 +620,6 @@ describe('updateVersionEvents', () => {
 
     const result = updateVersionEvents([publish, edit])
     expect(result[0]).toEqual({...publish, documentId: 'versions.rX.doc-1'})
-    expect(result[1]).toBe(edit)
-  })
-})
-
-const releasesState = (releases: Map<string, typeof activeASAPRelease>): ReleasesReducerState => ({
-  releases,
-  state: 'loaded',
-})
-
-describe('updatePublishedEvents', () => {
-  it('attaches the release document when it exists in the releases store', () => {
-    const publish = publishDocumentVersionEvent({
-      versionId: `versions.${activeASAPRelease.name}.doc-1`,
-    })
-    const state = releasesState(new Map([[activeASAPRelease._id, activeASAPRelease]]))
-
-    const [result] = updatePublishedEvents([publish], state)
-    expect(result).toEqual({...publish, release: activeASAPRelease})
-  })
-
-  it('attaches a stub {_id} when the release is not in the store (e.g. deleted release)', () => {
-    const publish = publishDocumentVersionEvent({versionId: 'versions.rGone.doc-1'})
-    const state = releasesState(new Map())
-
-    const [result] = updatePublishedEvents([publish], state)
-    expect(result).toEqual({
-      ...publish,
-      release: {_id: getReleaseDocumentIdFromReleaseId('rGone')},
-    })
-  })
-
-  it('leaves draft publishes and other event types untouched', () => {
-    const draftPublish = publishDocumentVersionEvent({versionId: 'drafts.doc-1'})
-    const edit = editDocumentVersionEvent()
-    const state = releasesState(new Map())
-
-    const result = updatePublishedEvents([draftPublish, edit], state)
-    expect(result[0]).toBe(draftPublish)
     expect(result[1]).toBe(edit)
   })
 })
