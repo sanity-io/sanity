@@ -176,6 +176,46 @@ describe('validateDocument', () => {
     expect(pureValidator).toHaveBeenCalledOnce()
   })
 
+  it('reports client-dependent media validation as not evaluated without a client', async () => {
+    const mediaValidator = vi.fn(() => true as const)
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'media',
+            type: 'object',
+            fields: [{name: '_ref', type: 'string'}],
+          },
+        ],
+        validation: (rule: Rule) => rule.media(mediaValidator),
+      },
+    ])
+
+    await expect(
+      validateDocument({
+        document: createDocument({
+          _type: 'article',
+          media: {_ref: 'media-library:library-id:asset-id'},
+        }),
+        schema,
+      }),
+    ).resolves.toEqual({
+      status: 'notEvaluated',
+      markers: [],
+      skipped: [
+        {
+          check: 'media',
+          level: 'warning',
+          path: [],
+          reason: 'clientUnavailable',
+        },
+      ],
+    })
+    expect(mediaValidator).not.toHaveBeenCalled()
+  })
+
   it('reports manifest-only custom validators as unavailable', async () => {
     const schema = createSchemaFromManifestTypes({
       name: 'test',
@@ -302,16 +342,13 @@ describe('validateDocument', () => {
     const i18n = {...fallbackI18n, t: vi.fn(fallbackI18n.t)}
     const workspace = {getClient: () => client, i18n, schema}
 
-    const [headlessMarkers, workspaceMarkers, namedHelperMarkers] = await Promise.all([
+    const [headlessMarkers, workspaceMarkers] = await Promise.all([
       validateMarkers({client, document, schema}),
-      // oxlint-disable-next-line typescript/no-deprecated -- explicitly covers compatibility API
-      validateDocumentWithWorkspace({document, workspace}),
       // oxlint-disable-next-line typescript/no-deprecated -- explicitly covers compatibility API
       validateDocumentWithWorkspace({document, workspace}),
     ])
 
     expect(workspaceMarkers).toEqual(headlessMarkers)
-    expect(namedHelperMarkers).toEqual(headlessMarkers)
     expect(i18n.t).toHaveBeenCalledWith('validation:string.minimum-length', {minLength: 10})
   })
 
@@ -468,7 +505,7 @@ describe('validateDocument', () => {
     const {client} = createMockClient()
 
     await expect(
-      validateDocument({
+      validateMarkers({
         client,
         document: createDocument({_type: 'article', title: 'Title'}),
         schema,
