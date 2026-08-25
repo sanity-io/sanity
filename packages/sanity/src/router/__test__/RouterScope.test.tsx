@@ -37,14 +37,18 @@ interface WrapperProps {
 }
 
 const createWrapper = (disableScopedSearchParams = false) => {
-  const Wrapper = ({children}: WrapperProps) => (
-    <RouterProvider onNavigate={mockOnNavigate} router={mockRouter} state={initialState}>
-      <RouteScope scope="testScope" __unsafe_disableScopedSearchParams={disableScopedSearchParams}>
-        {children}
-      </RouteScope>
-    </RouterProvider>
-  )
-  Wrapper.displayName = 'TestWrapper'
+  function Wrapper({children}: WrapperProps) {
+    return (
+      <RouterProvider onNavigate={mockOnNavigate} router={mockRouter} state={initialState}>
+        <RouteScope
+          scope="testScope"
+          __unsafe_disableScopedSearchParams={disableScopedSearchParams}
+        >
+          {children}
+        </RouteScope>
+      </RouterProvider>
+    )
+  }
   return Wrapper
 }
 
@@ -195,14 +199,15 @@ describe('RouteScope', () => {
 
   describe('nested scopes', () => {
     it('should handle nested route scopes correctly', () => {
-      const NestedWrapper = ({children}: WrapperProps) => (
-        <RouterProvider onNavigate={mockOnNavigate} router={mockRouter} state={initialState}>
-          <RouteScope scope="parentScope">
-            <RouteScope scope="childScope">{children}</RouteScope>
-          </RouteScope>
-        </RouterProvider>
-      )
-      NestedWrapper.displayName = 'NestedWrapper'
+      function NestedWrapper({children}: WrapperProps) {
+        return (
+          <RouterProvider onNavigate={mockOnNavigate} router={mockRouter} state={initialState}>
+            <RouteScope scope="parentScope">
+              <RouteScope scope="childScope">{children}</RouteScope>
+            </RouteScope>
+          </RouterProvider>
+        )
+      }
 
       const {result} = renderHook(() => useRouter(), {wrapper: NestedWrapper})
 

@@ -226,4 +226,3 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
 
   return children
 })
-SanityDefaultPreview.displayName = 'Memo(SanityDefaultPreview)'

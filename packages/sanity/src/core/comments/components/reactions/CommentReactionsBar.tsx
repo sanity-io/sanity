@@ -197,4 +197,3 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
     </Flex>
   )
 })
-CommentReactionsBar.displayName = 'Memo(CommentReactionsBar)'
