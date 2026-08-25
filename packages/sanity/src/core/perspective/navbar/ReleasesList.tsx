@@ -1,28 +1,24 @@
-import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Card, Flex, Spinner, Stack} from '@sanity/ui'
-import {type JSX, type RefObject, useMemo} from 'react'
+import {Card, Flex, Spinner, Stack, TextInput} from '@sanity/ui'
+import {type ChangeEvent, type JSX, useCallback, useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
-import {LATEST, PUBLISHED} from '../../releases/util/const'
-import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {LATEST} from '../../releases/util/const'
+import {filterReleasesForSearch} from '../../releases/util/filterReleasesForSearch'
 import {useAgentBundles} from '../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../studio/workspace'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
+import {usePerspectiveActiveDocument} from '../activeDocument/usePerspectiveActiveDocument'
+import {MENU_PINNED_BLOCK_HEIGHT_VAR} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {AgentBundleMenuItem} from './AgentBundleMenuItem'
-import {
-  getRangePosition,
-  GlobalPerspectiveMenuItem,
-  type LayerRange,
-} from './GlobalPerspectiveMenuItem'
-import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
+import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
+import {DocumentReleaseSections, ReleaseTypeSections} from './ReleaseMenuSections'
 import {ScheduledDraftsMenuItem} from './ScheduledDraftsMenuItem'
-import {type ScrollElement} from './useScrollIndicatorVisibility'
 import {ViewContentReleasesMenuItem} from './ViewContentReleasesMenuItem'
-
-const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
 const StickyCard = styled(Card)`
   position: sticky;
@@ -40,23 +36,23 @@ const StickyBottomCard = styled(StickyCard)`
 
 export function ReleasesList({
   areReleasesEnabled,
-  setScrollContainer,
-  isRangeVisible,
-  selectedPerspectiveName,
   handleOpenBundleDialog,
-  scrollElementRef,
   menuItemProps,
+  filterQuery,
+  onFilterQueryChange,
 }: {
   areReleasesEnabled: boolean
-  setScrollContainer: (el: HTMLElement | null) => void
-  isRangeVisible: boolean
-  selectedPerspectiveName: string | undefined
   handleOpenBundleDialog: () => void
-  scrollElementRef: RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  filterQuery: string
+  onFilterQueryChange: (query: string) => void
 }): JSX.Element {
+  const {t} = useTranslation()
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const pinnedRef = useRef<HTMLDivElement | null>(null)
   const {loading, data: allReleases} = useActiveReleases()
   const {bundles: agentBundles} = useAgentBundles()
+  const {activeDocument} = usePerspectiveActiveDocument()
 
   const releases = useMemo(
     () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
@@ -69,51 +65,42 @@ export function ReleasesList({
     },
   } = useWorkspace()
 
-  const sortedReleaseTypeReleases = useMemo(
-    () =>
-      orderedReleaseTypes.reduce<Record<ReleaseType, ReleaseDocument[]>>(
-        (ReleaseTypeReleases, releaseType) => ({
-          ...ReleaseTypeReleases,
-          [releaseType]: releases.filter(({metadata}) => metadata.releaseType === releaseType),
-        }),
-        {} as Record<ReleaseType, ReleaseDocument[]>,
-      ),
-    [releases],
+  // Published and Drafts stay put while filtering, matching how the variant menu
+  // treats its own default entry.
+  const filteredReleases = useMemo(
+    () => filterReleasesForSearch(releases, filterQuery),
+    [filterQuery, releases],
   )
 
-  const range: LayerRange = useMemo(() => {
-    const isDraftsPerspective = typeof selectedPerspectiveName === 'undefined'
-    let lastIndex = isDraftsPerspective ? 1 : 0
+  const handleFilterChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => onFilterQueryChange(event.currentTarget.value),
+    [onFilterQueryChange],
+  )
 
-    const systemStack = [PUBLISHED, isDraftModelEnabled ? LATEST : []].flat()
-    const {asap, scheduled} = sortedReleaseTypeReleases
+  // Publish the pinned block's height so the section headings can pin directly
+  // below it — `MENU_PINNED_BLOCK_HEIGHT_VAR` explains why an offset is needed at
+  // all. Re-runs on `loading` because neither node exists while the spinner is up.
+  useEffect(() => {
+    // Nothing is rendered but the spinner while loading, so there is no block to
+    // measure yet. Checked directly rather than leaning on the refs being null,
+    // which reads as an unused dependency.
+    if (loading) return undefined
 
-    const offsets = {
-      asap: systemStack.length,
-      scheduled: systemStack.length + asap.length,
-      undecided: systemStack.length + asap.length + scheduled.length,
-    }
+    const root = rootRef.current
+    const pinned = pinnedRef.current
+    if (!root || !pinned) return undefined
 
-    const adjustIndexForReleaseType = (type: ReleaseType) => {
-      const groupSubsetReleases = sortedReleaseTypeReleases[type]
-      const offset = offsets[type]
+    const publish = () =>
+      root.style.setProperty(MENU_PINNED_BLOCK_HEIGHT_VAR, `${pinned.offsetHeight}px`)
 
-      groupSubsetReleases.forEach((release, groupReleaseIndex) => {
-        const index = offset + groupReleaseIndex
+    publish()
 
-        if (selectedPerspectiveName === getReleaseIdFromReleaseDocumentId(release._id)) {
-          lastIndex = index
-        }
-      })
-    }
-
-    orderedReleaseTypes.forEach(adjustIndexForReleaseType)
-
-    return {
-      lastIndex,
-      offsets,
-    }
-  }, [isDraftModelEnabled, selectedPerspectiveName, sortedReleaseTypeReleases])
+    // The block changes height in use: the Drafts row is conditional on the
+    // workspace, and the filter input can wrap.
+    const observer = new ResizeObserver(publish)
+    observer.observe(pinned)
+    return () => observer.disconnect()
+  }, [loading])
 
   if (loading) {
     return (
@@ -124,22 +111,26 @@ export function ReleasesList({
   }
 
   return (
-    <Card radius={3}>
-      <StickyTopCard borderBottom padding={1}>
-        <Stack gap={1}>
-          <GlobalPerspectiveMenuItem
-            rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
-            release={'published'}
-            menuItemProps={menuItemProps}
+    <Card radius={3} ref={rootRef}>
+      <StickyTopCard borderBottom ref={pinnedRef}>
+        <Card padding={2} borderBottom>
+          <TextInput
+            data-testid="release-menu-filter"
+            fontSize={1}
+            onChange={handleFilterChange}
+            placeholder={t('release.menu.filter-placeholder')}
+            radius={2}
+            value={filterQuery}
           />
-          {isDraftModelEnabled && (
-            <GlobalPerspectiveMenuItem
-              rangePosition={isRangeVisible ? getRangePosition(range, 1) : undefined}
-              release={LATEST}
-              menuItemProps={menuItemProps}
-            />
-          )}
-        </Stack>
+        </Card>
+        <Box padding={1}>
+          <Stack gap={1}>
+            <GlobalPerspectiveMenuItem release={'published'} menuItemProps={menuItemProps} />
+            {isDraftModelEnabled && (
+              <GlobalPerspectiveMenuItem release={LATEST} menuItemProps={menuItemProps} />
+            )}
+          </Stack>
+        </Box>
       </StickyTopCard>
       {agentBundles[0] && (
         <Card borderBottom padding={1}>
@@ -149,17 +140,16 @@ export function ReleasesList({
         </Card>
       )}
       {areReleasesEnabled && (
-        <Stack ref={setScrollContainer} data-ui="scroll-wrapper">
-          {orderedReleaseTypes.map((releaseType) => (
-            <ReleaseTypeMenuSection
-              key={releaseType}
-              releaseType={releaseType}
-              releases={sortedReleaseTypeReleases[releaseType]}
-              range={range}
-              currentGlobalBundleMenuItemRef={scrollElementRef}
+        <Stack data-ui="scroll-wrapper">
+          {activeDocument ? (
+            <DocumentReleaseSections
+              documentId={activeDocument.documentId}
+              releases={filteredReleases}
               menuItemProps={menuItemProps}
             />
-          ))}
+          ) : (
+            <ReleaseTypeSections releases={filteredReleases} menuItemProps={menuItemProps} />
+          )}
         </Stack>
       )}
       <StickyBottomCard borderTop paddingY={1} paddingX={2}>

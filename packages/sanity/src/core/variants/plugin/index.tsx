@@ -2,6 +2,7 @@ import {lazy} from 'react'
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
+import {type ObjectInputProps} from '../../form/types/inputProps'
 import {variantsUsEnglishLocaleBundle} from '../i18n'
 
 const VariantsTool = lazy(() =>
@@ -12,6 +13,14 @@ const VariantsStudioNavbar = lazy(() =>
     default: module.VariantsStudioNavbar,
   })),
 )
+const VariantsStudioLayout = lazy(() =>
+  import('./VariantsStudioLayout').then((module) => ({default: module.VariantsStudioLayout})),
+)
+const VariantsDocumentInputLayout = lazy(() =>
+  import('./VariantsDocumentInputLayout').then((module) => ({
+    default: module.VariantsDocumentInputLayout,
+  })),
+)
 
 /**
  * @internal
@@ -20,7 +29,8 @@ export const VARIANTS_NAME = 'sanity/variants'
 
 const VARIANTS_INTENT = 'variant'
 
-const VARIANTS_TOOL_NAME = 'variants'
+// Exported for the variant menu's "View variants" item, which links to the tool.
+export const VARIANTS_TOOL_NAME = 'variants'
 
 /**
  * @internal
@@ -29,7 +39,22 @@ export const variants = definePlugin({
   name: VARIANTS_NAME,
   studio: {
     components: {
+      layout: VariantsStudioLayout,
       navbar: VariantsStudioNavbar,
+    },
+  },
+  // Observes which document is on screen so the perspective bar's dropdowns can
+  // show which releases/variants it belongs to. Mirrors how the tasks plugin
+  // reaches the same information.
+  form: {
+    components: {
+      input: (props) => {
+        if (props.id === 'root' && props.schemaType.type?.name === 'document') {
+          return <VariantsDocumentInputLayout {...(props as ObjectInputProps)} />
+        }
+
+        return props.renderDefault(props)
+      },
     },
   },
   tools: [

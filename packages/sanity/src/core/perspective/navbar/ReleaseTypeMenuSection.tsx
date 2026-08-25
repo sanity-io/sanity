@@ -1,74 +1,59 @@
-import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
+import {type ReleaseDocument} from '@sanity/client'
 import {Card, Flex, Label, Stack} from '@sanity/ui'
-import {useCallback} from 'react'
+import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {usePerspective} from '../../perspective/usePerspective'
-import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {type ReleaseId, type ReleasesNavMenuItemPropsGetter} from '../types'
-import {
-  getRangePosition,
-  GlobalPerspectiveMenuItem,
-  type LayerRange,
-} from './GlobalPerspectiveMenuItem'
-import {GlobalPerspectiveMenuLabelIndicator} from './PerspectiveLayerIndicator'
-import {type ScrollElement} from './useScrollIndicatorVisibility'
+import {stickyMenuHeadingStyle} from '../styles'
+import {type ReleasesNavMenuItemPropsGetter} from '../types'
+import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
 
-const RELEASE_TYPE_LABELS: Record<ReleaseType, string> = {
-  asap: 'release.type.asap',
-  scheduled: 'release.type.scheduled',
-  undecided: 'release.type.undecided',
-}
+const StickyHeading = styled.div`
+  ${stickyMenuHeadingStyle}
+`
 
+/**
+ * One divider-separated group of releases in the perspective menu, with an
+ * optional heading.
+ *
+ * The heading is supplied rather than derived from the release type because the
+ * document-selected layout groups by type but labels only the first group — see
+ * `ReleaseMenuSections`.
+ */
 export function ReleaseTypeMenuSection({
-  releaseType,
   releases,
-  range,
-  currentGlobalBundleMenuItemRef,
+  heading,
   menuItemProps,
+  'data-testid': dataTestId,
 }: {
-  releaseType: ReleaseType
-  releases: ReleaseDocument[]
-  range: LayerRange
-  currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
-  menuItemProps?: ReleasesNavMenuItemPropsGetter
+  'releases': ReleaseDocument[]
+  'heading'?: string
+  'menuItemProps'?: ReleasesNavMenuItemPropsGetter
+  'data-testid'?: string
 }): React.JSX.Element | null {
-  const {t} = useTranslation()
-  const {selectedReleaseId} = usePerspective()
-
-  const getMenuItemRef = useCallback(
-    (releaseId: ReleaseId) =>
-      selectedReleaseId === releaseId
-        ? (currentGlobalBundleMenuItemRef as React.RefObject<HTMLDivElement>)
-        : undefined,
-    [currentGlobalBundleMenuItemRef, selectedReleaseId],
-  )
-
   if (releases.length === 0) return null
 
-  const {lastIndex, offsets} = range
-  const releaseTypeOffset = offsets[releaseType]
-
   return (
-    <Card padding={1} borderBottom>
-      <Stack gap={1}>
-        <GlobalPerspectiveMenuLabelIndicator
-          $withinRange={releaseTypeOffset > 0 && lastIndex >= releaseTypeOffset}
-          paddingLeft={2}
-          paddingTop={3}
-          paddingBottom={1}
-        >
-          <Label muted style={{textTransform: 'uppercase'}} size={1}>
-            {t(RELEASE_TYPE_LABELS[releaseType])}
-          </Label>
-        </GlobalPerspectiveMenuLabelIndicator>
+    <Card padding={1} borderBottom data-testid={dataTestId}>
+      {/*
+        The stack sets no gap and the heading carries the whole space below it as
+        padding instead. A gap would leave a transparent strip that rows flicker
+        through as they scroll under the pinned heading.
+      */}
+      <Stack gap={0}>
+        {heading && (
+          <StickyHeading>
+            <Box paddingLeft={2} paddingTop={3} paddingBottom={2}>
+              <Label muted style={{textTransform: 'uppercase'}} size={1}>
+                {heading}
+              </Label>
+            </Box>
+          </StickyHeading>
+        )}
         <Flex direction="column" gap={1}>
-          {releases.map((release, index) => (
+          {releases.map((release) => (
             <GlobalPerspectiveMenuItem
               key={release._id}
               release={release}
-              ref={getMenuItemRef(getReleaseIdFromReleaseDocumentId(release._id))}
-              rangePosition={getRangePosition(range, releaseTypeOffset + index)}
               menuItemProps={menuItemProps}
             />
           ))}
