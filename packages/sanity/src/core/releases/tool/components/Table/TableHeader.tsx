@@ -73,7 +73,7 @@ const TableHeaderSearch = ({
   const {setSearchTerm, searchTerm} = useTableContext()
 
   return (
-    <Stack {...headerProps} flex={1} paddingY={2} paddingRight={3} sizing="border">
+    <Stack {...headerProps} flex={1} paddingY={2} paddingRight={3}>
       <TextInput
         border={false}
         fontSize={1}
