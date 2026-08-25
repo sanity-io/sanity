@@ -85,19 +85,21 @@ describe('validateDocument', () => {
     }
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 
-    await expect(validateDocument({document, workspace})).resolves.toEqual([])
-    await expect(validateDocument({client, document, schema})).resolves.toEqual([
-      expect.objectContaining({
-        level: 'warning',
-        message: "Could not find schema type for type 'missing', skipping validation",
-      }),
-    ])
-    expect(warnSpy).toHaveBeenCalledWith(
-      'Schema type for object type "%s" not found, skipping validation',
-      'missing',
-    )
-
-    warnSpy.mockRestore()
+    try {
+      await expect(validateDocument({document, workspace})).resolves.toEqual([])
+      await expect(validateDocument({client, document, schema})).resolves.toEqual([
+        expect.objectContaining({
+          level: 'warning',
+          message: "Could not find schema type for type 'missing', skipping validation",
+        }),
+      ])
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Schema type for object type "%s" not found, skipping validation',
+        'missing',
+      )
+    } finally {
+      warnSpy.mockRestore()
+    }
   })
 
   it('returns validation and unknown-field markers without mutating the document', async () => {

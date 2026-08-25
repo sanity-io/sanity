@@ -1739,11 +1739,7 @@ export {
   type VersionType,
 } from '../core/util/versionsUtils'
 export {Rule as ConcreteRuleClass} from '@sanity/validation/_internal'
-export {
-  type ValidateDocumentWorkspaceOptions as ValidateDocumentOptions,
-  // oxlint-disable-next-line typescript/no-deprecated -- preserve the existing public API
-  validateDocumentWithWorkspace as validateDocument,
-} from '@sanity/validation'
+export {type ValidateDocumentOptions, validateDocument} from '../core/validation'
 export {type ValidationContext} from '@sanity/validation/_internal'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'

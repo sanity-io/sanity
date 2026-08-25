@@ -65,8 +65,7 @@ export {CopyPasteProvider} from '../core/studio/copyPaste/CopyPasteProvider'
 export {SourceProvider} from '../core/studio/source'
 export {useWorkspace, WorkspaceProvider} from '../core/studio/workspace'
 export {EMPTY_ARRAY} from '../core/util/empty'
-// oxlint-disable-next-line typescript/no-deprecated -- preserve the existing public API
-export {validateDocumentWithWorkspace as validateDocument} from '@sanity/validation'
+export {validateDocument} from '../core/validation'
 export {type FIXME} from '../core/FIXME'
 export {
   defineArrayMember,
