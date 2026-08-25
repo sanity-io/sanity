@@ -62,8 +62,8 @@ catalogs:
       specifier: ^29.1.1
       version: 29.1.1
     oxc-transform-react:
-      specifier: ^0.145.0
-      version: 0.145.0
+      specifier: ^0.147.0
+      version: 0.147.0
     playwright:
       specifier: 1.62.1
       version: 1.62.1
@@ -200,7 +200,7 @@ importers:
     dependencies:
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -271,7 +271,7 @@ importers:
         version: 19.2.18
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
@@ -375,7 +375,7 @@ importers:
         version: 4.0.0(@types/react@19.2.18)(react@19.2.8)
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -427,7 +427,7 @@ importers:
         version: link:../../packages/@sanity/vision
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -501,10 +501,10 @@ importers:
         version: 19.2.4(@types/react@19.2.18)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.145.0)(vite@8.2.2)
+        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.147.0)(vite@8.2.2)
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
@@ -541,7 +541,7 @@ importers:
     dependencies:
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -606,7 +606,7 @@ importers:
         version: 19.2.4(@types/react@19.2.18)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.145.0)(vite@8.2.2)
+        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.147.0)(vite@8.2.2)
       '@vitest/browser-playwright':
         specifier: 'catalog:'
         version: 4.1.11(playwright@1.62.1)(vite@8.2.2)(vitest@4.1.11)
@@ -615,7 +615,7 @@ importers:
         version: 18.5.0(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@0.1.9)
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       playwright:
         specifier: 'catalog:'
         version: 1.62.1
@@ -651,7 +651,7 @@ importers:
         version: link:../../packages/@sanity/vision
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -864,7 +864,7 @@ importers:
         version: 0.5.1(cac@7.0.0)(crossws@0.4.10)(srvx@0.12.5)(vite@8.2.2)
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
@@ -1013,13 +1013,13 @@ importers:
         version: 4.17.12
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.145.0)(vite@8.2.2)
+        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.147.0)(vite@8.2.2)
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       vite:
         specifier: 'catalog:'
         version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
@@ -1305,13 +1305,13 @@ importers:
         version: 19.2.18
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.145.0)(vite@8.2.2)
+        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.147.0)(vite@8.2.2)
       jsdom:
         specifier: 'catalog:'
         version: 29.1.1(@noble/hashes@2.2.0)
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -1668,13 +1668,13 @@ importers:
         version: 1.21.2(babel-plugin-macros@3.1.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.145.0)(vite@8.2.2)
+        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.147.0)(vite@8.2.2)
       jsdom:
         specifier: 'catalog:'
         version: 29.1.1(@noble/hashes@2.2.0)
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -1784,7 +1784,7 @@ importers:
         version: 2.0.2
       '@sanity/cli':
         specifier: ^8.3.0
-        version: 8.3.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.145.0)(oxfmt@0.64.0)(rolldown@1.2.4)(supports-color@8.1.1)(typescript@7.0.2)(vitest@4.1.11)(xstate@5.32.5)
+        version: 8.3.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.147.0)(oxfmt@0.64.0)(rolldown@1.2.4)(supports-color@8.1.1)(typescript@7.0.2)(vitest@4.1.11)(xstate@5.32.5)
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.2.0(vitest@4.1.11)
@@ -2109,7 +2109,7 @@ importers:
         version: 1.21.2(babel-plugin-macros@3.1.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.145.0)(vite@8.2.2)
+        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.147.0)(vite@8.2.2)
       '@vitest/browser-playwright':
         specifier: 'catalog:'
         version: 4.1.11(playwright@1.62.1)(vite@8.2.2)(vitest@4.1.11)
@@ -2127,7 +2127,7 @@ importers:
         version: 29.1.1(@noble/hashes@2.2.0)
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -2257,7 +2257,7 @@ importers:
     dependencies:
       oxc-transform-react:
         specifier: 'catalog:'
-        version: 0.145.0
+        version: 0.147.0
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -5807,8 +5807,20 @@ packages:
     cpu: [arm]
     os: [android]
 
+  '@oxc-transform-react/binding-android-arm-eabi@0.147.0':
+    resolution: {integrity: sha512-VRKQm1E8GA0yqii9t9f7EAOn3Y7wikAPjSdUDVQlfZx+p29MRG72oaVnS8vRjug2/a6wy8wrjlDiYi0fgvks3g==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [arm]
+    os: [android]
+
   '@oxc-transform-react/binding-android-arm64@0.145.0':
     resolution: {integrity: sha512-eDUKx6MAgRAF67JPScjLF6h8lL2qmlvFrXGSG8mYFIVJb++NMyDygiIo8TAKdWQNguoBElUZw/SK2EPRaKsryQ==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [arm64]
+    os: [android]
+
+  '@oxc-transform-react/binding-android-arm64@0.147.0':
+    resolution: {integrity: sha512-Ishxo2U0RYWAC3AEuNP7h11/rZa03phq3QcmdPXoOCD5s1gM8JflC1yWsZmQEVmHQe8VLocEaHAlYkWwUGiYIQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [android]
@@ -5819,8 +5831,20 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
+  '@oxc-transform-react/binding-darwin-arm64@0.147.0':
+    resolution: {integrity: sha512-2f3KkcleD6AzbtTgVJMRUEgGSfST24n+xc8Uy/smiBSHBXSGWfKFWMP7iR6JDVil3rHsqlDsnv9l7sy++mrbMw==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [arm64]
+    os: [darwin]
+
   '@oxc-transform-react/binding-darwin-x64@0.145.0':
     resolution: {integrity: sha512-R0PtsoOCsARulmWhLG1fFInT+98TRl/H6w6ifi8XOLvpdsksD1rxsw4Ol84lHbdHCcMNjfJTckZzQIZBMiXkLg==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [x64]
+    os: [darwin]
+
+  '@oxc-transform-react/binding-darwin-x64@0.147.0':
+    resolution: {integrity: sha512-jVHMynO2NdP5uEeTLMet8Lh3Y60q67rxyGID43XEXoh4qYS9nA0+tA78eQIX3fb+UeM0eTZi2l6NcAjhDs8ZcQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [darwin]
@@ -5831,8 +5855,20 @@ packages:
     cpu: [x64]
     os: [freebsd]
 
+  '@oxc-transform-react/binding-freebsd-x64@0.147.0':
+    resolution: {integrity: sha512-qJbfDnU0R1Y90mZvOaoF/lAWBoYxzAwik7cXxfh07mBuuUxbwfIifaHKv4CDhA42KhsM3ASpsyIzQcy6qU58dA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [x64]
+    os: [freebsd]
+
   '@oxc-transform-react/binding-linux-arm-gnueabihf@0.145.0':
     resolution: {integrity: sha512-ssHZ0W2wSjQwaBQdkg8u+A7dTdw2vkGSK0hRfCoDCkRkETu+19Q8Tae7NNxlYHcP1iUQYhEj8Qfgpq+S/MdrYA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [arm]
+    os: [linux]
+
+  '@oxc-transform-react/binding-linux-arm-gnueabihf@0.147.0':
+    resolution: {integrity: sha512-dzxP8VrfvODG/Gh7TWZzzX3w08C7QDohKqppwKwbox+W3xFgevRAH+aJj5PMvbUO+AwZRx7AHcEKgqJV00YLww==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm]
     os: [linux]
@@ -5843,8 +5879,21 @@ packages:
     cpu: [arm]
     os: [linux]
 
+  '@oxc-transform-react/binding-linux-arm-musleabihf@0.147.0':
+    resolution: {integrity: sha512-+V3y6Ad+tQJJ3RqfEs01vUp/aFcaRRDNzvLvTFgDjEtEy2KTVmzCbOgqiI5QOqO/5of2Eu+iHaIT9FVFsT8pIw==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [arm]
+    os: [linux]
+
   '@oxc-transform-react/binding-linux-arm64-gnu@0.145.0':
     resolution: {integrity: sha512-7KRa0CC1FaSKx5sy+bDtqGvXF+RiVoMmSe8OmTKm9kRZkNVdmsmpnsQhgravehTohlWDveo5aoGMwcFtffGDmw==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@oxc-transform-react/binding-linux-arm64-gnu@0.147.0':
+    resolution: {integrity: sha512-qwu3NoFx4OrwEUCML0emQguUL0sF4zWtVasMLyy5c1yeXL50bgER+FmavE9TOdINhY7L6eYt3bg/BRyRaihFHQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
@@ -5857,8 +5906,22 @@ packages:
     os: [linux]
     libc: [musl]
 
+  '@oxc-transform-react/binding-linux-arm64-musl@0.147.0':
+    resolution: {integrity: sha512-Edtn1bdSUZUsVumt/uSnKuPYR2iqHgULff1W77dqZyhxrQKUVk4pPBt6yiEmwBeWLc4AtBui4JuO6Akj2n5BZA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
   '@oxc-transform-react/binding-linux-ppc64-gnu@0.145.0':
     resolution: {integrity: sha512-VBaUTjRZYRypD2tL7cmbM2Fn6fvTnacLQ1GdsU1Y6A3fkqA/z+wc5Vy1QnnuFe9sIwb9xCvSS2tJVlucR39FYw==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [ppc64]
+    os: [linux]
+    libc: [glibc]
+
+  '@oxc-transform-react/binding-linux-ppc64-gnu@0.147.0':
+    resolution: {integrity: sha512-P1MHO3HbPTpeDO6qiQeFpM3qyJWdLhcV/kys65HelsIag6kU+ixrl/fAvOMdt+MfpJAusY42B+6x/IQsfaHoow==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [ppc64]
     os: [linux]
@@ -5871,8 +5934,22 @@ packages:
     os: [linux]
     libc: [glibc]
 
+  '@oxc-transform-react/binding-linux-riscv64-gnu@0.147.0':
+    resolution: {integrity: sha512-/IR46J5U0kYVLDUsHJr0Y7vT1lQt4haOi2uOMcsSCp+NEBhSaOomQyZ8GaQJVtTn49lYw/yfIm/D3D69L/VwmA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [riscv64]
+    os: [linux]
+    libc: [glibc]
+
   '@oxc-transform-react/binding-linux-riscv64-musl@0.145.0':
     resolution: {integrity: sha512-hFPrsL2nKL4aa8vFmheR53PcrxQgym8bnaSD1pMX9IoyQq+/ksAuw1CDJSV9c5xhxxZdw/KTPVer7M/6OQvfoA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [riscv64]
+    os: [linux]
+    libc: [musl]
+
+  '@oxc-transform-react/binding-linux-riscv64-musl@0.147.0':
+    resolution: {integrity: sha512-2Z+T/VYg+6onfi2b+umNr/37r3qCyutBtSE6dP6KzzNPDlwy3qGg9qIvj1AzKXJpIIheDNJ7hfYn7SBtnSlu0g==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [riscv64]
     os: [linux]
@@ -5885,8 +5962,22 @@ packages:
     os: [linux]
     libc: [glibc]
 
+  '@oxc-transform-react/binding-linux-s390x-gnu@0.147.0':
+    resolution: {integrity: sha512-EmkqOECTHdQj4tbuWn34eYzy3yYfsRWLOoPDAQ2SK6dddMTSGKLyvc/RsP+l65Q4AIM2tTpQshmcerlZDYScNA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [s390x]
+    os: [linux]
+    libc: [glibc]
+
   '@oxc-transform-react/binding-linux-x64-gnu@0.145.0':
     resolution: {integrity: sha512-WqgJ+0M9mwQ1cRfSgk4vzYudD2imLSBhUZ2QFes06vUjigts5Dw4NajWKc2JibPHYsoiUA9Zj39zWwC5AxXEGQ==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@oxc-transform-react/binding-linux-x64-gnu@0.147.0':
+    resolution: {integrity: sha512-gaktP45FnQ63VvXbK0vC81IbFtU7rBpj1Rcxc/mXYMQk24vRnMV3nGdAQb1jKFeg14GokrloQ4gNW+XLMID1vA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
@@ -5899,8 +5990,21 @@ packages:
     os: [linux]
     libc: [musl]
 
+  '@oxc-transform-react/binding-linux-x64-musl@0.147.0':
+    resolution: {integrity: sha512-FjZwrDx4xWZzy06/5hjdcJlXr3Zmv11buW/b4HKFVQ90u6dPUmiPiPRNd7QWJGGksVCm/zBQlA2P0HtAHS38YA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
   '@oxc-transform-react/binding-openharmony-arm64@0.145.0':
     resolution: {integrity: sha512-zhWiyJ+9XD4cuhSZIT6aozuXDHcZHNdoVe88xVmx2XN00anjZ6VAGj31rhD8ndha/F8NllcQEr8Q61Dr2MHv5Q==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [arm64]
+    os: [openharmony]
+
+  '@oxc-transform-react/binding-openharmony-arm64@0.147.0':
+    resolution: {integrity: sha512-Sp7bVak/0y5Lwpfk2fIIYOQmFNvmBG1qPR3010FTx361kANJmH+N1o7MkQ5PnDTCM7FkVOIBROjiRyW6WGimyQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [openharmony]
@@ -5911,14 +6015,32 @@ packages:
     cpu: [arm64]
     os: [win32]
 
+  '@oxc-transform-react/binding-win32-arm64-msvc@0.147.0':
+    resolution: {integrity: sha512-i+4W8zSlYUfIRIUR5+Omttx49M44FoL7YXJzzdT+ZmjgeS5hMOQNZDI6Cvkb1vm+4fh1b/lOjJeZjK5E4VYXbA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [arm64]
+    os: [win32]
+
   '@oxc-transform-react/binding-win32-ia32-msvc@0.145.0':
     resolution: {integrity: sha512-ERpriVJY5S8hXd3BJi4UtzsIVsEQnntmpqTgRqh0XCaflLRLTQnPWpkO8rgtI7xye5MRhfhA+qsxKg2olJs4qA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [ia32]
     os: [win32]
 
+  '@oxc-transform-react/binding-win32-ia32-msvc@0.147.0':
+    resolution: {integrity: sha512-mSc4BxQPdCN5DdzyxfYWK2OvzrUGqj4Hi+Q61XA96HIU5UtuSx8pVY34tjvMPZ/QrN8MReGSikAk9NI9njWgSg==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [ia32]
+    os: [win32]
+
   '@oxc-transform-react/binding-win32-x64-msvc@0.145.0':
     resolution: {integrity: sha512-sa781BGPLDw8+7ATrgUpLr0f4t0Q14O+zk3fOuQbUpjW5jERc9a3k1xIYKX1JkTG/sszoFhi8LzyCoMC49tkWA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [x64]
+    os: [win32]
+
+  '@oxc-transform-react/binding-win32-x64-msvc@0.147.0':
+    resolution: {integrity: sha512-4vtoIsur+v2mGj5UewMxm5BiuK9Se3skVyPRczNLXSYCjPVzHMV9XBkySWBGLBzcNICiejiiF+gVidNNGc3HDQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [win32]
@@ -11995,6 +12117,10 @@ packages:
 
   oxc-transform-react@0.145.0:
     resolution: {integrity: sha512-y8cfjow11WKvDekonySPVvRUvNuIvqNT0LZ0Aey6j5dsNUD6k4hy6Mae/SLmng5egmb1GdJS11GduJ+IoEAXEw==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+
+  oxc-transform-react@0.147.0:
+    resolution: {integrity: sha512-u3u8qZFlcQPawQx/kvMnK6csGPAQW5JJ4WWsmqYb3djL4SHfvsu5ftHCTkWgzdYkGfIjq5aSoBetVXfPb1ZiXw==}
     engines: {node: ^20.19.0 || >=22.12.0}
 
   oxfmt@0.64.0:
@@ -18124,58 +18250,115 @@ snapshots:
   '@oxc-transform-react/binding-android-arm-eabi@0.145.0':
     optional: true
 
+  '@oxc-transform-react/binding-android-arm-eabi@0.147.0':
+    optional: true
+
   '@oxc-transform-react/binding-android-arm64@0.145.0':
+    optional: true
+
+  '@oxc-transform-react/binding-android-arm64@0.147.0':
     optional: true
 
   '@oxc-transform-react/binding-darwin-arm64@0.145.0':
     optional: true
 
+  '@oxc-transform-react/binding-darwin-arm64@0.147.0':
+    optional: true
+
   '@oxc-transform-react/binding-darwin-x64@0.145.0':
+    optional: true
+
+  '@oxc-transform-react/binding-darwin-x64@0.147.0':
     optional: true
 
   '@oxc-transform-react/binding-freebsd-x64@0.145.0':
     optional: true
 
+  '@oxc-transform-react/binding-freebsd-x64@0.147.0':
+    optional: true
+
   '@oxc-transform-react/binding-linux-arm-gnueabihf@0.145.0':
+    optional: true
+
+  '@oxc-transform-react/binding-linux-arm-gnueabihf@0.147.0':
     optional: true
 
   '@oxc-transform-react/binding-linux-arm-musleabihf@0.145.0':
     optional: true
 
+  '@oxc-transform-react/binding-linux-arm-musleabihf@0.147.0':
+    optional: true
+
   '@oxc-transform-react/binding-linux-arm64-gnu@0.145.0':
+    optional: true
+
+  '@oxc-transform-react/binding-linux-arm64-gnu@0.147.0':
     optional: true
 
   '@oxc-transform-react/binding-linux-arm64-musl@0.145.0':
     optional: true
 
+  '@oxc-transform-react/binding-linux-arm64-musl@0.147.0':
+    optional: true
+
   '@oxc-transform-react/binding-linux-ppc64-gnu@0.145.0':
+    optional: true
+
+  '@oxc-transform-react/binding-linux-ppc64-gnu@0.147.0':
     optional: true
 
   '@oxc-transform-react/binding-linux-riscv64-gnu@0.145.0':
     optional: true
 
+  '@oxc-transform-react/binding-linux-riscv64-gnu@0.147.0':
+    optional: true
+
   '@oxc-transform-react/binding-linux-riscv64-musl@0.145.0':
+    optional: true
+
+  '@oxc-transform-react/binding-linux-riscv64-musl@0.147.0':
     optional: true
 
   '@oxc-transform-react/binding-linux-s390x-gnu@0.145.0':
     optional: true
 
+  '@oxc-transform-react/binding-linux-s390x-gnu@0.147.0':
+    optional: true
+
   '@oxc-transform-react/binding-linux-x64-gnu@0.145.0':
+    optional: true
+
+  '@oxc-transform-react/binding-linux-x64-gnu@0.147.0':
     optional: true
 
   '@oxc-transform-react/binding-linux-x64-musl@0.145.0':
     optional: true
 
+  '@oxc-transform-react/binding-linux-x64-musl@0.147.0':
+    optional: true
+
   '@oxc-transform-react/binding-openharmony-arm64@0.145.0':
+    optional: true
+
+  '@oxc-transform-react/binding-openharmony-arm64@0.147.0':
     optional: true
 
   '@oxc-transform-react/binding-win32-arm64-msvc@0.145.0':
     optional: true
 
+  '@oxc-transform-react/binding-win32-arm64-msvc@0.147.0':
+    optional: true
+
   '@oxc-transform-react/binding-win32-ia32-msvc@0.145.0':
     optional: true
 
+  '@oxc-transform-react/binding-win32-ia32-msvc@0.147.0':
+    optional: true
+
   '@oxc-transform-react/binding-win32-x64-msvc@0.145.0':
+    optional: true
+
+  '@oxc-transform-react/binding-win32-x64-msvc@0.147.0':
     optional: true
 
   '@oxfmt/binding-android-arm-eabi@0.64.0':
@@ -18784,17 +18967,17 @@ snapshots:
 
   '@sanity/browserslist-config@1.0.5': {}
 
-  '@sanity/cli-build@5.3.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.145.0)(rolldown@1.2.4)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)':
+  '@sanity/cli-build@5.3.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.147.0)(rolldown@1.2.4)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)':
     dependencies:
       '@oclif/core': 4.13.3
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.4)(vite@8.2.2)
-      '@sanity/cli-core': 3.3.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(oxc-transform-react@0.145.0)(vitest@4.1.11)(yaml@2.9.0)
+      '@sanity/cli-core': 3.3.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(oxc-transform-react@0.147.0)(vitest@4.1.11)(yaml@2.9.0)
       '@sanity/generate-help-url': 4.0.0
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench-cli': 2.1.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.145.0)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
-      '@vitejs/plugin-react': 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.145.0)(vite@8.2.2)
+      '@sanity/workbench-cli': 2.1.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.147.0)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
+      '@vitejs/plugin-react': 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.147.0)(vite@8.2.2)
       chokidar: 5.0.0
       cjs-module-lexer: 2.2.0
       empathic: 2.0.1
@@ -18808,7 +18991,7 @@ snapshots:
       zod: 4.4.3
     optionalDependencies:
       babel-plugin-react-compiler: 1.0.0
-      oxc-transform-react: 0.145.0
+      oxc-transform-react: 0.147.0
     transitivePeerDependencies:
       - '@babel/core'
       - '@babel/plugin-transform-runtime'
@@ -18876,7 +19059,7 @@ snapshots:
       - terser
       - yaml
 
-  '@sanity/cli-core@3.3.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(oxc-transform-react@0.145.0)(vitest@4.1.11)(yaml@2.9.0)':
+  '@sanity/cli-core@3.3.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(oxc-transform-react@0.147.0)(vitest@4.1.11)(yaml@2.9.0)':
     dependencies:
       '@inquirer/prompts': 8.5.2(@types/node@24.13.3)
       '@oclif/core': 4.13.3
@@ -18900,7 +19083,7 @@ snapshots:
       zod: 4.4.3
     optionalDependencies:
       babel-plugin-react-compiler: 1.0.0
-      oxc-transform-react: 0.145.0
+      oxc-transform-react: 0.147.0
     transitivePeerDependencies:
       - '@noble/hashes'
       - '@types/node'
@@ -18916,13 +19099,13 @@ snapshots:
       - vitest
       - yaml
 
-  '@sanity/cli@8.3.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.145.0)(oxfmt@0.64.0)(rolldown@1.2.4)(supports-color@8.1.1)(typescript@7.0.2)(vitest@4.1.11)(xstate@5.32.5)':
+  '@sanity/cli@8.3.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.147.0)(oxfmt@0.64.0)(rolldown@1.2.4)(supports-color@8.1.1)(typescript@7.0.2)(vitest@4.1.11)(xstate@5.32.5)':
     dependencies:
       '@oclif/core': 4.13.3
       '@oclif/plugin-help': 6.2.56
       '@oclif/plugin-not-found': 3.2.91(@types/node@24.13.3)
-      '@sanity/cli-build': 5.3.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.145.0)(rolldown@1.2.4)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
-      '@sanity/cli-core': 3.3.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(oxc-transform-react@0.145.0)(vitest@4.1.11)(yaml@2.9.0)
+      '@sanity/cli-build': 5.3.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.147.0)(rolldown@1.2.4)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
+      '@sanity/cli-core': 3.3.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(oxc-transform-react@0.147.0)(vitest@4.1.11)(yaml@2.9.0)
       '@sanity/client': 8.2.0(vitest@4.1.11)
       '@sanity/codegen': 8.0.0(oxfmt@0.64.0)(react@19.2.8)(supports-color@8.1.1)
       '@sanity/descriptors': 1.3.0
@@ -18931,12 +19114,12 @@ snapshots:
       '@sanity/id-utils': 1.0.0
       '@sanity/import': 6.0.4(@sanity/client@8.2.0)(supports-color@8.1.1)
       '@sanity/migrate': 8.0.2(supports-color@8.1.1)(xstate@5.32.5)
-      '@sanity/runtime-cli': 17.4.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(oxc-transform-react@0.145.0)(rolldown@1.2.4)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
+      '@sanity/runtime-cli': 17.4.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(oxc-transform-react@0.147.0)(rolldown@1.2.4)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/template-validator': 3.1.0
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench-cli': 2.1.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.145.0)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
+      '@sanity/workbench-cli': 2.1.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.147.0)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
       '@sanity/worker-channels': 2.0.0
       '@vercel/frameworks': 3.29.0
       chokidar: 5.0.0
@@ -18984,7 +19167,7 @@ snapshots:
       zod: 4.4.3
     optionalDependencies:
       babel-plugin-react-compiler: 1.0.0
-      oxc-transform-react: 0.145.0
+      oxc-transform-react: 0.147.0
     transitivePeerDependencies:
       - '@babel/core'
       - '@babel/plugin-transform-runtime'
@@ -19309,7 +19492,7 @@ snapshots:
       - '@sanity/types'
       - typescript
 
-  '@sanity/runtime-cli@17.4.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(oxc-transform-react@0.145.0)(rolldown@1.2.4)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)':
+  '@sanity/runtime-cli@17.4.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(oxc-transform-react@0.147.0)(rolldown@1.2.4)(supports-color@8.1.1)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)':
     dependencies:
       '@architect/hydrate': 6.0.2
       '@architect/inventory': 6.1.0
@@ -19319,7 +19502,7 @@ snapshots:
       '@sanity-labs/design-tokens': 0.0.2-alpha.4
       '@sanity/blueprints': 0.23.2(vite@8.2.2)
       '@sanity/blueprints-parser': 0.4.0
-      '@sanity/cli-build': 5.3.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.145.0)(rolldown@1.2.4)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
+      '@sanity/cli-build': 5.3.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.147.0)(rolldown@1.2.4)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
       '@sanity/cli-core': 2.8.1(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(supports-color@8.1.1)(yaml@2.9.0)
       '@sanity/client': 7.26.2
       adm-zip: 0.6.0
@@ -19592,13 +19775,13 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@sanity/workbench-cli@2.1.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.145.0)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)':
+  '@sanity/workbench-cli@2.1.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.147.0)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)':
     dependencies:
       '@module-federation/runtime': 2.8.2
       '@module-federation/vite': 1.20.7(typescript@7.0.2)(vite@8.2.2)
-      '@sanity/cli-core': 3.3.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(oxc-transform-react@0.145.0)(vitest@4.1.11)(yaml@2.9.0)
+      '@sanity/cli-core': 3.3.0(@noble/hashes@2.2.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(oxc-transform-react@0.147.0)(vitest@4.1.11)(yaml@2.9.0)
       '@sanity/types': link:packages/@sanity/types
-      '@vitejs/plugin-react': 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.145.0)(vite@8.2.2)
+      '@vitejs/plugin-react': 6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.147.0)(vite@8.2.2)
       form-data: 4.0.6
       rxjs: 7.8.2
       tar-fs: 3.1.3
@@ -20904,6 +21087,15 @@ snapshots:
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.4)(vite@8.2.2)
       babel-plugin-react-compiler: 1.0.0
       oxc-transform-react: 0.145.0
+
+  '@vitejs/plugin-react@6.1.0(@rolldown/plugin-babel@0.2.3)(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.147.0)(vite@8.2.2)':
+    dependencies:
+      '@rolldown/pluginutils': 1.0.1
+      vite: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+    optionalDependencies:
+      '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.4)(vite@8.2.2)
+      babel-plugin-react-compiler: 1.0.0
+      oxc-transform-react: 0.147.0
 
   '@vitest/browser-playwright@4.1.11(playwright@1.62.1)(vite@8.2.2)(vitest@4.1.11)':
     dependencies:
@@ -24782,6 +24974,29 @@ snapshots:
       '@oxc-transform-react/binding-win32-arm64-msvc': 0.145.0
       '@oxc-transform-react/binding-win32-ia32-msvc': 0.145.0
       '@oxc-transform-react/binding-win32-x64-msvc': 0.145.0
+    optional: true
+
+  oxc-transform-react@0.147.0:
+    optionalDependencies:
+      '@oxc-transform-react/binding-android-arm-eabi': 0.147.0
+      '@oxc-transform-react/binding-android-arm64': 0.147.0
+      '@oxc-transform-react/binding-darwin-arm64': 0.147.0
+      '@oxc-transform-react/binding-darwin-x64': 0.147.0
+      '@oxc-transform-react/binding-freebsd-x64': 0.147.0
+      '@oxc-transform-react/binding-linux-arm-gnueabihf': 0.147.0
+      '@oxc-transform-react/binding-linux-arm-musleabihf': 0.147.0
+      '@oxc-transform-react/binding-linux-arm64-gnu': 0.147.0
+      '@oxc-transform-react/binding-linux-arm64-musl': 0.147.0
+      '@oxc-transform-react/binding-linux-ppc64-gnu': 0.147.0
+      '@oxc-transform-react/binding-linux-riscv64-gnu': 0.147.0
+      '@oxc-transform-react/binding-linux-riscv64-musl': 0.147.0
+      '@oxc-transform-react/binding-linux-s390x-gnu': 0.147.0
+      '@oxc-transform-react/binding-linux-x64-gnu': 0.147.0
+      '@oxc-transform-react/binding-linux-x64-musl': 0.147.0
+      '@oxc-transform-react/binding-openharmony-arm64': 0.147.0
+      '@oxc-transform-react/binding-win32-arm64-msvc': 0.147.0
+      '@oxc-transform-react/binding-win32-ia32-msvc': 0.147.0
+      '@oxc-transform-react/binding-win32-x64-msvc': 0.147.0
 
   oxfmt@0.64.0:
     dependencies:
