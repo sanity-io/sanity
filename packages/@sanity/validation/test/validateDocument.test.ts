@@ -59,7 +59,7 @@ describe('validateDocument', () => {
   it('rejects pre-aborted validation with the abort reason', async () => {
     const schema = createSchema([{name: 'article', type: 'document', fields: []}])
     const reason = new Error('cancelled')
-    const client = {withConfig: vi.fn()}
+    const {client} = createMockClient()
 
     await expect(
       validateDocument({
@@ -197,10 +197,11 @@ describe('validateDocument', () => {
         }),
     )
     const client = {
+      fetch: vi.fn(async () => null),
       getDataUrl: () => '/data/doc',
       observable: {request},
       withConfig: () => client,
-    }
+    } as unknown as SanityClient
     const schema = createSchema([
       {
         name: 'article',
