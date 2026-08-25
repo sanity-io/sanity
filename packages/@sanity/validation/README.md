@@ -42,9 +42,14 @@ the signal's reason (an `AbortError` when no custom reason was supplied).
 ```ts
 const controller = new AbortController()
 const validation = validateDocument({document, schema, client, signal: controller.signal})
+const reason = new Error('Validation cancelled')
 
-controller.abort()
-await validation
+controller.abort(reason)
+try {
+  await validation
+} catch (error) {
+  if (error !== reason) throw error
+}
 ```
 
 The package does not apply mutations or decide whether a document may be edited or published.

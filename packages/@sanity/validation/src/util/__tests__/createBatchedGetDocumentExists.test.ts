@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {from, map, of} from 'rxjs'
+import {from, map, Observable, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
 import {
@@ -90,5 +90,59 @@ describe('createBatchedGetDocumentExists', () => {
     const results = await resultsPromise
     expect(results.every((result) => result === true))
     expect(mockClient.observable.request).toHaveBeenCalledTimes(MAX_REQUEST_CONCURRENCY + 1)
+  })
+
+  it('does not abort unrelated checks before their requests start', async () => {
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+    const mockClient = {
+      getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
+      observable: {
+        request: vi.fn(() => of({omitted: []})),
+      },
+    }
+    const getDocumentExists = createBatchedGetDocumentExists(mockClient as unknown as SanityClient)
+
+    const cancelled = getDocumentExists({id: 'cancelled', signal: controller.signal})
+    const active = getDocumentExists({id: 'active'})
+    controller.abort(reason)
+
+    await expect(cancelled).rejects.toBe(reason)
+    await expect(active).resolves.toBe(true)
+    expect(mockClient.observable.request).toHaveBeenCalledOnce()
+    expect(mockClient.observable.request).toHaveBeenCalledWith(
+      expect.objectContaining({signal: undefined}),
+    )
+  })
+
+  it('does not abort unrelated checks when an active request is aborted', async () => {
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+    const mockClient = {
+      getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
+      observable: {
+        request: vi.fn(({signal}: {signal?: AbortSignal}) => {
+          if (!signal) return of({omitted: []})
+
+          return new Observable<{omitted: {id: string; reason: 'existence' | 'permission'}[]}>(
+            (subscriber) => {
+              const onAbort = () => subscriber.error(signal.reason)
+              signal.addEventListener('abort', onAbort, {once: true})
+              return () => signal.removeEventListener('abort', onAbort)
+            },
+          )
+        }),
+      },
+    }
+    const getDocumentExists = createBatchedGetDocumentExists(mockClient as unknown as SanityClient)
+
+    const cancelled = getDocumentExists({id: 'cancelled', signal: controller.signal})
+    const active = getDocumentExists({id: 'active'})
+    await vi.waitFor(() => expect(mockClient.observable.request).toHaveBeenCalledOnce())
+    controller.abort(reason)
+
+    await expect(cancelled).rejects.toBe(reason)
+    await expect(active).resolves.toBe(true)
+    expect(mockClient.observable.request).toHaveBeenCalledTimes(2)
   })
 })

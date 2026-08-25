@@ -2,7 +2,9 @@ import {type SanityClient} from '@sanity/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {
   bufferTime,
+  catchError,
   defer,
+  EMPTY,
   filter,
   finalize,
   from,
@@ -11,6 +13,7 @@ import {
   share,
   Subject,
   switchMap,
+  throwError,
 } from 'rxjs'
 
 interface AvailabilityResponse {
@@ -71,6 +74,7 @@ export function createBatchedGetDocumentExists(
             finalize(limiter.release),
           ),
         ),
+        catchError((error) => (signal?.aborted ? EMPTY : throwError(() => error))),
       ),
     ),
     mergeMap(({availability, ids, signal}) =>

@@ -134,6 +134,7 @@ export const objectValidators: Validators = {
           {
             id: documentId,
           },
+          {signal: context.signal},
         )
       if (!asset) {
         console.warn(
