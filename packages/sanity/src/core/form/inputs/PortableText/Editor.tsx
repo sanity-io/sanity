@@ -1,5 +1,4 @@
 import {
-  type BlockDecoratorRenderProps,
   type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
@@ -7,7 +6,6 @@ import {
   PortableTextEditable,
   type PortableTextEditableProps,
   type RangeDecoration,
-  type RenderAnnotationFunction,
 } from '@portabletext/editor'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
@@ -21,7 +19,6 @@ import {useFormBuilder} from '../../useFormBuilder'
 import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useSpellCheck} from './hooks/useSpellCheck'
-import {Decorator} from './text/Decorator'
 import {Toolbar} from './toolbar/Toolbar'
 
 const noOutlineStyle = {outline: 'none'} as const
@@ -52,8 +49,6 @@ interface EditorProps {
   path: Path
   readOnly?: boolean
   rangeDecorations?: RangeDecoration[]
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  renderAnnotation: RenderAnnotationFunction
   scrollElement: HTMLElement | null
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
   setScrollElement: (scrollElement: HTMLElement | null) => void
@@ -79,7 +74,6 @@ export function Editor(props: EditorProps): ReactNode {
     path,
     readOnly,
     rangeDecorations,
-    renderAnnotation,
     scrollElement,
     setPortalElement,
     setScrollElement,
@@ -116,13 +110,6 @@ export function Editor(props: EditorProps): ReactNode {
     [t],
   )
   const spellCheck = useSpellCheck()
-  const renderDecorator = useCallback(
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    (decoratorProps: BlockDecoratorRenderProps) => {
-      return <Decorator {...decoratorProps} portableTextPath={path} />
-    },
-    [path],
-  )
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
@@ -134,10 +121,6 @@ export function Editor(props: EditorProps): ReactNode {
       onPaste,
       rangeDecorations,
       'ref': elementRef,
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      renderAnnotation,
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      renderDecorator,
       renderPlaceholder,
       scrollSelectionIntoView,
       'selection': initialSelection,
@@ -154,8 +137,6 @@ export function Editor(props: EditorProps): ReactNode {
     onCopy,
     onPaste,
     rangeDecorations,
-    renderAnnotation,
-    renderDecorator,
     renderPlaceholder,
     scrollSelectionIntoView,
     spellCheck,

@@ -1,4 +1,4 @@
-import {type BlockDecoratorRenderProps, useEditor} from '@portabletext/editor'
+import {type DecoratorRenderProps, useEditor} from '@portabletext/editor'
 import {getSanitySubSchema} from '@portabletext/sanity-bridge'
 import {type Path} from '@sanity/types'
 import {type Theme} from '@sanity/ui'
@@ -25,11 +25,10 @@ const Root = styled.span(({theme}: {theme: Theme}) => {
   `
 })
 
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-type DecoratorProps = BlockDecoratorRenderProps & {portableTextPath: Path}
+type DecoratorProps = DecoratorRenderProps & {portableTextPath: Path}
 
 export function Decorator(props: DecoratorProps) {
-  const {value, focused, selected, children, path, portableTextPath, schemaType} = props
+  const {decorator, focused, selected, children, path, portableTextPath} = props
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const editor = useEditor()
   // Resolve against the position's sub-schema, not the merged root: a
@@ -39,18 +38,18 @@ export function Decorator(props: DecoratorProps) {
     schemaTypes.portableText,
     editor.getSnapshot().context.value,
     path,
-  ).decorators.find((type) => type.value === schemaType.name)
-  const tag = TEXT_DECORATOR_TAGS[value]
+  ).decorators.find((type) => type.value === decorator)
+  const tag = TEXT_DECORATOR_TAGS[decorator]
   const CustomComponent = sanitySchemaType?.component
   const DefaultComponent = useCallback(
     (defaultComponentProps: BlockDecoratorProps) => {
       return (
-        <Root as={tag} data-mark={value}>
+        <Root as={tag} data-mark={decorator}>
           {defaultComponentProps.children}
         </Root>
       )
     },
-    [tag, value],
+    [tag, decorator],
   )
   return useMemo(() => {
     if (!sanitySchemaType) {
@@ -58,7 +57,7 @@ export function Decorator(props: DecoratorProps) {
       // removed). Render the children without the mark styling instead of
       // crashing.
       warnOnce(
-        `Could not find schema type for decorator: ${value} at ${pathToString(portableTextPath.concat(path))}`,
+        `Could not find schema type for decorator: ${decorator} at ${pathToString(portableTextPath.concat(path))}`,
       )
       return <>{children}</>
     }
@@ -68,7 +67,7 @@ export function Decorator(props: DecoratorProps) {
       schemaType: sanitySchemaType,
       selected,
       title: sanitySchemaType.title,
-      value,
+      value: decorator,
     }
     return CustomComponent ? (
       <CustomComponent {...componentProps}>{children}</CustomComponent>
@@ -85,6 +84,6 @@ export function Decorator(props: DecoratorProps) {
     portableTextPath,
     sanitySchemaType,
     selected,
-    value,
+    decorator,
   ])
 }

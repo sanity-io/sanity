@@ -4,11 +4,10 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button as UIButton,
-  Flex,
   Text,
 } from '@sanity/ui'
 import {useCallback} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -43,8 +42,8 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
   const {t} = useTranslation(tasksLocaleNamespace)
 
   return (
-    <Flex justify="space-between" align="center" gap={1}>
-      <Flex align="center" flex={1}>
+    <Flex justifyContent="space-between" alignItems="center" gap={1}>
+      <Flex alignItems="center" flexBasis="0%" flexGrow={1}>
         {viewMode === 'list' ? (
           <Box padding={2}>
             <Text size={2} weight="semibold">

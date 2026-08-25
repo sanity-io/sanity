@@ -1,7 +1,10 @@
 import {
-  type BlockAnnotationRenderProps,
+  type AnnotationRenderProps,
   type BlockObjectRenderProps,
+  type DecoratorRenderProps,
+  defineAnnotation,
   defineBlockObject,
+  defineDecorator,
   defineInlineObject,
   defineSpan,
   defineTextBlock,
@@ -30,7 +33,7 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
-import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
@@ -53,6 +56,7 @@ import {BlockObject} from './object/BlockObject'
 import {CombinedAnnotationPopover} from './object/CombinedAnnotationPopover'
 import {InlineObject} from './object/InlineObject'
 import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditModal'
+import {Decorator} from './text/Decorator'
 import {ListItem} from './text/ListItem'
 import {Style} from './text/Style'
 import {TextBlock} from './text/TextBlock'
@@ -120,6 +124,31 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const setElementRef = useSetPortableTextMemberItemElementRef()
   const editor = useEditor()
   const {t} = useTranslation()
+
+  // Tracks that an annotation object edit modal has been requested to open,
+  // but the form state doesn't reflect it as open yet. Inserting an annotation
+  // from the toolbar (or clicking "Edit" on an existing one) renders the
+  // annotated text as selected before `member.open` propagates, and without
+  // this signal the CombinedAnnotationPopover would flash in that window.
+  // The flag is set synchronously when the open is requested, and cleared by
+  // AnnotationObjectEditModal once the modal renders (or on item close).
+  const annotationOpeningRef = useRef(false)
+
+  const handleItemOpen = useCallback(
+    (itemPath: Path) => {
+      const relativePath = itemPath.slice(path.length)
+      if (relativePath.some((segment) => segment === 'markDefs')) {
+        annotationOpeningRef.current = true
+      }
+      onItemOpen(itemPath)
+    },
+    [onItemOpen, path],
+  )
+
+  const handleItemClose = useCallback(() => {
+    annotationOpeningRef.current = false
+    onItemClose()
+  }, [onItemClose])
 
   // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with
   // Sanity-specific PortableTextMemberSchemaTypes instead of the editor's
@@ -248,8 +277,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             focused={blockFocused}
             isFullscreen={isFullscreen}
             listItem={listSchemaType !== undefined ? block.listItem : undefined}
-            onItemClose={onItemClose}
-            onItemOpen={onItemOpen}
+            onItemClose={handleItemClose}
+            onItemOpen={handleItemOpen}
             onItemRemove={onItemRemove}
             onPathFocus={onPathFocus}
             path={fullyQualifiedPath}
@@ -283,8 +312,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       editor,
       floatingBoundary,
       isFullscreen,
-      onItemClose,
-      onItemOpen,
+      handleItemClose,
+      handleItemOpen,
       onItemRemove,
       onPathFocus,
       path,
@@ -326,8 +355,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
               floatingBoundary={floatingBoundary}
               focused={blockFocused}
               isFullscreen={isFullscreen}
-              onItemClose={onItemClose}
-              onItemOpen={onItemOpen}
+              onItemClose={handleItemClose}
+              onItemOpen={handleItemOpen}
               onItemRemove={onItemRemove}
               onPathFocus={onPathFocus}
               path={path.concat(blockPath)}
@@ -358,8 +387,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       scrollElement,
       schemaTypes.portableText,
       isFullscreen,
-      onItemClose,
-      onItemOpen,
+      handleItemClose,
+      handleItemOpen,
       onItemRemove,
       onPathFocus,
       path,
@@ -398,8 +427,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             <InlineObject
               floatingBoundary={floatingBoundary}
               focused={childFocused}
-              onItemClose={onItemClose}
-              onItemOpen={onItemOpen}
+              onItemClose={handleItemClose}
+              onItemOpen={handleItemOpen}
               onPathFocus={onPathFocus}
               path={path.concat(childPath)}
               readOnly={readOnly}
@@ -425,8 +454,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       schemaTypes.portableText,
       floatingBoundary,
-      onItemClose,
-      onItemOpen,
+      handleItemClose,
+      handleItemOpen,
       onPathFocus,
       path,
       readOnly,
@@ -449,41 +478,34 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [path],
   )
 
-  // Stable reference: `NodePlugin` re-runs its registration effect when
-  // `nodes` changes by reference.
-  const catchAllNodes = useMemo<RegistrableNode[]>(
-    () => [
-      defineTextBlock({type: '*', render: renderTextBlock}),
-      defineBlockObject({type: '*', render: renderBlockObject}),
-      defineInlineObject({type: '*', render: renderInlineObject}),
-      defineSpan({type: '*', render: renderSpan}),
-    ],
-    [renderTextBlock, renderBlockObject, renderInlineObject, renderSpan],
+  const renderDecoratorNode = useCallback(
+    (decoratorProps: DecoratorRenderProps) => (
+      <Decorator {...decoratorProps} portableTextPath={path} />
+    ),
+    [path],
   )
 
-  const editorRenderAnnotation = useCallback(
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    (annotationProps: BlockAnnotationRenderProps) => {
+  const renderAnnotationNode = useCallback(
+    (annotationProps: AnnotationRenderProps) => {
       const {
+        annotation,
         children,
         focused: editorNodeFocused,
         path: aPath,
         selected,
-        schemaType: aSchemaType,
-        value: aValue,
       } = annotationProps
-      const annotationPath = [...aPath.slice(0, -2), 'markDefs', {_key: aValue._key}]
+      const annotationPath = [...aPath.slice(0, -2), 'markDefs', {_key: annotation._key}]
       const sanitySchemaType = getSanitySubSchema(
         schemaTypes.portableText,
         editor.getSnapshot().context.value,
         annotationPath,
-      ).annotations.find((memberType) => memberType.name === aSchemaType.name)
+      ).annotations.find((t) => t.name === annotation._type)
       if (!sanitySchemaType) {
         // The value predates a schema change (for example an annotation type
         // that was removed). Render the annotated text plainly instead of
         // crashing.
         warnOnce(
-          `Could not find schema type for annotation: ${aSchemaType.name} at ${pathToString(path.concat(aPath))}`,
+          `Could not find schema type for annotation: ${annotation._type} at ${pathToString(path.concat(aPath))}`,
         )
         // No affordance here: the span render (`UnknownMarks`) resolves the
         // annotation type against the same sub-schema and already wraps the
@@ -495,8 +517,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           editorNodeFocused={editorNodeFocused}
           floatingBoundary={floatingBoundary}
           focused={Boolean(focused)}
-          onItemClose={onItemClose}
-          onItemOpen={onItemOpen}
+          onItemClose={handleItemClose}
+          onItemOpen={handleItemOpen}
           onPathFocus={onPathFocus}
           path={path.concat(aPath)}
           readOnly={readOnly}
@@ -512,7 +534,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           schemaType={sanitySchemaType}
           selected={selected}
           setElementRef={setElementRef}
-          value={aValue}
+          value={annotation}
         >
           {children}
         </Annotation>
@@ -523,8 +545,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       floatingBoundary,
       scrollElement,
       focused,
-      onItemClose,
-      onItemOpen,
+      handleItemClose,
+      handleItemOpen,
       onPathFocus,
       path,
       readOnly,
@@ -538,6 +560,27 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderPreview,
       setElementRef,
       editor,
+    ],
+  )
+
+  // Stable reference: `NodePlugin` re-runs its registration effect when
+  // `nodes` changes by reference.
+  const catchAllNodes = useMemo<RegistrableNode[]>(
+    () => [
+      defineTextBlock({type: '*', render: renderTextBlock}),
+      defineBlockObject({type: '*', render: renderBlockObject}),
+      defineInlineObject({type: '*', render: renderInlineObject}),
+      defineSpan({type: '*', render: renderSpan}),
+      defineDecorator({type: '*', render: renderDecoratorNode}),
+      defineAnnotation({type: '*', render: renderAnnotationNode}),
+    ],
+    [
+      renderTextBlock,
+      renderBlockObject,
+      renderInlineObject,
+      renderSpan,
+      renderDecoratorNode,
+      renderAnnotationNode,
     ],
   )
   const ariaDescribedBy = elementProps['aria-describedby']
@@ -589,14 +632,13 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             isActive={isActive}
             isFullscreen={isFullscreen}
             isOneLine={isOneLineEditor}
-            onItemOpen={onItemOpen}
+            onItemOpen={handleItemOpen}
             onCopy={onCopy}
             onPaste={wrappedOnPaste}
             onToggleFullscreen={handleToggleFullscreen}
             path={path}
             rangeDecorations={rangeDecorations}
             readOnly={readOnly}
-            renderAnnotation={editorRenderAnnotation}
             setPortalElement={setPortalElement}
             scrollElement={scrollElement}
             setScrollElement={setScrollElement}
@@ -620,13 +662,12 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       isActive,
       isFullscreen,
       isOneLineEditor,
-      onItemOpen,
+      handleItemOpen,
       onCopy,
       wrappedOnPaste,
       handleToggleFullscreen,
       path,
       rangeDecorations,
-      editorRenderAnnotation,
       scrollElement,
     ],
   )
@@ -648,7 +689,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     focusPath,
     ptInputPath: path,
     boundaryElement: scrollElement,
-    onItemClose,
+    onItemClose: handleItemClose,
   })
 
   // The editor should have a focus ring when the field itself is focused,
@@ -678,11 +719,15 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
                       <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
                         {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
                         <AnnotationObjectEditModal
+                          annotationOpeningRef={annotationOpeningRef}
                           focused={focused}
-                          onItemClose={onItemClose}
+                          onItemClose={handleItemClose}
                           referenceBoundary={scrollElement}
                         />
-                        <CombinedAnnotationPopover referenceBoundary={scrollElement} />
+                        <CombinedAnnotationPopover
+                          annotationOpeningRef={annotationOpeningRef}
+                          referenceBoundary={scrollElement}
+                        />
                       </Portal>
                     </Box>
                     <div data-border="" />

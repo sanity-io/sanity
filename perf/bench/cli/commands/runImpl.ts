@@ -123,7 +123,10 @@ export async function runBench(argv: RunArgs): Promise<void> {
   try {
     const calibration = await calibrateHost(browser)
     console.log(
-      `host calibration: ${calibration.toFixed(0)}ms (fixed workload; higher = slower host), CPU throttle: ${argv.throttle}x` +
+      // One decimal: the score lives at 5–9ms and is measured at 0.1ms
+      // granularity — whole-ms rounding collapses its whole range (see the
+      // dashboard's formatValue, which made the same call)
+      `host calibration: ${calibration.toFixed(1)}ms (fixed workload; higher = slower host), CPU throttle: ${argv.throttle}x` +
         `${reference ? `, mode: A/B (seed ${argv.seed})` : ', mode: absolute'}`,
     )
     const runMetadata = collectRunMetadata({
@@ -132,6 +135,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
       cpuThrottleRate: argv.throttle,
       seed: argv.seed,
       startedAt,
+      browserVersion: browser.version(),
     })
 
     if (argv.mode === 'soak') {

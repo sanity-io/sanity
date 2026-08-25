@@ -113,5 +113,61 @@ describe('Portable Text Input', () => {
         await expect.element($icon).toBeVisible()
       })
     })
+
+    it('Renders a custom decorator component with its BlockDecoratorProps (title, value) and mounts renderDefault', async () => {
+      const {
+        findBySelector,
+        getFocusedPortableTextInput,
+        getFocusedPortableTextEditor,
+        insertPortableText,
+      } = testHelpers()
+      void render(<DecoratorsStory />)
+      const $portableTextInput = await getFocusedPortableTextInput('field-customDecorator')
+      const $pte = await getFocusedPortableTextEditor('field-customDecorator')
+
+      await $portableTextInput.getByRole('button', {name: 'Highlight'}).click()
+      await insertPortableText('highlighted text', $pte)
+
+      const $customComponent = await findBySelector(
+        $pte,
+        '[data-testid="custom-highlight-decorator"]',
+      )
+      await expect.element($customComponent).toBeVisible()
+      await expect.element($customComponent).toHaveTextContent('highlighted text')
+
+      await expect.element($customComponent).toHaveAttribute('data-title', 'Highlight')
+      await expect.element($customComponent).toHaveAttribute('data-value', 'highlight')
+
+      // `data-mark` comes from Studio's own `DefaultComponent` in
+      // `text/Decorator.tsx`; the editor's built-in default render for
+      // registered decorators is identity and adds no markup
+      const $defaultMarkup = page.elementLocator(
+        $customComponent.element().querySelector('[data-mark="highlight"]')!,
+      )
+      await expect.element($defaultMarkup).toBeVisible()
+      await expect.element($defaultMarkup).toHaveTextContent('highlighted text')
+    })
+
+    it('Renders a custom decorator component that renders only its children', async () => {
+      const {
+        findBySelector,
+        getFocusedPortableTextInput,
+        getFocusedPortableTextEditor,
+        insertPortableText,
+      } = testHelpers()
+      void render(<DecoratorsStory />)
+      const $portableTextInput = await getFocusedPortableTextInput('field-customDecorator')
+      const $pte = await getFocusedPortableTextEditor('field-customDecorator')
+
+      await $portableTextInput.getByRole('button', {name: 'Spoiler'}).click()
+      await insertPortableText('spoiler text', $pte)
+
+      const $customComponent = await findBySelector(
+        $pte,
+        '[data-testid="custom-spoiler-decorator"]',
+      )
+      await expect.element($customComponent).toBeVisible()
+      await expect.element($customComponent).toHaveTextContent('spoiler text')
+    })
   })
 })

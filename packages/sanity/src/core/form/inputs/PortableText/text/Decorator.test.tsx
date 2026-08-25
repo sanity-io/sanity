@@ -30,12 +30,12 @@ type DecoratorRenderProps = Omit<ComponentProps<typeof Decorator>, 'portableText
 
 const DECORATOR_PROPS = {
   children: <span>schema-less decorator</span>,
-  editorElementRef: {current: null},
+  decorator: 'regressionDecorator',
   focused: false,
   path: SHARED_DECORATOR_PATH,
-  schemaType: {name: 'regressionDecorator'} as DecoratorRenderProps['schemaType'],
+  readOnly: false,
+  renderDefault: ({children}) => children,
   selected: false,
-  value: 'regressionDecorator',
 } satisfies DecoratorRenderProps
 
 it('warns once for identical decorator locations in separate form fields', () => {

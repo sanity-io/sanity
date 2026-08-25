@@ -15,11 +15,6 @@ const client = createClient({
 })
 
 export const {useQuery, useLiveMode} = createQueryStore({
-  // @ts-expect-error -- `@sanity/react-loader` pins `@sanity/client@^7`, so two copies of the
-  // package are installed and its `createQueryStore` is typed against the v7 `SanityClient`.
-  // `SanityClient` carries an ES private field, which TypeScript compares nominally, so the two
-  // copies are never assignable to each other even though the API we use here is identical.
-  // Remove once the loader chain supports `@sanity/client@^8`.
   client,
 })
 export const imageBuilder: ImageUrlBuilder = createImageUrlBuilder(client)

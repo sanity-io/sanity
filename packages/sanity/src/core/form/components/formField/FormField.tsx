@@ -6,7 +6,7 @@ import {type DocumentFieldActionNode} from '../../../config/document/fieldAction
 import {type FormNodePresence} from '../../../presence/types'
 import {useFieldActions} from '../../field/actions/useFieldActions'
 import {type FieldCommentsProps} from '../../types/fieldProps'
-import {FormDivergenceIndicator} from '../FormDivergenceIndicator'
+import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
@@ -76,7 +76,7 @@ export const FormField = memo(function FormField(
 
   return (
     <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
-      <FormRow gutterStartCell={<FormDivergenceIndicator path={path} />}>
+      <FormRow gutterStartCell={<FormFieldGutter path={path} />}>
         <Stack
           {...restProps}
           data-level={level}

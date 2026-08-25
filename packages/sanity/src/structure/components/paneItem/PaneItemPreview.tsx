@@ -11,14 +11,13 @@ import {
   type DocumentPresence,
   DocumentPreviewPresence,
   type DocumentPreviewStore,
-  DocumentStatus,
+  DocumentVersionsStatus,
   DocumentVersionsStatusIndicator,
   type GeneralPreviewLayoutKey,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   getPublishedId,
   SanityDefaultPreview,
-  useDocumentVersionInfo,
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
@@ -51,9 +50,8 @@ const INITIAL_PREVIEW_STATE = {
 export function PaneItemPreview(props: PaneItemPreviewProps) {
   const {icon, layout, presence, schemaType, sortOrder, value} = props
 
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const versionsInfo = useDocumentVersionInfo(value._id)
-  const {versions} = useDocumentVersions({documentId: getPublishedId(value._id)})
+  const publishedId = getPublishedId(value._id)
+  const {versions} = useDocumentVersions({documentId: publishedId})
 
   const {perspectiveStack, selectedVariantName} = usePerspective()
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
@@ -105,13 +103,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = (
-    <DocumentStatus
-      draft={versionsInfo.draft}
-      published={versionsInfo.published}
-      versions={versionsInfo.versions}
-    />
-  )
+  const tooltip = <DocumentVersionsStatus documentGroupId={publishedId} />
 
   return (
     <SanityDefaultPreview

@@ -1,4 +1,4 @@
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import deburr from 'lodash-es/deburr.js'
 import {
   type Ref,
@@ -10,7 +10,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {CommandList} from '../../../components/commandList/CommandList'
 import {type CommandListHandle} from '../../../components/commandList/types'
@@ -115,7 +115,7 @@ export function MentionsMenu(props: MentionsMenuProps & RefAttributes<MentionsMe
   const _inputElement = inputElement ? (inputElement as HTMLInputElement) : undefined
 
   return (
-    <Flex direction="column" height="fill" data-testid="comments-mentions-menu">
+    <Flex flexDirection="column" height="100%" data-testid="comments-mentions-menu">
       {filteredOptions.length === 0 && (
         <Box padding={5}>
           <Text align="center" size={1} muted>
@@ -125,7 +125,7 @@ export function MentionsMenu(props: MentionsMenuProps & RefAttributes<MentionsMe
       )}
 
       {filteredOptions.length > 0 && (
-        <FlexWrap direction="column" flex={1} overflow="hidden">
+        <FlexWrap flexDirection="column" flexBasis="0%" flexGrow={1} overflow="hidden">
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel={t('mentions.user-list-aria-label')}

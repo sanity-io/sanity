@@ -78,7 +78,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
     height: 100%;
   }
 
-  & .pt-editable {
+  & [data-pt-editor] {
     display: block;
     width: 100%;
     height: 100%;
@@ -122,7 +122,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
     & > [data-pt-block] {
       /* Positioning context for the absolutely-positioned drop indicator so it
          sizes to the block (the centred text column) instead of the full-width
-         .pt-editable, which overshoots the block in fullscreen. */
+         [data-pt-editor], which overshoots the block in fullscreen. */
       position: relative;
       margin: 0 auto;
       max-width: ${(props) => getTheme_v2(props.theme).container[1]}px;

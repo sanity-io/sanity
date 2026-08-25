@@ -72,6 +72,7 @@ import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
 import {issue4516AddFilterIntentLink} from './debug/issue4516AddFilterIntentLink'
+import {issue13494I18nTitleKeyStylesLists} from './debug/issue13494I18nTitleKeyStylesLists'
 import {languageFilterDebugType, localeBlockContentType} from './debug/languageFilter'
 import lazyComponents from './debug/lazyComponents'
 import liveEdit from './debug/liveEdit'
@@ -99,6 +100,7 @@ import recursivePopover from './debug/recursivePopover'
 import {pageDocRepro, sectionDocRepro} from './debug/referenceCreateButtonRepro'
 import removeRestoreAction from './debug/removeRestoreAction'
 import reservedFieldNames from './debug/reservedFieldNames'
+import restrictedVersionActions from './debug/restrictedVersionActions'
 import review from './debug/review'
 import * as scrollBugTypes from './debug/scrollBug'
 import select from './debug/select'
@@ -261,6 +263,7 @@ export function createSchemaTypes(projectId: string) {
     ...hiddenFieldValidationTypes,
     fieldsets,
     removeRestoreAction,
+    restrictedVersionActions,
 
     fieldValidationInferReproSharedObject,
     fieldValidationInferReproDoc,
@@ -275,6 +278,7 @@ export function createSchemaTypes(projectId: string) {
     inspectorsTestType,
     invalidPreviews,
     issue4516AddFilterIntentLink,
+    issue13494I18nTitleKeyStylesLists,
     languageFilterDebugType,
     localeBlockContentType,
     lazyComponents,
