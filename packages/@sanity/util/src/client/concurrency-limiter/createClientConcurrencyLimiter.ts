@@ -1,5 +1,5 @@
 import {type ObservableSanityClient, type SanityClient} from '@sanity/client'
-import {defer, finalize, from, switchMap} from 'rxjs'
+import {defer, finalize, from, switchMap, tap} from 'rxjs'
 
 import {ConcurrencyLimiter} from '../../concurrency-limiter'
 
@@ -70,13 +70,27 @@ export function createClientConcurrencyLimiter(
           case 'fetch': {
             return (...args: Parameters<ObservableSanityClient['fetch']>) => {
               const signal = args[2]?.signal
-              return from(limiter.ready(signal)).pipe(
+              const ready = limiter.ready(signal)
+              let acquired = false
+
+              return from(ready).pipe(
+                tap(() => {
+                  acquired = true
+                }),
                 switchMap(() =>
                   defer(() => {
                     signal?.throwIfAborted()
                     return target.fetch(...args)
-                  }).pipe(finalize(() => limiter.release())),
+                  }),
                 ),
+                finalize(() => {
+                  if (acquired) {
+                    limiter.release()
+                    return
+                  }
+
+                  void ready.then(limiter.release, () => undefined)
+                }),
               )
             }
           }

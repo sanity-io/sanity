@@ -1,7 +1,7 @@
 import {types} from 'node:util'
 
 import {createClient, type SanityClient} from '@sanity/client'
-import {firstValueFrom, from} from 'rxjs'
+import {firstValueFrom, from, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createClientConcurrencyLimiter} from '../createClientConcurrencyLimiter'
@@ -87,6 +87,20 @@ describe('createConcurrencyLimitedClient', () => {
     expect(types.isProxy(client.observable.clone().clone()))
     expect(types.isProxy(client.observable.withConfig().withConfig()))
     expect(types.isProxy(client.observable.config({}).config({})))
+  })
+
+  it('releases an observable slot when unsubscribed before the fetch starts', async () => {
+    const mockClient = {
+      observable: {fetch: vi.fn(() => of('result'))},
+    } as unknown as SanityClient
+    const client = createClientConcurrencyLimiter(1)(mockClient)
+
+    const cancelled = client.observable.fetch('cancelled').subscribe()
+    cancelled.unsubscribe()
+
+    await expect(firstValueFrom(client.observable.fetch('next'))).resolves.toBe('result')
+    expect(mockClient.observable.fetch).toHaveBeenCalledOnce()
+    expect(mockClient.observable.fetch).toHaveBeenCalledWith('next')
   })
 
   it('does not start a queued fetch after its signal is aborted', async () => {
