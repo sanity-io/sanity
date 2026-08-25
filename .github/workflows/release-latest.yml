@@ -199,17 +199,32 @@ jobs:
     # with the default GITHUB_TOKEN, whose events never start workflows (the
     # same reason sync-git-metrics is called rather than listening for tags).
     #
-    # Runs through bench.yml's backfill path, which builds and measures a given
-    # commit with HEAD's harness — the release sha is just another commit to
-    # measure. Non-blocking by construction: nothing depends on this job, so a
-    # failed benchmark can never fail or delay a release.
+    # Dispatches an ordinary build of the release tag — `--ref` is the tag, so
+    # the checkout inside bench.yml lands exactly on the released commit and its
+    # normal build measures the right tree. `release_tag` labels the stored
+    # document, and bench.yml verifies the measured commit is the tag's.
+    #
+    # `--ref` is the tag rather than `main` on purpose: main moves every few
+    # minutes, and this job runs minutes after the release commit lands (behind
+    # build-and-validate and git-operations), so `main` is frequently no longer
+    # the release. The tag is immutable and cannot race.
+    #
+    # Deliberately no `backfill_sha`: that selects bench's historical replay
+    # path, which rebuilds a commit in its own worktree from that commit's
+    # lockfile. It is for trees that no longer match the checkout, which is not
+    # the case here.
+    #
+    # Non-blocking by construction: nothing depends on this job, so a failed
+    # benchmark can never fail or delay a release.
     #
     # Requires git-operations to have actually run (not 'skipped', which
     # npm-publish tolerates), so a publish-only rerun does not re-measure a
     # release that was already measured. The flip side: if the original run's
-    # dispatch failed, a rerun will not retry it — measure it by hand with
-    # `gh workflow run bench.yml -f run_suite=true -f backfill_sha=<sha>
-    # -f release_tag=<tag>`, which is exactly what this job does.
+    # dispatch failed, a rerun will not retry it. Measuring it by hand later
+    # needs the replay path, dispatched from main (a tag older than this
+    # workflow has no release_tag input of its own):
+    # `gh workflow run bench.yml --ref main -f run_suite=true
+    # -f backfill_sha=<tag's commit> -f release_tag=<tag>`.
     needs: [build-and-validate, git-operations]
     if: >
       always() && needs.build-and-validate.result == 'success' &&
@@ -219,35 +234,15 @@ jobs:
       actions: write
       contents: read
     steps:
-      - uses: actions/checkout@v7
-        with:
-          persist-credentials: false
-          # The tag was pushed by git-operations; fetch it to dereference
-          fetch-depth: 0
-          ref: v${{ needs.build-and-validate.outputs.version }}
-
-      - name: Resolve the tag's commit
-        id: resolve
-        env:
-          VERSION: ${{ needs.build-and-validate.outputs.version }}
-        run: |
-          # The dereferenced commit, so an annotated tag yields the commit and
-          # not the tag object
-          sha=$(git rev-parse "v$VERSION^{commit}")
-          echo "sha=$sha" >> "$GITHUB_OUTPUT"
-          echo "Measuring v$VERSION at $sha"
-
       - name: Dispatch the bench suite for this release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ needs.build-and-validate.outputs.version }}
-          SHA: ${{ steps.resolve.outputs.sha }}
         run: |
           gh workflow run bench.yml \
             --repo "$GITHUB_REPOSITORY" \
-            --ref main \
+            --ref "v$VERSION" \
             -f run_suite=true \
-            -f backfill_sha="$SHA" \
             -f release_tag="v$VERSION"
 
   publish-releases:

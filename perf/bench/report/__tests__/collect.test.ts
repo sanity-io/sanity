@@ -147,6 +147,25 @@ describe('collectRunMetadata', () => {
     expect(metadata()).toMatchObject({trigger: 'release', releaseTag: 'v6.10.1'})
   })
 
+  // A release run is dispatched at its tag, so GITHUB_REF_NAME is the tag name.
+  // The measured commit is a main commit, and the dashboards group runs into
+  // per-branch lines defaulting to main — filing it under the tag would drop the
+  // run out of the series it belongs to.
+  it('files a release run on main, not on its tag ref', () => {
+    process.env.BENCH_TRIGGER = 'release'
+    process.env.BENCH_RELEASE_TAG = 'v6.10.1'
+    process.env.GITHUB_REF_NAME = 'v6.10.1'
+    expect(metadata().git.branch).toBe('main')
+  })
+
+  // ...but nothing else is rewritten: a PR or cron run keeps the ref it ran on
+  it('leaves the branch alone for non-release runs', () => {
+    process.env.GITHUB_REF_NAME = 'some-branch'
+    expect(metadata().git.branch).toBe('some-branch')
+    process.env.GITHUB_HEAD_REF = 'pr-branch'
+    expect(metadata().git.branch).toBe('pr-branch')
+  })
+
   // A tag on a non-release run would assert that the run measured that release,
   // which is the false attribution the field exists to remove
   it('keeps the release tag only on release runs', () => {
