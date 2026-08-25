@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
+import {type AvatarSize, Stack, type StackProps, useLayer} from '@sanity/ui'
 import {
   type KeyboardEvent,
   memo,
@@ -11,6 +11,7 @@ import {
   useState,
 } from 'react'
 import {css, styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
@@ -296,7 +297,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
         </Stack>
 
         {showCollapseButton && collapsed && (
-          <Flex gap={1} paddingY={1} sizing="border">
+          <Flex gap={1} paddingY={1}>
             <SpacerAvatar />
 
             <ExpandButton
@@ -359,4 +360,3 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
     </StyledThreadCard>
   )
 })
-CommentsListItem.displayName = 'Memo(CommentsListItem)'

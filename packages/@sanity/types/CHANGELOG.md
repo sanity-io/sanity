@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.11.0](https://github.com/sanity-io/sanity/compare/v6.10.1...v6.11.0) (2026-08-25)
+
+### Bug Fixes
+
+* **pkg:** add missing engines.node fields ([#14126](https://github.com/sanity-io/sanity/issues/14126)) ([7009966](https://github.com/sanity-io/sanity/commit/7009966be9aa012efbb1da24926bd4e102f275dc))
 ## [6.9.1](https://github.com/sanity-io/sanity/compare/v6.9.0...v6.9.1) (2026-08-06)
 
 ### Bug Fixes

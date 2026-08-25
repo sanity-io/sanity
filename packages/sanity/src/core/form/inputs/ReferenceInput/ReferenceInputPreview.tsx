@@ -155,26 +155,6 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
     </>
   )
 
-  const OpenLink = useMemo(
-    () =>
-      function OpenLink(
-        restProps: ComponentProps<typeof IntentLink> & RefAttributes<HTMLAnchorElement>,
-      ) {
-        const {ref, ...linkProps} = restProps
-        return (
-          <IntentLink
-            {...linkProps}
-            intent="edit"
-            params={{id: value?._ref, type: refType?.name}}
-            target="_blank"
-            rel="noopener noreferrer"
-            ref={ref}
-          />
-        )
-      },
-    [refType?.name, value?._ref],
-  )
-
   const menu = useMemo(
     () =>
       readOnly ? null : (
@@ -203,7 +183,11 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
                 {!readOnly && value?._ref && <MenuDivider />}
                 {value?._ref && (
                   <MenuItem
-                    as={OpenLink}
+                    as={IntentLink}
+                    intent="edit"
+                    params={{id: value?._ref, type: refType?.name}}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     data-as="a"
                     text={t('inputs.reference.action.open-in-new-tab')}
                     icon={OpenInNewTabIcon}
@@ -215,7 +199,7 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
           />
         </Box>
       ),
-    [handleClear, handleReplace, inputId, OpenLink, readOnly, t, value?._ref],
+    [handleClear, handleReplace, inputId, readOnly, t, value?._ref, refType?.name],
   )
 
   const handleFocus = useCallback(

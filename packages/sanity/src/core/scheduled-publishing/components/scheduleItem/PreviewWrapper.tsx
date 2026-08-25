@@ -1,6 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type ElementType, type ReactNode, useState} from 'react'
+import {type ComponentPropsWithoutRef, type ElementType, type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
@@ -28,10 +28,11 @@ import User from './User'
 const StatusDotPlaceholder = styled(Box)`
   width: 9px;
 `
-interface Props {
+interface Props<TLink extends ElementType | undefined = undefined> {
   children?: ReactNode
   contextMenu?: ReactNode
-  linkComponent?: ElementType | keyof React.JSX.IntrinsicElements
+  linkComponent?: TLink
+  linkProps?: TLink extends ElementType ? ComponentPropsWithoutRef<TLink> : undefined
   onClick?: () => void
   publishedDocumentId?: string
   schedule: Schedule
@@ -39,11 +40,12 @@ interface Props {
   useElementQueries?: boolean
 }
 
-const PreviewWrapper = (props: Props) => {
+function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props: Props<TLink>) {
   const {
     children,
     contextMenu,
     linkComponent,
+    linkProps,
     onClick,
     publishedDocumentId,
     schedule,
@@ -79,8 +81,9 @@ const PreviewWrapper = (props: Props) => {
           disabled={!publishedDocumentId}
         >
           <Card
+            {...(linkProps as object | undefined)}
             __unstable_focusRing
-            as={linkComponent ? linkComponent : undefined}
+            as={linkComponent ? (linkComponent as ElementType) : undefined}
             data-as={onClick || linkComponent ? 'a' : undefined}
             flex={1}
             onClick={onClick}

@@ -182,5 +182,3 @@ export const ReferenceChangedBanner = memo(() => {
     />
   )
 })
-
-ReferenceChangedBanner.displayName = 'Memo(ReferenceChangedBanner)'

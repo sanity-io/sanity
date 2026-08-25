@@ -338,4 +338,3 @@ export const PaneContainer = memo(function PaneContainer(
     </SourceProvider>
   )
 })
-PaneContainer.displayName = 'Memo(PaneContainer)'

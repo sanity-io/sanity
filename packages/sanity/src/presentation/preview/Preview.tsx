@@ -652,7 +652,6 @@ export const Preview = memo(function PreviewComponent(
     </MotionConfig>
   )
 })
-Preview.displayName = 'Memo(Preview)'
 
 const sizes = {
   desktop: {

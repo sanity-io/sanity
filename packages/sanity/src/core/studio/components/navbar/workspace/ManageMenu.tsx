@@ -13,7 +13,7 @@ import {WorkspacePreviewIcon} from './WorkspacePreview'
 
 export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) {
   const {projectId} = useWorkspace()
-  const {value: project} = useProject()
+  const project = useProject()
   const {activeWorkspace} = useActiveWorkspace()
   const envAwareWebsiteUrl = useEnvAwareSanityWebsiteUrl()
 

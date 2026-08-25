@@ -100,6 +100,7 @@ describe('ReleaseForm', () => {
       ]
       mockUseActiveReleases.mockReturnValue({
         data: mockData,
+        byId: new Map(mockData.map((release) => [release._id, release])),
         loading: false,
         dispatch: vi.fn(),
         error: undefined,
@@ -209,6 +210,7 @@ describe('ReleaseForm', () => {
       const mockData: ReleaseDocument[] = []
       mockUseActiveReleases.mockReturnValue({
         data: mockData,
+        byId: new Map(mockData.map((release) => [release._id, release])),
         loading: false,
         dispatch: vi.fn(),
         error: undefined,
@@ -315,6 +317,7 @@ describe('ReleaseForm', () => {
       ]
       mockUseActiveReleases.mockReturnValue({
         data: mockData,
+        byId: new Map(mockData.map((release) => [release._id, release])),
         loading: false,
         dispatch: vi.fn(),
         error: undefined,

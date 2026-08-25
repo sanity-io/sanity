@@ -7,11 +7,6 @@ import {useProjectStore} from '../../../store/datastores'
 const PERMISSION_NAME = 'sanity.project.members'
 const GRANT_NAME = 'invite'
 
-// Module-level so the disabled branch keeps a stable observable identity —
-// react-rx keys its store on identity, and a fresh `of(false)` per render
-// turns `useObservable`'s deferred pass into a self-sustaining render loop.
-const DISABLED$ = of(false)
-
 interface UseCanInviteProjectMembersOptions {
   /**
    * Whether the hook is enabled and should request the grants from the server.
@@ -30,20 +25,25 @@ export function useCanInviteProjectMembers(opts?: UseCanInviteProjectMembersOpti
   const {enabled = true} = opts || {}
   const projectStore = useProjectStore()
 
-  const result$ = useMemo(
-    () =>
-      projectStore.getGrants().pipe(
-        map((grants) => {
-          const permission = grants[PERMISSION_NAME]
+  // Keep the observable identity stable across renders.
+  //
+  // Why it matters: once this hook has received an emission, react-rx
+  // re-subscribes *replacement* observables during render (that is what
+  // lets rebuild-every-render consumers converge instead of looping).
+  // Stable identity = exactly one subscription for the hook's lifetime.
+  //
+  // The React Compiler usually memoizes this expression already. The
+  // explicit `useMemo` keeps the guarantee even where the compiler bails.
+  const canInvite$ = useMemo(() => {
+    if (!enabled) return of(false)
+    return projectStore.getGrants().pipe(
+      map((grants) => {
+        const permission = grants[PERMISSION_NAME]
 
-          return !!permission?.some((p) => p.grants.some((g) => g.name === GRANT_NAME))
-        }),
-      ),
-    [projectStore],
-  )
-
-  // If the hook is disabled, don't subscribe to the observable
-  const canInvite$ = enabled ? result$ : DISABLED$
+        return !!permission?.some((p) => p.grants.some((g) => g.name === GRANT_NAME))
+      }),
+    )
+  }, [enabled, projectStore])
 
   return useObservable(canInvite$, false)
 }

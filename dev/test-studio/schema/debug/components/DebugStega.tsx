@@ -1,12 +1,13 @@
 import {type ContentSourceMap, type ContentSourceMapDocuments, studioPath} from '@sanity/client/csm'
 import {stegaEncodeSourceMap} from '@sanity/client/stega'
-import {Box, Button, Card, Label, Stack} from '@sanity/ui'
+import {Button, Card, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {vercelStegaDecodeAll} from '@vercel/stega'
 import {useMemo} from 'react'
 import {type InputProps, isDocumentSchemaType} from 'sanity'
 import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 export function StegaDebugger(props: InputProps) {
   if (isDocumentSchemaType(props.schemaType)) {

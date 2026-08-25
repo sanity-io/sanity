@@ -1,8 +1,8 @@
 import {type CurrentUser} from '@sanity/types'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useListFormat} from '../../../hooks/useListFormat'
@@ -150,7 +150,7 @@ function CommentReactionsUsersTooltipContent(
 
   return (
     <ContentStack padding={1}>
-      <Flex justify="center" paddingBottom={2} paddingTop={1}>
+      <Flex justifyContent="center" paddingBottom={2} paddingTop={1}>
         <EmojiText size={4}>{COMMENT_REACTION_EMOJIS[reactionName]}</EmojiText>
       </Flex>
 
