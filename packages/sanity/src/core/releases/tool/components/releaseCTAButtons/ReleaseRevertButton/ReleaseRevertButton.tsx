@@ -1,11 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Checkbox, Flex, Text} from '@sanity/ui'
+import {Card, Checkbox, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../../ui-components/dialog/Dialog'
@@ -209,7 +209,7 @@ const ConfirmReleaseDialog = ({
           />
         }
       </Text>
-      <Flex align="center" paddingTop={4}>
+      <Flex alignItems="center" paddingTop={4}>
         <Checkbox
           onChange={() => setStageNewRevertRelease((current) => !current)}
           id="immediate-revert-release"

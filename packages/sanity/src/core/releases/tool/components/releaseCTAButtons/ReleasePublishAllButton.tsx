@@ -2,9 +2,10 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Checkbox, Flex, Stack, Text} from '@sanity/ui'
+import {Checkbox, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -209,7 +210,7 @@ export const ReleasePublishAllButton = ({
           </Text>
           {showUpdateDraftsOption && (
             <Stack gap={3}>
-              <Flex align="center" gap={3} as="label">
+              <Flex alignItems="center" gap={3} as="label">
                 <Checkbox
                   checked={shouldUpdateDrafts}
                   onChange={(event: ChangeEvent<HTMLInputElement>) =>
@@ -269,7 +270,7 @@ export const ReleasePublishAllButton = ({
     // TODO: this is a duplicate of logic in ReleaseScheduleButton
     return (
       <Text muted size={1}>
-        <Flex align="center" gap={3} padding={1}>
+        <Flex alignItems="center" gap={3} padding={1}>
           <ToneIcon icon={ErrorOutlineIcon} tone={isValidatingDocuments ? 'default' : 'critical'} />
           {tooltipText()}
         </Flex>

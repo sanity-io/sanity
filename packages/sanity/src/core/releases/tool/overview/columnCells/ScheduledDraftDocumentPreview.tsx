@@ -1,6 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Card, Flex, Skeleton, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Card, Skeleton, Text} from '@sanity/ui'
+import {Box, Flex} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -26,7 +26,7 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
 
   if (isLoading) {
     return (
-      <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+      <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
         <Skeleton animated radius={2} style={{height: '32px', width: '100%'}} />
       </Flex>
     )
@@ -38,7 +38,7 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
   return (
     <Box {...cellProps} flexBasis="0%" flexGrow={1} padding={1} paddingLeft={2} paddingRight={2}>
       <Card tone={validationErrorCount ? 'critical' : 'inherit'} radius={2}>
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           <Box flexBasis="0%" flexGrow={1}>
             <ReleaseDocumentPreview
               documentId={firstDocument._id}
@@ -57,7 +57,7 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
                 placement="bottom-end"
                 content={
                   <Text muted size={1}>
-                    <Flex align="center" gap={3} padding={1}>
+                    <Flex alignItems="center" gap={3} padding={1}>
                       <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
                       {t('document-validation.error', {count: validationErrorCount})}
                     </Flex>

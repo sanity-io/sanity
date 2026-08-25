@@ -1,8 +1,8 @@
-import {Container, Flex} from '@sanity/ui'
+import {Container} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/SingleDocReleaseEnabledProvider'
 import {useSingleDocReleaseUpsell} from '../../../singleDocRelease/context/SingleDocReleaseUpsellProvider'
@@ -31,14 +31,20 @@ const SingleDocReleasesUpsell = () => {
     return null
   }
   return (
-    <Flex direction="column" flex={1} justify={'center'} align={'center'}>
+    <Flex
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
+      justifyContent={'center'}
+      alignItems={'center'}
+    >
       <motion.div
         initial={{opacity: 0}}
         animate={{opacity: 1}}
         transition={{duration: 0.3, ease: 'easeInOut'}}
       >
         <Panel width={0} padding={4} paddingY={1}>
-          <Flex align={'center'} direction="column">
+          <Flex alignItems={'center'} flexDirection="column">
             <ReleaseIllustration />
             <Box paddingTop={2}>
               <UpsellPanel
@@ -71,14 +77,20 @@ const ReleasesUpsell = () => {
     return null
   }
   return (
-    <Flex direction="column" flex={1} justify={'center'} align={'center'}>
+    <Flex
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
+      justifyContent={'center'}
+      alignItems={'center'}
+    >
       <motion.div
         initial={{opacity: 0}}
         animate={{opacity: 1}}
         transition={{duration: 0.3, ease: 'easeInOut'}}
       >
         <Panel width={0} padding={4} paddingY={1}>
-          <Flex align={'center'} direction="column">
+          <Flex alignItems={'center'} flexDirection="column">
             <ReleaseIllustration />
             <Box paddingTop={2}>
               <UpsellPanel
