@@ -322,7 +322,7 @@ describe('validateDocument', () => {
     })
   })
 
-  it('preserves workspace validation behavior through the compatibility overload', async () => {
+  it('preserves workspace validation behavior through the compatibility helper', async () => {
     const schema = createSchema([
       {
         name: 'article',
