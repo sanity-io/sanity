@@ -5,7 +5,13 @@ import {
   parseRenovateReleaseNotes,
   RENOVATE_RELEASE_NOTES_PACKAGES,
 } from '../parseRenovateReleaseNotes'
+import {type NormalizedMarkdownBlock} from '../portabletext-markdown/markdownToPortableText'
+import {type PortableTextBlock} from '../portabletext-markdown/types'
 import {readFixture} from './helpers'
+
+function markDefsOf(blocks: NormalizedMarkdownBlock[]): PortableTextBlock['markDefs'] {
+  return blocks.flatMap((block) => (block._type === 'block' ? block.markDefs : []))
+}
 
 describe('parseRenovateReleaseNotes', () => {
   it('parses @sanity/cli Renovate body and returns portable text with bug fix and feature content', async () => {
@@ -31,9 +37,9 @@ describe('parseRenovateReleaseNotes', () => {
     // Should NOT contain deps-scoped items even when under Bug Fixes
     expect(markdown).not.toContain('update oclif-tooling')
 
-    // Should preserve PR/issue refs as links (without outer parens)
-    expect(markdown).toMatch(/\[#\d+]\(/)
-    expect(markdown).not.toMatch(/\(\[#\d+]\(/)
+    // Should NOT contain PR/issue refs
+    expect(markdown).not.toMatch(/\[#/)
+    expect(markDefsOf(blocks)).toEqual([])
 
     // Should NOT contain commit hashes
     expect(markdown).not.toMatch(/\(\[[0-9a-f]{7}]\(/)
@@ -89,11 +95,8 @@ describe('parseRenovateReleaseNotes', () => {
     const blocks = parseRenovateReleaseNotes(body)
     const markdown = portableTextToMarkdown(blocks)
 
-    expect(markdown).toContain('a visible fix')
-    // PR ref link should be preserved
-    expect(markdown).toContain('[#1](https://example.com)')
-    // Commit hash should be stripped
-    expect(markdown).not.toContain('abc1234')
+    expect(markdown).toBe('- a visible fix')
+    expect(markDefsOf(blocks)).toEqual([])
     expect(markdown).not.toContain('dep bumped')
     expect(markdown).not.toContain('reformatted code')
     expect(markdown).not.toContain('updated config')
@@ -122,7 +125,7 @@ describe('parseRenovateReleaseNotes', () => {
     expect(markdown).not.toContain('deps')
   })
 
-  it('strips commit hashes but preserves PR refs as links', () => {
+  it('strips commit hashes and PR refs', () => {
     const body = `### Release Notes
 
 <details>
@@ -139,13 +142,29 @@ describe('parseRenovateReleaseNotes', () => {
     const blocks = parseRenovateReleaseNotes(body)
     const markdown = portableTextToMarkdown(blocks)
 
-    expect(markdown).toContain('fix something important')
-    // PR ref should be preserved as a link
-    expect(markdown).toContain('[#123](https://example.com/issues/123)')
-    // Commit hash should be stripped
-    expect(markdown).not.toContain('deadbeef')
-    // Outer parens around PR ref should be removed
-    expect(markdown).not.toContain('([#123]')
+    expect(markdown).toBe('- fix something important')
+    expect(markDefsOf(blocks)).toEqual([])
+  })
+
+  it('strips PR refs containing a zero-width space entity', () => {
+    const body = `### Release Notes
+
+<details>
+<summary>sanity-io/cli (@&#8203;sanity/cli)</summary>
+
+### [\`v8.3.0\`](https://example.com)
+
+##### Features
+
+- include source of auth token in \`sanity debug\` ([#&#8203;1690](https://redirect.github.com/sanity-io/cli/pull/1690)) ([e64da59](https://redirect.github.com/sanity-io/cli/commit/e64da59))
+
+</details>`
+
+    const blocks = parseRenovateReleaseNotes(body)
+    const markdown = portableTextToMarkdown(blocks)
+
+    expect(markdown).toBe('- include source of auth token in `sanity debug`')
+    expect(markDefsOf(blocks)).toEqual([])
   })
 
   it('returns empty for non-Renovate PR bodies', () => {

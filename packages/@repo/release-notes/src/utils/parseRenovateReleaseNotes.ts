@@ -125,11 +125,16 @@ function filterVisibleSections(markdown: string): string {
   return output.join('\n')
 }
 
+// Renovate writes PR refs as `[#&#8203;661]`, inserting a zero-width space to stop GitHub
+// auto-linking them, so the pattern tolerates both the entity and a literal U+200B.
+const PR_REF_PATTERN = String.raw`\[#(?:&#8203;|\u200B)?\d+]\([^)]*\)`
+const PARENTHESISED_PR_REF = new RegExp(String.raw`\s*\(${PR_REF_PATTERN}\)`, 'gm')
+const BARE_PR_REF = new RegExp(String.raw`\s*${PR_REF_PATTERN}`, 'gm')
+
 /**
- * Strip trailing commit hashes like `([0b660b9](url))` from list items,
- * unwrap PR/issue refs from outer parentheses so the link is preserved
- * (e.g. `([#661](url))` → `[#661](url)`),
- * and remove dependency-scoped items (e.g. `- **deps:** ...`) that aren't meaningful for release notes.
+ * Strip trailing commit hashes like `([0b660b9](url))`, PR/issue refs like `([#661](url))`,
+ * and dependency-scoped items (e.g. `- **deps:** ...`) from list items. The refs resolve
+ * through Renovate's redirector to another repo's pull requests, so they are noise here.
  */
 function cleanChangelogItems(markdown: string): string {
   return (
@@ -138,7 +143,8 @@ function cleanChangelogItems(markdown: string): string {
       .replace(/^\s*-\s+\*\*deps:\*\*.*$/gm, '')
       // Strip trailing commit hash links like ([0b660b9](url))
       .replace(/\s*\(\[[0-9a-f]+]\([^)]*\)\)/gm, '')
-      // Unwrap PR/issue refs: ([#123](url)) → [#123](url) so the link is preserved
-      .replace(/\(\[#(\d+)]\(([^)]*)\)\)/gm, '[#$1]($2)')
+      // Parenthesised refs first, so removing a ref never leaves a stray paren behind
+      .replace(PARENTHESISED_PR_REF, '')
+      .replace(BARE_PR_REF, '')
   )
 }
