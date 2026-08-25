@@ -10,6 +10,7 @@ import {
 } from '@sanity/types'
 import get from 'lodash-es/get.js'
 
+import {isClientUnavailableError} from './clientUnavailable'
 import {validationMarkerCodes} from './codes'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
@@ -127,6 +128,31 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           specConstraint = get(context.parent, specConstraint.path)
         }
 
+        if (curr.flag === 'custom' || curr.flag === 'media') {
+          const validationCallback = specConstraint as CustomValidator
+          const metadata = validationCallback.__sanityValidation
+
+          if (metadata === 'unavailable') {
+            __internal.onSkipped?.({
+              check: curr.flag,
+              level: this._level || 'error',
+              path: context.path || [],
+              reason: 'validatorUnavailable',
+            })
+            return []
+          }
+
+          if (metadata !== 'internal' && __internal.customValidation === false) {
+            __internal.onSkipped?.({
+              check: curr.flag,
+              level: this._level || 'error',
+              path: context.path || [],
+              reason: 'customValidationDisabled',
+            })
+            return []
+          }
+        }
+
         if (
           curr.flag === 'custom' &&
           customValidationConcurrencyLimiter &&
@@ -148,11 +174,24 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           : this._message
 
         try {
-          const result = await validator(specConstraint, value, message, context)
+          const result = await validator(specConstraint, value, message, {
+            ...context,
+            __internal: {...__internal, validationLevel: this._level || 'error'},
+          })
           return convertToValidationMarker(result, this._level, context, {
             code: fallbackCodeForRule(curr.flag),
           })
         } catch (err) {
+          if (isClientUnavailableError(err) && (curr.flag === 'custom' || curr.flag === 'media')) {
+            __internal.onSkipped?.({
+              check: curr.flag,
+              level: this._level || 'error',
+              path: context.path || [],
+              reason: 'clientUnavailable',
+            })
+            return []
+          }
+
           const errorMessage = `${pathToString(
             context.path,
           )}: Exception occurred while validating value: ${err.message}`

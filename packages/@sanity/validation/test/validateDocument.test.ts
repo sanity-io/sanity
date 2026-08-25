@@ -1,11 +1,16 @@
 import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
-import {builtinTypes} from '@sanity/schema/_internal'
+import {builtinTypes, createSchemaFromManifestTypes} from '@sanity/schema/_internal'
 import {type Rule, type SanityDocument, type SchemaTypeDefinition} from '@sanity/types'
 import {of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
-import {validateDocument, validateDocumentWithWorkspace, validationMarkerCodes} from '../src'
+import {
+  validateDocument,
+  type ValidateDocumentOptions,
+  validateDocumentWithWorkspace,
+  validationMarkerCodes,
+} from '../src'
 import {getFallbackLocaleSource} from '../src/_internal'
 
 const builtinSchema = SchemaBuilder.compile({name: 'studio', types: builtinTypes})
@@ -41,7 +46,242 @@ function createMockClient(omitted: {id: string; reason: 'existence' | 'permissio
   return {client, fetch, request}
 }
 
+function validateMarkers(options: ValidateDocumentOptions) {
+  return validateDocument(options).then(({markers}) => markers)
+}
+
 describe('validateDocument', () => {
+  it('reports passed, failed, and not-evaluated document outcomes', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) => rule.required(),
+          },
+          {name: 'author', type: 'reference', to: [{type: 'author'}]},
+        ],
+      },
+      {name: 'author', type: 'document', fields: []},
+    ])
+
+    await expect(
+      validateDocument({
+        document: createDocument({_type: 'article', title: 'Hello'}),
+        schema,
+      }),
+    ).resolves.toMatchObject({status: 'passed', markers: [], skipped: []})
+
+    await expect(
+      validateDocument({document: createDocument({_type: 'article'}), schema}),
+    ).resolves.toMatchObject({status: 'failed', markers: [expect.any(Object)], skipped: []})
+
+    await expect(
+      validateDocument({
+        document: createDocument({
+          _type: 'article',
+          title: 'Hello',
+          author: {_type: 'reference', _ref: 'author-id'},
+        }),
+        schema,
+      }),
+    ).resolves.toEqual({
+      status: 'notEvaluated',
+      markers: [],
+      skipped: [
+        {
+          check: 'referenceExistence',
+          level: 'error',
+          path: ['author'],
+          reason: 'clientUnavailable',
+        },
+      ],
+    })
+  })
+
+  it('skips user validators without skipping engine-provided validators', async () => {
+    const customValidator = vi.fn(() => true as const)
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'title', type: 'string', validation: (rule: Rule) => rule.custom(customValidator)},
+        ],
+      },
+    ])
+
+    const result = await validateDocument({
+      customValidation: false,
+      document: createDocument({_type: 'article', title: 'Hello', unexpected: true}),
+      schema,
+    })
+
+    expect(result.status).toBe('failed')
+    expect(result.markers).toEqual([
+      expect.objectContaining({code: validationMarkerCodes.objectUnknownField}),
+    ])
+    expect(result.skipped).toEqual([
+      {
+        check: 'custom',
+        level: 'error',
+        path: ['title'],
+        reason: 'customValidationDisabled',
+      },
+    ])
+    expect(customValidator).not.toHaveBeenCalled()
+  })
+
+  it('runs pure custom validators without a client and skips client-dependent validators', async () => {
+    const pureValidator = vi.fn(() => true as const)
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'pure', type: 'string', validation: (rule: Rule) => rule.custom(pureValidator)},
+          {
+            name: 'remote',
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.custom((_value, context) => {
+                context.getClient({apiVersion: '2026-01-01'})
+                return true
+              }),
+          },
+        ],
+      },
+    ])
+
+    const result = await validateDocument({
+      document: createDocument({_type: 'article', pure: 'yes', remote: 'yes'}),
+      schema,
+    })
+
+    expect(result).toEqual({
+      status: 'notEvaluated',
+      markers: [],
+      skipped: [
+        {
+          check: 'custom',
+          level: 'error',
+          path: ['remote'],
+          reason: 'clientUnavailable',
+        },
+      ],
+    })
+    expect(pureValidator).toHaveBeenCalledOnce()
+  })
+
+  it('reports manifest-only custom validators as unavailable', async () => {
+    const schema = createSchemaFromManifestTypes({
+      name: 'test',
+      types: [
+        {
+          name: 'article',
+          type: 'document',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+              validation: [{level: 'warning', rules: [{flag: 'custom'}]}],
+            },
+          ],
+        },
+      ],
+    })
+
+    await expect(
+      validateDocument({
+        document: createDocument({_type: 'article', title: 'Hello'}),
+        schema,
+      }),
+    ).resolves.toEqual({
+      status: 'notEvaluated',
+      markers: [],
+      skipped: [
+        {
+          check: 'custom',
+          level: 'warning',
+          path: ['title'],
+          reason: 'validatorUnavailable',
+        },
+      ],
+    })
+  })
+
+  it('keeps local slug and reference checks in no-network mode', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'author', type: 'reference', to: [{type: 'author'}]},
+          {name: 'slug', type: 'slug'},
+        ],
+      },
+      {name: 'author', type: 'document', fields: []},
+    ])
+
+    const result = await validateDocument({
+      customValidation: false,
+      document: createDocument({_type: 'article', author: 'invalid', slug: {current: ''}}),
+      schema,
+    })
+
+    expect(result.status).toBe('failed')
+    expect(result.markers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({code: validationMarkerCodes.referenceInvalid}),
+        expect.objectContaining({code: validationMarkerCodes.slugMissingCurrent}),
+      ]),
+    )
+    expect(result.skipped).toEqual([])
+  })
+
+  it('skips network checks while honoring an explicit reference existence callback', async () => {
+    const getDocumentExists = vi.fn(async () => true)
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'author', type: 'reference', to: [{type: 'author'}]},
+          {name: 'slug', type: 'slug'},
+        ],
+      },
+      {name: 'author', type: 'document', fields: []},
+    ])
+
+    const result = await validateDocument({
+      customValidation: false,
+      document: createDocument({
+        _type: 'article',
+        author: {_ref: 'author-id', _type: 'reference'},
+        slug: {current: 'hello'},
+      }),
+      getDocumentExists,
+      schema,
+    })
+
+    expect(getDocumentExists).toHaveBeenCalledWith({id: 'author-id'})
+    expect(result).toEqual({
+      status: 'notEvaluated',
+      markers: [],
+      skipped: [
+        {
+          check: 'slugUniqueness',
+          level: 'warning',
+          path: ['slug'],
+          reason: 'clientUnavailable',
+        },
+      ],
+    })
+  })
+
   it('preserves workspace validation behavior through the compatibility overload', async () => {
     const schema = createSchema([
       {
@@ -63,8 +303,9 @@ describe('validateDocument', () => {
     const workspace = {getClient: () => client, i18n, schema}
 
     const [headlessMarkers, workspaceMarkers, namedHelperMarkers] = await Promise.all([
-      validateDocument({client, document, schema}),
-      validateDocument({document, workspace}),
+      validateMarkers({client, document, schema}),
+      // oxlint-disable-next-line typescript/no-deprecated -- explicitly covers compatibility API
+      validateDocumentWithWorkspace({document, workspace}),
       // oxlint-disable-next-line typescript/no-deprecated -- explicitly covers compatibility API
       validateDocumentWithWorkspace({document, workspace}),
     ])
@@ -86,8 +327,9 @@ describe('validateDocument', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 
     try {
-      await expect(validateDocument({document, workspace})).resolves.toEqual([])
-      await expect(validateDocument({client, document, schema})).resolves.toEqual([
+      // oxlint-disable-next-line typescript/no-deprecated -- explicitly covers compatibility API
+      await expect(validateDocumentWithWorkspace({document, workspace})).resolves.toEqual([])
+      await expect(validateMarkers({client, document, schema})).resolves.toEqual([
         expect.objectContaining({
           level: 'warning',
           message: "Could not find schema type for type 'missing', skipping validation",
@@ -120,7 +362,7 @@ describe('validateDocument', () => {
     const before = structuredClone(document)
     const {client} = createMockClient()
 
-    const markers = await validateDocument({client, document, schema})
+    const markers = await validateMarkers({client, document, schema})
 
     expect(markers).toEqual(
       expect.arrayContaining([
@@ -175,7 +417,7 @@ describe('validateDocument', () => {
     ])
     const {client} = createMockClient()
 
-    const markers = await validateDocument({
+    const markers = await validateMarkers({
       client,
       document: createDocument({
         _type: 'article',
@@ -256,7 +498,7 @@ describe('validateDocument', () => {
     const {client} = createMockClient()
 
     await expect(
-      validateDocument({
+      validateMarkers({
         client,
         document: createDocument({_type: 'article', title: 'Title'}),
         schema,
@@ -287,7 +529,7 @@ describe('validateDocument', () => {
     const {client} = createMockClient()
 
     await expect(
-      validateDocument({
+      validateMarkers({
         client,
         document: createDocument({_type: 'article', title: 'Short'}),
         schema,
@@ -306,7 +548,7 @@ describe('validateDocument', () => {
     const {client} = createMockClient()
 
     await expect(
-      validateDocument({
+      validateMarkers({
         client,
         document: createDocument({_type: 'missing'}),
         schema,
@@ -341,7 +583,7 @@ describe('validateDocument', () => {
     const {client, fetch} = createMockClient()
 
     await expect(
-      validateDocument({
+      validateMarkers({
         client,
         document: createDocument({_type: 'article', title: 'Hello'}),
         schema,
@@ -388,7 +630,7 @@ describe('validateDocument', () => {
         withConfig: () => client,
       } as unknown as SanityClient
 
-      await validateDocument({
+      await validateMarkers({
         client,
         document,
         getDocumentExists: async () => true,
@@ -415,7 +657,7 @@ describe('validateDocument', () => {
     const getDocumentExists = vi.fn(async () => false)
     const {client, request} = createMockClient()
 
-    const markers = await validateDocument({
+    const markers = await validateMarkers({
       client,
       document: createDocument({_type: 'article', author: {_ref: 'author-id', _type: 'reference'}}),
       getDocumentExists,
@@ -447,7 +689,7 @@ describe('validateDocument', () => {
     const {client, request} = createMockClient()
 
     await expect(
-      validateDocument({
+      validateMarkers({
         client,
         document: createDocument({
           _type: 'article',

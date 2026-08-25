@@ -20,6 +20,11 @@ const builtinSchema = Schema.compile({
   types: builtinTypes,
 })
 
+function markUnavailableValidator<T extends CustomValidator | MediaValidator>(validator: T): T {
+  validator.__sanityValidation = 'unavailable'
+  return validator
+}
+
 export function createSchemaFromManifestTypes(schemaDef: {name: string; types: unknown[]}) {
   const validated = validateSchema(schemaDef.types).getTypes()
   const validation = groupProblems(validated)
@@ -277,14 +282,14 @@ function applyRuleSpec(rule: IRule, ruleSpec: unknown): IRule {
     case 'custom':
       // When the manifest schema types are serialized, the custom function will be stripped. We add it back here to keep track that
       // a rule did exist at one point.
-      if (constraint === undefined) return rule.custom(() => true)
+      if (constraint === undefined) return rule.custom(markUnavailableValidator(() => true))
       if (typeof constraint === 'function') return rule.custom(constraint as CustomValidator)
       break
 
     case 'media':
       // When the manifest schema types are serialized, the custom function will be stripped. We add it back here to keep track that
       // a rule did exist at one point.
-      if (constraint === undefined) return rule.media(() => true)
+      if (constraint === undefined) return rule.media(markUnavailableValidator(() => true))
       if (typeof constraint === 'function') return rule.media(constraint as MediaValidator)
       break
 

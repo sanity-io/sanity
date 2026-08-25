@@ -5,6 +5,8 @@
 import type {
   BuiltInValidationMarkerCode,
   DocumentValidationMarker,
+  DocumentValidationResult,
+  SkippedValidation,
   validateDocument,
   ValidateDocumentOptions,
   validateDocumentWithWorkspace,
@@ -24,9 +26,15 @@ describe('@sanity/validation', () => {
   test('DocumentValidationMarker', () => {
     expectTypeOf<DocumentValidationMarker>().not.toBeNever()
   })
+  test('DocumentValidationResult', () => {
+    expectTypeOf<DocumentValidationResult>().toBeObject()
+  })
   test('validateDocument', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof validateDocument>().toBeFunction()
+    expectTypeOf<Parameters<typeof validateDocument>[0]>().toEqualTypeOf<ValidateDocumentOptions>()
+    expectTypeOf<ReturnType<typeof validateDocument>>().toEqualTypeOf<
+      Promise<DocumentValidationResult>
+    >()
   })
   test('ValidateDocumentOptions', () => {
     expectTypeOf<ValidateDocumentOptions>().toBeObject()
@@ -51,5 +59,8 @@ describe('@sanity/validation', () => {
   })
   test('ValidationSource', () => {
     expectTypeOf<ValidationSource>().toBeObject()
+  })
+  test('SkippedValidation', () => {
+    expectTypeOf<SkippedValidation>().toBeObject()
   })
 })
